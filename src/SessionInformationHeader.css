@@ -1,3 +1,46 @@
 .SessionInformationHeader {
-    border: 1px solid #000000;
+    font-family: 'arial', sans-serif;
+    color: white;
+    padding: 10px 10px;
+}
+
+.header {
+    background-color: gray;
+    padding-bottom: 20px;
+    background-clip: content-box; 
+}
+
+#ClassName {
+    font-size: 40px;
+    font-weight: bold;
+    text-align: left;
+}
+
+#RunnerName {
+    font-size: 30px;
+}
+
+.ClassLogistics {
+    font-size: 18px;
+    text-align: right;
+}
+
+.QueueInfo {
+    text-align: left;
+}
+
+#QueueNumber {
+    font-weight: bold;
+    font-size: 30px;
+}
+
+.button {
+    background-color: gray;
+    color: white;
+    border: none;
+    padding: 10px 20%;
+    display: inline-block;
+    font-size: 30px;
+    font-weight: bold;
+    border-radius: 25px;
 }
