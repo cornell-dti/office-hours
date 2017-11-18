@@ -2,65 +2,9 @@
     border: 1px solid #000000;
 }
 
-.QueueQuestions {
-    background-color: #f2f2f2;
-    width: 95%;
-    text-align: center;
-    box-shadow: 2px 2px 5px #b3b3b3;
-    height: 100px;
-    position: relative;
-    margin-top: 2px;
-    border: 1px solid #f2f2f2;
-    border-radius: 5px;
-}
-
-.QueueQuestions p {
-    font-size: 13px;
+.Queue {
     text-align: left;
-    padding-left: 10px;
-    padding-bottom: 5px;
-    margin: 0em;
-    color: #595959;
-}
-
-.Name {
-    font-weight: bold;
+    margin-left: 10px;
     font-size: 15px;
-    padding-top: 6px;
-}
-
-.Tags {
-    padding-top: 5px;
-    padding-left: 8px;
-}
-
-.Tags p {
-    display: block;
-    float: left;
-    font-size: 11px;
-    color: white;
-    border: 1px  solid #999999;
-    background-color: #999999;
-    padding: 1px 7px;
-    margin: 3px;
-    border-radius: 10px;
-}
-
-.BottomBar {
-    display: block;
-    margin: 32  px 30px;
-}
-
-.BottomBar p {
-    font-size: 14px;
-}
-
-.Button {
-    border: 1px solid #4d4d4d;
-    background-color: #4d4d4d;
-    color: white;
-    padding: 4px 15px;
-    position: absolute;
-    bottom: 0;
-    right: 0;
+    color: #404040;
 }
