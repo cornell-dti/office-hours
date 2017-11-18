@@ -1,0 +1,28 @@
+.SessionPopularQuestion {
+    width:27%;
+    height:90%;
+    float:left;
+    margin:5px 10px 5px 0px;
+    text-align: left;
+    padding:3px;
+    border-radius: 3px;
+    background-color: #f6f6f6;
+    box-shadow: 2px 2px 4px 0 rgba(158, 158, 158, 0.5);
+    position:relative;
+}
+
+.SessionPopularQuestion-Text {
+    color: #4a4a4a;
+    font-size:11px;
+    padding:2px;
+    width:100%;
+    height:auto;
+}
+
+.SessionPopularQuestion-People {
+    color:#000000;
+    font-size: 14px;
+    padding:2px;
+    position: absolute;
+    bottom:0;
+}
