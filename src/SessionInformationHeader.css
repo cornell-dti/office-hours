@@ -1,5 +1,6 @@
 .SessionInformationHeader {
     font-family: 'arial', sans-serif;
+    font-size: 12px;
     color: white;
 }
 
@@ -9,7 +10,7 @@
 }
 
 .CourseInfo { /* Course number and TA */
-    font-size: 30px;
+    font-size: 20px;
     text-align: left;
     padding-bottom: 20px;
 }
@@ -29,7 +30,7 @@
 
 .QueueTotal {
     font-weight: bold;
-    font-size: 40px;
+    font-size: 36px;
 }
 
 .OfficeHourInfo { /* Office hour info */
@@ -52,7 +53,7 @@
     border: none;
     padding: 10px 20%;
     display: inline-block;
-    font-size: 30px;
+    font-size: 16px;
     font-weight: bold;
     border-radius: 25px;
 }
