@@ -1,23 +1,32 @@
 {
-  "name": "my-app",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "react": "^16.1.0",
-    "react-dom": "^16.1.0",
-    "react-scripts-ts": "2.8.0",
-    "tslint-react": "^3.2.0"
-  },
+  "name": "office-hours",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index",
+  "types": "lib/index",
   "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "start": "npm run build:live",
+    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cornell-dti/office-hours.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cornell-dti/office-hours/issues"
+  },
+  "homepage": "https://github.com/cornell-dti/office-hours#readme",
+  "dependencies": {
+    "@types/express": "^4.0.39",
+    "express": "^4.16.2",
+    "firebase": "^4.6.2",
+    "nodemon": "^1.12.1"
   },
   "devDependencies": {
-    "@types/jest": "^21.1.6",
-    "@types/node": "^8.0.51",
-    "@types/react": "^16.0.22",
-    "@types/react-dom": "^16.0.3"
+    "@types/node": "^8.0.53",
+    "ts-node": "^3.3.0",
+    "typescript": "^2.6.1"
   }
 }
