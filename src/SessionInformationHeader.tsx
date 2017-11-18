@@ -6,32 +6,27 @@ class SessionInformationHeader extends React.Component {
         return(
             <div className="SessionInformationHeader">
                 <div className="header">
-                    <div className="ClassInfo">
-                        <h1 id="ClassName">
-                            CS 3110 
-                        </h1>
-                        <div id="RunnerName">
-                            Michael Clarkson
-                        </div>
+                    <div className="CourseInfo">
+                        <span className="CourseNum">CS 3110  </span>
+                        Michael Clarkson
                     </div>
-                    <div className="ClassLogistics">
-                        <div id="ClassTime">
-                            Wednesday, 8 Nov
-                            10:00 - 11:00 AM
+                    <div className="OfficeHourLogistics">
+                        <div className="QueueInfo"> 
+                            <div className="QueueTotal">14</div>
+                            <div>in queue</div>
                         </div>
-                        <div id="ClassLocation">
-                            G23 Gates Hall
-                        </div>
-                    </div>
-                    <div className="QueueInfo">
-                        <div id="QueueNumber">
-                            14
-                        </div>
-                        <div id="QueueText">
-                            in queue
+                        <div className="OfficeHourInfo">
+                            <div className="OfficeHourTime">
+                                <p>Wednesday, 8 Nov</p>
+                                <p>10:00 - 11:00 AM</p>
+                            </div>
+                            <div className="OfficeHourLocation">
+                                G23 Gates Hall
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div className="Spacing" />
                 <button className="button" type="submit">
                     Join Queue
                 </button>

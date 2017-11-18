@@ -1,41 +1,53 @@
 .SessionInformationHeader {
     font-family: 'arial', sans-serif;
     color: white;
-    padding: 10px 10px;
 }
 
-.header {
-    background-color: gray;
+.header { /* Above button */
+    background-color: #9b9b9b; 
+    padding: 30px;
+}
+
+.CourseInfo { /* Course number and TA */
+    font-size: 30px;
+    text-align: left;
     padding-bottom: 20px;
-    background-clip: content-box; 
 }
 
-#ClassName {
+.CourseNum { /* Course number */
+    font-weight: bold;
+}
+
+.QueueInfo, .OfficeHourInfo { 
+    display: inline-block;
+}
+
+.QueueInfo { /* Queue info */
+    width: 50%;
+    text-align: left;
+}
+
+.QueueTotal {
+    font-weight: bold;
     font-size: 40px;
-    font-weight: bold;
-    text-align: left;
 }
 
-#RunnerName {
-    font-size: 30px;
-}
-
-.ClassLogistics {
-    font-size: 18px;
+.OfficeHourInfo { /* Office hour info */
+    width: 50%;
     text-align: right;
+    line-height: 5px;
 }
 
-.QueueInfo {
-    text-align: left;
+.OfficeHourLocation {
+    line-height: 30px;
 }
 
-#QueueNumber {
-    font-weight: bold;
-    font-size: 30px;
+.Spacing { /* Spacing between header and button */
+    padding: 10px;
 }
 
-.button {
-    background-color: gray;
+.button { /* Join button */
+    background-color: #9b9b9b;
     color: white;
     border: none;
     padding: 10px 20%;
