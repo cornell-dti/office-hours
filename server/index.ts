@@ -57,18 +57,24 @@ const resolvers = {
     },
   },
   Mutation: {
-    changeName(_, { id, newName }) {
+    async changeName(_, { id, newName }) {
+      db.run(`UPDATE User SET name='${newName}' WHERE id=${id}`);
       pubsub.publish('nameChanged', {
-        nameChanged: { id: id, name: newName },
+        nameChanged: await db.all('select * from User'),
       });
 
-      db.run(`UPDATE User SET name='${newName}' WHERE id=${id}`);
       return { id: id, name: newName };
     },
   },
   Subscription: {
     nameChanged: {
-      subscribe: () => pubsub.asyncIterator('nameChanged'),
+      subscribe: withFilter(
+        () => pubsub.asyncIterator('nameChanged'),
+        (payload, variables) => {
+          console.log(payload, variables);
+          return true;
+        }
+      ),
     },
   },
 };

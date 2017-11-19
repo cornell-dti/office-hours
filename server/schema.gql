@@ -13,5 +13,5 @@ type Mutation {
 }
 
 type Subscription {
-  nameChanged(id: ID): User
+  nameChanged(id: ID): [User]
 }
