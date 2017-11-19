@@ -21,14 +21,13 @@ const typeDefs = [fs.readFileSync(path.join(__dirname, 'schema.gql'), 'utf8')];
 
 const joinMonster = require('join-monster').default;
 const joinMonsterAdapt = require('join-monster-graphql-tools-adapter');
-import { PubSub } from 'graphql-subscriptions';
+import { PubSub, withFilter } from 'graphql-subscriptions';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { createServer } from 'http';
 
 const GRAPHQL_PORT = 3001;
 const GRAPHQL_PATH = '/graphql';
 const SUBSCRIPTIONS_PATH = '/subscriptions';
-const SOMETHING_CHANGED_TOPIC = 'something_changed';
 
 const app = express();
 const pubsub = new PubSub();
@@ -60,14 +59,16 @@ const resolvers = {
   },
   Mutation: {
     changeName(_, { id, newName }) {
-      pubsub.publish(SOMETHING_CHANGED_TOPIC, { SOMETHING_CHANGED_TOPIC: 'bruh' });
+      pubsub.publish('nameChanged', {
+        nameChanged: { id: id, name: newName },
+      });
 
       db.run(`UPDATE User SET name='${newName}' WHERE id=${id}`);
     },
   },
   Subscription: {
     nameChanged: {
-      subscribe: () => pubsub.asyncIterator(SOMETHING_CHANGED_TOPIC),
+      subscribe: () => pubsub.asyncIterator('nameChanged'),
     },
   },
 };
@@ -112,7 +113,6 @@ async function initialize() {
   ('Kaia'),
   ('Halldora'),
   ('Dorte');`);
-  console.log(await graphql(schema, 'subscription{nameChanged}'));
 }
 initialize();
 app.use(
