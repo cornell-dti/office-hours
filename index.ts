@@ -130,22 +130,20 @@ app.use(
     subscriptionsEndpoint: `ws://localhost:${GRAPHQL_PORT}${SUBSCRIPTIONS_PATH}`,
   })
 );
-const graphQLServer = createServer(app);
-graphQLServer.listen(GRAPHQL_PORT, () => {
-  console.log(`GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}${GRAPHQL_PATH}`);
-  console.log(
-    `GraphQL Subscriptions are now running on ws://localhost:${GRAPHQL_PORT}${SUBSCRIPTIONS_PATH}`
+
+const ws = createServer(app);
+ws.listen(GRAPHQL_PORT, () => {
+  console.log(`GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}`);
+  // Set up the WebSocket for handling GraphQL subscriptions
+  new SubscriptionServer(
+    {
+      execute,
+      subscribe,
+      schema,
+    },
+    {
+      server: ws,
+      path: '/subscriptions',
+    }
   );
 });
-
-const subscriptionServer = SubscriptionServer.create(
-  {
-    schema: schema,
-    execute,
-    subscribe,
-  },
-  {
-    server: app,
-    path: SUBSCRIPTIONS_PATH,
-  }
-);
