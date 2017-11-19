@@ -1,40 +1,151 @@
 import * as express from 'express';
-import * as firebase from 'firebase';
+import * as bodyparser from 'body-parser';
+import * as sqlite from 'sqlite';
+import * as fs from 'fs';
+import * as path from 'path';
+import {
+  graphql,
+  GraphQLObjectType,
+  GraphQLSchema,
+  GraphQLID,
+  GraphQLString,
+  GraphQLNonNull,
+  execute,
+  subscribe,
+} from 'graphql';
 
-// const firebaseSer
-// import * as firebaseserver from 'firebase-server';
+import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
+import { makeExecutableSchema } from 'graphql-tools';
+// const { makeExecutableSchema } = require('graphql-tools');
+const typeDefs = [fs.readFileSync(path.join(__dirname, 'schema.gql'), 'utf8')];
+
+const joinMonster = require('join-monster').default;
+const joinMonsterAdapt = require('join-monster-graphql-tools-adapter');
+import { PubSub } from 'graphql-subscriptions';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { createServer } from 'http';
+
+const GRAPHQL_PORT = 3001;
+const GRAPHQL_PATH = '/graphql';
+const SUBSCRIPTIONS_PATH = '/subscriptions';
+const SOMETHING_CHANGED_TOPIC = 'something_changed';
 
 const app = express();
+const pubsub = new PubSub();
+let db: sqlite.Database;
 
-const config = {
-  authDomain: 'office-hours-b7f4c.firebaseapp.com',
-  // databaseURL: 'https://office-hours-b7f4c.firebaseio.com',
-  databaseURL: 'ws://127.0.1:5005',
-  projectId: 'office-hours-b7f4c',
-  storageBucket: 'office-hours-b7f4c.appspot.com',
-  messagingSenderId: '568482409494',
+const resolvers = {
+  Query: {
+    // call joinMonster in the "user" resolver, and all child fields that are tagged with "sqlTable" are handled!
+    viewer(parent, args, ctx, resolveInfo) {
+      return joinMonster(
+        resolveInfo,
+        ctx,
+        sql => {
+          return db.all(sql);
+        },
+        { dialect: 'sqlite3' }
+      );
+    },
+    user(parent, args, ctx, resolveInfo) {
+      return joinMonster(
+        resolveInfo,
+        ctx,
+        sql => {
+          return db.all(sql);
+        },
+        { dialect: 'sqlite3' }
+      );
+    },
+  },
+  Mutation: {
+    changeName(_, { id, newName }) {
+      pubsub.publish(SOMETHING_CHANGED_TOPIC, { SOMETHING_CHANGED_TOPIC: 'bruh' });
+
+      db.run(`UPDATE User SET name='${newName}' WHERE id=${id}`);
+    },
+  },
+  Subscription: {
+    nameChanged: {
+      subscribe: () => pubsub.asyncIterator(SOMETHING_CHANGED_TOPIC),
+    },
+  },
 };
 
-firebase.initializeApp(config);
-const db = firebase.database();
-// firebase.database().goOffline();
-
-app.get('/users', async (req, res) => {
-  db.ref('/').push('asdf');
-  await db
-    .ref('/')
-    .once('value')
-    .then((x: firebase.database.DataSnapshot) => console.log(x.toJSON()));
-  res.json([
-    {
-      id: 1,
-      username: 'samsepi0l',
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+joinMonsterAdapt(schema, {
+  Query: {
+    fields: {
+      user: {
+        where: (table, args) => `${table}.id = ${args.id}`,
+      },
     },
-    {
-      id: 2,
-      username: 'D0loresH4ze',
+  },
+  User: {
+    sqlTable: 'User',
+    uniqueKey: 'id',
+    fields: {
+      name: { sqlColumn: 'name' },
     },
-  ]);
+  },
 });
 
-app.listen(3001, () => console.log('Backend for Office Hours listening on port 3001'));
+async function initialize() {
+  db = await sqlite.open(':memory:');
+  await db.run(`CREATE TABLE User
+  (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(255)
+  );`);
+  await db.run(`
+  INSERT INTO User('name')
+  VALUES
+  ('freiksenet'),
+  ('fson'),
+  ('Hallie'),
+  ('Sophia'),
+  ('Riya'),
+  ('Kari'),
+  ('Estrid'),
+  ('Burwenna'),
+  ('Emma'),
+  ('Kaia'),
+  ('Halldora'),
+  ('Dorte');`);
+  console.log(await graphql(schema, 'subscription{nameChanged}'));
+}
+initialize();
+app.use(
+  '/graphql',
+  bodyparser.json(),
+  graphqlExpress({
+    schema: schema,
+    context: {}, // at least(!) an empty object
+  })
+);
+app.use(
+  '/graphiql',
+  graphiqlExpress({
+    endpointURL: GRAPHQL_PATH,
+    subscriptionsEndpoint: `ws://localhost:${GRAPHQL_PORT}${SUBSCRIPTIONS_PATH}`,
+  })
+);
+const graphQLServer = createServer(app);
+graphQLServer.listen(GRAPHQL_PORT, () => {
+  console.log(`GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}${GRAPHQL_PATH}`);
+  console.log(
+    `GraphQL Subscriptions are now running on ws://localhost:${GRAPHQL_PORT}${SUBSCRIPTIONS_PATH}`
+  );
+});
+
+const subscriptionServer = SubscriptionServer.create(
+  {
+    schema: schema,
+    execute,
+    subscribe,
+  },
+  {
+    server: app,
+    path: SUBSCRIPTIONS_PATH,
+  }
+);
