@@ -16,8 +16,6 @@ import {
 
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import { makeExecutableSchema } from 'graphql-tools';
-// const { makeExecutableSchema } = require('graphql-tools');
-const typeDefs = [fs.readFileSync(path.join(__dirname, 'schema.gql'), 'utf8')];
 
 const joinMonster = require('join-monster').default;
 const joinMonsterAdapt = require('join-monster-graphql-tools-adapter');
@@ -30,6 +28,7 @@ const GRAPHQL_PATH = '/graphql';
 const SUBSCRIPTIONS_PATH = '/subscriptions';
 
 const app = express();
+const typeDefs = [fs.readFileSync(path.join(__dirname, 'schema.gql'), 'utf8')];
 const pubsub = new PubSub();
 let db: sqlite.Database;
 
@@ -64,6 +63,7 @@ const resolvers = {
       });
 
       db.run(`UPDATE User SET name='${newName}' WHERE id=${id}`);
+      return { id: id, name: newName };
     },
   },
   Subscription: {
@@ -115,6 +115,7 @@ async function initialize() {
   ('Dorte');`);
 }
 initialize();
+
 app.use(
   '/graphql',
   bodyparser.json(),
@@ -133,7 +134,7 @@ app.use(
 
 const ws = createServer(app);
 ws.listen(GRAPHQL_PORT, () => {
-  console.log(`GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}`);
+  console.log(`Office Hours GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}`);
   // Set up the WebSocket for handling GraphQL subscriptions
   new SubscriptionServer(
     {
