@@ -1,7 +1,8 @@
 .SessionPopularQuestion {
     width:28%;
     height:90%;
-    margin: 10px 2.667%;
+    margin: 10px 1.667%;
+    padding: 1%;
     text-align: left;
     border-radius: 3px;
     background-color: #f6f6f6;
@@ -23,4 +24,10 @@
     padding:2px;
     position: absolute;
     bottom:0;
+}
+
+.SessionPopularQuestion-PeopleLogo {
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
 }
