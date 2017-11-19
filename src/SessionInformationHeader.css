@@ -6,7 +6,16 @@
 
 .header { /* Above button */
     background-color: #9b9b9b; 
-    padding: 30px;
+    padding: 20px;
+}
+
+.Close {
+    float: right;
+    background: url(https://www.iconsdb.com/icons/preview/white/x-mark-xxl.png);
+    border: none;
+    background-size: 20px;
+    height: 20px;  
+    width: 20px;
 }
 
 .CourseInfo { /* Course number and TA */
@@ -16,6 +25,7 @@
 }
 
 .CourseNum { /* Course number */
+    font-size: 20px;
     font-weight: bold;
 }
 

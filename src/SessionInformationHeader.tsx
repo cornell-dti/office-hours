@@ -6,11 +6,12 @@ class SessionInformationHeader extends React.Component {
         return(
             <div className="SessionInformationHeader">
                 <div className="header">
+                    <button className="Close" type="submit"/>
                     <div className="CourseInfo">
                         <span className="CourseNum">CS 3110  </span>
                         Michael Clarkson
                     </div>
-                    <div className="OfficeHourLogistics">
+                    <div>
                         <div className="QueueInfo"> 
                             <div className="QueueTotal">14</div>
                             <div>in queue</div>
