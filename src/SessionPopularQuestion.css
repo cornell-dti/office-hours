@@ -1,10 +1,8 @@
 .SessionPopularQuestion {
-    width:27%;
+    width:28%;
     height:90%;
-    float:left;
-    margin:5px 10px 5px 0px;
+    margin: 10px 2.667%;
     text-align: left;
-    padding:3px;
     border-radius: 3px;
     background-color: #f6f6f6;
     box-shadow: 2px 2px 4px 0 rgba(158, 158, 158, 0.5);

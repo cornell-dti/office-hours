@@ -1,5 +1,4 @@
 .SessionPopularQuestionsContainer {
-    border: 1px solid #000000;
     padding: 10px;
 }
 
@@ -15,4 +14,6 @@
 
 .SessionPopularQuestionsContainer-List {
     height:85px;
+    display: flex;
+    flex-wrap: wrap;
 }
