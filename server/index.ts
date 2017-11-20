@@ -93,6 +93,19 @@ joinMonsterAdapt(schema, {
     uniqueKey: 'id',
     fields: {
       name: { sqlColumn: 'name' },
+      posts: {
+        sqlJoin: (userTable, postTable) => `${userTable}.id = ${postTable}.userid`,
+      },
+    },
+  },
+  Post: {
+    sqlTable: 'Posts',
+    uniqueKey: 'id',
+    fields: {
+      text: { sqlColumn: 'text' },
+      author: {
+        sqlJoin: (postTable, userTable) => `${postTable}.userid = ${userTable}.id`,
+      },
     },
   },
 });
@@ -119,6 +132,18 @@ async function initialize() {
   ('Kaia'),
   ('Halldora'),
   ('Dorte');`);
+  await db.run(`
+  CREATE TABLE Posts
+  (
+    id INTEGER PRIMARY KEY,
+    userid INTEGER,
+    text VARCHAR(255)
+  );  `);
+  await db.run(`
+  INSERT INTO Posts('userid', 'text')
+  VALUES
+  (2, 'hello'),
+  (1, 'yo');`);
 }
 initialize();
 
