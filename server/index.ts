@@ -96,6 +96,12 @@ joinMonsterAdapt(schema, {
       posts: {
         sqlJoin: (userTable, postTable) => `${userTable}.id = ${postTable}.userid`,
       },
+      receivedFrom: {
+        sqlJoin: (userTable, postTable, args) => {
+          console.log(userTable, postTable, args);
+          return `${postTable}.userid = ${args.senderID} AND ${postTable}.receiverid = ${userTable}.id`;
+        },
+      },
     },
   },
   Post: {
@@ -105,6 +111,9 @@ joinMonsterAdapt(schema, {
       text: { sqlColumn: 'text' },
       author: {
         sqlJoin: (postTable, userTable) => `${postTable}.userid = ${userTable}.id`,
+      },
+      receiver: {
+        sqlJoin: (postTable, userTable) => `${postTable}.receiverid = ${userTable}.id`,
       },
     },
   },
@@ -137,13 +146,18 @@ async function initialize() {
   (
     id INTEGER PRIMARY KEY,
     userid INTEGER,
+    receiverid INTEGER,
     text VARCHAR(255)
   );  `);
   await db.run(`
-  INSERT INTO Posts('userid', 'text')
+  INSERT INTO Posts('userid', 'receiverid', 'text')
   VALUES
-  (2, 'hello'),
-  (1, 'yo');`);
+  (1, 2, 'hello2'),
+  (1, 3, 'hello3'),
+  (1, 4, 'hello4'),
+  (2, 1, 'yo'),
+  (2, 3, 'yo');
+  `);
 }
 initialize();
 
