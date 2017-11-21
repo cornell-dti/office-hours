@@ -44,6 +44,16 @@ const resolvers = {
         { dialect: 'sqlite3' }
       );
     },
+    course(parent, args, ctx, resolveInfo) {
+      return joinMonster(
+        resolveInfo,
+        ctx,
+        sql => {
+          return db.all(sql);
+        },
+        { dialect: 'sqlite3' }
+      );
+    },
   },
   // Mutation: {
   //   async changeName(_, { id, newName }) {
@@ -74,6 +84,9 @@ joinMonsterAdapt(schema, {
     fields: {
       student: {
         where: (table, args) => `${table}.netid = '${args.netid}'`,
+      },
+      course: {
+        where: (table, args) => `${table}.name = '${args.name}'`,
       },
     },
   },
@@ -127,6 +140,9 @@ joinMonsterAdapt(schema, {
           },
         },
       },
+      tags: {
+        sqlJoin: (courseTable, tagTable) => `${courseTable}.course_id = ${tagTable}.course_id`,
+      },
     },
   },
   Session: {
@@ -167,6 +183,38 @@ joinMonsterAdapt(schema, {
       student: {
         sqlJoin: (questionTable, studentTable) =>
           `${questionTable}.student = ${studentTable}.netid`,
+      },
+      tags: {
+        junction: {
+          sqlTable: 'question_tags',
+          uniqueKey: ['tag_id', 'question_id'],
+          sqlBatch: {
+            thisKey: 'question_id',
+            parentKey: 'question_id',
+            sqlJoin: (junctionTable, tagTable) => `${junctionTable}.tag_id = ${tagTable}.tag_id`,
+          },
+        },
+      },
+    },
+  },
+  Tag: {
+    sqlTable: 'tags',
+    uniqueKey: 'tag_id',
+    fields: {
+      course: {
+        sqlJoin: (tagTable, courseTable) => `${tagTable}.course_id = ${courseTable}.course_id`,
+      },
+      questions: {
+        junction: {
+          sqlTable: 'question_tags',
+          uniqueKey: ['tag_id', 'question_id'],
+          sqlBatch: {
+            thisKey: 'tag_id',
+            parentKey: 'tag_id',
+            sqlJoin: (junctionTable, questionTable) =>
+              `${junctionTable}.question_id = ${questionTable}.question_id`,
+          },
+        },
       },
     },
   },

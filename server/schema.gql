@@ -3,8 +3,12 @@ type Course {
   name: String!
   semester: String!
   students: [Student!]
+  # All the tas for this course.
   tas: [Student!]
+  # All the sessions for this course.
   sessions: [Session!]
+  # All the tags for this course
+  tags: [Tag!]
 }
 
 type Student {
@@ -28,14 +32,17 @@ type Question {
   time_entered: String!
   session: Session!
   student: Student!
+  tags: [Tag!]
 }
 
 type Tag {
   tag_id: ID!
-  course: Course!
   value: String!
+  course: Course!
+  questions: [Question!]
 }
 
 type Query {
   student(netid: ID!): Student
+  course(name: String!): Course
 }

@@ -46,13 +46,20 @@ CREATE TABLE session_tas (
 CREATE TABLE questions (
     question_id integer PRIMARY KEY AUTOINCREMENT,
     text text,
-    time_entered varchar,
+    time_entered datetime DEFAULT CURRENT_TIMESTAMP,
     session_id integer,
     student varchar,
     FOREIGN KEY(session_id) REFERENCES sessions(session_id),
     FOREIGN KEY(student) REFERENCES students(netid)
 );
 
+
+CREATE TABLE tags (
+    tag_id integer PRIMARY KEY AUTOINCREMENT,
+    value text,
+    course_id integer,
+    FOREIGN KEY(course_id) REFERENCES courses(course_id)
+);
 
 CREATE TABLE question_tags (
     tag_id integer,
@@ -62,12 +69,6 @@ CREATE TABLE question_tags (
     FOREIGN KEY(question_id) REFERENCES questions(question_id)
 );
 
-CREATE TABLE tags (
-    tag_id integer PRIMARY KEY AUTOINCREMENT,
-    value text,
-    course_id integer,
-    FOREIGN KEY(course_id) REFERENCES courses(course_id)
-);
 
 
 -- Initialization data
@@ -110,3 +111,19 @@ VALUES
 ('js234', (select course_id from courses where name='CS6832')),
 ('js234', (select course_id from courses where name='CS3110')),
 ('ks123', (select course_id from courses where name='CS3110'));
+
+INSERT INTO questions('text', 'session_id', 'student')
+VALUES
+('How do I program?', 1, 'hh498'),
+('How do I install this?', 1, 'hh498');
+
+INSERT INTO tags('value', 'course_id')
+VALUES
+('assignment 1', (select course_id from courses where name='CS2800')),
+('coding help', (select course_id from courses where name='CS2800')),
+('other', (select course_id from courses where name='CS2800'));
+
+INSERT INTO question_tags('tag_id', 'question_id')
+VALUES
+(1, 1),
+(2, 1);
