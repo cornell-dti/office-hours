@@ -88,6 +88,11 @@ async function initialize() {
   db = await sqlite.open(':memory:');
   await db.exec(fs.readFileSync(path.join(__dirname, 'db.sql'), 'utf-8'));
   console.log(await db.all('SELECT name FROM sqlite_master WHERE type = "table"'));
+  await db.run(`
+  INSERT INTO students('netid', 'name')
+  VALUES
+  ('hh498', 'horace'),
+  ('ks123', 'karun');`);
   // await db.run(`CREATE TABLE User
   // (
   //   id INTEGER PRIMARY KEY,
