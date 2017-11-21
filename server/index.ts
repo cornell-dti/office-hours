@@ -106,6 +106,18 @@ joinMonsterAdapt(schema, {
           },
         },
       },
+      following: {
+        junction: {
+          sqlTable: 'question_followers',
+          uniqueKey: ['question_id', 'follower'],
+          sqlBatch: {
+            thisKey: 'netid',
+            parentKey: 'follower',
+            sqlJoin: (junctionTable, questionTable) =>
+              `${junctionTable}.question_id = ${questionTable}.question_id`,
+          },
+        },
+      },
     },
   },
   Course: {
@@ -195,12 +207,25 @@ joinMonsterAdapt(schema, {
           },
         },
       },
+      followers: {
+        junction: {
+          sqlTable: 'question_followers',
+          uniqueKey: ['question_id', 'follower'],
+          sqlBatch: {
+            thisKey: 'question_id',
+            parentKey: 'question_id',
+            sqlJoin: (junctionTable, studentTable) =>
+              `${junctionTable}.follower = ${studentTable}.netid`,
+          },
+        },
+      },
     },
   },
   Tag: {
     sqlTable: 'tags',
     uniqueKey: 'tag_id',
     fields: {
+      id: { sqlColumn: 'tag_id' },
       course: {
         sqlJoin: (tagTable, courseTable) => `${tagTable}.course_id = ${courseTable}.course_id`,
       },

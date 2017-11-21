@@ -53,6 +53,13 @@ CREATE TABLE questions (
     FOREIGN KEY(student) REFERENCES students(netid)
 );
 
+CREATE TABLE question_followers (
+    question_id integer,
+    follower integer,
+    PRIMARY KEY (question_id, follower),
+    FOREIGN KEY(question_id) REFERENCES questions(question_id),
+    FOREIGN KEY(follower) REFERENCES students(netid)
+);
 
 CREATE TABLE tags (
     tag_id integer PRIMARY KEY AUTOINCREMENT,
