@@ -1,28 +1,33 @@
 type Course {
-  course_id: ID!
+  id: ID!
   name: String!
   semester: String!
-}
-
-type Session {
-  session_id: ID!
-  course: Course!
-  ta_id: Student!
-  time: String!
-  location: String!
-}
-
-type Question {
-  question_id: ID!
-  session: Session!
-  text: String!
-  time_entered: String!
-  student: Student!
+  students: [Student!]
+  tas: [Student!]
+  sessions: [Session!]
 }
 
 type Student {
   netid: ID!
   name: String!
+  courses: [Course!]
+}
+
+type Session {
+  id: ID!
+  time: String!
+  location: String!
+  course: Course!
+  tas: [Student!]
+  questions: [Question!]
+}
+
+type Question {
+  id: ID!
+  text: String!
+  time_entered: String!
+  session: Session!
+  student: Student!
 }
 
 type Tag {

@@ -80,7 +80,95 @@ joinMonsterAdapt(schema, {
   Student: {
     sqlTable: 'students',
     uniqueKey: 'netid',
-    fields: {},
+    fields: {
+      courses: {
+        junction: {
+          sqlTable: 'course_students',
+          uniqueKey: ['course_id', 'netid'],
+          sqlBatch: {
+            thisKey: 'netid',
+            parentKey: 'netid',
+            sqlJoin: (junctionTable, courseTable) =>
+              `${junctionTable}.course_id = ${courseTable}.course_id`,
+          },
+        },
+      },
+    },
+  },
+  Course: {
+    sqlTable: 'courses',
+    uniqueKey: 'course_id',
+    fields: {
+      id: { sqlColumn: 'course_id' },
+      students: {
+        junction: {
+          sqlTable: 'course_students',
+          uniqueKey: ['course_id', 'netid'],
+          sqlBatch: {
+            thisKey: 'course_id',
+            parentKey: 'course_id',
+            sqlJoin: (junctionTable, studentTable) =>
+              `${junctionTable}.netid = ${studentTable}.netid`,
+          },
+        },
+      },
+      sessions: {
+        sqlJoin: (courseTable, sessionTable) =>
+          `${courseTable}.course_id = ${sessionTable}.course_id`,
+      },
+      tas: {
+        junction: {
+          sqlTable: 'course_tas',
+          uniqueKey: ['course_id', 'ta'],
+          sqlBatch: {
+            thisKey: 'course_id',
+            parentKey: 'course_id',
+            sqlJoin: (junctionTable, studentTable) => `${junctionTable}.ta = ${studentTable}.netid`,
+          },
+        },
+      },
+    },
+  },
+  Session: {
+    sqlTable: 'sessions',
+    uniqueKey: 'session_id',
+    fields: {
+      id: { sqlColumn: 'session_id' },
+      course: {
+        sqlJoin: (sessionTable, courseTable) =>
+          `${sessionTable}.course_id = ${courseTable}.course_id`,
+      },
+      tas: {
+        junction: {
+          sqlTable: 'session_tas',
+          uniqueKey: ['session_id', 'ta'],
+          sqlBatch: {
+            thisKey: 'session_id',
+            parentKey: 'session_id',
+            sqlJoin: (junctionTable, studentTable) => `${junctionTable}.ta = ${studentTable}.netid`,
+          },
+        },
+      },
+      questions: {
+        sqlJoin: (sessionTable, questionTable) =>
+          `${sessionTable}.session_id = ${questionTable}.session_id`,
+      },
+    },
+  },
+  Question: {
+    sqlTable: 'questions',
+    uniqueKey: 'question_id',
+    fields: {
+      id: { sqlColumn: 'question_id' },
+      session: {
+        sqlJoin: (questionTable, sessionTable) =>
+          `${questionTable}.session_id = ${sessionTable}.session_id`,
+      },
+      student: {
+        sqlJoin: (questionTable, studentTable) =>
+          `${questionTable}.student = ${studentTable}.netid`,
+      },
+    },
   },
 });
 
@@ -88,48 +176,7 @@ async function initialize() {
   db = await sqlite.open(':memory:');
   await db.exec(fs.readFileSync(path.join(__dirname, 'db.sql'), 'utf-8'));
   console.log(await db.all('SELECT name FROM sqlite_master WHERE type = "table"'));
-  await db.run(`
-  INSERT INTO students('netid', 'name')
-  VALUES
-  ('hh498', 'horace'),
-  ('ks123', 'karun');`);
-  // await db.run(`CREATE TABLE User
-  // (
-  //   id INTEGER PRIMARY KEY,
-  //   name VARCHAR(255)
-  // );`);
-  // await db.run(`
-  // INSERT INTO User('name')
-  // VALUES
-  // ('freiksenet'),
-  // ('fson'),
-  // ('Hallie'),
-  // ('Sophia'),
-  // ('Riya'),
-  // ('Kari'),
-  // ('Estrid'),
-  // ('Burwenna'),
-  // ('Emma'),
-  // ('Kaia'),
-  // ('Halldora'),
-  // ('Dorte');`);
-  // await db.run(`
-  // CREATE TABLE Posts
-  // (
-  //   id INTEGER PRIMARY KEY,
-  //   userid INTEGER,
-  //   receiverid INTEGER,
-  //   text VARCHAR(255)
-  // );  `);
-  // await db.run(`
-  // INSERT INTO Posts('userid', 'receiverid', 'text')
-  // VALUES
-  // (1, 2, 'hello2'),
-  // (1, 3, 'hello3'),
-  // (1, 4, 'hello4'),
-  // (2, 1, 'yo'),
-  // (2, 3, 'yo');
-  // `);
+  // console.log(await db.all('select * from course_students'));
 }
 initialize();
 
