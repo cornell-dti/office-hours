@@ -1,26 +1,36 @@
-type Post {
-  id: ID!
-  text: String!
-  author: User!
-  receiver: User!
+type Course {
+  course_id: ID!
+  name: String!
+  semester: String!
 }
 
-type User {
-  id: ID!
+type Session {
+  session_id: ID!
+  course: Course!
+  ta_id: Student!
+  time: String!
+  location: String!
+}
+
+type Question {
+  question_id: ID!
+  session: Session!
+  text: String!
+  time_entered: String!
+  student: Student!
+}
+
+type Student {
+  netid: ID!
   name: String!
-  posts: [Post]
-  receivedFrom(senderID: ID!): [Post]
+}
+
+type Tag {
+  tag_id: ID!
+  course: Course!
+  value: String!
 }
 
 type Query {
-  viewer: User
-  user(id: Int!): User
-}
-
-type Mutation {
-  changeName(id: ID!, newName: String!): User
-}
-
-type Subscription {
-  nameChanged(id: ID): [User]
+  student(netid: ID!): Student
 }
