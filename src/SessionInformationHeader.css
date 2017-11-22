@@ -11,7 +11,10 @@
 
 .Close {
     float: right;
-    background: url(https://www.iconsdb.com/icons/preview/white/x-mark-xxl.png);
+    /* background: url(https://www.iconsdb.com/icons/preview/white/x-mark-xxl.png); */
+    background-color: #9b9b9b;
+    color: white;
+    font-weight: bold;
     border: none;
     background-size: 20px;
     height: 20px;  
@@ -53,10 +56,6 @@
     line-height: 30px;
 }
 
-.Spacing { /* Spacing between header and button */
-    padding: 10px;
-}
-
 .button { /* Join button */
     background-color: #9b9b9b;
     color: white;
@@ -66,4 +65,5 @@
     font-size: 16px;
     font-weight: bold;
     border-radius: 25px;
+    margin-top: 10px;
 }
