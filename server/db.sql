@@ -3,20 +3,21 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE courses (
     course_id integer PRIMARY KEY AUTOINCREMENT,
     name varchar,
+    -- In SP18 form
     semester varchar
 );
 
-create table students (
+CREATE TABLE students (
     netid varchar PRIMARY KEY,
     name varchar
 );
 
 CREATE TABLE course_students (
     course_id integer,
-    netid varchar,
-    PRIMARY KEY(course_id, netid),
+    student varchar,
+    PRIMARY KEY(course_id, student),
     FOREIGN KEY(course_id) REFERENCES courses(course_id),
-    FOREIGN KEY(netid) REFERENCES students(netid)
+    FOREIGN KEY(student) REFERENCES students(netid)
 );
 
 CREATE TABLE course_tas (
@@ -29,7 +30,8 @@ CREATE TABLE course_tas (
 
 CREATE TABLE sessions (
     session_id integer PRIMARY KEY AUTOINCREMENT,
-    time varchar,
+    start datetime,
+    end datetime,
     location varchar,
     course_id integer,
     FOREIGN KEY(course_id) REFERENCES courses(course_id)
@@ -45,7 +47,7 @@ CREATE TABLE session_tas (
 
 CREATE TABLE questions (
     question_id integer PRIMARY KEY AUTOINCREMENT,
-    text text,
+    value text,
     time_entered datetime DEFAULT CURRENT_TIMESTAMP,
     session_id integer,
     student varchar,
@@ -55,7 +57,7 @@ CREATE TABLE questions (
 
 CREATE TABLE question_followers (
     question_id integer,
-    follower integer,
+    follower varchar,
     PRIMARY KEY (question_id, follower),
     FOREIGN KEY(question_id) REFERENCES questions(question_id),
     FOREIGN KEY(follower) REFERENCES students(netid)
@@ -92,18 +94,19 @@ VALUES
 ('CS3110', 'FA17');
 
 
-INSERT INTO course_students('netid', 'course_id')
+INSERT INTO course_students('student', 'course_id')
 VALUES
 ('hh498', (select course_id from courses where name='CS2800')),
 ('hh498', (select course_id from courses where name='CS6832')),
 ('hh498', (select course_id from courses where name='CS3110')),
 ('ks123', (select course_id from courses where name='CS2800'));
 
-INSERT INTO sessions('time', 'location', 'course_id')
+-- I realize these are wrong, but it seems like a pain to change the dates right now.
+INSERT INTO sessions('start', 'end', 'location', 'course_id')
 VALUES
-('8:30', 'Baker', (select course_id from courses where name='CS2800')),
-('11:30', 'Gates', (select course_id from courses where name='CS2800')),
-('4:00', 'Baker', (select course_id from courses where name='CS3110'));
+('8:30', '9:30', 'Baker', (select course_id from courses where name='CS2800')),
+('11:30', '12:30', 'Gates', (select course_id from courses where name='CS2800')),
+('4:00', '5:00', 'Baker', (select course_id from courses where name='CS3110'));
 
 INSERT INTO session_tas('session_id', 'ta')
 VALUES
@@ -119,7 +122,7 @@ VALUES
 ('js234', (select course_id from courses where name='CS3110')),
 ('ks123', (select course_id from courses where name='CS3110'));
 
-INSERT INTO questions('text', 'session_id', 'student')
+INSERT INTO questions('value', 'session_id', 'student')
 VALUES
 ('How do I program?', 1, 'hh498'),
 ('How do I install this?', 1, 'hh498');

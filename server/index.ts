@@ -97,9 +97,9 @@ joinMonsterAdapt(schema, {
       courses: {
         junction: {
           sqlTable: 'course_students',
-          uniqueKey: ['course_id', 'netid'],
+          uniqueKey: ['course_id', 'student'],
           sqlBatch: {
-            thisKey: 'netid',
+            thisKey: 'student',
             parentKey: 'netid',
             sqlJoin: (junctionTable, courseTable) =>
               `${junctionTable}.course_id = ${courseTable}.course_id`,
@@ -128,12 +128,12 @@ joinMonsterAdapt(schema, {
       students: {
         junction: {
           sqlTable: 'course_students',
-          uniqueKey: ['course_id', 'netid'],
+          uniqueKey: ['course_id', 'student'],
           sqlBatch: {
             thisKey: 'course_id',
             parentKey: 'course_id',
             sqlJoin: (junctionTable, studentTable) =>
-              `${junctionTable}.netid = ${studentTable}.netid`,
+              `${junctionTable}.student = ${studentTable}.netid`,
           },
         },
       },
