@@ -12,7 +12,10 @@ class CalendarView extends React.Component {
                 <CalendarHeader />
                 <CalendarDateSelect />
                 <CalendarSessions />
-                <CalendarWeekSelect />
+                <CalendarWeekSelect
+                    thisWeek="10 - 16 November"
+                    nextWeek="16 - 22 November"
+                />
             </div>
         );
     }

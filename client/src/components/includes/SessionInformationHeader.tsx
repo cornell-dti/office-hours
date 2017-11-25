@@ -15,7 +15,7 @@ class SessionInformationHeader extends React.Component {
         return (
             <div className="SessionInformationHeader">
                 <div className="header">
-                    <button className="Close" type="submit">
+                    <button className="CloseButton" type="submit">
                         X
                     </button>
                     <div className="CourseInfo">
