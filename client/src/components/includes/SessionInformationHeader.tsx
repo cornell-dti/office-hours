@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './SessionInformationHeader.css';
+import '../../styles/SessionInformationHeader.css';
 
 class SessionInformationHeader extends React.Component {
     props: {
@@ -10,9 +10,9 @@ class SessionInformationHeader extends React.Component {
         time: string,
         location: string
     };
-    
+
     render() {
-        return(
+        return (
             <div className="SessionInformationHeader">
                 <div className="header">
                     <button className="Close" type="submit">
@@ -23,9 +23,9 @@ class SessionInformationHeader extends React.Component {
                         {this.props.profName}
                     </div>
                     <div>
-                        <div className="QueueInfo"> 
+                        <div className="QueueInfo">
                             <div className="QueueTotal">
-                            {this.props.queueSize}
+                                {this.props.queueSize}
                             </div>
                             <div>in queue</div>
                         </div>
