@@ -1,9 +1,9 @@
 import * as React from 'react';
-import './SessionQuestionsContainer.css';
+import '../../styles/SessionQuestionsContainer.css';
 
 class SessionQuestionsContainer extends React.Component {
     render() {
-        return(
+        return (
             <div className="SessionQuestionsContainer">
                 Session questions container placeholder
             </div>

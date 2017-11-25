@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './SessionPopularQuestion.css';
+import '../../styles/SessionPopularQuestion.css';
 
 class SessionPopularQuestion extends React.Component {
 
@@ -9,7 +9,7 @@ class SessionPopularQuestion extends React.Component {
     };
 
     render() {
-        return(
+        return (
             <div className="SessionPopularQuestion">
                 <div className="SessionPopularQuestion-Text">
                     {this.props.question}
