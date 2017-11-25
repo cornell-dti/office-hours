@@ -2,6 +2,15 @@ import * as React from 'react';
 import './SessionInformationHeader.css';
 
 class SessionInformationHeader extends React.Component {
+    props: {
+        courseName: string,
+        profName: string,
+        queueSize: number,
+        date: string,
+        time: string,
+        location: string
+    };
+    
     render() {
         return(
             <div className="SessionInformationHeader">
@@ -10,21 +19,23 @@ class SessionInformationHeader extends React.Component {
                         X
                     </button>
                     <div className="CourseInfo">
-                        <span className="CourseNum">CS 3110  </span>
-                        Michael Clarkson
+                        <span className="CourseNum">{this.props.courseName}  </span>
+                        {this.props.profName}
                     </div>
                     <div>
                         <div className="QueueInfo"> 
-                            <div className="QueueTotal">14</div>
+                            <div className="QueueTotal">
+                            {this.props.queueSize}
+                            </div>
                             <div>in queue</div>
                         </div>
                         <div className="OfficeHourInfo">
                             <div className="OfficeHourTime">
-                                <p>Wednesday, 8 Nov</p>
-                                <p>10:00 - 11:00 AM</p>
+                                <p>{this.props.date}</p>
+                                <p>{this.props.time}</p>
                             </div>
                             <div className="OfficeHourLocation">
-                                G23 Gates Hall
+                                {this.props.location}
                             </div>
                         </div>
                     </div>
