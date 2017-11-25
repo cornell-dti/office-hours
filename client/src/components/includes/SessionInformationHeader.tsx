@@ -1,9 +1,9 @@
 import * as React from 'react';
-import './SessionInformationHeader.css';
+import '../../styles/SessionInformationHeader.css';
 
 class SessionInformationHeader extends React.Component {
     render() {
-        return(
+        return (
             <div className="SessionInformationHeader">
                 Session information placeholder
             </div>
