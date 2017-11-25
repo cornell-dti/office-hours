@@ -10,9 +10,9 @@ class SessionPopularQuestionsContainer extends React.Component {
                     Popular questions <a className="SessionPopularQuestionsContainer-Collapse">(collapse)</a>
                 </div>
                 <div className="SessionPopularQuestionsContainer-List">
-                    <SessionPopularQuestion />
-                    <SessionPopularQuestion />
-                    <SessionPopularQuestion />
+                    <SessionPopularQuestion question="This is a sample question" numPeople={6} />
+                    <SessionPopularQuestion question="This is another question" numPeople={3}/>
+                    <SessionPopularQuestion question="And one more question" numPeople={2}/>
                 </div>
             </div>
         );

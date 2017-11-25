@@ -2,14 +2,20 @@ import * as React from 'react';
 import './SessionPopularQuestion.css';
 
 class SessionPopularQuestion extends React.Component {
+
+    props: {
+        question: string,
+        numPeople: number
+    };
+
     render() {
         return(
             <div className="SessionPopularQuestion">
                 <div className="SessionPopularQuestion-Text">
-                    How do you implement recursion on question 4?
+                    {this.props.question}
                 </div>
                 <div className="SessionPopularQuestion-People">
-                    n: 2
+                    n: {this.props.numPeople}
                 </div>
             </div>
         );
