@@ -8,7 +8,14 @@ class StudentSessionView extends React.Component {
     render() {
         return (
             <div className="StudentSessionView">
-                <SessionInformationHeader />
+                <SessionInformationHeader
+                    courseName="CS 3110"
+                    profName="Michael Clarkson"
+                    queueSize={14}
+                    date="Wednesday, 8 Nov"
+                    time="10:00 AM - 11:00 AM"
+                    location="G23 Gates Hall"
+                />
                 <SessionPopularQuestionsContainer />
                 <SessionQuestionsContainer />
             </div>
