@@ -1,23 +1,22 @@
 {
-  "name": "my-app",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "react": "^16.1.0",
-    "react-dom": "^16.1.0",
-    "react-scripts-ts": "2.8.0",
-    "tslint-react": "^3.2.0"
-  },
+  "name": "office-hours",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "start": "concurrently \" cd server && npm run start\"  \"cd client && npm start\""
   },
-  "devDependencies": {
-    "@types/jest": "^21.1.6",
-    "@types/node": "^8.0.51",
-    "@types/react": "^16.0.22",
-    "@types/react-dom": "^16.0.3"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cornell-dti/office-hours.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cornell-dti/office-hours/issues"
+  },
+  "homepage": "https://github.com/cornell-dti/office-hours#readme",
+  "dependencies": {
+    "concurrently": "^3.5.0"
   }
 }
