@@ -15,7 +15,7 @@ class SessionInformationHeader extends React.Component {
         return (
             <div className="SessionInformationHeader">
                 <div className="header">
-                    <button className="Close" type="submit">
+                    <button className="CloseButton" type="submit">
                         X
                     </button>
                     <div className="CourseInfo">
@@ -40,7 +40,7 @@ class SessionInformationHeader extends React.Component {
                         </div>
                     </div>
                 </div>
-                <button className="button" type="submit">
+                <button className="JoinButton" type="submit">
                     Join Queue
                 </button>
             </div>
