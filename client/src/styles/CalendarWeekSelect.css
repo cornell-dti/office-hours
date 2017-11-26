@@ -14,11 +14,15 @@
 }
 
 .CurrentWeek {
+    line-height: 15px;
+    font-weight: bold;
     width: 50%;
     text-align: left;
 }
 
 .NextWeek {
+    vertical-align: top;
+    line-height: 30px;
     width: 50%;
     text-align: right;
 }

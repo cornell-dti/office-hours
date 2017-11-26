@@ -14,9 +14,7 @@ class CalendarWeekSelect extends React.Component {
                     <div className="ThisWeek">
                         This Week
                     </div>
-                    <div>
-                        {this.props.thisWeek}
-                    </div>
+                    {this.props.thisWeek}
                 </div>
                 <div className="NextWeek">
                     {this.props.nextWeek}
