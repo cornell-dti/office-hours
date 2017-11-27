@@ -6,9 +6,13 @@
     overflow: hidden;
 }
 
-Button {
+button {
     background-color: #f9f9f9;
-    color: black;
+    border: none;
+}
+
+.CourseSelectButton {
+    font-size: 25px;
 }
 
 .CurrentCourse {
