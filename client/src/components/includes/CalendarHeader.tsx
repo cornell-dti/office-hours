@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Button } from 'semantic-ui-react';
 import '../../styles/CalendarHeader.css';
 
 class CalendarHeader extends React.Component {
@@ -11,13 +12,9 @@ class CalendarHeader extends React.Component {
             <div className="CalendarHeader">
                 <div className="CurrentCourse">
                     {this.props.currentCourse}
-                    <button className="CourseSelectButton">
-                        <i className="angle down icon" />
-                    </button>
+                    <Button className="SelectButton" size="big" compact icon="angle down" />
                 </div>
-                <button className="MenuButton">
-                    <i className="bars icon" />
-                </button>
+                <Button className="MenuButton" size="big" compact icon="bars" />
             </div>
         );
     }
