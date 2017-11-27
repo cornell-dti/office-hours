@@ -9,7 +9,9 @@ class CalendarView extends React.Component {
     render() {
         return (
             <div className="CalendarView">
-                <CalendarHeader />
+                <CalendarHeader
+                    currentCourse="CS 3110"
+                />
                 <CalendarDateSelect />
                 <CalendarSessions />
                 <CalendarWeekSelect
