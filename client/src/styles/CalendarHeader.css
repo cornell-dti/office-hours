@@ -9,10 +9,11 @@
 button {
     background-color: #f9f9f9;
     border: none;
+    font-size: 25px;
 }
 
-.CourseSelectButton {
-    font-size: 25px;
+.CourseSelectButton, .MenuButton {
+    
 }
 
 .CurrentCourse {
