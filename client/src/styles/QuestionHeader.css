@@ -1,0 +1,52 @@
+.QuestionHeader {
+    border: 1px solid #000000;
+}
+
+.header { /* Above button */
+    background-color: #9b9b9b;
+    padding: 20px;
+}
+
+.CourseInfo { /* Course number and TA */
+    font-size: 20px;
+    text-align: left;
+    padding: 10px 0px 5px 10px;
+    color: white;
+}
+
+.CourseNum { /* Course number */
+    font-size: 20px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.tagsContainer {
+  background-color: #f2f2f2;
+}
+
+.tagsContainer p {
+  text-align: left;
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.tagsMiniContainer {
+  white-space: pre-line;
+}
+
+.Tags {
+    padding: 5px 0px 0px 8px;
+}
+
+.Tags p {
+    font-weight: normal;
+    display: block;
+    float: left;
+    font-size: 13px;
+    color: white;
+    border: 1px  solid #999999;
+    background-color: #999999;
+    padding: 2px 10px;
+    margin: 3px;
+    border-radius: 12px;
+}
