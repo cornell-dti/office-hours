@@ -2,30 +2,24 @@ PRAGMA foreign_keys = ON;
 
 CREATE TABLE courses (
     course_id integer PRIMARY KEY AUTOINCREMENT,
+    code varchar,
     name varchar,
     -- In SP18 form
     semester varchar
 );
 
-CREATE TABLE students (
+CREATE TABLE users (
     netid varchar PRIMARY KEY,
     name varchar
 );
 
-CREATE TABLE course_students (
+CREATE TABLE course_users (
     course_id integer,
-    student varchar,
-    PRIMARY KEY(course_id, student),
+    user varchar,
+    status varchar,
+    PRIMARY KEY(course_id, user),
     FOREIGN KEY(course_id) REFERENCES courses(course_id),
-    FOREIGN KEY(student) REFERENCES students(netid)
-);
-
-CREATE TABLE course_tas (
-    course_id integer,
-    ta varchar,
-    PRIMARY KEY(course_id, ta),
-    FOREIGN KEY(course_id) REFERENCES courses(course_id),
-    FOREIGN KEY(ta) REFERENCES students(netid)
+    FOREIGN KEY(user) REFERENCES users(netid)
 );
 
 CREATE TABLE sessions (
@@ -42,7 +36,7 @@ CREATE TABLE session_tas (
     ta varchar,
     PRIMARY KEY(session_id, ta),
     FOREIGN KEY(session_id) REFERENCES sessions(session_id),
-    FOREIGN KEY(ta) REFERENCES students(netid)
+    FOREIGN KEY(ta) REFERENCES users(netid)
 );
 
 CREATE TABLE questions (
@@ -54,7 +48,7 @@ CREATE TABLE questions (
     session_id integer,
     student varchar,
     FOREIGN KEY(session_id) REFERENCES sessions(session_id),
-    FOREIGN KEY(student) REFERENCES students(netid)
+    FOREIGN KEY(student) REFERENCES users(netid)
 );
 
 CREATE TABLE question_followers (
@@ -62,7 +56,7 @@ CREATE TABLE question_followers (
     follower varchar,
     PRIMARY KEY (question_id, follower),
     FOREIGN KEY(question_id) REFERENCES questions(question_id),
-    FOREIGN KEY(follower) REFERENCES students(netid)
+    FOREIGN KEY(follower) REFERENCES users(netid)
 );
 
 CREATE TABLE tags (
@@ -83,7 +77,7 @@ CREATE TABLE question_tags (
 
 
 -- Initialization data
-INSERT INTO students('netid', 'name')
+INSERT INTO users('netid', 'name')
 VALUES
 ('hh498', 'Horace'),
 ('ks123', 'Karun'),
@@ -96,12 +90,12 @@ VALUES
 ('CS3110', 'FA17');
 
 
-INSERT INTO course_students('student', 'course_id')
+INSERT INTO course_users('user', 'course_id', 'status')
 VALUES
-('hh498', (select course_id from courses where name='CS2800')),
-('hh498', (select course_id from courses where name='CS6832')),
-('hh498', (select course_id from courses where name='CS3110')),
-('ks123', (select course_id from courses where name='CS2800'));
+('hh498', (select course_id from courses where name='CS2800'), 'student'),
+('hh498', (select course_id from courses where name='CS6832'), 'student'),
+('hh498', (select course_id from courses where name='CS3110'), 'student'),
+('ks123', (select course_id from courses where name='CS2800'), 'student');
 
 -- I realize these are wrong, but it seems like a pain to change the dates right now.
 INSERT INTO sessions('start', 'end', 'location', 'course_id')
@@ -117,12 +111,12 @@ VALUES
 ('3', 'js234'),
 ('3', 'ks123');
 
-INSERT INTO course_tas('ta', 'course_id')
+INSERT INTO course_users('user', 'course_id', 'status')
 VALUES
-('js234', (select course_id from courses where name='CS2800')),
-('js234', (select course_id from courses where name='CS6832')),
-('js234', (select course_id from courses where name='CS3110')),
-('ks123', (select course_id from courses where name='CS3110'));
+('js234', (select course_id from courses where name='CS2800'), 'ta'),
+('js234', (select course_id from courses where name='CS6832'), 'ta'),
+('js234', (select course_id from courses where name='CS3110'), 'ta'),
+('ks123', (select course_id from courses where name='CS3110'), 'ta');
 
 INSERT INTO questions('value', 'session_id', 'student')
 VALUES
