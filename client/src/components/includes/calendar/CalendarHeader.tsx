@@ -1,12 +1,23 @@
 import * as React from 'react';
-
-import '../../../styles/calendar/CalendarHeader.css';
+import '../../styles/CalendarHeader.css';
 
 class CalendarHeader extends React.Component {
+    props: {
+        currentCourse: string
+    };
+
     render() {
         return (
             <div className="CalendarHeader">
-                Calendar header placeholder
+                <div className="CurrentCourse">
+                    {this.props.currentCourse}
+                    <button className="CourseSelectButton">
+                        <i className="angle down icon" />
+                    </button>
+                </div>
+                <button className="MenuButton">
+                    <i className="bars icon" />
+                </button>
             </div>
         );
     }
