@@ -49,6 +49,8 @@ CREATE TABLE questions (
     question_id integer PRIMARY KEY AUTOINCREMENT,
     value text,
     time_entered datetime DEFAULT CURRENT_TIMESTAMP,
+    status text,
+    time_resolved datetime,
     session_id integer,
     student varchar,
     FOREIGN KEY(session_id) REFERENCES sessions(session_id),
