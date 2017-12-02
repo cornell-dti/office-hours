@@ -8,7 +8,7 @@
     "allowJs": true,
     "jsx": "react",
     "moduleResolution": "node",
-    "rootDir": "src",
+    //"rootDir": "src",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -25,5 +25,11 @@
     "webpack",
     "jest",
     "src/setupTests.ts"
-  ]
+  ],
+  "paths": {
+    // Fix "Duplicate identifier" errors caused by multiple dependencies fetching their own copies of type definitions.
+    // We tell TypeScript which type definitions module to treat as the canonical one (instead of combining all of them).
+    "react": ["./node_modules/@types/react/index"],
+    "react-dom": ["./node_modules/@types/react-dom/index"]
+  }
 }

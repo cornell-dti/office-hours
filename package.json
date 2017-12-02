@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \" cd server && npm run start\"  \"cd client && npm start\""
+    "install-global": "npm install concurrently nodemon --global",
+    "install-packages": "concurrently \" cd server && yarn install\"  \"cd client && yarn install\"",
+    "start": "concurrently \" cd server && yarn run start\"  \"cd client && yarn start\""
   },
   "repository": {
     "type": "git",

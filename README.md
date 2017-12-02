@@ -1,14 +1,18 @@
 # Office Hours
-./client contains the development server for the react app, while ./server contains the GraphQL server for the backend
+`./client` contains the development server for the react app, 
+while `./server` contains the GraphQL server for the backend
 
 ## Setup
-Run
+
+1. Install Yarn [here](https://yarnpkg.com/en/docs/install).
+
+2. Run the following commands in order:
 ```
-cd ./client && npm install
-cd ../server && npm install
+npm run install-global
+npm run install-packages
 ```
 
-Now, you should be able to run `npm start` and get everything running!
+3. Now, you should be able to run `npm start` and get everything running!
 
 # GraphQL goodies
 In what one might say is the entire reason we're using GraphQL, it's very easy to use the API. Once you have the graphQL server running, go to `localhost:3001/graphiql`.

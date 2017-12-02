@@ -1,6 +1,7 @@
-import * as React from 'react';
-import '../../styles/SessionPopularQuestionsContainer.css';
+import * as React             from 'react';
 import SessionPopularQuestion from './SessionPopularQuestion';
+
+import '../../../styles/session/SessionPopularQuestionsContainer.css';
 
 class SessionPopularQuestionsContainer extends React.Component {
     render() {
