@@ -1,5 +1,6 @@
 import * as React from 'react';
-import '../../styles/SessionInformationHeader.css';
+
+import '../../../styles/session/SessionInformationHeader.css';
 
 class SessionInformationHeader extends React.Component {
     props: {

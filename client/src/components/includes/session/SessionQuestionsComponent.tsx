@@ -1,7 +1,7 @@
 import * as React from 'react';
-import '../../styles/SessionQuestionsComponent.css';
+import '../../../styles/session/SessionQuestionsComponent.css';
 
-const peopleLogoImage = require('../../media/peopleLogo.jpg');
+const peopleLogoImage = require('../../../media/peopleLogo.jpg');
 
 class SessionQuestionsComponent extends React.Component {
     // constructor(props: any) {

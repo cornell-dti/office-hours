@@ -1,5 +1,6 @@
 import * as React from 'react';
-import '../../styles/CalendarSessions.css';
+
+import '../../../../styles/calendar/CalendarSessions.css';
 
 class CalendarSessions extends React.Component {
     render() {

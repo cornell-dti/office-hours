@@ -1,5 +1,6 @@
 import * as React from 'react';
-import '../../styles/CalendarDateSelect.css';
+
+import '../../../styles/calendar/CalendarDateSelect.css';
 
 class CalendarDateSelect extends React.Component {
     render() {
