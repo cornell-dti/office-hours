@@ -5,7 +5,8 @@ class CalendarDateItem extends React.Component {
         active: boolean,
         day: string,
         date: number,
-        hasOH: boolean
+        hasOH: boolean,
+        onClick: Function
     };
     render() {
         var activeClass = 'menuDate';

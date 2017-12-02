@@ -4,18 +4,58 @@ import CalendarDateItem from './CalendarDateItem';
 
 class CalendarDateSelect extends React.Component {
 
+    props: {
+        dayList: string[],
+        dateList: number[],
+        hasOHList: boolean[]
+    };
+
+    state: {
+        active: number
+    };
+
+    constructor(props: {}) {
+        super(props);
+        this.state = {
+            active: 0   // index of currently selected date
+        };
+    }
+
+    handleClick(index: {}) {
+        this.setState({
+            active: index
+        });
+    }
+
     render() {
+        const dayList = this.props.dayList;
+        const dateList = this.props.dateList;
+        const hasOHList = this.props.hasOHList;
+        const dateItems: {}[] = [];
+        for (var i = 0; i < 7; i++) {
+            const iDay = dayList[i];
+            const iDate = dateList[i];
+            const iHasOH = hasOHList[i];
+            const iActive = (i === this.state.active);
+            dateItems.push(
+                (
+                    <CalendarDateItem
+                        key={i}
+                        day={iDay}
+                        date={iDate}
+                        hasOH={iHasOH}
+                        active={iActive}
+                        onClick={(e: {}) => this.handleClick(e)}
+                    />
+                )
+            );
+        }
+
         return (
-            <div className="CalendarDateSelect">
+            <div className="CalendarDateSelect" >
                 <div className="CalendarDateSelect-Month">Nov, 2017</div>
                 <div className="CalendarDateSelect-Dates">
-                    <CalendarDateItem day="Mon" date={10} hasOH={true} active={true} />
-                    <CalendarDateItem day="Tue" date={11} hasOH={false} active={false} />
-                    <CalendarDateItem day="Wed" date={12} hasOH={true} active={false} />
-                    <CalendarDateItem day="Thu" date={13} hasOH={true} active={false} />
-                    <CalendarDateItem day="Fri" date={14} hasOH={false} active={false} />
-                    <CalendarDateItem day="Sat" date={15} hasOH={false} active={false} />
-                    <CalendarDateItem day="Sun" date={16} hasOH={false} active={false} />
+                    {dateItems}
                 </div>
             </div>
         );
