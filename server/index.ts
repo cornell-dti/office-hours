@@ -128,14 +128,13 @@ joinMonsterAdapt(schema, {
       students: {
         junction: {
           sqlTable: 'course_users',
-          uniqueKey: ['course_id', 'student'],
+          uniqueKey: ['course_id', 'user'],
+          where: junctionTable => `${junctionTable}.status = 'student'`,
           sqlBatch: {
             thisKey: 'course_id',
             parentKey: 'course_id',
             sqlJoin: (junctionTable, studentTable) =>
               `${junctionTable}.user = ${studentTable}.netid`,
-
-            where: table => `${table}.status = 'student'`,
           },
         },
       },
@@ -146,7 +145,8 @@ joinMonsterAdapt(schema, {
       tas: {
         junction: {
           sqlTable: 'course_users',
-          uniqueKey: ['course_id', 'ta'],
+          uniqueKey: ['course_id', 'user'],
+          where: junctionTable => `${junctionTable}.status = 'ta'`,
           sqlBatch: {
             thisKey: 'course_id',
             parentKey: 'course_id',
