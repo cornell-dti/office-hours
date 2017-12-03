@@ -19,11 +19,12 @@ class CalendarDateSelect extends React.Component {
         this.state = {
             active: 0   // index of currently selected date
         };
+        this.handleClick = this.handleClick.bind(this);
     }
 
-    handleClick(index: {}) {
+    handleClick(item: number) {
         this.setState({
-            active: index
+            active: item
         });
     }
 
@@ -41,11 +42,12 @@ class CalendarDateSelect extends React.Component {
                 (
                     <CalendarDateItem
                         key={i}
+                        index={i}
                         day={iDay}
                         date={iDate}
                         hasOH={iHasOH}
                         active={iActive}
-                        onClick={(e: {}) => this.handleClick(e)}
+                        handleClick={this.handleClick}
                     />
                 )
             );
