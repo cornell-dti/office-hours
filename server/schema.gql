@@ -1,26 +1,50 @@
-type Post {
-  id: ID!
-  text: String!
-  author: User!
-  receiver: User!
-}
-
-type User {
+type Course {
   id: ID!
   name: String!
-  posts: [Post]
-  receivedFrom(senderID: ID!): [Post]
+  semester: String!
+  students: [Student!]
+  # All the tas for this course.
+  tas: [Student!]
+  # All the sessions for this course.
+  sessions: [Session!]
+  # All the tags for this course
+  tags: [Tag!]
+}
+
+type Student {
+  netid: ID!
+  name: String!
+  courses: [Course!]
+  following: [Question!]
+}
+
+type Session {
+  id: ID!
+  time: String!
+  location: String!
+  course: Course!
+  tas: [Student!]
+  questions: [Question!]
+}
+
+type Question {
+  id: ID!
+  text: String!
+  time_entered: String!
+  session: Session!
+  student: Student!
+  tags: [Tag!]
+  followers: [Student!]
+}
+
+type Tag {
+  id: ID!
+  value: String!
+  course: Course!
+  questions: [Question!]
 }
 
 type Query {
-  viewer: User
-  user(id: Int!): User
-}
-
-type Mutation {
-  changeName(id: ID!, newName: String!): User
-}
-
-type Subscription {
-  nameChanged(id: ID): [User]
+  student(netid: ID!): Student
+  course(name: String!): Course
 }
