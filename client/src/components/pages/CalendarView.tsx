@@ -7,12 +7,14 @@ import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
 class CalendarView extends React.Component {
     render() {
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const dates = [10, 11, 12, 13, 14, 15, 16];
+        const hasOHs = [true, false, true, true, false, false, false];
+
         return (
             <div className="CalendarView">
-                <CalendarHeader
-                    currentCourse="CS 3110"
-                />
-                <CalendarDateSelect />
+                <CalendarHeader />
+                <CalendarDateSelect dayList={days} dateList={dates} hasOHList={hasOHs} />
                 <CalendarSessions />
                 <CalendarWeekSelect
                     thisWeek="10 - 16 November"
