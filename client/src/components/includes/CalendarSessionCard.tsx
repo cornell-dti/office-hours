@@ -13,7 +13,7 @@ class CalendarSessions extends React.Component {
 
     render() {
         return (
-            <h1>Hi</h1>
+            <div className="CalendarSessionCard">{this.props.ta}</div>
         );
     }
 }

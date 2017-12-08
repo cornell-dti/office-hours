@@ -16,11 +16,13 @@
     width:14.28%;
     padding-bottom:5px;
     opacity:0.3;
+    cursor:pointer;
 }
 
 .menuDate.active {
     border-bottom: 2px solid black;
     opacity:1.0;
+    cursor:default;
 }
 
 .menuDate>.notification {
