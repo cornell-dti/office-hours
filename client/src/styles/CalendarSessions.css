@@ -1,3 +1,7 @@
 .CalendarSessions {
     border: 1px solid #000000;
 }
+
+.CalendarSessionCard {
+    border: 1px solid black;
+}
