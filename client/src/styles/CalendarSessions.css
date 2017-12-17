@@ -3,5 +3,105 @@
 }
 
 .CalendarSessionCard {
-    border: 1px solid black;
+    font-size: 12px;
+    margin: 20px;
+    overflow: hidden;
+}
+
+.SessionIndicator {
+    width: 14px;
+    height: 14px;
+    border-radius: 14px;
+    border: solid 1px #9b9b9b;
+    margin-top: 3px;
+    margin-bottom: 15px;
+    float: left;
+}
+
+.SessionIndicator:first-child { /* Be able to highlight only the current OH */
+        background-color: #ff6767;
+        border: solid 1px #ff6767;
+}
+
+.SessionDivider { /* Length based on OH length? */
+    width: 2px;
+    height: 92px;
+    border: solid 1px #c3c3c3;
+    float: left;
+    margin-left: 6px; /* Currently is manually centered with the dot */
+}
+
+.CalendarTimeInfo, .CalendarCard {
+    margin-left: 20px;
+}
+
+.CalendarTimeInfo {
+    text-align: left;
+    padding-bottom: 15px;
+    font-weight: bold;
+    color: #9b9b9b;
+}
+
+.CalendarCard {
+    background-color: #f5f5f5;
+    border-radius: 5px;     
+    padding-bottom: 15px;
+}
+
+.CalendarUpperInfo, .CalendarLowerInfo {
+    overflow: hidden;
+    padding: 8px 10px 0px;
+}
+
+.CalendarQueueInfo {    
+    float: right;
+    padding-right: 40px;
+}
+
+.CalendarAheadInfo {
+    float: right;
+    border-left: 2px solid #9b9b9b;
+}
+
+.CalendarFinishedInfo {
+    float: left;
+}
+
+.CalendarFinishedInfo, .CalendarAheadInfo {
+    overflow: hidden;
+    align-content: center;
+    padding: 0px 15px;
+}
+
+.CalaendarTimeInfo {
+    color: #9b9b9b;
+    font-weight: bold;
+}
+
+.CalendarTa {
+    float: left;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.CalendarLocation {
+    float: left;
+    color: #747474;
+}
+
+.CalendarQueueText {
+    font-size: 9px;
+    color: #747474;
+}
+
+.CalendarQueueNumber {
+    font-size: 17px;
+}
+
+.CalendarOpenButton {
+    float: right;
+    background-color: #f5f5f5;
+    font-size: 20px;
+    padding: 0;
+    border: 0;
 }

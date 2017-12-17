@@ -22,6 +22,14 @@ class CalendarSessions extends React.Component {
                     resolvedNum={5}
                     aheadNum={23}
                 />
+                <CalendarSessionCard
+                    start={1485360000}
+                    end={1485363600}
+                    ta="Who is Michael Clarkson"
+                    location="Gates G11"
+                    resolvedNum={5}
+                    aheadNum={23}
+                />
             </div>
         );
     }
