@@ -18,9 +18,12 @@
     float: left;
 }
 
-.SessionIndicator:first-child { /* Be able to highlight only the current OH */
-        background-color: #ff6767;
-        border: solid 1px #ff6767;
+.SessionIndicator.live {
+    background-color: #ff6767;
+}
+
+.SessionIndicator.open{
+    background-color: rgb(20, 167, 20);
 }
 
 .SessionDivider { /* Length based on OH length? */

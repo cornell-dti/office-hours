@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Moment from 'react-moment';
 
 class CalendarSessions extends React.Component {
 
@@ -12,12 +13,40 @@ class CalendarSessions extends React.Component {
     };
 
     render() {
+        const openPeriod = 30 /* minutes */ * 60 /* seconds */;
+        var status = 'closed';
+        var startDate = new Date(this.props.start);
+        var endDate = new Date(this.props.end);
+        var nowDate = new Date();
+        // To test:
+        // var nowDate = new Date(this.props.start); // live
+        // var nowDate = new Date(this.props.start - 1); // open
+        if (startDate <= nowDate && nowDate <= endDate) {
+            status = 'live';
+        } else {
+            var nowPlusOpen = new Date(nowDate.getTime() + openPeriod);
+            if (startDate <= nowPlusOpen && nowPlusOpen <= endDate) {
+                status = 'open';
+            }
+        }
         return (
             <div className="CalendarSessionCard">
                 <div className="SessionIndicators">
-                    <div className="SessionIndicator" />
+                    <div className={'SessionIndicator ' + status} />
                     <div className="CalendarTimeInfo">
-                        {this.props.start}-{this.props.end}
+                        <Moment
+                            unix={true}
+                            date={this.props.start}
+                            interval={0}
+                            format={'hh:mm A'}
+                        />
+                        -
+                        <Moment
+                            unix={true}
+                            date={this.props.end}
+                            interval={0}
+                            format={'hh:mm A'}
+                        />
                     </div>
                 </div>
                 <div className="CalendarInfo">
