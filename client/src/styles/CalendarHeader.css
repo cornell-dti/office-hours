@@ -12,10 +12,6 @@ button {
     font-size: 25px;
 }
 
-.CourseSelectButton, .MenuButton {
-    
-}
-
 .CurrentCourse {
     float: left;
 }
