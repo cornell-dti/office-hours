@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "apollo-client-preset": "^1.0.5",
+    "graphql": "^0.12.3",
+    "graphql-tag": "^2.6.1",
     "moment": "^2.20.0",
     "moment-timezone": "^0.5.14",
     "react": "^16.1.0",
+    "react-apollo": "^2.0.4",
     "react-dom": "^16.1.0",
     "react-moment": "^0.6.8",
     "react-scripts-ts": "2.8.0",
