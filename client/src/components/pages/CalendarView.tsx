@@ -13,9 +13,9 @@ class CalendarView extends React.Component {
 
         return (
             <div className="CalendarView">
-                <CalendarHeader currentCourse="CS 3110" />
+                <CalendarHeader currentCourse="CS2800" />
                 <CalendarDateSelect dayList={days} dateList={dates} hasOHList={hasOHs} />
-                <CalendarSessions />
+                <CalendarSessions currentCourse="CS2800" />
                 <CalendarWeekSelect
                     thisWeek="10 - 16 November"
                     nextWeek="16 - 22 November"

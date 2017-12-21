@@ -22,6 +22,7 @@ const joinMonsterAdapt = require('join-monster-graphql-tools-adapter');
 import { PubSub, withFilter } from 'graphql-subscriptions';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { createServer } from 'http';
+const cors = require('cors');
 
 const GRAPHQL_PORT = 3001;
 const GRAPHQL_PATH = '/graphql';
@@ -254,6 +255,19 @@ async function initialize() {
   // console.log(await db.all('select * from course_students'));
 }
 initialize();
+
+// Fixes CORS error for local testing (see https://github.com/apollographql/apollo-client/issues/529)
+var whitelist = [
+  'http://localhost:3000',
+];
+var corsOptions = {
+  origin: function (origin, callback) {
+    var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+    callback(null, originIsWhitelisted);
+  },
+  credentials: true
+};
+app.use(cors(corsOptions));
 
 app.use(
   '/graphql',
