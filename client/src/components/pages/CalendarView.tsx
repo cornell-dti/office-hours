@@ -13,7 +13,7 @@ class CalendarView extends React.Component {
 
         return (
             <div className="CalendarView">
-                <CalendarHeader currentCourse="CS 3110" />
+                <CalendarHeader currentCourse="CS2800" />
                 <CalendarDateSelect dayList={days} dateList={dates} hasOHList={hasOHs} />
                 <CalendarSessions />
                 <CalendarWeekSelect
