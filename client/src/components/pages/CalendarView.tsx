@@ -17,10 +17,7 @@ class CalendarView extends React.Component<{}, {}> {
     constructor(props: {}) {
         super(props);
         this.state = { currentEpoch: new Date().getTime() };
-    }
-
-    componentWillMount() {
-        // determine initial state here
+        this.handleWeekClick = this.handleWeekClick.bind(this);
     }
 
     getWeekText(epoch: number): string {
@@ -34,6 +31,22 @@ class CalendarView extends React.Component<{}, {}> {
         weekText += ' ';
         weekText += this.monthNames[now.getMonth()];
         return weekText;
+    }
+
+    // previousWeek = true means that the previous week was clicked in the week selector
+    // previousWeek = false means that the next week was clicked in the week selector
+    handleWeekClick(previousWeek: boolean) {
+        if (previousWeek) {
+            this.setState({
+                currentEpoch: this.state.currentEpoch -
+                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
+            });
+        } else {
+            this.setState({
+                currentEpoch: this.state.currentEpoch +
+                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
+            });
+        }
     }
 
     render() {
@@ -69,6 +82,7 @@ class CalendarView extends React.Component<{}, {}> {
                 <CalendarWeekSelect
                     thisWeek={thisWeekText}
                     nextWeek={nextWeekText}
+                    handleClick={this.handleWeekClick}
                 />
             </div>
         );
