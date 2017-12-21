@@ -20,7 +20,8 @@ type Student {
 
 type Session {
   id: ID!
-  time: String!
+  start: Int!
+  end: Int!
   location: String!
   course: Course!
   tas: [Student!]
