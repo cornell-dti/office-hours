@@ -5,7 +5,7 @@ import CalendarDateSelect from '../includes/CalendarDateSelect';
 import CalendarSessions from '../includes/CalendarSessions';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
-class CalendarView extends React.Component<{}, {}> {
+class CalendarView extends React.Component {
 
     monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
