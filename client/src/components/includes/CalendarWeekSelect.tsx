@@ -20,13 +20,13 @@ class CalendarWeekSelect extends React.Component {
     render() {
         return (
             <div className="CalendarWeekSelect">
-                <div className="CurrentWeek" onClick={() => this._onClick(true)}>
+                <div className="CurrentWeek WeekControl" onClick={() => this._onClick(true)}>
                     <div className="ThisWeek">
                         This Week
                     </div>
                     {this.props.thisWeek}
                 </div>
-                <div className="NextWeek" onClick={() => this._onClick(false)}>
+                <div className="NextWeek WeekControl" onClick={() => this._onClick(false)}>
                     {this.props.nextWeek}
                     <button className="NextButton">
                         >
