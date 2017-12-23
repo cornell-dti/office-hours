@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/react-router-dom": "^4.2.2",
     "moment": "^2.20.0",
     "moment-timezone": "^0.5.14",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
     "react-moment": "^0.6.8",
+    "react-router-dom": "^4.2.2",
     "react-scripts-ts": "2.8.0",
     "semantic-ui-css": "^2.2.12",
     "semantic-ui-react": "^0.76.0",
