@@ -8,7 +8,8 @@ class CalendarDateSelect extends React.Component {
         dayList: string[],
         dateList: number[],
         hasOHList: boolean[],
-        monthYear: string
+        monthYear: string,
+        handleClick: Function
     };
 
     state: {
@@ -27,6 +28,7 @@ class CalendarDateSelect extends React.Component {
         this.setState({
             active: item
         });
+        this.props.handleClick(item);
     }
 
     render() {
