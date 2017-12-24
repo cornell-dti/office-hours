@@ -37,3 +37,7 @@
     height: 20px;  
     width: 20px;
 }
+
+.WeekControl {
+    cursor: pointer;
+}
