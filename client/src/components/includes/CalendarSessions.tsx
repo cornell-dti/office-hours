@@ -3,6 +3,11 @@ import '../../styles/CalendarSessions.css';
 import CalendarSessionCard from './CalendarSessionCard';
 
 class CalendarSessions extends React.Component {
+
+    props: {
+        todayEpoch: number
+    };
+
     render() {
         return (
             <div className="CalendarSessions">
