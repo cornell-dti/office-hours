@@ -4,7 +4,7 @@ import '../../styles/SessionInformationHeader.css';
 class SessionInformationHeader extends React.Component {
     props: {
         courseName: string,
-        profName: string,
+        taName: string,
         queueSize: number,
         date: string,
         time: string,
@@ -15,12 +15,12 @@ class SessionInformationHeader extends React.Component {
         return (
             <div className="SessionInformationHeader">
                 <div className="header">
-                    <button className="CloseButton" type="submit">
-                        X
-                    </button>
+                    <div className="CloseButton">
+                        x
+                    </div>
                     <div className="CourseInfo">
                         <span className="CourseNum">{this.props.courseName}  </span>
-                        {this.props.profName}
+                        {this.props.taName}
                     </div>
                     <div>
                         <div className="QueueInfo">
@@ -40,9 +40,6 @@ class SessionInformationHeader extends React.Component {
                         </div>
                     </div>
                 </div>
-                <button className="JoinButton" type="submit">
-                    Join Queue
-                </button>
             </div>
         );
     }

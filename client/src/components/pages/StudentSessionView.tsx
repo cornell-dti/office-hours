@@ -3,6 +3,7 @@ import '../../styles/StudentSessionView.css';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 import SessionPopularQuestionsContainer from '../includes/SessionPopularQuestionsContainer';
+import SessionJoinButton from '../includes/SessionJoinButton';
 
 class StudentSessionView extends React.Component {
     render() {
@@ -10,7 +11,7 @@ class StudentSessionView extends React.Component {
             <div className="StudentSessionView">
                 <SessionInformationHeader
                     courseName="CS 3110"
-                    profName="Michael Clarkson"
+                    taName="Michael Clarkson"
                     queueSize={14}
                     date="Wednesday, 8 Nov"
                     time="10:00 AM - 11:00 AM"
@@ -18,6 +19,7 @@ class StudentSessionView extends React.Component {
                 />
                 <SessionPopularQuestionsContainer />
                 <SessionQuestionsContainer />
+                <SessionJoinButton />
             </div>
         );
     }

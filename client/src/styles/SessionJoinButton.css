@@ -1,0 +1,22 @@
+.SessionJoinButton {
+    position: fixed;
+    right: 5px;
+    bottom: 5px;
+    background-image: linear-gradient(33deg, #6db9ea, #699fe9 31%, #668ae9);
+    box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.2), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 6px 10px 0 rgba(0, 0, 0, 0.14);
+    line-height:56px;
+    border-radius:50%;
+    width:56px;
+    height:56px;
+}
+
+.SessionJoinButton>span {
+    color:white;
+    width: 18px;
+    height: 56px;
+    font-size: 28px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+}
