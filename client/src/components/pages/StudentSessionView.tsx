@@ -3,11 +3,13 @@ import '../../styles/StudentSessionView.css';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 import SessionPopularQuestionsContainer from '../includes/SessionPopularQuestionsContainer';
+import DetailedQuestionView from '../includes/DetailedQuestionView';
 
 class StudentSessionView extends React.Component {
     render() {
         return (
             <div className="StudentSessionView">
+                <DetailedQuestionView />
                 <SessionInformationHeader
                     courseName="CS 3110"
                     profName="Michael Clarkson"

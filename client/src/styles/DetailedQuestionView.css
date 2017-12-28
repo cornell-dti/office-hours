@@ -1,0 +1,66 @@
+.DetailedQuestionView {
+    border: solid 1px black;
+    padding: 20px;
+    text-align: left;
+}
+
+.GroupInfo, .StudentInfo {
+    height: 50%;
+}
+
+.DetailedTags p {
+    display: inline;
+    font-size: 11px;
+    color: white;
+    border: 1px  solid #999999;
+    background-color: #999999;
+    padding: 1px 7px;
+    margin: 3px;
+    border-radius: 10px;
+}
+
+.DetailedQuestionInfo {
+    /* border: solid 1px black; */
+}
+
+.DetailedResolveButton, .DetailedCloseButton {
+    background-color: white;
+    border: solid 1px black;
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 10px;
+    width: 100%;
+}
+
+/* .DetailedResolveButton {
+    color: dodgerblue;
+} */
+
+.DetailedCloseButton {
+    color: red;
+}
+
+header {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px 0px;
+}
+
+ul {
+    text-align: left;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    color: #747474;
+}
+
+ul li {
+    padding: 5px 0px;
+    border-bottom: solid 1px #747474;
+}
+
+.StudentInfo p {
+    color: #747474;
+    padding-bottom: 10px;
+}
