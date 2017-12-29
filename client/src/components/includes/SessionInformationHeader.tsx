@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import '../../styles/SessionInformationHeader.css';
 
 class SessionInformationHeader extends React.Component {
@@ -15,9 +16,11 @@ class SessionInformationHeader extends React.Component {
         return (
             <div className="SessionInformationHeader">
                 <div className="header">
-                    <div className="CloseButton">
-                        x
-                    </div>
+                    <Link to="/calendar">
+                        <div className="CloseButton">
+                            x
+                        </div>
+                    </Link>
                     <div className="CourseInfo">
                         <span className="CourseNum">{this.props.courseName}  </span>
                         {this.props.taName}

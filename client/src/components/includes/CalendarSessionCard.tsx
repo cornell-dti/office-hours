@@ -56,9 +56,9 @@ class CalendarSessions extends React.Component {
                             <div className="CalendarTa">
                                 {this.props.ta}
                             </div>
-                            <button className="CalendarOpenButton">
+                            <div className="CalendarOpenButton">
                                 <i className="angle right icon" />
-                            </button>
+                            </div>
                         </div>
                         <div className="CalendarLowerInfo">
                             <div className="CalendarLocation">

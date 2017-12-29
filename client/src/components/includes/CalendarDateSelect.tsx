@@ -9,7 +9,8 @@ class CalendarDateSelect extends React.Component {
         dateList: number[],
         hasOHList: boolean[],
         monthYear: string,
-        handleClick: Function
+        handleClick: Function,
+        selectedIndex: number
     };
 
     state: {
@@ -19,7 +20,7 @@ class CalendarDateSelect extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = {
-            active: 0   // index of currently selected date
+            active: this.props.selectedIndex   // index of currently selected date
         };
         this.handleClick = this.handleClick.bind(this);
     }
