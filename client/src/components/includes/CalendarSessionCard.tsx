@@ -1,7 +1,8 @@
 import * as React from 'react';
 import Moment from 'react-moment';
+import { Redirect } from 'react-router';
 
-class CalendarSessions extends React.Component {
+class CalendarSessionCard extends React.Component {
 
     props: {
         start: number,
@@ -12,7 +13,25 @@ class CalendarSessions extends React.Component {
         aheadNum: number
     };
 
+    state: {
+        redirectPath: string
+    };
+
+    constructor(props: {}) {
+        super(props);
+        this.state = {
+            redirectPath: ''
+        };
+    }
+
+    handleOnClick = (path: string) => {
+        this.setState({ redirectPath: path });
+    }
+
     render() {
+        if (this.state.redirectPath.length > 0) {
+            return <Redirect push={true} to={this.state.redirectPath} />;
+        }
         const openPeriod = 30 /* minutes */ * 60 /* seconds */;
         var status = 'closed';
         var startDate = new Date(this.props.start);
@@ -51,7 +70,7 @@ class CalendarSessions extends React.Component {
                 </div>
                 <div className="CalendarInfo">
                     <div className="SessionDivider" />
-                    <div className="CalendarCard">
+                    <div className="CalendarCard" onClick={() => this.handleOnClick('/session')}>
                         <div className="CalendarUpperInfo">
                             <div className="CalendarTa">
                                 {this.props.ta}
@@ -82,4 +101,4 @@ class CalendarSessions extends React.Component {
     }
 }
 
-export default CalendarSessions;
+export default CalendarSessionCard;

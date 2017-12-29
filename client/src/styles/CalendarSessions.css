@@ -2,7 +2,6 @@
     font-size: 12px;
     margin: 20px;
     overflow: hidden;
-    cursor:pointer;
 }
 
 .SessionIndicator {
@@ -46,6 +45,7 @@
     background-color: #f5f5f5;
     border-radius: 5px;     
     padding-bottom: 15px;
+    cursor: pointer;
 }
 
 .CalendarUpperInfo, .CalendarLowerInfo {
