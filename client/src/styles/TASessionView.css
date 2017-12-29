@@ -7,12 +7,14 @@
     text-align: left;
     margin:10px;
     border-radius: 12px;
-    height:23px;
+    height:25px;
     border:1px solid black;
 }
 
 .SessionSorterItem {
     cursor:pointer;
+    float:left;
+    line-height: 13px;
     padding:5px;
     display: inline;
     font-size:10px;

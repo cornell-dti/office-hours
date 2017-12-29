@@ -17,10 +17,14 @@ class CalendarView extends React.Component {
 
     constructor(props: {}) {
         super(props);
+        var week = new Date();
+        week.setHours(0, 0, 0, 0);
+        week.setTime(week.getTime() -
+            (week.getDay() - 1) /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
         var today = new Date();
         today.setHours(0, 0, 0, 0);
         this.state = {
-            selectedWeekEpoch: today.getTime(),
+            selectedWeekEpoch: week.getTime(),
             selectedDateEpoch: today.getTime()
         };
         this.handleWeekClick = this.handleWeekClick.bind(this);
