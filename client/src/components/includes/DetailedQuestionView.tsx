@@ -2,34 +2,40 @@ import * as React from 'react';
 import '../../styles/DetailedQuestionView.css';
 
 class DetailedQuestionView extends React.Component {
-    // props: {
-    //     StudentName: string,
-    //     StudentQuestion: string,
-    //     Tags: string[],
-    //     Group: string[]
-    // };
+    props: {
+        studentName: string,
+        studentQuestion: string,
+        tags: string[],
+        group: string[]
+    };
 
     render() {
+        var tagsList = this.props.tags.map(
+            function (tag) {
+                return <p>{tag}</p>
+            }
+        )
+
+        var groupList = this.props.group.map(
+            function (member) {
+                return <li>{member}</li>
+            }
+        )
+
         return (
             <div className="DetailedQuestionView">
                 <div className="DetailedQuestionInfo">
                     <div className="StudentInfo">
-                        <header>Edgar Stewart</header>
-                        <p>How to start assignment 3?</p>
+                        <header>{this.props.studentName}</header>
+                        <p>{this.props.studentQuestion}</p>
                     </div>
                     <div className="DetailedTags">
-                        <p>Assignment 1</p>
-                        <p>Q4</p>
-                        <p>Recursion</p>
-                        <p>Conceptual</p>
+                        {tagsList}
                     </div>
                     <div className="GroupInfo">
                         <header>Students In This Group</header>
                         <ul>
-                            <li>Josh</li>
-                            <li>Bill</li>
-                            <li>Pat</li>
-                            <li>Harv</li>
+                            {groupList}
                         </ul>
                     </div>
                 </div>

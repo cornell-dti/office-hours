@@ -9,7 +9,12 @@ class StudentSessionView extends React.Component {
     render() {
         return (
             <div className="StudentSessionView">
-                <DetailedQuestionView />
+                <DetailedQuestionView
+                    studentName="Edgar Stewart"
+                    studentQuestion="How do I start Assignment 3?"
+                    tags={["Assignment 1", "Q4", "Recursion", "Conceptual"]}
+                    group={["Joshua Tran", "Bill Oliver", "Patrick Gross", "Harvey Estrada"]}
+                />
                 <SessionInformationHeader
                     courseName="CS 3110"
                     profName="Michael Clarkson"
