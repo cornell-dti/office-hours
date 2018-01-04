@@ -9,9 +9,22 @@ class SessionQuestionsComponent extends React.Component {
     //     this.state = {name: this.props.name };
     // }
 
+    props: {
+        handleClick: Function
+    };
+
+    constructor(props: {}) {
+        super(props);
+        this._toggleDetails = this._toggleDetails.bind(this);
+    }
+
+    _toggleDetails(prev: boolean) {
+        this.props.handleClick(prev)
+    }
+
     render() {
         return (
-            <div className="QueueQuestions">
+            <div className="QueueQuestions" onClick={() => this._toggleDetails(true)}>
                 <p className="Name">Karun Singh</p>
                 <p className="Question">How do implement recursion on question 4?</p>
                 <div className="Tags">

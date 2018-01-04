@@ -3,11 +3,22 @@ import '../../styles/DetailedQuestionView.css';
 
 class DetailedQuestionView extends React.Component {
     props: {
+        isDetailed: boolean,
         studentName: string,
         studentQuestion: string,
         tags: string[],
-        group: string[]
+        group: string[],
+        handleClick: Function
     };
+
+    constructor(props: {}) {
+        super(props);
+        this._toggleDetails = this._toggleDetails.bind(this);
+    }
+
+    _toggleDetails(prev: boolean) {
+        this.props.handleClick(prev)
+    }
 
     render() {
         var tagsList = this.props.tags.map(
@@ -40,7 +51,7 @@ class DetailedQuestionView extends React.Component {
                     </div>
                 </div>
                 {/* <button className="DetailedResolveButton">Resolve</button> */}
-                <button className="DetailedCloseButton">Close</button>
+                <button className="DetailedCloseButton " onClick={() => this._toggleDetails(false)}>Close</button>
             </div>
         );
     }
