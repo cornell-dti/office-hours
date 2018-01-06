@@ -15,7 +15,7 @@ class StudentSessionView extends React.Component {
         this.handleClick = this.handleClick.bind(this);
         this.state = {
             isDetailed: false
-        }
+        };
     }
 
     handleClick(toggle: boolean) {
@@ -25,23 +25,13 @@ class StudentSessionView extends React.Component {
     }
 
     render() {
-        if (this.state.isDetailed) {
-            return (
-                <div className="StudentSessionView">
-                    <DetailedQuestionView
-                        isDetailed={this.state.isDetailed}
-                        studentName="Edgar Stewart"
-                        studentQuestion="How do I start Assignment 3?"
-                        tags={['Assignment 1', 'Q4', 'Recursion', 'Conceptual']}
-                        group={['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada']}
-                        handleClick={this.handleClick}
-                    />
-                </div>
-            )
+        var popup = 'PopupInvisible';
+        if (this.state.isDetailed === true) {
+            popup = 'PopupVisible';
         }
 
         return (
-            <div className="StudentSessionView">
+            <div className={'StudentSessionView ' + popup}>
                 <SessionInformationHeader
                     courseName="CS 3110"
                     profName="Michael Clarkson"
@@ -54,6 +44,14 @@ class StudentSessionView extends React.Component {
                     handleClick={this.handleClick}
                 />
                 <SessionQuestionsContainer
+                    handleClick={this.handleClick}
+                />
+                <DetailedQuestionView
+                    studentName="Edgar Stewart"
+                    studentQuestion="How do I start Assignment 3?"
+                    tags={['Assignment 1', 'Q4', 'Recursion', 'Conceptual']}
+                    group={['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada']}
+                    isDetailed={this.state.isDetailed}
                     handleClick={this.handleClick}
                 />
             </div>

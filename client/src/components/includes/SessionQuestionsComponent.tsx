@@ -19,7 +19,7 @@ class SessionQuestionsComponent extends React.Component {
     }
 
     _toggleDetails(prev: boolean) {
-        this.props.handleClick(prev)
+        this.props.handleClick(prev);
     }
 
     render() {
