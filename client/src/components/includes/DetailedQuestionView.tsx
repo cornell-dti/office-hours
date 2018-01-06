@@ -13,28 +13,28 @@ class DetailedQuestionView extends React.Component {
 
     constructor(props: {}) {
         super(props);
-        this._toggleDetails = this._toggleDetails.bind(this);
+        this.toggleDetails = this.toggleDetails.bind(this);
     }
 
-    _toggleDetails(prev: boolean) {
+    toggleDetails(prev: boolean) {
         this.props.handleClick(prev);
     }
 
     render() {
         var tagsList = this.props.tags.map(
-            function (tag: string, index: number) {
-                return <p key={index}>{tag}</p>;
+            (tag, index) => {
+                return <p key={index}>{tag}</p>; /* Compiles with warning if key not included */
             }
         );
 
         var groupList = this.props.group.map(
-            function (member: string, index: number) {
+            (member, index) => {
                 return <li key={index}>{member}</li>;
             }
         );
 
         var popup = 'PopupInvisible';
-        if (this.props.isDetailed === true) {
+        if (this.props.isDetailed) {
             popup = 'PopupVisible';
         }
 
@@ -56,7 +56,7 @@ class DetailedQuestionView extends React.Component {
                     </div>
                 </div>
                 {/* <button className="DetailedResolveButton">Resolve</button> */}
-                <button className="DetailedCloseButton " onClick={() => this._toggleDetails(false)}>Close</button>
+                <button className="DetailedCloseButton " onClick={() => this.toggleDetails(false)}>Close</button>
             </div>
         );
     }

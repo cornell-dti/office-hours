@@ -20,6 +20,15 @@
     display: block;
 }
 
+.DetailedQuestionInfo {
+    border: solid 1px black;
+    border-radius: 10px;
+    background-color: white;
+    padding: 10px;
+    overflow-y: auto;
+    height: 93%;
+}
+
 .StudentInfo {
     padding-bottom: 20px;
 }
@@ -40,15 +49,6 @@
     border-radius: 10px;
 }
 
-.DetailedQuestionInfo {
-    border: solid 1px black;
-    border-radius: 10px;
-    background-color: white;
-    padding: 10px;
-    overflow-y: auto;
-    height: 90%;
-}
-
 .DetailedResolveButton, .DetailedCloseButton {
     background-color: white;
     border: solid 1px black;
@@ -57,7 +57,7 @@
     font-size: 16px;
     border-radius: 10px;
     width: 100%;
-    height: 10%;
+    height: 7%;
 }
 
 /* .DetailedResolveButton {
@@ -86,4 +86,3 @@ ul li {
     padding: 5px 0px;
     border-bottom: solid 1px #747474;
 }
-

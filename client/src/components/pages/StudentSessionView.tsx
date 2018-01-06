@@ -26,7 +26,7 @@ class StudentSessionView extends React.Component {
 
     render() {
         var popup = 'PopupInvisible';
-        if (this.state.isDetailed === true) {
+        if (this.state.isDetailed) {
             popup = 'PopupVisible';
         }
 

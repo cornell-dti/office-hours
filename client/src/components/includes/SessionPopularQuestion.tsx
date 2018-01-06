@@ -11,16 +11,16 @@ class SessionPopularQuestion extends React.Component {
 
     constructor(props: {}) {
         super(props);
-        this._toggleDetails = this._toggleDetails.bind(this);
+        this.toggleDetails = this.toggleDetails.bind(this);
     }
 
-    _toggleDetails(prev: boolean) {
+    toggleDetails(prev: boolean) {
         this.props.handleClick(prev);
     }
 
     render() {
         return (
-            <div className="SessionPopularQuestion" onClick={() => this._toggleDetails(true)}>
+            <div className="SessionPopularQuestion" onClick={() => this.toggleDetails(true)}>
                 <div className="SessionPopularQuestion-Text">
                     {this.props.question}
                 </div>
