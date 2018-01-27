@@ -3,14 +3,56 @@ import '../../styles/QuestionHeader.css';
 
 class QuestionHeader extends React.Component {
 
+    props: {
+        courseName: string,
+        profName: string,
+        primaryTags: string[],
+        secondaryTags: string[]
+    };
+
+    state: {
+        question: string
+    }
+
+    constructor(props: {}) {
+      super(props);
+      this.state = {
+        question: "What do you want to ask about?",
+      }
+      this.handleClick = this.handleClick.bind(this);
+    }
+
+    /*handleClick(item: string) {
+        this.setState({
+            question: item
+        });
+        this.props.handleClick(item);
+    }*/
+
+    handleClick() {
+      this.setState({question: "bob"});
+    }
+
     render() {
+        var primaryTagsList = this.props.primaryTags.map(
+          (tag, index) => {
+            return <p key={index}>{tag}</p>;
+          }
+        );
+
+        var secondaryTagsList = this.props.secondaryTags.map(
+          (tag, index) => {
+            return <p key={index}>{tag}</p>;
+          }
+        );
+
         return (
           <div className="QuestionHeader">
             Add Your Question
             <div className="header">
               <div className="QuestionCourseInfo">
-                  <span className="QuestionCourseNum">CS 3110</span>
-                  Michael Clarkson
+                  <span className="QuestionCourseNum">{this.props.courseName}</span>
+                  {this.props.profName}
               </div>
             </div>
             <div className="tagsContainer">
@@ -18,30 +60,22 @@ class QuestionHeader extends React.Component {
               <div className="tagsMiniContainer">
                 <p>Primary Tags</p>
                 <div className="QuestionTags">
-                    <p className="selectedTag">Assignment 1</p>
-                    <p>Assignment 2</p>
-                    <p>Prelim 1 Feedback</p>
+                    {primaryTagsList}
                 </div>
               </div>
               <div className="tagsMiniContainer">
                 <p>Secondary Tags</p>
                 <div className="QuestionTags">
-                    <p className="selectedTag">Q1</p>
-                    <p>Q2</p>
-                    <p>Q3</p>
-                    <p>Q4</p>
-                    <p>Q5</p>
-                    <p>Conceptual</p>
-                    <p className="selectedTag">Clarification</p>
-                    <p>Recursion</p>
-                    <p>Conditional</p>
-                    <p>Data</p>
-                    <p>Debugging</p>
+                    {secondaryTagsList}
                 </div>
               </div>
               <div className="tagsMiniContainer2">
                 <p>Question</p>
-                <p className="QuestionInput">What do you want to ask about?</p>
+                <input className="QuestionInput"
+                  type="text"
+                  value={this.state.question}
+                  onChange={this.handleClick}>
+                </input>
               </div>
             </div>
           </div>
