@@ -49,7 +49,7 @@ class CalendarSessions extends React.Component {
         }
 
         if (this.state.redirect) {
-            return <Redirect push to="/session" />;
+            return <Redirect push={true} to="/session" />;
         }
 
         return (
@@ -79,10 +79,8 @@ class CalendarSessions extends React.Component {
                             <div className="CalendarTa">
                                 {this.props.ta}
                             </div>
-                            <div className="Placeholder">
-                                <button className="CalendarOpenButton">
-                                    <i className="angle right icon" />
-                                </button>
+                            <div className="CalendarOpenButton">
+                                <i className="angle right icon" />
                             </div>
                         </div>
                         <div className="CalendarLowerInfo">
