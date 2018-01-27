@@ -1,7 +1,12 @@
 import * as React from 'react';
 import Moment from 'react-moment';
+import { Redirect } from 'react-router';
 
 class CalendarSessions extends React.Component {
+
+    state: {
+        redirect: boolean;
+    };
 
     props: {
         start: number,
@@ -11,6 +16,19 @@ class CalendarSessions extends React.Component {
         resolvedNum: number,
         aheadNum: number
     };
+
+    constructor(props: {}) {
+        super(props);
+        this.state = {
+            redirect: false
+        };
+    }
+
+    handleOnClick = () => {
+        this.setState({
+            redirect: true
+        });
+    }
 
     render() {
         const openPeriod = 30 /* minutes */ * 60 /* seconds */;
@@ -29,6 +47,11 @@ class CalendarSessions extends React.Component {
                 status = 'open';
             }
         }
+
+        if (this.state.redirect) {
+            return <Redirect push to="/session" />;
+        }
+
         return (
             <div className="CalendarSessionCard">
                 <div className="SessionIndicators">
@@ -51,14 +74,16 @@ class CalendarSessions extends React.Component {
                 </div>
                 <div className="CalendarInfo">
                     <div className="SessionDivider" />
-                    <div className="CalendarCard">
+                    <div className="CalendarCard" onClick={this.handleOnClick}>
                         <div className="CalendarUpperInfo">
                             <div className="CalendarTa">
                                 {this.props.ta}
                             </div>
-                            <button className="CalendarOpenButton">
-                                <i className="angle right icon" />
-                            </button>
+                            <div className="Placeholder">
+                                <button className="CalendarOpenButton">
+                                    <i className="angle right icon" />
+                                </button>
+                            </div>
                         </div>
                         <div className="CalendarLowerInfo">
                             <div className="CalendarLocation">
