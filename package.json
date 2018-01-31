@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \" cd server && npm start\"  \"cd client && npm start\"",
+    "start": "concurrently \" cd server && npm run build\"  \"cd client && npm run build\"",
     "build": "npm start",
-    "postinstall": "concurrently \" cd server && npm install\"  \"cd client && npm install\""
+    "postinstall":
+      "concurrently \" cd server && npm install && npm install --dev\"  \"cd client && npm install && npm install --dev\""
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,8 @@
   },
   "homepage": "https://github.com/cornell-dti/office-hours#readme",
   "dependencies": {
+    "@types/node": "^9.4.0",
+    "@types/react": "^16.0.35",
     "concurrently": "^3.5.0"
   }
 }
