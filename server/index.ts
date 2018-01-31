@@ -5,4 +5,4 @@ const app = express();
 
 app.use(postgraphql('postgres://localhost:5432', { graphiql: true }));
 
-app.listen(process.env.PORT || 3001);
+app.listen(3001);
