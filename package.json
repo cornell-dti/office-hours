@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \" cd server && npm run build\"  \"cd client && npm run build\"",
+    "start": "cd client && npm start",
     "build": "npm start",
-    "postinstall":
-      "concurrently \" cd server && npm install && npm install --dev\"  \"cd client && npm install && npm install --dev\""
+    "postinstall": "cd client && npm install && npm install --dev"
   },
   "repository": {
     "type": "git",
