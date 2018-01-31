@@ -5,7 +5,6 @@
   "main": "lib/index",
   "types": "lib/index",
   "scripts": {
-    "deploy": "npm install",
     "start": "npm run build:live",
     "build:live": "nodemon -e ts,js,sql,gql --exec ./node_modules/.bin/ts-node -- ./index.ts"
   },
