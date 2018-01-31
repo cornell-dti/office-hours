@@ -1,0 +1,88 @@
+.DetailedQuestionView {
+    padding: 20px;
+    text-align: left;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding-top: 180px; /* Padding to keep header visible. May need to fix header in place. */
+    background-color: rgba(0,0,0,0.3);
+}
+
+.DetailedQuestionView.PopupInvisible {
+    display: none;
+}
+
+.DetailedQuestionView.PopupVisible {
+    display: block;
+}
+
+.DetailedQuestionInfo {
+    border: solid 1px black;
+    border-radius: 10px;
+    background-color: white;
+    padding: 10px;
+    overflow-y: auto;
+    height: 93%;
+}
+
+.StudentInfo {
+    padding-bottom: 20px;
+}
+
+.StudentInfo p {
+    color: #747474;
+    padding-bottom: 10px;
+}
+
+.DetailedTags p {
+    display: inline;
+    font-size: 11px;
+    color: white;
+    border: 1px  solid #999999;
+    background-color: #999999;
+    padding: 1px 7px;
+    margin: 3px;
+    border-radius: 10px;
+}
+
+.DetailedResolveButton, .DetailedCloseButton {
+    background-color: white;
+    border: solid 1px black;
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 10px;
+    width: 100%;
+    height: 7%;
+}
+
+/* .DetailedResolveButton {
+    color: dodgerblue;
+} */
+
+.DetailedCloseButton {
+    color: red;
+}
+
+header {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px 0px;
+}
+
+ul {
+    text-align: left;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    color: #747474;
+}
+
+ul li {
+    padding: 5px 0px;
+    border-bottom: solid 1px #747474;
+}

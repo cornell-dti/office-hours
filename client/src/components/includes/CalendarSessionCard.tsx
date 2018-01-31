@@ -4,6 +4,10 @@ import { Redirect } from 'react-router';
 
 class CalendarSessionCard extends React.Component {
 
+    state: {
+        redirect: boolean;
+    };
+
     props: {
         start: number,
         end: number,
@@ -13,25 +17,20 @@ class CalendarSessionCard extends React.Component {
         aheadNum: number
     };
 
-    state: {
-        redirectPath: string
-    };
-
     constructor(props: {}) {
         super(props);
         this.state = {
-            redirectPath: ''
+            redirect: false
         };
     }
 
-    handleOnClick = (path: string) => {
-        this.setState({ redirectPath: path });
+    handleOnClick = () => {
+        this.setState({
+            redirect: true
+        });
     }
 
     render() {
-        if (this.state.redirectPath.length > 0) {
-            return <Redirect push={true} to={this.state.redirectPath} />;
-        }
         const openPeriod = 30 /* minutes */ * 60 /* seconds */;
         var status = 'closed';
         var startDate = new Date(this.props.start);
@@ -48,6 +47,11 @@ class CalendarSessionCard extends React.Component {
                 status = 'open';
             }
         }
+
+        if (this.state.redirect) {
+            return <Redirect push={true} to="/session" />;
+        }
+
         return (
             <div className="CalendarSessionCard">
                 <div className="SessionIndicators">
@@ -70,7 +74,7 @@ class CalendarSessionCard extends React.Component {
                 </div>
                 <div className="CalendarInfo">
                     <div className="SessionDivider" />
-                    <div className="CalendarCard" onClick={() => this.handleOnClick('/session')}>
+                    <div className="CalendarCard" onClick={this.handleOnClick}>
                         <div className="CalendarUpperInfo">
                             <div className="CalendarTa">
                                 {this.props.ta}

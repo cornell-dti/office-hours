@@ -3,6 +3,10 @@ import '../../styles/SessionQuestionsContainer.css';
 import SessionQuestionsComponent from './SessionQuestionsComponent';
 
 class SessionQuestionsContainer extends React.Component {
+    props: {
+        handleClick: Function
+    };
+
     render() {
         return (
             <div className="SessionQuestionsContainer">
@@ -10,11 +14,21 @@ class SessionQuestionsContainer extends React.Component {
                 <div>
                     <p className="Queue">Queue</p>
                 </div>
-                <SessionQuestionsComponent />
-                <SessionQuestionsComponent />
-                <SessionQuestionsComponent />
-                <SessionQuestionsComponent />
-                <SessionQuestionsComponent />
+                <SessionQuestionsComponent
+                    handleClick={this.props.handleClick}
+                />
+                <SessionQuestionsComponent
+                    handleClick={this.props.handleClick}
+                />
+                <SessionQuestionsComponent
+                    handleClick={this.props.handleClick}
+                />
+                <SessionQuestionsComponent
+                    handleClick={this.props.handleClick}
+                />
+                <SessionQuestionsComponent
+                    handleClick={this.props.handleClick}
+                />
             </div>
         );
     }
