@@ -2,17 +2,21 @@ import * as React from 'react';
 import '../../styles/TASessionView.css';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
+import DetailedQuestionView from '../includes/DetailedQuestionView';
 
 class TASessionView extends React.Component {
 
     state: {
-        sortPopularity: boolean
+        sortPopularity: boolean,
+        isDetailed: boolean
     };
 
     constructor(props: {}) {
         super(props);
+        this.handleClick = this.handleClick.bind(this);
         this.state = {
-            sortPopularity: false
+            sortPopularity: false,
+            isDetailed: false
         };
     }
 
@@ -22,10 +26,20 @@ class TASessionView extends React.Component {
         });
     }
 
+    handleClick(toggle: boolean) {
+        this.setState({
+            isDetailed: toggle
+        });
+    }
+
     render() {
+        var popup = 'PopupInvisible';
+        if (this.state.isDetailed) {
+            popup = 'PopupVisible';
+        }
         const chron = !this.state.sortPopularity;
         return (
-            <div className="TASessionView">
+            <div className={'StudentSessionView ' + popup}>
                 <SessionInformationHeader
                     courseName="CS 3110"
                     taName="Michael Clarkson"
@@ -48,7 +62,15 @@ class TASessionView extends React.Component {
                         Popularity
                     </div>
                 </div>
-                <SessionQuestionsContainer />
+                <SessionQuestionsContainer handleClick={this.handleClick} />
+                <DetailedQuestionView
+                    studentName="Edgar Stewart"
+                    studentQuestion="How do I start Assignment 3?"
+                    tags={['Assignment 1', 'Q4', 'Recursion', 'Conceptual']}
+                    group={['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada']}
+                    isDetailed={this.state.isDetailed}
+                    handleClick={this.handleClick}
+                />
             </div>
         );
     }
