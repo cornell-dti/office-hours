@@ -3,9 +3,11 @@ import '../../styles/SessionPopularQuestionsContainer.css';
 import SessionPopularQuestion from './SessionPopularQuestion';
 
 class SessionPopularQuestionsContainer extends React.Component {
-    props: {
-        handleClick: Function
-    };
+    handleClick(toggle: boolean) {
+        this.setState({
+            isDetailed: toggle
+        });
+    }
 
     render() {
         return (
@@ -17,17 +19,17 @@ class SessionPopularQuestionsContainer extends React.Component {
                     <SessionPopularQuestion
                         question="This is a sample question"
                         numPeople={6}
-                        handleClick={this.props.handleClick}
+                        handleClick={this.handleClick}
                     />
                     <SessionPopularQuestion
                         question="This is another question"
                         numPeople={3}
-                        handleClick={this.props.handleClick}
+                        handleClick={this.handleClick}
                     />
                     <SessionPopularQuestion
                         question="And one more question"
                         numPeople={2}
-                        handleClick={this.props.handleClick}
+                        handleClick={this.handleClick}
                     />
                 </div>
             </div>

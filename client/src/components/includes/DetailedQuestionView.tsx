@@ -11,6 +11,13 @@ class DetailedQuestionView extends React.Component {
         handleClick: Function
     };
 
+    state: {
+        studentName: string,
+        studentQuestion: string,
+        tags: string[],
+        group: string[]
+    };
+
     constructor(props: {}) {
         super(props);
         this.toggleDetails = this.toggleDetails.bind(this);

@@ -10,7 +10,12 @@ class SessionQuestionsComponent extends React.Component {
     // }
 
     props: {
-        handleClick: Function
+        handleClick: Function,
+        studentName: string,
+        studentQuestion: string,
+        tags: string[],
+        group: string[],
+        numberOfPeople: number
     };
 
     constructor(props: {}) {
@@ -23,19 +28,22 @@ class SessionQuestionsComponent extends React.Component {
     }
 
     render() {
+        var tagsList = this.props.tags.map(
+            (tag, index) => {
+                return <p key={index}>{tag}</p>;
+            }
+        );
+
         return (
             <div className="QueueQuestions" onClick={() => this.toggleDetails(true)}>
-                <p className="Name">Karun Singh</p>
-                <p className="Question">How do implement recursion on question 4?</p>
+                <p className="Name">{this.props.studentName}</p>
+                <p className="Question">{this.props.studentQuestion}</p>
                 <div className="Tags">
-                    <p>Assignment 1</p>
-                    <p>Q4</p>
-                    <p>Recursion</p>
-                    <p>Conceptual</p>
+                    {tagsList}
                 </div>
                 <div className="BottomBar">
                     <img src={peopleLogoImage} className={'peopleLogo'} alt="3 people logo" />
-                    <p className="NumberOfPeople">2</p>
+                    <p className="NumberOfPeople">{this.props.numberOfPeople}</p>
                     <button className="Button">Resolve</button>
                 </div>
             </div>
