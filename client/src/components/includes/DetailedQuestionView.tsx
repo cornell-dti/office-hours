@@ -3,15 +3,8 @@ import '../../styles/DetailedQuestionView.css';
 
 class DetailedQuestionView extends React.Component {
     props: {
-        studentName: string,
-        studentQuestion: string,
-        tags: string[],
-        group: string[],
         isDetailed: boolean,
-        handleClick: Function
-    };
-
-    state: {
+        handleClick: Function,
         studentName: string,
         studentQuestion: string,
         tags: string[],
@@ -30,7 +23,7 @@ class DetailedQuestionView extends React.Component {
     render() {
         var tagsList = this.props.tags.map(
             (tag, index) => {
-                return <p key={index}>{tag}</p>; /* Compiles with warning if key not included */
+                return <p key={index}>{tag}</p>;
             }
         );
 
