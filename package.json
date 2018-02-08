@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \" cd server && npm install\"",
+    "start": "concurrently \" cd server && npm run start\"",
     "build": "npm start",
-    "postinstall": "concurrently \" cd server && npm start\""
+    "postinstall": "cd server && npm install && npm install --dev"
   },
   "repository": {
     "type": "git",
