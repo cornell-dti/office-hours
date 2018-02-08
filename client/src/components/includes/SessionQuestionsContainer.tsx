@@ -7,7 +7,7 @@ class SessionQuestionsContainer extends React.Component {
     state: {
         isDetailed: boolean,
         index: number
-    }
+    };
 
     props: {
         isDetailed: boolean,
@@ -47,15 +47,18 @@ class SessionQuestionsContainer extends React.Component {
     render() {
         var cardList = this.props.studentName.map(
             (studentName, index) => {
-                return <SessionQuestionsComponent key={index}
-                    handleClick={this.handleClick}
-                    studentName={studentName}
-                    studentQuestion={this.props.studentQuestion[index]}
-                    tags={this.props.tags[index]}
-                    group={this.props.group[index]}
-                    numberOfPeople={this.props.numberOfPeople[index]}
-                    index={index}
-                />;
+                return (
+                    <SessionQuestionsComponent
+                        key={index}
+                        handleClick={this.handleClick}
+                        studentName={studentName}
+                        studentQuestion={this.props.studentQuestion[index]}
+                        tags={this.props.tags[index]}
+                        group={this.props.group[index]}
+                        numberOfPeople={this.props.numberOfPeople[index]}
+                        index={index}
+                    />
+                );
             }
         );
 
