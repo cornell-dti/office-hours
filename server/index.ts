@@ -1,5 +1,5 @@
 import * as express from 'express';
-import path from 'path';
+import * as path from 'path';
 //import postgraphql from 'postgraphql';
 
 const app = express();
