@@ -17,7 +17,7 @@ class DetailedQuestionView extends React.Component {
     }
 
     toggleDetails(prev: boolean) {
-        this.props.handleClick(prev);
+        this.props.handleClick(prev, 0);
     }
 
     render() {

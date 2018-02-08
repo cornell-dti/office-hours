@@ -3,12 +3,11 @@ import '../../styles/StudentSessionView.css';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 import SessionPopularQuestionsContainer from '../includes/SessionPopularQuestionsContainer';
-// import DetailedQuestionView from '../includes/DetailedQuestionView';
 
 class StudentSessionView extends React.Component {
     render() {
         var popup = 'PopupInvisible';
-        // if (this.state.isDetailed) {
+        // if (this.state.isDetailed) { // Moved isDetailed flag to child component, so cannot lock background scroll this way
         //     popup = 'PopupVisible';
         // }
 
@@ -23,7 +22,14 @@ class StudentSessionView extends React.Component {
                     location="G23 Gates Hall"
                 />
                 <SessionPopularQuestionsContainer />
-                <SessionQuestionsContainer />
+                <SessionQuestionsContainer
+                    isDetailed={false}
+                    studentName={["Karun Singh", "Shefali Agarwal", "Horace He", "Tiffany Wang", "Joyelle Gilbert"]}
+                    studentQuestion={["How do I start Assignment 1?", "How do I start Assignment 2?", "How do I start Assignment 3?", "How do I start Assignment 4?", "How do I start Assignment 5?"]}
+                    tags={[['Assignment 1', 'Q4', 'Recursion', 'Conceptual'], ['Assignment 2', 'Q4', 'Recursion', 'Conceptual'], ['Assignment 3', 'Q4', 'Recursion', 'Conceptual'], ['Assignment 4', 'Q4', 'Recursion', 'Conceptual'], ['Assignment 5', 'Q4', 'Recursion', 'Conceptual']]}
+                    group={[['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada'], ['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada'], ['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada'], ['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada'], ['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada']]}
+                    numberOfPeople={[10, 20, 30, 40, 50]}
+                />
             </div>
         );
     }

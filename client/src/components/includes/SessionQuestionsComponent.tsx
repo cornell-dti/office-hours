@@ -11,12 +11,12 @@ class SessionQuestionsComponent extends React.Component {
 
     props: {
         handleClick: Function,
-        updateDetails: Function,
         studentName: string,
         studentQuestion: string,
         tags: string[],
         group: string[],
-        numberOfPeople: number
+        numberOfPeople: number,
+        index: number
     };
 
     constructor(props: {}) {
@@ -25,8 +25,7 @@ class SessionQuestionsComponent extends React.Component {
     }
 
     toggleDetails(prev: boolean) {
-        this.props.handleClick(prev);
-        this.props.updateDetails(this.props.studentName, this.props.studentQuestion, this.props.tags, this.props.group);
+        this.props.handleClick(prev, this.props.index);
     }
 
     render() {
