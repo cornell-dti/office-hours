@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/SessionInformationHeader.css';
 
 class SessionInformationHeader extends React.Component {
     props: {

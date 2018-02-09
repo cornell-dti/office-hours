@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@types/react-router-dom": "^4.2.2",
+    "less-plugin-clean-css": "^1.5.1",
     "moment": "^2.20.0",
     "moment-timezone": "^0.5.14",
     "react": "^16.1.0",
@@ -16,10 +17,11 @@
     "tslint-react": "^3.2.0"
   },
   "scripts": {
-    "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "build-less": "lessc --clean-css src/styles/index.less src/styles/styles.min.css",
+    "eject": "react-scripts-ts eject",
+    "start": "npm run build-less && react-scripts-ts start",
+    "test": "react-scripts-ts test --env=jsdom"
   },
   "proxy": "http://localhost:3001",
   "devDependencies": {

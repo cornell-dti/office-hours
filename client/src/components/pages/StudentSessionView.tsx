@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/StudentSessionView.css';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 import SessionPopularQuestionsContainer from '../includes/SessionPopularQuestionsContainer';

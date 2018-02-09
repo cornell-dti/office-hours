@@ -1,0 +1,66 @@
+.DetailedQuestionView {
+    background-color: rgba(0,0,0,0.3);
+    bottom: 0;
+    left: 0;
+    padding: 180px 20px 20px;
+    position: fixed;
+    right: 0;
+    text-align: left;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+
+    &.PopupInvisible {
+        display: none;
+    }
+
+    &.PopupVisible {
+        display: block;
+    }
+
+    .DetailedCloseButton, .DetailedResolveButton {
+        background-color: white;
+        border: solid 1px black;
+        border-radius: 10px;
+        font-size: 16px;
+        height: 7%;
+        margin-top: 10px;
+        padding: 10px;
+        width: 100%;
+    }
+
+    .DetailedCloseButton {
+        color: red;
+    }
+
+    .DetailedQuestionInfo {
+        background-color: white;
+        border: 1px solid black;
+        border-radius: 10px;
+        height: 93%;
+        overflow-y: auto;
+        padding: 10px;
+    }
+
+    .DetailedTags {
+        p {
+            background-color: #999999;
+            border: 1px solid #999999;
+            border-radius: 10px;
+            color: white;
+            display: inline;
+            font-size: 11px;
+            margin: 3px;
+            padding: 1px 7px;
+        }
+    }
+
+    .StudentInfo {
+        padding-bottom: 20px;
+
+        p {
+            color: #747474;
+            padding-bottom: 10px;
+        }
+    }
+}

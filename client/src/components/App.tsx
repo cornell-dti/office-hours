@@ -2,7 +2,6 @@ import * as React from 'react';
 import CalendarView from './pages/CalendarView';
 import StudentSessionView from './pages/StudentSessionView';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import '../styles/App.css';
 
 class App extends React.Component {
   render() {
