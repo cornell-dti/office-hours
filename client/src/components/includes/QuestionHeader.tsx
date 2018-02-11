@@ -11,32 +11,33 @@ class QuestionHeader extends React.Component {
     };
 
     state: {
-        question: string
+        question: string,
+        primaryBooleanList: boolean[],
+        secondaryBooleanList: boolean[]
     }
 
     constructor(props: {}) {
       super(props);
       this.state = {
         question: "What do you want to ask about?",
+        primaryBooleanList: new Array(this.props.primaryTags.length).fill(false),
+        secondaryBooleanList: new Array(this.props.secondaryTags.length).fill(false)
       }
       this.handleClick = this.handleClick.bind(this);
     }
 
-    /*handleClick(item: string) {
-        this.setState({
-            question: item
-        });
-        this.props.handleClick(item);
-    }*/
-
-    handleClick() {
-      this.setState({question: "bob"});
+    public handleClick(event: any) : void {
+      this.setState({ question: event.target.value });
+      this.setState({ primaryBooleanList: event.target.value })
     }
 
     render() {
         var primaryTagsList = this.props.primaryTags.map(
           (tag, index) => {
-            return <p key={index}>{tag}</p>;
+            if (this.state.primaryBooleanList[index]) {
+              return <p className="selectedTag" key={index}>{tag}</p>
+            }
+            else return <p key={index}>{tag}</p>;
           }
         );
 
@@ -56,7 +57,6 @@ class QuestionHeader extends React.Component {
               </div>
             </div>
             <div className="tagsContainer">
-              <p className="x">x</p>
               <div className="tagsMiniContainer">
                 <p>Primary Tags</p>
                 <div className="QuestionTags">
