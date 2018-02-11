@@ -92,3 +92,7 @@ ul li {
     padding: 5px 0px;
     border-bottom: solid 1px #747474;
 }
+
+ul li:last-child {
+    border-bottom: none;
+}
