@@ -2,9 +2,9 @@ import * as React from 'react';
 import GoogleLogin from 'react-google-login';
 
 class LoginView extends React.Component {
-  responseGoogle = (response: Object) => {
+  responseGoogle = (response: any) => {
     console.log(response);
-    // console.log("Email: " + response.profileObj.email);
+    console.log("Email: " + response.profileObj.email);
   }
 
   render() {
@@ -15,6 +15,7 @@ class LoginView extends React.Component {
           buttonText="Login"
           onSuccess={this.responseGoogle}
           onFailure={this.responseGoogle}
+          hostedDomain="cornell.edu"
         />
       </div>
     );
