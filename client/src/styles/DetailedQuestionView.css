@@ -26,7 +26,11 @@
     background-color: white;
     padding: 10px;
     overflow-y: auto;
-    height: 93%;
+    top: 50%;
+}
+
+.GroupInfo.Empty {
+    display: none;
 }
 
 .StudentInfo {
