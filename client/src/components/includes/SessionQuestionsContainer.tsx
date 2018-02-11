@@ -21,7 +21,6 @@ class SessionQuestionsContainer extends React.Component {
     constructor(props: {}) {
         super(props);
         this.handleClick = this.handleClick.bind(this);
-        this.updateDetails = this.updateDetails.bind(this);
         this.state = {
             isDetailed: false,
             index: 0
@@ -32,15 +31,6 @@ class SessionQuestionsContainer extends React.Component {
         this.setState({
             isDetailed: toggle,
             index: index
-        });
-    }
-
-    updateDetails(studentName: string, studentQuestion: string, tags: string[], group: string[]) {
-        this.setState({
-            studentName: studentName,
-            studentQuestion: studentQuestion,
-            tags: tags,
-            group: group
         });
     }
 
