@@ -1,5 +1,6 @@
 import * as React from 'react';
 import '../../styles/QuestionHeader.css';
+import SelectedTags from '../includes/SelectedTags';
 
 class QuestionHeader extends React.Component {
 
@@ -24,26 +25,32 @@ class QuestionHeader extends React.Component {
         secondaryBooleanList: new Array(this.props.secondaryTags.length).fill(false)
       }
       this.handleClick = this.handleClick.bind(this);
+      this.handleSelected = this.handleSelected.bind(this);
     }
 
     public handleClick(event: any) : void {
       this.setState({ question: event.target.value });
-      this.setState({ primaryBooleanList: event.target.value })
+    }
+
+    public handleSelected(index: number) : void {
+      var temp = this.state.primaryBooleanList;
+      temp[0] = !temp[0];
+      this.setState({ primaryBooleanList: temp});
     }
 
     render() {
         var primaryTagsList = this.props.primaryTags.map(
           (tag, index) => {
-            if (this.state.primaryBooleanList[index]) {
-              return <p className="selectedTag" key={index}>{tag}</p>
-            }
-            else return <p key={index}>{tag}</p>;
+            return <SelectedTags index={index} tag={tag} ifSelected={this.state.primaryBooleanList[index]} onClick={this.handleSelected}/>
           }
         );
 
         var secondaryTagsList = this.props.secondaryTags.map(
           (tag, index) => {
-            return <p key={index}>{tag}</p>;
+            if (this.state.secondaryBooleanList[index]) {
+              return <p className="selectedTag" key={index} onClick={this.handleSelected}>{tag}</p>
+            }
+            else return <p key={index} onClick={this.handleSelected}>{tag}</p>;
           }
         );
 
