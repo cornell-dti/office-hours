@@ -2,9 +2,9 @@ import * as React from 'react';
 import GoogleLogin from 'react-google-login';
 
 class LoginView extends React.Component {
-  responseGoogle = (response: any) => {
+  responseGoogle = (response: ReactGoogleLogin.GoogleLoginResponse) => {
     console.log(response);
-    console.log("Email: " + response.profileObj.email);
+    console.log("Email: " + response.getBasicProfile().getEmail());
   }
 
   render() {
