@@ -2,9 +2,12 @@ import * as React from 'react';
 import GoogleLogin from 'react-google-login';
 
 class LoginView extends React.Component {
-  responseGoogle = (response: ReactGoogleLogin.GoogleLoginResponse) => {
-    console.log(response);
-    console.log("Email: " + response.getBasicProfile().getEmail());
+  printResponse = (response: ReactGoogleLogin.GoogleLoginResponseOffline) => {
+    console.log(response.code);
+  }
+
+  printError = (response: {error: string}) => {
+    console.log(response.error);
   }
 
   render() {
@@ -13,9 +16,10 @@ class LoginView extends React.Component {
         <GoogleLogin
           clientId="694487664328-79nbgbrnm3n3sa3nfsdfm5jigkr69svp.apps.googleusercontent.com"
           buttonText="Login"
-          onSuccess={this.responseGoogle}
-          onFailure={this.responseGoogle}
+          onSuccess={this.printResponse}
+          onFailure={this.printError}
           hostedDomain="cornell.edu"
+          responseType="code"
         />
       </div>
     );
