@@ -3,12 +3,12 @@ import '../../styles/DetailedQuestionView.css';
 
 class DetailedQuestionView extends React.Component {
     props: {
+        isDetailed: boolean,
+        handleClick: Function,
         studentName: string,
         studentQuestion: string,
         tags: string[],
-        group: string[],
-        isDetailed: boolean,
-        handleClick: Function
+        group: string[]
     };
 
     constructor(props: {}) {
@@ -17,13 +17,13 @@ class DetailedQuestionView extends React.Component {
     }
 
     toggleDetails(prev: boolean) {
-        this.props.handleClick(prev);
+        this.props.handleClick(prev, 0);
     }
 
     render() {
         var tagsList = this.props.tags.map(
             (tag, index) => {
-                return <p key={index}>{tag}</p>; /* Compiles with warning if key not included */
+                return <p key={index}>{tag}</p>;
             }
         );
 
