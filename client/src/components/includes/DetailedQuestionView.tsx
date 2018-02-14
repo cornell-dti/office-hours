@@ -33,11 +33,6 @@ class DetailedQuestionView extends React.Component {
             }
         );
 
-        var groupListEmpty = 'Empty';
-        if (groupList.length > 0) {
-            groupListEmpty = '';
-        }
-
         var popup = 'PopupInvisible';
         if (this.props.isDetailed) {
             popup = 'PopupVisible';
@@ -53,12 +48,10 @@ class DetailedQuestionView extends React.Component {
                             {tagsList}
                         </div>
                     </div>
-                    <div className={'GroupInfo ' + groupListEmpty}>
-                        <header>Students In This Group</header>
-                        <ul>
-                            {groupList}
-                        </ul>
-                    </div>
+                    {groupList.length > 0 && <header>Students In This Group</header>}
+                    <ul>
+                        {groupList}
+                    </ul>
                 </div>
                 {/* <button className="DetailedResolveButton">Resolve</button> */}
                 <button className="DetailedCloseButton " onClick={() => this.toggleDetails(false)}>Close</button>
