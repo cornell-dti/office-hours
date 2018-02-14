@@ -34,10 +34,8 @@ class StudentSessionView extends React.Component {
                     ['Assignment 4', 'Q4', 'Recursion', 'Conceptual'],
                     ['Assignment 5', 'Q4', 'Recursion', 'Conceptual']]}
                     group={[['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada'],
-                    ['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada'],
-                    ['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada'],
-                    ['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada'],
-                    ['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada']]}
+                    ['Joshua Tran', 'Bill Oliver', 'Patrick Gross'],
+                    ['Joshua Tran', 'Bill Oliver'], ['Joshua Tran'], []]}
                     numberOfPeople={[10, 20, 30, 40, 50]}
                 />
             </div>

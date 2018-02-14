@@ -48,12 +48,10 @@ class DetailedQuestionView extends React.Component {
                             {tagsList}
                         </div>
                     </div>
-                    <div className="GroupInfo">
-                        <header>Students In This Group</header>
-                        <ul>
-                            {groupList}
-                        </ul>
-                    </div>
+                    {groupList.length > 0 && <header>Students In This Group</header>}
+                    <ul>
+                        {groupList}
+                    </ul>
                 </div>
                 {/* <button className="DetailedResolveButton">Resolve</button> */}
                 <button className="DetailedCloseButton " onClick={() => this.toggleDetails(false)}>Close</button>
