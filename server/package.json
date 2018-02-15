@@ -26,6 +26,7 @@
     "graphql-subscriptions": "^0.5.4",
     "graphql-tools": "^2.8.0",
     "nodemon": "^1.12.1",
+    "postgraphql": "^3.5.6",
     "subscriptions-transport-ws": "^0.9.1",
     "tslint": "^5.8.0"
   },
