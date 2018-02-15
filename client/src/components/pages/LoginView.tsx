@@ -1,9 +1,9 @@
 import * as React from 'react';
 import GoogleLogin from 'react-google-login';
 
-const topStyle: any = {
+const topStyle: {} = {
   color: 'white',
-  height: '50vh',
+  height: '45vh',
   fontSize: '18px',
   lineHeight: '1.4',
   backgroundImage: 'linear-gradient(-225deg, #6DB9EA 0%, #668AE9 100%)',
@@ -13,11 +13,11 @@ const topStyle: any = {
   alignItems: 'center'
 };
 
-const hintText: any = {
+const hintText: {} = {
   color: 'grey'
-}
+};
 
-const btnStyle: any = {
+const btnStyle: {} = {
   backgroundImage: 'linear-gradient(90deg, #83C5EA 0%, #5D89F0 100%)',
   boxShadow: '0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px 0 rgba(0,0,0,0.20)',
   borderRadius: '4px',
@@ -27,7 +27,7 @@ const btnStyle: any = {
   color: 'white',
   outline: 'none',
   transition: 'all 0.17s cubic-bezier(0.4, 0.0, 0.2, 1)',
-}
+};
 
 class LoginView extends React.Component {
   printResponse = (response: ReactGoogleLogin.GoogleLoginResponseOffline) => {
@@ -46,11 +46,11 @@ class LoginView extends React.Component {
         </section>
         <p style={hintText} >Use your Cornell NetID to login</p>
         <GoogleLogin
+          hostedDomain="cornell.edu"
           clientId="694487664328-79nbgbrnm3n3sa3nfsdfm5jigkr69svp.apps.googleusercontent.com"
           buttonText="Sign in with Google"
           onSuccess={this.printResponse}
           onFailure={this.printError}
-          hostedDomain="cornell.edu"
           responseType="code"
           style={btnStyle}
         />
