@@ -18,7 +18,7 @@ const hintText: any = {
 }
 
 const btnStyle: any = {
-  backgroundImage: 'linear-gradient(-90deg, #83C5EA 0%, #5D89F0 100%)',
+  backgroundImage: 'linear-gradient(90deg, #83C5EA 0%, #5D89F0 100%)',
   boxShadow: '0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px 0 rgba(0,0,0,0.20)',
   borderRadius: '4px',
   padding: '12px',
