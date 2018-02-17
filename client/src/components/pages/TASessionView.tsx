@@ -11,7 +11,6 @@ class TASessionView extends React.Component {
 
     constructor(props: {}) {
         super(props);
-        this.handleClick = this.handleClick.bind(this);
         this.state = {
             sortPopularity: false
         };
@@ -20,12 +19,6 @@ class TASessionView extends React.Component {
     setSortPop(pop: boolean) {
         this.setState({
             sortPopularity: pop
-        });
-    }
-
-    handleClick(toggle: boolean) {
-        this.setState({
-            isDetailed: toggle
         });
     }
 
