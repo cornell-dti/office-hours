@@ -18,6 +18,7 @@ class CalendarSessions extends React.Component {
                     location="Gates G11"
                     resolvedNum={5}
                     aheadNum={23}
+                    id={1}
                 />
                 <CalendarSessionCard
                     start={1485360000}
@@ -26,6 +27,7 @@ class CalendarSessions extends React.Component {
                     location="Gates G11"
                     resolvedNum={5}
                     aheadNum={23}
+                    id={2}
                 />
                 <CalendarSessionCard
                     start={1485360000}
@@ -34,6 +36,7 @@ class CalendarSessions extends React.Component {
                     location="Gates G11"
                     resolvedNum={5}
                     aheadNum={23}
+                    id={3}
                 />
             </div>
         );

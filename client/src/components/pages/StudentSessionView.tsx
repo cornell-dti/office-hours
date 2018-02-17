@@ -4,32 +4,14 @@ import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 import SessionPopularQuestionsContainer from '../includes/SessionPopularQuestionsContainer';
 import SessionJoinButton from '../includes/SessionJoinButton';
-import DetailedQuestionView from '../includes/DetailedQuestionView';
 
 class StudentSessionView extends React.Component {
-    state: {
-        isDetailed: boolean
-    };
-
-    constructor(props: {}) {
-        super(props);
-        this.handleClick = this.handleClick.bind(this);
-        this.state = {
-            isDetailed: false
-        };
-    }
-
-    handleClick(toggle: boolean) {
-        this.setState({
-            isDetailed: toggle
-        });
-    }
-
     render() {
         var popup = 'PopupInvisible';
-        if (this.state.isDetailed) {
-            popup = 'PopupVisible';
-        }
+        // Moved isDetailed flag to child component, so cannot lock background scroll this way
+        // if (this.state.isDetailed) { 
+        //     popup = 'PopupVisible';
+        // }
 
         return (
             <div className={'StudentSessionView ' + popup}>
@@ -41,19 +23,21 @@ class StudentSessionView extends React.Component {
                     time="10:00 AM - 11:00 AM"
                     location="G23 Gates Hall"
                 />
-                <SessionPopularQuestionsContainer
-                    handleClick={this.handleClick}
-                />
+                <SessionPopularQuestionsContainer />
                 <SessionQuestionsContainer
-                    handleClick={this.handleClick}
-                />
-                <DetailedQuestionView
-                    studentName="Edgar Stewart"
-                    studentQuestion="How do I start Assignment 3?"
-                    tags={['Assignment 1', 'Q4', 'Recursion', 'Conceptual']}
-                    group={['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada']}
-                    isDetailed={this.state.isDetailed}
-                    handleClick={this.handleClick}
+                    isDetailed={false}
+                    studentName={['Karun Singh', 'Shefali Agarwal', 'Horace He', 'Tiffany Wang', 'Joyelle Gilbert']}
+                    studentQuestion={['How do I start Assignment 1?', 'How do I start Assignment 2?',
+                        'How do I start Assignment 3?', 'How do I start Assignment 4?', 'How do I start Assignment 5?']}
+                    tags={[['Assignment 1', 'Q4', 'Recursion', 'Conceptual'],
+                    ['Assignment 2', 'Q4', 'Recursion', 'Conceptual'],
+                    ['Assignment 3', 'Q4', 'Recursion', 'Conceptual'],
+                    ['Assignment 4', 'Q4', 'Recursion', 'Conceptual'],
+                    ['Assignment 5', 'Q4', 'Recursion', 'Conceptual']]}
+                    group={[['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada'],
+                    ['Joshua Tran', 'Bill Oliver', 'Patrick Gross'],
+                    ['Joshua Tran', 'Bill Oliver'], ['Joshua Tran'], []]}
+                    numberOfPeople={[10, 20, 30, 40, 50]}
                 />
                 <SessionJoinButton />
             </div>
