@@ -25,32 +25,36 @@ class QuestionHeader extends React.Component {
         secondaryBooleanList: new Array(this.props.secondaryTags.length).fill(false)
       }
       this.handleClick = this.handleClick.bind(this);
-      this.handleSelected = this.handleSelected.bind(this);
+      this.handlePrimarySelected = this.handlePrimarySelected.bind(this);
+      this.handleSecondarySelected = this.handleSecondarySelected.bind(this);
     }
 
     public handleClick(event: any) : void {
       this.setState({ question: event.target.value });
     }
 
-    public handleSelected(index: number) : void {
+    public handlePrimarySelected(index: number) : void {
       var temp = this.state.primaryBooleanList;
-      temp[0] = !temp[0];
+      temp[index] = !temp[index];
       this.setState({ primaryBooleanList: temp});
+    }
+
+    public handleSecondarySelected(index: number) : void {
+      var temp = this.state.secondaryBooleanList;
+      temp[index] = !temp[index];
+      this.setState({ secondaryBooleanList: temp});
     }
 
     render() {
         var primaryTagsList = this.props.primaryTags.map(
           (tag, index) => {
-            return <SelectedTags index={index} tag={tag} ifSelected={this.state.primaryBooleanList[index]} onClick={this.handleSelected}/>
+            return <SelectedTags index={index} tag={tag} ifSelected={this.state.primaryBooleanList[index]} onClick={this.handlePrimarySelected}/>
           }
         );
 
         var secondaryTagsList = this.props.secondaryTags.map(
           (tag, index) => {
-            if (this.state.secondaryBooleanList[index]) {
-              return <p className="selectedTag" key={index} onClick={this.handleSelected}>{tag}</p>
-            }
-            else return <p key={index} onClick={this.handleSelected}>{tag}</p>;
+            return <SelectedTags index={index} tag={tag} ifSelected={this.state.secondaryBooleanList[index]} onClick={this.handleSecondarySelected}/>
           }
         );
 

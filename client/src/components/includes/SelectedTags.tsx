@@ -20,8 +20,8 @@ class SelectedTags extends React.Component {
   }
 
   render() {
-      if (this.props.ifSelected) return <p className="selectedTag" onClick={this._onClick}>this.props.tag</p>;
-      else return <p onClick={this._onClick}>this.props.tag</p>;
+      if (this.props.ifSelected) return <p className="selectedTag" onClick={this._onClick}>{this.props.tag}</p>;
+      else return <p onClick={this._onClick}>{this.props.tag}</p>;
   }
 }
 
