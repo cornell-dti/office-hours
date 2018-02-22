@@ -29,18 +29,22 @@ const btnStyle: {} = {
 
 class LoginButton extends React.Component {
 
+    props: {
+        domain: string
+    };
+
     render() {
         return (
             <a
                 style={btnStyle}
                 href={
                     'https://accounts.google.com/o/oauth2/auth?' +
-                    'redirect_uri=http://localhost:3001/auth' +
+                    'redirect_uri=' + this.props.domain + '/auth' +
                     '&response_type=code' +
                     '&scope=email profile openid' +
                     '&openid.realm=' +
                     '&client_id=694487664328-79nbgbrnm3n3sa3nfsdfm5jigkr69svp.apps.googleusercontent.com' +
-                    '&ss_domain=http://localhost:3000' +
+                    // '&ss_domain=http://localhost:3000' +
                     '&prompt=' +
                     '&fetch_basic_profile=true' +
                     '&hd=cornell.edu' +
