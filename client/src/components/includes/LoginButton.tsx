@@ -35,12 +35,12 @@ class LoginButton extends React.Component {
                 style={btnStyle}
                 href={
                     'https://accounts.google.com/o/oauth2/auth?' +
-                    'redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fauth' +
+                    'redirect_uri=http://localhost:3001/auth' +
                     '&response_type=code' +
-                    '&scope=email%20profile%20openid' +
+                    '&scope=email profile openid' +
                     '&openid.realm=' +
                     '&client_id=694487664328-79nbgbrnm3n3sa3nfsdfm5jigkr69svp.apps.googleusercontent.com' +
-                    '&ss_domain=http%3A%2F%2Flocalhost%3A3000' +
+                    '&ss_domain=http://localhost:3000' +
                     '&prompt=' +
                     '&fetch_basic_profile=true' +
                     '&hd=cornell.edu' +
