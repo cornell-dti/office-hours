@@ -1,5 +1,4 @@
 import * as React from 'react';
-import GoogleLogin from 'react-google-login';
 const googleLogo = require('../../media/googleLogo.svg');
 const QMeLogo = require('../../media/QMeLogo.svg');
 const QLogo = require('../../media/QLogo.svg');
@@ -30,6 +29,9 @@ const btnStyle: {} = {
   fontSize: '16px',
   outline: 'none',
   transition: 'all 0.17s cubic-bezier(0.4, 0.0, 0.2, 1)',
+  display: 'block',
+  margin: 'auto',
+  height: '40px'
 };
 
 const QMeLogoStyle: {} = {
@@ -59,14 +61,6 @@ const QLogoStyle: {} = {
 };
 
 class LoginView extends React.Component {
-  printResponse = (response: ReactGoogleLogin.GoogleLoginResponseOffline) => {
-    console.log(response.code);
-  }
-
-  printError = (response: { error: string }) => {
-    console.log(response.error);
-  }
-
   render() {
     return (
       <div className="LoginView">
@@ -75,18 +69,25 @@ class LoginView extends React.Component {
           Queue up for office hours remotely. <br /> Skip the wait line
         </section>
         <p style={hintText} >Use your Cornell NetID to login</p>
-        <GoogleLogin
-          hostedDomain="cornell.edu"
-          clientId="694487664328-79nbgbrnm3n3sa3nfsdfm5jigkr69svp.apps.googleusercontent.com"
-          onSuccess={this.printResponse}
-          onFailure={this.printError}
-          responseType="code"
+        <a
           style={btnStyle}
-          prompt=""
+          href={
+            'https://accounts.google.com/o/oauth2/auth?' +
+            'redirect_uri=http%3A%2F%2Flocalhost%3A3001%2Fauth' +
+            '&response_type=code' +
+            '&scope=email%20profile%20openid' +
+            '&openid.realm=' +
+            '&client_id=694487664328-79nbgbrnm3n3sa3nfsdfm5jigkr69svp.apps.googleusercontent.com' +
+            '&ss_domain=http%3A%2F%2Flocalhost%3A3000' +
+            '&prompt=' +
+            '&fetch_basic_profile=true' +
+            '&hd=cornell.edu' +
+            '&gsiwebsdk=2'
+          }
         >
           <img src={googleLogo} style={googleLogoStyle} />
           <span style={textStyle}>Sign in with Google</span>
-        </GoogleLogin>
+        </a>
         <img src={QLogo} style={QLogoStyle} />
       </div >
     );
