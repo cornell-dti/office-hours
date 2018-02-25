@@ -1,20 +1,31 @@
 import * as React from 'react';
-import '../../styles/StudentSessionView.css';
+import '../../styles/TASessionView.css';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
-import SessionPopularQuestionsContainer from '../includes/SessionPopularQuestionsContainer';
-import SessionJoinButton from '../includes/SessionJoinButton';
 
-class StudentSessionView extends React.Component {
+class TASessionView extends React.Component {
+
+    state: {
+        sortPopularity: boolean
+    };
+
+    constructor(props: {}) {
+        super(props);
+        this.state = {
+            sortPopularity: false
+        };
+    }
+
+    setSortPop(pop: boolean) {
+        this.setState({
+            sortPopularity: pop
+        });
+    }
+
     render() {
-        var popup = 'PopupInvisible';
-        // Moved isDetailed flag to child component, so cannot lock background scroll this way
-        // if (this.state.isDetailed) { 
-        //     popup = 'PopupVisible';
-        // }
-
+        const chron = !this.state.sortPopularity;
         return (
-            <div className={'StudentSessionView ' + popup}>
+            <div className="StudentSessionView">
                 <SessionInformationHeader
                     courseName="CS 3110"
                     taName="Michael Clarkson"
@@ -23,7 +34,20 @@ class StudentSessionView extends React.Component {
                     time="10:00 AM - 11:00 AM"
                     location="G23 Gates Hall"
                 />
-                <SessionPopularQuestionsContainer />
+                <div className="SessionSorter">
+                    <div
+                        className={'SessionSorterItem left ' + (chron ? 'selected' : '')}
+                        onClick={() => this.setSortPop(false)}
+                    >
+                        Chronological
+                    </div>
+                    <div
+                        className={'SessionSorterItem ' + (!chron ? 'selected' : '')}
+                        onClick={() => this.setSortPop(true)}
+                    >
+                        Popularity
+                    </div>
+                </div>
                 <SessionQuestionsContainer
                     isDetailed={false}
                     studentName={['Karun Singh', 'Shefali Agarwal', 'Horace He', 'Tiffany Wang', 'Joyelle Gilbert']}
@@ -39,10 +63,9 @@ class StudentSessionView extends React.Component {
                     ['Joshua Tran', 'Bill Oliver'], ['Joshua Tran'], []]}
                     numberOfPeople={[10, 20, 30, 40, 50]}
                 />
-                <SessionJoinButton />
             </div>
         );
     }
 }
 
-export default StudentSessionView;
+export default TASessionView;
