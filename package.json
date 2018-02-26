@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+<<<<<<< HEAD
     "start": "concurrently \"cd server && yarn start\" \"cd client && yarn run deploy\"",
+=======
+    "start": "concurrently \"cd server && yarn start\" \"cd ../client && yarn run deploy\"",
+>>>>>>> 1921225dc6b54b4dd961613dd820949441c0b8e1
     "build": "yarn start",
     "postinstall": "cd client && yarn install --production=false && cd ../server && yarn install --production=false"
   },
