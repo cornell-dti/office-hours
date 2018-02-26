@@ -2,7 +2,7 @@ import * as React from 'react';
 import Moment from 'react-moment';
 import { Redirect } from 'react-router';
 
-class CalendarSessions extends React.Component {
+class CalendarSessionCard extends React.Component {
 
     state: {
         redirect: boolean;
@@ -106,4 +106,4 @@ class CalendarSessions extends React.Component {
     }
 }
 
-export default CalendarSessions;
+export default CalendarSessionCard;

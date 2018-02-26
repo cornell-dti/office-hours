@@ -7,7 +7,7 @@ class SessionPopularQuestionsContainer extends React.Component {
         return (
             <div className="SessionPopularQuestionsContainer">
                 <div className="SessionPopularQuestionsContainer-Title">
-                    Popular questions <a className="SessionPopularQuestionsContainer-Collapse">(collapse)</a>
+                    Popular questions
                 </div>
                 <div className="SessionPopularQuestionsContainer-List">
                     <SessionPopularQuestion

@@ -2,23 +2,21 @@
     font-family: 'arial', sans-serif;
     font-size: 12px;
     color: white;
+    background:#9b9b9b;
 }
 
 .header { /* Above button */
-    background-color: #9b9b9b; 
     padding: 20px;
 }
 
 .CloseButton {
+    background: inherit;
     float: right;
-    /* background: url(https://www.iconsdb.com/icons/preview/white/x-mark-xxl.png); */
-    background-color: #9b9b9b;
     color: white;
-    font-weight: bold;
     border: none;
-    background-size: 20px;
     height: 20px;  
     width: 20px;
+    font-size:20px;
 }
 
 .CourseInfo { /* Course number and TA */
@@ -54,16 +52,4 @@
 
 .OfficeHourLocation {
     line-height: 30px;
-}
-
-.JoinButton { /* Join button */
-    background-color: #9b9b9b;
-    color: white;
-    border: none;
-    padding: 10px 20%;
-    display: inline-block;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 25px;
-    margin-top: 10px;
 }
