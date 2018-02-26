@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/DetailedQuestionView.css';
 
 class DetailedQuestionView extends React.Component {
     props: {

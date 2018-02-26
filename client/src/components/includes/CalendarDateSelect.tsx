@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/CalendarDateSelect.css';
 import CalendarDateItem from './CalendarDateItem';
 
 class CalendarDateSelect extends React.Component {
@@ -58,9 +57,9 @@ class CalendarDateSelect extends React.Component {
         }
 
         return (
-            <div className="CalendarDateSelect" >
-                <div className="CalendarDateSelect-Month">{this.props.monthYear}</div>
-                <div className="CalendarDateSelect-Dates">
+            <div className="CalendarDateSelect">
+                <div className="month">{this.props.monthYear}</div>
+                <div className="dates">
                     {dateItems}
                 </div>
             </div>

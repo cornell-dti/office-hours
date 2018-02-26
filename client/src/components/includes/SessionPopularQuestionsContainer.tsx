@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/SessionPopularQuestionsContainer.css';
 import SessionPopularQuestion from './SessionPopularQuestion';
 
 class SessionPopularQuestionsContainer extends React.Component {

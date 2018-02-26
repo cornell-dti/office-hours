@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/CalendarView.css';
 import CalendarHeader from '../includes/CalendarHeader';
 import CalendarDateSelect from '../includes/CalendarDateSelect';
 import CalendarSessions from '../includes/CalendarSessions';

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/SessionPopularQuestion.css';
 
 class SessionPopularQuestion extends React.Component {
 

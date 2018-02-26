@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cd server && npm start",
-    "build": "npm start",
-    "postinstall": "cd server && npm install && npm install --dev"
+    "start": "concurrently \"cd server && yarn start\" \"cd client && yarn run deploy\"",
+    "build": "yarn start",
+    "postinstall": "cd client && yarn install --production=false && cd ../server && yarn install --production=false"
   },
   "repository": {
     "type": "git",

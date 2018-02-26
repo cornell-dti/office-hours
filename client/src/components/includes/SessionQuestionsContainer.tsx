@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/SessionQuestionsContainer.css';
 import SessionQuestionsComponent from './SessionQuestionsComponent';
 import DetailedQuestionView from './DetailedQuestionView';
 

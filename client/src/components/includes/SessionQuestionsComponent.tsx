@@ -1,6 +1,4 @@
 import * as React from 'react';
-import '../../styles/SessionQuestionsComponent.css';
-
 const peopleLogoImage = require('../../media/peopleLogo.jpg');
 
 class SessionQuestionsComponent extends React.Component {

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/TASessionView.css';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 
@@ -25,7 +24,7 @@ class TASessionView extends React.Component {
     render() {
         const chron = !this.state.sortPopularity;
         return (
-            <div className="StudentSessionView">
+            <div className="TASessionView">
                 <SessionInformationHeader
                     courseName="CS 3110"
                     taName="Michael Clarkson"

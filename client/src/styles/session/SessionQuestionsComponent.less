@@ -1,0 +1,82 @@
+.QueueQuestions {
+    background-color: #f2f2f2;
+    border: 1px solid #f2f2f2;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px #b3b3b3;
+    cursor: pointer;
+    display: block;
+    height: 100px;
+    margin: 2px auto 0;
+    position: relative;
+    text-align: center;
+    width: 95%;
+
+    &:not(:nth-of-type(2)) {
+        opacity: 0.6;
+    }
+
+    .BottomBar {
+        display: block;
+        margin: 32px 10px;
+
+        img {
+            display: block;
+            float: left;
+        }
+
+        p {
+            font-size: 14px;
+            display: block;
+            float: left;
+            margin: 0;
+            margin-left: 5px;
+        }
+
+        .Button {
+            border: 1px solid #4d4d4d;
+            background-color: #4d4d4d;
+            color: white;
+            padding: 4px 15px;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+
+        .peopleLogo {
+            width: 15px;
+            height: 15px;
+        }
+    }
+
+    .Name, .Question {
+        font-size: 13px;
+        text-align: left;
+        padding-left: 10px;
+        padding-bottom: 5px;
+        margin: 0em;
+        color: #595959;
+    }
+
+    .Name {
+        font-weight: bold;
+        font-size: 14px;
+        padding-top: 6px;
+    }
+
+    .Tags {
+        padding: 5px 0px 0px 8px;
+
+        p {
+            display: block;
+            float: left;
+            font-size: 11px;
+            color: white;
+            border: 1px  solid #999999;
+            background-color: #999999;
+            padding: 1px 7px;
+            margin: 3px;
+            border-radius: 10px;
+        }
+    }
+
+}

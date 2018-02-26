@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/SessionInformationHeader.css';
 import { Redirect } from 'react-router';
 
 class SessionInformationHeader extends React.Component {
