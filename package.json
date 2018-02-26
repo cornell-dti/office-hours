@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cd client && npm run deploy && cd ../server && npm start",
     "build": "npm start",
-    "postinstall": "cd server && npm install && npm install --dev"
+    "postinstall": "cd server && yarn install --prod=true"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/cornell-dti/office-hours#readme",
   "dependencies": {
-    "concurrently": "^3.5.0"
+    "concurrently": "^3.5.0",
+    "less": "^3.0.1"
   }
 }
