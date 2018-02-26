@@ -18,16 +18,15 @@
   },
   "scripts": {
     "build": "react-scripts-ts build",
-    "build-less": "lessc --clean-css src/styles/index.less src/styles/styles.min.css",
+    "build-less": "cd src/styles && less-watch-compiler ./ ./ index.less",
     "eject": "react-scripts-ts eject",
     "start": "npm run build-less && react-scripts-ts start",
     "test": "react-scripts-ts test --env=jsdom"
   },
-  "proxy": "http://localhost:3001",
   "devDependencies": {
     "@types/jest": "^21.1.6",
     "@types/node": "^8.0.51",
-    "@types/react": "^16.0.22",
+    "@types/react": "16.0.35",
     "@types/react-dom": "^16.0.3"
   }
 }

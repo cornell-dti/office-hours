@@ -5,7 +5,7 @@
   "main": "lib/index",
   "types": "lib/index",
   "scripts": {
-    "start": "npm run build:live",
+    "start": "ts-node index.ts",
     "build:live": "nodemon -e ts,js,sql,gql --exec ./node_modules/.bin/ts-node -- ./index.ts"
   },
   "repository": {
@@ -26,11 +26,12 @@
     "graphql-subscriptions": "^0.5.4",
     "graphql-tools": "^2.8.0",
     "nodemon": "^1.12.1",
+    "postgraphql": "^3.5.6",
     "subscriptions-transport-ws": "^0.9.1",
     "tslint": "^5.8.0"
   },
   "devDependencies": {
-    "@types/node": "^8.0.53",
+    "@types/node": "^8.5.9",
     "concurrently": "^3.5.0",
     "ts-node": "^3.3.0",
     "typescript": "^2.6.1"

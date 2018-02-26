@@ -5,7 +5,12 @@
 Run
 ```
 cd ./client && npm install
-cd ../server && npm install
+cd ./server && npm install
+```
+Before running the client, install `less` globally on your machine by running:
+```
+npm install -g less
+npm install -g less-watch-compiler
 ```
 
 Now, you should be able to run `npm start` and get everything running!
