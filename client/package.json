@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "@types/react-router-dom": "^4.2.2",
-    "clean-css": "^4.1.9",
     "concurrently": "^3.5.1",
     "less": "^3.0.1",
     "less-plugin-clean-css": "^1.5.1",

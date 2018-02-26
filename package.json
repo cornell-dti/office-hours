@@ -19,8 +19,6 @@
   },
   "homepage": "https://github.com/cornell-dti/office-hours#readme",
   "dependencies": {
-    "clean-css": "^4.1.9",
-    "concurrently": "^3.5.0",
-    "less": "^3.0.1"
+    "concurrently": "^3.5.0"
   }
 }
