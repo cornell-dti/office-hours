@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cd client && yarn run deploy && cd ../server && yarn start",
     "build": "yarn start",
-    "postinstall": "cd server && yarn install --prod=true"
+    "postinstall": "cd client && yarn install --prod=true && cd ../server && yarn install --prod=true"
   },
   "repository": {
     "type": "git",
