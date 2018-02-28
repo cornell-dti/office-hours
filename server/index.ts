@@ -24,18 +24,18 @@ passport.use(new GoogleStrategy(
     },
     function (accessToken, refreshToken, profile, cb) {
         console.log(profile.id)
-        return(cb(null, profile))
+        return (cb(null, profile))
         // User.findOrCreate({ googleId: profile.id }, function (err, user) {
         //     return cb(err, user);
         // });
     }
 ))
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
     done(null, user)
 })
 
-passport.deserializeUser(function(user, done) {
+passport.deserializeUser(function (user, done) {
     done(null, user)
 })
 
