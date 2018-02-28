@@ -8,13 +8,18 @@ class QuestionHeader extends React.Component {
         courseName: string,
         profName: string,
         primaryTags: string[],
-        secondaryTags: string[]
+        secondaryTags: string[],
+        topicTags: string[]
     };
 
     state: {
         question: string,
         primaryBooleanList: boolean[],
-        secondaryBooleanList: boolean[]
+        secondaryBooleanList: boolean[],
+        topicBooleanList: boolean[],
+        showSecondaryTags: boolean,
+        showTopicTags: boolean,
+        numberSecondaryTags: number
     }
 
     constructor(props: {}) {
@@ -22,11 +27,16 @@ class QuestionHeader extends React.Component {
       this.state = {
         question: "What do you want to ask about?",
         primaryBooleanList: new Array(this.props.primaryTags.length).fill(false),
-        secondaryBooleanList: new Array(this.props.secondaryTags.length).fill(false)
+        secondaryBooleanList: new Array(this.props.secondaryTags.length).fill(false),
+        topicBooleanList: new Array(this.props.topicTags.length).fill(false),
+        showSecondaryTags: false,
+        showTopicTags: false,
+        numberSecondaryTags: 0
       }
       this.handleClick = this.handleClick.bind(this);
       this.handlePrimarySelected = this.handlePrimarySelected.bind(this);
       this.handleSecondarySelected = this.handleSecondarySelected.bind(this);
+      this.handleTopicSelected = this.handleTopicSelected.bind(this);
     }
 
     public handleClick(event: any) : void {
@@ -34,15 +44,44 @@ class QuestionHeader extends React.Component {
     }
 
     public handlePrimarySelected(index: number) : void {
-      var temp = this.state.primaryBooleanList;
-      temp[index] = !temp[index];
+        var temp = this.state.primaryBooleanList;
+        if (!temp[index]) {
+          temp = new Array(this.props.primaryTags.length).fill(false);
+          temp[index] = !temp[index];
+          this.setState({ showSecondaryTags: true});
+          if (this.state.numberSecondaryTags > 0) {
+            this.setState({ showTopicTags: true});
+          }
+          else {
+            this.setState({ showTopicTags: false});
+          }
+        }
+        else {
+          temp[index] = !temp[index];
+          this.setState({ showSecondaryTags: false});
+          this.setState({ showTopicTags: false });
+        }
       this.setState({ primaryBooleanList: temp});
     }
 
     public handleSecondarySelected(index: number) : void {
       var temp = this.state.secondaryBooleanList;
       temp[index] = !temp[index];
+      if (temp[index]) this.state.numberSecondaryTags++;
+      else this.state.numberSecondaryTags--;
       this.setState({ secondaryBooleanList: temp});
+      if (this.state.numberSecondaryTags > 0) {
+        this.setState({ showTopicTags: true});
+      }
+      else {
+        this.setState({ showTopicTags: false});
+      }
+    }
+
+    public handleTopicSelected(index: number) : void {
+      var temp = this.state.topicBooleanList;
+      temp[index] = !temp[index];
+      this.setState({ topicBooleanList: temp});
     }
 
     render() {
@@ -55,6 +94,12 @@ class QuestionHeader extends React.Component {
         var secondaryTagsList = this.props.secondaryTags.map(
           (tag, index) => {
             return <SelectedTags index={index} tag={tag} ifSelected={this.state.secondaryBooleanList[index]} onClick={this.handleSecondarySelected}/>
+          }
+        );
+
+        var topicTagsList = this.props.topicTags.map(
+          (tag, index) => {
+            return <SelectedTags index={index} tag={tag} ifSelected={this.state.topicBooleanList[index]} onClick={this.handleTopicSelected}/>
           }
         );
 
@@ -76,9 +121,17 @@ class QuestionHeader extends React.Component {
               </div>
               <div className="tagsMiniContainer">
                 <p>Secondary Tags</p>
-                <div className="QuestionTags">
+                { this.state.showSecondaryTags ?
+                  <div className="QuestionTags">
                     {secondaryTagsList}
-                </div>
+                  </div> : null }
+              </div>
+              <div className="tagsMiniContainer">
+                <p>Topic Tags</p>
+                { this.state.showTopicTags ?
+                  <div className="QuestionTags">
+                    {topicTagsList}
+                  </div> : null }
               </div>
               <div className="tagsMiniContainer2">
                 <p>Question</p>

@@ -49,7 +49,7 @@
 .QuestionTags {
     padding: 5px 0px 0px 8px;
     float: left;
-    padding-bottom: 50px;
+    padding-bottom: 30px;
 }
 
 .QuestionTags p {
@@ -72,6 +72,7 @@
 
 .tagsMiniContainer2 {
   white-space: pre-line;
+  padding-top: 70px;
   padding-bottom: 100px;
 }
 
