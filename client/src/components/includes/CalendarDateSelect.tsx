@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/CalendarDateSelect.css';
 import CalendarDateItem from './CalendarDateItem';
 
 class CalendarDateSelect extends React.Component {
@@ -9,7 +8,8 @@ class CalendarDateSelect extends React.Component {
         dateList: number[],
         hasOHList: boolean[],
         monthYear: string,
-        handleClick: Function
+        handleClick: Function,
+        selectedIndex: number
     };
 
     state: {
@@ -19,7 +19,7 @@ class CalendarDateSelect extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = {
-            active: 0   // index of currently selected date
+            active: this.props.selectedIndex   // index of currently selected date
         };
         this.handleClick = this.handleClick.bind(this);
     }
@@ -57,9 +57,9 @@ class CalendarDateSelect extends React.Component {
         }
 
         return (
-            <div className="CalendarDateSelect" >
-                <div className="CalendarDateSelect-Month">{this.props.monthYear}</div>
-                <div className="CalendarDateSelect-Dates">
+            <div className="CalendarDateSelect">
+                <div className="month">{this.props.monthYear}</div>
+                <div className="dates">
                     {dateItems}
                 </div>
             </div>

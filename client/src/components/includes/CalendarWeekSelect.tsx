@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/CalendarWeekSelect.css';
 
 class CalendarWeekSelect extends React.Component {
     props: {

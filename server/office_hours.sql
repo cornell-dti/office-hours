@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.1
--- Dumped by pg_dump version 10.1
+-- Dumped from database version 10.2
+-- Dumped by pg_dump version 10.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -15,14 +15,14 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -35,7 +35,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: course_users; Type: TABLE; Schema: public; Owner: postgres
+-- Name: course_users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE course_users (
@@ -45,10 +45,8 @@ CREATE TABLE course_users (
 );
 
 
-ALTER TABLE course_users OWNER TO postgres;
-
 --
--- Name: courses; Type: TABLE; Schema: public; Owner: postgres
+-- Name: courses; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE courses (
@@ -59,10 +57,8 @@ CREATE TABLE courses (
 );
 
 
-ALTER TABLE courses OWNER TO postgres;
-
 --
--- Name: courses_course_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: courses_course_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE courses_course_id_seq
@@ -74,17 +70,15 @@ CREATE SEQUENCE courses_course_id_seq
     CACHE 1;
 
 
-ALTER TABLE courses_course_id_seq OWNER TO postgres;
-
 --
--- Name: courses_course_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: courses_course_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE courses_course_id_seq OWNED BY courses.course_id;
 
 
 --
--- Name: question_followers; Type: TABLE; Schema: public; Owner: postgres
+-- Name: question_followers; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE question_followers (
@@ -93,10 +87,8 @@ CREATE TABLE question_followers (
 );
 
 
-ALTER TABLE question_followers OWNER TO postgres;
-
 --
--- Name: question_tags; Type: TABLE; Schema: public; Owner: postgres
+-- Name: question_tags; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE question_tags (
@@ -105,10 +97,8 @@ CREATE TABLE question_tags (
 );
 
 
-ALTER TABLE question_tags OWNER TO postgres;
-
 --
--- Name: questions; Type: TABLE; Schema: public; Owner: postgres
+-- Name: questions; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE questions (
@@ -122,10 +112,8 @@ CREATE TABLE questions (
 );
 
 
-ALTER TABLE questions OWNER TO postgres;
-
 --
--- Name: questions_question_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: questions_question_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE questions_question_id_seq
@@ -137,17 +125,15 @@ CREATE SEQUENCE questions_question_id_seq
     CACHE 1;
 
 
-ALTER TABLE questions_question_id_seq OWNER TO postgres;
-
 --
--- Name: questions_question_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: questions_question_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE questions_question_id_seq OWNED BY questions.question_id;
 
 
 --
--- Name: session_tas; Type: TABLE; Schema: public; Owner: postgres
+-- Name: session_tas; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE session_tas (
@@ -156,10 +142,8 @@ CREATE TABLE session_tas (
 );
 
 
-ALTER TABLE session_tas OWNER TO postgres;
-
 --
--- Name: sessions; Type: TABLE; Schema: public; Owner: postgres
+-- Name: sessions; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE sessions (
@@ -171,10 +155,8 @@ CREATE TABLE sessions (
 );
 
 
-ALTER TABLE sessions OWNER TO postgres;
-
 --
--- Name: sessions_session_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: sessions_session_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE sessions_session_id_seq
@@ -186,17 +168,15 @@ CREATE SEQUENCE sessions_session_id_seq
     CACHE 1;
 
 
-ALTER TABLE sessions_session_id_seq OWNER TO postgres;
-
 --
--- Name: sessions_session_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: sessions_session_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE sessions_session_id_seq OWNED BY sessions.session_id;
 
 
 --
--- Name: tags; Type: TABLE; Schema: public; Owner: postgres
+-- Name: tags; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE tags (
@@ -206,10 +186,8 @@ CREATE TABLE tags (
 );
 
 
-ALTER TABLE tags OWNER TO postgres;
-
 --
--- Name: tags_tag_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: tags_tag_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE tags_tag_id_seq
@@ -221,17 +199,15 @@ CREATE SEQUENCE tags_tag_id_seq
     CACHE 1;
 
 
-ALTER TABLE tags_tag_id_seq OWNER TO postgres;
-
 --
--- Name: tags_tag_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: tags_tag_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE tags_tag_id_seq OWNED BY tags.tag_id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: postgres
+-- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE users (
@@ -240,38 +216,36 @@ CREATE TABLE users (
 );
 
 
-ALTER TABLE users OWNER TO postgres;
-
 --
--- Name: courses course_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: courses course_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY courses ALTER COLUMN course_id SET DEFAULT nextval('courses_course_id_seq'::regclass);
 
 
 --
--- Name: questions question_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: questions question_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY questions ALTER COLUMN question_id SET DEFAULT nextval('questions_question_id_seq'::regclass);
 
 
 --
--- Name: sessions session_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: sessions session_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY sessions ALTER COLUMN session_id SET DEFAULT nextval('sessions_session_id_seq'::regclass);
 
 
 --
--- Name: tags tag_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: tags tag_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tags ALTER COLUMN tag_id SET DEFAULT nextval('tags_tag_id_seq'::regclass);
 
 
 --
--- Data for Name: course_users; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: course_users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY course_users (course_id, user_id, status) FROM stdin;
@@ -279,7 +253,7 @@ COPY course_users (course_id, user_id, status) FROM stdin;
 
 
 --
--- Data for Name: courses; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: courses; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY courses (course_id, code, name, semester) FROM stdin;
@@ -287,7 +261,7 @@ COPY courses (course_id, code, name, semester) FROM stdin;
 
 
 --
--- Data for Name: question_followers; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: question_followers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY question_followers (question_id, follower) FROM stdin;
@@ -295,7 +269,7 @@ COPY question_followers (question_id, follower) FROM stdin;
 
 
 --
--- Data for Name: question_tags; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: question_tags; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY question_tags (tag_id, question_id) FROM stdin;
@@ -303,15 +277,18 @@ COPY question_tags (tag_id, question_id) FROM stdin;
 
 
 --
--- Data for Name: questions; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: questions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY questions (question_id, value, time_entered, status, time_resolved, session_id, student) FROM stdin;
+1	hey	\N	\N	\N	\N	\N
+2	hey	\N	\N	\N	\N	\N
+3	hey	\N	\N	\N	\N	\N
 \.
 
 
 --
--- Data for Name: session_tas; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: session_tas; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY session_tas (session_id, ta) FROM stdin;
@@ -319,7 +296,7 @@ COPY session_tas (session_id, ta) FROM stdin;
 
 
 --
--- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY sessions (session_id, start_time, end_time, location, course_id) FROM stdin;
@@ -327,7 +304,7 @@ COPY sessions (session_id, start_time, end_time, location, course_id) FROM stdin
 
 
 --
--- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY tags (tag_id, value, course_id) FROM stdin;
@@ -335,7 +312,7 @@ COPY tags (tag_id, value, course_id) FROM stdin;
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY users (netid, name) FROM stdin;
@@ -343,35 +320,35 @@ COPY users (netid, name) FROM stdin;
 
 
 --
--- Name: courses_course_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: courses_course_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('courses_course_id_seq', 1, false);
 
 
 --
--- Name: questions_question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: questions_question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('questions_question_id_seq', 1, false);
+SELECT pg_catalog.setval('questions_question_id_seq', 3, true);
 
 
 --
--- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('sessions_session_id_seq', 1, false);
 
 
 --
--- Name: tags_tag_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: tags_tag_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('tags_tag_id_seq', 1, false);
 
 
 --
--- Name: course_users course_users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: course_users course_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY course_users
@@ -379,7 +356,7 @@ ALTER TABLE ONLY course_users
 
 
 --
--- Name: courses courses_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: courses courses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY courses
@@ -387,7 +364,7 @@ ALTER TABLE ONLY courses
 
 
 --
--- Name: question_followers question_followers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: question_followers question_followers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY question_followers
@@ -395,7 +372,7 @@ ALTER TABLE ONLY question_followers
 
 
 --
--- Name: question_tags question_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: question_tags question_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY question_tags
@@ -403,7 +380,7 @@ ALTER TABLE ONLY question_tags
 
 
 --
--- Name: questions questions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: questions questions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY questions
@@ -411,7 +388,7 @@ ALTER TABLE ONLY questions
 
 
 --
--- Name: session_tas session_tas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: session_tas session_tas_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY session_tas
@@ -419,7 +396,7 @@ ALTER TABLE ONLY session_tas
 
 
 --
--- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY sessions
@@ -427,7 +404,7 @@ ALTER TABLE ONLY sessions
 
 
 --
--- Name: tags tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: tags tags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tags
@@ -435,7 +412,7 @@ ALTER TABLE ONLY tags
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY users
@@ -443,7 +420,7 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: course_users course_users_course_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: course_users course_users_course_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY course_users
@@ -451,7 +428,7 @@ ALTER TABLE ONLY course_users
 
 
 --
--- Name: course_users course_users_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: course_users course_users_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY course_users
@@ -459,7 +436,7 @@ ALTER TABLE ONLY course_users
 
 
 --
--- Name: question_followers question_followers_follower_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: question_followers question_followers_follower_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY question_followers
@@ -467,7 +444,7 @@ ALTER TABLE ONLY question_followers
 
 
 --
--- Name: question_followers question_followers_question_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: question_followers question_followers_question_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY question_followers
@@ -475,7 +452,7 @@ ALTER TABLE ONLY question_followers
 
 
 --
--- Name: question_tags question_tags_question_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: question_tags question_tags_question_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY question_tags
@@ -483,7 +460,7 @@ ALTER TABLE ONLY question_tags
 
 
 --
--- Name: question_tags question_tags_tag_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: question_tags question_tags_tag_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY question_tags
@@ -491,7 +468,7 @@ ALTER TABLE ONLY question_tags
 
 
 --
--- Name: questions questions_session_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: questions questions_session_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY questions
@@ -499,7 +476,7 @@ ALTER TABLE ONLY questions
 
 
 --
--- Name: questions questions_student_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: questions questions_student_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY questions
@@ -507,7 +484,7 @@ ALTER TABLE ONLY questions
 
 
 --
--- Name: session_tas session_tas_session_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: session_tas session_tas_session_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY session_tas
@@ -515,7 +492,7 @@ ALTER TABLE ONLY session_tas
 
 
 --
--- Name: session_tas session_tas_ta_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: session_tas session_tas_ta_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY session_tas
@@ -523,7 +500,7 @@ ALTER TABLE ONLY session_tas
 
 
 --
--- Name: sessions sessions_course_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: sessions sessions_course_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY sessions
@@ -531,7 +508,7 @@ ALTER TABLE ONLY sessions
 
 
 --
--- Name: tags tags_course_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: tags tags_course_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY tags

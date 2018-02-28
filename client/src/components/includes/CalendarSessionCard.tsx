@@ -2,7 +2,7 @@ import * as React from 'react';
 import Moment from 'react-moment';
 import { Redirect } from 'react-router';
 
-class CalendarSessions extends React.Component {
+class CalendarSessionCard extends React.Component {
 
     state: {
         redirect: boolean;
@@ -15,6 +15,7 @@ class CalendarSessions extends React.Component {
         location: string,
         resolvedNum: number,
         aheadNum: number
+        id: number
     };
 
     constructor(props: {}) {
@@ -49,7 +50,7 @@ class CalendarSessions extends React.Component {
         }
 
         if (this.state.redirect) {
-            return <Redirect push={true} to="/session" />;
+            return <Redirect push={true} to={'/session/' + this.props.id} />;
         }
 
         return (
@@ -105,4 +106,4 @@ class CalendarSessions extends React.Component {
     }
 }
 
-export default CalendarSessions;
+export default CalendarSessionCard;

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/CalendarSessions.css';
 import CalendarSessionCard from './CalendarSessionCard';
 
 class CalendarSessions extends React.Component {
@@ -18,6 +17,7 @@ class CalendarSessions extends React.Component {
                     location="Gates G11"
                     resolvedNum={5}
                     aheadNum={23}
+                    id={1}
                 />
                 <CalendarSessionCard
                     start={1485360000}
@@ -26,6 +26,7 @@ class CalendarSessions extends React.Component {
                     location="Gates G11"
                     resolvedNum={5}
                     aheadNum={23}
+                    id={2}
                 />
                 <CalendarSessionCard
                     start={1485360000}
@@ -34,6 +35,7 @@ class CalendarSessions extends React.Component {
                     location="Gates G11"
                     resolvedNum={5}
                     aheadNum={23}
+                    id={3}
                 />
             </div>
         );

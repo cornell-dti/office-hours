@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/CalendarView.css';
 import CalendarHeader from '../includes/CalendarHeader';
 import CalendarDateSelect from '../includes/CalendarDateSelect';
 import CalendarSessions from '../includes/CalendarSessions';
@@ -17,10 +16,14 @@ class CalendarView extends React.Component {
 
     constructor(props: {}) {
         super(props);
+        var week = new Date();
+        week.setHours(0, 0, 0, 0);
+        week.setTime(week.getTime() -
+            (week.getDay() - 1) /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
         var today = new Date();
         today.setHours(0, 0, 0, 0);
         this.state = {
-            selectedWeekEpoch: today.getTime(),
+            selectedWeekEpoch: week.getTime(),
             selectedDateEpoch: today.getTime()
         };
         this.handleWeekClick = this.handleWeekClick.bind(this);
@@ -70,15 +73,12 @@ class CalendarView extends React.Component {
     }
 
     render() {
-        var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         var hasOHs = [false, false, false, false, false, false, false];
         var dates = [];
 
         var now = new Date(this.state.selectedWeekEpoch);
-        var monthYear = this.monthNames[now.getMonth()] + ' ' + now.getFullYear();
-
-        var todayIndex = now.getDay();
-        days = days.slice(todayIndex).concat(days.splice(0, todayIndex));
+        var monthYear = this.monthNames[now.getMonth()].substring(0, 3) + ', ' + now.getFullYear();
 
         for (var i = 0; i < 7; i++) {
             dates.push(now.getDate());
@@ -89,6 +89,9 @@ class CalendarView extends React.Component {
         const nextWeekText = this.getWeekText(this.state.selectedWeekEpoch +
             7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
 
+        var selectedDate = new Date(this.state.selectedDateEpoch);
+        const todayIndex = ((selectedDate.getDay() - 1) + 7) % 7;
+
         return (
             <div className="CalendarView">
                 <CalendarHeader currentCourse="CS 3110" />
@@ -98,6 +101,7 @@ class CalendarView extends React.Component {
                     hasOHList={hasOHs}
                     monthYear={monthYear}
                     handleClick={this.handleDateClick}
+                    selectedIndex={todayIndex}
                 />
                 <CalendarSessions todayEpoch={this.state.selectedDateEpoch} />
                 <CalendarWeekSelect

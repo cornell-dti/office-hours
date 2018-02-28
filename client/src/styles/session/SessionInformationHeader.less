@@ -1,0 +1,55 @@
+.SessionInformationHeader {
+    color: white;
+    font-size: 12px;
+    font-family: 'arial', sans-serif;
+    background:#9b9b9b;
+
+    .CloseButton {
+        background: inherit;
+        float: right;
+        color: white;
+        border: none;
+        height: 20px;  
+        width: 20px;
+        font-size:20px;
+    }
+
+    .header { /* Above button */
+        padding: 20px;
+
+        .CourseInfo { /* Course number and TA */
+            font-size: 20px;
+            text-align: left;
+            padding-bottom: 20px;
+        }
+
+        .CourseNum { /* Course number */
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .OfficeHourInfo, .QueueInfo {
+            display: inline-block;
+        }
+
+        .OfficeHourInfo { /* Office hour info */
+            line-height: 5px;
+            text-align: right;
+            width: 50%;
+
+            .OfficeHourLocation {
+                line-height: 30px;
+            }
+        }
+
+        .QueueInfo { /* Queue info */
+            text-align: left;
+            width: 50%;
+        }
+
+        .QueueTotal {
+            font-size: 36px;
+            font-weight: bold;
+        }
+    }
+}
