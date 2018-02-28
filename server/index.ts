@@ -3,10 +3,12 @@ import postgraphql from 'postgraphql';
 import * as passport from 'passport';
 
 const app = express();
+app.use(passport.initialize());
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
+
 
 // app.use(postgraphql('postgres://localhost:5432', { graphiql: true }));
 
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 passport.use(new GoogleStrategy(
     {
@@ -16,28 +18,34 @@ passport.use(new GoogleStrategy(
         userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
     },
     function (accessToken, refreshToken, profile, cb) {
-        console.log(profile.emails)
+        console.log(profile.id)
+        return(cb(null, profile))
         // User.findOrCreate({ googleId: profile.id }, function (err, user) {
         //     return cb(err, user);
         // });
     }
 ))
 
+passport.serializeUser(function(user, done) {
+    done(null, user)
+})
+
+passport.deserializeUser(function(user, done) {
+    done(null, user)
+})
+
 app.get('/auth',
     passport.authenticate('google', {
         scope: ['email'],
         // @ts-ignore: Hosted domain is used by the Google strategy, but not allowed in passport's types
         hostedDomain: "cornell.edu"
-    }),
-    function (req, res) {
-        res.send("Hello World")
-    }
+    })
 )
 
 app.get('/auth/callback',
+    passport.authenticate('google', { failureRedirect: 'http://localhost:3000/login' }),
     function (req, res) {
         res.redirect('http://localhost:3000/session');
-        // res.send("authenticated")
     }
 )
 
