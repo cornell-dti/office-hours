@@ -43,7 +43,7 @@ class LoginView extends React.Component {
           Queue up for office hours remotely. <br /> Skip the wait line
         </section>
         <p style={hintText} >Use your Cornell NetID to login</p>
-        <LoginButton domain="http://localhost:3001" />
+        <LoginButton URL="http://localhost:3001/auth" />
         <img src={QLogo} style={QLogoStyle} />
       </div >
     );

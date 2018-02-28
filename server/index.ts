@@ -16,8 +16,7 @@ passport.use(new GoogleStrategy(
         userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
     },
     function (accessToken, refreshToken, profile, cb) {
-        console.log(profile)
-        console.log("Logging")
+        console.log(profile.emails)
         // User.findOrCreate({ googleId: profile.id }, function (err, user) {
         //     return cb(err, user);
         // });
@@ -27,17 +26,18 @@ passport.use(new GoogleStrategy(
 app.get('/auth',
     passport.authenticate('google', {
         scope: ['email'],
+        // @ts-ignore: Hosted domain is used by the Google strategy, but not allowed in passport's types
         hostedDomain: "cornell.edu"
     }),
     function (req, res) {
-        res.send(req.query.code)
+        res.send("Hello World")
     }
 )
 
 app.get('/auth/callback',
-    passport.authenticate('google', { failureRedirect: '/login' }),
     function (req, res) {
-        res.send(req.query.code)
+        res.redirect('http://localhost:3000/session');
+        // res.send("authenticated")
     }
 )
 
