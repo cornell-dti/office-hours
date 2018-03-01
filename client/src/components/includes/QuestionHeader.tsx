@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/QuestionHeader.css';
 import SelectedTags from '../includes/SelectedTags';
 
 class QuestionHeader extends React.Component {
