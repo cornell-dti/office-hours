@@ -3,24 +3,37 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/react-router-dom": "^4.2.2",
+    "concurrently": "^3.5.1",
+    "less": "^3.0.1",
+    "less-plugin-clean-css": "^1.5.1",
+    "less-watch-compiler": "^1.11.0",
+    "moment": "^2.20.0",
+    "moment-timezone": "^0.5.14",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
+    "react-moment": "^0.6.8",
+    "react-router-dom": "^4.2.2",
     "react-scripts-ts": "2.8.0",
     "semantic-ui-css": "^2.2.12",
     "semantic-ui-react": "^0.76.0",
     "tslint-react": "^3.2.0"
   },
   "scripts": {
-    "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "build-less": "cd src/styles && less-watch-compiler ./ ./ index.less",
+    "deploy": "lessc --clean-css src/styles/index.less src/styles/index.min.css && yarn run build",
+    "eject": "react-scripts-ts eject",
+    "start": "concurrently \"yarn run build-less\" \"react-scripts-ts start\"",
+    "test": "react-scripts-ts test --env=jsdom"
   },
-  "proxy": "http://localhost:3001",
   "devDependencies": {
     "@types/jest": "^21.1.6",
     "@types/node": "^8.0.51",
-    "@types/react": "^16.0.22",
-    "@types/react-dom": "^16.0.3"
+    "@types/react-dom": "^16.0.3",
+    "@types/react": "16.0.35"
+  },
+  "resolutions": {
+    "@types/react": "16.0.35"
   }
 }

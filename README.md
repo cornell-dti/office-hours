@@ -4,11 +4,28 @@
 ## Setup
 Run
 ```
-cd ./client && npm install
-cd ../server && npm install
+cd ./client && yarn install
+cd ./server && yarn install
 ```
 
-Now, you should be able to run `npm start` and get everything running!
+To run the client:
+```
+cd client
+yarn start
+```
+
+To create a static production build of the client that the frontend can serve:
+```
+cd client
+yarn run deploy
+```
+
+To run the server:
+```
+cd server
+yarn start
+```
+This will serve the latest production build of the client available to it.
 
 # GraphQL goodies
 In what one might say is the entire reason we're using GraphQL, it's very easy to use the API. Once you have the graphQL server running, go to `localhost:3001/graphiql`.

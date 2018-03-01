@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/SessionPopularQuestionsContainer.css';
 import SessionPopularQuestion from './SessionPopularQuestion';
 
 class SessionPopularQuestionsContainer extends React.Component {
@@ -7,12 +6,21 @@ class SessionPopularQuestionsContainer extends React.Component {
         return (
             <div className="SessionPopularQuestionsContainer">
                 <div className="SessionPopularQuestionsContainer-Title">
-                    Popular questions <a className="SessionPopularQuestionsContainer-Collapse">(collapse)</a>
+                    Popular questions
                 </div>
                 <div className="SessionPopularQuestionsContainer-List">
-                    <SessionPopularQuestion question="This is a sample question" numPeople={6} />
-                    <SessionPopularQuestion question="This is another question" numPeople={3} />
-                    <SessionPopularQuestion question="And one more question" numPeople={2} />
+                    <SessionPopularQuestion
+                        question="This is a sample question"
+                        numPeople={6}
+                    />
+                    <SessionPopularQuestion
+                        question="This is another question"
+                        numPeople={3}
+                    />
+                    <SessionPopularQuestion
+                        question="And one more question"
+                        numPeople={2}
+                    />
                 </div>
             </div>
         );

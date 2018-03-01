@@ -1,6 +1,4 @@
 import * as React from 'react';
-import '../../styles/SessionQuestionsComponent.css';
-
 const peopleLogoImage = require('../../media/peopleLogo.jpg');
 
 class SessionQuestionsComponent extends React.Component {
@@ -9,20 +7,42 @@ class SessionQuestionsComponent extends React.Component {
     //     this.state = {name: this.props.name };
     // }
 
+    props: {
+        handleClick: Function,
+        studentName: string,
+        studentQuestion: string,
+        tags: string[],
+        group: string[],
+        numberOfPeople: number,
+        index: number
+    };
+
+    constructor(props: {}) {
+        super(props);
+        this.toggleDetails = this.toggleDetails.bind(this);
+    }
+
+    toggleDetails(prev: boolean) {
+        this.props.handleClick(prev, this.props.index);
+    }
+
     render() {
+        var tagsList = this.props.tags.map(
+            (tag, index) => {
+                return <p key={index}>{tag}</p>;
+            }
+        );
+
         return (
-            <div className="QueueQuestions">
-                <p className="Name">Karun Singh</p>
-                <p className="Question">How do implement recursion on question 4?</p>
+            <div className="QueueQuestions" onClick={() => this.toggleDetails(true)}>
+                <p className="Name">{this.props.studentName}</p>
+                <p className="Question">{this.props.studentQuestion}</p>
                 <div className="Tags">
-                    <p>Assignment 1</p>
-                    <p>Q4</p>
-                    <p>Recursion</p>
-                    <p>Conceptual</p>
+                    {tagsList}
                 </div>
                 <div className="BottomBar">
                     <img src={peopleLogoImage} className={'peopleLogo'} alt="3 people logo" />
-                    <p className="NumberOfPeople">2</p>
+                    <p className="NumberOfPeople">{this.props.numberOfPeople}</p>
                     <button className="Button">Resolve</button>
                 </div>
             </div>

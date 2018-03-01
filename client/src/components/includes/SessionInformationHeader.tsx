@@ -1,26 +1,47 @@
 import * as React from 'react';
-import '../../styles/SessionInformationHeader.css';
+import { Redirect } from 'react-router';
 
 class SessionInformationHeader extends React.Component {
+    state: {
+        redirect: boolean;
+    };
+
     props: {
         courseName: string,
-        profName: string,
+        taName: string,
         queueSize: number,
         date: string,
         time: string,
         location: string
     };
 
+    constructor(props: {}) {
+        super(props);
+        this.state = {
+            redirect: false
+        };
+    }
+
+    handleOnClick = () => {
+        this.setState({
+            redirect: true
+        });
+    }
+
     render() {
+        if (this.state.redirect) {
+            return <Redirect push={true} to="/calendar" />;
+        }
+
         return (
             <div className="SessionInformationHeader">
                 <div className="header">
-                    <button className="CloseButton" type="submit">
+                    <button className="CloseButton" type="submit" onClick={this.handleOnClick}>
                         X
                     </button>
                     <div className="CourseInfo">
                         <span className="CourseNum">{this.props.courseName}  </span>
-                        {this.props.profName}
+                        {this.props.taName}
                     </div>
                     <div>
                         <div className="QueueInfo">
@@ -40,9 +61,6 @@ class SessionInformationHeader extends React.Component {
                         </div>
                     </div>
                 </div>
-                <button className="JoinButton" type="submit">
-                    Join Queue
-                </button>
             </div>
         );
     }
