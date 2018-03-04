@@ -2,7 +2,6 @@
 # yarn lockfile v1
 
 
-<<<<<<< HEAD
 "@types/async@2.0.47":
   version "2.0.47"
   resolved "https://registry.yarnpkg.com/@types/async/-/async-2.0.47.tgz#f49ba1dd1f189486beb6e1d070a850f6ab4bd521"
@@ -11,8 +10,6 @@
   version "0.12.4"
   resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.12.4.tgz#d43bb55d45c6de0178bbd11dd59d04fd42138d94"
 
-=======
->>>>>>> master
 "@types/history@*":
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.6.2.tgz#12cfaba693ba20f114ed5765467ff25fdf67ddb0"
@@ -21,11 +18,6 @@
   version "21.1.10"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-21.1.10.tgz#dcacb5217ddf997a090cc822bba219b4b2fd7984"
 
-"@types/node@*":
-  version "9.4.6"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.6.tgz#d8176d864ee48753d053783e4e463aec86b8d82e"
-
-<<<<<<< HEAD
 "@types/lodash.flowright@^3.5.3":
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/@types/lodash.flowright/-/lodash.flowright-3.5.3.tgz#60f8abe70c6656b945afaea1bee7d5297499197b"
@@ -36,14 +28,13 @@
   version "4.14.102"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.102.tgz#586a3e22385fc79b07cef9c5a1c8a5387986fbc8"
 
-"@types/node@*", "@types/node@^8.0.51":
-  version "8.0.51"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.51.tgz#b31d716fb8d58eeb95c068a039b9b6292817d5fb"
-=======
+"@types/node@*":
+  version "9.4.6"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.6.tgz#d8176d864ee48753d053783e4e463aec86b8d82e"
+
 "@types/node@^8.0.51":
   version "8.9.4"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.9.4.tgz#dfd327582a06c114eb6e0441fa3d6fab35edad48"
->>>>>>> master
 
 "@types/react-dom@^16.0.3":
   version "16.0.4"
@@ -53,39 +44,23 @@
     "@types/react" "*"
 
 "@types/react-router-dom@^4.2.2":
-<<<<<<< HEAD
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/@types/react-router-dom/-/react-router-dom-4.2.3.tgz#06e0b67ff536adc0681dffdbe592ae91fb85887d"
-=======
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/@types/react-router-dom/-/react-router-dom-4.2.4.tgz#02c43274129ffe0ac42b348f7c8c4a9a4e127c8a"
->>>>>>> master
   dependencies:
     "@types/history" "*"
     "@types/react" "*"
     "@types/react-router" "*"
 
 "@types/react-router@*":
-<<<<<<< HEAD
-  version "4.0.21"
-  resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-4.0.21.tgz#d6c7ea3b45dba02eb8f869629f3b7d7b6e9a7938"
-=======
   version "4.0.22"
   resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-4.0.22.tgz#2b97336eddfdf5886973539539b8ce7037cf629b"
->>>>>>> master
   dependencies:
     "@types/history" "*"
     "@types/react" "*"
 
-<<<<<<< HEAD
-"@types/react@*", "@types/react@^16.0.22":
-  version "16.0.22"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.22.tgz#19ad106e124aceebd2b4d430a278d55413ee8759"
-=======
 "@types/react@*", "@types/react@16.0.35":
   version "16.0.35"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.35.tgz#7ce8a83cad9690fd965551fc513217a74fc9e079"
->>>>>>> master
 
 "@types/zen-observable@0.5.3", "@types/zen-observable@^0.5.3":
   version "0.5.3"
@@ -2275,7 +2250,10 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
 
-<<<<<<< HEAD
+"graceful-readlink@>= 1.0.0":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
+
 graphql-anywhere@^4.1.5:
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/graphql-anywhere/-/graphql-anywhere-4.1.5.tgz#552ccd27b79a13a899022e20f658a2c2cb75e251"
@@ -2291,11 +2269,6 @@ graphql@^0.13.0:
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.13.0.tgz#d1b44a282279a9ce0a6ec1037329332f4c1079b6"
   dependencies:
     iterall "1.1.x"
-=======
-"graceful-readlink@>= 1.0.0":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
->>>>>>> master
 
 growly@^1.3.0:
   version "1.3.0"
@@ -2444,10 +2417,6 @@ hoek@2.x.x:
 hoek@4.x.x:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-4.2.1.tgz#9634502aa12c445dd5a7c5734b572bb8738aacbb"
-
-hoist-non-react-statics@^2.3.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.0.tgz#d2ca2dfc19c5a91c5a6615ce8e564ef0347e2a40"
 
 hoist-non-react-statics@^2.2.0, hoist-non-react-statics@^2.3.0:
   version "2.3.1"
@@ -2672,13 +2641,8 @@ interpret@^1.0.0:
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.1.0.tgz#7ed1b1410c6a0e0f78cf95d3b8440c63f78b8614"
 
 invariant@^2.2.1, invariant@^2.2.2:
-<<<<<<< HEAD
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.2.tgz#9e1f56ac0acdb6bf303306f338be3b204ae60360"
-=======
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.3.tgz#1a827dfde7dcbd7c323f0ca826be8fa7c5e9d688"
->>>>>>> master
   dependencies:
     loose-envify "^1.0.0"
 
@@ -4517,11 +4481,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-<<<<<<< HEAD
 prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.8, prop-types@^15.6.0:
-=======
-prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.6.0:
->>>>>>> master
   version "15.6.0"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.0.tgz#ceaf083022fc46b4a35f69e13ef75aed0d639856"
   dependencies:
