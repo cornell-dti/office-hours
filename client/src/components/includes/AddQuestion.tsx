@@ -104,7 +104,6 @@ class AddQuestion extends React.Component {
 
         return (
           <div className="AddQuestion">
-            Add Your Question
             <div className="header">
               <div className="QuestionCourseInfo">
                   <span className="QuestionCourseNum">{this.props.courseName}</span>
