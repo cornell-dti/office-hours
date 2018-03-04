@@ -1,7 +1,7 @@
 import * as React from 'react';
 import SelectedTags from '../includes/SelectedTags';
 
-class QuestionHeader extends React.Component {
+class AddQuestion extends React.Component {
 
     props: {
         courseName: string,
@@ -103,7 +103,7 @@ class QuestionHeader extends React.Component {
         );
 
         return (
-          <div className="QuestionHeader">
+          <div className="AddQuestion">
             Add Your Question
             <div className="header">
               <div className="QuestionCourseInfo">
@@ -146,4 +146,4 @@ class QuestionHeader extends React.Component {
     }
 }
 
-export default QuestionHeader;
+export default AddQuestion;

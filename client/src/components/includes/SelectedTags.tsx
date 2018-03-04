@@ -1,5 +1,5 @@
 import * as React from 'react';
-import '../../styles/QuestionHeader.css';
+import '../../styles/AddQuestion.css';
 
 class SelectedTags extends React.Component {
 
