@@ -1,112 +1,119 @@
+@text-color: #888888;
+@time-color: #696969;
+@border-color: #bfbfbf;
+@interior-color: #e6e6e6;
+@button-color: #454545;
+@red: #f67d7d;
+@green: #70d59d;
+
 .CalendarSessionCard {
-    font-size: 12px;
-    margin: 20px;
+    font-size: 11px;
+    padding-top: 20px;
+    margin: 20px 0px;
     overflow: hidden;
+    display: flex;
+    cursor: pointer;
+    color: @text-color;
+    background-color: white;
 
-    .CalendarInfo {
-        .CalendarCard {
-            background-color: #f5f5f5;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 20px;
-            padding-bottom: 15px;
+    > * {
+        margin: 0px 10px;
+    }
 
-            .CalendarAheadInfo, .CalendarFinishedInfo {
-                overflow: hidden;
-                align-content: center;
-                padding: 0 15px;
-            }
+    .TimeInfo {
+        display: inline-block;
+        color: @time-color;
+    }
 
-            .CalendarAheadInfo {
-                border-left: 2px solid #9b9b9b;
-                float: right;
-            }
-
-            .CalendarLowerInfo, .CalendarUpperInfo {
-                overflow: hidden;
-                padding: 8px 10px 0;
-            }
-
-            .CalendarLowerInfo {
-                .CalendarLocation {
-                    color: #747474;
-                    float: left;
-                }
-
-                .CalendarQueueInfo {
-                    padding-right: 40px;
-                    float: right;
-
-                    .CalendarFinishedInfo {
-                        float: left;
-                    }
-
-                    .CalendarQueueNumber {
-                        font-size: 17px;
-                    }
-
-                    .CalendarQueueText {
-                        color: #747474;
-                        font-size: 9px;
-                    }
-                }
-            }
-
-            .CalendarOpenButton {
-                background-color: #f5f5f5;
-                border: 0;
-                float: right;
-                font-size: 20px;
-                padding: 0;
-            }
-
-
-            .CalendarTa {
-                float: left;
-                font-size: 14px;
-                font-weight: bold;
-            }
+    .Indicator {
+        .Circle {
+            border: solid 1.5px white;
+            border-radius: 14px;
+            height: 14px;
+            width: 14px;
+            box-shadow: 0px 0px 7px grey;
         }
-
-        .CalendarTimeInfo {
-            color: #9b9b9b;
-            font-weight: bold;
-            padding-bottom: 15px;
-            text-align: left;
-        }
-
-        .SessionDivider { /* Length based on OH length? */
-            border: solid 1px #c3c3c3;
-            float: left;
-            height: 92px;
-            margin-left: 6px; /* Currently is manually centered with the dot */
+        
+        .Line {
             width: 2px;
+            height:100%;
+            margin: auto;
+        }
+
+        &.live * > {
+            background-color: @red;
+        }
+
+        &.open * > {
+            background-color: @green;
+        }
+
+        &.closed {
+            .Circle {
+                background-color: @interior-color;
+                border-color: @border-color;
+                box-shadow: none;
+            }
+            .Line {
+                background-color: white;
+                color: @border-color;
+                border-left: dashed;
+            }
         }
     }
-
-    .SessionIndicator {
-        border: solid 1px #9b9b9b;
-        border-radius: 14px;
-        float: left;
-        height: 14px;
-        margin-top: 3px;
-        margin-bottom: 15px;
-        width: 14px;
-
-        &.live {
-            background-color: #ff6767;
-        }
-
-        &.open{
-            background-color: rgb(20, 167, 20);
-        }
-    }
-
-    .CalendarTimeInfo {
-        color: #9b9b9b;
-        font-weight: bold;
-        margin-left: 20px;
+    
+    .CalendarCard {
+        flex-grow: 1;
+        border-radius: 5px;
         padding-bottom: 15px;
         text-align: left;
+
+        .TA {
+            color: black;
+            font-size: 14px;
+            font-weight: bold;
+
+            .IndicatorDesc {
+                margin-left: 10px;
+                text-transform: uppercase;
+                font-size: 12px;
+                font-weight: normal;
+                color: white;
+                padding: 0px 6px;
+                border-radius: 3px;
+
+                &.live {
+                    background-color: @red
+                }
+        
+                &.open {
+                    background-color: @green;
+                }
+        
+                &.closed {
+                    display: none;
+                }
+            }
+        }
+
+        .Queue {
+            .Ahead {
+                .AheadNum {
+                    margin-right: 8px;
+                    color: #ff6767;
+                }
+            }
+        }
+
+        .TimeDesc {
+            color: dodgerblue;
+        }
+    }    
+
+    .OpenButton {
+        color: @button-color;
+        font-size: 30px;
+        margin: auto;
+        padding-bottom: 10px;
     }
 }
