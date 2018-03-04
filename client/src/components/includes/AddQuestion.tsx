@@ -18,19 +18,23 @@ class AddQuestion extends React.Component {
         topicBooleanList: boolean[],
         showSecondaryTags: boolean,
         showTopicTags: boolean,
-        numberSecondaryTags: number
+        showQuestionInput: boolean,
+        numberSecondaryTags: number,
+        numberTopicTags: number
     }
 
     constructor(props: {}) {
       super(props);
       this.state = {
-        question: "What do you want to ask about?",
+        question: "Write what you want to ask about ...",
         primaryBooleanList: new Array(this.props.primaryTags.length).fill(false),
         secondaryBooleanList: new Array(this.props.secondaryTags.length).fill(false),
         topicBooleanList: new Array(this.props.topicTags.length).fill(false),
         showSecondaryTags: false,
         showTopicTags: false,
-        numberSecondaryTags: 0
+        showQuestionInput: false,
+        numberSecondaryTags: 0,
+        numberTopicTags: 0
       }
       this.handleClick = this.handleClick.bind(this);
       this.handlePrimarySelected = this.handlePrimarySelected.bind(this);
@@ -80,7 +84,15 @@ class AddQuestion extends React.Component {
     public handleTopicSelected(index: number) : void {
       var temp = this.state.topicBooleanList;
       temp[index] = !temp[index];
+      if (temp[index]) this.state.numberTopicTags++;
+      else this.state.numberTopicTags--;
       this.setState({ topicBooleanList: temp});
+      if (this.state.numberTopicTags > 0) {
+        this.setState({ showQuestionInput: true});
+      }
+      else {
+        this.setState({ showQuestionInput: false});
+      }
     }
 
     render() {
@@ -118,26 +130,30 @@ class AddQuestion extends React.Component {
                 </div>
               </div>
               <div className="tagsMiniContainer">
+                <hr/>
                 <p>Secondary Tags</p>
                 { this.state.showSecondaryTags ?
                   <div className="QuestionTags">
                     {secondaryTagsList}
-                  </div> : null }
+                  </div> : <p className="placeHolder">Select Primary Tag first</p> }
               </div>
               <div className="tagsMiniContainer">
+                <hr/>
                 <p>Topic Tags</p>
                 { this.state.showTopicTags ?
                   <div className="QuestionTags">
                     {topicTagsList}
-                  </div> : null }
+                  </div> : <p className="placeHolder">Select Secondary Tag first</p> }
               </div>
-              <div className="tagsMiniContainer2">
+              <div className="tagsMiniContainer">
+                <hr/>
                 <p>Question</p>
-                <input className="QuestionInput"
-                  type="text"
-                  value={this.state.question}
-                  onChange={this.handleClick}>
-                </input>
+                { this.state.showQuestionInput ?
+                  <input className="QuestionInput"
+                    type="text"
+                    value={this.state.question}
+                    onChange={this.handleClick}>
+                  </input> : <p className="placeHolder">First Finish Selecting Tags ...</p> }
               </div>
             </div>
           </div>

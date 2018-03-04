@@ -1,5 +1,4 @@
 import * as React from 'react';
-import '../../styles/QuestionView.css';
 import AddQuestion from '../includes/AddQuestion';
 
 class QuestionView extends React.Component {
