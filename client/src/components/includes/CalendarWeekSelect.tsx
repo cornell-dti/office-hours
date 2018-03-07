@@ -2,8 +2,10 @@ import * as React from 'react';
 
 class CalendarWeekSelect extends React.Component {
     props: {
-        thisWeek: string,
+        thisWeekOld: string,
         nextWeek: string,
+        thisMonth: string,
+        thisWeek: string,
         handleClick: Function
     };
 
@@ -19,18 +21,20 @@ class CalendarWeekSelect extends React.Component {
     render() {
         return (
             <div className="CalendarWeekSelect">
-                <div className="CurrentWeek WeekControl" onClick={() => this._onClick(true)}>
-                    <div className="ThisWeek">
-                        This Week
+                <span className="LastWeek" onClick={() => this._onClick(true)}>
+                    <i className="angle left icon" />
+                </span>
+                <span className="CurrentWeek">
+                    <div className="Month">
+                        {this.props.thisMonth}
                     </div>
-                    {this.props.thisWeek}
-                </div>
-                <div className="NextWeek WeekControl" onClick={() => this._onClick(false)}>
-                    {this.props.nextWeek}
-                    <button className="NextButton">
-                        >
-                    </button>
-                </div>
+                    <div className="Days">
+                        {this.props.thisWeek}
+                    </div>
+                </span>
+                <span className="NextWeek" onClick={() => this._onClick(false)}>
+                    <i className="angle right icon" />
+                </span>
             </div>
         );
     }

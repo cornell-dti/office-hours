@@ -95,6 +95,13 @@ class CalendarView extends React.Component {
         return (
             <div className="CalendarView">
                 <CalendarHeader currentCourse="CS 3110" />
+                <CalendarWeekSelect
+                    thisWeekOld={thisWeekText}
+                    nextWeek={nextWeekText}
+                    thisMonth="November"
+                    thisWeek="10-16"
+                    handleClick={this.handleWeekClick}
+                />
                 <CalendarDateSelect
                     dayList={days}
                     dateList={dates}
@@ -104,11 +111,6 @@ class CalendarView extends React.Component {
                     selectedIndex={todayIndex}
                 />
                 <CalendarSessions todayEpoch={this.state.selectedDateEpoch} />
-                <CalendarWeekSelect
-                    thisWeek={thisWeekText}
-                    nextWeek={nextWeekText}
-                    handleClick={this.handleWeekClick}
-                />
             </div>
         );
     }

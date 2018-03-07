@@ -49,7 +49,7 @@ class CalendarSessionCard extends React.Component {
             var nowPlusOpen = new Date(nowDate.getTime() + openPeriod);
             if (startDate <= nowPlusOpen && nowPlusOpen <= endDate) {
                 status = 'open';
-                timeDesc = 'Queue just opened'
+                timeDesc = 'Queue just opened';
             }
         }
 
