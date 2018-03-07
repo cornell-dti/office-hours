@@ -94,14 +94,16 @@ class CalendarView extends React.Component {
 
         return (
             <div className="CalendarView">
-                <CalendarHeader currentCourse="CS 3110" />
-                <CalendarWeekSelect
-                    thisWeekOld={thisWeekText}
-                    nextWeek={nextWeekText}
-                    thisMonth="November"
-                    thisWeek="10-16"
-                    handleClick={this.handleWeekClick}
-                />
+                <div className="Header">
+                    <CalendarHeader currentCourse="CS 3110" />
+                    <CalendarWeekSelect
+                        thisWeekOld={thisWeekText}
+                        nextWeek={nextWeekText}
+                        thisMonth="November"
+                        thisWeek="10-16"
+                        handleClick={this.handleWeekClick}
+                    />
+                </div>
                 <CalendarDateSelect
                     dayList={days}
                     dateList={dates}
