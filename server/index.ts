@@ -27,11 +27,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-// app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
-//     graphiql: true,
-//     graphqlRoute: '/graphql',
-//     graphiqlRoute: '/graphiql'
-// }));
+app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
+    graphiql: true,
+    graphqlRoute: '/__gql/graphql',
+    graphiqlRoute: '/__gql/graphiql'
+}));
 
 passport.use(new GoogleStrategy(
     {
@@ -87,8 +87,10 @@ app.get('/__sess',
     }
 )
 
-app.use(express.static('../client/build'));
-app.use('*', express.static('../client/build/index.html'));
+app.use(express.static(path.resolve(__dirname, '../client/build')));
+app.get('*', function (req, res) {
+    res.sendFile(path.resolve(__dirname, '../client/build/index.html'));
+});
 
 app.listen(process.env.PORT || 3001, () => {
     console.log("Now listening on port " + (process.env.PORT || 3001));
