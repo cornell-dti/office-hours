@@ -1,19 +1,31 @@
 .AddQuestion {
 
+  hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+  }
+  
   .header { /* Above button */
-    background-color: #9b9b9b;
-    padding: 20px;
+    background-color: white;
+    padding: 0px 20px 0px 20px;
 
-    .QuestionCourseInfo { /* Course number and TA */
+    .QuestionStudentInfo {
       font-size: 20px;
       text-align: left;
-      padding: 10px 0px 5px 10px;
-      color: white;
 
-      .QuestionCourseNum { /* Course number */
+      img {
+        display: inline-block;
+        margin-right: 10px;
+      }
+
+      .studentName {
+        display: inline-block;
         font-size: 20px;
         font-weight: bold;
-        margin-right: 10px;
       }
     }
   }
@@ -29,10 +41,14 @@
     }
 
     .tagsMiniContainer {
-      padding-top: 25px;
+      padding-top: 20px;
       float: left;
       clear: both;
       width: 100%;
+
+      &.primaryContainer {
+        padding-top: 5px;
+      }
 
       hr {
         display: block;
@@ -75,8 +91,7 @@
         font-weight: normal;
         border: 0px;
         color: #b3b3b3;
-        width: 90%;
-        margin-left: 3%;
+        width: 95%;
         padding-left: 5px;
       }
     }

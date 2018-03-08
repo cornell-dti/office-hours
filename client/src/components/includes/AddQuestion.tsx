@@ -4,8 +4,8 @@ import SelectedTags from '../includes/SelectedTags';
 class AddQuestion extends React.Component {
 
     props: {
-        courseName: string,
-        profName: string,
+        studentName: string,
+        studentPicture: string,
         primaryTags: string[],
         secondaryTags: string[],
         topicTags: string[]
@@ -26,7 +26,7 @@ class AddQuestion extends React.Component {
     constructor(props: {}) {
       super(props);
       this.state = {
-        question: "Write what you want to ask about ...",
+        question: "",
         primaryBooleanList: new Array(this.props.primaryTags.length).fill(false),
         secondaryBooleanList: new Array(this.props.secondaryTags.length).fill(false),
         topicBooleanList: new Array(this.props.topicTags.length).fill(false),
@@ -116,14 +116,16 @@ class AddQuestion extends React.Component {
 
         return (
           <div className="AddQuestion">
+            <hr/>
             <div className="header">
-              <div className="QuestionCourseInfo">
-                  <span className="QuestionCourseNum">{this.props.courseName}</span>
-                  {this.props.profName}
+              <div className="QuestionStudentInfo">
+                  <img src={require(this.props.studentPicture)}/>
+                  <p className="studentName">{this.props.studentName}</p>
               </div>
             </div>
             <div className="tagsContainer">
-              <div className="tagsMiniContainer">
+              <div className="tagsMiniContainer primaryContainer">
+                <hr/>
                 <p>Primary Tags</p>
                 <div className="QuestionTags">
                     {primaryTagsList}
@@ -149,11 +151,11 @@ class AddQuestion extends React.Component {
                 <hr/>
                 <p>Question</p>
                 { this.state.showQuestionInput ?
-                  <input className="QuestionInput"
-                    type="text"
+                  <textarea className="QuestionInput"
                     value={this.state.question}
-                    onChange={this.handleClick}>
-                  </input> : <p className="placeHolder">First Finish Selecting Tags ...</p> }
+                    onChange={this.handleClick}
+                    placeholder="Write what you want to ask about ...">
+                  </textarea> : <p className="placeHolder">First Finish Selecting Tags ...</p> }
               </div>
             </div>
           </div>

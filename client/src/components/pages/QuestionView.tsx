@@ -5,11 +5,12 @@ class QuestionView extends React.Component {
     render() {
         return (
             <div className="QuestionView">
-                <AddQuestion courseName="CS 3110" profName="Michael Clarkson"
-                primaryTags={["Assignment 1", "Assignment 2", "Prelim 1 Feedback"]}
-                secondaryTags={["Q1", "Q2", "Q3", "Q4", "Q5", "Conceptual", "Clarification", "Recursion", "Conditional",
-                "Data", "Debugging"]}
-                topicTags={["Dogs", "Cats", "Rabbits"]}/>
+                <AddQuestion studentName="Sangwoo Kim" studentPicture="../../media/peopleLogo.jpg"
+                primaryTags={["Assignment", "Lecture", "Exam", "General"]}
+                secondaryTags={["Assignment 1", "Assignment 2", "Assignment 3", "Assignment 4", "Assignment 5",
+                "Assignment 6"]}
+                topicTags={["Causality", "Probability", "Inference", "Recursion", "Regression", "Classification",
+                "Nearest Neighbor", "Visualization"]}/>
             </div>
         );
     }
