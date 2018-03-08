@@ -37,7 +37,7 @@ passport.use(new GoogleStrategy(
     {
         clientID: "694487664328-79nbgbrnm3n3sa3nfsdfm5jigkr69svp.apps.googleusercontent.com",
         clientSecret: process.env.OH_GOOGLE_SECRET,
-        callbackURL: "/auth/callback",
+        callbackURL: "/__auth/callback",
         userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
     },
     function (accessToken, refreshToken, profile, cb) {
@@ -58,7 +58,7 @@ passport.deserializeUser(function (user, done) {
     done(null, user)
 })
 
-app.get('/auth',
+app.get('/__auth',
     passport.authenticate('google', {
         scope: ['email'],
         // @ts-ignore: Hosted domain is used by the Google strategy, but not allowed in passport's types
@@ -66,7 +66,7 @@ app.get('/auth',
     })
 )
 
-app.get('/auth/callback',
+app.get('/__auth/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
     function (req, res) {
         console.log("Callback:")
@@ -75,10 +75,9 @@ app.get('/auth/callback',
     }
 )
 
-app.get('/sess',
+app.get('/__sess',
     function (req, res) {
         console.log("####################")
-
         console.log("Session Test:")
         console.log(req.user)
         if (req.user == undefined) {
@@ -89,6 +88,7 @@ app.get('/sess',
 )
 
 app.use(express.static('../client/build'));
+app.use('*', express.static('../client/build/index.html'));
 
 app.listen(process.env.PORT || 3001, () => {
     console.log("Now listening on port " + (process.env.PORT || 3001));

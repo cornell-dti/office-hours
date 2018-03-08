@@ -12,7 +12,7 @@ class LoginView extends React.Component {
           Queue up for office hours remotely. <br /> Skip the wait line
         </section>
         <p className="hintText" >Use your Cornell NetID to login</p>
-        <LoginButton URL="/auth" />
+        <LoginButton URL="/__auth" />
         <img src={QLogo} className="QLogo" />
       </div >
     );
