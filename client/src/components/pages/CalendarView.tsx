@@ -43,6 +43,22 @@ class CalendarView extends React.Component {
         return weekText;
     }
 
+    getWeek(epoch: number): string {
+        var now = new Date(epoch);
+        var weekText = '';
+        weekText += now.getDate();
+        weekText += ' - ';
+        now.setTime(now.getTime() +
+            6 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+        weekText += now.getDate();
+        return weekText;
+    }
+
+    getMonth(epoch: number): string {
+        var now = new Date(epoch);
+        return this.monthNames[now.getMonth()];
+    }
+
     // newDateIndex is an index between 0 and 6 inclusive, representing which of the days
     // in the current week has been selected
     handleDateClick(newDateIndex: number) {
@@ -88,6 +104,8 @@ class CalendarView extends React.Component {
         const thisWeekText = this.getWeekText(this.state.selectedWeekEpoch);
         const nextWeekText = this.getWeekText(this.state.selectedWeekEpoch +
             7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+        const thisWeek = this.getWeek(this.state.selectedWeekEpoch);
+        const thisMonth = this.getMonth(this.state.selectedWeekEpoch);
 
         var selectedDate = new Date(this.state.selectedDateEpoch);
         const todayIndex = ((selectedDate.getDay() - 1) + 7) % 7;
@@ -99,8 +117,8 @@ class CalendarView extends React.Component {
                     <CalendarWeekSelect
                         thisWeekOld={thisWeekText}
                         nextWeek={nextWeekText}
-                        thisMonth="November"
-                        thisWeek="10-16"
+                        thisMonth={thisMonth}
+                        thisWeek={thisWeek}
                         handleClick={this.handleWeekClick}
                     />
                 </div>

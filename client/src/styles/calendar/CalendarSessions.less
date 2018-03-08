@@ -1,4 +1,5 @@
 @text-color: #888888;
+@num-color: #545454;
 @time-color: #696969;
 @border-color: #bfbfbf;
 @interior-color: #e6e6e6;
@@ -31,7 +32,6 @@
             border-radius: 14px;
             height: 14px;
             width: 14px;
-            box-shadow: 0px 0px 7px grey;
         }
         
         .Line {
@@ -42,10 +42,12 @@
 
         &.live * > {
             background-color: @red;
+            box-shadow: 0px 0px 7px @red;
         }
 
         &.open * > {
             background-color: @green;
+            box-shadow: 0px 0px 7px @green;
         }
 
         &.closed {
@@ -101,6 +103,14 @@
                 .AheadNum {
                     margin-right: 8px;
                     color: #ff6767;
+                    &.zero {
+                        color: @num-color;
+                    }
+                }
+            }
+            .Finished {
+                .FinishedNum {
+                    color: @num-color;
                 }
             }
         }

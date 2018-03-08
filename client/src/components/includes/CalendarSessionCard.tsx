@@ -57,6 +57,9 @@ class CalendarSessionCard extends React.Component {
             return <Redirect push={true} to={'/session/' + this.props.id} />;
         }
 
+        var zero = '';
+        if (this.props.aheadNum == 0) zero = 'zero';
+
         return (
             <div className="CalendarSessionCard" onClick={this.handleOnClick}>
                 <div className="TimeInfo">
@@ -94,7 +97,7 @@ class CalendarSessionCard extends React.Component {
                     <div className="Queue">
                         <span className="Ahead">
                             Ahead: &nbsp;
-                            <span className="AheadNum">{this.props.aheadNum}</span>
+                            <span className={'AheadNum ' + zero}>{this.props.aheadNum}</span>
                         </span>
                         <span className="Finished">
                             Finished: &nbsp;

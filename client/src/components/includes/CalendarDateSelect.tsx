@@ -58,7 +58,6 @@ class CalendarDateSelect extends React.Component {
 
         return (
             <div className="CalendarDateSelect">
-                <div className="month">{this.props.monthYear}</div>
                 <div className="dates">
                     {dateItems}
                 </div>
