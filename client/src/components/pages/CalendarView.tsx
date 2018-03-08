@@ -90,7 +90,7 @@ class CalendarView extends React.Component {
 
     render() {
         var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        var hasOHs = [false, false, false, false, false, false, false];
+        var hasOHs = [true, false, true, false, true, false, false];
         var dates = [];
 
         var now = new Date(this.state.selectedWeekEpoch);
