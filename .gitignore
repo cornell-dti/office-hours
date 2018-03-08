@@ -22,3 +22,5 @@ yarn-error.log*
 
 .idea
 .DS_Store
+
+client/src/styles/index.min.css

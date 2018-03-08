@@ -4,11 +4,26 @@ import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 import SessionPopularQuestionsContainer from '../includes/SessionPopularQuestionsContainer';
 import SessionJoinButton from '../includes/SessionJoinButton';
 
-class StudentSessionView extends React.Component {
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { ChildProps } from 'react-apollo';
+
+const QUERY = gql`{
+    allQuestions{
+        nodes {
+            value
+        }
+    }
+}`;
+
+const withData = graphql<Response>(QUERY, {});
+
+class StudentSessionView extends React.Component<ChildProps<{}, Response>, {}> {
     render() {
+        console.log(this.props.data);
         var popup = 'PopupInvisible';
         // Moved isDetailed flag to child component, so cannot lock background scroll this way
-        // if (this.state.isDetailed) { 
+        // if (this.state.isDetailed) {
         //     popup = 'PopupVisible';
         // }
 
@@ -44,4 +59,4 @@ class StudentSessionView extends React.Component {
     }
 }
 
-export default StudentSessionView;
+export default withData(StudentSessionView);
