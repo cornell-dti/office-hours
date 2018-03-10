@@ -30,6 +30,7 @@ class CalendarView extends React.Component {
         this.handleDateClick = this.handleDateClick.bind(this);
     }
 
+    // Currently unused function, might be useful in the future
     getWeekText(epoch: number): string {
         var now = new Date(epoch);
         var weekText = '';
@@ -41,6 +42,22 @@ class CalendarView extends React.Component {
         weekText += ' ';
         weekText += this.monthNames[now.getMonth()];
         return weekText;
+    }
+
+    getWeek(epoch: number): string {
+        var now = new Date(epoch);
+        var weekText = '';
+        weekText += now.getDate();
+        weekText += ' - ';
+        now.setTime(now.getTime() +
+            6 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+        weekText += now.getDate();
+        return weekText;
+    }
+
+    getMonth(epoch: number): string {
+        var now = new Date(epoch);
+        return this.monthNames[now.getMonth()];
     }
 
     // newDateIndex is an index between 0 and 6 inclusive, representing which of the days
@@ -74,41 +91,40 @@ class CalendarView extends React.Component {
 
     render() {
         var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        var hasOHs = [false, false, false, false, false, false, false];
+        var hasOHs = [true, false, true, false, true, false, false];
         var dates = [];
 
         var now = new Date(this.state.selectedWeekEpoch);
-        var monthYear = this.monthNames[now.getMonth()].substring(0, 3) + ', ' + now.getFullYear();
 
         for (var i = 0; i < 7; i++) {
             dates.push(now.getDate());
             now.setTime(now.getTime() + 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
         }
 
-        const thisWeekText = this.getWeekText(this.state.selectedWeekEpoch);
-        const nextWeekText = this.getWeekText(this.state.selectedWeekEpoch +
-            7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+        const thisWeek = this.getWeek(this.state.selectedWeekEpoch);
+        const thisMonth = this.getMonth(this.state.selectedWeekEpoch);
 
         var selectedDate = new Date(this.state.selectedDateEpoch);
         const todayIndex = ((selectedDate.getDay() - 1) + 7) % 7;
 
         return (
             <div className="CalendarView">
-                <CalendarHeader currentCourse="CS 3110" />
+                <div className="Header">
+                    <CalendarHeader currentCourse="CS 1380" />
+                    <CalendarWeekSelect
+                        thisMonth={thisMonth}
+                        thisWeek={thisWeek}
+                        handleClick={this.handleWeekClick}
+                    />
+                </div>
                 <CalendarDateSelect
                     dayList={days}
                     dateList={dates}
                     hasOHList={hasOHs}
-                    monthYear={monthYear}
                     handleClick={this.handleDateClick}
                     selectedIndex={todayIndex}
                 />
                 <CalendarSessions todayEpoch={this.state.selectedDateEpoch} />
-                <CalendarWeekSelect
-                    thisWeek={thisWeekText}
-                    nextWeek={nextWeekText}
-                    handleClick={this.handleWeekClick}
-                />
             </div>
         );
     }
