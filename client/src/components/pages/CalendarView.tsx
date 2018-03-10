@@ -30,6 +30,7 @@ class CalendarView extends React.Component {
         this.handleDateClick = this.handleDateClick.bind(this);
     }
 
+    // Currently unused function, might be useful in the future
     getWeekText(epoch: number): string {
         var now = new Date(epoch);
         var weekText = '';
@@ -94,16 +95,12 @@ class CalendarView extends React.Component {
         var dates = [];
 
         var now = new Date(this.state.selectedWeekEpoch);
-        var monthYear = this.monthNames[now.getMonth()].substring(0, 3) + ', ' + now.getFullYear();
 
         for (var i = 0; i < 7; i++) {
             dates.push(now.getDate());
             now.setTime(now.getTime() + 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
         }
 
-        const thisWeekText = this.getWeekText(this.state.selectedWeekEpoch);
-        const nextWeekText = this.getWeekText(this.state.selectedWeekEpoch +
-            7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
         const thisWeek = this.getWeek(this.state.selectedWeekEpoch);
         const thisMonth = this.getMonth(this.state.selectedWeekEpoch);
 
@@ -113,10 +110,8 @@ class CalendarView extends React.Component {
         return (
             <div className="CalendarView">
                 <div className="Header">
-                    <CalendarHeader currentCourse="CS 3110" />
+                    <CalendarHeader currentCourse="CS 1380" />
                     <CalendarWeekSelect
-                        thisWeekOld={thisWeekText}
-                        nextWeek={nextWeekText}
                         thisMonth={thisMonth}
                         thisWeek={thisWeek}
                         handleClick={this.handleWeekClick}
@@ -126,7 +121,6 @@ class CalendarView extends React.Component {
                     dayList={days}
                     dateList={dates}
                     hasOHList={hasOHs}
-                    monthYear={monthYear}
                     handleClick={this.handleDateClick}
                     selectedIndex={todayIndex}
                 />

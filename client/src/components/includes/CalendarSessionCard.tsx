@@ -37,13 +37,13 @@ class CalendarSessionCard extends React.Component {
         var timeDesc = 'Queue is not open yet';
         var startDate = new Date(this.props.start);
         var endDate = new Date(this.props.end);
-        var nowDate = new Date();
+        var nowDate = new Date(Math.round(Date.now() / 1000));
         // To test:
         // var nowDate = new Date(this.props.start); // live
         // var nowDate = new Date(this.props.start - 1); // open
         if (startDate <= nowDate && nowDate <= endDate) {
             status = 'live';
-            var diff = Math.abs(endDate.getTime() - startDate.getTime());
+            var diff = Math.abs(endDate.getTime() - nowDate.getTime());
             timeDesc = 'Ends in ' + Math.floor(diff / 60) + ' minutes';
         } else {
             var nowPlusOpen = new Date(nowDate.getTime() + openPeriod);
@@ -58,7 +58,7 @@ class CalendarSessionCard extends React.Component {
         }
 
         var zero = '';
-        if (this.props.aheadNum == 0) zero = 'zero';
+        if (this.props.aheadNum === 0) { zero = 'zero'; }
 
         return (
             <div className="CalendarSessionCard" onClick={this.handleOnClick}>

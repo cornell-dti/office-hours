@@ -8,11 +8,17 @@ class CalendarSessions extends React.Component {
     };
 
     render() {
+        var nowTs = -1;
+        // if (process.env.NODE_ENV !== 'production') {
+        // For testing purposes only 
+        if (true) {
+            nowTs = Math.round(Date.now() / 1000);
+        }
         return (
             <div className="CalendarSessions">
                 <CalendarSessionCard
-                    start={1485360000}
-                    end={1485363600}
+                    start={nowTs - (30 /* minutes */ * 60 /* seconds */)}
+                    end={nowTs - (30 /* minutes */ * 60 /* seconds */) + (60 /* minutes */ * 60 /* seconds */)}
                     ta="Corey Valdez"
                     location="Gates G21"
                     resolvedNum={5}
@@ -20,8 +26,8 @@ class CalendarSessions extends React.Component {
                     id={1}
                 />
                 <CalendarSessionCard
-                    start={1485360000}
-                    end={1485363600}
+                    start={nowTs}
+                    end={nowTs + (60 /* minutes */ * 60 /* seconds */)}
                     ta="Edgar Stewart"
                     location="Academic Surge A Tutoring Office 101"
                     resolvedNum={0}
@@ -29,8 +35,8 @@ class CalendarSessions extends React.Component {
                     id={2}
                 />
                 <CalendarSessionCard
-                    start={1485360000}
-                    end={1485363600}
+                    start={nowTs + (30 /* minutes */ * 60 /* seconds */)}
+                    end={nowTs + (30 /* minutes */ * 60 /* seconds */) + (60 /* minutes */ * 60 /* seconds */)}
                     ta="Ada Morton"
                     location="Academic Surge A Tutoring Office 101"
                     resolvedNum={0}
@@ -38,8 +44,8 @@ class CalendarSessions extends React.Component {
                     id={3}
                 />
                 <CalendarSessionCard
-                    start={1485360000}
-                    end={1485363600}
+                    start={nowTs + (90 /* minutes */ * 60 /* seconds */)}
+                    end={nowTs + (90 /* minutes */ * 60 /* seconds */) + (60 /* minutes */ * 60 /* seconds */)}
                     ta="Caroline Robinson"
                     location="Gates G21"
                     resolvedNum={0}

@@ -2,8 +2,6 @@ import * as React from 'react';
 
 class CalendarWeekSelect extends React.Component {
     props: {
-        thisWeekOld: string,
-        nextWeek: string,
         thisMonth: string,
         thisWeek: string,
         handleClick: Function
