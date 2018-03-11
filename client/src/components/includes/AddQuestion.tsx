@@ -143,7 +143,7 @@ class AddQuestion extends React.Component {
             <hr/>
             <div className="header">
               <div className="QuestionStudentInfo">
-                  <img src={require(`${this.props.studentPicture}`)}/>
+                  <img src={this.props.studentPicture}/>
                   <p className="studentName">{this.props.studentName}</p>
               </div>
             </div>
