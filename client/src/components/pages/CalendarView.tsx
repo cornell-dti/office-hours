@@ -19,7 +19,7 @@ class CalendarView extends React.Component {
         var week = new Date();
         week.setHours(0, 0, 0, 0);
         week.setTime(week.getTime() -
-            (week.getDay() - 1) /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+            (week.getDay() + 6) /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
         var today = new Date();
         today.setHours(0, 0, 0, 0);
         this.state = {
