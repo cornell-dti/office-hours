@@ -19,6 +19,7 @@ class AddQuestion extends React.Component {
         showSecondaryTags: boolean,
         showTopicTags: boolean,
         showQuestionInput: boolean,
+        doneSelectingTags: boolean,
         numberSecondaryTags: number,
         numberTopicTags: number
     }
@@ -33,6 +34,7 @@ class AddQuestion extends React.Component {
         showSecondaryTags: false,
         showTopicTags: false,
         showQuestionInput: false,
+        doneSelectingTags: false,
         numberSecondaryTags: 0,
         numberTopicTags: 0
       }
@@ -44,6 +46,7 @@ class AddQuestion extends React.Component {
 
     public handleClick(event: any) : void {
       this.setState({ question: event.target.value });
+      this.setState({ doneSelectingTags: true})
     }
 
     public handlePrimarySelected(index: number) : void {
@@ -114,12 +117,33 @@ class AddQuestion extends React.Component {
           }
         );
 
+        var collapsedPrimary = this.state.primaryBooleanList.map(
+          (tag, index) => {
+            if (tag) return <p className="selectedTag">{this.props.primaryTags[index]}</p>
+            else return null
+          }
+        );
+
+        var collapsedSecondary = this.state.secondaryBooleanList.map(
+          (tag, index) => {
+            if (tag) return <p className="selectedTag">{this.props.secondaryTags[index]}</p>
+            else return null
+          }
+        );
+
+        var collapsedTopic = this.state.topicBooleanList.map(
+          (tag, index) => {
+            if (tag) return <p className="selectedTag">{this.props.topicTags[index]}</p>
+            else return null
+          }
+        );
+
         return (
           <div className="AddQuestion">
             <hr/>
             <div className="header">
               <div className="QuestionStudentInfo">
-                  <img src={require(this.props.studentPicture)}/>
+                  <img src={require(`${this.props.studentPicture}`)}/>
                   <p className="studentName">{this.props.studentName}</p>
               </div>
             </div>
@@ -127,14 +151,22 @@ class AddQuestion extends React.Component {
               <div className="tagsMiniContainer primaryContainer">
                 <hr/>
                 <p>Primary Tags</p>
-                <div className="QuestionTags">
+                { this.state.doneSelectingTags ?
+                  <div className="QuestionTags">
+                    {collapsedPrimary}
+                  </div> :
+                  <div className="QuestionTags">
                     {primaryTagsList}
-                </div>
+                  </div> }
               </div>
               <div className="tagsMiniContainer">
                 <hr/>
                 <p>Secondary Tags</p>
                 { this.state.showSecondaryTags ?
+                  this.state.doneSelectingTags ?
+                  <div className="QuestionTags">
+                    {collapsedSecondary}
+                  </div> :
                   <div className="QuestionTags">
                     {secondaryTagsList}
                   </div> : <p className="placeHolder">Select Primary Tag first</p> }
@@ -143,6 +175,10 @@ class AddQuestion extends React.Component {
                 <hr/>
                 <p>Topic Tags</p>
                 { this.state.showTopicTags ?
+                  this.state.doneSelectingTags ?
+                  <div className="QuestionTags">
+                    {collapsedTopic}
+                  </div> :
                   <div className="QuestionTags">
                     {topicTagsList}
                   </div> : <p className="placeHolder">Select Secondary Tag first</p> }

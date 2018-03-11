@@ -5,7 +5,7 @@ class QuestionView extends React.Component {
     render() {
         return (
             <div className="QuestionView">
-                <AddQuestion studentName="Sangwoo Kim" studentPicture="../../media/peopleLogo.jpg"
+                <AddQuestion studentName="Sangwoo Kim" studentPicture='../../media/dog.jpg'
                 primaryTags={["Assignment", "Lecture", "Exam", "General"]}
                 secondaryTags={["Assignment 1", "Assignment 2", "Assignment 3", "Assignment 4", "Assignment 5",
                 "Assignment 6"]}
