@@ -15,6 +15,7 @@ class SessionQuestionsContainer extends React.Component {
         tags: string[][],
         group: string[][]
         numberOfPeople: number[]
+        questions: Question[]
     };
 
     constructor(props: {}) {

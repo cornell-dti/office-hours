@@ -10,3 +10,9 @@ type Question = {
     time: number,
     tags: [Tag]
 }
+
+type QuestionNode = {
+    questionId: number,
+    value: string,
+    student: string
+}

@@ -36,6 +36,13 @@ type InputProps = {
         params: {
             sessionId: number
         }
+    },
+    data: {
+        sessionBySessionId: {
+            questionsBySessionId: {
+                nodes: [{}]
+            }
+        }
     }
 };
 
@@ -54,9 +61,15 @@ class StudentSessionView extends React.Component<ChildProps<InputProps, Response
         //     popup = 'PopupVisible';
         // }
         var questions: Question[] = [];
-        // this.props.data.forEach(element => {
-
-        // });
+        this.props.data.sessionBySessionId.questionsBySessionId.nodes.forEach((node: QuestionNode) => {
+            questions.push({
+                id: node.questionId,
+                name: node.student,
+                value: node.value,
+                time: 0,
+                tags: [{ id: 1, value: 'tag' }]
+            });
+        });
 
         return (
             <div className={'StudentSessionView ' + popup}>

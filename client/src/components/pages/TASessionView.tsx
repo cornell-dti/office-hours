@@ -48,6 +48,7 @@ class TASessionView extends React.Component {
                     </div>
                 </div>
                 <SessionQuestionsContainer
+                    questions={[]}
                     isDetailed={false}
                     studentName={['Karun Singh', 'Shefali Agarwal', 'Horace He', 'Tiffany Wang', 'Joyelle Gilbert']}
                     studentQuestion={['How do I start Assignment 1?', 'How do I start Assignment 2?',
