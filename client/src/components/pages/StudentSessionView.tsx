@@ -61,15 +61,20 @@ class StudentSessionView extends React.Component<ChildProps<InputProps, Response
         //     popup = 'PopupVisible';
         // }
         var questions: Question[] = [];
-        this.props.data.sessionBySessionId.questionsBySessionId.nodes.forEach((node: QuestionNode) => {
-            questions.push({
-                id: node.questionId,
-                name: node.student,
-                value: node.value,
-                time: 0,
-                tags: [{ id: 1, value: 'tag' }]
-            });
-        });
+        if (this.props.data.sessionBySessionId !== undefined) {
+            if (this.props.data.sessionBySessionId !== null) {
+                console.log('working?');
+                this.props.data.sessionBySessionId.questionsBySessionId.nodes.forEach((node: QuestionNode) => {
+                    questions.push({
+                        id: node.questionId,
+                        name: node.student,
+                        value: node.value,
+                        time: 0,
+                        tags: [{ id: 1, value: 'tag' }]
+                    });
+                });
+            }
+        }
 
         return (
             <div className={'StudentSessionView ' + popup}>
