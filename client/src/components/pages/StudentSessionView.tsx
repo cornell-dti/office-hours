@@ -53,6 +53,10 @@ class StudentSessionView extends React.Component<ChildProps<InputProps, Response
         // if (this.state.isDetailed) {
         //     popup = 'PopupVisible';
         // }
+        var questions: Question[] = [];
+        // this.props.data.forEach(element => {
+
+        // });
 
         return (
             <div className={'StudentSessionView ' + popup}>
@@ -66,6 +70,7 @@ class StudentSessionView extends React.Component<ChildProps<InputProps, Response
                 />
                 <SessionPopularQuestionsContainer />
                 <SessionQuestionsContainer
+                    questions={questions}
                     isDetailed={false}
                     studentName={['Karun Singh', 'Shefali Agarwal', 'Horace He', 'Tiffany Wang', 'Joyelle Gilbert']}
                     studentQuestion={['How do I start Assignment 1?', 'How do I start Assignment 2?',
