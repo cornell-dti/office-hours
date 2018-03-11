@@ -8,17 +8,44 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 
-const QUERY = gql`{
-    allQuestions{
-        nodes {
-            value
+const QUERY = gql`
+    query FindQuestionsBySessionId($sessionId: Int!) {
+        sessionBySessionId(sessionId: $sessionId)  {
+            questionsBySessionId  {
+                nodes  {
+                    questionId
+                    value
+                    student
+                    questionTagsByQuestionId  {
+                        nodes  {
+                            tagId
+                            tagByTagId  {
+                                value
+                                courseId
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-}`;
+`;
 
-const withData = graphql<Response>(QUERY, {});
+type InputProps = {
+    match: {
+        params: {
+            sessionId: number
+        }
+    }
+};
 
-class StudentSessionView extends React.Component<ChildProps<{}, Response>, {}> {
+const withData = graphql<Response, InputProps>(QUERY, {
+    options: ({ match }) => ({
+        variables: { 'sessionId': match.params.sessionId }
+    })
+});
+
+class StudentSessionView extends React.Component<ChildProps<InputProps, Response>, {}> {
     render() {
         console.log(this.props.data);
         var popup = 'PopupInvisible';
