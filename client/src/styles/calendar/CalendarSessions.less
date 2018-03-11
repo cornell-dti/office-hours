@@ -4,8 +4,8 @@
 @border-color: #bfbfbf;
 @interior-color: #e6e6e6;
 @button-color: #454545;
-@red: #f67d7d;
-@green: #70d59d;
+@live: #70d59d;
+@open: #ffdba6;
 
 .CalendarSessionCard {
     font-size: 11px;
@@ -33,21 +33,15 @@
             height: 14px;
             width: 14px;
         }
-        
-        .Line {
-            width: 2px;
-            height:100%;
-            margin: auto;
-        }
 
         &.live * > {
-            background-color: @red;
-            box-shadow: 0px 0px 7px @red;
+            background-color: @live;
+            box-shadow: 0px 0px 7px @live;
         }
 
         &.open * > {
-            background-color: @green;
-            box-shadow: 0px 0px 7px @green;
+            background-color: @open;
+            box-shadow: 0px 0px 7px @open;
         }
 
         &.closed {
@@ -55,11 +49,6 @@
                 background-color: @interior-color;
                 border-color: @border-color;
                 box-shadow: none;
-            }
-            .Line {
-                background-color: white;
-                color: @border-color;
-                border-left: dashed;
             }
         }
     }
@@ -85,11 +74,11 @@
                 border-radius: 3px;
 
                 &.live {
-                    background-color: @red
+                    background-color: @live
                 }
         
                 &.open {
-                    background-color: @green;
+                    background-color: @open;
                 }
         
                 &.closed {
