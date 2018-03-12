@@ -32,12 +32,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
-    graphiql: true,
-    graphqlRoute: '/__gql/graphql',
-    graphiqlRoute: '/__gql/graphiql'
-}));
-
 passport.use(new GoogleStrategy(
     {
         clientID: "694487664328-79nbgbrnm3n3sa3nfsdfm5jigkr69svp.apps.googleusercontent.com",
@@ -90,12 +84,6 @@ app.get('/__sess',
         res.send(req.user)
     }
 )
-
-app.use(express.static(path.resolve(__dirname, '../client/build')));
-app.get('*', function (req, res) {
-    res.sendFile(path.resolve(__dirname, '../client/build/index.html'));
-});
-
 
 const schemaString = readFileSync('schema.gql').toString();
 
