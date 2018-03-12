@@ -1,90 +1,24 @@
 import * as React from 'react';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
-import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 import SessionPopularQuestionsContainer from '../includes/SessionPopularQuestionsContainer';
 import SessionJoinButton from '../includes/SessionJoinButton';
+import ConnectedSessionQuestions from '../includes/ConnectedSessionQuestions';
 
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import { ChildProps } from 'react-apollo';
-
-const QUERY = gql`
-    query FindQuestionsBySessionId($sessionId: Int!) {
-        sessionBySessionId(sessionId: $sessionId)  {
-            questionsBySessionId  {
-                nodes  {
-                    questionId
-                    value
-                    student
-                    questionTagsByQuestionId  {
-                        nodes  {
-                            tagId
-                            tagByTagId  {
-                                value
-                                courseId
-                            }
-                        }
-                    }
-                }
+class StudentSessionView extends React.Component {
+    props: {
+        match: {
+            params: {
+                sessionId: number
             }
         }
-    }
-`;
+    };
 
-type InputProps = {
-    match: {
-        params: {
-            sessionId: number
-        }
-    },
-    data: {
-        sessionBySessionId: {
-            questionsBySessionId: {
-                nodes: [{}]
-            }
-        }
-    }
-};
-
-const withData = graphql<Response, InputProps>(QUERY, {
-    options: ({ match }) => ({
-        variables: { 'sessionId': match.params.sessionId }
-    })
-});
-
-class StudentSessionView extends React.Component<ChildProps<InputProps, Response>, {}> {
     render() {
-        console.log(this.props.data);
         var popup = 'PopupInvisible';
         // Moved isDetailed flag to child component, so cannot lock background scroll this way
         // if (this.state.isDetailed) {
         //     popup = 'PopupVisible';
         // }
-        var questions: Question[] = [];
-        if (this.props.data.sessionBySessionId !== undefined) {
-            if (this.props.data.sessionBySessionId !== null) {
-                this.props.data.sessionBySessionId.questionsBySessionId.nodes.forEach((node: QuestionNode) => {
-                    var questionTags: Tag[] = [];
-                    if (node.questionTagsByQuestionId !== undefined) {
-                        if (node.questionTagsByQuestionId !== null) {
-                            node.questionTagsByQuestionId.nodes.forEach((tagNode: TagNode) => {
-                                questionTags.push({
-                                    id: tagNode.tagId,
-                                    value: tagNode.tagByTagId.value
-                                });
-                            });
-                        }
-                    }
-                    questions.push({
-                        id: node.questionId,
-                        name: node.student,
-                        value: node.value,
-                        time: 0,
-                        tags: questionTags
-                    });
-                });
-            }
-        }
 
         return (
             <div className={'StudentSessionView ' + popup}>
@@ -97,14 +31,11 @@ class StudentSessionView extends React.Component<ChildProps<InputProps, Response
                     location="G23 Gates Hall"
                 />
                 <SessionPopularQuestionsContainer />
-                <SessionQuestionsContainer
-                    questions={questions}
-                    isDetailed={false}
-                />
+                <ConnectedSessionQuestions match={this.props.match} data={{}} />
                 <SessionJoinButton />
             </div>
         );
     }
 }
 
-export default withData(StudentSessionView);
+export default StudentSessionView;

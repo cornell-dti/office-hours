@@ -13,11 +13,11 @@ class App extends React.Component {
         <div className="App">
           Navigate: <Link to="/calendar">Calendar View</Link> | <Link to="/session/1">Student Session View</Link> |
           <Link to="/login"> Login View</Link> |
-          <Link to="/question">Question View</Link> | <Link to="/session-ta">TA Session View</Link>
+          <Link to="/question">Question View</Link> | <Link to="/session-ta/1">TA Session View</Link>
           <Route path="/calendar" component={CalendarView} />
           <Route path="/session/:sessionId" component={StudentSessionView} />
           <Route path="/question" component={QuestionView} />
-          <Route path="/session-ta" component={TASessionView} />
+          <Route path="/session-ta/:sessionId" component={TASessionView} />
           <Route path="/login" component={LoginView} />
         </div>
       </Router>
