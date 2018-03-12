@@ -1,9 +1,14 @@
 import * as express from 'express';
 import * as session from 'express-session';
-
+import * as bodyparser from 'body-parser';
 import * as path from 'path';
 import postgraphql from 'postgraphql';
 import * as passport from 'passport';
+
+import { graphqlExpress, graphiqlExpress } from 'graphql-server-express'
+import { makeExecutableSchema, addMockFunctionsToSchema } from 'graphql-tools';
+import { graphql } from 'graphql';
+import { readFileSync, readFile } from 'fs'
 
 const app = express();
 
@@ -65,7 +70,6 @@ app.get('/__auth',
         hostedDomain: "cornell.edu"
     })
 )
-
 app.get('/__auth/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
     function (req, res) {
@@ -92,6 +96,35 @@ app.get('*', function (req, res) {
     res.sendFile(path.resolve(__dirname, '../client/build/index.html'));
 });
 
+
+const schemaString = readFileSync('schema.gql').toString();
+
+// Make a GraphQL schema with no resolvers
+const schema = makeExecutableSchema({ typeDefs: schemaString });
+
+// Add mocks, modifies schema in place
+addMockFunctionsToSchema({ schema });
+app.use(
+    '/__gql/graphql',
+    bodyparser.json(),
+    graphqlExpress({
+        schema: schema,
+        context: {}, // at least(!) an empty object
+    })
+);
+app.use(
+    '/__gql/graphiql',
+    graphiqlExpress({
+        endpointURL: '/__gql/graphql',
+    })
+);
+// app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
+//     graphiql: true,
+//     graphqlRoute: '/__gql/graphql',
+//     graphiqlRoute: '/__gql/graphiql'
+// }));
+
+app.use(express.static('../client/build'));
 app.listen(process.env.PORT || 3001, () => {
     console.log("Now listening on port " + (process.env.PORT || 3001));
 });

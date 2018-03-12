@@ -7,7 +7,6 @@ class CalendarDateSelect extends React.Component {
         dayList: string[],
         dateList: number[],
         hasOHList: boolean[],
-        monthYear: string,
         handleClick: Function,
         selectedIndex: number
     };
@@ -58,7 +57,6 @@ class CalendarDateSelect extends React.Component {
 
         return (
             <div className="CalendarDateSelect">
-                <div className="month">{this.props.monthYear}</div>
                 <div className="dates">
                     {dateItems}
                 </div>

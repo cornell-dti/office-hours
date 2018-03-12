@@ -63,7 +63,6 @@ class StudentSessionView extends React.Component<ChildProps<InputProps, Response
         var questions: Question[] = [];
         if (this.props.data.sessionBySessionId !== undefined) {
             if (this.props.data.sessionBySessionId !== null) {
-                console.log('working?');
                 this.props.data.sessionBySessionId.questionsBySessionId.nodes.forEach((node: QuestionNode) => {
                     questions.push({
                         id: node.questionId,

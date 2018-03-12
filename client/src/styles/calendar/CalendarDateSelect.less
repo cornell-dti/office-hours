@@ -1,5 +1,8 @@
+@red: #f67d7d;
+
 .CalendarDateSelect {
-    background: #f9f9f9;
+    background: white;
+    color: black;
 
     .dates {
         display: flex;
@@ -14,26 +17,34 @@
 
 .menuDate {
     cursor: pointer;
-    opacity: 0.3;
     padding-bottom: 5px;
     width: 14.28%;
 
     &.active {
-        border-bottom: 2px solid black;
         cursor: default;
-        opacity: 1.0;
+        & > .date {
+            color: white;
+            background-color: @red;
+            border-radius: 50%;
+            margin: auto;
+            height: 30px;
+            width: 30px;
+        }
     }
 
     & > .day {
         font-size: 11px;
+        padding-bottom: 5px;
     }
 
     & > .date {
-        font-size: 19px;
+        font-size: 15px;
+        padding: 6px 0px;
     }
 
     & > .notification {
         font-size: 32px;
         height: 20px;
+        color: @red;
     }
 }
