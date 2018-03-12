@@ -64,12 +64,23 @@ class StudentSessionView extends React.Component<ChildProps<InputProps, Response
         if (this.props.data.sessionBySessionId !== undefined) {
             if (this.props.data.sessionBySessionId !== null) {
                 this.props.data.sessionBySessionId.questionsBySessionId.nodes.forEach((node: QuestionNode) => {
+                    var questionTags: Tag[] = [];
+                    if (node.questionTagsByQuestionId !== undefined) {
+                        if (node.questionTagsByQuestionId !== null) {
+                            node.questionTagsByQuestionId.nodes.forEach((tagNode: TagNode) => {
+                                questionTags.push({
+                                    id: tagNode.tagId,
+                                    value: tagNode.tagByTagId.value
+                                });
+                            });
+                        }
+                    }
                     questions.push({
                         id: node.questionId,
                         name: node.student,
                         value: node.value,
                         time: 0,
-                        tags: [{ id: 1, value: 'tag' }]
+                        tags: questionTags
                     });
                 });
             }

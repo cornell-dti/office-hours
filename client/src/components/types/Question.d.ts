@@ -8,11 +8,22 @@ type Question = {
     name: string,
     value: string,
     time: number,
-    tags: [Tag]
+    tags: Tag[]
 }
 
 type QuestionNode = {
     questionId: number,
     value: string,
-    student: string
+    student: string,
+    questionTagsByQuestionId: {
+        nodes: [{}]
+    }
+}
+
+type TagNode = {
+    tagId: number,
+    tagByTagId: {
+        courseId: number,
+        value: string
+    }
 }

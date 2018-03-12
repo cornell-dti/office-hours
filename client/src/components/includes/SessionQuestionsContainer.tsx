@@ -35,6 +35,7 @@ class SessionQuestionsContainer extends React.Component {
     }
 
     render() {
+        console.log(this.props.questions);
         var cardList = this.props.studentName.map(
             (studentName, index) => {
                 return (
