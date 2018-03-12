@@ -100,18 +100,6 @@ class StudentSessionView extends React.Component<ChildProps<InputProps, Response
                 <SessionQuestionsContainer
                     questions={questions}
                     isDetailed={false}
-                    studentName={['Karun Singh', 'Shefali Agarwal', 'Horace He', 'Tiffany Wang', 'Joyelle Gilbert']}
-                    studentQuestion={['How do I start Assignment 1?', 'How do I start Assignment 2?',
-                        'How do I start Assignment 3?', 'How do I start Assignment 4?', 'How do I start Assignment 5?']}
-                    tags={[['Assignment 1', 'Q4', 'Recursion', 'Conceptual'],
-                    ['Assignment 2', 'Q4', 'Recursion', 'Conceptual'],
-                    ['Assignment 3', 'Q4', 'Recursion', 'Conceptual'],
-                    ['Assignment 4', 'Q4', 'Recursion', 'Conceptual'],
-                    ['Assignment 5', 'Q4', 'Recursion', 'Conceptual']]}
-                    group={[['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada'],
-                    ['Joshua Tran', 'Bill Oliver', 'Patrick Gross'],
-                    ['Joshua Tran', 'Bill Oliver'], ['Joshua Tran'], []]}
-                    numberOfPeople={[10, 20, 30, 40, 50]}
                 />
                 <SessionJoinButton />
             </div>

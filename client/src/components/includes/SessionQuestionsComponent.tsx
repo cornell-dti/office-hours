@@ -1,5 +1,4 @@
 import * as React from 'react';
-const peopleLogoImage = require('../../media/peopleLogo.jpg');
 
 class SessionQuestionsComponent extends React.Component {
     // constructor(props: any) {
@@ -11,9 +10,7 @@ class SessionQuestionsComponent extends React.Component {
         handleClick: Function,
         studentName: string,
         studentQuestion: string,
-        tags: string[],
-        group: string[],
-        numberOfPeople: number,
+        tags: Tag[],
         index: number
     };
 
@@ -28,8 +25,8 @@ class SessionQuestionsComponent extends React.Component {
 
     render() {
         var tagsList = this.props.tags.map(
-            (tag, index) => {
-                return <p key={index}>{tag}</p>;
+            (tag) => {
+                return <p key={tag.id}>{tag.value}</p>;
             }
         );
 
@@ -41,8 +38,6 @@ class SessionQuestionsComponent extends React.Component {
                     {tagsList}
                 </div>
                 <div className="BottomBar">
-                    <img src={peopleLogoImage} className={'peopleLogo'} alt="3 people logo" />
-                    <p className="NumberOfPeople">{this.props.numberOfPeople}</p>
                     <button className="Button">Resolve</button>
                 </div>
             </div>

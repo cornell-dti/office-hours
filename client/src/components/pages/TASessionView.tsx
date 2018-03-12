@@ -1,6 +1,6 @@
 import * as React from 'react';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
-import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
+// import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 
 class TASessionView extends React.Component {
 
@@ -47,7 +47,7 @@ class TASessionView extends React.Component {
                         Popularity
                     </div>
                 </div>
-                <SessionQuestionsContainer
+                {/* <SessionQuestionsContainer
                     questions={[]}
                     isDetailed={false}
                     studentName={['Karun Singh', 'Shefali Agarwal', 'Horace He', 'Tiffany Wang', 'Joyelle Gilbert']}
@@ -62,7 +62,7 @@ class TASessionView extends React.Component {
                     ['Joshua Tran', 'Bill Oliver', 'Patrick Gross'],
                     ['Joshua Tran', 'Bill Oliver'], ['Joshua Tran'], []]}
                     numberOfPeople={[10, 20, 30, 40, 50]}
-                />
+                /> */}
             </div>
         );
     }
