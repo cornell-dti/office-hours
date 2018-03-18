@@ -82,7 +82,6 @@ class CalendarSessionCard extends React.Component {
                 </div>
                 <div className={'Indicator ' + status}>
                     <div className="Circle" />
-                    <div className="Line" />
                 </div>
                 <div className="CalendarCard">
                     <div className="TA">
