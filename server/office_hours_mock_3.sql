@@ -277,6 +277,9 @@ COPY public.course_users (course_id, user_id, status) FROM stdin;
 2	bLwwT0e3	kDhqROsS
 3	8GEG9YeB	X6YQVueI
 3	bLwwT0e3	7dAlfNx3
+21669083	8GEG9YeB	Ynw20CrV
+13109002	tdMwFeFJ	4TdLtRk4
+20534210	XX8RTmrh	YZUa1B2m
 \.
 
 
@@ -285,9 +288,12 @@ COPY public.course_users (course_id, user_id, status) FROM stdin;
 --
 
 COPY public.courses (course_id, code, name, semester) FROM stdin;
-1	tT0bVsBg	2BT5sFDc	7VWXU5T4
-2	osEaBmnk	2dktvrsN	Dpzl2Y9L
-3	bJwEOgFN	9alfqndp	jKtRHg6S
+1	jo7TE4uF	eX2SIEOf	vhnKeAvH
+2	ERAWtcyf	O1BaCGXJ	0d34mmiu
+3	ibXaUiIG	Z487lYpS	SYxsz6hT
+21669083	tT0bVsBg	2BT5sFDc	7VWXU5T4
+13109002	bJwEOgFN	9alfqndp	jKtRHg6S
+20534210	osEaBmnk	2dktvrsN	Dpzl2Y9L
 \.
 
 
@@ -297,8 +303,7 @@ COPY public.courses (course_id, code, name, semester) FROM stdin;
 
 COPY public.question_followers (question_id, follower) FROM stdin;
 6	bLwwT0e3
-2	bLwwT0e3
-1	tdMwFeFJ
+19746459	tdMwFeFJ
 \.
 
 
@@ -310,6 +315,8 @@ COPY public.question_tags (tag_id, question_id) FROM stdin;
 3	6
 3	4
 2	5
+1	13486445
+2	19746459
 \.
 
 
@@ -318,12 +325,12 @@ COPY public.question_tags (tag_id, question_id) FROM stdin;
 --
 
 COPY public.questions (question_id, value, time_entered, status, time_resolved, session_id, student) FROM stdin;
-1	hey	\N	\N	\N	\N	\N
-2	hey	\N	\N	\N	\N	\N
-3	hey	\N	\N	\N	\N	\N
-4	e4EBqU4C	2013-10-25 02:39:20	hfiYnlvT	2021-05-18 15:48:50	3	bLwwT0e3
-5	NjZpiXdl	2012-11-04 20:05:01	0tvmpdMZ	2024-05-07 21:21:22	1	bLwwT0e3
-6	69aaUMKC	2023-12-20 10:36:28	Q8VrlAhE	2025-09-20 07:18:37	1	tdMwFeFJ
+15238087	69aaUMKC	2023-12-20 10:36:28	Q8VrlAhE	2025-09-20 07:18:37	1	tdMwFeFJ
+13486445	NjZpiXdl	2012-11-04 20:05:01	0tvmpdMZ	2024-05-07 21:21:22	1	bLwwT0e3
+19746459	e4EBqU4C	2013-10-25 02:39:20	hfiYnlvT	2021-05-18 15:48:50	3	bLwwT0e3
+4	qKyxoLDj	2018-01-09 10:12:01	nGmhbPYX	2022-06-14 14:28:06	9908101	tdMwFeFJ
+5	ogwNNzr1	2021-11-07 19:44:35	aanoxwkh	2010-08-19 20:04:31	1	8GEG9YeB
+6	0sLEo4Kv	2011-04-11 22:31:50	YiFvu3LT	2010-08-31 12:40:09	12030179	tdMwFeFJ
 \.
 
 
@@ -335,6 +342,9 @@ COPY public.session_tas (session_id, ta) FROM stdin;
 1	tdMwFeFJ
 2	8GEG9YeB
 3	bLwwT0e3
+1	8GEG9YeB
+12030179	2WdfU2b7
+9908101	8GEG9YeB
 \.
 
 
@@ -343,9 +353,12 @@ COPY public.session_tas (session_id, ta) FROM stdin;
 --
 
 COPY public.sessions (session_id, start_time, end_time, location, course_id) FROM stdin;
-1	2016-02-26 16:48:17	2020-09-26 19:55:54	Nbd6rar6	3
-2	2018-02-13 07:49:37	2013-03-24 07:27:12	XX9jwVYY	1
-3	2025-07-13 16:17:52	2024-03-04 16:36:09	khRidsrX	3
+12030179	2016-02-26 16:48:17	2020-09-26 19:55:54	Nbd6rar6	3
+15516011	2025-07-13 16:17:52	2024-03-04 16:36:09	khRidsrX	3
+9908101	2018-02-13 07:49:37	2013-03-24 07:27:12	XX9jwVYY	1
+1	2024-06-17 05:50:09	2014-04-26 04:03:06	CeN4mc4V	3
+2	2017-04-25 05:54:50	2012-05-09 10:33:59	0kJXP2Dl	2
+3	2014-08-05 01:06:01	2017-05-18 02:00:13	2PZNR4in	2
 \.
 
 
@@ -354,9 +367,12 @@ COPY public.sessions (session_id, start_time, end_time, location, course_id) FRO
 --
 
 COPY public.tags (tag_id, value, course_id) FROM stdin;
-1	KEGNFkCk	1
-2	Sc4Y9GBN	1
-3	JupnSLg8	1
+20231139	KEGNFkCk	1
+21386312	JupnSLg8	1
+13798164	Sc4Y9GBN	1
+1	PuT3IAEt	3
+2	dgI8ytQp	21669083
+3	CdiRRMr1	1
 \.
 
 
@@ -368,6 +384,9 @@ COPY public.users (netid, name) FROM stdin;
 tdMwFeFJ	dVzt6heq
 bLwwT0e3	GB2WmYmN
 8GEG9YeB	BqBsMKWp
+2WdfU2b7	ZaFpP6eB
+XX8RTmrh	dkQnFmf4
+qq9xJ1hw	lp7LKWbD
 \.
 
 
@@ -375,28 +394,28 @@ bLwwT0e3	GB2WmYmN
 -- Name: courses_course_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chilli
 --
 
-SELECT pg_catalog.setval('public.courses_course_id_seq', 1, false);
+SELECT pg_catalog.setval('public.courses_course_id_seq', 3, true);
 
 
 --
 -- Name: questions_question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chilli
 --
 
-SELECT pg_catalog.setval('public.questions_question_id_seq', 3, true);
+SELECT pg_catalog.setval('public.questions_question_id_seq', 6, true);
 
 
 --
 -- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chilli
 --
 
-SELECT pg_catalog.setval('public.sessions_session_id_seq', 1, false);
+SELECT pg_catalog.setval('public.sessions_session_id_seq', 3, true);
 
 
 --
 -- Name: tags_tag_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chilli
 --
 
-SELECT pg_catalog.setval('public.tags_tag_id_seq', 1, false);
+SELECT pg_catalog.setval('public.tags_tag_id_seq', 3, true);
 
 
 --
