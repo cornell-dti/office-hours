@@ -1,60 +1,102 @@
 import * as React from 'react';
 import CalendarSessionCard from './CalendarSessionCard';
 
-class CalendarSessions extends React.Component {
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { ChildProps } from 'react-apollo';
 
-    props: {
-        todayEpoch: number
-    };
-
-    render() {
-        var nowTs = -1;
-        // if (process.env.NODE_ENV !== 'production') {
-        // For testing purposes only 
-        if (true) {
-            nowTs = Math.round(Date.now() / 1000);
+const QUERY = gql`
+    query FindSessionsByCourse($courseId: Int!) {
+        courseByCourseId(courseId: $courseId) {
+            sessionsByCourseId {
+                nodes {
+                    sessionId
+                    startTime
+                    endTime
+                    location
+                    sessionTasBySessionId {
+                        nodes {
+                            ta
+                        }
+                    }
+                }
+            }
         }
+    }
+`;
+
+const withData = graphql<Response, InputProps>(QUERY, {
+    options: ({ match }) => ({
+        variables: { courseId: match.params.courseId }
+    })
+});
+
+type InputProps = {
+    todayEpoch: number,
+    match: {
+        params: {
+            courseId: number,
+        },
+    },
+    data: {
+        courseByCourseId?: {
+            sessionsByCourseId: {
+                nodes: [{}],
+            },
+        },
+    },
+};
+
+class CalendarSessions extends React.Component<ChildProps<InputProps, Response>> {
+    render() {
+        // if (process.env.NODE_ENV !== 'production') {
+        // For testing purposes only
+        // var nowTs = Math.round(Date.now() / 1000);
+
+        var sessions: Session[] = [];
+        if (this.props.data.courseByCourseId !== undefined) {
+            if (this.props.data.courseByCourseId !== null) {
+                this.props.data.courseByCourseId.sessionsByCourseId.nodes.forEach((node: SessionNode) => {
+                    var tas: string[] = [];
+                    if (node.sessionTasBySessionId !== undefined) {
+                        if (node.sessionTasBySessionId !== null) {
+                            node.sessionTasBySessionId.nodes.forEach((ta: TANode) => {
+                                tas.push(ta.ta);
+                            });
+                        }
+                    }
+                    sessions.push({
+                        id: node.sessionId,
+                        location: node.location,
+                        ta: tas,
+                        startTime: new Date(node.startTime),
+                        endTime: new Date(node.endTime),
+                    });
+                });
+            }
+        }
+        sessions.sort(function (a: Session, b: Session) {
+            return (a.startTime > b.startTime) ? -1 : 1;
+        });
+
         return (
             <div className="CalendarSessions">
-                <CalendarSessionCard
-                    start={nowTs - (30 /* minutes */ * 60 /* seconds */)}
-                    end={nowTs - (30 /* minutes */ * 60 /* seconds */) + (60 /* minutes */ * 60 /* seconds */)}
-                    ta="Corey Valdez"
-                    location="Gates G21"
-                    resolvedNum={5}
-                    aheadNum={23}
-                    id={1}
-                />
-                <CalendarSessionCard
-                    start={nowTs}
-                    end={nowTs + (60 /* minutes */ * 60 /* seconds */)}
-                    ta="Edgar Stewart"
-                    location="Academic Surge A Tutoring Office 101"
-                    resolvedNum={0}
-                    aheadNum={3}
-                    id={2}
-                />
-                <CalendarSessionCard
-                    start={nowTs + (30 /* minutes */ * 60 /* seconds */)}
-                    end={nowTs + (30 /* minutes */ * 60 /* seconds */) + (60 /* minutes */ * 60 /* seconds */)}
-                    ta="Ada Morton"
-                    location="Academic Surge A Tutoring Office 101"
-                    resolvedNum={0}
-                    aheadNum={1}
-                    id={3}
-                />
-                <CalendarSessionCard
-                    start={nowTs + (90 /* minutes */ * 60 /* seconds */)}
-                    end={nowTs + (90 /* minutes */ * 60 /* seconds */) + (60 /* minutes */ * 60 /* seconds */)}
-                    ta="Caroline Robinson"
-                    location="Gates G21"
-                    resolvedNum={0}
-                    aheadNum={0}
-                    id={4}
-                />
+                {sessions.map(function (session: Session, i: number) {
+                    return <CalendarSessionCard
+                        start={session.startTime}
+                        end={session.endTime}
+                        ta={session.ta[0]}
+                        location={session.location}
+                        resolvedNum={0}
+                        aheadNum={0}
+                        id={session.id}
+                        key={session.id}
+                    />;
+                })}
+
             </div>
         );
     }
 }
 
-export default CalendarSessions;
+export default withData(CalendarSessions);

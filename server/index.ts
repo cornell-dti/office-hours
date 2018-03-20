@@ -91,26 +91,26 @@ const schemaString = readFileSync('schema.gql').toString();
 const schema = makeExecutableSchema({ typeDefs: schemaString });
 
 // Add mocks, modifies schema in place
-addMockFunctionsToSchema({ schema });
-app.use(
-    '/__gql/graphql',
-    bodyparser.json(),
-    graphqlExpress({
-        schema: schema,
-        context: {}, // at least(!) an empty object
-    })
-);
-app.use(
-    '/__gql/graphiql',
-    graphiqlExpress({
-        endpointURL: '/__gql/graphql',
-    })
-);
-// app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
-//     graphiql: true,
-//     graphqlRoute: '/__gql/graphql',
-//     graphiqlRoute: '/__gql/graphiql'
-// }));
+// addMockFunctionsToSchema({ schema });
+// app.use(
+//     '/__gql/graphql',
+//     bodyparser.json(),
+//     graphqlExpress({
+//         schema: schema,
+//         context: {}, // at least(!) an empty object
+//     })
+// );
+// app.use(
+//     '/__gql/graphiql',
+//     graphiqlExpress({
+//         endpointURL: '/__gql/graphql',
+//     })
+// );
+app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
+    graphiql: true,
+    graphqlRoute: '/__gql/graphql',
+    graphiqlRoute: '/__gql/graphiql'
+}));
 
 app.use(express.static('../client/build'));
 app.listen(process.env.PORT || 3001, () => {

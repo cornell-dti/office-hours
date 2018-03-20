@@ -5,6 +5,13 @@ import CalendarSessions from '../includes/CalendarSessions';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
 class CalendarView extends React.Component {
+    props: {
+        match: {
+            params: {
+                courseId: number
+            }
+        }
+    };
 
     monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
@@ -124,7 +131,7 @@ class CalendarView extends React.Component {
                     handleClick={this.handleDateClick}
                     selectedIndex={todayIndex}
                 />
-                <CalendarSessions todayEpoch={this.state.selectedDateEpoch} />
+                <CalendarSessions todayEpoch={this.state.selectedDateEpoch} match={this.props.match} data={{}} />
             </div>
         );
     }

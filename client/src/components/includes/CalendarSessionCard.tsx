@@ -3,19 +3,18 @@ import Moment from 'react-moment';
 import { Redirect } from 'react-router';
 
 class CalendarSessionCard extends React.Component {
-
     state: {
         redirect: boolean;
     };
 
     props: {
-        start: number,
-        end: number,
+        start: Date,
+        end: Date,
         ta: string,
         location: string,
         resolvedNum: number,
-        aheadNum: number
-        id: number
+        aheadNum: number,
+        id: number,
     };
 
     constructor(props: {}) {
@@ -35,19 +34,17 @@ class CalendarSessionCard extends React.Component {
         const openPeriod = 30 /* minutes */ * 60 /* seconds */;
         var status = 'closed';
         var timeDesc = 'Queue is not open yet';
-        var startDate = new Date(this.props.start);
-        var endDate = new Date(this.props.end);
         var nowDate = new Date(Math.round(Date.now() / 1000));
         // To test:
         // var nowDate = new Date(this.props.start); // live
         // var nowDate = new Date(this.props.start - 1); // open
-        if (startDate <= nowDate && nowDate <= endDate) {
+        if (this.props.start <= nowDate && nowDate <= this.props.end) {
             status = 'live';
-            var diff = Math.abs(endDate.getTime() - nowDate.getTime());
+            var diff = Math.abs(this.props.end.getTime() - nowDate.getTime());
             timeDesc = 'Ends in ' + Math.floor(diff / 60) + ' minutes';
         } else {
             var nowPlusOpen = new Date(nowDate.getTime() + openPeriod);
-            if (startDate <= nowPlusOpen && nowPlusOpen <= endDate) {
+            if (this.props.start <= nowPlusOpen && nowPlusOpen <= this.props.end) {
                 status = 'open';
                 timeDesc = 'Queue just opened';
             }
@@ -58,26 +55,18 @@ class CalendarSessionCard extends React.Component {
         }
 
         var zero = '';
-        if (this.props.aheadNum === 0) { zero = 'zero'; }
+        if (this.props.aheadNum === 0) {
+            zero = 'zero';
+        }
 
         return (
             <div className="CalendarSessionCard" onClick={this.handleOnClick}>
                 <div className="TimeInfo">
                     <div className="StartTime">
-                        <Moment
-                            unix={true}
-                            date={this.props.start}
-                            interval={0}
-                            format={'hh:mm A'}
-                        />
+                        <Moment unix={true} date={this.props.start} interval={0} format={'hh:mm A'} />
                     </div>
                     <div className="EndTime">
-                        <Moment
-                            unix={true}
-                            date={this.props.end}
-                            interval={0}
-                            format={'hh:mm A'}
-                        />
+                        <Moment unix={true} date={this.props.end} interval={0} format={'hh:mm A'} />
                     </div>
                 </div>
                 <div className={'Indicator ' + status}>
@@ -87,13 +76,9 @@ class CalendarSessionCard extends React.Component {
                 <div className="CalendarCard">
                     <div className="TA">
                         {this.props.ta}
-                        <span className={'IndicatorDesc ' + status}>
-                            {status}
-                        </span>
+                        <span className={'IndicatorDesc ' + status}>{status}</span>
                     </div>
-                    <div className="Location">
-                        {this.props.location}
-                    </div>
+                    <div className="Location">{this.props.location}</div>
                     <div className="Queue">
                         <span className="Ahead">
                             Ahead: &nbsp;
@@ -101,12 +86,10 @@ class CalendarSessionCard extends React.Component {
                         </span>
                         <span className="Finished">
                             Finished: &nbsp;
-                                <span className="FinishedNum">{this.props.resolvedNum}</span>
+                            <span className="FinishedNum">{this.props.resolvedNum}</span>
                         </span>
                     </div>
-                    <div className="TimeDesc">
-                        {timeDesc}
-                    </div>
+                    <div className="TimeDesc">{timeDesc}</div>
                 </div>
                 <div className="OpenButton">
                     <i className="angle right icon" />

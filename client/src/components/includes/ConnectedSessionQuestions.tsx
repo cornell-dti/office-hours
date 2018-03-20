@@ -7,16 +7,17 @@ import { ChildProps } from 'react-apollo';
 
 const QUERY = gql`
     query FindQuestionsBySessionId($sessionId: Int!) {
-        sessionBySessionId(sessionId: $sessionId)  {
-            questionsBySessionId  {
-                nodes  {
+        sessionBySessionId(sessionId: $sessionId) {
+            questionsBySessionId {
+                nodes {
                     questionId
                     value
                     student
-                    questionTagsByQuestionId  {
-                        nodes  {
+                    timeEntered
+                    questionTagsByQuestionId {
+                        nodes {
                             tagId
-                            tagByTagId  {
+                            tagByTagId {
                                 value
                                 courseId
                             }
@@ -31,21 +32,21 @@ const QUERY = gql`
 type InputProps = {
     match: {
         params: {
-            sessionId: number
-        }
+            sessionId: number,
+        },
     },
     data: {
         sessionBySessionId?: {
             questionsBySessionId: {
-                nodes: [{}]
-            }
-        }
-    }
+                nodes: [{}],
+            },
+        },
+    },
 };
 
 const withData = graphql<Response, InputProps>(QUERY, {
     options: ({ match }) => ({
-        variables: { 'sessionId': match.params.sessionId }
+        variables: { sessionId: match.params.sessionId }
     })
 });
 
@@ -70,14 +71,17 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
                         id: node.questionId,
                         name: node.student,
                         value: node.value,
-                        time: 0,
+                        time: new Date(node.timeEntered),
                         tags: questionTags
                     });
                 });
             }
         }
+        questions.sort(function (a: Question, b: Question) {
+            return (a.time > b.time) ? -1 : 1;
+        });
 
-        return (<SessionQuestionsContainer questions={questions} isDetailed={false} />);
+        return <SessionQuestionsContainer questions={questions} isDetailed={false} />;
     }
 }
 
