@@ -32,6 +32,7 @@ const withData = graphql<Response, InputProps>(QUERY, {
 });
 
 type InputProps = {
+    useFakeData: boolean,
     todayEpoch: number,
     match: {
         params: {
@@ -78,6 +79,36 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
         sessions.sort(function (a: Session, b: Session) {
             return (a.startTime > b.startTime) ? -1 : 1;
         });
+
+        if (this.props.useFakeData) {
+            sessions = [
+                {
+                    id: 1,
+                    location: 'Gates G21',
+                    ta: ['Corey Valdez'],
+                    startTime: new Date(Date.now() - 30 * 60 * 1000),
+                    endTime: new Date(Date.now() +  30 * 60 * 1000)
+                }, {
+                    id: 2,
+                    location: 'Academic Surge A Tutoring Office 101',
+                    ta: ['Edgar Stewart'],
+                    startTime: new Date(Date.now()),
+                    endTime: new Date(Date.now() + 60 * 60 * 1000)
+                }, {
+                    id: 3,
+                    location: 'Academic Surge A Tutoring Office 101',
+                    ta: ['Ada Morton'],
+                    startTime: new Date(Date.now() + 30 * 60 * 1000),
+                    endTime: new Date(Date.now() + 90 * 60 * 1000)
+                }, {
+                    id: 4,
+                    location: 'Gates G21',
+                    ta: ['Caroline Robinson'],
+                    startTime: new Date(Date.now() + 90 * 60 * 1000),
+                    endTime: new Date(Date.now() + 180 * 60 * 1000)
+                }
+            ];
+        }
 
         return (
             <div className="CalendarSessions">

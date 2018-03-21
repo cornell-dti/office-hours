@@ -131,7 +131,12 @@ class CalendarView extends React.Component {
                     handleClick={this.handleDateClick}
                     selectedIndex={todayIndex}
                 />
-                <CalendarSessions todayEpoch={this.state.selectedDateEpoch} match={this.props.match} data={{}} />
+                <CalendarSessions
+                    todayEpoch={this.state.selectedDateEpoch}
+                    match={this.props.match}
+                    data={{}}
+                    useFakeData={true}
+                />
             </div>
         );
     }

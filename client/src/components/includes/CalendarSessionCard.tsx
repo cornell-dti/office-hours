@@ -31,17 +31,17 @@ class CalendarSessionCard extends React.Component {
     }
 
     render() {
-        const openPeriod = 30 /* minutes */ * 60 /* seconds */;
+        const openPeriod = 30 /* minutes */ * 60 /* seconds */ * 1000 /* milliseconds */;
         var status = 'closed';
         var timeDesc = 'Queue is not open yet';
-        var nowDate = new Date(Math.round(Date.now() / 1000));
+        var nowDate = new Date(Date.now());
         // To test:
         // var nowDate = new Date(this.props.start); // live
         // var nowDate = new Date(this.props.start - 1); // open
         if (this.props.start <= nowDate && nowDate <= this.props.end) {
             status = 'live';
             var diff = Math.abs(this.props.end.getTime() - nowDate.getTime());
-            timeDesc = 'Ends in ' + Math.floor(diff / 60) + ' minutes';
+            timeDesc = 'Ends in ' + Math.floor(diff / 60000) + ' minutes';
         } else {
             var nowPlusOpen = new Date(nowDate.getTime() + openPeriod);
             if (this.props.start <= nowPlusOpen && nowPlusOpen <= this.props.end) {
@@ -63,10 +63,10 @@ class CalendarSessionCard extends React.Component {
             <div className="CalendarSessionCard" onClick={this.handleOnClick}>
                 <div className="TimeInfo">
                     <div className="StartTime">
-                        <Moment unix={true} date={this.props.start} interval={0} format={'hh:mm A'} />
+                        <Moment date={this.props.start} interval={0} format={'hh:mm A'} />
                     </div>
                     <div className="EndTime">
-                        <Moment unix={true} date={this.props.end} interval={0} format={'hh:mm A'} />
+                        <Moment date={this.props.end} interval={0} format={'hh:mm A'} />
                     </div>
                 </div>
                 <div className={'Indicator ' + status}>
