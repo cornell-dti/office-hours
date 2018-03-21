@@ -124,7 +124,6 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
                         key={session.id}
                     />;
                 })}
-
             </div>
         );
     }

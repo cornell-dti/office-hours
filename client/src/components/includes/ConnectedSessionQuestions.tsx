@@ -81,7 +81,7 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
             return (a.time > b.time) ? -1 : 1;
         });
 
-        return <SessionQuestionsContainer questions={questions} isDetailed={false} />;
+        return <SessionQuestionsContainer questions={questions} isDetailed={false} useFakeData={true}/>;
     }
 }
 
