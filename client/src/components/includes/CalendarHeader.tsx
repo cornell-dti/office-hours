@@ -14,9 +14,6 @@ class CalendarHeader extends React.Component {
                         <i className="angle down icon" />
                     </button>
                 </div>
-                <button className="MenuButton">
-                    <i className="bars icon" />
-                </button>
             </div>
         );
     }

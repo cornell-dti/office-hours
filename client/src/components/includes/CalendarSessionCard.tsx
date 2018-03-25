@@ -34,18 +34,22 @@ class CalendarSessionCard extends React.Component {
     render() {
         const openPeriod = 30 /* minutes */ * 60 /* seconds */;
         var status = 'closed';
+        var timeDesc = 'Queue is not open yet';
         var startDate = new Date(this.props.start);
         var endDate = new Date(this.props.end);
-        var nowDate = new Date();
+        var nowDate = new Date(Math.round(Date.now() / 1000));
         // To test:
         // var nowDate = new Date(this.props.start); // live
         // var nowDate = new Date(this.props.start - 1); // open
         if (startDate <= nowDate && nowDate <= endDate) {
             status = 'live';
+            var diff = Math.abs(endDate.getTime() - nowDate.getTime());
+            timeDesc = 'Ends in ' + Math.floor(diff / 60) + ' minutes';
         } else {
             var nowPlusOpen = new Date(nowDate.getTime() + openPeriod);
             if (startDate <= nowPlusOpen && nowPlusOpen <= endDate) {
                 status = 'open';
+                timeDesc = 'Queue just opened';
             }
         }
 
@@ -53,18 +57,21 @@ class CalendarSessionCard extends React.Component {
             return <Redirect push={true} to={'/session/' + this.props.id} />;
         }
 
+        var zero = '';
+        if (this.props.aheadNum === 0) { zero = 'zero'; }
+
         return (
-            <div className="CalendarSessionCard">
-                <div className="SessionIndicators">
-                    <div className={'SessionIndicator ' + status} />
-                    <div className="CalendarTimeInfo">
+            <div className="CalendarSessionCard" onClick={this.handleOnClick}>
+                <div className="TimeInfo">
+                    <div className="StartTime">
                         <Moment
                             unix={true}
                             date={this.props.start}
                             interval={0}
                             format={'hh:mm A'}
                         />
-                        -
+                    </div>
+                    <div className="EndTime">
                         <Moment
                             unix={true}
                             date={this.props.end}
@@ -73,33 +80,35 @@ class CalendarSessionCard extends React.Component {
                         />
                     </div>
                 </div>
-                <div className="CalendarInfo">
-                    <div className="SessionDivider" />
-                    <div className="CalendarCard" onClick={this.handleOnClick}>
-                        <div className="CalendarUpperInfo">
-                            <div className="CalendarTa">
-                                {this.props.ta}
-                            </div>
-                            <div className="CalendarOpenButton">
-                                <i className="angle right icon" />
-                            </div>
-                        </div>
-                        <div className="CalendarLowerInfo">
-                            <div className="CalendarLocation">
-                                {this.props.location}
-                            </div>
-                            <div className="CalendarQueueInfo">
-                                <div className="CalendarFinishedInfo">
-                                    <div className="CalendarQueueText">Finished</div>
-                                    <div className="CalendarQueueNumber">{this.props.resolvedNum}</div>
-                                </div>
-                                <div className="CalendarAheadInfo">
-                                    <div className="CalendarQueueText">Ahead</div>
-                                    <div className="CalendarQueueNumber">{this.props.aheadNum}</div>
-                                </div>
-                            </div>
-                        </div>
+                <div className={'Indicator ' + status}>
+                    <div className="Circle" />
+                </div>
+                <div className="CalendarCard">
+                    <div className="TA">
+                        {this.props.ta}
+                        <span className={'IndicatorDesc ' + status}>
+                            {status}
+                        </span>
                     </div>
+                    <div className="Location">
+                        {this.props.location}
+                    </div>
+                    <div className="Queue">
+                        <span className="Ahead">
+                            Ahead: &nbsp;
+                            <span className={'AheadNum ' + zero}>{this.props.aheadNum}</span>
+                        </span>
+                        <span className="Finished">
+                            Finished: &nbsp;
+                                <span className="FinishedNum">{this.props.resolvedNum}</span>
+                        </span>
+                    </div>
+                    <div className="TimeDesc">
+                        {timeDesc}
+                    </div>
+                </div>
+                <div className="OpenButton">
+                    <i className="angle right icon" />
                 </div>
             </div>
         );

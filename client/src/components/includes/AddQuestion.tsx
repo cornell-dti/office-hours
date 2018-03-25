@@ -1,5 +1,7 @@
 import * as React from 'react';
+
 import { Redirect } from 'react-router';
+
 import SelectedTags from '../includes/SelectedTags';
 
 class AddQuestion extends React.Component {
