@@ -16,35 +16,28 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: DATABASE postgres; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON DATABASE postgres IS 'default administrative connection database';
-
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: adminpack; Type: EXTENSION; Schema: -; Owner: -
+-- Name: adminpack; Type: EXTENSION; Schema: -; Owner: 
 --
 
 CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner: -
+-- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner: 
 --
 
 COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
@@ -55,35 +48,67 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: courseUsers; Type: TABLE; Schema: public; Owner: -
+-- Name: sessions; Type: TABLE; Schema: public; Owner: chilli
 --
 
-CREATE TABLE public."courseUsers" (
-    "courseId" integer NOT NULL,
-    "userId" integer NOT NULL,
+CREATE TABLE public.sessions (
+    session_id integer NOT NULL,
+    start_time timestamp without time zone NOT NULL,
+    end_time timestamp without time zone NOT NULL,
+    location text,
+    session_series_id integer
+);
+
+
+ALTER TABLE public.sessions OWNER TO chilli;
+
+--
+-- Name: search_session_range(integer, timestamp without time zone, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: chilli
+--
+
+CREATE FUNCTION public.search_session_range(course integer, begintime timestamp without time zone, endtime timestamp without time zone) RETURNS SETOF public.sessions
+    LANGUAGE sql STABLE
+    AS $$
+select * from sessions where start_time > begintime AND start_time < endtime
+$$;
+
+
+ALTER FUNCTION public.search_session_range(course integer, begintime timestamp without time zone, endtime timestamp without time zone) OWNER TO chilli;
+
+--
+-- Name: course_users; Type: TABLE; Schema: public; Owner: chilli
+--
+
+CREATE TABLE public.course_users (
+    course_id integer NOT NULL,
+    user_id integer NOT NULL,
     role text NOT NULL
 );
 
 
+ALTER TABLE public.course_users OWNER TO chilli;
+
 --
--- Name: courses; Type: TABLE; Schema: public; Owner: -
+-- Name: courses; Type: TABLE; Schema: public; Owner: chilli
 --
 
 CREATE TABLE public.courses (
-    "courseId" integer NOT NULL,
+    course_id integer NOT NULL,
     code text NOT NULL,
     name text NOT NULL,
     semester text NOT NULL,
-    "startDate" date NOT NULL,
-    "endDate" date NOT NULL
+    start_date date NOT NULL,
+    end_date date NOT NULL
 );
 
 
+ALTER TABLE public.courses OWNER TO chilli;
+
 --
--- Name: courses_courseId_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: courses_course_id_seq; Type: SEQUENCE; Schema: public; Owner: chilli
 --
 
-CREATE SEQUENCE public."courses_courseId_seq"
+CREATE SEQUENCE public.courses_course_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -92,44 +117,50 @@ CREATE SEQUENCE public."courses_courseId_seq"
     CACHE 1;
 
 
---
--- Name: courses_courseId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public."courses_courseId_seq" OWNED BY public.courses."courseId";
-
+ALTER TABLE public.courses_course_id_seq OWNER TO chilli;
 
 --
--- Name: questionTags; Type: TABLE; Schema: public; Owner: -
+-- Name: courses_course_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chilli
 --
 
-CREATE TABLE public."questionTags" (
-    "questionId" integer NOT NULL,
-    "tagId" integer NOT NULL
+ALTER SEQUENCE public.courses_course_id_seq OWNED BY public.courses.course_id;
+
+
+--
+-- Name: question_tags; Type: TABLE; Schema: public; Owner: chilli
+--
+
+CREATE TABLE public.question_tags (
+    question_id integer NOT NULL,
+    tag_id integer NOT NULL
 );
 
 
+ALTER TABLE public.question_tags OWNER TO chilli;
+
 --
--- Name: questions; Type: TABLE; Schema: public; Owner: -
+-- Name: questions; Type: TABLE; Schema: public; Owner: chilli
 --
 
 CREATE TABLE public.questions (
-    "questionId" integer NOT NULL,
+    question_id integer NOT NULL,
     content text NOT NULL,
-    "timeEntered" timestamp without time zone NOT NULL,
+    time_entered timestamp without time zone NOT NULL,
     status text NOT NULL,
-    "timeResolved" timestamp without time zone,
-    "sessionId" integer NOT NULL,
-    "askerId" integer NOT NULL,
-    "answererId" integer
+    time_resolved timestamp without time zone,
+    session_id integer NOT NULL,
+    asker_id integer NOT NULL,
+    answerer_id integer
 );
 
 
+ALTER TABLE public.questions OWNER TO chilli;
+
 --
--- Name: questions_questionId_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: questions_question_id_seq; Type: SEQUENCE; Schema: public; Owner: chilli
 --
 
-CREATE SEQUENCE public."questions_questionId_seq"
+CREATE SEQUENCE public.questions_question_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -138,84 +169,59 @@ CREATE SEQUENCE public."questions_questionId_seq"
     CACHE 1;
 
 
---
--- Name: questions_questionId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public."questions_questionId_seq" OWNED BY public.questions."questionId";
-
+ALTER TABLE public.questions_question_id_seq OWNER TO chilli;
 
 --
--- Name: sessionSeries; Type: TABLE; Schema: public; Owner: -
+-- Name: questions_question_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chilli
 --
 
-CREATE TABLE public."sessionSeries" (
-    "sessionSeriesId" integer NOT NULL,
-    "startTime" timestamp without time zone NOT NULL,
-    "endTime" timestamp without time zone NOT NULL,
-    location text NOT NULL,
-    "courseId" integer NOT NULL
-);
+ALTER SEQUENCE public.questions_question_id_seq OWNED BY public.questions.question_id;
 
 
 --
--- Name: sessionSeriesTas; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public."sessionSeriesTas" (
-    "sessionSeriesId" integer NOT NULL,
-    "userId" integer NOT NULL
-);
-
-
---
--- Name: sessionSeries_sessionSeriesId_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public."sessionSeries_sessionSeriesId_seq"
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: sessionSeries_sessionSeriesId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public."sessionSeries_sessionSeriesId_seq" OWNED BY public."sessionSeries"."sessionSeriesId";
-
-
---
--- Name: sessionTas; Type: TABLE; Schema: public; Owner: -
+-- Name: sessionTas; Type: TABLE; Schema: public; Owner: chilli
 --
 
 CREATE TABLE public."sessionTas" (
-    "sessionId" integer NOT NULL,
-    "userId" integer NOT NULL
+    session_id integer NOT NULL,
+    user_id integer NOT NULL
 );
 
 
+ALTER TABLE public."sessionTas" OWNER TO chilli;
+
 --
--- Name: sessions; Type: TABLE; Schema: public; Owner: -
+-- Name: session_series; Type: TABLE; Schema: public; Owner: chilli
 --
 
-CREATE TABLE public.sessions (
-    "sessionId" integer NOT NULL,
-    "startTime" timestamp without time zone NOT NULL,
-    "endTime" timestamp without time zone NOT NULL,
-    location text,
-    "sessionSeriesId" integer
+CREATE TABLE public.session_series (
+    session_series_id integer NOT NULL,
+    start_time timestamp without time zone NOT NULL,
+    end_time timestamp without time zone NOT NULL,
+    location text NOT NULL,
+    course_id integer NOT NULL
 );
 
 
+ALTER TABLE public.session_series OWNER TO chilli;
+
 --
--- Name: sessions_sessionId_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: session_seriesTas; Type: TABLE; Schema: public; Owner: chilli
 --
 
-CREATE SEQUENCE public."sessions_sessionId_seq"
+CREATE TABLE public."session_seriesTas" (
+    session_series_id integer NOT NULL,
+    user_id integer NOT NULL
+);
+
+
+ALTER TABLE public."session_seriesTas" OWNER TO chilli;
+
+--
+-- Name: session_series_session_series_id_seq; Type: SEQUENCE; Schema: public; Owner: chilli
+--
+
+CREATE SEQUENCE public.session_series_session_series_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -224,40 +230,68 @@ CREATE SEQUENCE public."sessions_sessionId_seq"
     CACHE 1;
 
 
---
--- Name: sessions_sessionId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public."sessions_sessionId_seq" OWNED BY public.sessions."sessionId";
-
+ALTER TABLE public.session_series_session_series_id_seq OWNER TO chilli;
 
 --
--- Name: tagRelations; Type: TABLE; Schema: public; Owner: -
+-- Name: session_series_session_series_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chilli
 --
 
-CREATE TABLE public."tagRelations" (
-    "parentId" integer NOT NULL,
-    "childId" integer NOT NULL
+ALTER SEQUENCE public.session_series_session_series_id_seq OWNED BY public.session_series.session_series_id;
+
+
+--
+-- Name: sessions_session_id_seq; Type: SEQUENCE; Schema: public; Owner: chilli
+--
+
+CREATE SEQUENCE public.sessions_session_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sessions_session_id_seq OWNER TO chilli;
+
+--
+-- Name: sessions_session_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chilli
+--
+
+ALTER SEQUENCE public.sessions_session_id_seq OWNED BY public.sessions.session_id;
+
+
+--
+-- Name: tag_relations; Type: TABLE; Schema: public; Owner: chilli
+--
+
+CREATE TABLE public.tag_relations (
+    parent_id integer NOT NULL,
+    child_id integer NOT NULL
 );
 
 
+ALTER TABLE public.tag_relations OWNER TO chilli;
+
 --
--- Name: tags; Type: TABLE; Schema: public; Owner: -
+-- Name: tags; Type: TABLE; Schema: public; Owner: chilli
 --
 
 CREATE TABLE public.tags (
-    "tagId" integer NOT NULL,
+    tag_id integer NOT NULL,
     name text NOT NULL,
-    "courseId" integer NOT NULL,
+    course_id integer NOT NULL,
     level integer NOT NULL
 );
 
 
+ALTER TABLE public.tags OWNER TO chilli;
+
 --
--- Name: tags_tagId_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: tags_tag_id_seq; Type: SEQUENCE; Schema: public; Owner: chilli
 --
 
-CREATE SEQUENCE public."tags_tagId_seq"
+CREATE SEQUENCE public.tags_tag_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -266,19 +300,21 @@ CREATE SEQUENCE public."tags_tagId_seq"
     CACHE 1;
 
 
---
--- Name: tags_tagId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public."tags_tagId_seq" OWNED BY public.tags."tagId";
-
+ALTER TABLE public.tags_tag_id_seq OWNER TO chilli;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -
+-- Name: tags_tag_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chilli
+--
+
+ALTER SEQUENCE public.tags_tag_id_seq OWNED BY public.tags.tag_id;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: chilli
 --
 
 CREATE TABLE public.users (
-    "userId" integer NOT NULL,
+    user_id integer NOT NULL,
     "netId" text NOT NULL,
     "googleId" text NOT NULL,
     "firstName" text,
@@ -288,11 +324,13 @@ CREATE TABLE public.users (
 );
 
 
+ALTER TABLE public.users OWNER TO chilli;
+
 --
--- Name: users_userId_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: users_user_id_seq; Type: SEQUENCE; Schema: public; Owner: chilli
 --
 
-CREATE SEQUENCE public."users_userId_seq"
+CREATE SEQUENCE public.users_user_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -301,60 +339,62 @@ CREATE SEQUENCE public."users_userId_seq"
     CACHE 1;
 
 
---
--- Name: users_userId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public."users_userId_seq" OWNED BY public.users."userId";
-
+ALTER TABLE public.users_user_id_seq OWNER TO chilli;
 
 --
--- Name: courses courseId; Type: DEFAULT; Schema: public; Owner: -
+-- Name: users_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: chilli
 --
 
-ALTER TABLE ONLY public.courses ALTER COLUMN "courseId" SET DEFAULT nextval('public."courses_courseId_seq"'::regclass);
+ALTER SEQUENCE public.users_user_id_seq OWNED BY public.users.user_id;
 
 
 --
--- Name: questions questionId; Type: DEFAULT; Schema: public; Owner: -
+-- Name: courses course_id; Type: DEFAULT; Schema: public; Owner: chilli
 --
 
-ALTER TABLE ONLY public.questions ALTER COLUMN "questionId" SET DEFAULT nextval('public."questions_questionId_seq"'::regclass);
-
-
---
--- Name: sessionSeries sessionSeriesId; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."sessionSeries" ALTER COLUMN "sessionSeriesId" SET DEFAULT nextval('public."sessionSeries_sessionSeriesId_seq"'::regclass);
+ALTER TABLE ONLY public.courses ALTER COLUMN course_id SET DEFAULT nextval('public.courses_course_id_seq'::regclass);
 
 
 --
--- Name: sessions sessionId; Type: DEFAULT; Schema: public; Owner: -
+-- Name: questions question_id; Type: DEFAULT; Schema: public; Owner: chilli
 --
 
-ALTER TABLE ONLY public.sessions ALTER COLUMN "sessionId" SET DEFAULT nextval('public."sessions_sessionId_seq"'::regclass);
-
-
---
--- Name: tags tagId; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.tags ALTER COLUMN "tagId" SET DEFAULT nextval('public."tags_tagId_seq"'::regclass);
+ALTER TABLE ONLY public.questions ALTER COLUMN question_id SET DEFAULT nextval('public.questions_question_id_seq'::regclass);
 
 
 --
--- Name: users userId; Type: DEFAULT; Schema: public; Owner: -
+-- Name: session_series session_series_id; Type: DEFAULT; Schema: public; Owner: chilli
 --
 
-ALTER TABLE ONLY public.users ALTER COLUMN "userId" SET DEFAULT nextval('public."users_userId_seq"'::regclass);
+ALTER TABLE ONLY public.session_series ALTER COLUMN session_series_id SET DEFAULT nextval('public.session_series_session_series_id_seq'::regclass);
 
 
 --
--- Data for Name: courseUsers; Type: TABLE DATA; Schema: public; Owner: -
+-- Name: sessions session_id; Type: DEFAULT; Schema: public; Owner: chilli
 --
 
-COPY public."courseUsers" ("courseId", "userId", role) FROM stdin;
+ALTER TABLE ONLY public.sessions ALTER COLUMN session_id SET DEFAULT nextval('public.sessions_session_id_seq'::regclass);
+
+
+--
+-- Name: tags tag_id; Type: DEFAULT; Schema: public; Owner: chilli
+--
+
+ALTER TABLE ONLY public.tags ALTER COLUMN tag_id SET DEFAULT nextval('public.tags_tag_id_seq'::regclass);
+
+
+--
+-- Name: users user_id; Type: DEFAULT; Schema: public; Owner: chilli
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.users_user_id_seq'::regclass);
+
+
+--
+-- Data for Name: course_users; Type: TABLE DATA; Schema: public; Owner: chilli
+--
+
+COPY public.course_users (course_id, user_id, role) FROM stdin;
 1	8	professor
 1	1	ta
 1	3	ta
@@ -367,19 +407,19 @@ COPY public."courseUsers" ("courseId", "userId", role) FROM stdin;
 
 
 --
--- Data for Name: courses; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: courses; Type: TABLE DATA; Schema: public; Owner: chilli
 --
 
-COPY public.courses ("courseId", code, name, semester, "startDate", "endDate") FROM stdin;
+COPY public.courses (course_id, code, name, semester, start_date, end_date) FROM stdin;
 1	CS 1380	Data Science For All	SP18	2018-01-24	2018-05-13
 \.
 
 
 --
--- Data for Name: questionTags; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: question_tags; Type: TABLE DATA; Schema: public; Owner: chilli
 --
 
-COPY public."questionTags" ("questionId", "tagId") FROM stdin;
+COPY public.question_tags (question_id, tag_id) FROM stdin;
 1	1
 1	9
 1	31
@@ -397,10 +437,10 @@ COPY public."questionTags" ("questionId", "tagId") FROM stdin;
 
 
 --
--- Data for Name: questions; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: questions; Type: TABLE DATA; Schema: public; Owner: chilli
 --
 
-COPY public.questions ("questionId", content, "timeEntered", status, "timeResolved", "sessionId", "askerId", "answererId") FROM stdin;
+COPY public.questions (question_id, content, time_entered, status, time_resolved, session_id, asker_id, answerer_id) FROM stdin;
 2	Dataset parsing for Q2	2018-03-26 10:01:33	unresolved	\N	1	4	\N
 3	Clarifying statistics concept from prelim	2018-03-26 10:03:12	unresolved	\N	1	7	\N
 1	How do you implement recursion in Question 2?	2018-03-26 09:47:33	resolved	2018-03-26 10:06:49	1	2	1
@@ -409,10 +449,20 @@ COPY public.questions ("questionId", content, "timeEntered", status, "timeResolv
 
 
 --
--- Data for Name: sessionSeries; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: sessionTas; Type: TABLE DATA; Schema: public; Owner: chilli
 --
 
-COPY public."sessionSeries" ("sessionSeriesId", "startTime", "endTime", location, "courseId") FROM stdin;
+COPY public."sessionTas" (session_id, user_id) FROM stdin;
+7	3
+7	6
+\.
+
+
+--
+-- Data for Name: session_series; Type: TABLE DATA; Schema: public; Owner: chilli
+--
+
+COPY public.session_series (session_series_id, start_time, end_time, location, course_id) FROM stdin;
 1	2018-03-26 10:00:00	2018-03-26 11:00:00	Gates G21	1
 2	2018-03-26 12:20:00	2018-03-26 13:10:00	Academic Surge A Office 101	1
 3	2018-03-26 13:00:00	2018-03-26 14:30:00	Academic Surge A Office 102	1
@@ -421,10 +471,10 @@ COPY public."sessionSeries" ("sessionSeriesId", "startTime", "endTime", location
 
 
 --
--- Data for Name: sessionSeriesTas; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: session_seriesTas; Type: TABLE DATA; Schema: public; Owner: chilli
 --
 
-COPY public."sessionSeriesTas" ("sessionSeriesId", "userId") FROM stdin;
+COPY public."session_seriesTas" (session_series_id, user_id) FROM stdin;
 1	1
 2	8
 3	3
@@ -433,20 +483,10 @@ COPY public."sessionSeriesTas" ("sessionSeriesId", "userId") FROM stdin;
 
 
 --
--- Data for Name: sessionTas; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: chilli
 --
 
-COPY public."sessionTas" ("sessionId", "userId") FROM stdin;
-7	3
-7	6
-\.
-
-
---
--- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.sessions ("sessionId", "startTime", "endTime", location, "sessionSeriesId") FROM stdin;
+COPY public.sessions (session_id, start_time, end_time, location, session_series_id) FROM stdin;
 1	2018-03-26 10:00:00	2018-03-26 11:00:00	\N	1
 2	2018-03-26 12:20:00	2018-03-26 13:10:00	\N	2
 3	2018-03-26 13:00:00	2018-03-26 14:30:00	Rhodes 412	3
@@ -458,10 +498,10 @@ COPY public.sessions ("sessionId", "startTime", "endTime", location, "sessionSer
 
 
 --
--- Data for Name: tagRelations; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: tag_relations; Type: TABLE DATA; Schema: public; Owner: chilli
 --
 
-COPY public."tagRelations" ("parentId", "childId") FROM stdin;
+COPY public.tag_relations (parent_id, child_id) FROM stdin;
 1	8
 1	9
 1	10
@@ -486,10 +526,10 @@ COPY public."tagRelations" ("parentId", "childId") FROM stdin;
 
 
 --
--- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: chilli
 --
 
-COPY public.tags ("tagId", name, "courseId", level) FROM stdin;
+COPY public.tags (tag_id, name, course_id, level) FROM stdin;
 1	Assignment 1	1	1
 2	Assignment 2	1	1
 3	Assignment 3	1	1
@@ -529,10 +569,10 @@ COPY public.tags ("tagId", name, "courseId", level) FROM stdin;
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: chilli
 --
 
-COPY public.users ("userId", "netId", "googleId", "firstName", "lastName", "createdAt", "lastActivityAt") FROM stdin;
+COPY public.users (user_id, "netId", "googleId", "firstName", "lastName", "createdAt", "lastActivityAt") FROM stdin;
 1	cv231	115064340704113209584	Corey	Valdez	2018-03-25 03:07:23.485	2018-03-25 03:07:26.391
 2	ejs928	139064340704113209582	Edgar	Stewart	2018-03-25 03:08:05.668	2018-03-25 03:08:08.294
 3	asm2292	115064340704118374059	Ada	Morton	2018-03-25 03:08:51.563	2018-03-25 03:08:54.084
@@ -545,129 +585,129 @@ COPY public.users ("userId", "netId", "googleId", "firstName", "lastName", "crea
 
 
 --
--- Name: courses_courseId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: courses_course_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chilli
 --
 
-SELECT pg_catalog.setval('public."courses_courseId_seq"', 1, true);
-
-
---
--- Name: questions_questionId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public."questions_questionId_seq"', 4, true);
+SELECT pg_catalog.setval('public.courses_course_id_seq', 1, true);
 
 
 --
--- Name: sessionSeries_sessionSeriesId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: questions_question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chilli
 --
 
-SELECT pg_catalog.setval('public."sessionSeries_sessionSeriesId_seq"', 4, true);
-
-
---
--- Name: sessions_sessionId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public."sessions_sessionId_seq"', 7, true);
+SELECT pg_catalog.setval('public.questions_question_id_seq', 4, true);
 
 
 --
--- Name: tags_tagId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: session_series_session_series_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chilli
 --
 
-SELECT pg_catalog.setval('public."tags_tagId_seq"', 35, true);
-
-
---
--- Name: users_userId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public."users_userId_seq"', 8, true);
+SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 4, true);
 
 
 --
--- Name: courses courses_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chilli
+--
+
+SELECT pg_catalog.setval('public.sessions_session_id_seq', 7, true);
+
+
+--
+-- Name: tags_tag_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chilli
+--
+
+SELECT pg_catalog.setval('public.tags_tag_id_seq', 35, true);
+
+
+--
+-- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chilli
+--
+
+SELECT pg_catalog.setval('public.users_user_id_seq', 8, true);
+
+
+--
+-- Name: courses courses_pk; Type: CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public.courses
-    ADD CONSTRAINT courses_pk PRIMARY KEY ("courseId");
+    ADD CONSTRAINT courses_pk PRIMARY KEY (course_id);
 
 
 --
--- Name: courseUsers courseusers_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: course_users courseusers_pk; Type: CONSTRAINT; Schema: public; Owner: chilli
 --
 
-ALTER TABLE ONLY public."courseUsers"
-    ADD CONSTRAINT courseusers_pk PRIMARY KEY ("courseId", "userId");
+ALTER TABLE ONLY public.course_users
+    ADD CONSTRAINT courseusers_pk PRIMARY KEY (course_id, user_id);
 
 
 --
--- Name: questions questions_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: questions questions_pk; Type: CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public.questions
-    ADD CONSTRAINT questions_pk PRIMARY KEY ("questionId");
+    ADD CONSTRAINT questions_pk PRIMARY KEY (question_id);
 
 
 --
--- Name: questionTags questiontags_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: question_tags questiontags_pk; Type: CONSTRAINT; Schema: public; Owner: chilli
 --
 
-ALTER TABLE ONLY public."questionTags"
-    ADD CONSTRAINT questiontags_pk PRIMARY KEY ("questionId", "tagId");
+ALTER TABLE ONLY public.question_tags
+    ADD CONSTRAINT questiontags_pk PRIMARY KEY (question_id, tag_id);
 
 
 --
--- Name: sessions sessions_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: sessions sessions_pk; Type: CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public.sessions
-    ADD CONSTRAINT sessions_pk PRIMARY KEY ("sessionId");
+    ADD CONSTRAINT sessions_pk PRIMARY KEY (session_id);
 
 
 --
--- Name: sessionSeries sessionseries_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: session_series sessionseries_pk; Type: CONSTRAINT; Schema: public; Owner: chilli
 --
 
-ALTER TABLE ONLY public."sessionSeries"
-    ADD CONSTRAINT sessionseries_pk PRIMARY KEY ("sessionSeriesId");
-
-
---
--- Name: sessionSeriesTas sessionseriestas_pk; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."sessionSeriesTas"
-    ADD CONSTRAINT sessionseriestas_pk PRIMARY KEY ("sessionSeriesId", "userId");
+ALTER TABLE ONLY public.session_series
+    ADD CONSTRAINT sessionseries_pk PRIMARY KEY (session_series_id);
 
 
 --
--- Name: sessionTas sessiontas_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: session_seriesTas sessionseriestas_pk; Type: CONSTRAINT; Schema: public; Owner: chilli
+--
+
+ALTER TABLE ONLY public."session_seriesTas"
+    ADD CONSTRAINT sessionseriestas_pk PRIMARY KEY (session_series_id, user_id);
+
+
+--
+-- Name: sessionTas sessiontas_pk; Type: CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public."sessionTas"
-    ADD CONSTRAINT sessiontas_pk PRIMARY KEY ("sessionId", "userId");
+    ADD CONSTRAINT sessiontas_pk PRIMARY KEY (session_id, user_id);
 
 
 --
--- Name: tagRelations tagrelations_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: tag_relations tagrelations_pk; Type: CONSTRAINT; Schema: public; Owner: chilli
 --
 
-ALTER TABLE ONLY public."tagRelations"
-    ADD CONSTRAINT tagrelations_pk PRIMARY KEY ("parentId", "childId");
+ALTER TABLE ONLY public.tag_relations
+    ADD CONSTRAINT tagrelations_pk PRIMARY KEY (parent_id, child_id);
 
 
 --
--- Name: tags tags_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: tags tags_pk; Type: CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public.tags
-    ADD CONSTRAINT tags_pk PRIMARY KEY ("tagId");
+    ADD CONSTRAINT tags_pk PRIMARY KEY (tag_id);
 
 
 --
--- Name: users users_googleId_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_googleId_key; Type: CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public.users
@@ -675,7 +715,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_netId_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_netId_key; Type: CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public.users
@@ -683,139 +723,139 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_pk; Type: CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_pk PRIMARY KEY ("userId");
+    ADD CONSTRAINT users_pk PRIMARY KEY (user_id);
 
 
 --
--- Name: courseUsers courseUsers_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: course_users course_users_fk0; Type: FK CONSTRAINT; Schema: public; Owner: chilli
 --
 
-ALTER TABLE ONLY public."courseUsers"
-    ADD CONSTRAINT "courseUsers_fk0" FOREIGN KEY ("courseId") REFERENCES public.courses("courseId");
-
-
---
--- Name: courseUsers courseUsers_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."courseUsers"
-    ADD CONSTRAINT "courseUsers_fk1" FOREIGN KEY ("userId") REFERENCES public.users("userId");
+ALTER TABLE ONLY public.course_users
+    ADD CONSTRAINT course_users_fk0 FOREIGN KEY (course_id) REFERENCES public.courses(course_id);
 
 
 --
--- Name: questionTags questionTags_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: course_users course_users_fk1; Type: FK CONSTRAINT; Schema: public; Owner: chilli
 --
 
-ALTER TABLE ONLY public."questionTags"
-    ADD CONSTRAINT "questionTags_fk0" FOREIGN KEY ("questionId") REFERENCES public.questions("questionId");
-
-
---
--- Name: questionTags questionTags_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."questionTags"
-    ADD CONSTRAINT "questionTags_fk1" FOREIGN KEY ("tagId") REFERENCES public.tags("tagId");
+ALTER TABLE ONLY public.course_users
+    ADD CONSTRAINT course_users_fk1 FOREIGN KEY (user_id) REFERENCES public.users(user_id);
 
 
 --
--- Name: questions questions_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: question_tags question_tags_fk0; Type: FK CONSTRAINT; Schema: public; Owner: chilli
 --
 
-ALTER TABLE ONLY public.questions
-    ADD CONSTRAINT questions_fk0 FOREIGN KEY ("sessionId") REFERENCES public.sessions("sessionId");
+ALTER TABLE ONLY public.question_tags
+    ADD CONSTRAINT question_tags_fk0 FOREIGN KEY (question_id) REFERENCES public.questions(question_id);
 
 
 --
--- Name: questions questions_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: question_tags question_tags_fk1; Type: FK CONSTRAINT; Schema: public; Owner: chilli
+--
+
+ALTER TABLE ONLY public.question_tags
+    ADD CONSTRAINT question_tags_fk1 FOREIGN KEY (tag_id) REFERENCES public.tags(tag_id);
+
+
+--
+-- Name: questions questions_fk0; Type: FK CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public.questions
-    ADD CONSTRAINT questions_fk1 FOREIGN KEY ("askerId") REFERENCES public.users("userId");
+    ADD CONSTRAINT questions_fk0 FOREIGN KEY (session_id) REFERENCES public.sessions(session_id);
 
 
 --
--- Name: questions questions_fk2; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: questions questions_fk1; Type: FK CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public.questions
-    ADD CONSTRAINT questions_fk2 FOREIGN KEY ("answererId") REFERENCES public.users("userId");
+    ADD CONSTRAINT questions_fk1 FOREIGN KEY (asker_id) REFERENCES public.users(user_id);
 
 
 --
--- Name: sessionSeriesTas sessionSeriesTas_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: questions questions_fk2; Type: FK CONSTRAINT; Schema: public; Owner: chilli
 --
 
-ALTER TABLE ONLY public."sessionSeriesTas"
-    ADD CONSTRAINT "sessionSeriesTas_fk0" FOREIGN KEY ("sessionSeriesId") REFERENCES public."sessionSeries"("sessionSeriesId");
-
-
---
--- Name: sessionSeriesTas sessionSeriesTas_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."sessionSeriesTas"
-    ADD CONSTRAINT "sessionSeriesTas_fk1" FOREIGN KEY ("userId") REFERENCES public.users("userId");
+ALTER TABLE ONLY public.questions
+    ADD CONSTRAINT questions_fk2 FOREIGN KEY (answerer_id) REFERENCES public.users(user_id);
 
 
 --
--- Name: sessionSeries sessionSeries_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."sessionSeries"
-    ADD CONSTRAINT "sessionSeries_fk0" FOREIGN KEY ("courseId") REFERENCES public.courses("courseId");
-
-
---
--- Name: sessionTas sessionTas_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: sessionTas sessionTas_fk0; Type: FK CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public."sessionTas"
-    ADD CONSTRAINT "sessionTas_fk0" FOREIGN KEY ("sessionId") REFERENCES public.sessions("sessionId");
+    ADD CONSTRAINT "sessionTas_fk0" FOREIGN KEY (session_id) REFERENCES public.sessions(session_id);
 
 
 --
--- Name: sessionTas sessionTas_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: sessionTas sessionTas_fk1; Type: FK CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public."sessionTas"
-    ADD CONSTRAINT "sessionTas_fk1" FOREIGN KEY ("userId") REFERENCES public.users("userId");
+    ADD CONSTRAINT "sessionTas_fk1" FOREIGN KEY (user_id) REFERENCES public.users(user_id);
 
 
 --
--- Name: sessions sessions_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: session_seriesTas session_seriesTas_fk0; Type: FK CONSTRAINT; Schema: public; Owner: chilli
+--
+
+ALTER TABLE ONLY public."session_seriesTas"
+    ADD CONSTRAINT "session_seriesTas_fk0" FOREIGN KEY (session_series_id) REFERENCES public.session_series(session_series_id);
+
+
+--
+-- Name: session_seriesTas session_seriesTas_fk1; Type: FK CONSTRAINT; Schema: public; Owner: chilli
+--
+
+ALTER TABLE ONLY public."session_seriesTas"
+    ADD CONSTRAINT "session_seriesTas_fk1" FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+-- Name: session_series session_series_fk0; Type: FK CONSTRAINT; Schema: public; Owner: chilli
+--
+
+ALTER TABLE ONLY public.session_series
+    ADD CONSTRAINT session_series_fk0 FOREIGN KEY (course_id) REFERENCES public.courses(course_id);
+
+
+--
+-- Name: sessions sessions_fk0; Type: FK CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public.sessions
-    ADD CONSTRAINT sessions_fk0 FOREIGN KEY ("sessionSeriesId") REFERENCES public."sessionSeries"("sessionSeriesId");
+    ADD CONSTRAINT sessions_fk0 FOREIGN KEY (session_series_id) REFERENCES public.session_series(session_series_id);
 
 
 --
--- Name: tagRelations tagRelations_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: tag_relations tag_relations_fk0; Type: FK CONSTRAINT; Schema: public; Owner: chilli
 --
 
-ALTER TABLE ONLY public."tagRelations"
-    ADD CONSTRAINT "tagRelations_fk0" FOREIGN KEY ("parentId") REFERENCES public.tags("tagId");
-
-
---
--- Name: tagRelations tagRelations_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."tagRelations"
-    ADD CONSTRAINT "tagRelations_fk1" FOREIGN KEY ("childId") REFERENCES public.tags("tagId");
+ALTER TABLE ONLY public.tag_relations
+    ADD CONSTRAINT tag_relations_fk0 FOREIGN KEY (parent_id) REFERENCES public.tags(tag_id);
 
 
 --
--- Name: tags tags_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: tag_relations tag_relations_fk1; Type: FK CONSTRAINT; Schema: public; Owner: chilli
+--
+
+ALTER TABLE ONLY public.tag_relations
+    ADD CONSTRAINT tag_relations_fk1 FOREIGN KEY (child_id) REFERENCES public.tags(tag_id);
+
+
+--
+-- Name: tags tags_fk0; Type: FK CONSTRAINT; Schema: public; Owner: chilli
 --
 
 ALTER TABLE ONLY public.tags
-    ADD CONSTRAINT tags_fk0 FOREIGN KEY ("courseId") REFERENCES public.courses("courseId");
+    ADD CONSTRAINT tags_fk0 FOREIGN KEY (course_id) REFERENCES public.courses(course_id);
 
 
 --
