@@ -6,6 +6,12 @@ type Session = {
     endTime: Date
 };
 
+type SessionSeriesNode = {
+    sessionsBySessionSeriesId: {
+        nodes: [{}],
+    }
+}
+
 type SessionNode = {
     sessionId: number,
     location: string,
@@ -18,5 +24,8 @@ type SessionNode = {
 };
 
 type TANode = {
-    ta: string
+    userByUserId: {
+        firstName: string,
+        lastName: string,
+    }
 }
