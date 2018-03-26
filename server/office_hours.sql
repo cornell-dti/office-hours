@@ -56,7 +56,8 @@ CREATE TABLE public.sessions (
     start_time timestamp without time zone NOT NULL,
     end_time timestamp without time zone NOT NULL,
     location text,
-    session_series_id integer
+    session_series_id integer,
+    course_id integer
 );
 
 
@@ -486,14 +487,14 @@ COPY public."session_seriesTas" (session_series_id, user_id) FROM stdin;
 -- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: chilli
 --
 
-COPY public.sessions (session_id, start_time, end_time, location, session_series_id) FROM stdin;
-1	2018-03-26 10:00:00	2018-03-26 11:00:00	\N	1
-2	2018-03-26 12:20:00	2018-03-26 13:10:00	\N	2
-3	2018-03-26 13:00:00	2018-03-26 14:30:00	Rhodes 412	3
-6	2018-04-02 12:20:00	2018-04-02 13:10:00	Gates G11	2
-4	2018-03-26 19:00:00	2018-03-26 20:30:00	\N	4
-5	2018-04-02 10:00:00	2018-04-02 11:00:00	\N	1
-7	2018-04-02 19:00:00	2018-04-02 20:30:00	\N	4
+COPY public.sessions (session_id, start_time, end_time, location, session_series_id, course_id) FROM stdin;
+1	2018-03-26 10:00:00	2018-03-26 11:00:00	\N	1	\N
+2	2018-03-26 12:20:00	2018-03-26 13:10:00	\N	2	\N
+3	2018-03-26 13:00:00	2018-03-26 14:30:00	Rhodes 412	3	\N
+6	2018-04-02 12:20:00	2018-04-02 13:10:00	Gates G11	2	\N
+4	2018-03-26 19:00:00	2018-03-26 20:30:00	\N	4	\N
+5	2018-04-02 10:00:00	2018-04-02 11:00:00	\N	1	\N
+7	2018-04-02 19:00:00	2018-04-02 20:30:00	\N	4	\N
 \.
 
 
@@ -744,6 +745,14 @@ ALTER TABLE ONLY public.course_users
 
 ALTER TABLE ONLY public.course_users
     ADD CONSTRAINT course_users_fk1 FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+
+--
+-- Name: sessions fk_session_course; Type: FK CONSTRAINT; Schema: public; Owner: chilli
+--
+
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT fk_session_course FOREIGN KEY (course_id) REFERENCES public.courses(course_id);
 
 
 --
