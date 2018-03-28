@@ -136,7 +136,7 @@ class CalendarView extends React.Component {
                     endTime={new Date(this.state.selectedDateEpoch + 24 /* hours */ * 60 /* minutes */ * 60 * 1000)}
                     match={this.props.match}
                     data={{}}
-                    useFakeData={true}
+                    useFakeData={false}
                 />
             </div>
         );

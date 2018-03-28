@@ -23,12 +23,8 @@ class StudentSessionView extends React.Component {
         return (
             <div className={'StudentSessionView ' + popup}>
                 <SessionInformationHeader
-                    courseName="CS 3110"
-                    taName="Michael Clarkson"
-                    queueSize={14}
-                    date="Wednesday, 8 Nov"
-                    time="10:00 AM - 11:00 AM"
-                    location="G23 Gates Hall"
+                    match={this.props.match}
+                    data={{}}
                 />
                 <SessionPopularQuestionsContainer />
                 <ConnectedSessionQuestions match={this.props.match} data={{}} />

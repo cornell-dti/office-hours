@@ -59,24 +59,26 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
         if (this.props.data.sessionBySessionId !== undefined) {
             if (this.props.data.sessionBySessionId !== null) {
                 this.props.data.sessionBySessionId.questionsBySessionId.nodes.forEach((node: QuestionNode) => {
-                    var questionTags: Tag[] = [];
-                    if (node.questionTagsByQuestionId !== undefined) {
-                        if (node.questionTagsByQuestionId !== null) {
-                            node.questionTagsByQuestionId.nodes.forEach((tagNode: TagNode) => {
-                                questionTags.push({
-                                    id: tagNode.tagId,
-                                    name: tagNode.tagByTagId.name
+                    if (node.status !== 'resolved') {
+                        var questionTags: Tag[] = [];
+                        if (node.questionTagsByQuestionId !== undefined) {
+                            if (node.questionTagsByQuestionId !== null) {
+                                node.questionTagsByQuestionId.nodes.forEach((tagNode: TagNode) => {
+                                    questionTags.push({
+                                        id: tagNode.tagId,
+                                        name: tagNode.tagByTagId.name
+                                    });
                                 });
-                            });
+                            }
                         }
+                        questions.push({
+                            id: node.questionId,
+                            name: node.userByAskerId.firstName + ' ' + node.userByAskerId.lastName,
+                            content: node.content,
+                            time: new Date(node.timeEntered),
+                            tags: questionTags
+                        });
                     }
-                    questions.push({
-                        id: node.questionId,
-                        name: node.userByAskerId.firstName + ' ' + node.userByAskerId.lastName,
-                        content: node.content,
-                        time: new Date(node.timeEntered),
-                        tags: questionTags
-                    });
                 });
             }
         }
