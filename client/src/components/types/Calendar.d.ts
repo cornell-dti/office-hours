@@ -9,6 +9,9 @@ type Session = {
 type SessionSeriesNode = {
     sessionsBySessionSeriesId: {
         nodes: [{}],
+    },
+    sessionSeriesTasBySessionSeriesId: {
+        nodes: [{}]
     }
 }
 

@@ -12,7 +12,7 @@ query FindSessionsByCourse($courseId: Int!) {
             nodes {
                 sessionSeriesTasBySessionSeriesId{
                     nodes {
-                        userByUserId{
+                        userByUserId {
                         firstName
                         lastName
                         }
@@ -62,6 +62,9 @@ type InputProps = {
             sessionSeriesByCourseId: {
                 nodes: [{}],
             },
+            sessionSeriesTasBySessionSeriesId: {
+                nodes: [{}],
+            },
         },
     },
 };
@@ -76,6 +79,10 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
         if (this.props.data.courseByCourseId !== undefined) {
             if (this.props.data.courseByCourseId !== null) {
                 this.props.data.courseByCourseId.sessionSeriesByCourseId.nodes.forEach((node: SessionSeriesNode) => {
+                    var seriesTas: string[] = [];
+                    node.sessionSeriesTasBySessionSeriesId.nodes.forEach((ta: TANode) => {
+                        seriesTas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
+                    });
                     node.sessionsBySessionSeriesId.nodes.forEach((sessionNode: SessionNode) => {
                         var tas: string[] = [];
                         if (sessionNode.sessionTasBySessionId !== undefined) {
@@ -84,6 +91,9 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
                                     tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
                                 });
                             }
+                        }
+                        if (tas = []) {
+                            tas = seriesTas;
                         }
                         sessions.push({
                             id: sessionNode.sessionId,
