@@ -37,68 +37,68 @@ class SessionQuestionsContainer extends React.Component {
                 {
                     id: 1,
                     name: 'Karun Singh',
-                    value: 'How do you implement recursion when you try to use function used in question 4?',
+                    content: 'How do you implement recursion when you try to use function used in question 4?',
                     time: new Date(Date.now()),
                     tags: [
-                        {id: 1, value: 'Assignment 2'},
-                        {id: 1, value: 'Q4'},
-                        {id: 1, value: 'Recursion'},
-                        {id: 1, value: 'Conceptual'}
+                        { id: 1, name: 'Assignment 2' },
+                        { id: 1, name: 'Q4' },
+                        { id: 1, name: 'Recursion' },
+                        { id: 1, name: 'Conceptual' }
                     ],
                 }, {
                     id: 1,
                     name: 'Ryan Slama',
-                    value: 'Can you clarify the statistics concept from the prelim?',
+                    content: 'Can you clarify the statistics concept from the prelim?',
                     time: new Date(Date.now()),
                     tags: [
-                        {id: 1, value: 'Assignment 2'},
-                        {id: 1, value: 'Q4'},
-                        {id: 1, value: 'Prelim'},
-                        {id: 1, value: 'Statistics'}
+                        { id: 1, name: 'Assignment 2' },
+                        { id: 1, name: 'Q4' },
+                        { id: 1, name: 'Prelim' },
+                        { id: 1, name: 'Statistics' }
                     ],
                 }, {
                     id: 1,
                     name: 'Shefali Agarwal',
-                    value: 'How can I use the given function to parse dataset 1?',
+                    content: 'How can I use the given function to parse dataset 1?',
                     time: new Date(Date.now()),
                     tags: [
-                        {id: 1, value: 'Assignment 2'},
-                        {id: 1, value: 'Q4'},
-                        {id: 1, value: 'Function'},
-                        {id: 1, value: 'Dataset'}
+                        { id: 1, name: 'Assignment 2' },
+                        { id: 1, name: 'Q4' },
+                        { id: 1, name: 'Function' },
+                        { id: 1, name: 'Dataset' }
                     ],
                 }, {
                     id: 1,
                     name: 'Horace He',
-                    value: 'I don’t understand how to infer the classification of causality.',
+                    content: 'I don’t understand how to infer the classification of causality.',
                     time: new Date(Date.now()),
                     tags: [
-                        {id: 1, value: 'Assignment 2'},
-                        {id: 1, value: 'Q4'},
-                        {id: 1, value: 'Recursion'},
-                        {id: 1, value: 'Conceptual'}
+                        { id: 1, name: 'Assignment 2' },
+                        { id: 1, name: 'Q4' },
+                        { id: 1, name: 'Recursion' },
+                        { id: 1, name: 'Conceptual' }
                     ],
                 }, {
                     id: 1,
                     name: 'Tiffany Wang',
-                    value: 'Lorem ipsum, I am running out of ideas!',
+                    content: 'Lorem ipsum, I am running out of ideas!',
                     time: new Date(Date.now()),
                     tags: [
-                        {id: 1, value: 'Assignment 2'},
-                        {id: 1, value: 'Q4'},
-                        {id: 1, value: 'Lorem'},
-                        {id: 1, value: 'Ipsum'}
+                        { id: 1, name: 'Assignment 2' },
+                        { id: 1, name: 'Q4' },
+                        { id: 1, name: 'Lorem' },
+                        { id: 1, name: 'Ipsum' }
                     ],
                 }, {
                     id: 1,
                     name: 'Joyelle Gilbert',
-                    value: 'How do you implement recursion when you try to use function used in question 4?',
+                    content: 'How do you implement recursion when you try to use function used in question 4?',
                     time: new Date(Date.now()),
                     tags: [
-                        {id: 1, value: 'Assignment 2'},
-                        {id: 1, value: 'Q4'},
-                        {id: 1, value: 'Recursion'},
-                        {id: 1, value: 'Conceptual'}
+                        { id: 1, name: 'Assignment 2' },
+                        { id: 1, name: 'Q4' },
+                        { id: 1, name: 'Recursion' },
+                        { id: 1, name: 'Conceptual' }
                     ],
                 },
             ];
@@ -109,7 +109,7 @@ class SessionQuestionsContainer extends React.Component {
                     key={question.id}
                     handleClick={this.handleClick}
                     studentName={question.name}
-                    studentQuestion={question.value}
+                    studentQuestion={question.content}
                     tags={question.tags}
                     index={index}
                 />
@@ -123,7 +123,7 @@ class SessionQuestionsContainer extends React.Component {
                         isDetailed={this.state.isDetailed}
                         handleClick={this.handleClick}
                         studentName={this.props.questions[this.state.index].name}
-                        studentQuestion={this.props.questions[this.state.index].value}
+                        studentQuestion={this.props.questions[this.state.index].content}
                         tags={this.props.questions[this.state.index].tags}
                     />
                 }

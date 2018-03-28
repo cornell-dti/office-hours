@@ -11,15 +11,18 @@ const QUERY = gql`
             questionsBySessionId {
                 nodes {
                     questionId
-                    value
-                    student
+                    content
+                    status
+                    userByAskerId {
+                        firstName
+                        lastName
+                    }
                     timeEntered
                     questionTagsByQuestionId {
                         nodes {
                             tagId
                             tagByTagId {
-                                value
-                                courseId
+                                name
                             }
                         }
                     }
@@ -62,15 +65,15 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
                             node.questionTagsByQuestionId.nodes.forEach((tagNode: TagNode) => {
                                 questionTags.push({
                                     id: tagNode.tagId,
-                                    value: tagNode.tagByTagId.value
+                                    name: tagNode.tagByTagId.name
                                 });
                             });
                         }
                     }
                     questions.push({
                         id: node.questionId,
-                        name: node.student,
-                        value: node.value,
+                        name: node.userByAskerId.firstName + ' ' + node.userByAskerId.lastName,
+                        content: node.content,
                         time: new Date(node.timeEntered),
                         tags: questionTags
                     });
@@ -81,7 +84,7 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
             return (a.time > b.time) ? -1 : 1;
         });
 
-        return <SessionQuestionsContainer questions={questions} isDetailed={false} useFakeData={true}/>;
+        return <SessionQuestionsContainer questions={questions} isDetailed={false} useFakeData={false} />;
     }
 }
 

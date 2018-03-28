@@ -1,21 +1,25 @@
 type Tag = {
     id: number,
-    value: string,
+    name: string,
 };
 
 type Question = {
     id: number,
     name: string,
-    value: string,
+    content: string,
     time: Date,
     tags: Tag[],
 };
 
 type QuestionNode = {
     questionId: number,
-    value: string,
-    student: string,
+    content: string,
+    userByAskerId: {
+        firstName: string,
+        lastName: string,
+    },
     timeEntered: string,
+    status: string,
     questionTagsByQuestionId: {
         nodes: [{}],
     },
@@ -24,7 +28,6 @@ type QuestionNode = {
 type TagNode = {
     tagId: number,
     tagByTagId: {
-        courseId: number,
-        value: string,
+        name: string,
     },
 };

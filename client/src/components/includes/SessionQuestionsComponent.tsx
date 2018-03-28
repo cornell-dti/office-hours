@@ -26,7 +26,7 @@ class SessionQuestionsComponent extends React.Component {
     render() {
         var tagsList = this.props.tags.map(
             (tag) => {
-                return <p key={tag.id}>{tag.value}</p>;
+                return <p key={tag.id}>{tag.name}</p>;
             }
         );
 

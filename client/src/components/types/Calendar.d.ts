@@ -6,25 +6,20 @@ type Session = {
     endTime: Date
 };
 
-type SessionSeriesNode = {
-    sessionsBySessionSeriesId: {
-        nodes: [{}],
-    },
-    sessionSeriesTasBySessionSeriesId: {
-        nodes: [{}]
-    }
-}
-
 type SessionNode = {
-    sessionId: number,
+    endTime: Date,
     location: string,
-    startTime: string,
-    endTime: string,
-    timeEntered: string,
-    sessionTasBySessionId: {
-        nodes: [{}],
+    sessionId: number
+    sessionSeryBySessionSeriesId: {
+        sessionSeriesTasBySessionSeriesId: {
+            nodes: [TANode]
+        }
     },
-};
+    sessionTasBySessionId: {
+        nodes: [TANode]
+    },
+    startTime: Date
+}
 
 type TANode = {
     userByUserId: {

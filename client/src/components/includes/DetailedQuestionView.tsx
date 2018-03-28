@@ -22,7 +22,7 @@ class DetailedQuestionView extends React.Component {
     render() {
         var tagsList = this.props.tags.map(
             (tag, index) => {
-                return <p key={tag.id}>{tag.value}</p>;
+                return <p key={tag.id}>{tag.name}</p>;
             }
         );
 

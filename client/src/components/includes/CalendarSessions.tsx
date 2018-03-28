@@ -6,139 +6,121 @@ import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 
 const QUERY = gql`
-query FindSessionsByCourse($courseId: Int!) {
-    courseByCourseId(courseId: $courseId) {
-        sessionSeriesByCourseId {
+query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Datetime!) {
+    searchSessionRange(course: $courseId, begintime: $beginTime, endtime: $endTime) {
+        nodes {
+        sessionSeryBySessionSeriesId {
+            sessionSeriesTasBySessionSeriesId {
             nodes {
-                sessionSeriesTasBySessionSeriesId{
-                    nodes {
-                        userByUserId {
-                        firstName
-                        lastName
-                        }
-                    }
-                }
-                sessionsBySessionSeriesId(
-                    orderBy: START_TIME_ASC
-                    #  condition:  {startTime:  "2018-03-26T10:00:00"}
-                )  {
-                    nodes {
-                        sessionId
-                        startTime
-                        endTime
-                        location
-                        sessionTasBySessionId {
-                            nodes {
-                                userByUserId {
-                                    firstName
-                                    lastName
-                                }
-                            }
-                        }
-                    }
+                userByUserId {
+                firstName
+                lastName
                 }
             }
+            }
+        }
+        sessionId
+        startTime
+        endTime
+        location
+        sessionTasBySessionId {
+            nodes {
+            userByUserId {
+                firstName
+                lastName
+            }
+            }
+        }
         }
     }
 }
+
 `;
 
 const withData = graphql<Response, InputProps>(QUERY, {
-    options: ({ match }) => ({
-        variables: { courseId: match.params.courseId }
+    options: ({ beginTime, endTime, match }) => ({
+        variables: {
+            courseId: match.params.courseId,
+            beginTime: beginTime,
+            endTime: endTime
+        }
     })
 });
 
 type InputProps = {
     useFakeData: boolean,
-    todayEpoch: number,
     match: {
         params: {
             courseId: number,
         },
     },
+    beginTime: Date,
+    endTime: Date,
     data: {
-        courseByCourseId?: {
-            sessionSeriesByCourseId: {
-                nodes: [{}],
-            },
-            sessionSeriesTasBySessionSeriesId: {
-                nodes: [{}],
-            },
+        searchSessionRange?: {
+            nodes: [{}]
         },
     },
 };
 
 class CalendarSessions extends React.Component<ChildProps<InputProps, Response>> {
     render() {
-        // if (process.env.NODE_ENV !== 'production') {
-        // For testing purposes only
-        // var nowTs = Math.round(Date.now() / 1000);
-
         var sessions: Session[] = [];
-        if (this.props.data.courseByCourseId !== undefined) {
-            if (this.props.data.courseByCourseId !== null) {
-                this.props.data.courseByCourseId.sessionSeriesByCourseId.nodes.forEach((node: SessionSeriesNode) => {
-                    var seriesTas: string[] = [];
-                    node.sessionSeriesTasBySessionSeriesId.nodes.forEach((ta: TANode) => {
-                        seriesTas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
-                    });
-                    node.sessionsBySessionSeriesId.nodes.forEach((sessionNode: SessionNode) => {
-                        var tas: string[] = [];
-                        if (sessionNode.sessionTasBySessionId !== undefined) {
-                            if (sessionNode.sessionTasBySessionId !== null) {
-                                sessionNode.sessionTasBySessionId.nodes.forEach((ta: TANode) => {
-                                    tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
-                                });
-                            }
-                        }
-                        if (tas = []) {
-                            tas = seriesTas;
-                        }
-                        sessions.push({
-                            id: sessionNode.sessionId,
-                            location: sessionNode.location,
-                            ta: tas,
-                            startTime: new Date(sessionNode.startTime),
-                            endTime: new Date(sessionNode.endTime),
+        if (this.props.data.searchSessionRange !== undefined) {
+            if (this.props.data.searchSessionRange !== null) {
+                this.props.data.searchSessionRange.nodes.forEach((node: SessionNode) => {
+                    var tas: string[] = [];
+                    if (node.sessionTasBySessionId !== undefined) {
+                        node.sessionTasBySessionId.nodes.forEach(ta => {
+                            tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
                         });
+                    }
+                    if (node.sessionSeryBySessionSeriesId.sessionSeriesTasBySessionSeriesId.nodes !== undefined
+                        && tas.length === 0) {
+                        node.sessionSeryBySessionSeriesId.sessionSeriesTasBySessionSeriesId.nodes.forEach(ta => {
+                            tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
+                        });
+                    }
+                    sessions.push({
+                        id: node.sessionId,
+                        location: node.location,
+                        ta: tas,
+                        startTime: node.startTime,
+                        endTime: node.endTime,
                     });
                 });
             }
         }
-        // sessions.sort(function (a: Session, b: Session) {
-        //     return (a.startTime > b.startTime) ? -1 : 1;
-        // });
 
-        // if (true) {
-        //     sessions = [
-        //         {
-        //             id: 1,
-        //             location: 'Gates G21',
-        //             ta: ['Corey Valdez'],
-        //             startTime: new Date(Date.now() - 30 * 60 * 1000),
-        //             endTime: new Date(Date.now() + 30 * 60 * 1000)
-        //         }, {
-        //             id: 2,
-        //             location: 'Academic Surge A Tutoring Office 101',
-        //             ta: ['Edgar Stewart'],
-        //             startTime: new Date(Date.now()),
-        //             endTime: new Date(Date.now() + 60 * 60 * 1000)
-        //         }, {
-        //             id: 3,
-        //             location: 'Academic Surge A Tutoring Office 101',
-        //             ta: ['Ada Morton'],
-        //             startTime: new Date(Date.now() + 30 * 60 * 1000),
-        //             endTime: new Date(Date.now() + 90 * 60 * 1000)
-        //         }, {
-        //             id: 4,
-        //             location: 'Gates G21',
-        //             ta: ['Caroline Robinson'],
-        //             startTime: new Date(Date.now() + 90 * 60 * 1000),
-        //             endTime: new Date(Date.now() + 180 * 60 * 1000)
-        //         }
-        //     ];
-        // }
+        if (this.props.useFakeData) {
+            sessions = [
+                {
+                    id: 1,
+                    location: 'Gates G21',
+                    ta: ['Corey Valdez'],
+                    startTime: new Date(Date.now() - 30 * 60 * 1000),
+                    endTime: new Date(Date.now() + 30 * 60 * 1000)
+                }, {
+                    id: 2,
+                    location: 'Academic Surge A Tutoring Office 101',
+                    ta: ['Edgar Stewart'],
+                    startTime: new Date(Date.now()),
+                    endTime: new Date(Date.now() + 60 * 60 * 1000)
+                }, {
+                    id: 3,
+                    location: 'Academic Surge A Tutoring Office 101',
+                    ta: ['Ada Morton'],
+                    startTime: new Date(Date.now() + 30 * 60 * 1000),
+                    endTime: new Date(Date.now() + 90 * 60 * 1000)
+                }, {
+                    id: 4,
+                    location: 'Gates G21',
+                    ta: ['Caroline Robinson'],
+                    startTime: new Date(Date.now() + 90 * 60 * 1000),
+                    endTime: new Date(Date.now() + 180 * 60 * 1000)
+                }
+            ];
+        }
 
         return (
             <div className="CalendarSessions">

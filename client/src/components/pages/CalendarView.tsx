@@ -132,7 +132,8 @@ class CalendarView extends React.Component {
                     selectedIndex={todayIndex}
                 />
                 <CalendarSessions
-                    todayEpoch={this.state.selectedDateEpoch}
+                    beginTime={new Date(this.state.selectedDateEpoch)}
+                    endTime={new Date(this.state.selectedDateEpoch + 24 /* hours */ * 60 /* minutes */ * 60 * 1000)}
                     match={this.props.match}
                     data={{}}
                     useFakeData={true}
