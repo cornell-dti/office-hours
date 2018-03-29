@@ -27,7 +27,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-app.use(postgraphql(process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/postgres', {
+app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
     graphiql: true,
     graphqlRoute: '/__gql/graphql',
     graphiqlRoute: '/__gql/graphiql'
