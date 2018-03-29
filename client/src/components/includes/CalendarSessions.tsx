@@ -9,32 +9,32 @@ const QUERY = gql`
 query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Datetime!) {
     searchSessionRange(course: $courseId, begintime: $beginTime, endtime: $endTime) {
         nodes {
-        sessionSeryBySessionSeriesId {
-            sessionSeriesTasBySessionSeriesId {
-            nodes {
-                userByUserId {
-                firstName
-                lastName
+            sessionSeryBySessionSeriesId {
+                location
+                sessionSeriesTasBySessionSeriesId {
+                nodes {
+                    userByUserId {
+                    firstName
+                    lastName
+                    }
+                }
                 }
             }
+            sessionId
+            startTime
+            endTime
+            location
+            sessionTasBySessionId {
+                nodes {
+                    userByUserId {
+                        firstName
+                        lastName
+                    }
+                }
             }
-        }
-        sessionId
-        startTime
-        endTime
-        location
-        sessionTasBySessionId {
-            nodes {
-            userByUserId {
-                firstName
-                lastName
-            }
-            }
-        }
         }
     }
 }
-
 `;
 
 const withData = graphql<Response, InputProps>(QUERY, {
@@ -81,9 +81,15 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
                             tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
                         });
                     }
+
+                    var location = node.sessionSeryBySessionSeriesId.location;
+                    if (node.location !== null) {
+                        location = node.location;
+                    }
+
                     sessions.push({
                         id: node.sessionId,
-                        location: node.location,
+                        location: location,
                         ta: tas,
                         startTime: node.startTime,
                         endTime: node.endTime,

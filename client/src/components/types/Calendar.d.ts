@@ -13,7 +13,8 @@ type SessionNode = {
     sessionSeryBySessionSeriesId: {
         sessionSeriesTasBySessionSeriesId: {
             nodes: [TANode]
-        }
+        },
+        location: string,
     },
     sessionTasBySessionId: {
         nodes: [TANode]

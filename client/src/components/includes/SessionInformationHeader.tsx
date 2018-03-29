@@ -18,6 +18,7 @@ type InputProps = {
             },
             location: string,
             sessionSeryBySessionSeriesId: {
+                location: string,
                 courseByCourseId: {
                     name: string
                 },
@@ -48,17 +49,18 @@ const QUERY = gql`
                 }
             }
             sessionSeryBySessionSeriesId {
-            courseByCourseId {
-                name
-            }
-            sessionSeriesTasBySessionSeriesId {
-                nodes {
-                    userByUserId {
-                        firstName
-                        lastName
+                location
+                courseByCourseId {
+                    name
+                }
+                sessionSeriesTasBySessionSeriesId {
+                    nodes {
+                        userByUserId {
+                            firstName
+                            lastName
+                        }
                     }
                 }
-            }
             }
             sessionTasBySessionId {
             nodes {
@@ -114,6 +116,11 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                 });
             }
 
+            var location = session.sessionSeryBySessionSeriesId.location;
+            if (session.location !== null) {
+                location = session.location;
+            }
+
             var queueLength = 0;
             session.questionsBySessionId.nodes.forEach(question => {
                 if (question.timeResolved === null) {
@@ -151,7 +158,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                                     <p>{new Date(session.endTime).toLocaleTimeString('en-us', options)}</p>
                                 </div>
                                 <div className="OfficeHourLocation">
-                                    {session.location || 'Unknown'}
+                                    {location || 'Unknown'}
                                 </div>
                             </div>
                         </div>
