@@ -1,18 +1,21 @@
 import * as React from 'react';
-import ProfessorCalendarItem from '../includes/ProfessorCalendarTable';
+import * as moment from 'moment';
+import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
 
 class ProfessorView extends React.Component {
 
     state: {
         editVisible: boolean;
+        deleteVisible: boolean;
     };
 
     constructor(props: {}) {
         super(props);
         this.state = {
-            editVisible: false
+            editVisible: false,
+            deleteVisible: false
+
         };
-        this.toggleEdit = this.toggleEdit.bind(this);
     }
 
     toggleEdit(toggle: boolean) {
@@ -21,11 +24,19 @@ class ProfessorView extends React.Component {
         });
     }
 
+    toggleDelete(toggle: boolean) {
+        this.setState({
+            deleteVisible: toggle
+        });
+    }
+
     render() {
-        var today = (new Date()).toDateString();
+        var today = moment().format('ddd L');
 
         return (
             <div className="ProfessorView">
+                <div className="Delete">
+                </div>
                 <div className={'Add ' + !this.state.editVisible}>
                     <button className="NewOHButton" onClick={() => this.toggleEdit(true)}>
                         <i className="plus icon" />
@@ -73,7 +84,7 @@ class ProfessorView extends React.Component {
                     </div>
                 </div>
                 <div className="Calendar">
-                    <ProfessorCalendarItem
+                    <ProfessorCalendarTable
                         mondayList={[['11:00 AM to 12:00 PM', '12:00 PM to 2:00 PM'], ['Zechen Zhang', 'Bob'], ['Gates Hall G01', 'Gates Hall G21']]}
                         tuesdayList={[['11:00 AM to 12:00 PM', '12:00 PM to 2:00 PM'], ['Zechen Zhang', 'Bob'], ['Gates Hall G01', 'Gates Hall G21']]}
                         wednesdayList={[['11:00 AM to 12:00 PM', '12:00 PM to 2:00 PM'], ['Zechen Zhang', 'Bob'], ['Gates Hall G01', 'Gates Hall G21']]}

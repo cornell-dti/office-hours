@@ -15,6 +15,10 @@
         width: 100%;
         border-collapse: collapse;
 
+        .rows{
+            width: 100%;
+        }
+
         .NoOH {
             text-align: center;
         }
@@ -27,9 +31,8 @@
             background-color: @header-color;
         }
 
-        td:first-child {
-            padding-left: 5%;
-            width: 35%;
+        .EditButtons {
+            padding-left: 0px;
         }
 
         td {
@@ -40,20 +43,12 @@
             width: 5%;
         }
 
-        tr:nth-child(even) {
-            background-color: @even-color;
-        }
+        // .Preview:nth-of-type(even) {
+        //     background-color: @even-color;
+        // }
 
-        tr:nth-child(odd) {
-            background-color: @odd-color;
-        }
-
-        Button {
-            background-color: transparent;
-            border: none;
-            display: inline-block;
-            font-size: 20px;
-        }
+        // .Preview:nth-of-type(odd) {
+        //     background-color: @odd-color;
+        // }
     }
-    
 }

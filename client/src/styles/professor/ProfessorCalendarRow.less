@@ -1,0 +1,126 @@
+@even-color: #edeff2;
+@odd-color: white;
+
+// tr.Preview:nth-child(even) {
+//     background-color: @even-color;
+// }
+
+// tr.Preview:nth-child(odd) {
+//     background-color: @odd-color;
+// }
+
+// tr.Preview:nth-child(1) {
+//     background-color: pink;
+// }
+
+.Pair.true {
+    border: 1px solid gray;
+    .Preview {
+        color: white;
+
+        .Edit, .Delete {
+            color: white;
+        }
+    }
+}
+
+.Pair {
+    td:first-child {
+        width: 35%;
+    }
+
+    .ExpandedEdit.false {
+        display: none;
+    }
+
+    .Preview {
+        background-color: white;
+        td:first-child {
+            padding-left: 5%;
+        }
+    }
+    
+    .Preview.true {
+        background-color: #898989;
+    }
+
+    Button {
+        background-color: transparent;
+        border: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+    
+    .ExpandedEdit {
+        background-color: white;
+    
+        .InfoInput {
+            margin-left: 5%;
+    
+            .TA {
+                margin-top: 14px;
+    
+                .AddTAButton {
+                    color: dodgerblue;
+                    background-color: white;
+                    border: none;
+                    font-size: 14px;
+                }
+    
+                .long {
+                    width: 40%;
+                }
+            }
+    
+            .Location {
+                margin-top: 24px;
+    
+                .long {
+                    width: 40%;
+                }
+            }
+            
+            .Time {
+                margin-top: 24px;
+    
+                .repeat {
+                    width: 20px;
+                    height: 20px;
+                    margin: 0px 10px 0px 30px;
+                    border:2px solid black;
+                    background-color: white;
+                    border-radius: 3px;
+                }
+            }
+        }  
+        
+        .EditButtons {
+            border-top: 1px solid #d9d9d9;
+            margin-top: 26px;
+            padding-top: 12px;
+
+            Button {
+                font-size: 14px;
+                padding: 10px 40px;
+                border-radius: 3px;
+                font-size: 14px;
+                margin: 0px 15px;
+                background-color: white;
+                border: 1px solid gray;
+                float: right;
+            }
+
+            .Delete {
+                float: left;
+            }
+    
+            .SaveChanges {
+                background-color: dodgerblue;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+            }
+        }
+    }
+}
+
