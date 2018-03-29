@@ -1,74 +1,140 @@
-.AddQuestion {
+.QuestionView {
+  background-color: white;
+  height: 100%;
 
-  .header { /* Above button */
-    background-color: #9b9b9b;
-    padding: 20px;
+  .AddQuestion {
 
-    .QuestionCourseInfo { /* Course number and TA */
-      font-size: 20px;
-      text-align: left;
-      padding: 10px 0px 5px 10px;
-      color: white;
+    hr {
+      display: block;
+      height: 1px;
+      border: 0;
+      border-top: 1px solid #ccc;
+      margin: 0;
+      padding: 0;
+    }
 
-      .QuestionCourseNum { /* Course number */
-        font-size: 20px;
+    .queueHeader {
+      background-color: white;
+      padding: 15px 20px 0px 20px;
+
+      p {
+        display: inline-block;
+        font-size: 21px;
+        vertical-align: middle;
+      }
+
+      .title {
         font-weight: bold;
-        margin-right: 10px;
       }
-    }
-  }
 
-  .tagsContainer {
-    background-color: #f2f2f2;
-
-    p {
-      text-align: left;
-      font-weight: bold;
-      font-size: 17px;
-      padding-left: 3%;
-    }
-
-    .tagsMiniContainer {
-      white-space: pre-line;
-      padding-top: 25px;
-
-      .QuestionTags {
-        padding: 5px 0px 0px 8px;
+      .xbutton {
         float: left;
-        padding-bottom: 30px;
+      }
 
-        p {
-          font-weight: normal;
-          display: block;
-          float: left;
-          font-size: 13px;
-          color: white;
-          border: 1px solid #999999;
-          background-color: #999999;
-          padding: 2px 10px;
-          margin: 3px;
-          border-radius: 12px;
+      .joinButton {
+        float: right;
+        font-size: 18px;
+        color: #C3C2C2;
+      }
+
+      .joinButtonActivate {
+        float: right;
+        font-size: 18px;
+        color: #4FA2E0;
+      }
+    }
+
+    .studentHeader { /* Above button */
+      background-color: white;
+      padding: 15px 20px 0px 20px;
+
+      .QuestionStudentInfo {
+        font-size: 20px;
+        text-align: left;
+
+        img {
+          display: inline-block;
+          margin-right: 10px;
+          width: 35px;
+          height: 35px;
+          border-radius: 35px;
+          vertical-align: middle;
+          object-fit: cover;
         }
 
-        .selectedTag {
-          border: 1px solid #00b3b3;
-          background-color: #00b3b3;
+        .studentName {
+          display: inline-block;
+          font-size: 20px;
+          vertical-align: middle;
+          margin-left: 5px;
         }
       }
     }
 
-    .tagsMiniContainer2 {
-      white-space: pre-line;
-      padding-top: 70px;
-      padding-bottom: 100px;
+    .tagsContainer {
+      background-color: white;
 
-      .QuestionInput {
-        font-weight: normal;
-        color: #b3b3b3;
-        border-bottom: 2px solid #b3b3b3;
-        width: 90%;
-        margin-left: 3%;
-        padding-left: 5px;
+      p {
+        text-align: left;
+        font-size: 17px;
+        padding-left: 3%;
+        cursor: pointer;
+      }
+
+      .tagsMiniContainer {
+        padding-top: 20px;
+        float: left;
+        clear: both;
+        width: 100%;
+
+        &.primaryContainer {
+          padding-top: 5px;
+        }
+
+        hr {
+          display: block;
+          height: 1px;
+          border: 0;
+          border-top: 1px solid #ccc;
+          margin: 1em 0;
+          padding: 0;
+        }
+
+        .QuestionTags {
+          padding: 5px 0px 0px 8px;
+          float: left;
+
+          p {
+            font-weight: normal;
+            display: block;
+            float: left;
+            font-size: 13px;
+            color: #4FA2E0;
+            border: 0.5px solid #4FA2E0;
+            padding: 2px 10px;
+            margin: 3px;
+            border-radius: 12px;
+          }
+
+          .selectedTag {
+            border: 0.5px solid #C1DEF4;
+            background-color: #C1DEF4;
+          }
+        }
+
+        .placeHolder {
+          font-size: 15px;
+          font-weight: normal;
+          color: #C3C2C2;
+        }
+
+        .QuestionInput {
+          font-weight: normal;
+          border: 0px;
+          color: #b3b3b3;
+          width: 95%;
+          padding-left: 5px;
+        }
       }
     }
   }

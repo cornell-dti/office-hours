@@ -25,3 +25,5 @@ yarn-error.log*
 .DS_Store
 
 client/src/styles/index.min.css
+
+client/src/styles/index.min.css
