@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Moment from 'react-moment';
 import { Redirect } from 'react-router';
 
 import gql from 'graphql-tag';
@@ -16,9 +17,11 @@ type InputProps = {
             sessionTasBySessionId: {
                 nodes: [TANode]
             },
-            location: string,
+            building: string,
+            room: string,
             sessionSeryBySessionSeriesId: {
-                location: string,
+                building: string,
+                room: string,
                 courseByCourseId: {
                     name: string
                 },
@@ -40,7 +43,8 @@ type InputProps = {
 const QUERY = gql`
     query getHeaderInformation($sessionId: Int!) {
         sessionBySessionId(sessionId: $sessionId) {
-            location
+            building
+            room
             startTime
             endTime
             questionsBySessionId {
@@ -49,7 +53,8 @@ const QUERY = gql`
                 }
             }
             sessionSeryBySessionSeriesId {
-                location
+                building
+                room
                 courseByCourseId {
                     name
                 }
@@ -63,12 +68,12 @@ const QUERY = gql`
                 }
             }
             sessionTasBySessionId {
-            nodes {
-                userByUserId {
-                    firstName
-                    lastName
+                nodes {
+                    userByUserId {
+                        firstName
+                        lastName
+                    }
                 }
-            }
             }
         }
     }
@@ -116,9 +121,10 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                 });
             }
 
-            var location = session.sessionSeryBySessionSeriesId.location;
-            if (session.location !== null) {
-                location = session.location;
+            var location = session.sessionSeryBySessionSeriesId.building +
+                ' ' + session.sessionSeryBySessionSeriesId.room;
+            if (session.building !== null) {
+                location = session.building + ' ' + session.room;
             }
 
             var queueLength = 0;
@@ -128,11 +134,6 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                 }
             });
 
-            var options = {
-                hour: '2-digit',
-                minute: '2-digit',
-            };
-
             return (
                 <div className="SessionInformationHeader">
                     <div className="header">
@@ -141,7 +142,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                         </button>
                         <div className="CourseInfo">
                             <span className="CourseNum">
-                                {session.sessionSeryBySessionSeriesId.courseByCourseId.name}
+                                {session.sessionSeryBySessionSeriesId.courseByCourseId.name}&nbsp;&nbsp;
                             </span>
                             {tas[0]}
                         </div>
@@ -154,8 +155,10 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                             </div>
                             <div className="OfficeHourInfo">
                                 <div className="OfficeHourTime">
-                                    <p>{new Date(session.startTime).toLocaleTimeString('en-us', options)}</p>
-                                    <p>{new Date(session.endTime).toLocaleTimeString('en-us', options)}</p>
+                                    <p><Moment date={session.startTime} interval={0} format={'hh:mm A'} />
+                                        &nbsp;-&nbsp;
+                                        <Moment date={session.endTime} interval={0} format={'hh:mm A'} /></p>
+                                    <p><Moment date={session.startTime} interval={0} format={'dddd, D MMM'} /></p>
                                 </div>
                                 <div className="OfficeHourLocation">
                                     {location || 'Unknown'}

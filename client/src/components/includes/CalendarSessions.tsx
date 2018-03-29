@@ -10,20 +10,22 @@ query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Dat
     searchSessionRange(course: $courseId, begintime: $beginTime, endtime: $endTime) {
         nodes {
             sessionSeryBySessionSeriesId {
-                location
+                building
+                room
                 sessionSeriesTasBySessionSeriesId {
-                nodes {
-                    userByUserId {
-                    firstName
-                    lastName
+                    nodes {
+                        userByUserId {
+                            firstName
+                            lastName
+                        }
                     }
-                }
                 }
             }
             sessionId
             startTime
             endTime
-            location
+            building
+            room
             sessionTasBySessionId {
                 nodes {
                     userByUserId {
@@ -82,9 +84,10 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
                         });
                     }
 
-                    var location = node.sessionSeryBySessionSeriesId.location;
-                    if (node.location !== null) {
-                        location = node.location;
+                    var location = node.sessionSeryBySessionSeriesId.building +
+                        ' ' + node.sessionSeryBySessionSeriesId.room;
+                    if (node.building !== null) {
+                        location = node.building + ' ' + node.room;
                     }
 
                     sessions.push({

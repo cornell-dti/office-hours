@@ -8,13 +8,15 @@ type Session = {
 
 type SessionNode = {
     endTime: Date,
-    location: string,
+    building: string,
+    room: string,
     sessionId: number
     sessionSeryBySessionSeriesId: {
         sessionSeriesTasBySessionSeriesId: {
             nodes: [TANode]
         },
-        location: string,
+        building: string,
+        room: string
     },
     sessionTasBySessionId: {
         nodes: [TANode]
