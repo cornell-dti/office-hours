@@ -1,8 +1,11 @@
 import * as React from 'react';
+import { Dropdown, DropdownItemProps } from 'semantic-ui-react'
+import { Checkbox } from 'semantic-ui-react'
 
 class ProfessorCalendarRow extends React.Component {
 
     props: {
+        taList: string[]
         time: string[]
         ta: string[]
         location: string[]
@@ -38,6 +41,12 @@ class ProfessorCalendarRow extends React.Component {
             );
         }
 
+        const taOptions = new Array<DropdownItemProps>();
+        for (var i = 0; i < this.props.taList.length; i++) {
+            var current = this.props.taList[i];
+            taOptions.push({ value: current, text: current })
+        }
+
         var rows = this.props.time.map(
             (row, index) => {
                 return (
@@ -62,7 +71,7 @@ class ProfessorCalendarRow extends React.Component {
                                 <div className="InfoInput">
                                     <div className="TA">
                                         <i className="user icon" />
-                                        <input className="long" value={this.props.ta[index]} />
+                                        <Dropdown className="dropdown" placeholder='TA Name' selection options={taOptions} defaultValue={taOptions[index].value} />
                                         <button className="AddTAButton">
                                             <i className="plus icon" />
                                             Add TA
@@ -79,8 +88,7 @@ class ProfessorCalendarRow extends React.Component {
                                         <input value="12:00 PM" />
                                         To
                                         <input value="2:00 PM" />
-                                        <input className="repeat" type="checkbox" />
-                                        Repeat Weekly
+                                        <Checkbox className='repeat' label='Repeat Weekly' />
                                     </div>
                                 </div>
                                 <div className="EditButtons">
