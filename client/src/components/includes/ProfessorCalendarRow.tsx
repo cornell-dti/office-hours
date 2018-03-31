@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as moment from 'moment';
 import { Dropdown, DropdownItemProps } from 'semantic-ui-react'
 import { Checkbox } from 'semantic-ui-react'
 
@@ -6,9 +7,11 @@ class ProfessorCalendarRow extends React.Component {
 
     props: {
         taList: string[]
-        time: string[]
-        ta: string[]
-        location: string[]
+        timeStart: number[]
+        timeEnd: number[]
+        taIndex: number[]
+        LocationBuilding: string[]
+        LocationRoomNum: string[]
         tablewidth: number
     };
 
@@ -19,7 +22,7 @@ class ProfessorCalendarRow extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = {
-            editVisible: new Array<boolean>(this.props.time.length).fill(false)
+            editVisible: new Array<boolean>(this.props.timeStart.length).fill(false)
         };
     }
 
@@ -31,7 +34,7 @@ class ProfessorCalendarRow extends React.Component {
     }
 
     render() {
-        if (this.props.time.length === 0) {
+        if (this.props.timeStart.length === 0) {
             return (
                 <tr>
                     <td colSpan={this.props.tablewidth} className="NoOH">
@@ -41,20 +44,31 @@ class ProfessorCalendarRow extends React.Component {
             );
         }
 
+        // Create TA Dropdown items
         const taOptions = new Array<DropdownItemProps>();
         for (var i = 0; i < this.props.taList.length; i++) {
             var current = this.props.taList[i];
             taOptions.push({ value: current, text: current })
         }
 
-        var rows = this.props.time.map(
+        // Convert UNIX timestamps to readable time string
+        var date = new Array<string>(this.props.timeStart.length);
+        var timeStart = new Array<string>(this.props.timeStart.length);
+        var timeEnd = new Array<string>(this.props.timeEnd.length);
+        for (var i = 0; i < this.props.timeStart.length; i++) {
+            date[i] = moment(this.props.timeStart[i]).format("dddd MM/DD/YY");
+            timeStart[i] = moment(this.props.timeStart[i]).format("h:mm A");
+            timeEnd[i] = moment(this.props.timeEnd[i]).format("h:mm A");
+        }
+
+        var rows = this.props.timeStart.map(
             (row, index) => {
                 return (
                     <tbody className={'Pair ' + this.state.editVisible[index]}>
                         <tr className={'Preview ' + this.state.editVisible[index]}>
-                            <td>{this.props.time[index]}</td>
-                            <td>{this.props.ta[index]}</td>
-                            <td>{this.props.location[index]}</td>
+                            <td>{timeStart[index]} to {timeEnd[index]}</td>
+                            <td>{this.props.taList[this.props.taIndex[index]]}</td>
+                            <td>{this.props.LocationBuilding[index]} {this.props.LocationRoomNum[index]}</td>
                             <td>
                                 <button className="Edit" onClick={() => this.toggleEdit(index)}>
                                     <i className="pencil icon" />
@@ -79,15 +93,15 @@ class ProfessorCalendarRow extends React.Component {
                                     </div>
                                     <div className="Location">
                                         <i className="marker icon" />
-                                        <input className="long" value={this.props.location[index]} />
-                                        <input value="Room Number" />
+                                        <input className="long" value={this.props.LocationBuilding[index]} />
+                                        <input value={this.props.LocationRoomNum[index]} />
                                     </div>
                                     <div className="Time">
                                         <i className="time icon" />
-                                        <input value={this.props.time[index]} />
-                                        <input value="12:00 PM" />
+                                        <input value={date[index]} />
+                                        <input value={timeStart[index]} />
                                         To
-                                        <input value="2:00 PM" />
+                                        <input value={timeEnd[index]} />
                                         <Checkbox className='repeat' label='Repeat Weekly' />
                                     </div>
                                 </div>

@@ -1,17 +1,17 @@
 import * as React from 'react';
 import * as moment from 'moment';
-import { Dropdown } from 'semantic-ui-react'
-import { Checkbox } from 'semantic-ui-react'
+import { Dropdown } from 'semantic-ui-react';
+import { Checkbox } from 'semantic-ui-react';
 
 class ProfessorAddNewOH extends React.Component {
 
     props: {
         taList: string[]
-    }
+    };
 
     state: {
-        editVisible: boolean;
-        deleteVisible: boolean;
+        editVisible: boolean
+        deleteVisible: boolean
     };
 
     constructor(props: {}) {
@@ -41,7 +41,7 @@ class ProfessorAddNewOH extends React.Component {
         const taOptions = [];
         for (var i = 0; i < this.props.taList.length; i++) {
             var current = this.props.taList[i];
-            taOptions.push({ value: current, text: current })
+            taOptions.push({ value: current, text: current });
         }
 
         return (
@@ -55,7 +55,7 @@ class ProfessorAddNewOH extends React.Component {
                     </button>
                 </div>
                 <div className={'ExpandedAdd ' + this.state.editVisible}>
-                    <div className='NewOHHeader'>
+                    <div className="NewOHHeader">
                         <button className="ExpandedNewOHButton" onClick={() => this.toggleEdit(false)}>
                             <i className="plus icon" />
                             Add New Office Hour
@@ -64,7 +64,7 @@ class ProfessorAddNewOH extends React.Component {
                     <div className="InfoInput">
                         <div className="TA">
                             <i className="user icon" />
-                            <Dropdown className="dropdown" placeholder='TA Name' selection options={taOptions} />
+                            <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} />
                             <button className="AddTAButton">
                                 <i className="plus icon" />
                                 Add TA
@@ -81,7 +81,7 @@ class ProfessorAddNewOH extends React.Component {
                             <input placeholder="12:00 PM" />
                             To
                             <input placeholder="2:00 PM" />
-                            <Checkbox className='repeat' label='Repeat Weekly' />
+                            <Checkbox className="repeat" label="Repeat Weekly" />
                         </div>
                     </div>
                     <div className="Buttons">
