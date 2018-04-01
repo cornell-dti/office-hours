@@ -4,9 +4,9 @@ import ProfessorCalendarRow from './ProfessorCalendarRow';
 class ProfessorCalendarTable extends React.Component {
 
     props: {
+        taList: string[],
         // Array lengths are all 7
         // Index 0 == Monday... Index 6 == Sunday
-        taList: string[],
         timeStart: number[][],
         timeEnd: number[][],
         taIndex: number[][],
@@ -14,8 +14,62 @@ class ProfessorCalendarTable extends React.Component {
         LocationRoomNum: string[][],
     };
 
+    state: {
+        isExpanded: boolean[][]
+        currentDay: number
+        currentRow: number
+    }
+
+    constructor(props: {}) {
+        super(props);
+        this.toggleEdit = this.toggleEdit.bind(this);
+        // var isExpandedInit = new Array<boolean[]>();
+        var isExpandedInit = []
+        for (var i = 0; i < 7; i++) {
+            isExpandedInit.push(new Array<boolean>(this.props.timeStart[i].length).fill(false))
+        }
+        this.state = {
+            isExpanded: isExpandedInit,
+            currentDay: 0,
+            currentRow: 0
+        };
+    }
+
+    toggleEdit(day: number, row: number) {
+        var cDay = this.state.currentDay;
+        var cRow = this.state.currentRow;
+
+        if (!(cDay == day && cRow == row)) {
+            this.state.isExpanded[cDay][cRow] = false;
+        }
+        this.state.isExpanded[day][row] = !this.state.isExpanded[day][row];
+
+        this.setState({
+            isExpanded: this.state.isExpanded,
+            currentDay: day,
+            currentRow: row
+        });
+    }
+
     render() {
         var tablewidth = 5;
+
+        var rows = new Array(7);
+        for (var i = 0; i < rows.length; i++) {
+            rows[i] =
+                <ProfessorCalendarRow
+                    dayNumber={i}
+                    taList={this.props.taList}
+                    timeStart={this.props.timeStart[i]}
+                    timeEnd={this.props.timeEnd[i]}
+                    taIndex={this.props.taIndex[i]}
+                    LocationBuilding={this.props.LocationBuilding[i]}
+                    LocationRoomNum={this.props.LocationRoomNum[i]}
+                    isExpanded={this.state.isExpanded[i]}
+                    handleToggle={this.toggleEdit}
+                    tablewidth={tablewidth}
+                />
+        }
 
         return (
             <div className="ProfessorCalendarTable">
@@ -23,87 +77,31 @@ class ProfessorCalendarTable extends React.Component {
                     <tr>
                         <th colSpan={tablewidth}>Monday</th>
                     </tr>
-                    <ProfessorCalendarRow
-                        taList={this.props.taList}
-                        timeStart={this.props.timeStart[0]}
-                        timeEnd={this.props.timeEnd[0]}
-                        taIndex={this.props.taIndex[0]}
-                        LocationBuilding={this.props.LocationBuilding[0]}
-                        LocationRoomNum={this.props.LocationRoomNum[0]}
-                        tablewidth={tablewidth}
-                    />
+                    {rows[0]}
                     <tr>
                         <th colSpan={tablewidth}>Tuesday</th>
                     </tr>
-                    <ProfessorCalendarRow
-                        taList={this.props.taList}
-                        timeStart={this.props.timeStart[1]}
-                        timeEnd={this.props.timeEnd[1]}
-                        taIndex={this.props.taIndex[1]}
-                        LocationBuilding={this.props.LocationBuilding[1]}
-                        LocationRoomNum={this.props.LocationRoomNum[1]}
-                        tablewidth={tablewidth}
-                    />
+                    {rows[1]}
                     <tr>
                         <th colSpan={tablewidth}>Wednesday</th>
                     </tr>
-                    <ProfessorCalendarRow
-                        taList={this.props.taList}
-                        timeStart={this.props.timeStart[2]}
-                        timeEnd={this.props.timeEnd[2]}
-                        taIndex={this.props.taIndex[2]}
-                        LocationBuilding={this.props.LocationBuilding[2]}
-                        LocationRoomNum={this.props.LocationRoomNum[2]}
-                        tablewidth={tablewidth}
-                    />
+                    {rows[2]}
                     <tr>
                         <th colSpan={tablewidth}>Thursday</th>
                     </tr>
-                    <ProfessorCalendarRow
-                        taList={this.props.taList}
-                        timeStart={this.props.timeStart[3]}
-                        timeEnd={this.props.timeEnd[3]}
-                        taIndex={this.props.taIndex[3]}
-                        LocationBuilding={this.props.LocationBuilding[3]}
-                        LocationRoomNum={this.props.LocationRoomNum[3]}
-                        tablewidth={tablewidth}
-                    />
+                    {rows[3]}
                     <tr>
                         <th colSpan={tablewidth}>Friday</th>
                     </tr>
-                    <ProfessorCalendarRow
-                        taList={this.props.taList}
-                        timeStart={this.props.timeStart[4]}
-                        timeEnd={this.props.timeEnd[4]}
-                        taIndex={this.props.taIndex[4]}
-                        LocationBuilding={this.props.LocationBuilding[4]}
-                        LocationRoomNum={this.props.LocationRoomNum[4]}
-                        tablewidth={tablewidth}
-                    />
+                    {rows[4]}
                     <tr>
                         <th colSpan={tablewidth}>Saturday</th>
                     </tr>
-                    <ProfessorCalendarRow
-                        taList={this.props.taList}
-                        timeStart={this.props.timeStart[5]}
-                        timeEnd={this.props.timeEnd[5]}
-                        taIndex={this.props.taIndex[5]}
-                        LocationBuilding={this.props.LocationBuilding[5]}
-                        LocationRoomNum={this.props.LocationRoomNum[5]}
-                        tablewidth={tablewidth}
-                    />
+                    {rows[5]}
                     <tr>
                         <th colSpan={tablewidth}>Sunday</th>
                     </tr>
-                    <ProfessorCalendarRow
-                        taList={this.props.taList}
-                        timeStart={this.props.timeStart[5]}
-                        timeEnd={this.props.timeEnd[5]}
-                        taIndex={this.props.taIndex[5]}
-                        LocationBuilding={this.props.LocationBuilding[5]}
-                        LocationRoomNum={this.props.LocationRoomNum[5]}
-                        tablewidth={tablewidth}
-                    />
+                    {rows[6]}
                 </table>
             </div>
         );

@@ -1,26 +1,29 @@
 @even-color: #edeff2;
 @odd-color: white;
 
-// tr.Preview:nth-child(even) {
-//     background-color: @even-color;
-// }
+tbody:nth-of-type(even) {
+    background-color: @even-color;
+}
 
-// tr.Preview:nth-child(odd) {
-//     background-color: @odd-color;
-// }
+tbody:nth-of-type(odd) {
+    background-color: @odd-color;
+}
 
-// tr.Preview:nth-child(1) {
-//     background-color: pink;
-// }
+.NoOH {
+    background-color: @even-color;
+}
 
 .Pair.true {
-    border: 1px solid gray;
-    // padding-right: 10px; 
     .Preview {
         color: white;
+        background-color: #898989;
         .Edit, .Delete {
             color: white;
         }
+    }
+    .ExpandedEdit {
+        border: 1px solid gray;
+        // box-sizing: border-box;
     }
 }
 
@@ -34,14 +37,9 @@
     }
 
     .Preview {
-        background-color: white;
         td:first-child {
             padding-left: 5%;
         }
-    }
-    
-    .Preview.true {
-        background-color: #898989;
     }
 
     Button {
@@ -119,4 +117,3 @@
         }
     }
 }
-

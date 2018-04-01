@@ -6,31 +6,25 @@ import { Checkbox } from 'semantic-ui-react'
 class ProfessorCalendarRow extends React.Component {
 
     props: {
+        dayNumber: number
         taList: string[]
         timeStart: number[]
         timeEnd: number[]
         taIndex: number[]
         LocationBuilding: string[]
         LocationRoomNum: string[]
+        isExpanded: boolean[]
+        handleToggle: Function
         tablewidth: number
-    };
-
-    state: {
-        editVisible: boolean[];
     };
 
     constructor(props: {}) {
         super(props);
-        this.state = {
-            editVisible: new Array<boolean>(this.props.timeStart.length).fill(false)
-        };
+        this.toggleEdit = this.toggleEdit.bind(this);
     }
 
-    toggleEdit(toggle: number) {
-        this.state.editVisible[toggle] = !this.state.editVisible[toggle]
-        this.setState({
-            editVisible: this.state.editVisible
-        });
+    toggleEdit(row: number) {
+        this.props.handleToggle(this.props.dayNumber, row);
     }
 
     render() {
@@ -61,12 +55,12 @@ class ProfessorCalendarRow extends React.Component {
             timeEnd[i] = moment(this.props.timeEnd[i]).format("h:mm A");
         }
 
-        var rows = this.props.timeStart.map(
+        var rowPair = this.props.timeStart.map(
             (row, index) => {
                 return (
-                    <tbody className={'Pair ' + this.state.editVisible[index]}>
-                        <tr className={'Preview ' + this.state.editVisible[index]}>
-                            <td>{timeStart[index]} to {timeEnd[index]}</td>
+                    <tbody className={'Pair ' + this.props.isExpanded[index]}>
+                        <tr className='Preview'>
+                            <td>{index} {timeStart[index]} to {timeEnd[index]}</td>
                             <td>{this.props.taList[this.props.taIndex[index]]}</td>
                             <td>{this.props.LocationBuilding[index]} {this.props.LocationRoomNum[index]}</td>
                             <td>
@@ -81,7 +75,7 @@ class ProfessorCalendarRow extends React.Component {
                             </td>
                         </tr>
                         <tr>
-                            <td colSpan={this.props.tablewidth} className={'ExpandedEdit ' + this.state.editVisible[index]}>
+                            <td colSpan={this.props.tablewidth} className={'ExpandedEdit ' + this.props.isExpanded[index]}>
                                 <div className="InfoInput">
                                     <div className="TA">
                                         <i className="user icon" />
@@ -93,15 +87,15 @@ class ProfessorCalendarRow extends React.Component {
                                     </div>
                                     <div className="Location">
                                         <i className="marker icon" />
-                                        <input className="long" value={this.props.LocationBuilding[index]} />
-                                        <input value={this.props.LocationRoomNum[index]} />
+                                        <input className="long" defaultValue={this.props.LocationBuilding[index]} />
+                                        <input defaultValue={this.props.LocationRoomNum[index]} />
                                     </div>
                                     <div className="Time">
                                         <i className="time icon" />
-                                        <input value={date[index]} />
-                                        <input value={timeStart[index]} />
+                                        <input defaultValue={date[index]} />
+                                        <input defaultValue={timeStart[index]} />
                                         To
-                                        <input value={timeEnd[index]} />
+                                        <input defaultValue={timeEnd[index]} />
                                         <Checkbox className='repeat' label='Repeat Weekly' />
                                     </div>
                                 </div>
@@ -109,6 +103,7 @@ class ProfessorCalendarRow extends React.Component {
                                     <button className="Delete">
                                         Delete
                                     </button>
+                                    <input type="reset" value="Cancel" />
                                     <button className="Cancel" onClick={() => this.toggleEdit(index)}>
                                         Cancel
                                     </button>
@@ -124,7 +119,7 @@ class ProfessorCalendarRow extends React.Component {
         );
 
         return (
-            rows
+            rowPair
         );
     }
 }
