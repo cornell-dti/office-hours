@@ -2,6 +2,9 @@ import * as React from 'react';
 import * as moment from 'moment';
 import { Dropdown } from 'semantic-ui-react';
 import { Checkbox } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react'
+// import DatePicker from 'react-datepicker';
+// import 'react-datepicker/dist/react-datepicker.css';
 
 class ProfessorAddNewOH extends React.Component {
 
@@ -50,35 +53,42 @@ class ProfessorAddNewOH extends React.Component {
                 </div>
                 <div className={'Add ' + !this.state.editVisible}>
                     <button className="NewOHButton" onClick={() => this.toggleEdit(true)}>
-                        <i className="plus icon" />
+                        <Icon name="plus" />
                         Add New Office Hour
                     </button>
                 </div>
                 <div className={'ExpandedAdd ' + this.state.editVisible}>
                     <div className="NewOHHeader">
                         <button className="ExpandedNewOHButton" onClick={() => this.toggleEdit(false)}>
-                            <i className="plus icon" />
+                            <Icon name="plus" />
                             Add New Office Hour
                         </button>
                     </div>
                     <div className="InfoInput">
                         <div className="TA">
-                            <i className="user icon" />
+                            <Icon name="user" />
                             <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} />
                             <button className="AddTAButton">
-                                <i className="plus icon" />
+                                <Icon name="plus" />
                                 Add TA
                             </button>
                         </div>
                         <div className="Location">
-                            <i className="marker icon" />
+                            <Icon name="marker" />
                             <input className="long" placeholder="Building/Location" />
                             <input placeholder="Room Number" />
                         </div>
                         <div className="Time">
-                            <i className="time icon" />
+                            <Icon name="time" />
                             <input placeholder={today} />
                             <input placeholder="12:00 PM" />
+                            {/* <DatePicker
+                                showTimeSelect
+                                showTimeSelectOnly
+                                timeIntervals={15}
+                                dateFormat="LT"
+                                timeCaption="Time"
+                            /> */}
                             To
                             <input placeholder="2:00 PM" />
                             <Checkbox className="repeat" label="Repeat Weekly" />

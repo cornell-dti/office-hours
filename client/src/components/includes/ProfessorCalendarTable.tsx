@@ -67,7 +67,7 @@ class ProfessorCalendarTable extends React.Component {
                     LocationRoomNum={this.props.LocationRoomNum[i]}
                     isExpanded={this.state.isExpanded[i]}
                     handleToggle={this.toggleEdit}
-                    tablewidth={tablewidth}
+                    tablewidth={5}
                 />
         }
 

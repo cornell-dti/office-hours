@@ -1,7 +1,8 @@
 import * as React from 'react';
 import * as moment from 'moment';
-import { Dropdown, DropdownItemProps } from 'semantic-ui-react'
-import { Checkbox } from 'semantic-ui-react'
+import { Dropdown, DropdownItemProps } from 'semantic-ui-react';
+import { Checkbox } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 
 class ProfessorCalendarRow extends React.Component {
 
@@ -42,35 +43,35 @@ class ProfessorCalendarRow extends React.Component {
         const taOptions = new Array<DropdownItemProps>();
         for (var i = 0; i < this.props.taList.length; i++) {
             var current = this.props.taList[i];
-            taOptions.push({ value: current, text: current })
+            taOptions.push({ value: current, text: current });
         }
 
         // Convert UNIX timestamps to readable time string
         var date = new Array<string>(this.props.timeStart.length);
         var timeStart = new Array<string>(this.props.timeStart.length);
         var timeEnd = new Array<string>(this.props.timeEnd.length);
-        for (var i = 0; i < this.props.timeStart.length; i++) {
-            date[i] = moment(this.props.timeStart[i]).format("dddd MM/DD/YY");
-            timeStart[i] = moment(this.props.timeStart[i]).format("h:mm A");
-            timeEnd[i] = moment(this.props.timeEnd[i]).format("h:mm A");
+        for (i = 0; i < this.props.timeStart.length; i++) {
+            date[i] = moment(this.props.timeStart[i]).format('dddd MM/DD/YY');
+            timeStart[i] = moment(this.props.timeStart[i]).format('h:mm A');
+            timeEnd[i] = moment(this.props.timeEnd[i]).format('h:mm A');
         }
 
         var rowPair = this.props.timeStart.map(
             (row, index) => {
                 return (
                     <tbody className={'Pair ' + this.props.isExpanded[index]}>
-                        <tr className='Preview'>
-                            <td>{index} {timeStart[index]} to {timeEnd[index]}</td>
+                        <tr className="Preview">
+                            <td>{timeStart[index]} to {timeEnd[index]}</td>
                             <td>{this.props.taList[this.props.taIndex[index]]}</td>
                             <td>{this.props.LocationBuilding[index]} {this.props.LocationRoomNum[index]}</td>
                             <td>
                                 <button className="Edit" onClick={() => this.toggleEdit(index)}>
-                                    <i className="pencil icon" />
+                                    <Icon name="pencil" />
                                 </button>
                             </td>
                             <td>
                                 <button className="Delete">
-                                    <i className="x icon" />
+                                    <Icon name="x" />
                                 </button>
                             </td>
                         </tr>
@@ -78,32 +79,31 @@ class ProfessorCalendarRow extends React.Component {
                             <td colSpan={this.props.tablewidth} className={'ExpandedEdit ' + this.props.isExpanded[index]}>
                                 <div className="InfoInput">
                                     <div className="TA">
-                                        <i className="user icon" />
-                                        <Dropdown className="dropdown" placeholder='TA Name' selection options={taOptions} defaultValue={taOptions[index].value} />
+                                        <Icon name="user" />
+                                        <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} defaultValue={taOptions[index].value} />
                                         <button className="AddTAButton">
-                                            <i className="plus icon" />
+                                            <Icon name="plus" />
                                             Add TA
                                         </button>
                                     </div>
                                     <div className="Location">
-                                        <i className="marker icon" />
+                                        <Icon name="marker" />
                                         <input className="long" defaultValue={this.props.LocationBuilding[index]} />
                                         <input defaultValue={this.props.LocationRoomNum[index]} />
                                     </div>
                                     <div className="Time">
-                                        <i className="time icon" />
+                                        <Icon name="time" />
                                         <input defaultValue={date[index]} />
                                         <input defaultValue={timeStart[index]} />
                                         To
                                         <input defaultValue={timeEnd[index]} />
-                                        <Checkbox className='repeat' label='Repeat Weekly' />
+                                        <Checkbox className="repeat" label="Repeat Weekly" />
                                     </div>
                                 </div>
                                 <div className="EditButtons">
                                     <button className="Delete">
                                         Delete
                                     </button>
-                                    <input type="reset" value="Cancel" />
                                     <button className="Cancel" onClick={() => this.toggleEdit(index)}>
                                         Cancel
                                     </button>
