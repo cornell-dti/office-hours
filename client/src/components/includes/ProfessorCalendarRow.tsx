@@ -3,6 +3,8 @@ import * as moment from 'moment';
 import { Dropdown, DropdownItemProps } from 'semantic-ui-react';
 import { Checkbox } from 'semantic-ui-react';
 import { Icon } from 'semantic-ui-react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 class ProfessorCalendarRow extends React.Component {
 
@@ -19,13 +21,27 @@ class ProfessorCalendarRow extends React.Component {
         tablewidth: number
     };
 
+    state: {
+        startDate: moment.Moment
+    };
+
     constructor(props: {}) {
         super(props);
+        this.state = {
+            startDate: moment()
+        };
         this.toggleEdit = this.toggleEdit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     toggleEdit(row: number) {
         this.props.handleToggle(this.props.dayNumber, row);
+    }
+
+    handleChange(date: moment.Moment) {
+        this.setState({
+            startDate: date
+        });
     }
 
     render() {
@@ -93,7 +109,14 @@ class ProfessorCalendarRow extends React.Component {
                                     </div>
                                     <div className="Time">
                                         <Icon name="time" />
-                                        <input defaultValue={date[index]} />
+                                        <div className="datePicker">
+                                            <DatePicker
+                                                selected={this.state.startDate}
+                                                onChange={this.handleChange}
+                                                dateFormat='dddd MM/DD/YY'
+                                                placeholderText={date[index]}
+                                            />
+                                        </div>
                                         <input defaultValue={timeStart[index]} />
                                         To
                                         <input defaultValue={timeEnd[index]} />

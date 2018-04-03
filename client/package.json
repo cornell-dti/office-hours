@@ -5,6 +5,7 @@
   "dependencies": {
     "@types/graphql": "^0.12.4",
     "@types/lodash.flowright": "^3.5.3",
+    "@types/react-datepicker": "^1.1.2",
     "@types/react-router-dom": "^4.2.2",
     "apollo-client-preset": "^1.0.8",
     "concurrently": "^3.5.1",

@@ -3,8 +3,8 @@ import * as moment from 'moment';
 import { Dropdown } from 'semantic-ui-react';
 import { Checkbox } from 'semantic-ui-react';
 import { Icon } from 'semantic-ui-react'
-// import DatePicker from 'react-datepicker';
-// import 'react-datepicker/dist/react-datepicker.css';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 class ProfessorAddNewOH extends React.Component {
 
@@ -15,15 +15,17 @@ class ProfessorAddNewOH extends React.Component {
     state: {
         editVisible: boolean
         deleteVisible: boolean
+        startDate: moment.Moment
     };
 
     constructor(props: {}) {
         super(props);
         this.state = {
             editVisible: false,
-            deleteVisible: false
-
+            deleteVisible: false,
+            startDate: moment()
         };
+        this.handleChange = this.handleChange.bind(this);
     }
 
     toggleEdit(toggle: boolean) {
@@ -35,6 +37,12 @@ class ProfessorAddNewOH extends React.Component {
     toggleDelete(toggle: boolean) {
         this.setState({
             deleteVisible: toggle
+        });
+    }
+
+    handleChange(date: moment.Moment) {
+        this.setState({
+            startDate: date
         });
     }
 
@@ -80,15 +88,15 @@ class ProfessorAddNewOH extends React.Component {
                         </div>
                         <div className="Time">
                             <Icon name="time" />
-                            <input placeholder={today} />
+                            <div className="datePicker">
+                                <DatePicker
+                                    selected={this.state.startDate}
+                                    onChange={this.handleChange}
+                                    dateFormat='dddd MM/DD/YY'
+                                    placeholderText={today}
+                                />
+                            </div>
                             <input placeholder="12:00 PM" />
-                            {/* <DatePicker
-                                showTimeSelect
-                                showTimeSelectOnly
-                                timeIntervals={15}
-                                dateFormat="LT"
-                                timeCaption="Time"
-                            /> */}
                             To
                             <input placeholder="2:00 PM" />
                             <Checkbox className="repeat" label="Repeat Weekly" />

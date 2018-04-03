@@ -36,6 +36,13 @@
   version "8.9.4"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.9.4.tgz#dfd327582a06c114eb6e0441fa3d6fab35edad48"
 
+"@types/react-datepicker@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@types/react-datepicker/-/react-datepicker-1.1.2.tgz#9efe769a8af0d5b38cb51f082f18a664b20e3d46"
+  dependencies:
+    "@types/react" "*"
+    moment ">=2.14.0"
+
 "@types/react-dom@^16.0.3":
   version "16.0.4"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.4.tgz#2e8fd45f5443780ed49bf2cdd9809e6091177a7d"
@@ -3664,6 +3671,10 @@ moment-timezone@^0.5.14:
 "moment@>= 2.9.0", moment@^2.20.0:
   version "2.20.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.20.1.tgz#d6eb1a46cbcc14a2b2f9434112c1ff8907f313fd"
+
+moment@>=2.14.0:
+  version "2.22.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.0.tgz#7921ade01017dd45186e7fee5f424f0b8663a730"
 
 ms@2.0.0:
   version "2.0.0"
