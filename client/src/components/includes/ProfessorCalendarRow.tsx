@@ -22,13 +22,17 @@ class ProfessorCalendarRow extends React.Component {
     };
 
     state: {
-        startDate: moment.Moment
+        startDate: (moment.Moment | null)[]
     };
 
     constructor(props: {}) {
         super(props);
+        var timeStartMoment = []
+        for (var i = 0; i < this.props.timeStart.length; i++) {
+            timeStartMoment.push(moment(this.props.timeStart[i]));
+        }
         this.state = {
-            startDate: moment()
+            startDate: timeStartMoment
         };
         this.toggleEdit = this.toggleEdit.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -38,9 +42,10 @@ class ProfessorCalendarRow extends React.Component {
         this.props.handleToggle(this.props.dayNumber, row);
     }
 
-    handleChange(date: moment.Moment) {
+    handleChange(index: number, date: moment.Moment | null) {
+        this.state.startDate[index] = date;
         this.setState({
-            startDate: date
+            startDate: this.state.startDate
         });
     }
 
@@ -111,10 +116,9 @@ class ProfessorCalendarRow extends React.Component {
                                         <Icon name="time" />
                                         <div className="datePicker">
                                             <DatePicker
-                                                selected={this.state.startDate}
-                                                onChange={this.handleChange}
-                                                dateFormat='dddd MM/DD/YY'
-                                                placeholderText={date[index]}
+                                                selected={this.state.startDate[index]}
+                                                onChange={(date) => this.handleChange(index, date)}
+                                                dateFormat="dddd MM/DD/YY"
                                             />
                                         </div>
                                         <input defaultValue={timeStart[index]} />

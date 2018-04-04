@@ -15,7 +15,7 @@ class ProfessorAddNewOH extends React.Component {
     state: {
         editVisible: boolean
         deleteVisible: boolean
-        startDate: moment.Moment
+        startDate?: moment.Moment
     };
 
     constructor(props: {}) {
@@ -23,7 +23,7 @@ class ProfessorAddNewOH extends React.Component {
         this.state = {
             editVisible: false,
             deleteVisible: false,
-            startDate: moment()
+            startDate: undefined
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -47,7 +47,7 @@ class ProfessorAddNewOH extends React.Component {
     }
 
     render() {
-        var today = moment().format('ddd L');
+        var today = moment().format('dddd MM/DD/YY');
 
         const taOptions = [];
         for (var i = 0; i < this.props.taList.length; i++) {
