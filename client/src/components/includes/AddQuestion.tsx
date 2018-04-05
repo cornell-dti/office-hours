@@ -46,7 +46,7 @@ class AddQuestion extends React.Component {
       this.handleClick = this.handleClick.bind(this);
       this.handlePrimarySelected = this.handlePrimarySelected.bind(this);
       this.handleSecondarySelected = this.handleSecondarySelected.bind(this);
-      this.handleTopicSelected = this.handleTopicSelected.bind(this);
+      /*this.handleTopicSelected = this.handleTopicSelected.bind(this);*/
       this.handleEditTags = this.handleEditTags.bind(this);
       this.handleXClick = this.handleXClick.bind(this);
       this.handleJoinClick = this.handleJoinClick.bind(this);
@@ -72,17 +72,17 @@ class AddQuestion extends React.Component {
           temp = new Array(this.props.primaryTags.length).fill(false);
           temp[index] = !temp[index];
           this.setState({ showSecondaryTags: true});
-          if (this.state.numberSecondaryTags > 0) {
+          /*if (this.state.numberSecondaryTags > 0) {
             this.setState({ showTopicTags: true});
           }
           else {
             this.setState({ showTopicTags: false});
-          }
+          }*/
         }
         else {
           temp[index] = !temp[index];
           this.setState({ showSecondaryTags: false});
-          this.setState({ showTopicTags: false });
+          /*this.setState({ showTopicTags: false });*/
         }
       this.setState({ primaryBooleanList: temp});
     }
@@ -94,14 +94,19 @@ class AddQuestion extends React.Component {
       else this.state.numberSecondaryTags--;
       this.setState({ secondaryBooleanList: temp});
       if (this.state.numberSecondaryTags > 0) {
-        this.setState({ showTopicTags: true});
+        /*this.setState({ showTopicTags: true});
       }
       else {
         this.setState({ showTopicTags: false});
+      }*/
+        this.setState({ showQuestionInput: true});
+      }
+      else {
+        this.setState({ showQuestionInput: false});
       }
     }
 
-    public handleTopicSelected(index: number) : void {
+    /*public handleTopicSelected(index: number) : void {
       var temp = this.state.topicBooleanList;
       temp[index] = !temp[index];
       if (temp[index]) this.state.numberTopicTags++;
@@ -113,7 +118,7 @@ class AddQuestion extends React.Component {
       else {
         this.setState({ showQuestionInput: false});
       }
-    }
+    }*/
 
     public handleEditTags(event: any) : void {
       this.setState({ doneSelectingTags: false})
@@ -136,11 +141,11 @@ class AddQuestion extends React.Component {
           }
         );
 
-        var topicTagsList = this.props.topicTags.map(
+        /*var topicTagsList = this.props.topicTags.map(
           (tag, index) => {
             return <SelectedTags index={index} tag={tag} ifSelected={this.state.topicBooleanList[index]} onClick={this.handleTopicSelected}/>
           }
-        );
+        );*/
 
         var collapsedPrimary = this.state.primaryBooleanList.map(
           (tag, index) => {
@@ -156,12 +161,12 @@ class AddQuestion extends React.Component {
           }
         );
 
-        var collapsedTopic = this.state.topicBooleanList.map(
+        /*var collapsedTopic = this.state.topicBooleanList.map(
           (tag, index) => {
             if (tag) return <p className="selectedTag">{this.props.topicTags[index]}</p>
             else return null
           }
-        );
+        );*/
 
         return (
           <div className="AddQuestion">
@@ -205,7 +210,7 @@ class AddQuestion extends React.Component {
                     {secondaryTagsList}
                   </div> : <p className="placeHolder">Select Primary Tag first</p> }
               </div>
-              <div className="tagsMiniContainer" onClick={this.handleEditTags}>
+              {/*<div className="tagsMiniContainer" onClick={this.handleEditTags}>
                 <hr/>
                 <p>Topic Tags</p>
                 { this.state.showTopicTags ?
@@ -216,7 +221,7 @@ class AddQuestion extends React.Component {
                   <div className="QuestionTags">
                     {topicTagsList}
                   </div> : <p className="placeHolder">Select Secondary Tag first</p> }
-              </div>
+              </div>*/}
               <div className="tagsMiniContainer">
                 <hr/>
                 <p>Question</p>
