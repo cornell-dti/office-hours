@@ -12,7 +12,8 @@ class SessionInformationHeader extends React.Component {
         queueSize: number,
         date: string,
         time: string,
-        location: string
+        location: string,
+        picture: string
     };
 
     constructor(props: {}) {
@@ -36,29 +37,29 @@ class SessionInformationHeader extends React.Component {
         return (
             <div className="SessionInformationHeader">
                 <div className="header">
-                    <button className="CloseButton" type="submit" onClick={this.handleOnClick}>
-                        X
-                    </button>
+                    <p className="BackButton" onClick={this.handleOnClick}><i className="left"></i> {this.props.courseName}</p>
                     <div className="CourseInfo">
-                        <span className="CourseNum">{this.props.courseName}  </span>
-                        {this.props.taName}
+                        <div className="CourseDetails">
+                            <p className="Location">{this.props.location}</p>
+                            <p>{this.props.time}</p>
+                        </div>
+                        <div className="Picture">
+                            <img src={this.props.picture}/>
+                        </div>
                     </div>
-                    <div>
-                        <div className="QueueInfo">
-                            <div className="QueueTotal">
-                                {this.props.queueSize}
-                            </div>
-                            <div>in queue</div>
+                </div>
+                <div className="MoreInformation">
+                    <hr/>
+                    <div className="QueueInfo">
+                        <img src="../../media/peopleLogo.jpg"/>
+                        <p><span className="red">{this.props.queueSize}</span> ahead</p>
+                    </div>
+                    <div className="OfficeHourInfo">
+                        <div className="OfficeHourDate">
+                            <img src="../../media/peopleLogo.jpg"/>
+                            <p>{this.props.date}</p>
                         </div>
-                        <div className="OfficeHourInfo">
-                            <div className="OfficeHourTime">
-                                <p>{this.props.date}</p>
-                                <p>{this.props.time}</p>
-                            </div>
-                            <div className="OfficeHourLocation">
-                                {this.props.location}
-                            </div>
-                        </div>
+                        <p>Held by <span className="black">{this.props.taName}</span></p>
                     </div>
                 </div>
             </div>

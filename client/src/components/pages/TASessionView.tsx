@@ -32,6 +32,7 @@ class TASessionView extends React.Component {
                     date="Wednesday, 8 Nov"
                     time="10:00 AM - 11:00 AM"
                     location="G23 Gates Hall"
+                    picture="https://i2.wp.com/puppypassionn.org/wp-content/uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1"
                 />
                 <div className="SessionSorter">
                     <div

@@ -4,7 +4,8 @@ class SessionJoinButton extends React.Component {
     render() {
         return (
             <div className="SessionJoinButton">
-                <span>+</span>
+                <p className="Plus">+</p>
+                <p>Join the Queue</p>
             </div>
         );
     }
