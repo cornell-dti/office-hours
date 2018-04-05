@@ -13,8 +13,9 @@ class SessionQuestionsContainer extends React.Component {
         studentName: string[],
         studentQuestion: string[],
         tags: string[][],
-        group: string[][]
-        numberOfPeople: number[]
+        group: string[][],
+        order: string[],
+        times: string[]
     };
 
     constructor(props: {}) {
@@ -40,11 +41,10 @@ class SessionQuestionsContainer extends React.Component {
                     <SessionQuestionsComponent
                         key={index}
                         handleClick={this.handleClick}
-                        studentName={studentName}
                         studentQuestion={this.props.studentQuestion[index]}
                         tags={this.props.tags[index]}
-                        group={this.props.group[index]}
-                        numberOfPeople={this.props.numberOfPeople[index]}
+                        order={this.props.order[index]}
+                        times={this.props.times[index]}
                         index={index}
                     />
                 );

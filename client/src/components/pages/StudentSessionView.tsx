@@ -32,8 +32,11 @@ class StudentSessionView extends React.Component {
                     tags={[['Assignment', 'Assignment 1', 'Recursion', 'Function'],
                     ['Exam', 'Prelim1', 'Q5', 'Statistics', 'Nearest Neighbor'],
                     ['Lecture', 'Lecture1', 'Parsing', 'DataSet1', 'Function']]}
-                    group={[['Group 1'], ['Group 2'], ['Group 3']]}
-                    numberOfPeople={[1005, 1011, 1018]}
+                    group={[['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada'],
+                    ['Joshua Tran', 'Bill Oliver', 'Patrick Gross'],
+                    ['Joshua Tran', 'Bill Oliver'], ['Joshua Tran'], []]}
+                    order={['NOW', '2nd', '3rd']}
+                    times={["10:05 AM", "10:11 AM", "10:18 AM"]}
                 />
             </div>
         );

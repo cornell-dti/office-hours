@@ -1,5 +1,4 @@
 import * as React from 'react';
-const peopleLogoImage = require('../../media/peopleLogo.jpg');
 
 class SessionQuestionsComponent extends React.Component {
     // constructor(props: any) {
@@ -9,11 +8,10 @@ class SessionQuestionsComponent extends React.Component {
 
     props: {
         handleClick: Function,
-        studentName: string,
         studentQuestion: string,
         tags: string[],
-        group: string[],
-        numberOfPeople: number,
+        order: string,
+        times: string,
         index: number
     };
 
@@ -35,15 +33,13 @@ class SessionQuestionsComponent extends React.Component {
 
         return (
             <div className="QueueQuestions" onClick={() => this.toggleDetails(true)}>
-                <p className="Name">{this.props.studentName}</p>
                 <p className="Question">{this.props.studentQuestion}</p>
                 <div className="Tags">
                     {tagsList}
                 </div>
                 <div className="BottomBar">
-                    <img src={peopleLogoImage} className={'peopleLogo'} alt="3 people logo" />
-                    <p className="NumberOfPeople">{this.props.numberOfPeople}</p>
-                    <button className="Button">Resolve</button>
+                    <p className="Order">{this.props.order}</p>
+                    <p className="Time">{this.props.times}</p>
                 </div>
             </div>
         );

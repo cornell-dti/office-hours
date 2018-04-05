@@ -61,7 +61,8 @@ class TASessionView extends React.Component {
                     group={[['Joshua Tran', 'Bill Oliver', 'Patrick Gross', 'Harvey Estrada'],
                     ['Joshua Tran', 'Bill Oliver', 'Patrick Gross'],
                     ['Joshua Tran', 'Bill Oliver'], ['Joshua Tran'], []]}
-                    numberOfPeople={[10, 20, 30, 40, 50]}
+                    order={['NOW', '2nd', '3rd']}
+                    times={["10:05 AM", "10:11 AM", "10:18 AM"]}
                 />
             </div>
         );
