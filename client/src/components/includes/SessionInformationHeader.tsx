@@ -51,13 +51,12 @@ class SessionInformationHeader extends React.Component {
                 <div className="MoreInformation">
                     <hr/>
                     <div className="QueueInfo">
-                        <img src="../../media/peopleLogo.jpg"/>
+                        <i className="users"></i>
                         <p><span className="red">{this.props.queueSize}</span> ahead</p>
                     </div>
                     <div className="OfficeHourInfo">
                         <div className="OfficeHourDate">
-                            <img src="../../media/peopleLogo.jpg"/>
-                            <p>{this.props.date}</p>
+                            <p><i className="calendar"></i> {this.props.date}</p>
                         </div>
                         <p>Held by <span className="black">{this.props.taName}</span></p>
                     </div>
