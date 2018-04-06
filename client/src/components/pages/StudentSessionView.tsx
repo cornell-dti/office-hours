@@ -25,7 +25,10 @@ class StudentSessionView extends React.Component {
                 <SessionJoinButton />
                 <SessionQuestionsContainer
                     isDetailed={false}
-                    studentName={['Gibbs', 'Dinozzo', 'Ziva']}
+                    studentPicture={["https://i2.wp.com/puppypassionn.org/wp-content/uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1",
+                    "https://i2.wp.com/puppypassionn.org/wp-content/uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1",
+                    "https://i2.wp.com/puppypassionn.org/wp-content/uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1"]}
+                    studentName={['Willie Clarke', 'Nancy Weber', 'Gibbs']}
                     studentQuestion={['How do you implement recursion when you try to use function used in question 4? hard to understand.',
                     'Can you clarify the statistics concept from the prelim?',
                     'How can I use the given function to parse dataset 1?']}
@@ -37,6 +40,7 @@ class StudentSessionView extends React.Component {
                     ['Joshua Tran', 'Bill Oliver'], ['Joshua Tran'], []]}
                     order={['NOW', '2nd', '3rd']}
                     times={["10:05 AM", "10:11 AM", "10:18 AM"]}
+                    isTA={false}
                 />
             </div>
         );

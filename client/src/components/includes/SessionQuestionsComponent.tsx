@@ -8,11 +8,14 @@ class SessionQuestionsComponent extends React.Component {
 
     props: {
         handleClick: Function,
+        studentPicture: string,
+        studentName: string,
         studentQuestion: string,
         tags: string[],
         order: string,
         times: string,
-        index: number
+        index: number,
+        isTA: boolean
     };
 
     constructor(props: {}) {
@@ -33,6 +36,12 @@ class SessionQuestionsComponent extends React.Component {
 
         return (
             <div className="QueueQuestions" onClick={() => this.toggleDetails(true)}>
+                { this.props.isTA ?
+                  <div className="studentInformation">
+                      <img src={this.props.studentPicture}/>
+                      <p className="Name">{this.props.studentName}</p>
+                  </div> : <div> </div>
+                }
                 <p className="Question">{this.props.studentQuestion}</p>
                 <div className="Tags">
                     {tagsList}
@@ -41,6 +50,15 @@ class SessionQuestionsComponent extends React.Component {
                     <p className="Order">{this.props.order}</p>
                     <p className="Time">{this.props.times}</p>
                 </div>
+                { this.props.isTA ?
+                  <div className="Buttons">
+                    <hr/>
+                    <div className="Button">
+                      <p className="Delete">X Delete</p>
+                      <p className="Resolve">	&#10004; Resolve</p>
+                    </div>
+                  </div> : <div> </div>
+                }
             </div>
         );
     }
