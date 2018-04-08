@@ -68,37 +68,37 @@ type InputProps = {
 class CalendarSessions extends React.Component<ChildProps<InputProps, Response>> {
     render() {
         var sessions: Session[] = [];
-        if (this.props.data.searchSessionRange !== undefined) {
-            if (this.props.data.searchSessionRange !== null) {
-                this.props.data.searchSessionRange.nodes.forEach((node: SessionNode) => {
-                    var tas: string[] = [];
-                    if (node.sessionTasBySessionId !== undefined) {
-                        node.sessionTasBySessionId.nodes.forEach(ta => {
-                            tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
-                        });
-                    }
-                    if (node.sessionSeryBySessionSeriesId.sessionSeriesTasBySessionSeriesId.nodes !== undefined
-                        && tas.length === 0) {
-                        node.sessionSeryBySessionSeriesId.sessionSeriesTasBySessionSeriesId.nodes.forEach(ta => {
-                            tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
-                        });
-                    }
-
-                    var location = node.sessionSeryBySessionSeriesId.building +
-                        ' ' + node.sessionSeryBySessionSeriesId.room;
-                    if (node.building !== null) {
-                        location = node.building + ' ' + node.room;
-                    }
-
-                    sessions.push({
-                        id: node.sessionId,
-                        location: location,
-                        ta: tas,
-                        startTime: node.startTime,
-                        endTime: node.endTime,
+        if (this.props.data.searchSessionRange) {
+            this.props.data.searchSessionRange.nodes.forEach((node: SessionNode) => {
+                var tas: string[] = [];
+                if (node.sessionTasBySessionId) {
+                    node.sessionTasBySessionId.nodes.forEach(ta => {
+                        tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
                     });
+                }
+                var location = '';
+                if (node.sessionSeryBySessionSeriesId) {
+                    if (node.sessionSeryBySessionSeriesId.sessionSeriesTasBySessionSeriesId.nodes && tas.length === 0) {
+                        tas = node.sessionSeryBySessionSeriesId.sessionSeriesTasBySessionSeriesId.nodes.map(
+                            ta => ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName
+                        );
+                    }
+
+                    location = node.sessionSeryBySessionSeriesId.building +
+                        ' ' + node.sessionSeryBySessionSeriesId.room;
+                }
+                if (node.building !== null) {
+                    location = node.building + ' ' + node.room;
+                }
+
+                sessions.push({
+                    id: node.sessionId,
+                    location: location,
+                    ta: tas,
+                    startTime: node.startTime,
+                    endTime: node.endTime,
                 });
-            }
+            });
         }
 
         if (this.props.useFakeData) {
