@@ -19,6 +19,9 @@ type InputProps = {
             },
             building: string,
             room: string,
+            courseByCourseId: {
+                name: string
+            }
             sessionSeryBySessionSeriesId: {
                 building: string,
                 room: string,
@@ -46,6 +49,9 @@ const QUERY = gql`
             building
             room
             startTime
+            courseByCourseId {
+                name
+            }
             endTime
             questionsBySessionId {
                 nodes {
@@ -107,22 +113,24 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
         if (this.state.redirect) {
             return <Redirect push={true} to="/calendar" />;
         }
-        if (this.props.data.sessionBySessionId !== null && this.props.data.sessionBySessionId !== undefined) {
-
+        var location = 'Unknown';
+        if (this.props.data.sessionBySessionId) {
             var session = this.props.data.sessionBySessionId;
 
             var tas: string[] = [];
             session.sessionTasBySessionId.nodes.forEach(ta => {
                 tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
             });
-            if (tas.length === 0) {
-                session.sessionSeryBySessionSeriesId.sessionSeriesTasBySessionSeriesId.nodes.forEach(ta => {
-                    tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
-                });
-            }
+            if (session.sessionSeryBySessionSeriesId) {
+                if (tas.length === 0) {
+                    session.sessionSeryBySessionSeriesId.sessionSeriesTasBySessionSeriesId.nodes.forEach(ta => {
+                        tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
+                    });
+                }
 
-            var location = session.sessionSeryBySessionSeriesId.building +
-                ' ' + session.sessionSeryBySessionSeriesId.room;
+                location = session.sessionSeryBySessionSeriesId.building +
+                    ' ' + session.sessionSeryBySessionSeriesId.room;
+            }
             if (session.building !== null) {
                 location = session.building + ' ' + session.room;
             }
@@ -142,7 +150,10 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                         </button>
                         <div className="CourseInfo">
                             <span className="CourseNum">
-                                {session.sessionSeryBySessionSeriesId.courseByCourseId.name}&nbsp;&nbsp;
+                                {
+                                    session.courseByCourseId.name ||
+                                    session.sessionSeryBySessionSeriesId.courseByCourseId.name
+                                }
                             </span>
                             {tas[0]}
                         </div>
