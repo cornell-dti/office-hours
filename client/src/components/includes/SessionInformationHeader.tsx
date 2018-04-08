@@ -151,7 +151,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                         <div className="CourseInfo">
                             <span className="CourseNum">
                                 {
-                                    session.courseByCourseId.name ||
+                                    session.courseByCourseId && session.courseByCourseId.name ||
                                     session.sessionSeryBySessionSeriesId.courseByCourseId.name
                                 }
                             </span>
