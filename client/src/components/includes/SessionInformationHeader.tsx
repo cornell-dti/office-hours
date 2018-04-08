@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Redirect } from 'react-router';
+import { Icon } from 'semantic-ui-react'
 
 class SessionInformationHeader extends React.Component {
     state: {
@@ -51,12 +52,12 @@ class SessionInformationHeader extends React.Component {
                 <div className="MoreInformation">
                     <hr/>
                     <div className="QueueInfo">
-                        <i className="users"></i>
+                        <Icon name="users"/>
                         <p><span className="red">{this.props.queueSize}</span> ahead</p>
                     </div>
                     <div className="OfficeHourInfo">
                         <div className="OfficeHourDate">
-                            <p><i className="calendar"></i> {this.props.date}</p>
+                            <p><Icon name="calendar"/> {this.props.date}</p>
                         </div>
                         <p>Held by <span className="black">{this.props.taName}</span></p>
                     </div>
