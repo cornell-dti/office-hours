@@ -133,6 +133,13 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
 
         return (
             <div className="CalendarSessions">
+                {
+                    sessions.length === 0 &&
+                    <React.Fragment>
+                        <p className="noHoursHeading">No Office Hours</p>
+                        <p className="noHoursBody">No office hours are scheduled for today.</p>
+                    </React.Fragment>
+                }
                 {sessions.map(function (session: Session, i: number) {
                     return <CalendarSessionCard
                         start={session.startTime}
