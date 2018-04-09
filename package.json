@@ -20,6 +20,7 @@
     "homepage": "https://github.com/cornell-dti/office-hours#readme",
     "dependencies": {
         "body-parser": "^1.18.2",
+        "apollo-client": "^2.2.6",
         "concurrently": "^3.5.0",
         "express-graphql": "^0.6.12"
     }
