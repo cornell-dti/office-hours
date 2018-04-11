@@ -5,6 +5,13 @@ import CalendarSessions from '../includes/CalendarSessions';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
 class CalendarView extends React.Component {
+    props: {
+        match: {
+            params: {
+                courseId: number
+            }
+        }
+    };
 
     monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
@@ -18,8 +25,8 @@ class CalendarView extends React.Component {
         super(props);
         var week = new Date();
         week.setHours(0, 0, 0, 0);
-        week.setTime(week.getTime() -
-            (week.getDay() + 6) /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+
+        week.setDate(week.getDate() + 1 - week.getDay());
         var today = new Date();
         today.setHours(0, 0, 0, 0);
         this.state = {
@@ -124,7 +131,13 @@ class CalendarView extends React.Component {
                     handleClick={this.handleDateClick}
                     selectedIndex={todayIndex}
                 />
-                <CalendarSessions todayEpoch={this.state.selectedDateEpoch} />
+                <CalendarSessions
+                    beginTime={new Date(this.state.selectedDateEpoch)}
+                    endTime={new Date(this.state.selectedDateEpoch + 24 /* hours */ * 60 /* minutes */ * 60 * 1000)}
+                    match={this.props.match}
+                    data={{}}
+                    useFakeData={false}
+                />
             </div>
         );
     }

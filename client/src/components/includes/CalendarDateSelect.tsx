@@ -6,7 +6,7 @@ class CalendarDateSelect extends React.Component {
     props: {
         dayList: string[],
         dateList: number[],
-        hasOHList: boolean[]
+        hasOHList: boolean[],
         handleClick: Function,
         selectedIndex: number
     };

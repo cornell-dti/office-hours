@@ -28,7 +28,7 @@ yarn start
 This will serve the latest production build of the client available to it.
 
 # GraphQL goodies
-In what one might say is the entire reason we're using GraphQL, it's very easy to use the API. Once you have the graphQL server running, go to `localhost:3001/graphiql`.
+In what one might say is the entire reason we're using GraphQL, it's very easy to use the API. Once you have the graphQL server running, go to `localhost:3001/__gql/graphiql`.
 
 Tips:
 1. Press Docs to explore the different actions you can take.

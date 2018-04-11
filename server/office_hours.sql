@@ -825,4 +825,3 @@ ALTER TABLE ONLY public.tags
 --
 -- PostgreSQL database dump complete
 --
-
