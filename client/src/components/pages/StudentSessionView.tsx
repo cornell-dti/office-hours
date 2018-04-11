@@ -1,9 +1,22 @@
 import * as React from 'react';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
+<<<<<<< HEAD
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
+=======
+import SessionPopularQuestionsContainer from '../includes/SessionPopularQuestionsContainer';
+>>>>>>> db192cf10bf6e709cf127d33601ae47a8530ccc0
 import SessionJoinButton from '../includes/SessionJoinButton';
+import ConnectedSessionQuestions from '../includes/ConnectedSessionQuestions';
 
 class StudentSessionView extends React.Component {
+    props: {
+        match: {
+            params: {
+                sessionId: number
+            }
+        }
+    };
+
     render() {
         var popup = 'PopupInvisible';
         // Moved isDetailed flag to child component, so cannot lock background scroll this way
@@ -15,6 +28,7 @@ class StudentSessionView extends React.Component {
         return (
             <div className={'StudentSessionView ' + popup}>
                 <SessionInformationHeader
+<<<<<<< HEAD
                     courseName="CS 1380"
                     taName="Corey Valedz"
                     queueSize={23}
@@ -46,6 +60,14 @@ class StudentSessionView extends React.Component {
                     times={["10:05 AM", "10:11 AM", "10:18 AM"]}
                     isTA={false}
                 />
+=======
+                    match={this.props.match}
+                    data={{}}
+                />
+                <SessionPopularQuestionsContainer />
+                <ConnectedSessionQuestions match={this.props.match} data={{}} />
+                <SessionJoinButton />
+>>>>>>> db192cf10bf6e709cf127d33601ae47a8530ccc0
             </div>
         );
     }

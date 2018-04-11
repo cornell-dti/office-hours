@@ -11,11 +11,16 @@ class SessionQuestionsComponent extends React.Component {
         studentPicture: string,
         studentName: string,
         studentQuestion: string,
+<<<<<<< HEAD
         tags: string[],
         order: string,
         times: string,
         index: number,
         isTA: boolean
+=======
+        tags: Tag[],
+        index: number
+>>>>>>> db192cf10bf6e709cf127d33601ae47a8530ccc0
     };
 
     constructor(props: {}) {
@@ -29,8 +34,8 @@ class SessionQuestionsComponent extends React.Component {
 
     render() {
         var tagsList = this.props.tags.map(
-            (tag, index) => {
-                return <p key={index}>{tag}</p>;
+            (tag) => {
+                return <p key={tag.id}>{tag.name}</p>;
             }
         );
 
@@ -47,8 +52,12 @@ class SessionQuestionsComponent extends React.Component {
                     {tagsList}
                 </div>
                 <div className="BottomBar">
+<<<<<<< HEAD
                     <p className="Order">{this.props.order}</p>
                     <p className="Time">{this.props.times}</p>
+=======
+                    <button className="Button">Resolve</button>
+>>>>>>> db192cf10bf6e709cf127d33601ae47a8530ccc0
                 </div>
                 { this.props.isTA ?
                   <div className="Buttons">

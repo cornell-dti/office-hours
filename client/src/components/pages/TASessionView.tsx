@@ -1,8 +1,16 @@
 import * as React from 'react';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
-import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
+import ConnectedSessionQuestions from '../includes/ConnectedSessionQuestions';
 
 class TASessionView extends React.Component {
+
+    props: {
+        match: {
+            params: {
+                sessionId: number
+            }
+        }
+    };
 
     state: {
         sortPopularity: boolean
@@ -25,6 +33,7 @@ class TASessionView extends React.Component {
         return (
             <div className="TASessionView">
                 <SessionInformationHeader
+<<<<<<< HEAD
                     courseName="CS 3110"
                     taName="Michael Clarkson"
                     queueSize={14}
@@ -53,6 +62,26 @@ class TASessionView extends React.Component {
                     times={["10:05 AM", "10:11 AM", "10:18 AM"]}
                     isTA={true}
                 />
+=======
+                    match={this.props.match}
+                    data={{}}
+                />
+                <div className="SessionSorter">
+                    <div
+                        className={'SessionSorterItem left ' + (chron ? 'selected' : '')}
+                        onClick={() => this.setSortPop(false)}
+                    >
+                        Chronological
+                    </div>
+                    <div
+                        className={'SessionSorterItem ' + (!chron ? 'selected' : '')}
+                        onClick={() => this.setSortPop(true)}
+                    >
+                        Popularity
+                    </div>
+                </div>
+                <ConnectedSessionQuestions match={this.props.match} data={{}} />
+>>>>>>> db192cf10bf6e709cf127d33601ae47a8530ccc0
             </div>
         );
     }
