@@ -7,11 +7,7 @@ import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 
 type InputProps = {
-    match: {
-        params: {
-            sessionId: number,
-        },
-    },
+    sessionId: number,
     data: {
         sessionBySessionId?: {
             sessionTasBySessionId: {
@@ -86,8 +82,8 @@ const QUERY = gql`
 `;
 
 const withData = graphql<Response, InputProps>(QUERY, {
-    options: ({ match }) => ({
-        variables: { sessionId: match.params.sessionId }
+    options: ({ sessionId }) => ({
+        variables: { sessionId: sessionId }
     })
 });
 

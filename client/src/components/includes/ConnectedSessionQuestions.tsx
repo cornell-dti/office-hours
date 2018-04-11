@@ -33,11 +33,7 @@ const QUERY = gql`
 `;
 
 type InputProps = {
-    match: {
-        params: {
-            sessionId: number,
-        },
-    },
+    sessionId: number,
     data: {
         sessionBySessionId?: {
             questionsBySessionId: {
@@ -48,8 +44,8 @@ type InputProps = {
 };
 
 const withData = graphql<Response, InputProps>(QUERY, {
-    options: ({ match }) => ({
-        variables: { sessionId: match.params.sessionId }
+    options: ({ sessionId }) => ({
+        variables: { sessionId: sessionId }
     })
 });
 

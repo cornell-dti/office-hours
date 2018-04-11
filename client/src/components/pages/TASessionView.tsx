@@ -34,7 +34,7 @@ class TASessionView extends React.Component {
         return (
             <div className="TASessionView">
                 <SessionInformationHeader
-                    match={this.props.match}
+                    sessionId={this.props.match.params.sessionId}
                     data={{}}
                 />
                 <div className="SessionSorter">
@@ -51,7 +51,7 @@ class TASessionView extends React.Component {
                         Popularity
                     </div>
                 </div>
-                <ConnectedSessionQuestions match={this.props.match} data={{}} />
+                <ConnectedSessionQuestions sessionId={this.props.match.params.sessionId} data={{}} />
             </div>
         );
     }
