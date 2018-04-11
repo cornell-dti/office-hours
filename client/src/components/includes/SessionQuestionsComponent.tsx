@@ -55,7 +55,7 @@ class SessionQuestionsComponent extends React.Component {
                     <hr/>
                     <div className="Button">
                       <p className="Delete">X Delete</p>
-                      <p className="Resolve">	&#10004; Resolve</p>
+                      <p className="Resolve">&#10004; Resolve</p>
                     </div>
                   </div> : <div> </div>
                 }

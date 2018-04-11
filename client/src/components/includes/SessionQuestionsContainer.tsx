@@ -13,6 +13,7 @@ class SessionQuestionsContainer extends React.Component {
         studentPicture: string[],
         studentName: string[],
         studentQuestion: string[],
+        userQuestionID: number,
         tags: string[][],
         group: string[][],
         order: string[],
@@ -37,6 +38,15 @@ class SessionQuestionsContainer extends React.Component {
     }
 
     render() {
+        var userQuestion = this.props.studentQuestion[1]
+        var userOrder = this.props.order[1]
+        var userTime = this.props.times[1]
+        var userTagsList = this.props.tags[1].map(
+            (tag, index) => {
+                return <p key={index}>{tag}</p>;
+            }
+        );
+
         var cardList = this.props.studentName.map(
             (studentName, index) => {
                 return (
@@ -66,6 +76,27 @@ class SessionQuestionsContainer extends React.Component {
                     tags={this.props.tags[this.state.index]}
                     group={this.props.group[this.state.index]}
                 />
+                { (!this.props.isTA && (this.props.userQuestionID != -1)) ?
+                  <div className="User">
+                      <div className="UserQuestionHeader">
+                          <p className="QuestionHeader">My Question</p>
+                      </div>
+                      <div className="UserQuestion">
+                          <p className="Question">{userQuestion}</p>
+                          <div className="Tags">
+                              {userTagsList}
+                          </div>
+                          <div className="BottomBar">
+                              <p className="Order">{userOrder}</p>
+                              <p className="Time">{userTime}</p>
+                          </div>
+                          <div className="Buttons">
+                            <hr/>
+                            <p className="Delete">X Remove</p>
+                          </div>
+                      </div>
+                  </div> : <div> </div>
+                }
                 <div>
                     <p className="Queue">Queue</p>
                 </div>

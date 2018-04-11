@@ -10,6 +10,7 @@ class StudentSessionView extends React.Component {
         // if (this.state.isDetailed) {
         //     popup = 'PopupVisible';
         // }
+        var userID = 1;
 
         return (
             <div className={'StudentSessionView ' + popup}>
@@ -22,7 +23,9 @@ class StudentSessionView extends React.Component {
                     location="G23 Gates Hall"
                     picture="https://i2.wp.com/puppypassionn.org/wp-content/uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1"
                 />
-                <SessionJoinButton />
+                { userID == -1 ?
+                  <SessionJoinButton /> : <div> </div>
+                }
                 <SessionQuestionsContainer
                     isDetailed={false}
                     studentPicture={["https://i2.wp.com/puppypassionn.org/wp-content/uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1",
@@ -32,6 +35,7 @@ class StudentSessionView extends React.Component {
                     studentQuestion={['How do you implement recursion when you try to use function used in question 4? hard to understand.',
                     'Can you clarify the statistics concept from the prelim?',
                     'How can I use the given function to parse dataset 1?']}
+                    userQuestionID={userID}
                     tags={[['Assignment', 'Assignment 1', 'Recursion', 'Function'],
                     ['Exam', 'Prelim1', 'Q5', 'Statistics', 'Nearest Neighbor'],
                     ['Lecture', 'Lecture1', 'Parsing', 'DataSet1', 'Function']]}
