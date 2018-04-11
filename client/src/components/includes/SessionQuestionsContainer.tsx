@@ -130,7 +130,12 @@ class SessionQuestionsContainer extends React.Component {
                 <div>
                     <p className="Queue">Queue</p>
                 </div>
-                {cardList}
+                {questions.length > 0 && cardList}
+                {
+                    questions.length === 0 &&
+                    <p className="noQuestionsWarning">No questions in the queue. Be the first!</p>
+                }
+
             </div>
         );
     }
