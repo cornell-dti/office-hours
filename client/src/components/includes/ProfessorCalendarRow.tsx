@@ -22,31 +22,42 @@ class ProfessorCalendarRow extends React.Component {
     };
 
     state: {
-        startDate: (moment.Moment | null)[]
+        startTime: (moment.Moment | null)[]
+        endTime: (moment.Moment | null)[]
     };
 
     constructor(props: {}) {
         super(props);
         var timeStartMoment = [];
+        var timeEndMoment = [];
         for (var i = 0; i < this.props.timeStart.length; i++) {
             timeStartMoment.push(moment(this.props.timeStart[i]));
+            timeEndMoment.push(moment(this.props.timeEnd[i]));
         }
 
         this.state = {
-            startDate: timeStartMoment
+            startTime: timeStartMoment,
+            endTime: timeEndMoment
         };
         this.toggleEdit = this.toggleEdit.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.handleStartTime = this.handleStartTime.bind(this);
     }
 
     toggleEdit(row: number) {
         this.props.handleToggle(this.props.dayNumber, row);
     }
 
-    handleChange(index: number, date: moment.Moment | null) {
-        this.state.startDate[index] = date;
+    handleStartTime(index: number, date: moment.Moment | null) {
+        this.state.startTime[index] = date;
         this.setState({
-            startDate: this.state.startDate
+            startDate: this.state.startTime
+        });
+    }
+
+    handleEndTime(index: number, date: moment.Moment | null) {
+        this.state.endTime[index] = date;
+        this.setState({
+            startDate: this.state.endTime
         });
     }
 
@@ -117,14 +128,36 @@ class ProfessorCalendarRow extends React.Component {
                                         <Icon name="time" />
                                         <div className="datePicker">
                                             <DatePicker
-                                                selected={this.state.startDate[index]}
-                                                onChange={(d) => this.handleChange(index, d)}
+                                                selected={this.state.startTime[index]}
+                                                onChange={(d) => this.handleStartTime(index, d)}
                                                 dateFormat="dddd MM/DD/YY"
                                             />
                                         </div>
-                                        <input defaultValue={timeStart[index]} />
+                                        <div className="datePicker">
+                                            <DatePicker
+                                                selected={this.state.startTime[index]}
+                                                onChange={(d) => this.handleStartTime(index, d)}
+                                                showTimeSelect
+                                                // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
+                                                // Will not compile if removed
+                                                showTimeSelectOnly
+                                                timeIntervals={30}
+                                                dateFormat="LT"
+                                            />
+                                        </div >
                                         To
-                                        <input defaultValue={timeEnd[index]} />
+                                        <div className="datePicker">
+                                            <DatePicker
+                                                selected={this.state.endTime[index]}
+                                                onChange={(d) => this.handleEndTime(index, d)}
+                                                showTimeSelect
+                                                // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
+                                                // Will not compile if removed
+                                                showTimeSelectOnly
+                                                timeIntervals={30}
+                                                dateFormat="LT"
+                                            />
+                                        </div >
                                         <Checkbox className="repeat" label="Repeat Weekly" />
                                     </div>
                                 </div>

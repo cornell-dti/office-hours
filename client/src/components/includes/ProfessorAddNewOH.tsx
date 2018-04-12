@@ -110,19 +110,34 @@ class ProfessorAddNewOH extends React.Component {
                                     dateFormat='dddd MM/DD/YY'
                                     placeholderText={today}
                                 />
-                            </div>
-                            {/* <DatePicker
-                                selected={this.state.startTime}
-                                onChange={this.handleDate}
-                                showTimeSelect
-                                showTimeSelectOnly
-                                timeIntervals={15}
-                                dateFormat="LT"
-                                timeCaption="Time"
-                            /> */}
-                            <input placeholder="12:00 PM" />
+                            </div >
+                            <div className="datePicker">
+                                <DatePicker
+                                    selected={this.state.startTime}
+                                    onChange={this.handleStartTime}
+                                    showTimeSelect
+                                    // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
+                                    // Will not compile if removed
+                                    showTimeSelectOnly
+                                    timeIntervals={30}
+                                    dateFormat="LT"
+                                    placeholderText="12:00 PM"
+                                />
+                            </div >
                             To
-                            <input placeholder="2:00 PM" />
+                            <div className="datePicker">
+                                <DatePicker
+                                    selected={this.state.endTime}
+                                    onChange={this.handleEndTime}
+                                    showTimeSelect
+                                    // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
+                                    // Will not compile if removed
+                                    showTimeSelectOnly
+                                    timeIntervals={30}
+                                    dateFormat="LT"
+                                    placeholderText="2:00 PM"
+                                />
+                            </div >
                             <Checkbox className="repeat" label="Repeat Weekly" />
                         </div>
                     </div>
