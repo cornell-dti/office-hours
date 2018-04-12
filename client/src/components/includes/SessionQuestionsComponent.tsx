@@ -7,30 +7,14 @@ class SessionQuestionsComponent extends React.Component {
     // }
 
     props: {
-        handleClick: Function,
         studentPicture: string,
         studentName: string,
         studentQuestion: string,
-<<<<<<< HEAD
-        tags: string[],
-        order: string,
-        times: string,
-        index: number,
-        isTA: boolean
-=======
         tags: Tag[],
-        index: number
->>>>>>> db192cf10bf6e709cf127d33601ae47a8530ccc0
+        index: number,
+        isTA: boolean,
+        time: string,
     };
-
-    constructor(props: {}) {
-        super(props);
-        this.toggleDetails = this.toggleDetails.bind(this);
-    }
-
-    toggleDetails(prev: boolean) {
-        this.props.handleClick(prev, this.props.index);
-    }
 
     render() {
         var tagsList = this.props.tags.map(
@@ -40,33 +24,31 @@ class SessionQuestionsComponent extends React.Component {
         );
 
         return (
-            <div className="QueueQuestions" onClick={() => this.toggleDetails(true)}>
-                { this.props.isTA ?
-                  <div className="studentInformation">
-                      <img src={this.props.studentPicture}/>
-                      <p className="Name">{this.props.studentName}</p>
-                  </div> : <div> </div>
+            <div className="QueueQuestions">
+                {
+                    this.props.isTA &&
+                    <div className="studentInformation">
+                        <img src={this.props.studentPicture} />
+                        <p className="Name">{this.props.studentName}</p>
+                    </div>
                 }
                 <p className="Question">{this.props.studentQuestion}</p>
                 <div className="Tags">
                     {tagsList}
                 </div>
                 <div className="BottomBar">
-<<<<<<< HEAD
-                    <p className="Order">{this.props.order}</p>
-                    <p className="Time">{this.props.times}</p>
-=======
-                    <button className="Button">Resolve</button>
->>>>>>> db192cf10bf6e709cf127d33601ae47a8530ccc0
+                    <p className="Order">{this.props.index}</p>
+                    <p className="Time">{this.props.time}</p>
                 </div>
-                { this.props.isTA ?
-                  <div className="Buttons">
-                    <hr/>
-                    <div className="Button">
-                      <p className="Delete">X Delete</p>
-                      <p className="Resolve">&#10004; Resolve</p>
+                {
+                    this.props.isTA &&
+                    <div className="Buttons">
+                        <hr />
+                        <div className="Button">
+                            <p className="Delete">X Delete</p>
+                            <p className="Resolve">&#10004; Resolve</p>
+                        </div>
                     </div>
-                  </div> : <div> </div>
                 }
             </div>
         );

@@ -97,21 +97,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
         redirect: boolean;
     };
 
-<<<<<<< HEAD
-    props: {
-        courseName: string,
-        taName: string,
-        queueSize: number,
-        date: string,
-        time: string,
-        location: string,
-        picture: string
-    };
-
-    constructor(props: {}) {
-=======
     constructor(props: ChildProps<InputProps, Response>) {
->>>>>>> db192cf10bf6e709cf127d33601ae47a8530ccc0
         super(props);
         this.state = {
             redirect: false
@@ -125,39 +111,19 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
     }
 
     render() {
+        var queueLength = 0;
+
         if (this.state.redirect) {
             return <Redirect push={true} to="/calendar" />;
         }
-        var location = 'Unknown';
-        if (this.props.data.sessionBySessionId) {
-            var session = this.props.data.sessionBySessionId;
 
-<<<<<<< HEAD
-        return (
-            <div className="SessionInformationHeader">
-                <div className="header">
-                    <p className="BackButton" onClick={this.handleOnClick}><i className="left"></i> {this.props.courseName}</p>
-                    <div className="CourseInfo">
-                        <div className="CourseDetails">
-                            <p className="Location">{this.props.location}</p>
-                            <p>{this.props.time}</p>
-                        </div>
-                        <div className="Picture">
-                            <img src={this.props.picture}/>
-                        </div>
-                    </div>
-                </div>
-                <div className="MoreInformation">
-                    <hr/>
-                    <div className="QueueInfo">
-                        <Icon name="users"/>
-                        <p><span className="red">{this.props.queueSize}</span> ahead</p>
-                    </div>
-                    <div className="OfficeHourInfo">
-                        <div className="OfficeHourDate">
-                            <p><Icon name="calendar"/> {this.props.date}</p>
-=======
-            var tas: string[] = [];
+        var location = 'Unknown';
+        var tas: string[] = [];
+        var session = null;
+
+        if (this.props.data.sessionBySessionId) {
+            session = this.props.data.sessionBySessionId;
+
             session.sessionTasBySessionId.nodes.forEach(ta => {
                 tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
             });
@@ -175,61 +141,62 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                 location = session.building + ' ' + session.room;
             }
 
-            var queueLength = 0;
             session.questionsBySessionId.nodes.forEach(question => {
                 if (question.timeResolved === null) {
                     queueLength += 1;
                 }
             });
-
-            return (
-                <div className="SessionInformationHeader">
-                    <div className="header">
-                        <button className="CloseButton" type="submit" onClick={this.handleOnClick}>
-                            X
-                        </button>
-                        <div className="CourseInfo">
-                            <span className="CourseNum">
-                                {
-                                    session.courseByCourseId && session.courseByCourseId.name ||
-                                    session.sessionSeryBySessionSeriesId.courseByCourseId.name
-                                }
-                            </span>
-                            {tas[0]}
-                        </div>
-                        <div>
-                            <div className="QueueInfo">
-                                <div className="QueueTotal">
-                                    {queueLength}
-                                </div>
-                                <div>in queue</div>
-                            </div>
-                            <div className="OfficeHourInfo">
-                                <div className="OfficeHourTime">
-                                    <p><Moment date={session.startTime} interval={0} format={'hh:mm A'} />
-                                        &nbsp;-&nbsp;
-                                        <Moment date={session.endTime} interval={0} format={'hh:mm A'} /></p>
-                                    <p><Moment date={session.startTime} interval={0} format={'dddd, D MMM'} /></p>
-                                </div>
-                                <div className="OfficeHourLocation">
-                                    {location || 'Unknown'}
-                                </div>
-                            </div>
->>>>>>> db192cf10bf6e709cf127d33601ae47a8530ccc0
-                        </div>
-                        <p>Held by <span className="black">{this.props.taName}</span></p>
-                    </div>
-                </div>
-            );
-        } else {
-            return ('');
         }
 
+        return (
+            < div className="SessionInformationHeader" >
+                <div className="header">
+                    <p className="BackButton" onClick={this.handleOnClick}>
+                        <i className="left" />
+                        {
+                            session &&
+                            session.courseByCourseId && session.courseByCourseId.name ||
+                            session &&
+                            session.sessionSeryBySessionSeriesId.courseByCourseId.name
+                        }
+                    </p>
+                    <div className="CourseInfo">
+                        <div className="CourseDetails">
+                            <p className="Location">{location || 'Unknown'}</p>
+                            <p>{session && <Moment date={session.startTime} interval={0} format={'hh:mm A'} />}</p>
+                        </div>
+                        <div className="Picture">
+                            <img
+                                src={'https://i2.wp.com/puppypassionn.org/wp-content/' +
+                                    'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div className="MoreInformation">
+                    <hr />
+                    <div className="QueueInfo">
+                        <Icon name="users" />
+                        <p><span className="red">{queueLength}</span> ahead</p>
+                    </div>
+                    <div className="OfficeHourInfo">
+                        <div className="OfficeHourDate">
+                            <p><Icon name="calendar" />
+                                {
+                                    session &&
+                                    <Moment
+                                        date={session.startTime}
+                                        interval={0}
+                                        format={'dddd, D MMM'}
+                                    />
+                                }
+                            </p>
+                        </div>
+                        <p>Held by <span className="black"> {tas.length > 0 && tas[0]} </span></p>
+                    </div>
+                </div>
+            </div >
+        );
     }
 }
-
-<<<<<<< HEAD
-export default SessionInformationHeader;
-=======
 export default withData(SessionInformationHeader);
->>>>>>> db192cf10bf6e709cf127d33601ae47a8530ccc0
