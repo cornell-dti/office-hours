@@ -16,16 +16,19 @@ class ProfessorAddNewOH extends React.Component {
         editVisible: boolean
         deleteVisible: boolean
         startDate?: moment.Moment
+        startTime?: moment.Moment
+        endTime?: moment.Moment
     };
 
     constructor(props: {}) {
         super(props);
         this.state = {
             editVisible: false,
-            deleteVisible: false,
-            startDate: undefined
+            deleteVisible: false
         };
-        this.handleChange = this.handleChange.bind(this);
+        this.handleDate = this.handleDate.bind(this);
+        this.handleStartTime = this.handleStartTime.bind(this);
+        this.handleEndTime = this.handleEndTime.bind(this);
     }
 
     toggleEdit(toggle: boolean) {
@@ -40,9 +43,21 @@ class ProfessorAddNewOH extends React.Component {
         });
     }
 
-    handleChange(date: moment.Moment) {
+    handleDate(date: moment.Moment) {
         this.setState({
             startDate: date
+        });
+    }
+
+    handleStartTime(startTime: moment.Moment) {
+        this.setState({
+            startTime: startTime
+        });
+    }
+
+    handleEndTime(endTime: moment.Moment) {
+        this.setState({
+            endTime: endTime
         });
     }
 
@@ -91,11 +106,20 @@ class ProfessorAddNewOH extends React.Component {
                             <div className="datePicker">
                                 <DatePicker
                                     selected={this.state.startDate}
-                                    onChange={this.handleChange}
+                                    onChange={this.handleDate}
                                     dateFormat='dddd MM/DD/YY'
                                     placeholderText={today}
                                 />
                             </div>
+                            {/* <DatePicker
+                                selected={this.state.startTime}
+                                onChange={this.handleDate}
+                                showTimeSelect
+                                showTimeSelectOnly
+                                timeIntervals={15}
+                                dateFormat="LT"
+                                timeCaption="Time"
+                            /> */}
                             <input placeholder="12:00 PM" />
                             To
                             <input placeholder="2:00 PM" />

@@ -27,10 +27,11 @@ class ProfessorCalendarRow extends React.Component {
 
     constructor(props: {}) {
         super(props);
-        var timeStartMoment = []
+        var timeStartMoment = [];
         for (var i = 0; i < this.props.timeStart.length; i++) {
             timeStartMoment.push(moment(this.props.timeStart[i]));
         }
+
         this.state = {
             startDate: timeStartMoment
         };
@@ -101,7 +102,7 @@ class ProfessorCalendarRow extends React.Component {
                                 <div className="InfoInput">
                                     <div className="TA">
                                         <Icon name="user" />
-                                        <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} defaultValue={taOptions[index].value} />
+                                        <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} defaultValue={taOptions[this.props.taIndex[index]].value} />
                                         <button className="AddTAButton">
                                             <Icon name="plus" />
                                             Add TA
@@ -117,7 +118,7 @@ class ProfessorCalendarRow extends React.Component {
                                         <div className="datePicker">
                                             <DatePicker
                                                 selected={this.state.startDate[index]}
-                                                onChange={(date) => this.handleChange(index, date)}
+                                                onChange={(d) => this.handleChange(index, d)}
                                                 dateFormat="dddd MM/DD/YY"
                                             />
                                         </div>

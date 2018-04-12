@@ -23,7 +23,6 @@ class ProfessorCalendarTable extends React.Component {
     constructor(props: {}) {
         super(props);
         this.toggleEdit = this.toggleEdit.bind(this);
-        // var isExpandedInit = new Array<boolean[]>();
         var isExpandedInit = []
         for (var i = 0; i < 7; i++) {
             isExpandedInit.push(new Array<boolean>(this.props.timeStart[i].length).fill(false))
