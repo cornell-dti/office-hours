@@ -133,7 +133,7 @@ class AddQuestion extends React.Component {
 
     render() {
         if (this.state.redirect) {
-            return <Redirect push={true} to={'/session'} />;
+            return <Redirect push={true} to={'/session/1'} />;
         }
 
         var primaryTagsList = this.props.primaryTags.map(
@@ -225,7 +225,7 @@ class AddQuestion extends React.Component {
                 <div className="tagsContainer">
                     <div className="tagsMiniContainer primaryContainer" onClick={this.handleEditTags}>
                         <hr />
-                        <p>Primary Tags</p>
+                        <p>Primary Tag</p>
                         {this.state.doneSelectingTags ?
                             <div className="QuestionTags">
                                 {collapsedPrimary}
@@ -244,7 +244,7 @@ class AddQuestion extends React.Component {
                                 </div> :
                                 <div className="QuestionTags">
                                     {secondaryTagsList}
-                                </div> : <p className="placeHolder">Select Primary Tag first</p>}
+                                </div> : <p className="placeHolder">Select primary Tag first</p>}
                     </div>
                     {/*<div className="tagsMiniContainer" onClick={this.handleEditTags}>
                 <hr/>
@@ -268,7 +268,7 @@ class AddQuestion extends React.Component {
                                 onChange={this.handleClick}
                                 placeholder="Write what you want to ask about ..."
                             />
-                            : <p className="placeHolder">First Finish Selecting Tags ...</p>}
+                            : <p className="placeHolder">First finish selecting tags ...</p>}
                     </div>
                 </div>
             </div >

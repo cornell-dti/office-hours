@@ -26,6 +26,7 @@ class SessionQuestionsContainer extends React.Component {
                     tags={question.tags}
                     index={i}
                     isTA={this.props.isTA}
+                    isMyQuestion={false}
                 />
             );
         });
@@ -41,25 +42,25 @@ class SessionQuestionsContainer extends React.Component {
 
         return (
             <div className="SessionQuestionsContainer" >
-                {questions.length > 0 && userQuestionIndex !== -1 &&
+                {!this.props.isTA && questions.length > 0 && userQuestionIndex !== -1 &&
                     <div className="User">
                         <div className="UserQuestionHeader">
                             <p className="QuestionHeader">My Question</p>
                         </div>
-                        <div className="UserQuestion">
-                            <p className="Question">{questions[userQuestionIndex].content}</p>
-                            <div className="Tags">
-                                {tagsList}
-                            </div>
-                            <div className="BottomBar">
-                                <p className="Order">{userQuestionIndex}</p>
-                                <p className="Time">{questions[userQuestionIndex].timeEntered}</p>
-                            </div>
-                            <div className="Buttons">
-                                <hr />
-                                <p className="Delete">X Remove</p>
-                            </div>
-                        </div>
+                        {
+                            <SessionQuestionsComponent
+                                key={questions[userQuestionIndex].id}
+                                studentName={questions[userQuestionIndex].name}
+                                studentPicture={'https://i2.wp.com/puppypassionn.org/wp-content/' +
+                                    'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
+                                studentQuestion={questions[userQuestionIndex].content}
+                                time={questions[userQuestionIndex].timeEntered}
+                                tags={questions[userQuestionIndex].tags}
+                                index={userQuestionIndex}
+                                isTA={this.props.isTA}
+                                isMyQuestion={true}
+                            />
+                        }
                     </div>
                 }
                 <div>
@@ -68,7 +69,10 @@ class SessionQuestionsContainer extends React.Component {
                 {questions.length > 0 && cardList}
                 {
                     questions.length === 0 &&
-                    <p className="noQuestionsWarning">No questions in the queue. Be the first!</p>
+                    (!this.props.isTA &&
+                        <p className="noQuestionsWarning">No questions in the queue. Be the first!</p>
+                        ||
+                        <p className="noQuestionsWarning">No questions in the queue yet.</p>)
                 }
 
             </div>

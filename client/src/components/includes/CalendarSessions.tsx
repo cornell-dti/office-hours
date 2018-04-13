@@ -4,6 +4,7 @@ import CalendarSessionCard from './CalendarSessionCard';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
+import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader/Loader';
 
 const QUERY = gql`
 query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Datetime!) {
@@ -50,7 +51,6 @@ const withData = graphql<Response, InputProps>(QUERY, {
 });
 
 type InputProps = {
-    useFakeData: boolean,
     match: {
         params: {
             courseId: number,
@@ -59,6 +59,7 @@ type InputProps = {
     beginTime: Date,
     endTime: Date,
     data: {
+        loading: boolean,
         searchSessionRange?: {
             nodes: [{}]
         },
@@ -67,6 +68,8 @@ type InputProps = {
 
 class CalendarSessions extends React.Component<ChildProps<InputProps, Response>> {
     render() {
+        const { loading } = this.props.data;
+
         var sessions: Session[] = [];
         if (this.props.data.searchSessionRange) {
             this.props.data.searchSessionRange.nodes.forEach((node: SessionNode) => {
@@ -95,52 +98,26 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
                     id: node.sessionId,
                     location: location,
                     ta: tas,
-                    startTime: node.startTime,
-                    endTime: node.endTime,
+                    startTime: new Date(node.startTime),
+                    endTime: new Date(node.endTime),
                 });
             });
-        }
-
-        if (this.props.useFakeData) {
-            sessions = [
-                {
-                    id: 1,
-                    location: 'Gates G21',
-                    ta: ['Corey Valdez'],
-                    startTime: new Date(Date.now() - 30 * 60 * 1000),
-                    endTime: new Date(Date.now() + 30 * 60 * 1000)
-                }, {
-                    id: 2,
-                    location: 'Academic Surge A Tutoring Office 101',
-                    ta: ['Edgar Stewart'],
-                    startTime: new Date(Date.now()),
-                    endTime: new Date(Date.now() + 60 * 60 * 1000)
-                }, {
-                    id: 3,
-                    location: 'Academic Surge A Tutoring Office 101',
-                    ta: ['Ada Morton'],
-                    startTime: new Date(Date.now() + 30 * 60 * 1000),
-                    endTime: new Date(Date.now() + 90 * 60 * 1000)
-                }, {
-                    id: 4,
-                    location: 'Gates G21',
-                    ta: ['Caroline Robinson'],
-                    startTime: new Date(Date.now() + 90 * 60 * 1000),
-                    endTime: new Date(Date.now() + 180 * 60 * 1000)
-                }
-            ];
         }
 
         return (
             <div className="CalendarSessions">
                 {
-                    sessions.length === 0 &&
+                    loading &&
+                    <Loader active={true} content={'Loading'} />
+                }
+                {
+                    !loading && sessions.length === 0 &&
                     <React.Fragment>
                         <p className="noHoursHeading">No Office Hours</p>
                         <p className="noHoursBody">No office hours are scheduled for today.</p>
                     </React.Fragment>
                 }
-                {sessions.map(function (session: Session, i: number) {
+                {!loading && sessions.map(function (session: Session, i: number) {
                     return <CalendarSessionCard
                         start={session.startTime}
                         end={session.endTime}

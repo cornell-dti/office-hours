@@ -18,7 +18,7 @@ class TASessionView extends React.Component {
                     match={this.props.match}
                     data={{}}
                 />
-                <ConnectedSessionQuestions match={this.props.match} data={{}} isTA={false} />
+                <ConnectedSessionQuestions match={this.props.match} data={{}} isTA={true} />
             </div>
         );
     }

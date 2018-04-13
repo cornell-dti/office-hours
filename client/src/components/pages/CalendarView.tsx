@@ -98,7 +98,6 @@ class CalendarView extends React.Component {
 
     render() {
         var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        var hasOHs = [true, false, true, false, true, false, false];
         var dates = [];
 
         var now = new Date(this.state.selectedWeekEpoch);
@@ -114,10 +113,15 @@ class CalendarView extends React.Component {
         var selectedDate = new Date(this.state.selectedDateEpoch);
         const todayIndex = ((selectedDate.getDay() - 1) + 7) % 7;
 
+        const isTA = false; // TODO fetch from backend
+
         return (
             <div className="CalendarView">
                 <div className="Header">
-                    <CalendarHeader currentCourse="CS 1380" />
+                    <CalendarHeader
+                        currentCourse="CS 1380"
+                        isTA={isTA}
+                    />
                     <CalendarWeekSelect
                         thisMonth={thisMonth}
                         thisWeek={thisWeek}
@@ -127,7 +131,6 @@ class CalendarView extends React.Component {
                 <CalendarDateSelect
                     dayList={days}
                     dateList={dates}
-                    hasOHList={hasOHs}
                     handleClick={this.handleDateClick}
                     selectedIndex={todayIndex}
                 />
@@ -135,8 +138,7 @@ class CalendarView extends React.Component {
                     beginTime={new Date(this.state.selectedDateEpoch)}
                     endTime={new Date(this.state.selectedDateEpoch + 24 /* hours */ * 60 /* minutes */ * 60 * 1000)}
                     match={this.props.match}
-                    data={{}}
-                    useFakeData={false}
+                    data={{ loading: true }}
                 />
             </div>
         );

@@ -114,7 +114,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
         var queueLength = 0;
 
         if (this.state.redirect) {
-            return <Redirect push={true} to="/calendar" />;
+            return <Redirect push={true} to="/calendar/1" />;
         }
 
         var location = 'Unknown';
@@ -149,7 +149,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
         }
 
         return (
-            < div className="SessionInformationHeader" >
+            <div className="SessionInformationHeader" >
                 <div className="header">
                     <p className="BackButton" onClick={this.handleOnClick}>
                         <i className="left" />
