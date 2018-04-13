@@ -1,82 +1,137 @@
 .QueueQuestions {
-    background-color: #f2f2f2;
-    border: 1px solid #f2f2f2;
-    border-radius: 5px;
-    box-shadow: 2px 2px 5px #b3b3b3;
-    cursor: pointer;
+    background-color: white;
     display: block;
-    height: 100px;
-    margin: 2px auto 0;
+    margin: 12px auto 0;
     position: relative;
     text-align: center;
-    width: 95%;
+    width: 100%;
 
-    &:not(:nth-of-type(2)) {
-        opacity: 0.6;
-    }
+    // &:not(:nth-of-type(2)) {
+    //     opacity: 0.6;
+    // }
 
-    .BottomBar {
-        display: block;
-        margin: 32px 10px;
+    .studentInformation {
+        display: inline-block;
+        width: 100%;
+        padding: 20px 0px 0px 15px;
 
         img {
-            display: block;
-            float: left;
+          display: inline-block;
+          margin-right: 10px;
+          width: 30px;
+          height: 30px;
+          border-radius: 30px;
+          vertical-align: middle;
+          object-fit: cover;
+          float: left;
         }
 
-        p {
-            font-size: 14px;
-            display: block;
-            float: left;
-            margin: 0;
-            margin-left: 5px;
-        }
-
-        .Button {
-            border: 1px solid #4d4d4d;
-            background-color: #4d4d4d;
-            color: white;
-            padding: 4px 15px;
-            position: absolute;
-            bottom: 0;
-            right: 0;
-        }
-
-        .peopleLogo {
-            width: 15px;
-            height: 15px;
+        .Name {
+          font-size: 16px;
+          font-weight: bold;
+          text-align: left;
+          line-height: 12px;
+          padding: 10px 0px 0px 15px;
+          margin: 0em;
+          color: #595959;
+          vertical-align: middle;
         }
     }
 
-    .Name, .Question {
-        font-size: 13px;
+    .Question {
+        font-size: 16px;
         text-align: left;
-        padding-left: 10px;
-        padding-bottom: 5px;
+        padding: 5px 0px 5px 15px;
         margin: 0em;
         color: #595959;
     }
 
-    .Name {
-        font-weight: bold;
-        font-size: 14px;
-        padding-top: 6px;
-    }
-
     .Tags {
-        padding: 5px 0px 0px 8px;
+        padding: 5px 0px 10px 13px;
+        float: left;
 
         p {
+            font-weight: normal;
             display: block;
             float: left;
-            font-size: 11px;
-            color: white;
-            border: 1px  solid #999999;
-            background-color: #999999;
-            padding: 1px 7px;
+            font-size: 13px;
+            color: #4FA2E0;
+            border: 0.5px solid #4FA2E0;
+            padding: 2px 8px;
             margin: 3px;
-            border-radius: 10px;
+            border-radius: 12px;
         }
     }
 
+    .BottomBar {
+        display: inline-block;
+        width: 100%;
+
+        p {
+            font-size: 15px;
+            display: block;
+            float: left;
+        }
+
+        .Order {
+            float: left;
+            font-size: 13px;
+            margin-left: 15px;
+            padding: 0px 5px;
+            color: white;
+            background-color: #a6a6a6;
+            border: solid #a6a6a6 0px;
+            border-radius: 5px;
+        }
+
+        .Time {
+            float: right;
+            color: gray;
+            padding-right: 25px;
+        }
+    }
+
+    .Buttons {
+
+        hr {
+            display: block;
+            height: 1px;
+            border: 1px;
+            border-top: 1px solid #ccc;
+            margin: 0px 10px;
+            padding: 0;
+        }
+
+        .Remove {
+            color: #595959;
+            padding: 10px 30px;
+            font-size: 15px;
+        }
+
+        .TAButtons {
+            display: inline-block;
+            padding-top:10px;
+
+            p {
+                border-radius: 5px;
+                color: white;
+                padding: 3px 30px;
+                font-size: 15px;
+            }
+
+            .Delete {
+                float: left;
+                margin-right: 7px;
+                border: 0.5px solid red;
+                color: red;
+            }
+
+            .Resolve {
+                float: right;
+                margin-left: 7px;
+                border: 0.5px solid #4d94ff;
+                color: #4d94ff;
+            }
+        }
+    }
 }

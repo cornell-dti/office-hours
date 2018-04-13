@@ -16,6 +16,7 @@ const QUERY = gql`
                     userByAskerId {
                         firstName
                         lastName
+                        userId
                     }
                     timeEntered
                     questionTagsByQuestionId {
@@ -45,6 +46,7 @@ type InputProps = {
             },
         },
     },
+    isTA: boolean,
 };
 
 const withData = graphql<Response, InputProps>(QUERY, {
@@ -76,7 +78,9 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
                             name: node.userByAskerId.firstName + ' ' + node.userByAskerId.lastName,
                             content: node.content,
                             time: new Date(node.timeEntered),
-                            tags: questionTags
+                            tags: questionTags,
+                            userId: node.userByAskerId.userId,
+                            timeEntered: node.timeEntered
                         });
                     }
                 });
@@ -86,7 +90,12 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
             return (a.time > b.time) ? -1 : 1;
         });
 
-        return <SessionQuestionsContainer questions={questions} isDetailed={false} useFakeData={false} />;
+        return (
+            <SessionQuestionsContainer
+                isTA={this.props.isTA}
+                questions={questions}
+            />
+        );
     }
 }
 

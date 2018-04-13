@@ -6,7 +6,6 @@ class CalendarDateSelect extends React.Component {
     props: {
         dayList: string[],
         dateList: number[],
-        hasOHList: boolean[],
         handleClick: Function,
         selectedIndex: number
     };
@@ -33,12 +32,10 @@ class CalendarDateSelect extends React.Component {
     render() {
         const dayList = this.props.dayList;
         const dateList = this.props.dateList;
-        const hasOHList = this.props.hasOHList;
         const dateItems: {}[] = [];
         for (var i = 0; i < 7; i++) {
             const iDay = dayList[i];
             const iDate = dateList[i];
-            const iHasOH = hasOHList[i];
             const iActive = (i === this.state.active);
             dateItems.push(
                 (
@@ -47,7 +44,6 @@ class CalendarDateSelect extends React.Component {
                         index={i}
                         day={iDay}
                         date={iDate}
-                        hasOH={iHasOH}
                         active={iActive}
                         handleClick={this.handleClick}
                     />

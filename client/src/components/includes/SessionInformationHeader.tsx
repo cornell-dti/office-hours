@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Moment from 'react-moment';
 import { Redirect } from 'react-router';
+import { Icon } from 'semantic-ui-react';
 
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
@@ -110,14 +111,19 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
     }
 
     render() {
-        if (this.state.redirect) {
-            return <Redirect push={true} to="/calendar" />;
-        }
-        var location = 'Unknown';
-        if (this.props.data.sessionBySessionId) {
-            var session = this.props.data.sessionBySessionId;
+        var queueLength = 0;
 
-            var tas: string[] = [];
+        if (this.state.redirect) {
+            return <Redirect push={true} to="/calendar/1" />;
+        }
+
+        var location = 'Unknown';
+        var tas: string[] = [];
+        var session = null;
+
+        if (this.props.data.sessionBySessionId) {
+            session = this.props.data.sessionBySessionId;
+
             session.sessionTasBySessionId.nodes.forEach(ta => {
                 tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
             });
@@ -135,55 +141,62 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                 location = session.building + ' ' + session.room;
             }
 
-            var queueLength = 0;
             session.questionsBySessionId.nodes.forEach(question => {
                 if (question.timeResolved === null) {
                     queueLength += 1;
                 }
             });
+        }
 
-            return (
-                <div className="SessionInformationHeader">
-                    <div className="header">
-                        <button className="CloseButton" type="submit" onClick={this.handleOnClick}>
-                            X
-                        </button>
-                        <div className="CourseInfo">
-                            <span className="CourseNum">
-                                {
-                                    session.courseByCourseId && session.courseByCourseId.name ||
-                                    session.sessionSeryBySessionSeriesId.courseByCourseId.name
-                                }
-                            </span>
-                            {tas[0]}
+        return (
+            <div className="SessionInformationHeader" >
+                <div className="header">
+                    <p className="BackButton" onClick={this.handleOnClick}>
+                        <i className="left" />
+                        {
+                            session &&
+                            session.courseByCourseId && session.courseByCourseId.name ||
+                            session &&
+                            session.sessionSeryBySessionSeriesId.courseByCourseId.name
+                        }
+                    </p>
+                    <div className="CourseInfo">
+                        <div className="CourseDetails">
+                            <p className="Location">{location || 'Unknown'}</p>
+                            <p>{session && <Moment date={session.startTime} interval={0} format={'hh:mm A'} />}</p>
                         </div>
-                        <div>
-                            <div className="QueueInfo">
-                                <div className="QueueTotal">
-                                    {queueLength}
-                                </div>
-                                <div>in queue</div>
-                            </div>
-                            <div className="OfficeHourInfo">
-                                <div className="OfficeHourTime">
-                                    <p><Moment date={session.startTime} interval={0} format={'hh:mm A'} />
-                                        &nbsp;-&nbsp;
-                                        <Moment date={session.endTime} interval={0} format={'hh:mm A'} /></p>
-                                    <p><Moment date={session.startTime} interval={0} format={'dddd, D MMM'} /></p>
-                                </div>
-                                <div className="OfficeHourLocation">
-                                    {location || 'Unknown'}
-                                </div>
-                            </div>
+                        <div className="Picture">
+                            <img
+                                src={'https://i2.wp.com/puppypassionn.org/wp-content/' +
+                                    'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
+                            />
                         </div>
                     </div>
                 </div>
-            );
-        } else {
-            return ('');
-        }
-
+                <div className="MoreInformation">
+                    <hr />
+                    <div className="QueueInfo">
+                        <Icon name="users" />
+                        <p><span className="red">{queueLength}</span> ahead</p>
+                    </div>
+                    <div className="OfficeHourInfo">
+                        <div className="OfficeHourDate">
+                            <p><Icon name="calendar" />
+                                {
+                                    session &&
+                                    <Moment
+                                        date={session.startTime}
+                                        interval={0}
+                                        format={'dddd, D MMM'}
+                                    />
+                                }
+                            </p>
+                        </div>
+                        <p>Held by <span className="black"> {tas.length > 0 && tas[0]} </span></p>
+                    </div>
+                </div>
+            </div >
+        );
     }
 }
-
 export default withData(SessionInformationHeader);
