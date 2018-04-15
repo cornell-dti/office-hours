@@ -64,6 +64,7 @@ type InputProps = {
             nodes: [{}]
         },
     },
+    callback: Function | null
 };
 
 class CalendarSessions extends React.Component<ChildProps<InputProps, Response>> {
@@ -103,6 +104,7 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
                 });
             });
         }
+        const callback = this.props.callback;
 
         return (
             <div className="CalendarSessions">
@@ -127,6 +129,7 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
                         aheadNum={0}
                         id={session.id}
                         key={session.id}
+                        callback={callback}
                     />;
                 })}
             </div>

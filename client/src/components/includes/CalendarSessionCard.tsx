@@ -15,6 +15,7 @@ class CalendarSessionCard extends React.Component {
         resolvedNum: number,
         aheadNum: number,
         id: number,
+        callback: Function | null
     };
 
     constructor(props: {}) {
@@ -25,9 +26,13 @@ class CalendarSessionCard extends React.Component {
     }
 
     handleOnClick = () => {
-        this.setState({
-            redirect: true
-        });
+        if (this.props.callback) {
+            this.props.callback(this.props.id);
+        } else {
+            this.setState({
+                redirect: true
+            });
+        }
     }
 
     render() {

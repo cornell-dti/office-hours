@@ -38,7 +38,7 @@ class SplitView extends React.Component {
         this.state = {
             selectedWeekEpoch: week.getTime(),
             selectedDateEpoch: today.getTime(),
-            sessionId: 1
+            sessionId: -1
         };
         this.handleWeekClick = this.handleWeekClick.bind(this);
         this.handleDateClick = this.handleDateClick.bind(this);
@@ -103,6 +103,12 @@ class SplitView extends React.Component {
         }
     }
 
+    handleSessionClick = (sessionId: number) => {
+        this.setState((prevState) => {
+            return { sessionId: sessionId };
+        });
+    }
+
     render() {
         var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         var dates = [];
@@ -142,17 +148,20 @@ class SplitView extends React.Component {
                         endTime={new Date(this.state.selectedDateEpoch + 24 /* hours */ * 60 /* minutes */ * 60 * 1000)}
                         match={this.props.match}
                         data={{ loading: true }}
+                        callback={this.handleSessionClick}
                     />
                 </aside>
                 <section className={'StudentSessionView '}>
-                    <SessionInformationHeader
-                        sessionId={this.state.sessionId}
-                        data={{}}
-                    />
-                    <SessionJoinButton />
-                    <div className="splitQuestions">
-                        <ConnectedSessionQuestions sessionId={this.state.sessionId} isTA={false} data={{}} />
-                    </div>
+                    {this.state.sessionId === -1 ?
+                        <p className="noSessionSelected">Please Select an Office Hour from the Calendar.</p>
+                        : <React.Fragment>
+                            <SessionInformationHeader sessionId={this.state.sessionId} data={{}} />
+                            <SessionJoinButton />
+                            <div className="splitQuestions">
+                                <ConnectedSessionQuestions sessionId={this.state.sessionId} isTA={false} data={{}} />
+                            </div>
+                        </React.Fragment>
+                    }
                 </section>
             </React.Fragment>
         );
