@@ -1,70 +1,80 @@
 import * as React from 'react';
 import SessionQuestionsComponent from './SessionQuestionsComponent';
-import DetailedQuestionView from './DetailedQuestionView';
 
 class SessionQuestionsContainer extends React.Component {
-    state: {
-        isDetailed: boolean,
-        index: number
-    };
-
     props: {
-        isDetailed: boolean,
-        studentName: string[],
-        studentQuestion: string[],
-        tags: string[][],
-        group: string[][]
-        numberOfPeople: number[]
+        isTA: boolean,
+        questions: Question[],
     };
-
-    constructor(props: {}) {
-        super(props);
-        this.handleClick = this.handleClick.bind(this);
-        this.state = {
-            isDetailed: false,
-            index: 0
-        };
-    }
-
-    handleClick(toggle: boolean, index: number) {
-        this.setState({
-            isDetailed: toggle,
-            index: index
-        });
-    }
 
     render() {
-        var cardList = this.props.studentName.map(
-            (studentName, index) => {
-                return (
-                    <SessionQuestionsComponent
-                        key={index}
-                        handleClick={this.handleClick}
-                        studentName={studentName}
-                        studentQuestion={this.props.studentQuestion[index]}
-                        tags={this.props.tags[index]}
-                        group={this.props.group[index]}
-                        numberOfPeople={this.props.numberOfPeople[index]}
-                        index={index}
-                    />
-                );
+        var questions = this.props.questions;
+        var userQuestionIndex: number = 0;
+        var cardList: JSX.Element[] = [];
+        questions.forEach((question, i: number) => {
+            if (question.userId === 100) {
+                userQuestionIndex = i;
             }
-        );
+            cardList.push(
+                <SessionQuestionsComponent
+                    key={question.id}
+                    studentName={question.name}
+                    studentPicture={'https://i2.wp.com/puppypassionn.org/wp-content/' +
+                        'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
+                    studentQuestion={question.content}
+                    time={question.timeEntered}
+                    tags={question.tags}
+                    index={i}
+                    isTA={this.props.isTA}
+                    isMyQuestion={false}
+                />
+            );
+        });
+
+        var tagsList: JSX.Element[] = [];
+        if (questions.length > 0 && userQuestionIndex !== -1) {
+            tagsList = questions[userQuestionIndex].tags.map(
+                (tag) => {
+                    return <p key={tag.id}>{tag.name}</p>;
+                }
+            );
+        }
 
         return (
-            <div className="SessionQuestionsContainer">
-                <DetailedQuestionView
-                    isDetailed={this.state.isDetailed}
-                    handleClick={this.handleClick}
-                    studentName={this.props.studentName[this.state.index]}
-                    studentQuestion={this.props.studentQuestion[this.state.index]}
-                    tags={this.props.tags[this.state.index]}
-                    group={this.props.group[this.state.index]}
-                />
+            <div className="SessionQuestionsContainer" >
+                {!this.props.isTA && questions.length > 0 && userQuestionIndex !== -1 &&
+                    <div className="User">
+                        <div className="UserQuestionHeader">
+                            <p className="QuestionHeader">My Question</p>
+                        </div>
+                        {
+                            <SessionQuestionsComponent
+                                key={questions[userQuestionIndex].id}
+                                studentName={questions[userQuestionIndex].name}
+                                studentPicture={'https://i2.wp.com/puppypassionn.org/wp-content/' +
+                                    'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
+                                studentQuestion={questions[userQuestionIndex].content}
+                                time={questions[userQuestionIndex].timeEntered}
+                                tags={questions[userQuestionIndex].tags}
+                                index={userQuestionIndex}
+                                isTA={this.props.isTA}
+                                isMyQuestion={true}
+                            />
+                        }
+                    </div>
+                }
                 <div>
                     <p className="Queue">Queue</p>
                 </div>
-                {cardList}
+                {questions.length > 0 && cardList}
+                {
+                    questions.length === 0 &&
+                    (!this.props.isTA &&
+                        <p className="noQuestionsWarning">No questions in the queue. Be the first!</p>
+                        ||
+                        <p className="noQuestionsWarning">No questions in the queue yet.</p>)
+                }
+
             </div>
         );
     }

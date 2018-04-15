@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "office-hours",
   "version": "1.0.0",
   "description": "",
@@ -22,4 +23,31 @@
     "apollo-client": "^2.2.6",
     "concurrently": "^3.5.0"
   }
+=======
+    "name": "office-hours",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "cd server && yarn start",
+        "build": "yarn start",
+        "postinstall": "cd client && yarn install --production=false && yarn run deploy && cd ../server && yarn install --production=false"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/cornell-dti/office-hours.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/cornell-dti/office-hours/issues"
+    },
+    "homepage": "https://github.com/cornell-dti/office-hours#readme",
+    "dependencies": {
+        "body-parser": "^1.18.2",
+        "apollo-client": "^2.2.6",
+        "concurrently": "^3.5.0",
+        "express-graphql": "^0.6.12"
+    }
+>>>>>>> 0dd7f23e5e8dbf4c7844e92708a11d581c603626
 }

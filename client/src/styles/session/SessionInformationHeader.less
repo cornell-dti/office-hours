@@ -1,55 +1,119 @@
 .SessionInformationHeader {
-    color: white;
-    font-size: 12px;
-    font-family: 'arial', sans-serif;
-    background:#9b9b9b;
+    background-color: white;
+    font-size: 15px;
+    width: 100%;
 
-    .CloseButton {
-        background: inherit;
-        float: right;
-        color: white;
-        border: none;
-        height: 20px;  
-        width: 20px;
-        font-size:20px;
-    }
+    .header {
+        padding: 10px 25px 10px 20px;
 
-    .header { /* Above button */
-        padding: 20px;
-
-        .CourseInfo { /* Course number and TA */
-            font-size: 20px;
-            text-align: left;
-            padding-bottom: 20px;
-        }
-
-        .CourseNum { /* Course number */
-            font-size: 20px;
+        .BackButton {
+            font-size: 17px;
             font-weight: bold;
-        }
+            text-align: left;
+            margin: 0px;
+            color: #4d4d4d;
 
-        .OfficeHourInfo, .QueueInfo {
-            display: inline-block;
-        }
+            .left {
+                border: solid #4d4d4d;
+                border-width: 0 3px 3px 0;
+                display: inline-block;
+                padding: 5px;
+            }
 
-        .OfficeHourInfo { /* Office hour info */
-            line-height: 5px;
-            text-align: right;
-            width: 50%;
-
-            .OfficeHourLocation {
-                line-height: 30px;
+            .left {
+                transform: rotate(135deg);
+                -webkit-transform: rotate(135deg);
             }
         }
 
-        .QueueInfo { /* Queue info */
-            text-align: left;
-            width: 50%;
+        .CourseInfo {
+
+            .CourseDetails {
+                float: left;
+                padding: 15px 0px 10px 19px;
+
+                p {
+                    font-size: 16px;
+                    text-align: left;
+                    color: gray;
+                    margin: 0px;
+                }
+
+                .Location {
+                    color: #4d4d4d;
+                    padding-bottom: 3px;
+                }
+            }
+
+            .Picture {
+                float: right;
+                padding-right: 30px;
+
+                img {
+                    display: inline-block;
+                    margin-right: 10px;
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 35px;
+                    vertical-align: middle;
+                    object-fit: cover;
+                }
+            }
+        }
+    }
+
+    .MoreInformation {
+        display: inline-block;
+        width: 85%;
+        padding-bottom: 20px;
+
+        hr {
+          display: block;
+          height: 1px;
+          border: 0;
+          border-top: 1px solid #ccc;
+          margin: 0;
+          padding: 0;
         }
 
-        .QueueTotal {
-            font-size: 36px;
-            font-weight: bold;
+        .QueueInfo {
+            float: left;
+            padding-top: 20px;
+            padding-left: 30px;
+
+            p {
+                font-size: 16px;
+                color: #4d4d4d;
+            }
+
+            .users {
+                font-size: 30px;
+            }
+
+            .red {
+              color: red;
+            }
+        }
+
+        .OfficeHourInfo {
+            float: right;
+            padding-top: 20px;
+            padding-right: 20px;
+
+            p {
+              color: gray;
+              font-size: 14px;
+
+              .black {
+                color: #4d4d4d;
+              }
+            }
+
+            .OfficeHourDate {
+                float: right;
+                width: 100%;
+                padding-bottom: 5px;
+            }
         }
     }
 }

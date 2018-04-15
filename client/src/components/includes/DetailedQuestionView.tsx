@@ -6,8 +6,8 @@ class DetailedQuestionView extends React.Component {
         handleClick: Function,
         studentName: string,
         studentQuestion: string,
-        tags: string[],
-        group: string[]
+        tags: Tag[],
+        // group?: string[]
     };
 
     constructor(props: {}) {
@@ -22,15 +22,15 @@ class DetailedQuestionView extends React.Component {
     render() {
         var tagsList = this.props.tags.map(
             (tag, index) => {
-                return <p key={index}>{tag}</p>;
+                return <p key={tag.id}>{tag.name}</p>;
             }
         );
 
-        var groupList = this.props.group.map(
-            (member, index) => {
-                return <li key={index}>{member}</li>;
-            }
-        );
+        // var groupList = this.props.group.map(
+        //     (member, index) => {
+        //         return <li key={index}>{member}</li>;
+        //     }
+        // );
 
         var popup = 'PopupInvisible';
         if (this.props.isDetailed) {
@@ -47,10 +47,10 @@ class DetailedQuestionView extends React.Component {
                             {tagsList}
                         </div>
                     </div>
-                    {groupList.length > 0 && <header>Students In This Group</header>}
-                    <ul>
+                    {/* {groupList.length > 0 && <header>Students In This Group</header>} */}
+                    {/* <ul>
                         {groupList}
-                    </ul>
+                    </ul> */}
                 </div>
                 {/* <button className="DetailedResolveButton">Resolve</button> */}
                 <button className="DetailedCloseButton " onClick={() => this.toggleDetails(false)}>Close</button>
