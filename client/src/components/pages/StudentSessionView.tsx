@@ -19,7 +19,9 @@ class StudentSessionView extends React.Component {
                     match={this.props.match}
                     data={{}}
                 />
-                <SessionJoinButton />
+                <SessionJoinButton
+                    sessionId={this.props.match.params.sessionId}
+                />
                 <ConnectedSessionQuestions match={this.props.match} data={{}} isTA={false} />
             </div>
         );

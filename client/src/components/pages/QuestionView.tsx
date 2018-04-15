@@ -3,6 +3,14 @@ import * as React from 'react';
 import AddQuestion from '../includes/AddQuestion';
 
 class QuestionView extends React.Component {
+    props: {
+        match: {
+            params: {
+                sessionId: number
+            }
+        }
+    };
+
     render() {
         const imageURL =
             'https://i2.wp.com/puppypassionn.org/wp-content/uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1';
