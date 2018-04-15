@@ -16,28 +16,28 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: adminpack; Type: EXTENSION; Schema: -; Owner:
+-- Name: adminpack; Type: EXTENSION; Schema: -; Owner: 
 --
 
 CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner:
+-- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner: 
 --
 
 COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
@@ -46,6 +46,50 @@ COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
 SET default_tablespace = '';
 
 SET default_with_oids = false;
+
+--
+-- Name: questions; Type: TABLE; Schema: public; Owner: chilli
+--
+
+CREATE TABLE public.questions (
+    question_id integer NOT NULL,
+    content text NOT NULL,
+    time_entered timestamp without time zone DEFAULT now() NOT NULL,
+    status text NOT NULL,
+    time_resolved timestamp without time zone,
+    session_id integer NOT NULL,
+    asker_id integer NOT NULL,
+    answerer_id integer
+);
+
+
+ALTER TABLE public.questions OWNER TO chilli;
+
+--
+-- Name: add_question_with_tags(text, text, integer, integer, integer[]); Type: FUNCTION; Schema: public; Owner: chilli
+--
+
+CREATE FUNCTION public.add_question_with_tags(content text, status text, session_id integer, asker_id integer, tags integer[]) RETURNS SETOF public.questions
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+inserted_question integer;
+tag integer;
+
+BEGIN
+INSERT INTO questions(content, status, session_id, asker_id) 
+VALUES
+(content, status, session_id, asker_id) returning question_id INTO inserted_question;
+FOREACH tag in ARRAY tags
+LOOP
+INSERT INTO question_tags(question_id, tag_id) VALUES (inserted_question, tag);
+END LOOP;
+RETURN QUERY select * from questions where question_id = inserted_question;
+END
+$$;
+
+
+ALTER FUNCTION public.add_question_with_tags(content text, status text, session_id integer, asker_id integer, tags integer[]) OWNER TO chilli;
 
 --
 -- Name: sessions; Type: TABLE; Schema: public; Owner: chilli
@@ -138,24 +182,6 @@ CREATE TABLE public.question_tags (
 
 
 ALTER TABLE public.question_tags OWNER TO chilli;
-
---
--- Name: questions; Type: TABLE; Schema: public; Owner: chilli
---
-
-CREATE TABLE public.questions (
-    question_id integer NOT NULL,
-    content text NOT NULL,
-    time_entered timestamp without time zone NOT NULL,
-    status text NOT NULL,
-    time_resolved timestamp without time zone,
-    session_id integer NOT NULL,
-    asker_id integer NOT NULL,
-    answerer_id integer
-);
-
-
-ALTER TABLE public.questions OWNER TO chilli;
 
 --
 -- Name: questions_question_id_seq; Type: SEQUENCE; Schema: public; Owner: chilli
@@ -435,6 +461,8 @@ COPY public.question_tags (question_id, tag_id) FROM stdin;
 4	7
 4	25
 4	35
+7	1
+7	2
 \.
 
 
@@ -447,6 +475,7 @@ COPY public.questions (question_id, content, time_entered, status, time_resolved
 3	Clarifying statistics concept from prelim	2018-03-26 10:03:12	unresolved	\N	1	7	\N
 1	How do you implement recursion in Question 2?	2018-03-26 09:47:33	resolved	2018-03-26 10:06:49	1	2	1
 4	Question about course grading	2018-03-26 10:07:39	unresolved	\N	1	5	\N
+7	help!!	2018-04-15 14:03:07.622829	unresolved	\N	1	1	\N
 \.
 
 
@@ -597,7 +626,7 @@ SELECT pg_catalog.setval('public.courses_course_id_seq', 1, true);
 -- Name: questions_question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chilli
 --
 
-SELECT pg_catalog.setval('public.questions_question_id_seq', 4, true);
+SELECT pg_catalog.setval('public.questions_question_id_seq', 7, true);
 
 
 --
