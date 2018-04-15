@@ -16,28 +16,28 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: adminpack; Type: EXTENSION; Schema: -; Owner: 
+-- Name: adminpack; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
@@ -70,7 +70,7 @@ ALTER TABLE public.sessions OWNER TO chilli;
 CREATE FUNCTION public.search_session_range(course integer, begintime timestamp without time zone, endtime timestamp without time zone) RETURNS SETOF public.sessions
     LANGUAGE sql STABLE
     AS $$
-select * from sessions where start_time > begintime AND start_time < endtime
+select * from sessions where start_time > begintime AND start_time < endtime AND course_id = course
 $$;
 
 
@@ -489,12 +489,12 @@ COPY public."session_seriesTas" (session_series_id, user_id) FROM stdin;
 --
 
 COPY public.sessions (session_id, start_time, end_time, location, session_series_id, course_id) FROM stdin;
-1	2018-03-26 10:00:00	2018-03-26 11:00:00	\N	1	\N
-2	2018-03-26 12:20:00	2018-03-26 13:10:00	\N	2	\N
+1	2018-03-26 10:00:00	2018-03-26 11:00:00	\N	1	1
+2	2018-03-26 12:20:00	2018-03-26 13:10:00	\N	2	1
 3	2018-03-26 13:00:00	2018-03-26 14:30:00	Rhodes 412	3	\N
 6	2018-04-02 12:20:00	2018-04-02 13:10:00	Gates G11	2	\N
 4	2018-03-26 19:00:00	2018-03-26 20:30:00	\N	4	\N
-5	2018-04-02 10:00:00	2018-04-02 11:00:00	\N	1	\N
+5	2018-04-02 10:00:00	2018-04-02 11:00:00	\N	1	1
 7	2018-04-02 19:00:00	2018-04-02 20:30:00	\N	4	\N
 \.
 
