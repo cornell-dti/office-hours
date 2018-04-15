@@ -316,12 +316,13 @@ ALTER SEQUENCE public.tags_tag_id_seq OWNED BY public.tags.tag_id;
 
 CREATE TABLE public.users (
     user_id integer NOT NULL,
-    "netId" text NOT NULL,
-    "googleId" text NOT NULL,
-    "firstName" text,
-    "lastName" text,
-    "createdAt" timestamp without time zone,
-    "lastActivityAt" timestamp without time zone
+    net_id text NOT NULL,
+    google_id text NOT NULL,
+    first_name text,
+    last_name text,
+    created_at timestamp without time zone,
+    last_activity_at timestamp without time zone,
+    photo_url text
 );
 
 
@@ -573,15 +574,15 @@ COPY public.tags (tag_id, name, course_id, level) FROM stdin;
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: chilli
 --
 
-COPY public.users (user_id, "netId", "googleId", "firstName", "lastName", "createdAt", "lastActivityAt") FROM stdin;
-1	cv231	115064340704113209584	Corey	Valdez	2018-03-25 03:07:23.485	2018-03-25 03:07:26.391
-2	ejs928	139064340704113209582	Edgar	Stewart	2018-03-25 03:08:05.668	2018-03-25 03:08:08.294
-3	asm2292	115064340704118374059	Ada	Morton	2018-03-25 03:08:51.563	2018-03-25 03:08:54.084
-4	cr848	215064340704113209584	Caroline	Robinson	2018-03-25 03:09:25.563	2018-03-25 03:09:28.525
-5	ca449	115064340704113209332	Christopher	Arnold	2018-03-25 03:10:28.166	2018-03-25 03:10:32.518
-6	zz527	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394	2018-03-25 03:11:22.765
-7	sjw748	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328	2018-03-25 03:12:47.826
-8	mjc334	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996	2018-03-25 03:13:29.4
+COPY public.users (user_id, net_id, google_id, first_name, last_name, created_at, last_activity_at, photo_url) FROM stdin;
+1	cv231	115064340704113209584	Corey	Valdez	2018-03-25 03:07:23.485	2018-03-25 03:07:26.391	\N
+2	ejs928	139064340704113209582	Edgar	Stewart	2018-03-25 03:08:05.668	2018-03-25 03:08:08.294	\N
+3	asm2292	115064340704118374059	Ada	Morton	2018-03-25 03:08:51.563	2018-03-25 03:08:54.084	\N
+4	cr848	215064340704113209584	Caroline	Robinson	2018-03-25 03:09:25.563	2018-03-25 03:09:28.525	\N
+5	ca449	115064340704113209332	Christopher	Arnold	2018-03-25 03:10:28.166	2018-03-25 03:10:32.518	\N
+6	zz527	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394	2018-03-25 03:11:22.765	\N
+7	sjw748	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328	2018-03-25 03:12:47.826	\N
+8	mjc334	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996	2018-03-25 03:13:29.4	\N
 \.
 
 
@@ -712,7 +713,7 @@ ALTER TABLE ONLY public.tags
 --
 
 ALTER TABLE ONLY public.users
-    ADD CONSTRAINT "users_googleId_key" UNIQUE ("googleId");
+    ADD CONSTRAINT "users_googleId_key" UNIQUE (google_id);
 
 
 --
@@ -720,7 +721,7 @@ ALTER TABLE ONLY public.users
 --
 
 ALTER TABLE ONLY public.users
-    ADD CONSTRAINT "users_netId_key" UNIQUE ("netId");
+    ADD CONSTRAINT "users_netId_key" UNIQUE (net_id);
 
 
 --
