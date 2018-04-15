@@ -24,8 +24,24 @@ class SplitView extends React.Component {
     state: {
         selectedWeekEpoch: number,
         selectedDateEpoch: number,
-        sessionId: number
+        sessionId: number,
+        width: number,
+        height: number,
+        activeView: string
     };
+
+    componentDidMount() {
+        this.updateWindowDimensions();
+        window.addEventListener('resize', this.updateWindowDimensions);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateWindowDimensions);
+    }
+
+    updateWindowDimensions() {
+        this.setState({ width: window.innerWidth, height: window.innerHeight });
+    }
 
     constructor(props: {}) {
         super(props);
@@ -38,10 +54,14 @@ class SplitView extends React.Component {
         this.state = {
             selectedWeekEpoch: week.getTime(),
             selectedDateEpoch: today.getTime(),
-            sessionId: -1
+            sessionId: -1,
+            width: 0,
+            height: 0,
+            activeView: 'calendar'
         };
         this.handleWeekClick = this.handleWeekClick.bind(this);
         this.handleDateClick = this.handleDateClick.bind(this);
+        this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
     }
 
     // Currently unused function, might be useful in the future
@@ -105,7 +125,13 @@ class SplitView extends React.Component {
 
     handleSessionClick = (sessionId: number) => {
         this.setState((prevState) => {
-            return { sessionId: sessionId };
+            return { sessionId: sessionId, activeView: 'session' };
+        });
+    }
+
+    handleBackClick = () => {
+        this.setState((prevState) => {
+            return { activeView: 'calendar' };
         });
     }
 
@@ -128,41 +154,53 @@ class SplitView extends React.Component {
 
         return (
             <React.Fragment>
-                <aside className="CalendarView">
-                    <div className="Header">
-                        <CalendarHeader currentCourse="CS 1380" isTA={true} />
-                        <CalendarWeekSelect
-                            thisMonth={thisMonth}
-                            thisWeek={thisWeek}
-                            handleClick={this.handleWeekClick}
+                {(this.state.width > 600 || (this.state.width <= 600 && this.state.activeView === 'calendar')) &&
+                    <aside className="CalendarView">
+                        <div className="Header">
+                            <CalendarHeader currentCourse="CS 1380" isTA={true} />
+                            <CalendarWeekSelect
+                                thisMonth={thisMonth}
+                                thisWeek={thisWeek}
+                                handleClick={this.handleWeekClick}
+                            />
+                        </div>
+                        <CalendarDateSelect
+                            dayList={days}
+                            dateList={dates}
+                            handleClick={this.handleDateClick}
+                            selectedIndex={todayIndex}
                         />
-                    </div>
-                    <CalendarDateSelect
-                        dayList={days}
-                        dateList={dates}
-                        handleClick={this.handleDateClick}
-                        selectedIndex={todayIndex}
-                    />
-                    <CalendarSessions
-                        beginTime={new Date(this.state.selectedDateEpoch)}
-                        endTime={new Date(this.state.selectedDateEpoch + 24 /* hours */ * 60 /* minutes */ * 60 * 1000)}
-                        match={this.props.match}
-                        data={{ loading: true }}
-                        callback={this.handleSessionClick}
-                    />
-                </aside>
-                <section className={'StudentSessionView '}>
-                    {this.state.sessionId === -1 ?
-                        <p className="noSessionSelected">Please Select an Office Hour from the Calendar.</p>
-                        : <React.Fragment>
-                            <SessionInformationHeader sessionId={this.state.sessionId} data={{}} />
-                            <SessionJoinButton />
-                            <div className="splitQuestions">
-                                <ConnectedSessionQuestions sessionId={this.state.sessionId} isTA={false} data={{}} />
-                            </div>
-                        </React.Fragment>
-                    }
-                </section>
+                        <CalendarSessions
+                            beginTime={new Date(this.state.selectedDateEpoch)}
+                            endTime={new Date(this.state.selectedDateEpoch + 24 * 60 /* minutes */ * 60 * 1000)}
+                            match={this.props.match}
+                            data={{ loading: true }}
+                            callback={this.handleSessionClick}
+                        />
+                    </aside>
+                }
+                {(this.state.width > 600 || (this.state.width <= 600 && this.state.activeView !== 'calendar')) &&
+                    <section className={'StudentSessionView '}>
+                        {this.state.sessionId === -1 ?
+                            <p className="noSessionSelected">Please Select an Office Hour from the Calendar.</p>
+                            : <React.Fragment>
+                                <SessionInformationHeader
+                                    sessionId={this.state.sessionId}
+                                    data={{}}
+                                    callback={this.handleBackClick}
+                                />
+                                <SessionJoinButton />
+                                <div className="splitQuestions">
+                                    <ConnectedSessionQuestions
+                                        sessionId={this.state.sessionId}
+                                        isTA={false}
+                                        data={{}}
+                                    />
+                                </div>
+                            </React.Fragment>
+                        }
+                    </section>
+                }
             </React.Fragment>
         );
     }

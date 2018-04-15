@@ -25,3 +25,58 @@
     left: 0;
     right: 0
 }
+
+@media only screen and (min-width: 800px) {
+    .LoginView {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        align-items: stretch;
+        background-color: #34495eb9;
+        height: 100%;
+        padding-top: 128px;
+    }
+
+    .LoginView::after {
+        content: "";
+        background-image: url('/mann.jpg');
+        background-size: cover;
+        opacity: 0.5;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        position: absolute;
+        z-index: -1;
+    }
+
+    .topPanel, .bottomPanel {
+        height: 600px;
+        font-size: 20px;
+        box-shadow: 10px 10px 111px 0px rgba(0,0,0,0.65);
+    }
+    .topPanel {
+        margin: 0;
+        background-image: linear-gradient(40deg, #668ae9, #6db9ea);
+        min-width: 400px;
+        max-width: 475px;
+        border-radius: 15px 0 0 15px;
+    }
+    .bottomPanel {
+        color: #8d8d8d;
+        min-width: 400px;
+        max-width: 475px;
+        border-radius: 0 15px 15px 0;
+        background-color: white;
+        position: relative;
+    }
+    .QLogo {
+        position: absolute;
+        bottom: 20px;
+        margin: 0 16px 0 auto;
+    }
+    .hintText {
+        padding-top: 65%;
+    }
+
+}
