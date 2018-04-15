@@ -149,8 +149,10 @@ class SplitView extends React.Component {
                         sessionId={this.state.sessionId}
                         data={{}}
                     />
-                    <ConnectedSessionQuestions sessionId={this.state.sessionId} isTA={true} data={{}} />
                     <SessionJoinButton />
+                    <div className="splitQuestions">
+                        <ConnectedSessionQuestions sessionId={this.state.sessionId} isTA={false} data={{}} />
+                    </div>
                 </section>
             </React.Fragment>
         );
