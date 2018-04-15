@@ -5,6 +5,9 @@ aside.CalendarView {
     left: 0;
     width: 390px;
     box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
+    z-index: 1;
+    overflow-y:scroll;
+    overflow-x:hidden;
 }
 
 section.StudentSessionView {
@@ -13,8 +16,11 @@ section.StudentSessionView {
     bottom: 0;
     right: 0;
     left: 390px;
-    z-index: -1;
     overflow-y:scroll;
     overflow-x:hidden;
-    height: 100%;
+}
+
+
+section.StudentSessionView::-webkit-scrollbar , aside.CalendarView::-webkit-scrollbar {
+    display: none;
 }

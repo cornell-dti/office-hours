@@ -12,12 +12,14 @@ class App extends React.Component {
         return (
             <Router>
                 <div className="App">
-                    Navigate: <Link to="/calendar/1">Calendar View</Link> |
+                    <nav>
+                        Navigate: <Link to="/calendar/1">Calendar View</Link> |
                     <Link to="/session/1"> Student Session View</Link> |
                     <Link to="/login"> Login View</Link> |
                     <Link to="/question"> Question View</Link> |
                     <Link to="/session-ta/1">TA Session View</Link> |
                     <Link to="/desktop/1">Split View</Link>
+                    </nav>
                     <Route path="/calendar/:courseId" component={CalendarView} />
                     <Route path="/session/:sessionId" component={StudentSessionView} />
                     <Route path="/question" component={QuestionView} />
