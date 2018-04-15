@@ -1,5 +1,6 @@
 import * as React from 'react';
 import ProfessorCalendarRow from './ProfessorCalendarRow';
+import ProfessorDelete from '../includes/ProfessorDelete';
 
 class ProfessorCalendarTable extends React.Component {
 
@@ -16,8 +17,11 @@ class ProfessorCalendarTable extends React.Component {
 
     state: {
         isExpanded: boolean[][]
+        isDeleteVisible: boolean
         currentDay: number
         currentRow: number
+        dayIndex: number
+        rowIndex: number
     }
 
     constructor(props: {}) {
@@ -29,9 +33,14 @@ class ProfessorCalendarTable extends React.Component {
         }
         this.state = {
             isExpanded: isExpandedInit,
+            isDeleteVisible: false,
             currentDay: 0,
-            currentRow: 0
+            currentRow: 0,
+            dayIndex: 0,
+            rowIndex: 0
         };
+        this.updateDeleteInfo = this.updateDeleteInfo.bind(this);
+        this.updateDeleteVisible = this.updateDeleteVisible.bind(this);
     }
 
     toggleEdit(day: number, row: number) {
@@ -50,8 +59,23 @@ class ProfessorCalendarTable extends React.Component {
         });
     }
 
+    updateDeleteInfo(dayIndex: number, rowIndex: number) {
+        this.setState({
+            dayIndex: dayIndex,
+            rowIndex: rowIndex
+        });
+    }
+
+    updateDeleteVisible(toggle: boolean) {
+        this.setState({
+            isDeleteVisible: toggle
+        });
+    }
+
     render() {
         var tablewidth = 5;
+        var dayIndex = this.state.dayIndex;
+        var rowIndex = this.state.rowIndex;
 
         var rows = new Array(7);
         for (var i = 0; i < rows.length; i++) {
@@ -62,16 +86,27 @@ class ProfessorCalendarTable extends React.Component {
                     timeStart={this.props.timeStart[i]}
                     timeEnd={this.props.timeEnd[i]}
                     taIndex={this.props.taIndex[i]}
-                    LocationBuilding={this.props.LocationBuilding[i]}
-                    LocationRoomNum={this.props.LocationRoomNum[i]}
+                    locationBuilding={this.props.LocationBuilding[i]}
+                    locationRoomNum={this.props.LocationRoomNum[i]}
                     isExpanded={this.state.isExpanded[i]}
-                    handleToggle={this.toggleEdit}
+                    handleEditToggle={this.toggleEdit}
                     tablewidth={5}
+                    updateDeleteInfo={this.updateDeleteInfo}
+                    updateDeleteVisible={this.updateDeleteVisible}
                 />
         }
 
         return (
             <div className="ProfessorCalendarTable">
+                <ProfessorDelete
+                    isDeleteVisible={this.state.isDeleteVisible}
+                    updateDeleteVisible={this.updateDeleteVisible}
+                    ta={this.props.taList[this.props.taIndex[dayIndex][rowIndex]]}
+                    timeStart={this.props.timeStart[dayIndex][rowIndex]}
+                    timeEnd={this.props.timeEnd[dayIndex][rowIndex]}
+                    locationBuilding={this.props.LocationBuilding[dayIndex][rowIndex]}
+                    locationRoomNum={this.props.LocationRoomNum[dayIndex][rowIndex]}
+                />
                 <table className="Calendar">
                     <tr>
                         <th colSpan={tablewidth}>Monday</th>

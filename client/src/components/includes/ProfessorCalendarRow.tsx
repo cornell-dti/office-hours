@@ -14,11 +14,13 @@ class ProfessorCalendarRow extends React.Component {
         timeStart: number[]
         timeEnd: number[]
         taIndex: number[]
-        LocationBuilding: string[]
-        LocationRoomNum: string[]
+        locationBuilding: string[]
+        locationRoomNum: string[]
         isExpanded: boolean[]
-        handleToggle: Function
+        handleEditToggle: Function
         tablewidth: number
+        updateDeleteInfo: Function
+        updateDeleteVisible: Function
     };
 
     state: {
@@ -41,10 +43,11 @@ class ProfessorCalendarRow extends React.Component {
         };
         this.toggleEdit = this.toggleEdit.bind(this);
         this.handleStartTime = this.handleStartTime.bind(this);
+        this.updateDeleteInfo = this.updateDeleteInfo.bind(this);
     }
 
     toggleEdit(row: number) {
-        this.props.handleToggle(this.props.dayNumber, row);
+        this.props.handleEditToggle(this.props.dayNumber, row);
     }
 
     handleStartTime(index: number, date: moment.Moment | null) {
@@ -59,6 +62,11 @@ class ProfessorCalendarRow extends React.Component {
         this.setState({
             startDate: this.state.endTime
         });
+    }
+
+    updateDeleteInfo(dayIndex: number, rowIndex: number) {
+        this.props.updateDeleteInfo(dayIndex, rowIndex);
+        this.props.updateDeleteVisible(true);
     }
 
     render() {
@@ -96,14 +104,14 @@ class ProfessorCalendarRow extends React.Component {
                         <tr className="Preview">
                             <td>{timeStart[index]} to {timeEnd[index]}</td>
                             <td>{this.props.taList[this.props.taIndex[index]]}</td>
-                            <td>{this.props.LocationBuilding[index]} {this.props.LocationRoomNum[index]}</td>
+                            <td>{this.props.locationBuilding[index]} {this.props.locationRoomNum[index]}</td>
                             <td>
                                 <button className="Edit" onClick={() => this.toggleEdit(index)}>
                                     <Icon name="pencil" />
                                 </button>
                             </td>
                             <td>
-                                <button className="Delete">
+                                <button className="Delete" onClick={() => this.updateDeleteInfo(this.props.dayNumber, index)}>
                                     <Icon name="x" />
                                 </button>
                             </td>
@@ -121,8 +129,8 @@ class ProfessorCalendarRow extends React.Component {
                                     </div>
                                     <div className="Location">
                                         <Icon name="marker" />
-                                        <input className="long" defaultValue={this.props.LocationBuilding[index]} />
-                                        <input defaultValue={this.props.LocationRoomNum[index]} />
+                                        <input className="long" defaultValue={this.props.locationBuilding[index]} />
+                                        <input defaultValue={this.props.locationRoomNum[index]} />
                                     </div>
                                     <div className="Time">
                                         <Icon name="time" />
@@ -162,7 +170,7 @@ class ProfessorCalendarRow extends React.Component {
                                     </div>
                                 </div>
                                 <div className="EditButtons">
-                                    <button className="Delete">
+                                    <button className="Delete" onClick={() => this.updateDeleteInfo(this.props.dayNumber, index)}>
                                         Delete
                                     </button>
                                     <button className="Cancel" onClick={() => this.toggleEdit(index)}>
