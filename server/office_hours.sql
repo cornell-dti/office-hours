@@ -16,28 +16,28 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: adminpack; Type: EXTENSION; Schema: -; Owner: 
+-- Name: adminpack; Type: EXTENSION; Schema: -; Owner:
 --
 
 CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
@@ -77,7 +77,7 @@ inserted_question integer;
 tag integer;
 
 BEGIN
-INSERT INTO questions(content, status, session_id, asker_id) 
+INSERT INTO questions(content, status, session_id, asker_id)
 VALUES
 (content, status, session_id, asker_id) returning question_id INTO inserted_question;
 FOREACH tag in ARRAY tags
@@ -475,7 +475,6 @@ COPY public.questions (question_id, content, time_entered, status, time_resolved
 3	Clarifying statistics concept from prelim	2018-03-26 10:03:12	unresolved	\N	1	7	\N
 1	How do you implement recursion in Question 2?	2018-03-26 09:47:33	resolved	2018-03-26 10:06:49	1	2	1
 4	Question about course grading	2018-03-26 10:07:39	unresolved	\N	1	5	\N
-7	help!!	2018-04-15 14:03:07.622829	unresolved	\N	1	1	\N
 \.
 
 
