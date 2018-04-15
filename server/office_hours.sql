@@ -48,7 +48,6 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
-<<<<<<< HEAD
 -- Name: questions; Type: TABLE; Schema: public; Owner: chilli
 --
 
@@ -78,7 +77,7 @@ inserted_question integer;
 tag integer;
 
 BEGIN
-INSERT INTO questions(content, status, session_id, asker_id) 
+INSERT INTO questions(content, status, session_id, asker_id)
 VALUES
 (content, status, session_id, asker_id) returning question_id INTO inserted_question;
 FOREACH tag in ARRAY tags
@@ -94,9 +93,6 @@ ALTER FUNCTION public.add_question_with_tags(content text, status text, session_
 
 --
 -- Name: sessions; Type: TABLE; Schema: public; Owner: chilli
-=======
--- Name: sessions; Type: TABLE; Schema: public; Owner: -
->>>>>>> 0dd7f23e5e8dbf4c7844e92708a11d581c603626
 --
 
 CREATE TABLE public.sessions (
@@ -111,7 +107,6 @@ CREATE TABLE public.sessions (
 
 
 --
-<<<<<<< HEAD
 -- Name: create_sessions_from_session_series(integer); Type: FUNCTION; Schema: public; Owner: chilli
 --
 
@@ -135,14 +130,14 @@ END IF;
 course := (SELECT course_id FROM session_series WHERE session_series_id = series);
 start_date := date_trunc('week', (SELECT courses.start_date from courses WHERE course_id = course));
 end_date := date_trunc('week', (SELECT courses.end_date from courses WHERE course_id = course));
-SELECT session_series.start_time, session_series.end_time, session_series.location 
-	INTO session_start_time, session_end_time, location 
+SELECT session_series.start_time, session_series.end_time, session_series.location
+	INTO session_start_time, session_end_time, location
 	FROM session_series WHERE session_series_id = series;
 session_start_offset := session_start_time - date_trunc('week', session_start_time);
 session_end_offset := session_end_time - date_trunc('week', session_end_time) ;
 cur_date := start_date;
 while cur_date < end_date LOOP
-    INSERT INTO sessions(start_time, end_time, location, session_series_id, course_id) 
+    INSERT INTO sessions(start_time, end_time, location, session_series_id, course_id)
     VALUES
     (cur_date + session_start_offset, cur_date + session_end_offset, location, series, course);
 
@@ -157,9 +152,6 @@ ALTER FUNCTION public.create_sessions_from_session_series(series integer) OWNER 
 
 --
 -- Name: search_session_range(integer, timestamp without time zone, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: chilli
-=======
--- Name: search_session_range(integer, timestamp without time zone, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: -
->>>>>>> 0dd7f23e5e8dbf4c7844e92708a11d581c603626
 --
 
 CREATE FUNCTION public.search_session_range(course integer, begintime timestamp without time zone, endtime timestamp without time zone) RETURNS SETOF public.sessions
@@ -225,27 +217,7 @@ CREATE TABLE public.question_tags (
 
 
 --
-<<<<<<< HEAD
 -- Name: questions_question_id_seq; Type: SEQUENCE; Schema: public; Owner: chilli
-=======
--- Name: questions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.questions (
-    question_id integer NOT NULL,
-    content text NOT NULL,
-    time_entered timestamp without time zone NOT NULL,
-    status text NOT NULL,
-    time_resolved timestamp without time zone,
-    session_id integer NOT NULL,
-    asker_id integer NOT NULL,
-    answerer_id integer
-);
-
-
---
--- Name: questions_question_id_seq; Type: SEQUENCE; Schema: public; Owner: -
->>>>>>> 0dd7f23e5e8dbf4c7844e92708a11d581c603626
 --
 
 CREATE SEQUENCE public.questions_question_id_seq
@@ -496,14 +468,11 @@ COPY public.question_tags (question_id, tag_id) FROM stdin;
 3	21
 4	7
 4	25
-<<<<<<< HEAD
 4	35
 7	1
 7	2
 8	1
 8	2
-=======
->>>>>>> 0dd7f23e5e8dbf4c7844e92708a11d581c603626
 \.
 
 
@@ -560,7 +529,6 @@ COPY public.session_tas (session_id, user_id) FROM stdin;
 -- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-<<<<<<< HEAD
 COPY public.sessions (session_id, start_time, end_time, location, session_series_id, course_id) FROM stdin;
 1	2018-03-26 10:00:00	2018-03-26 11:00:00	\N	1	1
 143	2018-01-22 12:20:00	2018-01-22 13:10:00	Academic Surge A Office 101	2	1
@@ -582,17 +550,6 @@ COPY public.sessions (session_id, start_time, end_time, location, session_series
 155	2018-04-16 12:20:00	2018-04-16 13:10:00	Academic Surge A Office 101	2	1
 156	2018-04-23 12:20:00	2018-04-23 13:10:00	Academic Surge A Office 101	2	1
 157	2018-04-30 12:20:00	2018-04-30 13:10:00	Academic Surge A Office 101	2	1
-=======
-COPY public.sessions (session_id, start_time, end_time, building, room, session_series_id, course_id) FROM stdin;
-1	2018-03-26 10:00:00	2018-03-26 11:00:00	\N	\N	1	\N
-2	2018-03-26 12:20:00	2018-03-26 13:10:00	\N	\N	2	\N
-3	2018-03-26 13:00:00	2018-03-26 14:30:00	Rhodes	412	3	\N
-6	2018-04-02 12:20:00	2018-04-02 13:10:00	Gates	G11	2	\N
-4	2018-03-26 19:00:00	2018-03-26 20:30:00	\N	\N	4	\N
-5	2018-04-02 10:00:00	2018-04-02 11:00:00	\N	\N	1	\N
-7	2018-04-02 19:00:00	2018-04-02 20:30:00	\N	\N	4	\N
-8	2018-04-03 17:00:00	2018-04-03 17:30:00	Upson	B60	\N	1
->>>>>>> 0dd7f23e5e8dbf4c7844e92708a11d581c603626
 \.
 
 
@@ -700,11 +657,7 @@ SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 4, true)
 -- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-<<<<<<< HEAD
 SELECT pg_catalog.setval('public.sessions_session_id_seq', 157, true);
-=======
-SELECT pg_catalog.setval('public.sessions_session_id_seq', 8, true);
->>>>>>> 0dd7f23e5e8dbf4c7844e92708a11d581c603626
 
 
 --
