@@ -64,7 +64,7 @@ type InputProps = {
             nodes: [{}]
         },
     },
-    callback: Function | null
+    callback: Function
 };
 
 class CalendarSessions extends React.Component<ChildProps<InputProps, Response>> {
