@@ -1,6 +1,5 @@
 import * as React from 'react';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
-import SessionPopularQuestionsContainer from '../includes/SessionPopularQuestionsContainer';
 import SessionJoinButton from '../includes/SessionJoinButton';
 import ConnectedSessionQuestions from '../includes/ConnectedSessionQuestions';
 
@@ -14,21 +13,14 @@ class StudentSessionView extends React.Component {
     };
 
     render() {
-        var popup = 'PopupInvisible';
-        // Moved isDetailed flag to child component, so cannot lock background scroll this way
-        // if (this.state.isDetailed) {
-        //     popup = 'PopupVisible';
-        // }
-
         return (
-            <div className={'StudentSessionView ' + popup}>
+            <div className={'StudentSessionView'}>
                 <SessionInformationHeader
                     sessionId={this.props.match.params.sessionId}
                     data={{}}
                 />
-                <SessionPopularQuestionsContainer />
-                <ConnectedSessionQuestions sessionId={this.props.match.params.sessionId} data={{}} />
                 <SessionJoinButton />
+                <ConnectedSessionQuestions sessionId={this.props.match.params.sessionId} data={{}} isTA={false} />
             </div>
         );
     }

@@ -31,13 +31,20 @@ class CalendarSessionCard extends React.Component {
     }
 
     render() {
+
+        if (this.state.redirect) {
+            return <Redirect push={true} to={'/session/' + this.props.id} />;
+        }
+
+        // TODO fetch from backend
         const openPeriod = 30 /* minutes */ * 60 /* seconds */ * 1000 /* milliseconds */;
+
         var status = 'closed';
-        var timeDesc = 'Queue is not open yet';
+        var timeDesc = '';
         var nowDate = new Date(Date.now());
         // To test:
         // var nowDate = new Date(this.props.start); // live
-        // var nowDate = new Date(this.props.start - 1); // open
+        // var nowDate = new Date(this.props.start.getTime() - 1); // open
         if (this.props.start <= nowDate && nowDate <= this.props.end) {
             status = 'live';
             var diff = Math.abs(this.props.end.getTime() - nowDate.getTime());
@@ -46,12 +53,7 @@ class CalendarSessionCard extends React.Component {
             var nowPlusOpen = new Date(nowDate.getTime() + openPeriod);
             if (this.props.start <= nowPlusOpen && nowPlusOpen <= this.props.end) {
                 status = 'open';
-                timeDesc = 'Queue just opened';
             }
-        }
-
-        if (this.state.redirect) {
-            return <Redirect push={true} to={'/session/' + this.props.id} />;
         }
 
         var zero = '';

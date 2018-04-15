@@ -6,7 +6,6 @@ class CalendarDateItem extends React.Component {
         active: boolean,
         day: string,
         date: number,
-        hasOH: boolean,
         handleClick: Function
     };
 
@@ -24,13 +23,8 @@ class CalendarDateItem extends React.Component {
         if (this.props.active === true) {
             activeClass = 'menuDate active';
         }
-        var notifText = '\u00B7';
-        if (this.props.hasOH === false) {
-            notifText = '';
-        }
         return (
             <div className={activeClass} onClick={this._onClick}>
-                <div className="notification">{notifText}</div>
                 <div className="day">{this.props.day}</div>
                 <div className="date">{this.props.date}</div>
             </div>

@@ -46,7 +46,7 @@ class AddQuestion extends React.Component {
         this.handleClick = this.handleClick.bind(this);
         this.handlePrimarySelected = this.handlePrimarySelected.bind(this);
         this.handleSecondarySelected = this.handleSecondarySelected.bind(this);
-        this.handleTopicSelected = this.handleTopicSelected.bind(this);
+        /*this.handleTopicSelected = this.handleTopicSelected.bind(this);*/
         this.handleEditTags = this.handleEditTags.bind(this);
         this.handleXClick = this.handleXClick.bind(this);
         this.handleJoinClick = this.handleJoinClick.bind(this);
@@ -78,15 +78,16 @@ class AddQuestion extends React.Component {
             temp = new Array(this.props.primaryTags.length).fill(false);
             temp[index] = !temp[index];
             this.setState({ showSecondaryTags: true });
-            if (this.state.numberSecondaryTags > 0) {
-                this.setState({ showTopicTags: true });
-            } else {
-                this.setState({ showTopicTags: false });
+            /*if (this.state.numberSecondaryTags > 0) {
+                this.setState({ showTopicTags: true});
             }
+            else {
+                this.setState({ showTopicTags: false});
+            }*/
         } else {
             temp[index] = !temp[index];
             this.setState({ showSecondaryTags: false });
-            this.setState({ showTopicTags: false });
+            /*this.setState({ showTopicTags: false });*/
         }
         this.setState({ primaryBooleanList: temp });
     }
@@ -101,27 +102,30 @@ class AddQuestion extends React.Component {
         }
         this.setState({ secondaryBooleanList: temp });
         if (this.state.numberSecondaryTags > 0) {
-            this.setState({ showTopicTags: true });
-        } else {
-            this.setState({ showTopicTags: false });
-        }
-    }
-
-    public handleTopicSelected(index: number): void {
-        var temp = this.state.topicBooleanList;
-        temp[index] = !temp[index];
-        if (temp[index]) {
-            this.state.numberTopicTags++;
-        } else {
-            this.state.numberTopicTags--;
-        }
-        this.setState({ topicBooleanList: temp });
-        if (this.state.numberTopicTags > 0) {
+            /*this.setState({ showTopicTags: true});
+            }
+            else {
+                this.setState({ showTopicTags: false});
+            }*/
             this.setState({ showQuestionInput: true });
         } else {
             this.setState({ showQuestionInput: false });
         }
     }
+
+    /*public handleTopicSelected(index: number) : void {
+        var temp = this.state.topicBooleanList;
+        temp[index] = !temp[index];
+        if (temp[index]) this.state.numberTopicTags++;
+        else this.state.numberTopicTags--;
+        this.setState({ topicBooleanList: temp});
+        if (this.state.numberTopicTags > 0) {
+            this.setState({ showQuestionInput: true});
+        }
+        else {
+            this.setState({ showQuestionInput: false});
+        }
+    }*/
 
     public handleEditTags(event: React.MouseEvent<HTMLElement>): void {
         this.setState({ doneSelectingTags: false });
@@ -129,7 +133,7 @@ class AddQuestion extends React.Component {
 
     render() {
         if (this.state.redirect) {
-            return <Redirect push={true} to={'/session'} />;
+            return <Redirect push={true} to={'/session/1'} />;
         }
 
         var primaryTagsList = this.props.primaryTags.map(
@@ -160,24 +164,23 @@ class AddQuestion extends React.Component {
             }
         );
 
-        var topicTagsList = this.props.topicTags.map(
-            (tag, index) => {
-                return (
-                    <SelectedTags
-                        index={index}
-                        key={tag}
-                        tag={tag}
-                        ifSelected={this.state.topicBooleanList[index]}
-                        onClick={this.handleTopicSelected}
-                    />
-                );
-            }
-        );
+        /*var topicTagsList = this.props.topicTags.map(
+        (tag, index) => {
+            return (
+                <SelectedTags
+                    index={index}
+                    tag={tag}
+                    ifSelected={this.state.topicBooleanList[index]}
+                    onClick={this.handleTopicSelected}
+                />
+            );
+        }
+        );*/
 
         var collapsedPrimary = this.state.primaryBooleanList.map(
             (tag, index) => {
                 if (tag) {
-                    return <p className="selectedTag">{this.props.primaryTags[index]}</p>;
+                    return <p className="selectedTag" key={index}>{this.props.primaryTags[index]}</p>;
                 } else {
                     return null;
                 }
@@ -187,22 +190,19 @@ class AddQuestion extends React.Component {
         var collapsedSecondary = this.state.secondaryBooleanList.map(
             (tag, index) => {
                 if (tag) {
-                    return <p className="selectedTag">{this.props.secondaryTags[index]}</p>;
+                    return <p className="selectedTag" key={index}>{this.props.secondaryTags[index]}</p>;
                 } else {
                     return null;
                 }
             }
         );
 
-        var collapsedTopic = this.state.topicBooleanList.map(
+        /*var collapsedTopic = this.state.topicBooleanList.map(
             (tag, index) => {
-                if (tag) {
-                    return <p className="selectedTag">{this.props.topicTags[index]}</p>;
-                } else {
-                    return null;
-                }
+                if (tag) return <p className="selectedTag">{this.props.topicTags[index]}</p>
+            else return null
             }
-        );
+        );*/
 
         return (
             <div className="AddQuestion">
@@ -225,7 +225,7 @@ class AddQuestion extends React.Component {
                 <div className="tagsContainer">
                     <div className="tagsMiniContainer primaryContainer" onClick={this.handleEditTags}>
                         <hr />
-                        <p>Primary Tags</p>
+                        <p>Primary Tag</p>
                         {this.state.doneSelectingTags ?
                             <div className="QuestionTags">
                                 {collapsedPrimary}
@@ -244,20 +244,20 @@ class AddQuestion extends React.Component {
                                 </div> :
                                 <div className="QuestionTags">
                                     {secondaryTagsList}
-                                </div> : <p className="placeHolder">Select Primary Tag first</p>}
+                                </div> : <p className="placeHolder">Select primary Tag first</p>}
                     </div>
-                    <div className="tagsMiniContainer" onClick={this.handleEditTags}>
-                        <hr />
-                        <p>Topic Tags</p>
-                        {this.state.showTopicTags ?
-                            this.state.doneSelectingTags ?
-                                <div className="QuestionTags">
-                                    {collapsedTopic}
-                                </div> :
-                                <div className="QuestionTags">
-                                    {topicTagsList}
-                                </div> : <p className="placeHolder">Select Secondary Tag first</p>}
-                    </div>
+                    {/*<div className="tagsMiniContainer" onClick={this.handleEditTags}>
+                <hr/>
+                <p>Topic Tags</p>
+                { this.state.showTopicTags ?
+                    this.state.doneSelectingTags ?
+                    <div className="QuestionTags">
+                        {collapsedTopic}
+                    </div> :
+                    <div className="QuestionTags">
+                        {topicTagsList}
+                    </div> : <p className="placeHolder">Select Secondary Tag first</p> }
+              </div>*/}
                     <div className="tagsMiniContainer">
                         <hr />
                         <p>Question</p>
@@ -267,10 +267,11 @@ class AddQuestion extends React.Component {
                                 value={this.state.question}
                                 onChange={this.handleClick}
                                 placeholder="Write what you want to ask about ..."
-                            /> : <p className="placeHolder">First Finish Selecting Tags ...</p>}
+                            />
+                            : <p className="placeHolder">First finish selecting tags ...</p>}
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 }

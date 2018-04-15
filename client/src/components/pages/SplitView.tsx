@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import SessionInformationHeader from '../includes/SessionInformationHeader';
-import SessionPopularQuestionsContainer from '../includes/SessionPopularQuestionsContainer';
 import SessionJoinButton from '../includes/SessionJoinButton';
 import ConnectedSessionQuestions from '../includes/ConnectedSessionQuestions';
 
@@ -106,7 +105,6 @@ class SplitView extends React.Component {
 
     render() {
         var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        var hasOHs = [true, false, true, false, true, false, false];
         var dates = [];
 
         var now = new Date(this.state.selectedWeekEpoch);
@@ -126,7 +124,7 @@ class SplitView extends React.Component {
             <React.Fragment>
                 <aside className="CalendarView">
                     <div className="Header">
-                        <CalendarHeader currentCourse="CS 1380" />
+                        <CalendarHeader currentCourse="CS 1380" isTA={true} />
                         <CalendarWeekSelect
                             thisMonth={thisMonth}
                             thisWeek={thisWeek}
@@ -136,7 +134,6 @@ class SplitView extends React.Component {
                     <CalendarDateSelect
                         dayList={days}
                         dateList={dates}
-                        hasOHList={hasOHs}
                         handleClick={this.handleDateClick}
                         selectedIndex={todayIndex}
                     />
@@ -144,8 +141,7 @@ class SplitView extends React.Component {
                         beginTime={new Date(this.state.selectedDateEpoch)}
                         endTime={new Date(this.state.selectedDateEpoch + 24 /* hours */ * 60 /* minutes */ * 60 * 1000)}
                         match={this.props.match}
-                        data={{}}
-                        useFakeData={false}
+                        data={{ loading: true }}
                     />
                 </aside>
                 <section className={'StudentSessionView '}>
@@ -153,8 +149,7 @@ class SplitView extends React.Component {
                         sessionId={this.state.sessionId}
                         data={{}}
                     />
-                    <SessionPopularQuestionsContainer />
-                    <ConnectedSessionQuestions sessionId={this.state.sessionId} data={{}} />
+                    <ConnectedSessionQuestions sessionId={this.state.sessionId} isTA={true} data={{}} />
                     <SessionJoinButton />
                 </section>
             </React.Fragment>
