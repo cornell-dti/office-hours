@@ -16,28 +16,28 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: adminpack; Type: EXTENSION; Schema: -; Owner:
+-- Name: adminpack; Type: EXTENSION; Schema: -; Owner: 
 --
 
 CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner:
+-- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner: 
 --
 
 COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
@@ -77,7 +77,7 @@ inserted_question integer;
 tag integer;
 
 BEGIN
-INSERT INTO questions(content, status, session_id, asker_id)
+INSERT INTO questions(content, status, session_id, asker_id) 
 VALUES
 (content, status, session_id, asker_id) returning question_id INTO inserted_question;
 FOREACH tag in ARRAY tags
@@ -106,6 +106,50 @@ CREATE TABLE public.sessions (
 
 
 ALTER TABLE public.sessions OWNER TO chilli;
+
+--
+-- Name: create_sessions_from_session_series(integer); Type: FUNCTION; Schema: public; Owner: chilli
+--
+
+CREATE FUNCTION public.create_sessions_from_session_series(series integer) RETURNS SETOF public.sessions
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+course integer;
+location text;
+start_date timestamp;
+end_date timestamp;
+cur_date timestamp;
+session_start_time timestamp;
+session_end_time timestamp;
+session_start_offset interval;
+session_end_offset interval;
+BEGIN
+IF (SELECT COUNT(*) FROM sessions where session_series_id = series) > 0 THEN
+    RAISE EXCEPTION 'sessions with this series_id already exist';
+END IF;
+course := (SELECT course_id FROM session_series WHERE session_series_id = series);
+start_date := date_trunc('week', (SELECT courses.start_date from courses WHERE course_id = course));
+end_date := date_trunc('week', (SELECT courses.end_date from courses WHERE course_id = course));
+SELECT session_series.start_time, session_series.end_time, session_series.location 
+	INTO session_start_time, session_end_time, location 
+	FROM session_series WHERE session_series_id = series;
+session_start_offset := session_start_time - date_trunc('week', session_start_time);
+session_end_offset := session_end_time - date_trunc('week', session_end_time) ;
+cur_date := start_date;
+while cur_date < end_date LOOP
+    INSERT INTO sessions(start_time, end_time, location, session_series_id, course_id) 
+    VALUES
+    (cur_date + session_start_offset, cur_date + session_end_offset, location, series, course);
+
+    cur_date := cur_date + interval '1 week';
+END LOOP;
+RETURN QUERY select * from sessions where session_series_id = series;
+END
+$$;
+
+
+ALTER FUNCTION public.create_sessions_from_session_series(series integer) OWNER TO chilli;
 
 --
 -- Name: search_session_range(integer, timestamp without time zone, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: chilli
@@ -463,6 +507,8 @@ COPY public.question_tags (question_id, tag_id) FROM stdin;
 4	35
 7	1
 7	2
+8	1
+8	2
 \.
 
 
@@ -475,6 +521,8 @@ COPY public.questions (question_id, content, time_entered, status, time_resolved
 3	Clarifying statistics concept from prelim	2018-03-26 10:03:12	unresolved	\N	1	7	\N
 1	How do you implement recursion in Question 2?	2018-03-26 09:47:33	resolved	2018-03-26 10:06:49	1	2	1
 4	Question about course grading	2018-03-26 10:07:39	unresolved	\N	1	5	\N
+7	help!!	2018-04-15 14:03:07.622829	unresolved	\N	1	1	\N
+8	help!!	2018-04-15 14:14:58.818084	unresolved	\N	1	1	\N
 \.
 
 
@@ -518,12 +566,25 @@ COPY public."session_seriesTas" (session_series_id, user_id) FROM stdin;
 
 COPY public.sessions (session_id, start_time, end_time, location, session_series_id, course_id) FROM stdin;
 1	2018-03-26 10:00:00	2018-03-26 11:00:00	\N	1	1
-2	2018-03-26 12:20:00	2018-03-26 13:10:00	\N	2	1
+143	2018-01-22 12:20:00	2018-01-22 13:10:00	Academic Surge A Office 101	2	1
 3	2018-03-26 13:00:00	2018-03-26 14:30:00	Rhodes 412	3	\N
-6	2018-04-02 12:20:00	2018-04-02 13:10:00	Gates G11	2	\N
+144	2018-01-29 12:20:00	2018-01-29 13:10:00	Academic Surge A Office 101	2	1
 4	2018-03-26 19:00:00	2018-03-26 20:30:00	\N	4	\N
 5	2018-04-02 10:00:00	2018-04-02 11:00:00	\N	1	1
 7	2018-04-02 19:00:00	2018-04-02 20:30:00	\N	4	\N
+145	2018-02-05 12:20:00	2018-02-05 13:10:00	Academic Surge A Office 101	2	1
+146	2018-02-12 12:20:00	2018-02-12 13:10:00	Academic Surge A Office 101	2	1
+147	2018-02-19 12:20:00	2018-02-19 13:10:00	Academic Surge A Office 101	2	1
+148	2018-02-26 12:20:00	2018-02-26 13:10:00	Academic Surge A Office 101	2	1
+149	2018-03-05 12:20:00	2018-03-05 13:10:00	Academic Surge A Office 101	2	1
+150	2018-03-12 12:20:00	2018-03-12 13:10:00	Academic Surge A Office 101	2	1
+151	2018-03-19 12:20:00	2018-03-19 13:10:00	Academic Surge A Office 101	2	1
+152	2018-03-26 12:20:00	2018-03-26 13:10:00	Academic Surge A Office 101	2	1
+153	2018-04-02 12:20:00	2018-04-02 13:10:00	Academic Surge A Office 101	2	1
+154	2018-04-09 12:20:00	2018-04-09 13:10:00	Academic Surge A Office 101	2	1
+155	2018-04-16 12:20:00	2018-04-16 13:10:00	Academic Surge A Office 101	2	1
+156	2018-04-23 12:20:00	2018-04-23 13:10:00	Academic Surge A Office 101	2	1
+157	2018-04-30 12:20:00	2018-04-30 13:10:00	Academic Surge A Office 101	2	1
 \.
 
 
@@ -625,7 +686,7 @@ SELECT pg_catalog.setval('public.courses_course_id_seq', 1, true);
 -- Name: questions_question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chilli
 --
 
-SELECT pg_catalog.setval('public.questions_question_id_seq', 7, true);
+SELECT pg_catalog.setval('public.questions_question_id_seq', 8, true);
 
 
 --
@@ -639,7 +700,7 @@ SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 4, true)
 -- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: chilli
 --
 
-SELECT pg_catalog.setval('public.sessions_session_id_seq', 7, true);
+SELECT pg_catalog.setval('public.sessions_session_id_seq', 157, true);
 
 
 --
