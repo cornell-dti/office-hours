@@ -11,14 +11,16 @@ class AddQuestion extends React.Component {
         studentPicture: string,
         primaryTags: string[],
         secondaryTags: string[],
-        topicTags: string[]
+        primaryTagsIds: number[],
+        secondaryTagsIds: number[]
+        // topicTags: string[]
     };
 
     state: {
         question: string,
         primaryBooleanList: boolean[],
         secondaryBooleanList: boolean[],
-        topicBooleanList: boolean[],
+        // topicBooleanList: boolean[],
         showSecondaryTags: boolean,
         showTopicTags: boolean,
         showQuestionInput: boolean,
@@ -34,7 +36,7 @@ class AddQuestion extends React.Component {
             question: '',
             primaryBooleanList: new Array(this.props.primaryTags.length).fill(false),
             secondaryBooleanList: new Array(this.props.secondaryTags.length).fill(false),
-            topicBooleanList: new Array(this.props.topicTags.length).fill(false),
+            // topicBooleanList: new Array(this.props.topicTags.length).fill(false),
             showSecondaryTags: false,
             showTopicTags: false,
             showQuestionInput: false,

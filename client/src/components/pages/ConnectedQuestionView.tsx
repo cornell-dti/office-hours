@@ -62,15 +62,21 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
         const imageURL =
             'https://i2.wp.com/puppypassionn.org/wp-content/uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1';
 
-        console.log(this.props.data)
-
         if (this.props.data.allSessions !== undefined) {
             var tags = this.props.data.allSessions.nodes[0].sessionSeryBySessionSeriesId.courseByCourseId.tagsByCourseId.nodes
 
-            var primaryTagNames = []
+            var primaryTagNames = [];
+            var secondaryTagNames = [];
+            var primaryTagNamesIds = [];
+            var secondaryTagNamesIds = [];
             for (var i = 0; i < tags.length; i++) {
-                if (tags[i].level == 1) {
+                if (tags[i].level === 1) {
                     primaryTagNames.push(tags[i].name);
+                    primaryTagNamesIds.push(tags[i].tagId);
+                }
+                if (tags[i].level === 2) {
+                    secondaryTagNames.push(tags[i].name);
+                    secondaryTagNamesIds.push(tags[i].tagId);
                 }
             }
 
@@ -80,10 +86,9 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
                         studentName="Sangwoo Kim"
                         studentPicture={imageURL}
                         primaryTags={primaryTagNames}
-                        secondaryTags={['Assignment 1', 'Assignment 2', 'Assignment 3', 'Assignment 4',
-                            'Assignment 5', 'Assignment 6']}
-                        topicTags={['Causality', 'Probability', 'Inference', 'Recursion', 'Regression', 'Classification',
-                            'Nearest Neighbor', 'Visualization']}
+                        secondaryTags={secondaryTagNames}
+                        primaryTagsIds={primaryTagNamesIds}
+                        secondaryTagsIds={secondaryTagNamesIds}
                     />
                 </div>
             );
@@ -91,7 +96,7 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
 
         return (
             <div className="QuestionView">
-                :(
+                Could not find course
             </div>
         );
 

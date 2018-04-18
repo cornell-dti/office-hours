@@ -22,8 +22,8 @@ class QuestionView extends React.Component {
                     primaryTags={['Assignment', 'Lecture', 'Exam', 'General']}
                     secondaryTags={['Assignment 1', 'Assignment 2', 'Assignment 3', 'Assignment 4',
                         'Assignment 5', 'Assignment 6']}
-                    topicTags={['Causality', 'Probability', 'Inference', 'Recursion', 'Regression', 'Classification',
-                        'Nearest Neighbor', 'Visualization']}
+                    primaryTagsIds={[1, 2, 3, 4]}
+                    secondaryTagsIds={[5, 6, 7, 8, 9, 10]}
                 />
             </div>
         );
