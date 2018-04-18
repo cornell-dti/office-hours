@@ -31,6 +31,24 @@ type InputProps = {
             sessionId: number,
         },
     },
+    data: {
+        allSessions?: {
+            nodes: [{
+                sessionSeryBySessionSeriesId: {
+                    courseByCourseId: {
+                        tagsByCourseId: {
+                            nodes: [{
+                                tagId: number,
+                                name: string,
+                                level: number
+                            }]
+                        }
+                    }
+                }
+
+            }],
+        },
+    },
 };
 
 const withData = graphql<Response, InputProps>(QUERY, {
@@ -44,20 +62,39 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
         const imageURL =
             'https://i2.wp.com/puppypassionn.org/wp-content/uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1';
 
+        console.log(this.props.data)
+
+        if (this.props.data.allSessions !== undefined) {
+            var tags = this.props.data.allSessions.nodes[0].sessionSeryBySessionSeriesId.courseByCourseId.tagsByCourseId.nodes
+
+            var primaryTagNames = []
+            for (var i = 0; i < tags.length; i++) {
+                if (tags[i].level == 1) {
+                    primaryTagNames.push(tags[i].name);
+                }
+            }
+
+            return (
+                <div className="QuestionView">
+                    <AddQuestion
+                        studentName="Sangwoo Kim"
+                        studentPicture={imageURL}
+                        primaryTags={primaryTagNames}
+                        secondaryTags={['Assignment 1', 'Assignment 2', 'Assignment 3', 'Assignment 4',
+                            'Assignment 5', 'Assignment 6']}
+                        topicTags={['Causality', 'Probability', 'Inference', 'Recursion', 'Regression', 'Classification',
+                            'Nearest Neighbor', 'Visualization']}
+                    />
+                </div>
+            );
+        }
 
         return (
             <div className="QuestionView">
-                <AddQuestion
-                    studentName="Sangwoo Kim"
-                    studentPicture={imageURL}
-                    primaryTags={this.props.data.allSessions.nodes[0].sessionSeryBySessionSeriesId.courseByCourseId.tagsByCourseId}
-                    secondaryTags={['Assignment 1', 'Assignment 2', 'Assignment 3', 'Assignment 4',
-                        'Assignment 5', 'Assignment 6']}
-                    topicTags={['Causality', 'Probability', 'Inference', 'Recursion', 'Regression', 'Classification',
-                        'Nearest Neighbor', 'Visualization']}
-                />
+                :(
             </div>
         );
+
     }
 }
 
