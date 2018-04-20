@@ -75,7 +75,7 @@ inserted_question integer;
 tag integer;
 
 BEGIN
-INSERT INTO questions(content, status, session_id, asker_id) 
+INSERT INTO questions(content, status, session_id, asker_id)
 VALUES
 (content, status, session_id, asker_id) returning question_id INTO inserted_question;
 FOREACH tag in ARRAY tags
@@ -125,20 +125,66 @@ END IF;
 course := (SELECT course_id FROM session_series WHERE session_series_id = series);
 start_date := date_trunc('week', (SELECT courses.start_date from courses WHERE course_id = course));
 end_date := date_trunc('week', (SELECT courses.end_date from courses WHERE course_id = course));
-SELECT session_series.start_time, session_series.end_time, session_series.location 
-	INTO session_start_time, session_end_time, location 
+SELECT session_series.start_time, session_series.end_time, session_series.location
+	INTO session_start_time, session_end_time, location
 	FROM session_series WHERE session_series_id = series;
 session_start_offset := session_start_time - date_trunc('week', session_start_time);
 session_end_offset := session_end_time - date_trunc('week', session_end_time) ;
 cur_date := start_date;
 while cur_date < end_date LOOP
-    INSERT INTO sessions(start_time, end_time, location, session_series_id, course_id) 
+    INSERT INTO sessions(start_time, end_time, location, session_series_id, course_id)
     VALUES
     (cur_date + session_start_offset, cur_date + session_end_offset, location, series, course);
 
     cur_date := cur_date + interval '1 week';
 END LOOP;
 RETURN QUERY select * from sessions where session_series_id = series;
+END
+$$;
+
+
+--
+-- Name: delete_session_series(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.delete_session_series(_series_id integer) RETURNS SETOF public.sessions
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+BEGIN
+DELETE FROM sessions WHERE session_series_id = _series_id AND start_time > now();
+DELETE FROM session_series_tas WHERE session_series_id = _series_id;
+UPDATE sessions
+SET session_series_id = NULL WHERE session_series_id = _series_id;
+DELETE FROM session_series WHERE session_series_id = _series_id;
+END
+$$;
+
+
+--
+-- Name: edit_session_series(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.edit_session_series(series integer) RETURNS SETOF public.sessions
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+_start_time timestamp;
+_end_time timestamp;
+_loc text;
+_course_id integer;
+_session_start_offset interval;
+_session_end_offset interval;
+BEGIN
+SELECT ss.start_time, ss.end_time, ss.location, ss.course_id INTO _start_time, _end_time, _loc, _course_id
+FROM session_series AS ss WHERE session_series_id = series;
+_session_start_offset := _start_time - date_trunc('week', _start_time);
+_session_end_offset := _end_time - date_trunc('week', _end_time);
+
+UPDATE sessions
+SET (start_time, end_time, location, course_id) = (date_trunc('week', sessions.start_time) + _session_start_offset, date_trunc('week', sessions.end_time) + _session_end_offset, _loc, _course_id)
+WHERE session_series_id = series AND start_time > now();
+RETURN QUERY select * from sessions where session_series_id = series AND start_time > now();
 END
 $$;
 
@@ -253,16 +299,6 @@ CREATE TABLE public.session_series (
 
 
 --
--- Name: session_seriesTas; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public."session_seriesTas" (
-    session_series_id integer NOT NULL,
-    user_id integer NOT NULL
-);
-
-
---
 -- Name: session_series_session_series_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -280,6 +316,16 @@ CREATE SEQUENCE public.session_series_session_series_id_seq
 --
 
 ALTER SEQUENCE public.session_series_session_series_id_seq OWNED BY public.session_series.session_series_id;
+
+
+--
+-- Name: session_series_tas; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.session_series_tas (
+    session_series_id integer NOT NULL,
+    user_id integer NOT NULL
+);
 
 
 --
@@ -503,10 +549,10 @@ COPY public.session_series (session_series_id, start_time, end_time, location, c
 
 
 --
--- Data for Name: session_seriesTas; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: session_series_tas; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public."session_seriesTas" (session_series_id, user_id) FROM stdin;
+COPY public.session_series_tas (session_series_id, user_id) FROM stdin;
 1	1
 2	8
 3	3
@@ -720,10 +766,10 @@ ALTER TABLE ONLY public.session_series
 
 
 --
--- Name: session_seriesTas sessionseriestas_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: session_series_tas sessionseriestas_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."session_seriesTas"
+ALTER TABLE ONLY public.session_series_tas
     ADD CONSTRAINT sessionseriestas_pk PRIMARY KEY (session_series_id, user_id);
 
 
@@ -856,18 +902,18 @@ ALTER TABLE ONLY public."sessionTas"
 
 
 --
--- Name: session_seriesTas session_seriesTas_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: session_series_tas session_seriesTas_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."session_seriesTas"
+ALTER TABLE ONLY public.session_series_tas
     ADD CONSTRAINT "session_seriesTas_fk0" FOREIGN KEY (session_series_id) REFERENCES public.session_series(session_series_id);
 
 
 --
--- Name: session_seriesTas session_seriesTas_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: session_series_tas session_seriesTas_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."session_seriesTas"
+ALTER TABLE ONLY public.session_series_tas
     ADD CONSTRAINT "session_seriesTas_fk1" FOREIGN KEY (user_id) REFERENCES public.users(user_id);
 
 
