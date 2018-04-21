@@ -18,13 +18,15 @@ class ProfessorAddNewOH extends React.Component {
         startDate?: moment.Moment
         startTime?: moment.Moment
         endTime?: moment.Moment
+        numAddTA: number
     };
 
     constructor(props: {}) {
         super(props);
         this.state = {
             editVisible: false,
-            deleteVisible: false
+            deleteVisible: false,
+            numAddTA: 0
         };
         this.handleDate = this.handleDate.bind(this);
         this.handleStartTime = this.handleStartTime.bind(this);
@@ -61,6 +63,12 @@ class ProfessorAddNewOH extends React.Component {
         });
     }
 
+    incAddTA(inc: number) {
+        this.setState({
+            numAddTA: this.state.numAddTA + inc
+        });
+    }
+
     render() {
         var today = moment().format('dddd MM/DD/YY');
 
@@ -68,6 +76,24 @@ class ProfessorAddNewOH extends React.Component {
         for (var i = 0; i < this.props.taList.length; i++) {
             var current = this.props.taList[i];
             taOptions.push({ value: current, text: current });
+        }
+
+        var AddTA = [];
+        for (var i = 0; i < this.state.numAddTA; i++) {
+            var x = <div />
+            if (i === this.state.numAddTA - 1) {
+                x = <button className="AddTAButton" onClick={() => this.incAddTA(-1)}>
+                    <Icon name="x" />
+                </button>
+            }
+
+            AddTA.push(
+                <div className="AddTA">
+                    <Icon name="user" />
+                    <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} />
+                    {x}
+                </div>
+            );
         }
 
         return (
@@ -91,11 +117,12 @@ class ProfessorAddNewOH extends React.Component {
                         <div className="TA">
                             <Icon name="user" />
                             <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} />
-                            <button className="AddTAButton">
+                            <button className="AddTAButton" onClick={() => this.incAddTA(1)}>
                                 <Icon name="plus" />
                                 Add TA
                             </button>
                         </div>
+                        {AddTA}
                         <div className="Location">
                             <Icon name="marker" />
                             <input className="long" placeholder="Building/Location" />
