@@ -96,6 +96,11 @@ class ProfessorAddNewOH extends React.Component {
             );
         }
 
+        var isMaxTA = false;
+        if (this.state.numAddTA >= 4) {
+            isMaxTA = true;
+        }
+
         return (
             <div className="ProfessorAddNewOH">
                 <div className="Delete">
@@ -117,7 +122,7 @@ class ProfessorAddNewOH extends React.Component {
                         <div className="TA">
                             <Icon name="user" />
                             <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} />
-                            <button className="AddTAButton" onClick={() => this.incAddTA(1)}>
+                            <button className={'AddTAButton ' + isMaxTA} disabled={isMaxTA} onClick={() => this.incAddTA(1)}>
                                 <Icon name="plus" />
                                 Add TA
                             </button>
