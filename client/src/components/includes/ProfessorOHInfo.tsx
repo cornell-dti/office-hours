@@ -10,46 +10,28 @@ class ProfoessorOHInfo extends React.Component {
 
     props: {
         taList: string[]
-        startDate?: moment.Moment
-        startTime?: moment.Moment
-        endTime?: moment.Moment
-        taIndex?: number
-        numAddTA: number
+        taIndexDefault?: number
+        locationBuildingDefault?: string
+        locationRoomNumDefault?: string
+        startTimeDefault?: (moment.Moment | null)
+        endTimeDefault?: (moment.Moment | null)
     };
 
     state: {
-        startDate?: moment.Moment
-        startTime?: moment.Moment
-        endTime?: moment.Moment
+        startTime?: (moment.Moment | null)
+        endTime?: (moment.Moment | null)
         numAddTA: number
     };
 
     constructor(props: {}) {
         super(props);
         this.state = {
+            startTime: this.props.startTimeDefault,
+            endTime: this.props.endTimeDefault,
             numAddTA: 0
         };
-        this.handleDate = this.handleDate.bind(this);
         this.handleStartTime = this.handleStartTime.bind(this);
         this.handleEndTime = this.handleEndTime.bind(this);
-    }
-
-    toggleEdit(toggle: boolean) {
-        this.setState({
-            editVisible: toggle
-        });
-    }
-
-    toggleDelete(toggle: boolean) {
-        this.setState({
-            deleteVisible: toggle
-        });
-    }
-
-    handleDate(date: moment.Moment) {
-        this.setState({
-            startDate: date
-        });
     }
 
     handleStartTime(startTime: moment.Moment) {
@@ -73,6 +55,7 @@ class ProfoessorOHInfo extends React.Component {
     render() {
         var today = moment().format('dddd MM/DD/YY');
 
+        // Create TA Dropdown items
         const taOptions = [];
         for (var i = 0; i < this.props.taList.length; i++) {
             var current = this.props.taList[i];
@@ -102,17 +85,13 @@ class ProfoessorOHInfo extends React.Component {
             isMaxTA = true;
         }
 
-        var defaultValue = null;
-        if (this.props.taIndex !== null) {
-            defaultValue = taOptions[this.props.taIndex].value;
-        }
-
+        var defaultTA = this.props.taIndexDefault != undefined ? taOptions[this.props.taIndexDefault].value : undefined
 
         return (
             <div className="ProfessorOHInfo">
                 <div className="TA">
                     <Icon name="user" />
-                    <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} defaultValue={taOptions[this.props.taIndex].value} />
+                    <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} defaultValue={defaultTA} />
                     <button className={'AddTAButton ' + isMaxTA} disabled={isMaxTA} onClick={() => this.incAddTA(1)}>
                         <Icon name="plus" />
                         Add TA
@@ -121,15 +100,15 @@ class ProfoessorOHInfo extends React.Component {
                 {AddTA}
                 <div className="Location">
                     <Icon name="marker" />
-                    <input className="long" placeholder="Building/Location" />
-                    <input placeholder="Room Number" />
+                    <input className="long" placeholder="Building/Location" defaultValue={this.props.locationBuildingDefault} />
+                    <input placeholder="Room Number" defaultValue={this.props.locationRoomNumDefault} />
                 </div>
                 <div className="Time">
                     <Icon name="time" />
                     <div className="datePicker">
                         <DatePicker
-                            selected={this.state.startDate}
-                            onChange={this.handleDate}
+                            selected={this.state.startTime}
+                            onChange={this.handleStartTime}
                             dateFormat='dddd MM/DD/YY'
                             placeholderText={today}
                         />

@@ -1,10 +1,8 @@
 import * as React from 'react';
 import * as moment from 'moment';
-import { Dropdown, DropdownItemProps } from 'semantic-ui-react';
-import { Checkbox } from 'semantic-ui-react';
 import { Icon } from 'semantic-ui-react';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import ProfoessorOHInfo from './ProfessorOHInfo';
 
 class ProfessorCalendarRow extends React.Component {
 
@@ -42,26 +40,11 @@ class ProfessorCalendarRow extends React.Component {
             endTime: timeEndMoment
         };
         this.toggleEdit = this.toggleEdit.bind(this);
-        this.handleStartTime = this.handleStartTime.bind(this);
         this.updateDeleteInfo = this.updateDeleteInfo.bind(this);
     }
 
     toggleEdit(row: number) {
         this.props.handleEditToggle(this.props.dayNumber, row);
-    }
-
-    handleStartTime(index: number, date: moment.Moment | null) {
-        this.state.startTime[index] = date;
-        this.setState({
-            startDate: this.state.startTime
-        });
-    }
-
-    handleEndTime(index: number, date: moment.Moment | null) {
-        this.state.endTime[index] = date;
-        this.setState({
-            startDate: this.state.endTime
-        });
     }
 
     updateDeleteInfo(dayIndex: number, rowIndex: number) {
@@ -80,18 +63,11 @@ class ProfessorCalendarRow extends React.Component {
             );
         }
 
-        // Create TA Dropdown items
-        const taOptions = new Array<DropdownItemProps>();
-        for (var i = 0; i < this.props.taList.length; i++) {
-            var current = this.props.taList[i];
-            taOptions.push({ value: current, text: current });
-        }
-
         // Convert UNIX timestamps to readable time string
         var date = new Array<string>(this.props.timeStart.length);
         var timeStart = new Array<string>(this.props.timeStart.length);
         var timeEnd = new Array<string>(this.props.timeEnd.length);
-        for (i = 0; i < this.props.timeStart.length; i++) {
+        for (var i = 0; i < this.props.timeStart.length; i++) {
             date[i] = moment(this.props.timeStart[i]).format('dddd MM/DD/YY');
             timeStart[i] = moment(this.props.timeStart[i]).format('h:mm A');
             timeEnd[i] = moment(this.props.timeEnd[i]).format('h:mm A');
@@ -118,57 +94,14 @@ class ProfessorCalendarRow extends React.Component {
                         </tr>
                         <tr>
                             <td colSpan={this.props.tablewidth} className={'ExpandedEdit ' + this.props.isExpanded[index]}>
-                                <div className="InfoInput">
-                                    <div className="TA">
-                                        <Icon name="user" />
-                                        <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} defaultValue={taOptions[this.props.taIndex[index]].value} />
-                                        <button className="AddTAButton">
-                                            <Icon name="plus" />
-                                            Add TA
-                                        </button>
-                                    </div>
-                                    <div className="Location">
-                                        <Icon name="marker" />
-                                        <input className="long" defaultValue={this.props.locationBuilding[index]} />
-                                        <input defaultValue={this.props.locationRoomNum[index]} />
-                                    </div>
-                                    <div className="Time">
-                                        <Icon name="time" />
-                                        <div className="datePicker">
-                                            <DatePicker
-                                                selected={this.state.startTime[index]}
-                                                onChange={(d) => this.handleStartTime(index, d)}
-                                                dateFormat="dddd MM/DD/YY"
-                                            />
-                                        </div>
-                                        <div className="datePicker">
-                                            <DatePicker
-                                                selected={this.state.startTime[index]}
-                                                onChange={(d) => this.handleStartTime(index, d)}
-                                                showTimeSelect
-                                                // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
-                                                // Will not compile if removed
-                                                showTimeSelectOnly
-                                                timeIntervals={30}
-                                                dateFormat="LT"
-                                            />
-                                        </div >
-                                        To
-                                        <div className="datePicker">
-                                            <DatePicker
-                                                selected={this.state.endTime[index]}
-                                                onChange={(d) => this.handleEndTime(index, d)}
-                                                showTimeSelect
-                                                // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
-                                                // Will not compile if removed
-                                                showTimeSelectOnly
-                                                timeIntervals={30}
-                                                dateFormat="LT"
-                                            />
-                                        </div >
-                                        <Checkbox className="repeat" label="Repeat Weekly" />
-                                    </div>
-                                </div>
+                                <ProfoessorOHInfo
+                                    taList={this.props.taList}
+                                    taIndexDefault={this.props.taIndex[index]}
+                                    locationBuildingDefault={this.props.locationBuilding[index]}
+                                    locationRoomNumDefault={this.props.locationRoomNum[index]}
+                                    startTimeDefault={this.state.startTime[index]}
+                                    endTimeDefault={this.state.endTime[index]}
+                                />
                                 <div className="EditButtons">
                                     <button className="Delete" onClick={() => this.updateDeleteInfo(this.props.dayNumber, index)}>
                                         Delete
