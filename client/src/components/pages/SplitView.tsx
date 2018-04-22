@@ -1,5 +1,4 @@
 import * as React from 'react';
-// import { RouteComponentProps, withRouter } from 'react-router-dom';
 import * as H from 'history';
 
 import SessionInformationHeader from '../includes/SessionInformationHeader';
@@ -67,6 +66,17 @@ class SplitView extends React.Component {
         this.handleWeekClick = this.handleWeekClick.bind(this);
         this.handleDateClick = this.handleDateClick.bind(this);
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+        this.props.history.listen((location, action) => {
+            if (this.props.match.params.sessionId) {
+                this.setState((prevState) => {
+                    return { activeView: 'session', sessionId: this.props.match.params.sessionId };
+                });
+            } else {
+                this.setState((prevState) => {
+                    return { activeView: 'calendar', sessionId: -1 };
+                });
+            }
+        });
     }
 
     // Currently unused function, might be useful in the future
