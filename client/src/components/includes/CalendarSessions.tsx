@@ -41,9 +41,9 @@ query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Dat
 `;
 
 const withData = graphql<Response, InputProps>(QUERY, {
-    options: ({ beginTime, endTime, match }) => ({
+    options: ({ beginTime, endTime, courseId }) => ({
         variables: {
-            courseId: match.params.courseId,
+            courseId: courseId,
             beginTime: beginTime,
             endTime: endTime
         }
@@ -51,11 +51,7 @@ const withData = graphql<Response, InputProps>(QUERY, {
 });
 
 type InputProps = {
-    match: {
-        params: {
-            courseId: number,
-        },
-    },
+    courseId: number,
     beginTime: Date,
     endTime: Date,
     data: {

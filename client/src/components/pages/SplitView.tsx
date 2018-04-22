@@ -1,4 +1,6 @@
 import * as React from 'react';
+// import { RouteComponentProps, withRouter } from 'react-router-dom';
+import * as H from 'history';
 
 import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionJoinButton from '../includes/SessionJoinButton';
@@ -10,12 +12,15 @@ import CalendarSessions from '../includes/CalendarSessions';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
 class SplitView extends React.Component {
+
     props: {
         match: {
             params: {
-                courseId: number
+                courseId: number,
+                sessionId: number | null
             }
-        }
+        },
+        history: H.History
     };
 
     monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -54,7 +59,7 @@ class SplitView extends React.Component {
         this.state = {
             selectedWeekEpoch: week.getTime(),
             selectedDateEpoch: today.getTime(),
-            sessionId: -1,
+            sessionId: this.props.match.params.sessionId || -1,
             width: 0,
             height: 0,
             activeView: 'calendar'
@@ -124,14 +129,16 @@ class SplitView extends React.Component {
     }
 
     handleSessionClick = (sessionId: number) => {
+        this.props.history.push('/course/1/session/' + sessionId);
         this.setState((prevState) => {
             return { sessionId: sessionId, activeView: 'session' };
         });
     }
 
     handleBackClick = () => {
+        this.props.history.push('/course/1');
         this.setState((prevState) => {
-            return { activeView: 'calendar' };
+            return { activeView: 'calendar', sessionId: -1 };
         });
     }
 
@@ -173,7 +180,7 @@ class SplitView extends React.Component {
                         <CalendarSessions
                             beginTime={new Date(this.state.selectedDateEpoch)}
                             endTime={new Date(this.state.selectedDateEpoch + 24 * 60 /* minutes */ * 60 * 1000)}
-                            match={this.props.match}
+                            courseId={this.props.match.params.courseId}
                             data={{ loading: true }}
                             callback={this.handleSessionClick}
                         />
@@ -205,5 +212,4 @@ class SplitView extends React.Component {
         );
     }
 }
-
 export default SplitView;
