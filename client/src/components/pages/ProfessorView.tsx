@@ -3,6 +3,7 @@ import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
 import ProfessorAddNewOH from '../includes/ProfessorAddNewOH';
 import ProfessorHeader from '../includes/ProfessorHeader';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
+import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
 class ProfessorView extends React.Component {
     render() {
@@ -21,6 +22,7 @@ class ProfessorView extends React.Component {
                         <ProfessorAddNewOH
                             taList={['Tiffany Wang', 'Joyelle Gilbert', 'Sophia Wang', 'Sean Kim', 'Zechen Zhang']}
                         />
+                        <CalendarWeekSelect />
                         <div className="Calendar">
                             <ProfessorCalendarTable
                                 taList={['Tiffany Wang', 'Joyelle Gilbert', 'Sophia Wang', 'Sean Kim', 'Zechen Zhang']}

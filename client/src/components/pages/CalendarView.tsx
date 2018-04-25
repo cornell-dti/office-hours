@@ -6,9 +6,6 @@ import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
 class CalendarView extends React.Component {
 
-    monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'];
-
     state: {
         selectedWeekEpoch: number,
         selectedDateEpoch: number
@@ -19,29 +16,14 @@ class CalendarView extends React.Component {
         var week = new Date();
         week.setHours(0, 0, 0, 0);
         week.setTime(week.getTime() -
-            (week.getDay() + 6) /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+            (week.getDay() - 1) /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
         var today = new Date();
         today.setHours(0, 0, 0, 0);
         this.state = {
             selectedWeekEpoch: week.getTime(),
             selectedDateEpoch: today.getTime()
         };
-        this.handleWeekClick = this.handleWeekClick.bind(this);
         this.handleDateClick = this.handleDateClick.bind(this);
-    }
-
-    // Currently unused function, might be useful in the future
-    getWeekText(epoch: number): string {
-        var now = new Date(epoch);
-        var weekText = '';
-        weekText += now.getDate();
-        weekText += ' - ';
-        now.setTime(now.getTime() +
-            6 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
-        weekText += now.getDate();
-        weekText += ' ';
-        weekText += this.monthNames[now.getMonth()];
-        return weekText;
     }
 
     getWeek(epoch: number): string {
@@ -55,11 +37,6 @@ class CalendarView extends React.Component {
         return weekText;
     }
 
-    getMonth(epoch: number): string {
-        var now = new Date(epoch);
-        return this.monthNames[now.getMonth()];
-    }
-
     // newDateIndex is an index between 0 and 6 inclusive, representing which of the days
     // in the current week has been selected
     handleDateClick(newDateIndex: number) {
@@ -67,26 +44,6 @@ class CalendarView extends React.Component {
             selectedDateEpoch: this.state.selectedWeekEpoch +
                 newDateIndex * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
         });
-    }
-
-    // previousWeek = true means that the previous week was clicked in the week selector
-    // previousWeek = false means that the next week was clicked in the week selector
-    handleWeekClick(previousWeek: boolean) {
-        if (previousWeek) {
-            this.setState({
-                selectedWeekEpoch: this.state.selectedWeekEpoch -
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */,
-                selectedDateEpoch: this.state.selectedDateEpoch -
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
-            });
-        } else {
-            this.setState({
-                selectedWeekEpoch: this.state.selectedWeekEpoch +
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */,
-                selectedDateEpoch: this.state.selectedDateEpoch +
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
-            });
-        }
     }
 
     render() {
@@ -101,9 +58,6 @@ class CalendarView extends React.Component {
             now.setTime(now.getTime() + 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
         }
 
-        const thisWeek = this.getWeek(this.state.selectedWeekEpoch);
-        const thisMonth = this.getMonth(this.state.selectedWeekEpoch);
-
         var selectedDate = new Date(this.state.selectedDateEpoch);
         const todayIndex = ((selectedDate.getDay() - 1) + 7) % 7;
 
@@ -111,11 +65,7 @@ class CalendarView extends React.Component {
             <div className="CalendarView">
                 <div className="Header">
                     <CalendarHeader currentCourse="CS 1380" />
-                    <CalendarWeekSelect
-                        thisMonth={thisMonth}
-                        thisWeek={thisWeek}
-                        handleClick={this.handleWeekClick}
-                    />
+                    <CalendarWeekSelect />
                 </div>
                 <CalendarDateSelect
                     dayList={days}
