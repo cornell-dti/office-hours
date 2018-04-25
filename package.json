@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"cd server && yarn start\" \"cd client && yarn run deploy\"",
+    "start": "cd server && yarn start",
     "build": "yarn start",
-    "postinstall": "cd client && yarn install --production=false && cd ../server && yarn install --production=false"
+    "postinstall": "cd client && yarn install --production=false && yarn run deploy && cd ../server && yarn install --production=false"
   },
   "repository": {
     "type": "git",
@@ -19,8 +19,9 @@
   },
   "homepage": "https://github.com/cornell-dti/office-hours#readme",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "apollo-client": "^2.2.6",
     "concurrently": "^3.5.0",
-    "react-datepicker": "^1.3.0"
+    "express-graphql": "^0.6.12"
   }
 }

@@ -7,6 +7,17 @@
 @live: #70d59d;
 @open: #ffdba6;
 
+.noHoursHeading {
+    padding-top: 20vh;
+    font-weight: bold;
+}
+
+.noHoursBody {
+    font-family: Roboto;
+    font-size: 15px;
+    color: #484848;
+}
+
 .CalendarSessionCard {
     font-size: 11px;
     padding-top: 20px;
@@ -52,7 +63,7 @@
             }
         }
     }
-    
+
     .CalendarCard {
         flex-grow: 1;
         border-radius: 5px;
@@ -76,11 +87,11 @@
                 &.live {
                     background-color: @live
                 }
-        
+
                 &.open {
                     background-color: @open;
                 }
-        
+
                 &.closed {
                     display: none;
                 }
@@ -107,7 +118,7 @@
         .TimeDesc {
             color: dodgerblue;
         }
-    }    
+    }
 
     .OpenButton {
         color: @button-color;

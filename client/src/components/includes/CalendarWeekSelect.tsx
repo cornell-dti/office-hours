@@ -52,7 +52,6 @@ class CalendarWeekSelect extends React.Component {
         }
     }
 
-
     render() {
         const thisWeek = this.getWeek(this.state.selectedWeekEpoch);
         const thisMonth = this.getMonth(this.state.selectedWeekEpoch);

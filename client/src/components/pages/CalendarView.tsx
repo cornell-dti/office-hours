@@ -5,6 +5,13 @@ import CalendarSessions from '../includes/CalendarSessions';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
 class CalendarView extends React.Component {
+    props: {
+        match: {
+            params: {
+                courseId: number
+            }
+        }
+    };
 
     state: {
         selectedWeekEpoch: number,
@@ -15,8 +22,7 @@ class CalendarView extends React.Component {
         super(props);
         var week = new Date();
         week.setHours(0, 0, 0, 0);
-        week.setTime(week.getTime() -
-            (week.getDay() - 1) /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+        week.setDate(week.getDate() + 1 - week.getDay());
         var today = new Date();
         today.setHours(0, 0, 0, 0);
         this.state = {
@@ -48,7 +54,6 @@ class CalendarView extends React.Component {
 
     render() {
         var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        var hasOHs = [true, false, true, false, true, false, false];
         var dates = [];
 
         var now = new Date(this.state.selectedWeekEpoch);
@@ -61,20 +66,29 @@ class CalendarView extends React.Component {
         var selectedDate = new Date(this.state.selectedDateEpoch);
         const todayIndex = ((selectedDate.getDay() - 1) + 7) % 7;
 
+        const isTA = false; // TODO fetch from backend
+
         return (
             <div className="CalendarView">
                 <div className="Header">
-                    <CalendarHeader currentCourse="CS 1380" />
+                    <CalendarHeader
+                        currentCourse="CS 1380"
+                        isTA={isTA}
+                    />
                     <CalendarWeekSelect />
                 </div>
                 <CalendarDateSelect
                     dayList={days}
                     dateList={dates}
-                    hasOHList={hasOHs}
                     handleClick={this.handleDateClick}
                     selectedIndex={todayIndex}
                 />
-                <CalendarSessions todayEpoch={this.state.selectedDateEpoch} />
+                <CalendarSessions
+                    beginTime={new Date(this.state.selectedDateEpoch)}
+                    endTime={new Date(this.state.selectedDateEpoch + 24 /* hours */ * 60 /* minutes */ * 60 * 1000)}
+                    match={this.props.match}
+                    data={{ loading: true }}
+                />
             </div>
         );
     }
