@@ -174,7 +174,11 @@ class SplitView extends React.Component {
                 {(this.state.width > 600 || (this.state.width <= 600 && this.state.activeView === 'calendar')) &&
                     <aside className="CalendarView">
                         <div className="Header">
-                            <CalendarHeader currentCourse="CS 1380" isTA={true} />
+                            <CalendarHeader
+                                currentCourse="CS 1380"
+                                userId={1}
+                                courseId={this.props.match.params.courseId}
+                            />
                             <CalendarWeekSelect
                                 thisMonth={thisMonth}
                                 thisWeek={thisWeek}
@@ -212,6 +216,7 @@ class SplitView extends React.Component {
                                         sessionId={this.state.sessionId}
                                         isTA={false}
                                         data={{}}
+                                        userId={1}
                                     />
                                 </div>
                             </React.Fragment>
