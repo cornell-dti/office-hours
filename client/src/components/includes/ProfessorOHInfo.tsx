@@ -134,7 +134,7 @@ class ProfoessorOHInfo extends React.Component {
                             showTimeSelect
                             // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
                             // Will not compile if removed
-                            showTimeSelectOnly
+                            // showTimeSelectOnly
                             timeIntervals={30}
                             dateFormat="LT"
                             placeholderText="2:00 PM"
