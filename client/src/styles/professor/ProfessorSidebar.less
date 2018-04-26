@@ -1,0 +1,70 @@
+@deselect: #c3c3c3;
+@selectprimary: #5f87ef;
+@selectsecondary: #e4efff;
+
+.ProfessorSidebar {
+    height: 100%;
+    width: 200px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color:white;
+    overflow-x: hidden;
+    padding-top: 20px;
+    box-shadow: 2px 0 8px 1px rgba(190, 190, 190, 0.5);
+
+    .header {
+        background: dodgerblue;
+        color: white;
+        font-size: 20px;
+        padding: 18px 0px;
+        margin-bottom: 25px;
+
+        .dropdown {
+            font-size:15px;
+            padding-left: 10px;
+        }
+    }
+
+    .manage,.actions {
+        font-size: 15px;
+        text-align: left;
+        display:block;
+        color: @deselect;
+
+        i.icon {
+            padding-right:30px;
+        }
+
+        span {
+            margin-left: 30px;
+            display: block;
+            padding: 22.5px 0px;
+        }
+    }
+
+    .divider {
+        margin: 30px 25px 30px;
+        height: 2px;
+        background-color: @deselect;
+    }
+
+    .logo { // Placeholder
+        display: block;
+        margin:auto;
+        margin-bottom: 100px;
+    }
+
+    .selected {
+        margin-left: 0px !important;
+        color: @selectprimary;
+        border-left: solid 5px @selectprimary;
+        background-color: @selectsecondary;
+        font-weight: bold;
+
+        i.icon {
+            padding-left:25px;
+        }
+    }
+}

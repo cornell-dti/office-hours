@@ -1,0 +1,68 @@
+.ProfessorDelete.true {
+    display: block;
+}
+
+.ProfessorDelete {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 200px;
+    top: 0;
+    width: calc(~'100% - 200px');
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.4);
+
+    .content {
+        text-align: center;
+        background-color: #fefefe;
+        margin: 15% auto;
+        position: relative;
+        left: 0;
+        width: 600px;
+
+        .x {
+            padding: 4px;
+            float: right;
+        }
+
+        .question {
+            padding-top: 28px;
+        }
+
+        .info {
+            background-color: #edeff2   ;
+            margin: 15px 30px;
+            padding: 15px;
+
+            .ta {
+                font-weight: bold;
+                padding-bottom: 15px;
+            }
+
+            span {
+                padding: 0 5%;
+            }
+        }
+
+        .Delete, .Cancel {
+            font-size: 14px;
+            padding: 10px 40px;
+            border-radius: 3px;
+            font-size: 14px;
+            margin: 20px 15px;
+            background-color: white;
+            border: 1px solid gray;
+        }
+
+        .Delete {
+            background-color: dodgerblue;
+            color: white;
+            border: none;
+        }
+    }
+}
+
+
+
+
