@@ -4,7 +4,7 @@ import CalendarSessionCard from './CalendarSessionCard';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
-import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader/Loader';
+import { Loader } from 'semantic-ui-react';
 
 const QUERY = gql`
 query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Datetime!) {

@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 import AddQuestion from '../includes/AddQuestion';
+import { Loader } from 'semantic-ui-react';
 
 const QUERY = gql`
     query FindTagsBySessionId($sessionId: Int!) {
@@ -16,6 +17,11 @@ const QUERY = gql`
                                 tagId
                                 name
                                 level
+                                tagRelationsByChildId {
+                                    nodes {
+                                        parentId
+                                    }
+                                }
                             }
                         }
                     }
@@ -32,6 +38,7 @@ type InputProps = {
         },
     },
     data: {
+        loading: boolean,
         allSessions?: {
             nodes: [{
                 sessionSeryBySessionSeriesId: {
@@ -41,6 +48,11 @@ type InputProps = {
                                 tagId: number,
                                 name: string,
                                 level: number
+                                tagRelationsByChildId: {
+                                    nodes: [{
+                                        parentId: number
+                                    }]
+                                }
                             }]
                         }
                     }
@@ -61,14 +73,20 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
     render() {
         const imageURL =
             'https://i2.wp.com/puppypassionn.org/wp-content/uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1';
+        const { loading } = this.props.data;
+
+        if (loading) {
+            return <Loader active={true} content={'Loading'} />;
+        }
 
         if (this.props.data.allSessions !== undefined) {
-            var tags = this.props.data.allSessions.nodes[0].sessionSeryBySessionSeriesId.courseByCourseId.tagsByCourseId.nodes
+            var tags = this.props.data.allSessions.nodes[0].sessionSeryBySessionSeriesId.courseByCourseId.tagsByCourseId.nodes;
 
             var primaryTagNames = [];
             var secondaryTagNames = [];
             var primaryTagNamesIds = [];
             var secondaryTagNamesIds = [];
+            var secondaryTagParentIds = [];
             for (var i = 0; i < tags.length; i++) {
                 if (tags[i].level === 1) {
                     primaryTagNames.push(tags[i].name);
@@ -77,18 +95,20 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
                 if (tags[i].level === 2) {
                     secondaryTagNames.push(tags[i].name);
                     secondaryTagNamesIds.push(tags[i].tagId);
+                    secondaryTagParentIds.push(tags[i].tagRelationsByChildId.nodes[0].parentId);
                 }
             }
 
             return (
                 <div className="QuestionView">
                     <AddQuestion
-                        studentName="Sangwoo Kim"
-                        studentPicture={imageURL}
+                        taName="Sangwoo Kim"
+                        taPicture={imageURL}
                         primaryTags={primaryTagNames}
                         secondaryTags={secondaryTagNames}
                         primaryTagsIds={primaryTagNamesIds}
                         secondaryTagsIds={secondaryTagNamesIds}
+                        secondaryTagParentIds={secondaryTagParentIds}
                     />
                 </div>
             );
@@ -96,7 +116,7 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
 
         return (
             <div className="QuestionView">
-                Could not find course
+                Error
             </div>
         );
 

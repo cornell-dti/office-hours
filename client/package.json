@@ -2,7 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3001",
+  "proxy": "http://queue-me-in.herokuapp.com",
   "dependencies": {
     "apollo-client-preset": "^1.0.8",
     "graphql": "^0.13.0",
