@@ -113,21 +113,21 @@ class ProfoessorOHInfo extends React.Component {
                             placeholderText={today}
                         />
                     </div >
-                    <div className="datePicker">
+                    <div className="datePicker timePicker">
                         <DatePicker
                             selected={this.state.startTime}
                             onChange={this.handleStartTime}
                             showTimeSelect
                             // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
                             // Will not compile if removed
-                            showTimeSelectOnly
+                            // showTimeSelectOnly
                             timeIntervals={30}
                             dateFormat="LT"
                             placeholderText="12:00 PM"
                         />
                     </div >
                     To
-                    <div className="datePicker">
+                    <div className="datePicker timePicker">
                         <DatePicker
                             selected={this.state.endTime}
                             onChange={this.handleEndTime}
