@@ -169,7 +169,10 @@ class SplitView extends React.Component {
                                     data={{}}
                                     callback={this.handleBackClick}
                                 />
-                                <SessionJoinButton />
+                                <SessionJoinButton
+                                    sessionId={this.state.sessionId}
+                                    courseId={this.props.match.params.courseId}
+                                />
                                 <div className="splitQuestions">
                                     <ConnectedSessionQuestions
                                         sessionId={this.state.sessionId}

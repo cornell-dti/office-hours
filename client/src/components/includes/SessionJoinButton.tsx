@@ -4,6 +4,10 @@ import { Redirect } from 'react-router';
 
 class SessionJoinButton extends React.Component {
 
+    props: {
+        sessionId: number
+    };
+
     state: {
         redirect: boolean
     };
@@ -23,7 +27,7 @@ class SessionJoinButton extends React.Component {
 
     render() {
         if (this.state.redirect) {
-            return <Redirect push={true} to={'/question'} />;
+            return <Redirect push={true} to={'/question/' + this.props.sessionId} />;
         }
 
         return (
