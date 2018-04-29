@@ -95,7 +95,8 @@ CREATE TABLE public.sessions (
     session_id integer NOT NULL,
     start_time timestamp without time zone NOT NULL,
     end_time timestamp without time zone NOT NULL,
-    location text,
+    building text,
+    room text,
     session_series_id integer,
     course_id integer
 );
@@ -110,7 +111,8 @@ CREATE FUNCTION public.create_sessions_from_session_series(series integer) RETUR
     AS $$
 DECLARE
 course integer;
-location text;
+building text;
+room text;
 start_date timestamp;
 end_date timestamp;
 cur_date timestamp;
@@ -125,16 +127,16 @@ END IF;
 course := (SELECT course_id FROM session_series WHERE session_series_id = series);
 start_date := date_trunc('week', (SELECT courses.start_date from courses WHERE course_id = course));
 end_date := date_trunc('week', (SELECT courses.end_date from courses WHERE course_id = course));
-SELECT session_series.start_time, session_series.end_time, session_series.location
-	INTO session_start_time, session_end_time, location
+SELECT session_series.start_time, session_series.end_time, session_series.building, session_series.room
+	INTO session_start_time, session_end_time, building, room
 	FROM session_series WHERE session_series_id = series;
 session_start_offset := session_start_time - date_trunc('week', session_start_time);
 session_end_offset := session_end_time - date_trunc('week', session_end_time) ;
 cur_date := start_date;
 while cur_date < end_date LOOP
-    INSERT INTO sessions(start_time, end_time, location, session_series_id, course_id)
+    INSERT INTO sessions(start_time, end_time, building, room, session_series_id, course_id)
     VALUES
-    (cur_date + session_start_offset, cur_date + session_end_offset, location, series, course);
+    (cur_date + session_start_offset, cur_date + session_end_offset, building, room, series, course);
 
     cur_date := cur_date + interval '1 week';
 END LOOP;
@@ -171,18 +173,19 @@ CREATE FUNCTION public.edit_session_series(series integer) RETURNS SETOF public.
 DECLARE
 _start_time timestamp;
 _end_time timestamp;
-_loc text;
+_building text;
+_room text;
 _course_id integer;
 _session_start_offset interval;
 _session_end_offset interval;
 BEGIN
-SELECT ss.start_time, ss.end_time, ss.location, ss.course_id INTO _start_time, _end_time, _loc, _course_id
+SELECT ss.start_time, ss.end_time, ss.building, ss.room, ss.course_id INTO _start_time, _end_time, _building, _room, _course_id
 FROM session_series AS ss WHERE session_series_id = series;
 _session_start_offset := _start_time - date_trunc('week', _start_time);
 _session_end_offset := _end_time - date_trunc('week', _end_time);
 
 UPDATE sessions
-SET (start_time, end_time, location, course_id) = (date_trunc('week', sessions.start_time) + _session_start_offset, date_trunc('week', sessions.end_time) + _session_end_offset, _loc, _course_id)
+SET (start_time, end_time, _building, _room, course_id) = (date_trunc('week', sessions.start_time) + _session_start_offset, date_trunc('week', sessions.end_time) + _session_end_offset, _building, _room, _course_id)
 WHERE session_series_id = series AND start_time > now();
 RETURN QUERY select * from sessions where session_series_id = series AND start_time > now();
 END
@@ -293,7 +296,8 @@ CREATE TABLE public.session_series (
     session_series_id integer NOT NULL,
     start_time timestamp without time zone NOT NULL,
     end_time timestamp without time zone NOT NULL,
-    location text NOT NULL,
+    building text NOT NULL,
+    room text NOT NULL,
     course_id integer NOT NULL
 );
 
@@ -540,11 +544,11 @@ COPY public."sessionTas" (session_id, user_id) FROM stdin;
 -- Data for Name: session_series; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.session_series (session_series_id, start_time, end_time, location, course_id) FROM stdin;
-1	2018-03-26 10:00:00	2018-03-26 11:00:00	Gates G21	1
-2	2018-03-26 12:20:00	2018-03-26 13:10:00	Academic Surge A Office 101	1
-3	2018-03-26 13:00:00	2018-03-26 14:30:00	Academic Surge A Office 102	1
-4	2018-03-26 19:00:00	2018-03-26 20:15:00	Gates G17	1
+COPY public.session_series (session_series_id, start_time, end_time, building, room, course_id) FROM stdin;
+1	2018-03-26 10:00:00	2018-03-26 11:00:00	Gates	G21	1
+2	2018-03-26 12:20:00	2018-03-26 13:10:00	Academic Surge A Office	101	1
+3	2018-03-26 13:00:00	2018-03-26 14:30:00	Academic Surge A Office	102	1
+4	2018-03-26 19:00:00	2018-03-26 20:15:00	Gates	G17	1
 \.
 
 
@@ -564,27 +568,27 @@ COPY public.session_series_tas (session_series_id, user_id) FROM stdin;
 -- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.sessions (session_id, start_time, end_time, location, session_series_id, course_id) FROM stdin;
-143	2018-01-22 12:20:00	2018-01-22 13:10:00	Academic Surge A Office 101	2	1
-144	2018-01-29 12:20:00	2018-01-29 13:10:00	Academic Surge A Office 101	2	1
-145	2018-02-05 12:20:00	2018-02-05 13:10:00	Academic Surge A Office 101	2	1
-146	2018-02-12 12:20:00	2018-02-12 13:10:00	Academic Surge A Office 101	2	1
-147	2018-02-19 12:20:00	2018-02-19 13:10:00	Academic Surge A Office 101	2	1
-148	2018-02-26 12:20:00	2018-02-26 13:10:00	Academic Surge A Office 101	2	1
-149	2018-03-05 12:20:00	2018-03-05 13:10:00	Academic Surge A Office 101	2	1
-150	2018-03-12 12:20:00	2018-03-12 13:10:00	Academic Surge A Office 101	2	1
-151	2018-03-19 12:20:00	2018-03-19 13:10:00	Academic Surge A Office 101	2	1
-152	2018-03-26 12:20:00	2018-03-26 13:10:00	Academic Surge A Office 101	2	1
-153	2018-04-02 12:20:00	2018-04-02 13:10:00	Academic Surge A Office 101	2	1
-154	2018-04-09 12:20:00	2018-04-09 13:10:00	Academic Surge A Office 101	2	1
-155	2018-04-16 12:20:00	2018-04-16 13:10:00	Academic Surge A Office 101	2	1
-156	2018-04-23 12:20:00	2018-04-23 13:10:00	Academic Surge A Office 101	2	1
-157	2018-04-30 12:20:00	2018-04-30 13:10:00	Academic Surge A Office 101	2	1
-1	2018-03-26 10:00:00	2018-03-26 11:00:00	\N	\N	1
-3	2018-03-26 13:00:00	2018-03-26 14:30:00	Rhodes 412	\N	\N
-4	2018-03-26 19:00:00	2018-03-26 20:30:00	\N	\N	\N
-5	2018-04-02 10:00:00	2018-04-02 11:00:00	\N	\N	1
-7	2018-04-02 19:00:00	2018-04-02 20:30:00	\N	\N	\N
+COPY public.sessions (session_id, start_time, end_time, building, room, session_series_id, course_id) FROM stdin;
+143	2018-01-22 12:20:00	2018-01-22 13:10:00	Academic Surge A Office	101	2	1
+144	2018-01-29 12:20:00	2018-01-29 13:10:00	Academic Surge A Office	101	2	1
+145	2018-02-05 12:20:00	2018-02-05 13:10:00	Academic Surge A Office	101	2	1
+146	2018-02-12 12:20:00	2018-02-12 13:10:00	Academic Surge A Office	101	2	1
+147	2018-02-19 12:20:00	2018-02-19 13:10:00	Academic Surge A Office	101	2	1
+148	2018-02-26 12:20:00	2018-02-26 13:10:00	Academic Surge A Office	101	2	1
+149	2018-03-05 12:20:00	2018-03-05 13:10:00	Academic Surge A Office	101	2	1
+150	2018-03-12 12:20:00	2018-03-12 13:10:00	Academic Surge A Office	101	2	1
+151	2018-03-19 12:20:00	2018-03-19 13:10:00	Academic Surge A Office	101	2	1
+152	2018-03-26 12:20:00	2018-03-26 13:10:00	Academic Surge A Office	101	2	1
+153	2018-04-02 12:20:00	2018-04-02 13:10:00	Academic Surge A Office	101	2	1
+154	2018-04-09 12:20:00	2018-04-09 13:10:00	Academic Surge A Office	101	2	1
+155	2018-04-16 12:20:00	2018-04-16 13:10:00	Academic Surge A Office	101	2	1
+156	2018-04-23 12:20:00	2018-04-23 13:10:00	Academic Surge A Office	101	2	1
+157	2018-04-30 12:20:00	2018-04-30 13:10:00	Academic Surge A Office	101	2	1
+1	2018-03-26 10:00:00	2018-03-26 11:00:00	\N	\N	\N	1
+3	2018-03-26 13:00:00	2018-03-26 14:30:00	Rhodes	412	\N	\N
+4	2018-03-26 19:00:00	2018-03-26 20:30:00	\N	\N	\N	\N
+5	2018-04-02 10:00:00	2018-04-02 11:00:00	\N	\N	\N	1
+7	2018-04-02 19:00:00	2018-04-02 20:30:00	\N	\N	\N	\N
 \.
 
 
