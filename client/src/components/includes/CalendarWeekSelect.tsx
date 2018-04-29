@@ -4,6 +4,10 @@ class CalendarWeekSelect extends React.Component {
     monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
 
+    props: {
+        handleClick?: Function
+    }
+
     state: {
         selectedWeekEpoch: number
     };
@@ -49,6 +53,9 @@ class CalendarWeekSelect extends React.Component {
                 selectedWeekEpoch: this.state.selectedWeekEpoch +
                     7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
             });
+        }
+        if (this.props.handleClick !== undefined) {
+            this.props.handleClick(previousWeek);
         }
     }
 

@@ -13,6 +13,9 @@ class CalendarView extends React.Component {
         }
     };
 
+    monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+
     state: {
         selectedWeekEpoch: number,
         selectedDateEpoch: number
@@ -29,18 +32,8 @@ class CalendarView extends React.Component {
             selectedWeekEpoch: week.getTime(),
             selectedDateEpoch: today.getTime()
         };
+        this.handleWeekClick = this.handleWeekClick.bind(this);
         this.handleDateClick = this.handleDateClick.bind(this);
-    }
-
-    getWeek(epoch: number): string {
-        var now = new Date(epoch);
-        var weekText = '';
-        weekText += now.getDate();
-        weekText += ' - ';
-        now.setTime(now.getTime() +
-            6 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
-        weekText += now.getDate();
-        return weekText;
     }
 
     // newDateIndex is an index between 0 and 6 inclusive, representing which of the days
@@ -50,6 +43,24 @@ class CalendarView extends React.Component {
             selectedDateEpoch: this.state.selectedWeekEpoch +
                 newDateIndex * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
         });
+    }
+
+    handleWeekClick(previousWeek: boolean) {
+        if (previousWeek) {
+            this.setState({
+                selectedWeekEpoch: this.state.selectedWeekEpoch -
+                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */,
+                selectedDateEpoch: this.state.selectedDateEpoch -
+                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
+            });
+        } else {
+            this.setState({
+                selectedWeekEpoch: this.state.selectedWeekEpoch +
+                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */,
+                selectedDateEpoch: this.state.selectedDateEpoch +
+                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
+            });
+        }
     }
 
     render() {
@@ -75,7 +86,9 @@ class CalendarView extends React.Component {
                         currentCourse="CS 1380"
                         isTA={isTA}
                     />
-                    <CalendarWeekSelect />
+                    <CalendarWeekSelect
+                        handleClick={this.handleWeekClick}
+                    />
                 </div>
                 <CalendarDateSelect
                     dayList={days}
