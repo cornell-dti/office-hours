@@ -35,6 +35,7 @@ type InputProps = {
     match: {
         params: {
             sessionId: number,
+            courseId: number,
         },
     },
     data: {
@@ -80,7 +81,8 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
         }
 
         if (this.props.data.allSessions !== undefined) {
-            var tags = this.props.data.allSessions.nodes[0].sessionSeryBySessionSeriesId.courseByCourseId.tagsByCourseId.nodes;
+            var tags = this.props.data.allSessions
+                .nodes[0].sessionSeryBySessionSeriesId.courseByCourseId.tagsByCourseId.nodes;
 
             var primaryTagNames = [];
             var secondaryTagNames = [];
@@ -110,6 +112,7 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
                         secondaryTagsIds={secondaryTagNamesIds}
                         secondaryTagParentIds={secondaryTagParentIds}
                         sessionId={this.props.match.params.sessionId}
+                        courseId={this.props.match.params.courseId}
                     />
                 </div>
             );

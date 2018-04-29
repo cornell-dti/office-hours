@@ -13,7 +13,7 @@ class App extends React.Component {
                 <div className="App">
                     <nav>
                         <Link to="/login"> Login View</Link> |
-                        <Link to="/question/1"> Question View</Link> |
+                        <Link to="/course/-1/session/1/question"> Question View</Link> |
                         <Link to="/professor"> Professor View</Link> |
                         <Link to="/course/-1"> Split View</Link>
                     </nav>

@@ -6,7 +6,8 @@ class QuestionView extends React.Component {
     props: {
         match: {
             params: {
-                sessionId: number
+                sessionId: number,
+                courseId: number
             }
         }
     };
@@ -26,6 +27,7 @@ class QuestionView extends React.Component {
                     secondaryTagsIds={[5, 6, 7, 8, 9, 10]}
                     secondaryTagParentIds={[1, 1, 1, 1, 1, 1]}
                     sessionId={this.props.match.params.sessionId}
+                    courseId={this.props.match.params.courseId}
                 />
             </div>
         );

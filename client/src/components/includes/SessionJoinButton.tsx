@@ -5,7 +5,8 @@ import { Redirect } from 'react-router';
 class SessionJoinButton extends React.Component {
 
     props: {
-        sessionId: number
+        sessionId: number,
+        courseId: number
     };
 
     state: {
@@ -27,7 +28,12 @@ class SessionJoinButton extends React.Component {
 
     render() {
         if (this.state.redirect) {
-            return <Redirect push={true} to={'/question/' + this.props.sessionId} />;
+            return (
+                <Redirect
+                    push={true}
+                    to={'/course/' + this.props.courseId + '/session/' + this.props.sessionId + '/question'}
+                />
+            );
         }
 
         return (
