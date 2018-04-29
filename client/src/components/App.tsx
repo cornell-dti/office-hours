@@ -14,7 +14,7 @@ class App extends React.Component {
                     <nav>
                         <Link to="/login"> Login View</Link> |
                         <Link to="/question"> Question View</Link> |
-                        <Link to="/professor">Professor View</Link> |
+                        <Link to="/professor"> Professor View</Link> |
                         <Link to="/course/-1"> Split View</Link>
                     </nav>
                     <Route path="/question" component={QuestionView} />

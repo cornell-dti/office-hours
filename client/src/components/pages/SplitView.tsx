@@ -55,6 +55,7 @@ class SplitView extends React.Component {
         week.setDate(week.getDate() + 1 - week.getDay());
         var today = new Date();
         today.setHours(0, 0, 0, 0);
+
         this.state = {
             selectedWeekEpoch: week.getTime(),
             selectedDateEpoch: today.getTime(),
@@ -63,8 +64,10 @@ class SplitView extends React.Component {
             height: 0,
             activeView: 'calendar'
         };
+
         this.handleDateClick = this.handleDateClick.bind(this);
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+
         this.props.history.listen((location, action) => {
             if (this.props.match.params.sessionId) {
                 this.setState((prevState) => {
