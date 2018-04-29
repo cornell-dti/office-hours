@@ -66,6 +66,7 @@ class SplitView extends React.Component {
         };
 
         this.handleDateClick = this.handleDateClick.bind(this);
+        this.handleWeekClick = this.handleWeekClick.bind(this);
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
 
         this.props.history.listen((location, action) => {
@@ -93,6 +94,24 @@ class SplitView extends React.Component {
         weekText += ' ';
         weekText += this.monthNames[now.getMonth()];
         return weekText;
+    }
+
+    handleWeekClick(previousWeek: boolean) {
+        if (previousWeek) {
+            this.setState({
+                selectedWeekEpoch: this.state.selectedWeekEpoch -
+                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */,
+                selectedDateEpoch: this.state.selectedDateEpoch -
+                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
+            });
+        } else {
+            this.setState({
+                selectedWeekEpoch: this.state.selectedWeekEpoch +
+                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */,
+                selectedDateEpoch: this.state.selectedDateEpoch +
+                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
+            });
+        }
     }
 
     // newDateIndex is an index between 0 and 6 inclusive, representing which of the days
@@ -142,7 +161,9 @@ class SplitView extends React.Component {
                                 userId={1}
                                 courseId={this.props.match.params.courseId}
                             />
-                            <CalendarWeekSelect />
+                            <CalendarWeekSelect
+                                handleClick={this.handleWeekClick}
+                            />
                         </div>
                         <CalendarDateSelect
                             dayList={days}
