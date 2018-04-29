@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Moment from 'react-moment';
-import { Redirect } from 'react-router';
 
 class CalendarSessionCard extends React.Component {
     state: {
@@ -15,27 +14,14 @@ class CalendarSessionCard extends React.Component {
         resolvedNum: number,
         aheadNum: number,
         id: number,
+        callback: Function
     };
 
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            redirect: false
-        };
-    }
-
     handleOnClick = () => {
-        this.setState({
-            redirect: true
-        });
+        this.props.callback(this.props.id);
     }
 
     render() {
-
-        if (this.state.redirect) {
-            return <Redirect push={true} to={'/session/' + this.props.id} />;
-        }
-
         // TODO fetch from backend
         const openPeriod = 30 /* minutes */ * 60 /* seconds */ * 1000 /* milliseconds */;
 

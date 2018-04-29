@@ -4,7 +4,7 @@ import CalendarSessionCard from './CalendarSessionCard';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
-import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader/Loader';
+import { Loader } from 'semantic-ui-react';
 
 const QUERY = gql`
 query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Datetime!) {
@@ -41,9 +41,9 @@ query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Dat
 `;
 
 const withData = graphql<Response, InputProps>(QUERY, {
-    options: ({ beginTime, endTime, match }) => ({
+    options: ({ beginTime, endTime, courseId }) => ({
         variables: {
-            courseId: match.params.courseId,
+            courseId: courseId,
             beginTime: beginTime,
             endTime: endTime
         }
@@ -51,11 +51,7 @@ const withData = graphql<Response, InputProps>(QUERY, {
 });
 
 type InputProps = {
-    match: {
-        params: {
-            courseId: number,
-        },
-    },
+    courseId: number,
     beginTime: Date,
     endTime: Date,
     data: {
@@ -64,6 +60,7 @@ type InputProps = {
             nodes: [{}]
         },
     },
+    callback: Function
 };
 
 class CalendarSessions extends React.Component<ChildProps<InputProps, Response>> {
@@ -103,6 +100,7 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
                 });
             });
         }
+        const callback = this.props.callback;
 
         return (
             <div className="CalendarSessions">
@@ -127,6 +125,7 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
                         aheadNum={0}
                         id={session.id}
                         key={session.id}
+                        callback={callback}
                     />;
                 })}
             </div>

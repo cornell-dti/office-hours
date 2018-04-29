@@ -6,7 +6,8 @@ class SelectedTags extends React.Component {
         index: number,
         tag: string,
         ifSelected: boolean,
-        onClick: Function
+        onClick: Function,
+        level: number
     };
 
     constructor(props: {}) {
@@ -19,10 +20,16 @@ class SelectedTags extends React.Component {
     }
 
     render() {
+        var baseClassName = '';
+        if (this.props.level === 1) {
+            baseClassName = 'tag primaryTag';
+        } else if (this.props.level === 2) {
+            baseClassName = 'tag secondaryTag';
+        }
         if (this.props.ifSelected) {
-            return <p className="selectedTag" onClick={this._onClick}>{this.props.tag}</p>;
+            return <p className={baseClassName + ' selectedTag'} onClick={this._onClick}>{this.props.tag}</p>;
         } else {
-            return <p onClick={this._onClick}>{this.props.tag}</p>;
+            return <p className={baseClassName} onClick={this._onClick}>{this.props.tag}</p>;
         }
     }
 }
