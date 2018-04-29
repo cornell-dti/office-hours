@@ -109,6 +109,7 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
                         primaryTagsIds={primaryTagNamesIds}
                         secondaryTagsIds={secondaryTagNamesIds}
                         secondaryTagParentIds={secondaryTagParentIds}
+                        sessionId={this.props.match.params.sessionId}
                     />
                 </div>
             );

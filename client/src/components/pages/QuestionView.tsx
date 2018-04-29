@@ -25,6 +25,7 @@ class QuestionView extends React.Component {
                     primaryTagsIds={[1, 2, 3, 4]}
                     secondaryTagsIds={[5, 6, 7, 8, 9, 10]}
                     secondaryTagParentIds={[1, 1, 1, 1, 1, 1]}
+                    sessionId={this.props.match.params.sessionId}
                 />
             </div>
         );

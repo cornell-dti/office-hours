@@ -14,8 +14,9 @@ class AddQuestion extends React.Component {
         secondaryTags: string[],
         primaryTagsIds: number[],
         secondaryTagsIds: number[],
-        secondaryTagParentIds: number[]
+        secondaryTagParentIds: number[],
         // topicTags: string[]
+        sessionId: number
     };
 
     state: {
@@ -138,7 +139,7 @@ class AddQuestion extends React.Component {
 
     render() {
         if (this.state.redirect) {
-            return <Redirect push={true} to={'/session/1'} />;
+            return <Redirect push={true} to={'/session/' + this.props.sessionId} />;
         }
 
         var primaryTagsList = this.props.primaryTags.map(
