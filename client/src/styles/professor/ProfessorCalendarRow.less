@@ -1,0 +1,80 @@
+@even-color: #edeff2;
+@odd-color: white;
+
+tbody:nth-of-type(even) {
+    background-color: @even-color;
+}
+
+tbody:nth-of-type(odd) {
+    background-color: @odd-color;
+}
+
+.NoOH {
+    background-color: @even-color;
+}
+
+.Pair.true {
+    .Preview {
+        color: white;
+        background-color: #898989;
+        .Edit, .Delete {
+            color: white;
+        }
+    }
+    .ExpandedEdit {
+        border-bottom: 1px solid gray;
+    }
+}
+
+.Pair {
+    td:first-child {
+        width: 35%;
+    }
+
+    .ExpandedEdit.false {
+        display: none;
+    }
+
+    .Preview {
+        td:first-child {
+            padding-left: 5%;
+        }
+    }
+
+    Button {
+        display: inline-block;
+        font-size: 16px;
+    }
+    
+    .ExpandedEdit {
+        background-color: white;
+        
+        .EditButtons {
+            border-top: 1px solid #d9d9d9;
+            margin-top: 26px;
+            padding-top: 12px;
+
+            Button {
+                font-size: 14px;
+                padding: 10px 40px;
+                border-radius: 3px;
+                font-size: 14px;
+                margin: 0px 15px;
+                background-color: white;
+                border: 1px solid gray;
+                float: right;
+            }
+
+            .Delete {
+                float: left;
+            }
+    
+            .SaveChanges {
+                background-color: dodgerblue;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+            }
+        }
+    }
+}

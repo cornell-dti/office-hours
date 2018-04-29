@@ -63,7 +63,6 @@ class SplitView extends React.Component {
             height: 0,
             activeView: 'calendar'
         };
-        this.handleWeekClick = this.handleWeekClick.bind(this);
         this.handleDateClick = this.handleDateClick.bind(this);
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
         this.props.history.listen((location, action) => {
@@ -93,22 +92,6 @@ class SplitView extends React.Component {
         return weekText;
     }
 
-    getWeek(epoch: number): string {
-        var now = new Date(epoch);
-        var weekText = '';
-        weekText += now.getDate();
-        weekText += ' - ';
-        now.setTime(now.getTime() +
-            6 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
-        weekText += now.getDate();
-        return weekText;
-    }
-
-    getMonth(epoch: number): string {
-        var now = new Date(epoch);
-        return this.monthNames[now.getMonth()];
-    }
-
     // newDateIndex is an index between 0 and 6 inclusive, representing which of the days
     // in the current week has been selected
     handleDateClick(newDateIndex: number) {
@@ -116,26 +99,6 @@ class SplitView extends React.Component {
             selectedDateEpoch: this.state.selectedWeekEpoch +
                 newDateIndex * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
         });
-    }
-
-    // previousWeek = true means that the previous week was clicked in the week selector
-    // previousWeek = false means that the next week was clicked in the week selector
-    handleWeekClick(previousWeek: boolean) {
-        if (previousWeek) {
-            this.setState({
-                selectedWeekEpoch: this.state.selectedWeekEpoch -
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */,
-                selectedDateEpoch: this.state.selectedDateEpoch -
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
-            });
-        } else {
-            this.setState({
-                selectedWeekEpoch: this.state.selectedWeekEpoch +
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */,
-                selectedDateEpoch: this.state.selectedDateEpoch +
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
-            });
-        }
     }
 
     handleSessionClick = (sessionId: number) => {
@@ -163,9 +126,6 @@ class SplitView extends React.Component {
             now.setTime(now.getTime() + 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
         }
 
-        const thisWeek = this.getWeek(this.state.selectedWeekEpoch);
-        const thisMonth = this.getMonth(this.state.selectedWeekEpoch);
-
         var selectedDate = new Date(this.state.selectedDateEpoch);
         const todayIndex = ((selectedDate.getDay() - 1) + 7) % 7;
 
@@ -179,11 +139,7 @@ class SplitView extends React.Component {
                                 userId={1}
                                 courseId={this.props.match.params.courseId}
                             />
-                            <CalendarWeekSelect
-                                thisMonth={thisMonth}
-                                thisWeek={thisWeek}
-                                handleClick={this.handleWeekClick}
-                            />
+                            <CalendarWeekSelect />
                         </div>
                         <CalendarDateSelect
                             dayList={days}
