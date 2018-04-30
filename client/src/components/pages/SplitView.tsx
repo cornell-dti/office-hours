@@ -67,8 +67,7 @@ class SplitView extends React.Component {
             sessionId: this.props.match.params.sessionId || -1,
             width: window.innerWidth,
             height: window.innerHeight,
-            activeView: 'addQuestion'
-            // activeView: this.props.match.params.sessionId ? 'session' : 'calendar'
+            activeView: this.props.match.params.sessionId ? 'session' : 'calendar'
         };
 
         this.handleDateClick = this.handleDateClick.bind(this);
