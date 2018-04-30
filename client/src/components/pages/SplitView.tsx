@@ -1,25 +1,30 @@
 import * as React from 'react';
 import * as H from 'history';
 
+import { Icon } from 'semantic-ui-react';
+
 import SessionInformationHeader from '../includes/SessionInformationHeader';
-import SessionJoinButton from '../includes/SessionJoinButton';
 import ConnectedSessionQuestions from '../includes/ConnectedSessionQuestions';
+
+import ConnectedQuestionView from '../includes/ConnectedQuestionView';
 
 import CalendarHeader from '../includes/CalendarHeader';
 import CalendarDateSelect from '../includes/CalendarDateSelect';
 import CalendarSessions from '../includes/CalendarSessions';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
-class SplitView extends React.Component {
+const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
+const ONE_WEEK = 7 /* days */ * ONE_DAY;
 
+class SplitView extends React.Component {
     props: {
+        history: H.History,
         match: {
             params: {
                 courseId: number,
                 sessionId: number | null
             }
-        },
-        history: H.History
+        }
     };
 
     monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -31,11 +36,11 @@ class SplitView extends React.Component {
         sessionId: number,
         width: number,
         height: number,
-        activeView: string
+        activeView: string,
     };
 
+    // Keep window size in state for conditional rendering
     componentDidMount() {
-        this.updateWindowDimensions();
         window.addEventListener('resize', this.updateWindowDimensions);
     }
 
@@ -60,24 +65,22 @@ class SplitView extends React.Component {
             selectedWeekEpoch: week.getTime(),
             selectedDateEpoch: today.getTime(),
             sessionId: this.props.match.params.sessionId || -1,
-            width: 0,
-            height: 0,
-            activeView: 'calendar'
+            width: window.innerWidth,
+            height: window.innerHeight,
+            activeView: 'addQuestion'
+            // activeView: this.props.match.params.sessionId ? 'session' : 'calendar'
         };
 
         this.handleDateClick = this.handleDateClick.bind(this);
         this.handleWeekClick = this.handleWeekClick.bind(this);
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
 
+        // Handle browser back button
         this.props.history.listen((location, action) => {
             if (this.props.match.params.sessionId) {
-                this.setState((prevState) => {
-                    return { activeView: 'session', sessionId: this.props.match.params.sessionId };
-                });
+                this.setState({ activeView: 'session', sessionId: this.props.match.params.sessionId });
             } else {
-                this.setState((prevState) => {
-                    return { activeView: 'calendar', sessionId: -1 };
-                });
+                this.setState({ activeView: 'calendar', sessionId: -1 });
             }
         });
     }
@@ -96,20 +99,17 @@ class SplitView extends React.Component {
         return weekText;
     }
 
+    // Update state used for date picker
     handleWeekClick(previousWeek: boolean) {
         if (previousWeek) {
             this.setState({
-                selectedWeekEpoch: this.state.selectedWeekEpoch -
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */,
-                selectedDateEpoch: this.state.selectedDateEpoch -
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
+                selectedWeekEpoch: this.state.selectedWeekEpoch - ONE_WEEK,
+                selectedDateEpoch: this.state.selectedDateEpoch - ONE_WEEK
             });
         } else {
             this.setState({
-                selectedWeekEpoch: this.state.selectedWeekEpoch +
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */,
-                selectedDateEpoch: this.state.selectedDateEpoch +
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
+                selectedWeekEpoch: this.state.selectedWeekEpoch + ONE_WEEK,
+                selectedDateEpoch: this.state.selectedDateEpoch + ONE_WEEK
             });
         }
     }
@@ -117,24 +117,22 @@ class SplitView extends React.Component {
     // newDateIndex is an index between 0 and 6 inclusive, representing which of the days
     // in the current week has been selected
     handleDateClick(newDateIndex: number) {
-        this.setState({
-            selectedDateEpoch: this.state.selectedWeekEpoch +
-                newDateIndex * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
-        });
+        this.setState({ selectedDateEpoch: this.state.selectedWeekEpoch + newDateIndex * ONE_DAY });
     }
 
+    // Keep track of active view for mobile
     handleSessionClick = (sessionId: number) => {
         this.props.history.push('/course/1/session/' + sessionId);
-        this.setState((prevState) => {
-            return { sessionId: sessionId, activeView: 'session' };
-        });
+        this.setState({ sessionId: sessionId, activeView: 'session' });
+    }
+
+    handleJoinClick = () => {
+        this.setState({ activeView: 'addQuestion' });
     }
 
     handleBackClick = () => {
         this.props.history.push('/course/1');
-        this.setState((prevState) => {
-            return { activeView: 'calendar', sessionId: -1 };
-        });
+        this.setState({ activeView: 'calendar', sessionId: -1 });
     }
 
     render() {
@@ -145,7 +143,7 @@ class SplitView extends React.Component {
 
         for (var i = 0; i < 7; i++) {
             dates.push(now.getDate());
-            now.setTime(now.getTime() + 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+            now.setTime(now.getTime() + ONE_DAY);
         }
 
         var selectedDate = new Date(this.state.selectedDateEpoch);
@@ -153,7 +151,7 @@ class SplitView extends React.Component {
 
         return (
             <React.Fragment>
-                {(this.state.width > 600 || (this.state.width <= 600 && this.state.activeView === 'calendar')) &&
+                {(this.state.width > 800 || (this.state.width <= 800 && this.state.activeView === 'calendar')) &&
                     <aside className="CalendarView">
                         <div className="Header">
                             <CalendarHeader
@@ -172,15 +170,15 @@ class SplitView extends React.Component {
                             selectedIndex={todayIndex}
                         />
                         <CalendarSessions
-                            beginTime={new Date(this.state.selectedDateEpoch)}
-                            endTime={new Date(this.state.selectedDateEpoch + 24 * 60 /* minutes */ * 60 * 1000)}
+                            beginTime={selectedDate}
+                            endTime={new Date(this.state.selectedDateEpoch + ONE_DAY)}
                             courseId={this.props.match.params.courseId}
                             data={{ loading: true }}
                             callback={this.handleSessionClick}
                         />
                     </aside>
                 }
-                {(this.state.width > 600 || (this.state.width <= 600 && this.state.activeView !== 'calendar')) &&
+                {(this.state.width > 800 || (this.state.width <= 800 && this.state.activeView !== 'calendar')) &&
                     <section className={'StudentSessionView '}>
                         {this.state.sessionId === -1 ?
                             <p className="noSessionSelected">Please Select an Office Hour from the Calendar.</p>
@@ -190,10 +188,9 @@ class SplitView extends React.Component {
                                     data={{}}
                                     callback={this.handleBackClick}
                                 />
-                                <SessionJoinButton
-                                    sessionId={this.state.sessionId}
-                                    courseId={this.props.match.params.courseId}
-                                />
+                                <div className="SessionJoinButton" onClick={this.handleJoinClick}>
+                                    <p><Icon name="plus" /> Join the Queue</p>
+                                </div>
                                 <div className="splitQuestions">
                                     <ConnectedSessionQuestions
                                         sessionId={this.state.sessionId}
@@ -206,6 +203,16 @@ class SplitView extends React.Component {
                         }
                     </section>
                 }
+                {this.state.activeView === 'addQuestion' && <React.Fragment>
+                    <div className="modal">
+                        <ConnectedQuestionView
+                            sessionId={this.state.sessionId || -1}
+                            courseId={this.props.match.params.courseId}
+                            data={{ loading: true }}
+                        />
+                    </div>
+                    <div className="modalShade" />
+                </React.Fragment>}
             </React.Fragment>
         );
     }
