@@ -158,9 +158,7 @@ class SplitView extends React.Component {
                                 userId={1}
                                 courseId={this.props.match.params.courseId}
                             />
-                            <CalendarWeekSelect
-                                handleClick={this.handleWeekClick}
-                            />
+                            <CalendarWeekSelect handleClick={this.handleWeekClick} />
                         </div>
                         <CalendarDateSelect
                             dayList={days}
@@ -210,7 +208,7 @@ class SplitView extends React.Component {
                             data={{ loading: true }}
                         />
                     </div>
-                    <div className="modalShade" />
+                    <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />
                 </React.Fragment>}
             </React.Fragment>
         );
