@@ -143,7 +143,11 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                     <div className="CourseInfo">
                         <div className="CourseDetails">
                             <p className="Location">{location || 'Unknown'}</p>
-                            <p>{session && <Moment date={session.startTime} interval={0} format={'hh:mm A'} />}</p>
+                            <p>{session &&
+                                <React.Fragment>
+                                    <Moment date={session.startTime} interval={0} format={'hh:mm A'} />
+                                    <Moment date={session.endTime} interval={0} format={' - hh:mm A'} />
+                                </React.Fragment>}</p>
                         </div>
                         <div className="Picture">
                             <img
