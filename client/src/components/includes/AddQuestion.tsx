@@ -221,7 +221,6 @@ class AddQuestion extends React.Component {
 
         return (
             <div className="AddQuestion">
-                <hr />
                 <div className="queueHeader">
                     <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
                     <p className="title">Join The Queue</p>

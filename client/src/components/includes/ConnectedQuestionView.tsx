@@ -32,12 +32,8 @@ const QUERY = gql`
 `;
 
 type InputProps = {
-    match: {
-        params: {
-            sessionId: number,
-            courseId: number,
-        },
-    },
+    sessionId: number,
+    courseId: number,
     data: {
         loading: boolean,
         allSessions?: {
@@ -65,8 +61,8 @@ type InputProps = {
 };
 
 const withData = graphql<Response, InputProps>(QUERY, {
-    options: ({ match }) => ({
-        variables: { sessionId: match.params.sessionId }
+    options: ({ sessionId }) => ({
+        variables: { sessionId: sessionId }
     })
 });
 
@@ -81,8 +77,8 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
         }
 
         if (this.props.data.allSessions !== undefined) {
-            var tags = this.props.data.allSessions
-                .nodes[0].sessionSeryBySessionSeriesId.courseByCourseId.tagsByCourseId.nodes;
+            var series = this.props.data.allSessions.nodes[0].sessionSeryBySessionSeriesId;
+            var tags = series ? series.courseByCourseId.tagsByCourseId.nodes : [];
 
             var primaryTagNames = [];
             var secondaryTagNames = [];
@@ -111,8 +107,8 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
                         primaryTagsIds={primaryTagNamesIds}
                         secondaryTagsIds={secondaryTagNamesIds}
                         secondaryTagParentIds={secondaryTagParentIds}
-                        sessionId={this.props.match.params.sessionId}
-                        courseId={this.props.match.params.courseId}
+                        sessionId={this.props.sessionId}
+                        courseId={this.props.courseId}
                     />
                 </div>
             );
