@@ -6,7 +6,6 @@ class ProfessorSidebar extends React.Component {
         course: string
     };
 
-
     render() {
         return (
             <div className="ProfessorSidebar">
