@@ -52,7 +52,7 @@ class ProfessorSidebar extends React.Component {
                     </div>
                 </div>
                 <svg className="logo" width="100" height="100">
-                    <circle cx="50" cy="50" r="10" fill="dodgerblue" />
+                    <circle cx="50" cy="50" r="10" fill="#7ab7fe" />
                 </svg>
             </div>
         );
