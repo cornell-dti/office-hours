@@ -103,13 +103,15 @@ class SessionQuestionsContainer extends React.Component {
                         }
                     </div>
                 }
-                <div className="Undo">
-                    <p className="XUndoButton" onClick={this.handleClick}><Icon name="close" /></p>
-                    <div className="UndoInformation">
-                        <p className="UndoText">{undoQuestionName} has been {this.state.undoStatus}!</p>
-                        <p className="UndoButton" onClick={this.handleClick}>Undo</p>
-                    </div>
-                </div>
+                {this.props.isTA && this.state.undoId !== -1 &&
+                  <div className="Undo">
+                      <p className="XUndoButton" onClick={this.handleClick}><Icon name="close" /></p>
+                      <div className="UndoInformation">
+                          <p className="UndoText">{undoQuestionName} has been {this.state.undoStatus}!</p>
+                          <p className="UndoButton" onClick={this.handleClick}>Undo</p>
+                      </div>
+                  </div>
+                }
                 <div>
                     <p className="Queue">Queue</p>
                 </div>
