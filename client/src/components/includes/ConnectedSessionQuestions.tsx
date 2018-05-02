@@ -24,6 +24,7 @@ query FindQuestionsBySessionId($userId: Int!, $sessionId: Int!) {
                         tagId
                         tagByTagId {
                             name
+                            level
                         }
                     }
                 }
@@ -87,7 +88,8 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
                             node.questionTagsByQuestionId.nodes.forEach((tagNode: TagNode) => {
                                 questionTags.push({
                                     id: tagNode.tagId,
-                                    name: tagNode.tagByTagId.name
+                                    name: tagNode.tagByTagId.name,
+                                    level: tagNode.tagByTagId.level
                                 });
                             });
                         }

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import Moment from 'react-moment';
+import SelectedTags from '../includes/SelectedTags';
 
 class SessionQuestionsComponent extends React.Component {
 
@@ -31,7 +32,17 @@ class SessionQuestionsComponent extends React.Component {
     render() {
         var tagsList = this.props.tags.map(
             (tag) => {
-                return <p key={tag.id}>{tag.name}</p>;
+                return (
+                    <SelectedTags
+                        key={tag.id}
+                        ifSelected={false}
+                        tag={tag.name}
+                        level={tag.level}
+                        index={0}
+                        onClick={null}
+                    />
+                );
+                // return <p key={tag.id}>{tag.name}</p>;
             }
         );
 

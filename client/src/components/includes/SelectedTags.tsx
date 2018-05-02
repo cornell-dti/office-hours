@@ -6,7 +6,7 @@ class SelectedTags extends React.Component {
         index: number,
         tag: string,
         ifSelected: boolean,
-        onClick: Function,
+        onClick: Function | null,
         level: number
     };
 
@@ -16,7 +16,9 @@ class SelectedTags extends React.Component {
     }
 
     _onClick() {
-        this.props.onClick(this.props.index);
+        if (this.props.onClick) {
+            this.props.onClick(this.props.index);
+        }
     }
 
     render() {
