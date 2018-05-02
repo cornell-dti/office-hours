@@ -1,10 +1,12 @@
 import * as React from 'react';
+import { Redirect } from 'react-router';
 import { Icon } from 'semantic-ui-react';
 import Moment from 'react-moment';
 
 class SessionQuestionsComponent extends React.Component {
 
     props: {
+        questionId: number,
         studentPicture: string,
         studentName: string,
         studentQuestion: string,
@@ -12,8 +14,23 @@ class SessionQuestionsComponent extends React.Component {
         index: number,
         isTA: boolean,
         time: string,
-        isMyQuestion: boolean
+        isMyQuestion: boolean,
+        handleShowClick: Function
     };
+
+    state: {
+        redirect: boolean
+    };
+
+    constructor(props: {}) {
+        super(props);
+        this.state = {
+            redirect: false
+          };
+        this.handleClick = this.handleClick.bind(this);
+        this._onClickDelete = this._onClickDelete.bind(this);
+        this._onClickResolve = this._onClickResolve.bind(this);
+    }
 
     // Given an index from [1..n], converts it to text that is displayed
     // on the question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
@@ -24,11 +41,27 @@ class SessionQuestionsComponent extends React.Component {
         } else {
             // Disclaimer: none of us wrote this one-line magic :)
             // It is borrowed from https://stackoverflow.com/revisions/39466341/5
-            return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || 'th';
+            return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index  + 'th';
         }
     }
 
+    public handleClick(event: React.MouseEvent<HTMLElement>): void {
+        this.setState({ redirect: true });
+    }
+
+    _onClickDelete() {
+      this.props.handleShowClick(this.props.questionId, "deleted")
+    }
+
+    _onClickResolve() {
+      this.props.handleShowClick(this.props.questionId, "resolved")
+    }
+
     render() {
+        if (this.state.redirect) {
+            return <Redirect push={true} to={'/session/1'} />;
+        }
+
         var tagsList = this.props.tags.map(
             (tag) => {
                 return <p key={tag.id}>{tag.name}</p>;
@@ -57,8 +90,8 @@ class SessionQuestionsComponent extends React.Component {
                     <div className="Buttons">
                         <hr />
                         <div className="TAButtons">
-                            <p className="Delete"><Icon name="close" /> Delete</p>
-                            <p className="Resolve"><Icon name="check" /> Resolve</p>
+                            <p className="Delete" onClick={this._onClickDelete}><Icon name="close" /> Delete</p>
+                            <p className="Resolve" onClick={this._onClickResolve}><Icon name="check" /> Resolve</p>
                         </div>
                     </div>
                 }

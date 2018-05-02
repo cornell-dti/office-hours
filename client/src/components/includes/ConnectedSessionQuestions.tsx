@@ -8,7 +8,7 @@ import { ChildProps } from 'react-apollo';
 const QUERY = gql`
     query FindQuestionsBySessionId($sessionId: Int!) {
         sessionBySessionId(sessionId: $sessionId) {
-            questionsBySessionId {
+            questionsBySessionId(orderBy: TIME_ENTERED_ASC) {
                 nodes {
                     questionId
                     content
@@ -86,9 +86,6 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
                 });
             }
         }
-        questions.sort(function (a: Question, b: Question) {
-            return (a.time > b.time) ? -1 : 1;
-        });
 
         return (
             <SessionQuestionsContainer
