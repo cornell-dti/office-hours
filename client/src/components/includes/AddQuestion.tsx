@@ -285,7 +285,7 @@ class AddQuestion extends React.Component {
                             />
                             : <p className="placeHolder text">Finish selecting tags...</p>}
                     </div>
-                    <p className="AddButton"> Add My Question </p>
+                    <p className="AddButton" onClick={this.handleJoinClick}> Add My Question </p>
                 </div>
             </div >
         );
