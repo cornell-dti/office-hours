@@ -229,13 +229,14 @@ class AddQuestion extends React.Component {
                         <p className="joinButton" onClick={this.handleJoinClick}>Join</p>
                     }
                 </div>
+                {/* No longer in design - commending out in case it comes back.
                 <hr />
                 <div className="taHeader">
                     <div className="QuestionTaInfo">
                         <img src={this.props.taPicture} />
                         <p className="taName">{this.props.taName}</p>
                     </div>
-                </div>
+                </div> */}
                 <div className="tagsContainer">
                     <hr />
                     <div className="tagsMiniContainer" onClick={this.handleEditTags}>
