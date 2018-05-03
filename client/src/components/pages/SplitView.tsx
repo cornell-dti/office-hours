@@ -184,6 +184,7 @@ class SplitView extends React.Component {
                                     sessionId={this.state.sessionId}
                                     data={{}}
                                     callback={this.handleBackClick}
+                                    isDesktop={this.state.width > 800}
                                 />
                                 <div className="SessionJoinButton" onClick={this.handleJoinClick}>
                                     <p><Icon name="plus" /> Join the Queue</p>
