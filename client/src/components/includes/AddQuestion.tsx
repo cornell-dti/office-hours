@@ -240,7 +240,7 @@ class AddQuestion extends React.Component {
                 <div className="tagsContainer">
                     <hr />
                     <div className="tagsMiniContainer" onClick={this.handleEditTags}>
-                        <p className="header">Primary Tag</p>
+                        <p className="header">Categories</p>
                         {this.state.doneSelectingTags ?
                             <div className="QuestionTags">
                                 {collapsedPrimary}
@@ -251,7 +251,7 @@ class AddQuestion extends React.Component {
                     </div>
                     <hr />
                     <div className="tagsMiniContainer" onClick={this.handleEditTags}>
-                        <p className="header">Secondary Tags</p>
+                        <p className="header">Tags</p>
                         {this.state.showSecondaryTags ?
                             this.state.doneSelectingTags ?
                                 <div className="QuestionTags">
@@ -259,7 +259,7 @@ class AddQuestion extends React.Component {
                                 </div> :
                                 <div className="QuestionTags">
                                     {secondaryTagsList}
-                                </div> : <p className="placeHolder">Select a primary tag</p>}
+                                </div> : <p className="placeHolder">Select a category</p>}
                     </div>
                     {/*<div className="tagsMiniContainer" onClick={this.handleEditTags}>
                 <hr/>
@@ -285,7 +285,10 @@ class AddQuestion extends React.Component {
                             />
                             : <p className="placeHolder text">Finish selecting tags...</p>}
                     </div>
-                    <p className="AddButton" onClick={this.handleJoinClick}> Add My Question </p>
+                    {this.state.doneSelectingTags ?
+                        <p className="AddButton active" onClick={this.handleJoinClick}> Add My Question </p> :
+                        <p className="AddButton"> Add My Question </p>
+                    }
                 </div>
             </div >
         );
