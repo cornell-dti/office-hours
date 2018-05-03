@@ -222,11 +222,11 @@ class AddQuestion extends React.Component {
         return (
             <div className="AddQuestion">
                 <div className="queueHeader">
-                    <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
-                    <p className="title">Join The Queue</p>
+                    <span className="xbutton" onClick={this.handleXClick}><Icon name="close" /></span>
+                    <span className="title">Join The Queue</span>
                     {this.state.doneSelectingTags ?
-                        <p className="joinButtonActivate" onClick={this.handleJoinClick}>Join</p> :
-                        <p className="joinButton" onClick={this.handleJoinClick}>Join</p>
+                        <span className="joinButton active" onClick={this.handleJoinClick}>Join</span> :
+                        <span className="joinButton" onClick={this.handleJoinClick}>Join</span>
                     }
                 </div>
                 {/* No longer in design - commending out in case it comes back.
@@ -240,7 +240,7 @@ class AddQuestion extends React.Component {
                 <div className="tagsContainer">
                     <hr />
                     <div className="tagsMiniContainer" onClick={this.handleEditTags}>
-                        <p>Primary Tag</p>
+                        <p className="header">Primary Tag</p>
                         {this.state.doneSelectingTags ?
                             <div className="QuestionTags">
                                 {collapsedPrimary}
@@ -251,7 +251,7 @@ class AddQuestion extends React.Component {
                     </div>
                     <hr />
                     <div className="tagsMiniContainer" onClick={this.handleEditTags}>
-                        <p>Secondary Tags</p>
+                        <p className="header">Secondary Tags</p>
                         {this.state.showSecondaryTags ?
                             this.state.doneSelectingTags ?
                                 <div className="QuestionTags">
@@ -275,7 +275,7 @@ class AddQuestion extends React.Component {
               </div>*/}
                     <hr />
                     <div className="tagsMiniContainer">
-                        <p>Question</p>
+                        <p className="header">Question</p>
                         {this.state.showQuestionInput ?
                             <textarea
                                 className="QuestionInput"
@@ -283,8 +283,9 @@ class AddQuestion extends React.Component {
                                 onChange={this.handleClick}
                                 placeholder="What's your question about?"
                             />
-                            : <p className="placeHolder">Finish selecting tags...</p>}
+                            : <p className="placeHolder text">Finish selecting tags...</p>}
                     </div>
+                    <p className="AddButton"> Add My Question </p>
                 </div>
             </div >
         );

@@ -1,6 +1,7 @@
 .QuestionView {
   background-color: white;
   height: 100%;
+  color: #484848;
 
   .AddQuestion {
     hr {
@@ -17,14 +18,15 @@
       background-color: white;
       padding: 15px 20px 0px 20px;
 
-      p {
+      span {
         display: inline-block;
         font-size: 21px;
         vertical-align: middle;
       }
 
       .title {
-        font-weight: bold;
+        font-weight: 500;
+        padding-bottom: 8px;
       }
 
       .xbutton {
@@ -36,43 +38,44 @@
         float: right;
         font-size: 18px;
         color: #C3C2C2;
+        @media only screen and (min-width: 800px) {
+            display: none;
+        }
       }
 
-      .joinButtonActivate {
-        float: right;
-        font-size: 18px;
+      .joinButton.active {
         color: #4FA2E0;
         cursor: pointer;
       }
     }
 
-    .taHeader { /* Above button */
-      background-color: white;
-      padding: 10px 0;
-      padding-left: 3%;
+    // .taHeader { /* Above button */
+    //   background-color: white;
+    //   padding: 10px 0;
+    //   padding-left: 3%;
 
-      .QuestionTaInfo {
-        font-size: 20px;
-        text-align: left;
+    //   .QuestionTaInfo {
+    //     font-size: 20px;
+    //     text-align: left;
 
-        img {
-          display: inline-block;
-          margin-right: 10px;
-          width: 35px;
-          height: 35px;
-          border-radius: 35px;
-          vertical-align: middle;
-          object-fit: cover;
-        }
+    //     img {
+    //       display: inline-block;
+    //       margin-right: 10px;
+    //       width: 35px;
+    //       height: 35px;
+    //       border-radius: 35px;
+    //       vertical-align: middle;
+    //       object-fit: cover;
+    //     }
 
-        .taName {
-          display: inline-block;
-          font-size: 20px;
-          vertical-align: middle;
-          margin-left: 5px;
-        }
-      }
-    }
+    //     .taName {
+    //       display: inline-block;
+    //       font-size: 20px;
+    //       vertical-align: middle;
+    //       margin-left: 5px;
+    //     }
+    //   }
+    // }
 
     .tagsContainer {
       background-color: white;
@@ -88,10 +91,9 @@
       }
 
       .tagsMiniContainer {
-        padding: 10px 0;
+        padding: 10px 32px;
         clear: both;
         width: 100%;
-        padding-left: 3%;
         display:inline-block;
         text-align: left;
 
@@ -100,23 +102,55 @@
           margin-bottom:0.5em;
         }
 
+        .header {
+            font-size: 15px;
+        }
+
         .placeHolder {
           font-size: 15px;
           font-weight: normal;
           color: #C3C2C2;
         }
 
-        .QuestionInput {
-          font-weight: normal;
-          border: 0px;
-          color: #b3b3b3;
-          width: 100%;
-
-          &:focus {
-            font-size:16px;
-          }
+        .placeHolder.text {
+            height: 72px;
         }
+
+        .QuestionInput {
+            font-weight: normal;
+            border: 0px;
+            color: #484848;
+            width: 100%;
+            font-size:15px;
+            height: 72px;
+            padding: 8px;
+            border-radius: 3.3px;
+
+            @media only screen and (min-width: 800px) {
+                border: solid 0.7px #979797;
+            }
+
+            &::placeholder {
+                color: #545454;
+                font-weight: 300;
+            }
+
+        }
+
       }
+    }
+
+    .AddButton {
+        width: 180px;
+        height: 30px;
+        color: white;
+        font-size: 13px;
+        border-radius: 4px;
+        background-color: #77bbfa;
+        display: block;
+        margin: auto 32px 32px auto;
+        padding-top: 6px;
+        cursor: pointer;
     }
   }
 }
