@@ -62,7 +62,7 @@ class AddQuestion extends React.Component {
     }
 
     public handleJoinClick(event: React.MouseEvent<HTMLElement>): void {
-        this.setState({ redirect: true });
+        if (this.state.doneSelectingTags) this.setState({ redirect: true });
     }
 
     public handleClick(event: React.ChangeEvent<HTMLTextAreaElement>): void {
@@ -224,10 +224,6 @@ class AddQuestion extends React.Component {
                 <div className="queueHeader">
                     <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
                     <p className="title">Join The Queue</p>
-                    {this.state.doneSelectingTags ?
-                        <p className="joinButtonActivate" onClick={this.handleJoinClick}>Join</p> :
-                        <p className="joinButton" onClick={this.handleJoinClick}>Join</p>
-                    }
                 </div>
                 <hr />
                 <div className="taHeader">
@@ -283,6 +279,12 @@ class AddQuestion extends React.Component {
                                 placeholder="What's your question about?"
                             />
                             : <p className="placeHolder">Finish selecting tags...</p>}
+                    </div>
+                    <div className="join">
+                      {this.state.doneSelectingTags ?
+                          <p className="joinButtonActivate" onClick={this.handleJoinClick}>Add Your Question</p> :
+                          <p className="joinButton" onClick={this.handleJoinClick}>Add Your Question</p>
+                      }
                     </div>
                 </div>
             </div >
