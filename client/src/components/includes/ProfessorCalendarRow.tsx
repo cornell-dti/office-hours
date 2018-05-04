@@ -21,24 +21,8 @@ class ProfessorCalendarRow extends React.Component {
         updateDeleteVisible: Function
     };
 
-    state: {
-        startTime: (moment.Moment | null)[]
-        endTime: (moment.Moment | null)[]
-    };
-
     constructor(props: {}) {
         super(props);
-        var timeStartMoment = [];
-        var timeEndMoment = [];
-        for (var i = 0; i < this.props.timeStart.length; i++) {
-            timeStartMoment.push(moment(this.props.timeStart[i]));
-            timeEndMoment.push(moment(this.props.timeEnd[i]));
-        }
-
-        this.state = {
-            startTime: timeStartMoment,
-            endTime: timeEndMoment
-        };
         this.toggleEdit = this.toggleEdit.bind(this);
         this.updateDeleteInfo = this.updateDeleteInfo.bind(this);
     }
@@ -67,10 +51,10 @@ class ProfessorCalendarRow extends React.Component {
         var date = new Array<string>(this.props.timeStart.length);
         var timeStart = new Array<string>(this.props.timeStart.length);
         var timeEnd = new Array<string>(this.props.timeEnd.length);
-        for (var i = 0; i < this.props.timeStart.length; i++) {
-            date[i] = moment(this.props.timeStart[i]).format('dddd MM/DD/YY');
-            timeStart[i] = moment(this.props.timeStart[i]).format('h:mm A');
-            timeEnd[i] = moment(this.props.timeEnd[i]).format('h:mm A');
+        for (var index = 0; index < this.props.timeStart.length; index++) {
+            date[index] = moment(this.props.timeStart[index]).format('dddd MM/DD/YY');
+            timeStart[index] = moment(this.props.timeStart[index]).format('h:mm A');
+            timeEnd[index] = moment(this.props.timeEnd[index]).format('h:mm A');
         }
 
         var rowPair = this.props.timeStart.map(
@@ -99,8 +83,8 @@ class ProfessorCalendarRow extends React.Component {
                                     taDefault={this.props.taIndex[index]}
                                     locationBuildingDefault={this.props.locationBuilding[index]}
                                     locationRoomNumDefault={this.props.locationRoomNum[index]}
-                                    startTimeDefault={this.state.startTime[index]}
-                                    endTimeDefault={this.state.endTime[index]}
+                                    startTimeDefault={moment(this.props.timeStart[index])}
+                                    endTimeDefault={moment(this.props.timeEnd[index])}
                                 />
                                 <div className="EditButtons">
                                     <button className="Delete" onClick={() => this.updateDeleteInfo(this.props.dayNumber, index)}>

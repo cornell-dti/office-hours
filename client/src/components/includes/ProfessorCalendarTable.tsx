@@ -72,9 +72,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
     //     timeEnd: number[][],
     //     taIndex: number[][],
     //     LocationBuilding: string[][],
-    //     LocationRoomNum: string[][],
-    //     beginTime: Date,
-    //     endTime: Date
+    //     LocationRoomNum: string[][]
     // };
 
     state: {
@@ -92,6 +90,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         var isExpandedInit: boolean[][] = []
         for (var i = 0; i < 7; i++) {
             // isExpandedInit.push(new Array<boolean>(this.props.timeStart[i].length).fill(false))
+            // Temporary fix: assumes no more than 20 office hours per day
             isExpandedInit.push(new Array<boolean>(20).fill(false))
         }
         this.state = {
@@ -153,8 +152,8 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         if (this.props.data.searchSessionRange) {
             this.props.data.searchSessionRange.nodes.forEach((node: SessionNode) => {
                 var dayIndex = new Date(node.startTime).getDate();
-                timeStart[dayIndex].push(new Date(node.startTime))
-                timeEnd[dayIndex].push(new Date(node.endTime))
+                timeStart[dayIndex].push(new Date(node.startTime));
+                timeEnd[dayIndex].push(new Date(node.endTime));
 
                 var tas: string[] = [];
                 if (node.sessionSeryBySessionSeriesId) {
@@ -187,31 +186,10 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         var dayIndex = this.state.dayIndex;
         var rowIndex = this.state.rowIndex;
 
-        // var isExpandedInit = []
-        // for (var i = 0; i < 7; i++) {
-        //     var arrayLength = timeStart[i].length;
-        //     isExpandedInit.push(new Array<boolean>(arrayLength).fill(false));
-        // }
-        // this.setState({
-        //     isExpanded: isExpandedInit
-        // });
-
         var rows = new Array(7);
         for (var i = 0; i < rows.length; i++) {
             rows[i] =
                 <ProfessorCalendarRow
-                    // dayNumber={i}
-                    // taList={this.props.taList}
-                    // timeStart={this.props.timeStart[i]}
-                    // timeEnd={this.props.timeEnd[i]}
-                    // taIndex={this.props.taIndex[i]}
-                    // locationBuilding={this.props.LocationBuilding[i]}
-                    // locationRoomNum={this.props.LocationRoomNum[i]}
-                    // isExpanded={this.state.isExpanded[i]}
-                    // handleEditToggle={this.toggleEdit}
-                    // tablewidth={5}
-                    // updateDeleteInfo={this.updateDeleteInfo}
-                    // updateDeleteVisible={this.updateDeleteVisible}
                     dayNumber={i}
                     taList={this.props.taList}
                     timeStart={timeStart[i]}

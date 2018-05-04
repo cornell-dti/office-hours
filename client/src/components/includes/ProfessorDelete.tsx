@@ -32,7 +32,6 @@ class ProfessorDelete extends React.Component {
         var timeStart = moment(this.props.timeStart).format('h:mm A');
         var timeEnd = moment(this.props.timeEnd).format('h:mm A');
 
-
         return (
             <div className={'ProfessorDelete ' + this.props.isDeleteVisible}>
                 <div className="content">
@@ -46,15 +45,17 @@ class ProfessorDelete extends React.Component {
                         <div className="ta">
                             {this.props.ta}
                         </div>
-                        <span>
-                            {date}
-                        </span>
-                        <span>
-                            {timeStart} to {timeEnd}
-                        </span>
-                        <span>
-                            {this.props.locationBuilding} {this.props.locationRoomNum}
-                        </span>
+                        <div>
+                            <span>
+                                {date}
+                            </span>
+                            <span>
+                                {timeStart} to {timeEnd}
+                            </span>
+                            <span>
+                                {this.props.locationBuilding} {this.props.locationRoomNum}
+                            </span>
+                        </div>
                     </div>
                     <div>
                         <Checkbox label="Delete all Office Hours in this series" />
