@@ -8,8 +8,8 @@ class ProfessorDelete extends React.Component {
         isDeleteVisible: boolean,
         updateDeleteVisible: Function,
         ta: string
-        timeStart: number,
-        timeEnd: number,
+        timeStart: Date,
+        timeEnd: Date,
         locationBuilding: string,
         locationRoomNum: string
     };

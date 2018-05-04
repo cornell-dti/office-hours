@@ -10,7 +10,7 @@ class ProfoessorOHInfo extends React.Component {
 
     props: {
         taList: string[]
-        taIndexDefault?: number
+        taDefault?: string
         locationBuildingDefault?: string
         locationRoomNumDefault?: string
         startTimeDefault?: (moment.Moment | null)
@@ -85,7 +85,7 @@ class ProfoessorOHInfo extends React.Component {
             isMaxTA = true;
         }
 
-        var defaultTA = this.props.taIndexDefault != undefined ? taOptions[this.props.taIndexDefault].value : undefined
+        var defaultTA = this.props.taDefault != undefined ? this.props.taDefault : undefined
 
         return (
             <div className="ProfessorOHInfo">

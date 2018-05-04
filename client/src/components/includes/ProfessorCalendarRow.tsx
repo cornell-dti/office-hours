@@ -9,9 +9,9 @@ class ProfessorCalendarRow extends React.Component {
     props: {
         dayNumber: number
         taList: string[]
-        timeStart: number[]
-        timeEnd: number[]
-        taIndex: number[]
+        timeStart: Date[]
+        timeEnd: Date[]
+        taIndex: string[]
         locationBuilding: string[]
         locationRoomNum: string[]
         isExpanded: boolean[]
@@ -79,7 +79,7 @@ class ProfessorCalendarRow extends React.Component {
                     <tbody className={'Pair ' + this.props.isExpanded[index]}>
                         <tr className="Preview">
                             <td>{timeStart[index]} to {timeEnd[index]}</td>
-                            <td>{this.props.taList[this.props.taIndex[index]]}</td>
+                            <td>{this.props.taIndex[index]}</td>
                             <td>{this.props.locationBuilding[index]} {this.props.locationRoomNum[index]}</td>
                             <td>
                                 <button className="Edit" onClick={() => this.toggleEdit(index)}>
@@ -96,7 +96,7 @@ class ProfessorCalendarRow extends React.Component {
                             <td colSpan={this.props.tablewidth} className={'ExpandedEdit ' + this.props.isExpanded[index]}>
                                 <ProfoessorOHInfo
                                     taList={this.props.taList}
-                                    taIndexDefault={this.props.taIndex[index]}
+                                    taDefault={this.props.taIndex[index]}
                                     locationBuildingDefault={this.props.locationBuilding[index]}
                                     locationRoomNumDefault={this.props.locationRoomNum[index]}
                                     startTimeDefault={this.state.startTime[index]}
