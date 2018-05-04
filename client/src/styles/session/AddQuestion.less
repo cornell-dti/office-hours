@@ -33,21 +33,6 @@
         float: left;
         cursor: pointer;
       }
-
-      .joinButton {
-        float: right;
-        font-size: 18px;
-        color: #C3C2C2;
-        transition: all 0.3s ease;
-        @media only screen and (min-width: 800px) {
-            display: none;
-        }
-      }
-
-      .joinButton.active {
-        color: #4FA2E0;
-        cursor: pointer;
-      }
     }
 
     // .taHeader { /* Above button */
@@ -126,6 +111,7 @@
             height: 72px;
             padding: 8px;
             border-radius: 3.3px;
+            resize: none;
 
             @media only screen and (min-width: 800px) {
                 border: solid 0.7px #979797;

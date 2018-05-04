@@ -46,8 +46,10 @@ class SessionQuestionsComponent extends React.Component {
             }
         );
 
+        const myQuestionCSS = this.props.isMyQuestion ? ' MyQuestion' : '';
+
         return (
-            <div className="QueueQuestions">
+            <div className={'QueueQuestions' + myQuestionCSS}>
                 {
                     this.props.isTA &&
                     <div className="studentInformation">

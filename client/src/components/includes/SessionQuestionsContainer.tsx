@@ -12,6 +12,7 @@ class SessionQuestionsContainer extends React.Component {
         var userQuestionIndex: number = 0;
         var cardList: JSX.Element[] = [];
         questions.forEach((question, i: number) => {
+            // TODO: change before shipping
             if (question.userId === 100) {
                 userQuestionIndex = i;
             }
@@ -26,7 +27,7 @@ class SessionQuestionsContainer extends React.Component {
                     tags={question.tags}
                     index={i}
                     isTA={this.props.isTA}
-                    isMyQuestion={false}
+                    isMyQuestion={userQuestionIndex === i}
                 />
             );
         });

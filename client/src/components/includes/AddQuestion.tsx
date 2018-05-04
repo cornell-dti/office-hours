@@ -224,10 +224,6 @@ class AddQuestion extends React.Component {
                 <div className="queueHeader">
                     <span className="xbutton" onClick={this.handleXClick}><Icon name="close" /></span>
                     <span className="title">Join The Queue</span>
-                    {this.state.doneSelectingTags ?
-                        <span className="joinButton active" onClick={this.handleJoinClick}>Join</span> :
-                        <span className="joinButton" onClick={this.handleJoinClick}>Join</span>
-                    }
                 </div>
                 {/* No longer in design - commending out in case it comes back.
                 <hr />
