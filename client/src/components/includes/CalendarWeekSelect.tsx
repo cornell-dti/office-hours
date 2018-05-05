@@ -1,4 +1,5 @@
 import * as React from 'react';
+const chevron = require('../../media/chevron.svg');
 
 class CalendarWeekSelect extends React.Component {
     monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -6,7 +7,7 @@ class CalendarWeekSelect extends React.Component {
 
     props: {
         handleClick?: Function
-    }
+    };
 
     state: {
         selectedWeekEpoch: number
@@ -66,7 +67,7 @@ class CalendarWeekSelect extends React.Component {
         return (
             <div className="CalendarWeekSelect">
                 <span className="LastWeek" onClick={() => this.handleWeekClick(true)}>
-                    <i className="angle left icon" />
+                    <img src={chevron} alt="Previous Week" className="flipped" />
                 </span>
                 <span className="CurrentWeek">
                     <div className="Month">
@@ -77,7 +78,7 @@ class CalendarWeekSelect extends React.Component {
                     </div>
                 </span>
                 <span className="NextWeek" onClick={() => this.handleWeekClick(false)}>
-                    <i className="angle right icon" />
+                    <img src={chevron} alt="Next Week" />
                 </span>
             </div>
         );

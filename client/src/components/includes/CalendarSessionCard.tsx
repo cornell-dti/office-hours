@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Moment from 'react-moment';
+const chevron = require('../../media/chevron.svg');
 
 class CalendarSessionCard extends React.Component {
     state: {
@@ -79,7 +80,7 @@ class CalendarSessionCard extends React.Component {
                     <div className="TimeDesc">{timeDesc}</div>
                 </div>
                 <div className="OpenButton">
-                    <i className="angle right icon" />
+                    <img src={chevron} />
                 </div>
             </div>
         );
