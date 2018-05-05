@@ -6,6 +6,8 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 
+const people = require('../../media/people.svg');
+
 type InputProps = {
     sessionId: number,
     callback: Function,
@@ -153,7 +155,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                     </div>
                     <div className="QueueWrap">
                         <div className="QueueInfo">
-                            <Icon name="users" />
+                            <img src={people} />
                             <p><span className="red">{queueLength}</span> ahead</p>
                         </div>
                     </div>
@@ -192,7 +194,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                 <div className="MoreInformation">
                     <hr />
                     <div className="QueueInfo">
-                        <Icon name="users" />
+                        <img src={people} />
                         <p><span className="red">{queueLength}</span> ahead</p>
                     </div>
                     <div className="OfficeHourInfo">
