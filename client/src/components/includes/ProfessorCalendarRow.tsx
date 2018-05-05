@@ -14,6 +14,7 @@ class ProfessorCalendarRow extends React.Component {
         taIndex: string[]
         locationBuilding: string[]
         locationRoomNum: string[]
+        isSeries: boolean[]
         isExpanded: boolean[]
         handleEditToggle: Function
         tablewidth: number
@@ -85,6 +86,7 @@ class ProfessorCalendarRow extends React.Component {
                                     locationRoomNumDefault={this.props.locationRoomNum[index]}
                                     startTimeDefault={moment(this.props.timeStart[index])}
                                     endTimeDefault={moment(this.props.timeEnd[index])}
+                                    isSeries={this.props.isSeries[index]}
                                 />
                                 <div className="EditButtons">
                                     <button className="Delete" onClick={() => this.updateDeleteInfo(this.props.dayNumber, index)}>

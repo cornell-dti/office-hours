@@ -12,6 +12,7 @@ class ProfessorDelete extends React.Component {
         timeEnd: Date,
         locationBuilding: string,
         locationRoomNum: string
+        isSeries: boolean
     };
 
     constructor(props: {}) {
@@ -58,7 +59,7 @@ class ProfessorDelete extends React.Component {
                         </div>
                     </div>
                     <div>
-                        <Checkbox label="Delete all Office Hours in this series" />
+                        <Checkbox label="Delete all Office Hours in this series" disabled={!this.props.isSeries} />
                     </div>
                     <span>
                         <button className="Delete">

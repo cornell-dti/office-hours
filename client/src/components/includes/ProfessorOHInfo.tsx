@@ -15,6 +15,7 @@ class ProfoessorOHInfo extends React.Component {
         locationRoomNumDefault?: string
         startTimeDefault?: (moment.Moment | null)
         endTimeDefault?: (moment.Moment | null)
+        isSeries?: boolean
     };
 
     state: {
@@ -140,7 +141,7 @@ class ProfoessorOHInfo extends React.Component {
                             placeholderText="2:00 PM"
                         />
                     </div >
-                    <Checkbox className="repeat" label="Repeat Weekly" />
+                    <Checkbox className="repeat" label="Repeat Weekly" checked={this.props.isSeries} />
                 </div>
             </div>
         );

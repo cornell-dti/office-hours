@@ -66,15 +66,6 @@ type InputProps = {
 };
 
 class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Response>>{
-    // props: {
-    //     taList: string[],
-    //     timeStart: number[][],
-    //     timeEnd: number[][],
-    //     taIndex: number[][],
-    //     LocationBuilding: string[][],
-    //     LocationRoomNum: string[][]
-    // };
-
     state: {
         isExpanded: boolean[][]
         isDeleteVisible: boolean
@@ -135,11 +126,12 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
     }
 
     render() {
-        var timeStart: Date[][] = []
-        var timeEnd: Date[][] = []
-        var taIndex: string[][] = []
-        var building: string[][] = []
-        var room: string[][] = []
+        var timeStart: Date[][] = [];
+        var timeEnd: Date[][] = [];
+        var taIndex: string[][] = [];
+        var building: string[][] = [];
+        var room: string[][] = [];
+        var isSeries: boolean[][] = []
 
         for (var i = 0; i < 7; i++) {
             timeStart.push(new Array<Date>());
@@ -147,11 +139,12 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
             taIndex.push(new Array<string>());
             building.push(new Array<string>());
             room.push(new Array<string>());
+            isSeries.push(new Array<boolean>());
         }
 
         if (this.props.data.searchSessionRange) {
             this.props.data.searchSessionRange.nodes.forEach((node: SessionNode) => {
-                var dayIndex = new Date(node.startTime).getDate();
+                var dayIndex = new Date(node.startTime).getDay();
                 timeStart[dayIndex].push(new Date(node.startTime));
                 timeEnd[dayIndex].push(new Date(node.endTime));
 
@@ -164,21 +157,30 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                     }
                     building[dayIndex].push(node.sessionSeryBySessionSeriesId.building);
                     room[dayIndex].push(node.sessionSeryBySessionSeriesId.room);
-                }
-
-                if (node.sessionTasBySessionId) {
+                    isSeries[dayIndex].push(true);
+                } else {
                     node.sessionTasBySessionId.nodes.forEach(ta => {
                         tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
                     });
-                }
-                if (node.building !== null) {
                     building[dayIndex].push(node.building);
-                }
-                if (node.room !== null) {
                     room[dayIndex].push(node.room);
+                    isSeries[dayIndex].push(false);
                 }
-
                 taIndex[dayIndex].push(tas[0]);
+                // if (node.sessionTasBySessionId) {
+                //     node.sessionTasBySessionId.nodes.forEach(ta => {
+                //         tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
+                //     });
+                // }
+                // if (node.building !== null) {
+                //     building[dayIndex].push(node.building);
+                // }
+                // if (node.room !== null) {
+                //     room[dayIndex].push(node.room);
+                // }
+                // if (node.sessionSeryBySessionSeriesId === null) {
+                //     isSeries[dayIndex].push(false);
+                // }
             });
         }
 
@@ -197,6 +199,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                     taIndex={taIndex[i]}
                     locationBuilding={building[i]}
                     locationRoomNum={room[i]}
+                    isSeries={isSeries[i]}
                     isExpanded={this.state.isExpanded[i]}
                     handleEditToggle={this.toggleEdit}
                     tablewidth={5}
@@ -215,36 +218,37 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                     timeEnd={timeEnd[dayIndex][rowIndex]}
                     locationBuilding={building[dayIndex][rowIndex]}
                     locationRoomNum={room[dayIndex][rowIndex]}
+                    isSeries={isSeries[dayIndex][rowIndex]}
                 />
                 <table className="Calendar">
                     <tr>
                         <th colSpan={tablewidth}>Monday</th>
                     </tr>
-                    {rows[0]}
+                    {rows[1]}
                     <tr>
                         <th colSpan={tablewidth}>Tuesday</th>
                     </tr>
-                    {rows[1]}
+                    {rows[2]}
                     <tr>
                         <th colSpan={tablewidth}>Wednesday</th>
                     </tr>
-                    {rows[2]}
+                    {rows[3]}
                     <tr>
                         <th colSpan={tablewidth}>Thursday</th>
                     </tr>
-                    {rows[3]}
+                    {rows[4]}
                     <tr>
                         <th colSpan={tablewidth}>Friday</th>
                     </tr>
-                    {rows[4]}
+                    {rows[5]}
                     <tr>
                         <th colSpan={tablewidth}>Saturday</th>
                     </tr>
-                    {rows[5]}
+                    {rows[6]}
                     <tr>
                         <th colSpan={tablewidth}>Sunday</th>
                     </tr>
-                    {rows[6]}
+                    {rows[0]}
                 </table>
             </div>
         );
