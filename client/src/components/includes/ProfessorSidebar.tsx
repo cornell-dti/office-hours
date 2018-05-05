@@ -3,11 +3,14 @@ import { Icon } from 'semantic-ui-react';
 
 class ProfessorSidebar extends React.Component {
     props: {
-        course: string
+        course: string,
+        selected: number
     };
 
-
     render() {
+        var selectedArray: string[] = ["", "", "", "", ""]
+        selectedArray[this.props.selected] = "selected";
+
         return (
             <div className="ProfessorSidebar">
                 <div className="header">
@@ -17,39 +20,29 @@ class ProfessorSidebar extends React.Component {
                     </span>
                 </div>
                 <div className="manage">
-                    <div>
-                        <span>
-                            <Icon name="users" />
-                            People
-                        </span>
-                    </div>
-                    <div>
-                        <span>
-                            <Icon name="help" />
-                            Question
-                        </span>
-                    </div>
+                    <button className={selectedArray[0]}>
+                        <Icon name="users" />
+                        People
+                        </button>
+                    <button className={selectedArray[1]}>
+                        <Icon name="help" />
+                        Question
+                        </button>
                 </div>
                 <div className="divider" />
                 <div className="actions">
-                    <div>
-                        <span className="selected">
-                            <Icon name="setting" />
-                            Manage Hours
-                        </span>
-                    </div>
-                    <div>
-                        <span>
-                            <Icon name="settings" />
-                            Settings
-                        </span>
-                    </div>
-                    <div>
-                        <span>
-                            <Icon name="log out" />
-                            Logout
-                        </span>
-                    </div>
+                    <button className={selectedArray[2]}>
+                        <Icon name="setting" />
+                        Manage Hours
+                    </button>
+                    <button className={selectedArray[3]}>
+                        <Icon name="settings" />
+                        Manage Tags
+                    </button>
+                    <button className={selectedArray[4]}>
+                        <Icon name="log out" />
+                        Logout
+                    </button>
                 </div>
                 <svg className="logo" width="100" height="100">
                     <circle cx="50" cy="50" r="10" fill="dodgerblue" />

@@ -29,18 +29,20 @@
 
     .manage,.actions {
         font-size: 15px;
-        text-align: left;
-        display:block;
         color: @deselect;
+        display: inline-block;
 
         i.icon {
-            padding-right:30px;
+            padding: 0 30px;
         }
 
-        span {
-            margin-left: 30px;
+        button {
+            margin-right: auto;
             display: block;
-            padding: 22.5px 0px;
+            padding: 22.5px 0;
+            width: 100%;
+            float: left;
+            text-align: left;  
         }
     }
 
@@ -52,12 +54,13 @@
 
     .logo { // Placeholder
         display: block;
-        margin:auto;
+        margin: auto;
         margin-bottom: 100px;
     }
 
     .selected {
         margin-left: 0px !important;
+        padding-left: 25px;   
         color: @selectprimary;
         border-left: solid 5px @selectprimary;
         background-color: @selectsecondary;

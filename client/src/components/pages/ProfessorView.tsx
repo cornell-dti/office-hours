@@ -50,6 +50,7 @@ class ProfessorView extends React.Component {
             <div className="ProfessorView">
                 <ProfessorSidebar
                     course="CS 1380"
+                    selected={2}
                 />
                 <div className="rightOfSidebar">
                     <ProfessorHeader
