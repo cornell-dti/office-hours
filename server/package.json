@@ -34,6 +34,7 @@
     "graphql-server-express": "^1.2.0",
     "graphql-subscriptions": "^0.5.4",
     "graphql-tools": "^2.8.0",
+    "heroku-ssl-redirect": "^0.0.4",
     "nodemon": "^1.12.1",
     "passport": "^0.4.0",
     "passport-google-oauth20": "^1.0.0",
