@@ -16,6 +16,9 @@ import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 const ONE_WEEK = 7 /* days */ * ONE_DAY;
 
+// Also update in the main LESS file
+const MOBILE_BREAKPOINT = 800;
+
 class SplitView extends React.Component {
     props: {
         history: H.History,
@@ -90,8 +93,7 @@ class SplitView extends React.Component {
         var weekText = '';
         weekText += now.getDate();
         weekText += ' - ';
-        now.setTime(now.getTime() +
-            6 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+        now.setTime(now.getTime() + 6 /* days */ * ONE_DAY);
         weekText += now.getDate();
         weekText += ' ';
         weekText += this.monthNames[now.getMonth()];
@@ -150,7 +152,9 @@ class SplitView extends React.Component {
 
         return (
             <React.Fragment>
-                {(this.state.width > 800 || (this.state.width <= 800 && this.state.activeView === 'calendar')) &&
+                {(this.state.width > MOBILE_BREAKPOINT ||
+                    (this.state.width <= MOBILE_BREAKPOINT &&
+                        this.state.activeView === 'calendar')) &&
                     <aside className="CalendarView">
                         <div className="Header">
                             <CalendarHeader
@@ -172,10 +176,13 @@ class SplitView extends React.Component {
                             courseId={this.props.match.params.courseId}
                             data={{ loading: true }}
                             callback={this.handleSessionClick}
+                            activeSessionId={this.state.sessionId || -1}
                         />
                     </aside>
                 }
-                {(this.state.width > 800 || (this.state.width <= 800 && this.state.activeView !== 'calendar')) &&
+                {(this.state.width > MOBILE_BREAKPOINT ||
+                    (this.state.width <= MOBILE_BREAKPOINT &&
+                        this.state.activeView !== 'calendar')) &&
                     <section className={'StudentSessionView '}>
                         {this.state.sessionId === -1 ?
                             <p className="noSessionSelected">Please Select an Office Hour from the Calendar.</p>
@@ -184,6 +191,7 @@ class SplitView extends React.Component {
                                     sessionId={this.state.sessionId}
                                     data={{}}
                                     callback={this.handleBackClick}
+                                    isDesktop={this.state.width > MOBILE_BREAKPOINT}
                                 />
                                 <div className="SessionJoinButton" onClick={this.handleJoinClick}>
                                     <p><Icon name="plus" /> Join the Queue</p>

@@ -1,5 +1,6 @@
 .CalendarWeekSelect {
     background-color: white;
+    color: #454545;
     font-size: 13px;
     padding: 15px;
     display: flex;
@@ -11,16 +12,16 @@
 
     .LastWeek, .NextWeek {
         cursor: pointer;
-        font-weight: bold;
+        font-weight: 500;
         font-size: 30px;
     }
 
     .CurrentWeek {
         padding: 0px 10px;
-        
+
 
         .Month {
-            font-weight: bold;
+            font-weight: 500;
             font-size: 17px;
             min-width: 90px;
             max-width: 90px;
@@ -34,4 +35,8 @@
     .WeekControl {
         cursor: pointer;
     }
+}
+
+.flipped {
+    transform: scaleX(-1);
 }

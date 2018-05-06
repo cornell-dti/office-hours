@@ -1,6 +1,7 @@
 type Tag = {
     id: number,
     name: string,
+    level: number,
 };
 
 type Question = {
@@ -32,5 +33,6 @@ type TagNode = {
     tagId: number,
     tagByTagId: {
         name: string,
+        level: number,
     },
 };

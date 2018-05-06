@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Moment from 'react-moment';
+const chevron = require('../../media/chevron.svg');
 
 class CalendarSessionCard extends React.Component {
     state: {
@@ -14,7 +15,8 @@ class CalendarSessionCard extends React.Component {
         resolvedNum: number,
         aheadNum: number,
         id: number,
-        callback: Function
+        callback: Function,
+        active: boolean,
     };
 
     handleOnClick = () => {
@@ -48,7 +50,7 @@ class CalendarSessionCard extends React.Component {
         }
 
         return (
-            <div className="CalendarSessionCard" onClick={this.handleOnClick}>
+            <div className={(this.props.active ? 'active' : '') + ' CalendarSessionCard'} onClick={this.handleOnClick}>
                 <div className="TimeInfo">
                     <div className="StartTime">
                         <Moment date={this.props.start} interval={0} format={'hh:mm A'} />
@@ -79,7 +81,7 @@ class CalendarSessionCard extends React.Component {
                     <div className="TimeDesc">{timeDesc}</div>
                 </div>
                 <div className="OpenButton">
-                    <i className="angle right icon" />
+                    <img src={chevron} />
                 </div>
             </div>
         );

@@ -12,6 +12,7 @@ class SessionQuestionsContainer extends React.Component {
         var userQuestionIndex: number = 0;
         var cardList: JSX.Element[] = [];
         questions.forEach((question, i: number) => {
+            // TODO: change before shipping
             if (question.userId === 100) {
                 userQuestionIndex = i;
             }
@@ -26,7 +27,7 @@ class SessionQuestionsContainer extends React.Component {
                     tags={question.tags}
                     index={i}
                     isTA={this.props.isTA}
-                    isMyQuestion={false}
+                    isMyQuestion={userQuestionIndex === i}
                 />
             );
         });
@@ -63,16 +64,23 @@ class SessionQuestionsContainer extends React.Component {
                         }
                     </div>
                 }
-                <div>
-                    <p className="Queue">Queue</p>
-                </div>
-                {questions.length > 0 && cardList}
+                {questions.length > 0 &&
+                    <React.Fragment>
+                        <p className="Queue">Queue</p>
+                        {cardList}
+                    </React.Fragment>
+                }
                 {
                     questions.length === 0 &&
-                    (!this.props.isTA &&
-                        <p className="noQuestionsWarning">No questions in the queue. Be the first!</p>
-                        ||
-                        <p className="noQuestionsWarning">No questions in the queue yet.</p>)
+                    <React.Fragment>
+                        <p className="noQuestionsHeading">Queue Currently Empty</p>
+                        {!this.props.isTA && (
+                            <p className="noQuestionsWarning">Be the first to join the queue!</p>
+                            ||
+                            <p className="noQuestionsWarning">No questions in the queue yet.</p>)
+                        }
+                    </React.Fragment>
+
                 }
 
             </div>
