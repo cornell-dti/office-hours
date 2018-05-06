@@ -35,6 +35,8 @@ class SessionQuestionsContainer extends React.Component {
             undoId: item,
             undoStatus: status
         });
+        const self = this;
+        setTimeout(function() { self.setState({undoId: -1}); }, 10000);
     }
 
     render() {
