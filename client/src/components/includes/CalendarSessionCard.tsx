@@ -15,7 +15,8 @@ class CalendarSessionCard extends React.Component {
         resolvedNum: number,
         aheadNum: number,
         id: number,
-        callback: Function
+        callback: Function,
+        active: boolean,
     };
 
     handleOnClick = () => {
@@ -49,7 +50,7 @@ class CalendarSessionCard extends React.Component {
         }
 
         return (
-            <div className="CalendarSessionCard" onClick={this.handleOnClick}>
+            <div className={(this.props.active ? 'active' : '') + ' CalendarSessionCard'} onClick={this.handleOnClick}>
                 <div className="TimeInfo">
                     <div className="StartTime">
                         <Moment date={this.props.start} interval={0} format={'hh:mm A'} />
