@@ -1,10 +1,22 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import Moment from 'react-moment';
+import gql from 'graphql-tag';
+import { Mutation } from 'react-apollo';
+
+const UPDATE_QUESTION = gql`
+mutation UpdateQuestion($questionId: Int!, $status: String, $timeResolved: Datetime, $sessionId: Int, $answererId: Int) {
+    updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeResolved: $timeResolved, sessionId: $sessionId, answererId: $answererId}, questionId: $questionId}) {
+        clientMutationId
+    }
+}
+`;
 
 class SessionQuestionsComponent extends React.Component {
 
     props: {
+        questionId: number,
+        sessionId: number,
         studentPicture: string,
         studentName: string,
         studentQuestion: string,
@@ -15,6 +27,20 @@ class SessionQuestionsComponent extends React.Component {
         isMyQuestion: boolean
     };
 
+    state: {
+      answererId: number
+    }
+
+    constructor(props: {}) {
+        super(props);
+        this.state = {
+            answererId: 1
+        };
+        this.handleClick = this.handleClick.bind(this);
+        this._onClickDelete = this._onClickDelete.bind(this);
+        this._onClickResolve = this._onClickResolve.bind(this);
+    }
+
     // Given an index from [1..n], converts it to text that is displayed
     // on the question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
@@ -24,8 +50,38 @@ class SessionQuestionsComponent extends React.Component {
         } else {
             // Disclaimer: none of us wrote this one-line magic :)
             // It is borrowed from https://stackoverflow.com/revisions/39466341/5
-            return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || 'th';
+            return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index  + 'th';
         }
+    }
+
+    public handleClick(event: React.MouseEvent<HTMLElement>): void {
+        this.setState({ redirect: true });
+    }
+
+    _onClickDelete(event: React.MouseEvent<HTMLElement>, f: Function) {
+      f({
+          variables: {
+              questionId: this.props.questionId,
+              status: "deleted",
+              timeEntered: new Date(),
+              sessionId: this.props.sessionId,
+              answererId: this.state.answererId
+          }
+      });
+      //this.props.handleShowClick(this.props.questionId, "deleted")
+    }
+
+    _onClickResolve(event: React.MouseEvent<HTMLElement>, f: Function) {
+      f({
+          variables: {
+              questionId: this.props.questionId,
+              status: "resolved",
+              timeEntered: new Date(),
+              sessionId: this.props.sessionId,
+              answererId: this.state.answererId
+          }
+      });
+      //this.props.handleShowClick(this.props.questionId, "resolved")
     }
 
     render() {
@@ -56,10 +112,14 @@ class SessionQuestionsComponent extends React.Component {
                     this.props.isTA &&
                     <div className="Buttons">
                         <hr />
-                        <div className="TAButtons">
-                            <p className="Delete"><Icon name="close" /> Delete</p>
-                            <p className="Resolve"><Icon name="check" /> Resolve</p>
-                        </div>
+                        <Mutation mutation={UPDATE_QUESTION}>
+                            {(UpdateQuestions) =>
+                                <div className="TAButtons">
+                                    <p className="Delete" onClick={(e) => this._onClickDelete(e, UpdateQuestions)}><Icon name="close" /> Delete</p>
+                                    <p className="Resolve" onClick={(e) => this._onClickResolve(e, UpdateQuestions)}><Icon name="check" /> Resolve</p>
+                                </div>
+                            }
+                        </Mutation>
                     </div>
                 }
                 {

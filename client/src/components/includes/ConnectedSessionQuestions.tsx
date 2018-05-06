@@ -112,6 +112,7 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
         return (
             <SessionQuestionsContainer
                 isTA={isTa}
+                sessionId={this.props.sessionId}
                 questions={questions}
             />
         );

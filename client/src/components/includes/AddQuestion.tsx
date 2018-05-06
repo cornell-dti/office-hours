@@ -246,12 +246,19 @@ class AddQuestion extends React.Component {
                     <p className="title">Join The Queue</p>
                     <Mutation mutation={INPUT_QUESTION}>
                         {(InputQuestions) =>
+                          this.state.doneSelectingTags ?
                             <p
                                 className="joinButtonActivate"
                                 onClick={(e) => this.handleJoinClick(e, InputQuestions)}
                             >
                                 Join
+                            </p> :
+                            <p
+                                className="joinButton"
+                            >
+                                Join
                             </p>
+
                         }
                     </Mutation>
                 </div>
