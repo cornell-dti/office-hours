@@ -1,51 +1,51 @@
 {
-  "name": "client",
-  "version": "0.1.0",
-  "private": true,
-  "proxy": "http://queue-me-in.herokuapp.com",
-  "dependencies": {
-    "@types/graphql": "^0.12.4",
-    "@types/lodash.flowright": "^3.5.3",
-    "@types/react-datepicker": "^1.1.2",
-    "@types/react-router-dom": "^4.2.2",
-    "apollo-client-preset": "^1.0.8",
-    "concurrently": "^3.5.1",
-    "graphql": "^0.13.0",
-    "graphql-tag": "^2.7.3",
-    "less": "^3.0.1",
-    "less-plugin-clean-css": "^1.5.1",
-    "less-watch-compiler": "^1.11.0",
-    "moment": "^2.20.0",
-    "moment-timezone": "^0.5.14",
-    "react": "^16.1.0",
-    "react-apollo": "^2.0.4",
-    "react-datepicker": "^1.4.1",
-    "react-dom": "^16.1.0",
-    "react-moment": "^0.6.8",
-    "react-router-dom": "^4.2.2",
-    "react-scripts-ts": "2.8.0",
-    "semantic-ui-css": "^2.2.12",
-    "semantic-ui-react": "^0.76.0",
-    "tslint-react": "^3.2.0"
-  },
-  "scripts": {
-    "build": "react-scripts-ts build",
-    "build-less": "cd src/styles && less-watch-compiler ./ ./ index.less",
-    "deploy": "lessc --clean-css src/styles/index.less src/styles/index.min.css && yarn run build",
-    "eject": "react-scripts-ts eject",
-    "start": "concurrently \"yarn run build-less\" \"react-scripts-ts start\"",
-    "test": "react-scripts-ts test --env=jsdom"
-  },
-  "devDependencies": {
-    "@types/graphql": "^0.12.4",
-    "@types/jest": "^21.1.6",
-    "@types/lodash.flowright": "^3.5.3",
-    "@types/node": "^8.0.51",
-    "@types/react": "16.0.35",
-    "@types/react-dom": "^16.0.3",
-    "@types/react-router-dom": "^4.2.2"
-  },
-  "resolutions": {
-    "@types/react": "16.0.35"
-  }
+    "name": "client",
+    "version": "0.1.0",
+    "private": true,
+    "proxy": "http://localhost:3001",
+    "dependencies": {
+        "@types/graphql": "^0.12.4",
+        "@types/lodash.flowright": "^3.5.3",
+        "@types/react-datepicker": "^1.1.2",
+        "@types/react-router-dom": "^4.2.2",
+        "apollo-client-preset": "^1.0.8",
+        "concurrently": "^3.5.1",
+        "graphql": "^0.13.0",
+        "graphql-tag": "^2.7.3",
+        "less": "^3.0.1",
+        "less-plugin-clean-css": "^1.5.1",
+        "less-watch-compiler": "^1.11.0",
+        "moment": "^2.20.0",
+        "moment-timezone": "^0.5.14",
+        "react": "^16.1.0",
+        "react-apollo": "^2.0.4",
+        "react-datepicker": "^1.4.1",
+        "react-dom": "^16.1.0",
+        "react-moment": "^0.6.8",
+        "react-router-dom": "^4.2.2",
+        "react-scripts-ts": "2.8.0",
+        "semantic-ui-css": "^2.2.12",
+        "semantic-ui-react": "^0.76.0",
+        "tslint-react": "^3.2.0"
+    },
+    "scripts": {
+        "build": "react-scripts-ts build",
+        "build-less": "cd src/styles && less-watch-compiler ./ ./ index.less",
+        "deploy": "lessc --clean-css src/styles/index.less src/styles/index.min.css && yarn run build",
+        "eject": "react-scripts-ts eject",
+        "start": "concurrently \"yarn run build-less\" \"react-scripts-ts start\"",
+        "test": "react-scripts-ts test --env=jsdom"
+    },
+    "devDependencies": {
+        "@types/graphql": "^0.12.4",
+        "@types/jest": "^21.1.6",
+        "@types/lodash.flowright": "^3.5.3",
+        "@types/node": "^8.0.51",
+        "@types/react": "16.0.35",
+        "@types/react-dom": "^16.0.3",
+        "@types/react-router-dom": "^4.2.2"
+    },
+    "resolutions": {
+        "@types/react": "16.0.35"
+    }
 }

@@ -51,6 +51,7 @@ const withData = graphql<Response, InputProps>(QUERY, {
 });
 
 type InputProps = {
+    activeSessionId: number,
     courseId: number,
     beginTime: Date,
     endTime: Date,
@@ -101,6 +102,7 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
             });
         }
         const callback = this.props.callback;
+        const activeSessionId = this.props.activeSessionId;
 
         return (
             <div className="CalendarSessions">
@@ -126,6 +128,7 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
                         id={session.id}
                         key={session.id}
                         callback={callback}
+                        active={session.id === activeSessionId}
                     />;
                 })}
             </div>

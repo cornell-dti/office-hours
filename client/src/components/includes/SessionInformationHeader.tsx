@@ -6,9 +6,12 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 
+const people = require('../../media/people.svg');
+
 type InputProps = {
     sessionId: number,
     callback: Function,
+    isDesktop: boolean,
     data: {
         sessionBySessionId?: {
             sessionTasBySessionId: {
@@ -127,9 +130,40 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                 }
             });
         }
-
+        if (this.props.isDesktop) {
+            return (
+                <header className="DesktopSessionInformationHeader" >
+                    <div className="Picture">
+                        <img
+                            src={'https://i2.wp.com/puppypassionn.org/wp-content/' +
+                                'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
+                        />
+                    </div>
+                    <div className="Details">
+                        <p className="Location">{location || 'Unknown'}</p>
+                        <p>{session &&
+                            <React.Fragment>
+                                <Moment date={session.startTime} interval={0} format={'h:mm A'} />
+                                <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
+                                <p className="Date">
+                                    <Icon name="calendar" />
+                                    <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
+                                </p>
+                                <p>Held by <span className="black"> {tas.length > 0 && tas[0]} </span></p>
+                            </React.Fragment>
+                        }</p>
+                    </div>
+                    <div className="QueueWrap">
+                        <div className="QueueInfo">
+                            <img src={people} />
+                            <p><span className="red">{queueLength}</span> ahead</p>
+                        </div>
+                    </div>
+                </header>
+            );
+        }
         return (
-            <div className="SessionInformationHeader" >
+            <header className="SessionInformationHeader" >
                 <div className="header">
                     <p className="BackButton" onClick={this.handleBackClick}>
                         <i className="left" />
@@ -143,7 +177,11 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                     <div className="CourseInfo">
                         <div className="CourseDetails">
                             <p className="Location">{location || 'Unknown'}</p>
-                            <p>{session && <Moment date={session.startTime} interval={0} format={'hh:mm A'} />}</p>
+                            <p>{session &&
+                                <React.Fragment>
+                                    <Moment date={session.startTime} interval={0} format={'h:mm A'} />
+                                    <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
+                                </React.Fragment>}</p>
                         </div>
                         <div className="Picture">
                             <img
@@ -156,7 +194,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                 <div className="MoreInformation">
                     <hr />
                     <div className="QueueInfo">
-                        <Icon name="users" />
+                        <img src={people} />
                         <p><span className="red">{queueLength}</span> ahead</p>
                     </div>
                     <div className="OfficeHourInfo">
@@ -175,7 +213,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                         <p>Held by <span className="black"> {tas.length > 0 && tas[0]} </span></p>
                     </div>
                 </div>
-            </div >
+            </header>
         );
     }
 }
