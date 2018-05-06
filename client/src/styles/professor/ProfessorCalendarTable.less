@@ -1,0 +1,46 @@
+@header-color: dodgerblue;
+@even-color: #edeff2;
+@odd-color: white;
+
+.ProfessorCalendarTable {
+    text-align: left;
+
+    tr:first-child {
+        th:first-child {
+            border-radius: 10px 10px 0px 0px;
+        }
+    }
+
+    .Calendar {
+        width: 100%;
+        border-collapse: collapse;
+
+        .rows{
+            width: 100%;
+        }
+
+        .NoOH {
+            text-align: center;
+        }
+
+        th {
+            padding: 14px 0px;
+            color: white;
+            font-size: 20px;
+            padding-left: 5%;
+            background-color: @header-color;
+        }
+
+        .EditButtons {
+            padding-left: 0px;
+        }
+
+        td {
+            padding: 7px 0px;
+        }
+
+        td:nth-child(4), td:nth-child(5) {
+            width: 5%;
+        }
+    }
+}

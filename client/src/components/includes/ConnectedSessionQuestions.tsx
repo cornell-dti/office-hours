@@ -6,93 +6,112 @@ import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 
 const QUERY = gql`
-    query FindQuestionsBySessionId($sessionId: Int!) {
-        sessionBySessionId(sessionId: $sessionId) {
-            questionsBySessionId {
-                nodes {
-                    questionId
-                    content
-                    status
-                    userByAskerId {
-                        firstName
-                        lastName
-                        userId
-                    }
-                    timeEntered
-                    questionTagsByQuestionId {
-                        nodes {
-                            tagId
-                            tagByTagId {
-                                name
-                            }
+query FindQuestionsBySessionId($userId: Int!, $sessionId: Int!) {
+    sessionBySessionId(sessionId: $sessionId) {
+        questionsBySessionId {
+            nodes {
+                questionId
+                content
+                status
+                userByAskerId {
+                    firstName
+                    lastName
+                    userId
+                }
+                timeEntered
+                questionTagsByQuestionId {
+                    nodes {
+                        tagId
+                        tagByTagId {
+                            name
                         }
                     }
                 }
             }
         }
+        courseByCourseId {
+            courseUsersByCourseId(condition: {userId: $userId}), {
+                nodes {
+                    role
+                }
+            }
+        }
     }
+}
 `;
 
 type InputProps = {
-    match: {
-        params: {
-            sessionId: number,
-        },
-    },
+    sessionId: number,
     data: {
         sessionBySessionId?: {
             questionsBySessionId: {
                 nodes: [{}],
             },
+            courseByCourseId: {
+                courseUsersByCourseId: {
+                    nodes: [{
+                        role: string
+                    }]
+                }
+            },
         },
     },
     isTA: boolean,
+    userId: number,
 };
 
 const withData = graphql<Response, InputProps>(QUERY, {
-    options: ({ match }) => ({
-        variables: { sessionId: match.params.sessionId }
+    options: ({ sessionId, userId }) => ({
+        variables: { sessionId: sessionId, userId: userId }
     })
 });
 
 class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, Response>, {}> {
     render() {
         var questions: Question[] = [];
-        if (this.props.data.sessionBySessionId !== undefined) {
-            if (this.props.data.sessionBySessionId !== null) {
-                this.props.data.sessionBySessionId.questionsBySessionId.nodes.forEach((node: QuestionNode) => {
-                    if (node.status !== 'resolved') {
-                        var questionTags: Tag[] = [];
-                        if (node.questionTagsByQuestionId !== undefined) {
-                            if (node.questionTagsByQuestionId !== null) {
-                                node.questionTagsByQuestionId.nodes.forEach((tagNode: TagNode) => {
-                                    questionTags.push({
-                                        id: tagNode.tagId,
-                                        name: tagNode.tagByTagId.name
-                                    });
-                                });
-                            }
-                        }
-                        questions.push({
-                            id: node.questionId,
-                            name: node.userByAskerId.firstName + ' ' + node.userByAskerId.lastName,
-                            content: node.content,
-                            time: new Date(node.timeEntered),
-                            tags: questionTags,
-                            userId: node.userByAskerId.userId,
-                            timeEntered: node.timeEntered
-                        });
-                    }
-                });
+        var isTa = false;
+        if (this.props.data.sessionBySessionId) {
+
+            if (this.props.data.sessionBySessionId.courseByCourseId) {
+                var course = this.props.data.sessionBySessionId.courseByCourseId;
+                if (course) {
+                    isTa = course.courseUsersByCourseId.nodes[0].role === 'ta';
+                }
             }
+
+            this.props.data.sessionBySessionId.questionsBySessionId.nodes.forEach((node: QuestionNode) => {
+                if (node.status !== 'resolved') {
+                    var questionTags: Tag[] = [];
+                    if (node.questionTagsByQuestionId !== undefined) {
+                        if (node.questionTagsByQuestionId !== null) {
+                            node.questionTagsByQuestionId.nodes.forEach((tagNode: TagNode) => {
+                                questionTags.push({
+                                    id: tagNode.tagId,
+                                    name: tagNode.tagByTagId.name
+                                });
+                            });
+                        }
+                    }
+                    questions.push({
+                        id: node.questionId,
+                        name: node.userByAskerId.firstName + ' ' + node.userByAskerId.lastName,
+                        content: node.content,
+                        time: new Date(node.timeEntered),
+                        tags: questionTags,
+                        userId: node.userByAskerId.userId,
+                        timeEntered: node.timeEntered
+                    });
+                }
+            });
         }
+
         questions.sort(function (a: Question, b: Question) {
             return (a.time > b.time) ? -1 : 1;
         });
 
         return (
             <SessionQuestionsContainer
-                isTA={this.props.isTA}
+                isTA={isTa}
                 questions={questions}
             />
         );

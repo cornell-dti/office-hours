@@ -8,6 +8,7 @@
 // Session
 @import "./session/AddQuestion";
 @import "./session/DetailedQuestionView";
+@import "./session/SelectedTags";
 @import "./session/SessionInformationHeader";
 @import "./session/SessionJoinButton";
 @import "./session/SessionPopularQuestion";
@@ -21,6 +22,19 @@
 @import "./login/LoginView";
 @import "./login/LoginButton";
 
+// Split
+@import "./SplitView";
+
+// Professor
+@import "./professor/ProfessorView";
+@import "./professor/ProfessorHeader";
+@import "./professor/ProfessorSidebar";
+@import "./professor/ProfessorAddNewOH";
+@import "./professor/ProfessorCalendarTable";
+@import "./professor/ProfessorCalendarRow";
+@import "./professor/ProfessorDelete";
+@import "./professor/ProfessorOHInfo";
+
 #root {
    height: 100%;
 }
@@ -33,7 +47,7 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: 'Roboto', 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
   background: #f5f5f5 !important;
 }
 
@@ -54,4 +68,8 @@ ul {
     border-bottom: solid 1px #747474;
     padding: 5px 0;
   }
+}
+
+nav {
+    background-color: #eee;
 }

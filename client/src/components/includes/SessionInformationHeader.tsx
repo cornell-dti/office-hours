@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Moment from 'react-moment';
-import { Redirect } from 'react-router';
 import { Icon } from 'semantic-ui-react';
 
 import gql from 'graphql-tag';
@@ -8,11 +7,8 @@ import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 
 type InputProps = {
-    match: {
-        params: {
-            sessionId: number,
-        },
-    },
+    sessionId: number,
+    callback: Function,
     data: {
         sessionBySessionId?: {
             sessionTasBySessionId: {
@@ -87,35 +83,19 @@ const QUERY = gql`
 `;
 
 const withData = graphql<Response, InputProps>(QUERY, {
-    options: ({ match }) => ({
-        variables: { sessionId: match.params.sessionId }
+    options: ({ sessionId }) => ({
+        variables: { sessionId: sessionId }
     })
 });
 
 class SessionInformationHeader extends React.Component<ChildProps<InputProps, Response>> {
-    state: {
-        redirect: boolean;
-    };
 
-    constructor(props: ChildProps<InputProps, Response>) {
-        super(props);
-        this.state = {
-            redirect: false
-        };
-    }
-
-    handleOnClick = () => {
-        this.setState({
-            redirect: true
-        });
+    handleBackClick = () => {
+        this.props.callback();
     }
 
     render() {
         var queueLength = 0;
-
-        if (this.state.redirect) {
-            return <Redirect push={true} to="/calendar/1" />;
-        }
 
         var location = 'Unknown';
         var tas: string[] = [];
@@ -151,7 +131,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
         return (
             <div className="SessionInformationHeader" >
                 <div className="header">
-                    <p className="BackButton" onClick={this.handleOnClick}>
+                    <p className="BackButton" onClick={this.handleBackClick}>
                         <i className="left" />
                         {
                             session &&
