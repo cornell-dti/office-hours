@@ -40,18 +40,38 @@ query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Dat
             }
         }
     }
+    courseByCourseId(courseId: $courseId) {
+        tas: courseUsersByCourseId(condition: {role: "ta"}) {
+            nodes {
+                userByUserId {
+                firstName
+                lastName
+                }
+            }
+        }
+        professors: courseUsersByCourseId(condition: {role: "professor"}) {
+            nodes {
+                userByUserId {
+                firstName
+                lastName
+                }
+            }
+        }
+    }
 }
 `;
 
-const withData = graphql<Response, InputProps>(QUERY, {
-    options: ({ courseId, beginTime, endTime }) => ({
-        variables: {
-            courseId: courseId,
-            beginTime: beginTime,
-            endTime: endTime
-        }
-    })
-});
+const withData = graphql<Response, InputProps>(
+    QUERY, {
+        options: ({ courseId, beginTime, endTime }) => ({
+            variables: {
+                courseId: courseId,
+                beginTime: beginTime,
+                endTime: endTime
+            }
+        })
+    }
+);
 
 type InputProps = {
     courseId: number,
@@ -61,8 +81,16 @@ type InputProps = {
         searchSessionRange?: {
             nodes: [{}]
         },
-    },
-    taList: string[] // Replace with query
+        courseByCourseId?: {
+            tas: {
+                nodes: [{}]
+            }
+            professors: {
+                nodes: [{}]
+            }
+        }
+    }
+    taList: string[]
 };
 
 class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Response>> {
@@ -79,12 +107,12 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         super(props);
         this.toggleEdit = this.toggleEdit.bind(this);
         var isExpandedInit: boolean[][] = [];
-        // var numOHPerDays: number[] = [0, 0, 0, 0, 0, 0, 0];
-        // if (this.props.data.searchSessionRange) {
-        //     this.props.data.searchSessionRange.nodes.forEach((node: SessionNode) => {
-        //         numOHPerDays[new Date(node.startTime).getDay()]++;
-        //     })
-        // }
+        var numOHPerDays: number[] = [0, 0, 0, 0, 0, 0, 0];
+        if (this.props.data.searchSessionRange) {
+            this.props.data.searchSessionRange.nodes.forEach((node: SessionNode) => {
+                numOHPerDays[new Date(node.startTime).getDay()]++;
+            })
+        }
         for (var i = 0; i < 7; i++) {
             // Temporary fix: assumes no more than 20 office hours per day
             isExpandedInit.push(new Array<boolean>(20).fill(false));
@@ -189,7 +217,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                     taList={this.props.taList}
                     timeStart={timeStart[i]}
                     timeEnd={timeEnd[i]}
-                    taIndex={taIndex[i]}
+                    officeHoursTas={taIndex[i]}
                     locationBuilding={building[i]}
                     locationRoomNum={room[i]}
                     isSeries={isSeries[i]}

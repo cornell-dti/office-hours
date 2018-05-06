@@ -5,20 +5,71 @@ import ProfessorHeader from '../includes/ProfessorHeader';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
-class ProfessorView extends React.Component {
-    props: {
-        match: {
-            params: {
-                courseId: number
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { ChildProps } from 'react-apollo';
+
+const QUERY = gql`
+query FindSessionsByCourse($courseId: Int!) {
+    courseByCourseId(courseId: $courseId) {
+        tas: courseUsersByCourseId(condition: {role: "ta"}) {
+            nodes {
+                userByUserId {
+                firstName
+                lastName
+                }
             }
         }
-    };
+        professors: courseUsersByCourseId(condition: {role: "professor"}) {
+            nodes {
+                userByUserId {
+                firstName
+                lastName
+                }
+            }
+        }
+    }
+}
+`;
+
+const withData = graphql<Response, InputProps>(
+    QUERY, {
+        options: ({ courseId }) => ({
+            variables: {
+                courseId: 1
+            }
+        })
+    }
+);
+
+type InputProps = {
+    courseId: number
+    data: {
+        courseByCourseId?: {
+            tas: {
+                nodes: [{}]
+            }
+            professors: {
+                nodes: [{}]
+            }
+        }
+    }
+};
+
+class ProfessorView extends React.Component<ChildProps<InputProps, Response>> {
+    // props: {
+    //     match: {
+    //         params: {
+    //             courseId: number
+    //         }
+    //     }
+    // };
 
     state: {
         selectedWeekEpoch: number
     };
 
-    constructor(props: {}) {
+    constructor(props: ChildProps<InputProps, Response>) {
         super(props);
         var week = new Date();
         week.setHours(0, 0, 0, 0);
@@ -46,6 +97,17 @@ class ProfessorView extends React.Component {
     }
 
     render() {
+        var taList: string[] = [];
+
+        if (this.props.data.courseByCourseId) {
+            this.props.data.courseByCourseId.tas.nodes.forEach((node: TANode) => {
+                taList.push(node.userByUserId.firstName + " " + node.userByUserId.lastName);
+            });
+            this.props.data.courseByCourseId.professors.nodes.forEach((node: TANode) => {
+                taList.push(node.userByUserId.firstName + " " + node.userByUserId.lastName);
+            });
+        }
+
         return (
             <div className="ProfessorView">
                 <ProfessorSidebar
@@ -60,7 +122,7 @@ class ProfessorView extends React.Component {
                     />
                     <div className="main">
                         <ProfessorAddNewOH
-                            taList={['Tiffany Wang', 'Joyelle Gilbert', 'Sophia Wang', 'Sean Kim', 'Zechen Zhang']}
+                            taList={taList}
                         />
                         <CalendarWeekSelect
                             handleClick={this.handleWeekClick}
@@ -74,7 +136,7 @@ class ProfessorView extends React.Component {
                                     7 /* days */ * 24 /* hours */ * 60 /* minutes */
                                     * 60 /* seconds */ * 1000 /* millis */)}
                                 data={{}}
-                                taList={['Tiffany Wang', 'Joyelle Gilbert', 'Sophia Wang', 'Sean Kim', 'Zechen Zhang']}
+                                taList={taList}
                             />
                         </div>
                     </div>
@@ -84,4 +146,4 @@ class ProfessorView extends React.Component {
     }
 }
 
-export default ProfessorView;
+export default withData(ProfessorView);

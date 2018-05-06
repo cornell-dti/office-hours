@@ -2,7 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://queue-me-in.herokuapp.com",
+  "proxy": "https://queue-me-in.herokuapp.com",
   "dependencies": {
     "@types/graphql": "^0.12.4",
     "@types/lodash.flowright": "^3.5.3",

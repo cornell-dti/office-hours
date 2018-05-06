@@ -61,6 +61,8 @@ class ProfoessorOHInfo extends React.Component {
             taOptions.push({ value: current, text: current });
         }
 
+        var defaultTA = this.props.taDefault !== undefined ? this.props.taDefault : undefined;
+
         var AddTA = [];
         for (var i = 0; i < this.state.numAddTA; i++) {
             var x = <div />;
@@ -85,8 +87,6 @@ class ProfoessorOHInfo extends React.Component {
         if (this.state.numAddTA >= 4) {
             isMaxTA = true;
         }
-
-        var defaultTA = this.props.taDefault !== undefined ? this.props.taDefault : undefined;
 
         return (
             <div className="ProfessorOHInfo">
