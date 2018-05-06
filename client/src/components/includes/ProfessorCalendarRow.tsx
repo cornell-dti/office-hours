@@ -72,13 +72,15 @@ class ProfessorCalendarRow extends React.Component {
                                 </button>
                             </td>
                             <td>
-                                <button className="Delete" onClick={() => this.updateDeleteInfo(this.props.dayNumber, index)}>
+                                <button className="Delete" onClick={() =>
+                                    this.updateDeleteInfo(this.props.dayNumber, index)}>
                                     <Icon name="x" />
                                 </button>
                             </td>
                         </tr>
                         <tr>
-                            <td colSpan={this.props.tablewidth} className={'ExpandedEdit ' + this.props.isExpanded[index]}>
+                            <td colSpan={this.props.tablewidth}
+                                className={'ExpandedEdit ' + this.props.isExpanded[index]}>
                                 <ProfoessorOHInfo
                                     taList={this.props.taList}
                                     taDefault={this.props.taIndex[index]}
@@ -89,7 +91,8 @@ class ProfessorCalendarRow extends React.Component {
                                     isSeries={this.props.isSeries[index]}
                                 />
                                 <div className="EditButtons">
-                                    <button className="Delete" onClick={() => this.updateDeleteInfo(this.props.dayNumber, index)}>
+                                    <button className="Delete" onClick={() =>
+                                        this.updateDeleteInfo(this.props.dayNumber, index)}>
                                         Delete
                                     </button>
                                     <button className="Cancel" onClick={() => this.toggleEdit(index)}>

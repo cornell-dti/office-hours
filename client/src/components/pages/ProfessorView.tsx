@@ -54,11 +54,11 @@ class ProfessorView extends React.Component {
                 />
                 <div className="rightOfSidebar">
                     <ProfessorHeader
-                        professor='Michael Clarkson'
-                        image='https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg'
+                        professor="Michael Clarkson"
+                        image="https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg"
                         notification={true}
                     />
-                    <div className='main'>
+                    <div className="main">
                         <ProfessorAddNewOH
                             taList={['Tiffany Wang', 'Joyelle Gilbert', 'Sophia Wang', 'Sean Kim', 'Zechen Zhang']}
                         />
@@ -71,7 +71,8 @@ class ProfessorView extends React.Component {
                                 courseId={1}
                                 beginTime={new Date(this.state.selectedWeekEpoch)}
                                 endTime={new Date(this.state.selectedWeekEpoch +
-                                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */)}
+                                    7 /* days */ * 24 /* hours */ * 60 /* minutes */
+                                    * 60 /* seconds */ * 1000 /* millis */)}
                                 data={{}}
                                 taList={['Tiffany Wang', 'Joyelle Gilbert', 'Sophia Wang', 'Sean Kim', 'Zechen Zhang']}
                             />

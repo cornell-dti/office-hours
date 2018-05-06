@@ -8,8 +8,8 @@ class ProfessorSidebar extends React.Component {
     };
 
     render() {
-        var selectedArray: string[] = ["", "", "", "", ""]
-        selectedArray[this.props.selected] = "selected";
+        var selectedArray: string[] = ['', '', '', '', ''];
+        selectedArray[this.props.selected] = 'selected';
 
         return (
             <div className="ProfessorSidebar">

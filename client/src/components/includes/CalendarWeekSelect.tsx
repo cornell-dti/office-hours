@@ -6,7 +6,7 @@ class CalendarWeekSelect extends React.Component {
 
     props: {
         handleClick?: Function
-    }
+    };
 
     state: {
         selectedWeekEpoch: number

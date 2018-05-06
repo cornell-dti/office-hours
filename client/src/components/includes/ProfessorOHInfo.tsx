@@ -1,8 +1,6 @@
 import * as React from 'react';
 import * as moment from 'moment';
-import { Dropdown } from 'semantic-ui-react';
-import { Checkbox } from 'semantic-ui-react';
-import { Icon } from 'semantic-ui-react'
+import { Dropdown, Checkbox, Icon } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -65,11 +63,13 @@ class ProfoessorOHInfo extends React.Component {
 
         var AddTA = [];
         for (var i = 0; i < this.state.numAddTA; i++) {
-            var x = <div />
+            var x = <div />;
             if (i === this.state.numAddTA - 1) {
-                x = <button className="AddTAButton" onClick={() => this.incAddTA(-1)}>
-                    <Icon name="x" />
-                </button>
+                x = (
+                    <button className="AddTAButton" onClick={() => this.incAddTA(-1)}>
+                        <Icon name="x" />
+                    </button>
+                );
             }
 
             AddTA.push(
@@ -86,7 +86,7 @@ class ProfoessorOHInfo extends React.Component {
             isMaxTA = true;
         }
 
-        var defaultTA = this.props.taDefault != undefined ? this.props.taDefault : undefined
+        var defaultTA = this.props.taDefault !== undefined ? this.props.taDefault : undefined;
 
         return (
             <div className="ProfessorOHInfo">
@@ -110,7 +110,7 @@ class ProfoessorOHInfo extends React.Component {
                         <DatePicker
                             selected={this.state.startTime}
                             onChange={this.handleStartTime}
-                            dateFormat='dddd MM/DD/YY'
+                            dateFormat="dddd MM/DD/YY"
                             placeholderText={today}
                         />
                     </div >

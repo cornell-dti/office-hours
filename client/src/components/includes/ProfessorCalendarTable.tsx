@@ -65,7 +65,7 @@ type InputProps = {
     taList: string[] // Replace with query
 };
 
-class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Response>>{
+class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Response>> {
     state: {
         isExpanded: boolean[][]
         isDeleteVisible: boolean
@@ -73,16 +73,23 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         currentRow: number
         dayIndex: number
         rowIndex: number
-    }
+    };
 
     constructor(props: ChildProps<InputProps, Response>) {
         super(props);
         this.toggleEdit = this.toggleEdit.bind(this);
-        var isExpandedInit: boolean[][] = []
+        var isExpandedInit: boolean[][] = [];
+        // var numOHPerDays: number[] = [0, 0, 0, 0, 0, 0, 0];
+        // if (this.props.data.searchSessionRange) {
+        //     this.props.data.searchSessionRange.nodes.forEach((node: SessionNode) => {
+        //         numOHPerDays[new Date(node.startTime).getDay()]++;
+        //     })
+        // }
         for (var i = 0; i < 7; i++) {
-            // isExpandedInit.push(new Array<boolean>(this.props.timeStart[i].length).fill(false))
             // Temporary fix: assumes no more than 20 office hours per day
-            isExpandedInit.push(new Array<boolean>(20).fill(false))
+            isExpandedInit.push(new Array<boolean>(20).fill(false));
+            // isExpandedInit.push(new Array<boolean>(numOHPerDays[i]).fill(false));
+            // Old way: isExpandedInit.push(new Array<boolean>(this.props.timeStart[i].length).fill(false))
         }
         this.state = {
             isExpanded: isExpandedInit,
@@ -100,7 +107,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         var cDay = this.state.currentDay;
         var cRow = this.state.currentRow;
 
-        if (!(cDay == day && cRow == row)) {
+        if (!(cDay === day && cRow === row)) {
             this.state.isExpanded[cDay][cRow] = false;
         }
         this.state.isExpanded[day][row] = !this.state.isExpanded[day][row];
@@ -131,9 +138,9 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         var taIndex: string[][] = [];
         var building: string[][] = [];
         var room: string[][] = [];
-        var isSeries: boolean[][] = []
+        var isSeries: boolean[][] = [];
 
-        for (var i = 0; i < 7; i++) {
+        for (var day = 0; day < 7; day++) {
             timeStart.push(new Array<Date>());
             timeEnd.push(new Array<Date>());
             taIndex.push(new Array<string>());
@@ -167,20 +174,6 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                     isSeries[dayIndex].push(false);
                 }
                 taIndex[dayIndex].push(tas[0]);
-                // if (node.sessionTasBySessionId) {
-                //     node.sessionTasBySessionId.nodes.forEach(ta => {
-                //         tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
-                //     });
-                // }
-                // if (node.building !== null) {
-                //     building[dayIndex].push(node.building);
-                // }
-                // if (node.room !== null) {
-                //     room[dayIndex].push(node.room);
-                // }
-                // if (node.sessionSeryBySessionSeriesId === null) {
-                //     isSeries[dayIndex].push(false);
-                // }
             });
         }
 
@@ -190,7 +183,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
 
         var rows = new Array(7);
         for (var i = 0; i < rows.length; i++) {
-            rows[i] =
+            rows[i] = (
                 <ProfessorCalendarRow
                     dayNumber={i}
                     taList={this.props.taList}
@@ -206,6 +199,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                     updateDeleteInfo={this.updateDeleteInfo}
                     updateDeleteVisible={this.updateDeleteVisible}
                 />
+            );
         }
 
         return (

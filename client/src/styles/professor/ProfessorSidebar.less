@@ -29,7 +29,6 @@
 
     .manage,.actions {
         font-size: 15px;
-        color: @deselect;
         display: inline-block;
 
         i.icon {
@@ -42,7 +41,24 @@
             padding: 22.5px 0;
             width: 100%;
             float: left;
-            text-align: left;  
+            text-align: left;
+            color: @deselect;
+        }
+        button:hover {
+            background-color: @selectsecondary;
+            color: @selectprimary;
+        }
+
+        .selected {
+            margin-left: 0px !important;
+            border-left: solid 5px @selectprimary;
+            background-color: @selectsecondary;
+            color: @selectprimary;
+            font-weight: bold;
+
+            i.icon {
+                padding-left: 25px;
+            }
         }
     }
 
@@ -58,16 +74,5 @@
         margin-bottom: 100px;
     }
 
-    .selected {
-        margin-left: 0px !important;
-        padding-left: 25px;   
-        color: @selectprimary;
-        border-left: solid 5px @selectprimary;
-        background-color: @selectsecondary;
-        font-weight: bold;
-
-        i.icon {
-            padding-left:25px;
-        }
-    }
+    
 }
