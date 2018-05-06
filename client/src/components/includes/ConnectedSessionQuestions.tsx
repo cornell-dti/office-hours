@@ -60,7 +60,7 @@ type InputProps = {
     userId: number,
 };
 
-const withData = graphql<Response, InputProps>(QUERY, {
+const withData = graphql<InputProps, Response>(QUERY, {
     options: ({ sessionId, userId }) => ({
         variables: { sessionId: sessionId, userId: userId }
     })

@@ -30,7 +30,7 @@ interface InputProps {
     };
 }
 
-const withData = graphql<Response, InputProps>(QUERY, {
+const withData = graphql<InputProps, Response>(QUERY, {
     options: ({ userId, courseId }) => ({
         variables: { userId: userId, courseId: courseId }
     })

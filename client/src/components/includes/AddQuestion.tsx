@@ -2,8 +2,20 @@ import * as React from 'react';
 
 import { Redirect } from 'react-router';
 import { Icon } from 'semantic-ui-react';
+import gql from 'graphql-tag';
+import { Mutation } from 'react-apollo';
 
 import SelectedTags from '../includes/SelectedTags';
+
+const INPUT_QUESTION = gql`
+mutation InputQuestion($content: String!, $timeEntered: Datetime!, $sessionId: Int!, $askerId: Int!) {
+    createQuestion(input: {question: {content: $content, timeEntered: $timeEntered, status: "unresolved", sessionId: $sessionId, askerId: $askerId}}) {
+        clientMutationId
+    }
+}
+`;
+
+const userId = 1;
 
 class AddQuestion extends React.Component {
 
@@ -62,7 +74,15 @@ class AddQuestion extends React.Component {
         this.setState({ redirect: true });
     }
 
-    public handleJoinClick(event: React.MouseEvent<HTMLElement>): void {
+    public handleJoinClick(event: React.MouseEvent<HTMLElement>, f: Function): void {
+        f({
+            variables: {
+                content: this.state.question,
+                timeEntered: new Date(),
+                sessionId: this.props.sessionId,
+                askerId: userId
+            }
+        });
         this.setState({ redirect: true });
     }
 
@@ -224,10 +244,16 @@ class AddQuestion extends React.Component {
                 <div className="queueHeader">
                     <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
                     <p className="title">Join The Queue</p>
-                    {this.state.doneSelectingTags ?
-                        <p className="joinButtonActivate" onClick={this.handleJoinClick}>Join</p> :
-                        <p className="joinButton" onClick={this.handleJoinClick}>Join</p>
-                    }
+                    <Mutation mutation={INPUT_QUESTION}>
+                        {(InputQuestions) =>
+                            <p
+                                className="joinButtonActivate"
+                                onClick={(e) => this.handleJoinClick(e, InputQuestions)}
+                            >
+                                Join
+                            </p>
+                        }
+                    </Mutation>
                 </div>
                 <hr />
                 <div className="taHeader">
