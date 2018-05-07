@@ -40,24 +40,6 @@ query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Dat
             }
         }
     }
-    courseByCourseId(courseId: $courseId) {
-        tas: courseUsersByCourseId(condition: {role: "ta"}) {
-            nodes {
-                userByUserId {
-                firstName
-                lastName
-                }
-            }
-        }
-        professors: courseUsersByCourseId(condition: {role: "professor"}) {
-            nodes {
-                userByUserId {
-                firstName
-                lastName
-                }
-            }
-        }
-    }
 }
 `;
 
@@ -80,14 +62,6 @@ type InputProps = {
     data: {
         searchSessionRange?: {
             nodes: [{}]
-        },
-        courseByCourseId?: {
-            tas: {
-                nodes: [{}]
-            }
-            professors: {
-                nodes: [{}]
-            }
         }
     }
     taList: string[]

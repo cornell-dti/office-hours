@@ -16,11 +16,15 @@
     .content {
         text-align: center;
         background-color: #fefefe;
-        margin: 15% auto;
         position: relative;
-        left: 0;
-        width: 800px;
-        white-space: nowrap;
+        margin-top: 15%;
+        max-width: 100%;
+        display: inline-block;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        -webkit-font-smoothing: subpixel-antialiased;
+        -webkit-filter: blur(0);
 
         .x {
             padding: 4px;
@@ -42,7 +46,8 @@
             }
 
             span {
-                padding: 0 4%;
+                padding: 2px 20px;
+                display: inline-block;
             }
         }
 

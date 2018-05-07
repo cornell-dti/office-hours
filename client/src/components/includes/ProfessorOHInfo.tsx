@@ -141,7 +141,7 @@ class ProfoessorOHInfo extends React.Component {
                             placeholderText="2:00 PM"
                         />
                     </div >
-                    <Checkbox className="repeat" label="Repeat Weekly" checked={this.props.isSeries} />
+                    <Checkbox className="repeat" label="Repeat Weekly" defaultChecked={this.props.isSeries} />
                 </div>
             </div>
         );
