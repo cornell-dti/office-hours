@@ -183,6 +183,17 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         var dayIndex = this.state.dayIndex;
         var rowIndex = this.state.rowIndex;
 
+        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thurdsay', 'Friday', 'Saturday'];
+        var headers = new Array(7);
+
+        for (var i = 0; i < headers.length; i++) {
+            headers[i] = (
+                <tr>
+                    <th colSpan={tablewidth}>{days[i]}</th>
+                </tr>
+            );
+        }
+
         var rows = new Array(7);
         for (var i = 0; i < rows.length; i++) {
             rows[i] = (
@@ -217,33 +228,19 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                     isSeries={isSeries[dayIndex][rowIndex]}
                 />
                 <table className="Calendar">
-                    <tr>
-                        <th colSpan={tablewidth}>Monday</th>
-                    </tr>
+                    {headers[1]}
                     {rows[1]}
-                    <tr>
-                        <th colSpan={tablewidth}>Tuesday</th>
-                    </tr>
+                    {headers[2]}
                     {rows[2]}
-                    <tr>
-                        <th colSpan={tablewidth}>Wednesday</th>
-                    </tr>
+                    {headers[3]}
                     {rows[3]}
-                    <tr>
-                        <th colSpan={tablewidth}>Thursday</th>
-                    </tr>
+                    {headers[4]}
                     {rows[4]}
-                    <tr>
-                        <th colSpan={tablewidth}>Friday</th>
-                    </tr>
+                    {headers[5]}
                     {rows[5]}
-                    <tr>
-                        <th colSpan={tablewidth}>Saturday</th>
-                    </tr>
+                    {headers[6]}
                     {rows[6]}
-                    <tr>
-                        <th colSpan={tablewidth}>Sunday</th>
-                    </tr>
+                    {headers[0]}
                     {rows[0]}
                 </table>
             </div>

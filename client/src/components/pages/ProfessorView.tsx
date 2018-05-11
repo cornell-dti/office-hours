@@ -1,6 +1,6 @@
 import * as React from 'react';
 import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
-import ProfessorAddNewOH from '../includes/ProfessorAddNewOH';
+import ProfessorAddNew from '../includes/ProfessorAddNew';
 import ProfessorHeader from '../includes/ProfessorHeader';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
@@ -8,6 +8,7 @@ import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
+import ProfoessorOHInfo from '../includes/ProfessorOHInfo';
 
 const QUERY = gql`
 query FindSessionsByCourse($courseId: Int!) {
@@ -121,8 +122,13 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>> {
                         notification={true}
                     />
                     <div className="main">
-                        <ProfessorAddNewOH
-                            taList={taList}
+                        <ProfessorAddNew
+                            text="Add New Office Hour"
+                            content={
+                                <ProfoessorOHInfo
+                                    taList={taList}
+                                />
+                            }
                         />
                         <CalendarWeekSelect
                             handleClick={this.handleWeekClick}
