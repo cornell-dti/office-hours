@@ -62,7 +62,7 @@ class SessionQuestionsComponent extends React.Component {
       f({
           variables: {
               questionId: this.props.questionId,
-              status: "deleted",
+              status: "noshow",
               timeEntered: new Date(),
               sessionId: this.props.sessionId,
               answererId: this.state.answererId
@@ -115,7 +115,7 @@ class SessionQuestionsComponent extends React.Component {
                         <Mutation mutation={UPDATE_QUESTION}>
                             {(UpdateQuestions) =>
                                 <div className="TAButtons">
-                                    <p className="Delete" onClick={(e) => this._onClickDelete(e, UpdateQuestions)}><Icon name="close" /> Delete</p>
+                                    <p className="Delete" onClick={(e) => this._onClickDelete(e, UpdateQuestions)}>No-Show</p>
                                     <p className="Resolve" onClick={(e) => this._onClickResolve(e, UpdateQuestions)}><Icon name="check" /> Resolve</p>
                                 </div>
                             }
