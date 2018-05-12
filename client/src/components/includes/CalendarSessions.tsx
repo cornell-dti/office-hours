@@ -100,7 +100,13 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
                     endTime: new Date(node.endTime),
                 });
             });
+            sessions.sort(function (a: Session, b: Session) {
+                var x = a.startTime;
+                var y = b.startTime;
+                return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+            });
         }
+
         const callback = this.props.callback;
         const activeSessionId = this.props.activeSessionId;
 
