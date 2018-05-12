@@ -1,10 +1,12 @@
 import * as React from 'react';
 import SessionQuestionsComponent from './SessionQuestionsComponent';
+import { Icon } from 'semantic-ui-react';
 
 class SessionQuestionsContainer extends React.Component {
     props: {
         isTA: boolean,
         questions: Question[],
+        handleJoinClick: Function,
     };
 
     render() {
@@ -27,7 +29,7 @@ class SessionQuestionsContainer extends React.Component {
                     tags={question.tags}
                     index={i}
                     isTA={this.props.isTA}
-                    isMyQuestion={userQuestionIndex === i}
+                    isMyQuestion={userQuestionIndex === i && !this.props.isTA}
                 />
             );
         });
@@ -42,12 +44,16 @@ class SessionQuestionsContainer extends React.Component {
         }
 
         return (
+
             <div className="SessionQuestionsContainer" >
+                {!this.props.isTA && userQuestionIndex === -1 &&
+                    <div className="SessionJoinButton" onClick={() => this.props.handleJoinClick}>
+                        <p><Icon name="plus" /> Join the Queue</p>
+                    </div>
+                }
                 {!this.props.isTA && questions.length > 0 && userQuestionIndex !== -1 &&
                     <div className="User">
-                        <div className="UserQuestionHeader">
-                            <p className="QuestionHeader">My Question</p>
-                        </div>
+                        <p className="QuestionHeader">My Question</p>
                         {
                             <SessionQuestionsComponent
                                 key={questions[userQuestionIndex].id}
@@ -62,11 +68,11 @@ class SessionQuestionsContainer extends React.Component {
                                 isMyQuestion={true}
                             />
                         }
+                        <p className="Queue">Queue</p>
                     </div>
                 }
                 {questions.length > 0 &&
                     <React.Fragment>
-                        <p className="Queue">Queue</p>
                         {cardList}
                     </React.Fragment>
                 }

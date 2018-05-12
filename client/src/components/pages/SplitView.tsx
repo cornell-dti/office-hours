@@ -1,8 +1,6 @@
 import * as React from 'react';
 import * as H from 'history';
 
-import { Icon } from 'semantic-ui-react';
-
 import SessionInformationHeader from '../includes/SessionInformationHeader';
 import ConnectedSessionQuestions from '../includes/ConnectedSessionQuestions';
 
@@ -193,15 +191,12 @@ class SplitView extends React.Component {
                                     callback={this.handleBackClick}
                                     isDesktop={this.state.width > MOBILE_BREAKPOINT}
                                 />
-                                <div className="SessionJoinButton" onClick={this.handleJoinClick}>
-                                    <p><Icon name="plus" /> Join the Queue</p>
-                                </div>
                                 <div className="splitQuestions">
                                     <ConnectedSessionQuestions
                                         sessionId={this.state.sessionId}
-                                        isTA={false}
                                         data={{}}
                                         userId={1}
+                                        handleJoinClick={this.handleJoinClick}
                                     />
                                 </div>
                             </React.Fragment>
