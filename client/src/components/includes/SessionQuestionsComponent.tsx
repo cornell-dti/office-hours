@@ -109,7 +109,7 @@ class SessionQuestionsComponent extends React.Component {
                     this.props.isTA &&
                     <div className="studentInformation">
                         <img src={this.props.studentPicture} />
-                        <p className="Name">{this.props.studentName}</p>
+                        <span className="Name">{this.props.studentName}</span>
                     </div>
                 }
                 <p className="Question">{this.props.studentQuestion}</p>

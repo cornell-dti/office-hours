@@ -57,8 +57,8 @@ type InputProps = {
             },
         },
     },
-    isTA: boolean,
     userId: number,
+    handleJoinClick: Function,
 };
 
 const withData = graphql<InputProps, Response>(QUERY, {
@@ -112,6 +112,7 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
                 isTA={isTa}
                 sessionId={this.props.sessionId}
                 questions={questions}
+                handleJoinClick={this.props.handleJoinClick}
             />
         );
     }
