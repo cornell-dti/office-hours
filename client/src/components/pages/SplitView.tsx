@@ -15,7 +15,7 @@ const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* m
 const ONE_WEEK = 7 /* days */ * ONE_DAY;
 
 // Also update in the main LESS file
-const MOBILE_BREAKPOINT = 800;
+const MOBILE_BREAKPOINT = 920;
 
 class SplitView extends React.Component {
     props: {
