@@ -153,7 +153,8 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
 
         if (this.props.data.searchSessionRange) {
             this.props.data.searchSessionRange.nodes.forEach((node: SessionNode) => {
-                var dayIndex = new Date(node.startTime).getDay();
+                // 0 = Monday..., 5 = Saturday, 6 = Sunday
+                var dayIndex = (new Date(node.startTime).getDay() + 5) % 6;
                 timeStart[dayIndex].push(new Date(node.startTime));
                 timeEnd[dayIndex].push(new Date(node.endTime));
 
@@ -183,7 +184,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         var dayIndex = this.state.dayIndex;
         var rowIndex = this.state.rowIndex;
 
-        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thurdsay', 'Friday', 'Saturday'];
+        var days = ['Monday', 'Tuesday', 'Wednesday', 'Thurdsay', 'Friday', 'Saturday', 'Sunday'];
         var headers = new Array(7);
 
         for (var i = 0; i < headers.length; i++) {
@@ -194,26 +195,33 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
             );
         }
 
-        var rows = new Array(7);
-        for (var i = 0; i < rows.length; i++) {
-            rows[i] = (
-                <ProfessorCalendarRow
-                    dayNumber={i}
-                    taList={this.props.taList}
-                    timeStart={timeStart[i]}
-                    timeEnd={timeEnd[i]}
-                    officeHoursTas={taIndex[i]}
-                    locationBuilding={building[i]}
-                    locationRoomNum={room[i]}
-                    isSeries={isSeries[i]}
-                    isExpanded={this.state.isExpanded[i]}
-                    handleEditToggle={this.toggleEdit}
-                    tablewidth={5}
-                    updateDeleteInfo={this.updateDeleteInfo}
-                    updateDeleteVisible={this.updateDeleteVisible}
-                />
-            );
-        }
+        var rows = days.map(
+            (tag, i) => {
+                return (
+                    <tbody>
+                        <tr>
+                            <th colSpan={tablewidth}>{tag}</th>
+                        </tr>
+                        <ProfessorCalendarRow
+                            dayNumber={i}
+                            taList={this.props.taList}
+                            timeStart={timeStart[i]}
+                            timeEnd={timeEnd[i]}
+                            officeHoursTas={taIndex[i]}
+                            locationBuilding={building[i]}
+                            locationRoomNum={room[i]}
+                            isSeries={isSeries[i]}
+                            
+                            isExpanded={this.state.isExpanded[i]}
+                            handleEditToggle={this.toggleEdit}
+                            tablewidth={5}
+                            updateDeleteInfo={this.updateDeleteInfo}
+                            updateDeleteVisible={this.updateDeleteVisible}
+                        />
+                    </tbody>
+                )
+            }
+        );
 
         return (
             <div className="ProfessorCalendarTable">
@@ -228,20 +236,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                     isSeries={isSeries[dayIndex][rowIndex]}
                 />
                 <table className="Calendar">
-                    {headers[1]}
-                    {rows[1]}
-                    {headers[2]}
-                    {rows[2]}
-                    {headers[3]}
-                    {rows[3]}
-                    {headers[4]}
-                    {rows[4]}
-                    {headers[5]}
-                    {rows[5]}
-                    {headers[6]}
-                    {rows[6]}
-                    {headers[0]}
-                    {rows[0]}
+                    {rows}
                 </table>
             </div>
         );
