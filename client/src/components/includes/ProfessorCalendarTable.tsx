@@ -5,6 +5,7 @@ import ProfessorDelete from '../includes/ProfessorDelete';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
+import ProfessorOHInfoDelete from './ProfessorOHInfoDelete';
 
 const QUERY = gql`
 query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Datetime!) {
@@ -203,7 +204,6 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                             <th colSpan={tablewidth}>{tag}</th>
                         </tr>
                         <ProfessorCalendarRow
-                            dayNumber={i}
                             taList={this.props.taList}
                             timeStart={timeStart[i]}
                             timeEnd={timeEnd[i]}
@@ -211,10 +211,11 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                             locationBuilding={building[i]}
                             locationRoomNum={room[i]}
                             isSeries={isSeries[i]}
-                            
+
+                            tablewidth={5}
+                            dayNumber={i}
                             isExpanded={this.state.isExpanded[i]}
                             handleEditToggle={this.toggleEdit}
-                            tablewidth={5}
                             updateDeleteInfo={this.updateDeleteInfo}
                             updateDeleteVisible={this.updateDeleteVisible}
                         />
@@ -228,12 +229,16 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                 <ProfessorDelete
                     isDeleteVisible={this.state.isDeleteVisible}
                     updateDeleteVisible={this.updateDeleteVisible}
-                    ta={taIndex[dayIndex][rowIndex]}
-                    timeStart={timeStart[dayIndex][rowIndex]}
-                    timeEnd={timeEnd[dayIndex][rowIndex]}
-                    locationBuilding={building[dayIndex][rowIndex]}
-                    locationRoomNum={room[dayIndex][rowIndex]}
-                    isSeries={isSeries[dayIndex][rowIndex]}
+                    content={
+                        <ProfessorOHInfoDelete
+                            ta={taIndex[dayIndex][rowIndex]}
+                            timeStart={timeStart[dayIndex][rowIndex]}
+                            timeEnd={timeEnd[dayIndex][rowIndex]}
+                            locationBuilding={building[dayIndex][rowIndex]}
+                            locationRoomNum={room[dayIndex][rowIndex]}
+                            isSeries={isSeries[dayIndex][rowIndex]}
+                        />
+                    }
                 />
                 <table className="Calendar">
                     {rows}

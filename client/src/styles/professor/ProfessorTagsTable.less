@@ -2,36 +2,42 @@
 @even-color: #edeff2;
 @odd-color: white;
 
-.ProfessorCalendarTable {
+.ProfessorTagsTable {
     text-align: left;
     min-width: 900px;
+    margin-top: 30px;
 
-    tbody:first-child{
-        tr:first-child {
-            th:first-child {
-                border-radius: 10px 10px 0px 0px;
-            }
-        }
-    }
-
-    .Calendar {
+    .Tags {
         width: 100%;
         border-collapse: collapse;
+
+        tr:first-child {
+            th:first-child {
+                border-top-left-radius: 10px; 
+            }
+            th:last-child {
+                border-top-right-radius: 10px;
+            }
+        }
 
         .rows{
             width: 100%;
         }
 
-        .NoOH {
+        .None {
             text-align: center;
         }
 
         th {
-            padding: 14px 0px;
+            padding: 7px 0px;
             color: white;
-            font-size: 20px;
-            padding-left: 5%;
             background-color: @header-color;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        th:first-child {
+            padding-left: 5%;
         }
 
         .EditButtons {

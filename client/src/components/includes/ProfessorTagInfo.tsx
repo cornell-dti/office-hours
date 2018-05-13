@@ -7,8 +7,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 class ProfoessorTagInfo extends React.Component {
 
     props: {
+        assignmentName?: string
         startTimeDefault?: (moment.Moment | null)
         endTimeDefault?: (moment.Moment | null)
+        numQuestions?: number
     }
 
     state: {
@@ -40,13 +42,14 @@ class ProfoessorTagInfo extends React.Component {
 
     render() {
         var today = moment().format('dddd MM/DD/YY');
+        var defaultNumQuestions: number = (this.props.numQuestions === undefined) ? 1 : this.props.numQuestions
 
         return (
             <div className="ProfessorTagInfo">
                 <div className="Assignment">
                     Assignment Name
                     <div className="AssignmentInput">
-                        <input placeholder="Recursion Lab" />
+                        <input placeholder="Recursion Lab" value={this.props.assignmentName} />
                     </div>
                 </div>
                 <div className="Time">
@@ -75,7 +78,7 @@ class ProfoessorTagInfo extends React.Component {
                 <div className="NumQuestions">
                     Number of Questions
                     <div className="NumericInput">
-                        <NumericInput min={0} value={1} snap strict />
+                        <NumericInput min={0} value={defaultNumQuestions} snap strict />
                     </div>
                 </div>
             </div>
