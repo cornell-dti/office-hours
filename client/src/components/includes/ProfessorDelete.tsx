@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as moment from 'moment';
-import { Icon, Checkbox } from 'semantic-ui-react'
+import { Icon, Checkbox } from 'semantic-ui-react';
 
 class ProfessorDelete extends React.Component {
 
@@ -23,7 +23,7 @@ class ProfessorDelete extends React.Component {
     }
 
     updateDeleteVisible(toggle: boolean) {
-        this.props.updateDeleteVisible(toggle)
+        this.props.updateDeleteVisible(toggle);
     }
 
     render() {
@@ -31,7 +31,6 @@ class ProfessorDelete extends React.Component {
         var date = moment(this.props.timeStart).format('dddd MM/DD/YY');
         var timeStart = moment(this.props.timeStart).format('h:mm A');
         var timeEnd = moment(this.props.timeEnd).format('h:mm A');
-
 
         return (
             <div className={'ProfessorDelete ' + this.props.isDeleteVisible}>
