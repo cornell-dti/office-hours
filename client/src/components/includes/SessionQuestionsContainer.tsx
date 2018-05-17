@@ -11,7 +11,7 @@ class SessionQuestionsContainer extends React.Component {
 
     render() {
         var questions = this.props.questions;
-        var userQuestionIndex: number = 0;
+        var userQuestionIndex: number = -1;
         var cardList: JSX.Element[] = [];
         questions.forEach((question, i: number) => {
             // TODO: change before shipping
@@ -47,7 +47,7 @@ class SessionQuestionsContainer extends React.Component {
 
             <div className="SessionQuestionsContainer" >
                 {!this.props.isTA && userQuestionIndex === -1 &&
-                    <div className="SessionJoinButton" onClick={() => this.props.handleJoinClick}>
+                    <div className="SessionJoinButton" onClick={() => this.props.handleJoinClick()}>
                         <p><Icon name="plus" /> Join the Queue</p>
                     </div>
                 }
