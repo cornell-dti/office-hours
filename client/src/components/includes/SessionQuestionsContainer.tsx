@@ -15,7 +15,7 @@ class SessionQuestionsContainer extends React.Component {
         var cardList: JSX.Element[] = [];
         questions.forEach((question, i: number) => {
             // TODO: change before shipping
-            if (question.userId === 100) {
+            if (question.userId === 7) {
                 userQuestionIndex = i;
             }
             cardList.push(

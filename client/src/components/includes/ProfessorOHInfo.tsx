@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as moment from 'moment';
 import { Dropdown } from 'semantic-ui-react';
 import { Checkbox } from 'semantic-ui-react';
-import { Icon } from 'semantic-ui-react'
+import { Icon } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -63,18 +63,20 @@ class ProfoessorOHInfo extends React.Component {
         }
 
         var AddTA = [];
-        for (var i = 0; i < this.state.numAddTA; i++) {
-            var x = <div />
+        for (i = 0; i < this.state.numAddTA; i++) {
+            var x = <div />;
             if (i === this.state.numAddTA - 1) {
-                x = <button className="AddTAButton" onClick={() => this.incAddTA(-1)}>
-                    <Icon name="x" />
-                </button>
+                x = (
+                    <button className="AddTAButton" onClick={() => this.incAddTA(-1)}>
+                        <Icon name="x" />
+                    </button>
+                );
             }
 
             AddTA.push(
                 <div className="AddTA">
                     <Icon name="user" />
-                    <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} />
+                    <Dropdown className="dropdown" placeholder="TA Name" selection={true} options={taOptions} />
                     {x}
                 </div>
             );
@@ -85,13 +87,21 @@ class ProfoessorOHInfo extends React.Component {
             isMaxTA = true;
         }
 
-        var defaultTA = this.props.taIndexDefault != undefined ? taOptions[this.props.taIndexDefault].value : undefined
+        var defaultTA = this.props.taIndexDefault !== undefined ?
+            taOptions[this.props.taIndexDefault].value :
+            undefined;
 
         return (
             <div className="ProfessorOHInfo">
                 <div className="TA">
                     <Icon name="user" />
-                    <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} defaultValue={defaultTA} />
+                    <Dropdown
+                        className="dropdown"
+                        placeholder="TA Name"
+                        selection={true}
+                        options={taOptions}
+                        defaultValue={defaultTA}
+                    />
                     <button className={'AddTAButton ' + isMaxTA} disabled={isMaxTA} onClick={() => this.incAddTA(1)}>
                         <Icon name="plus" />
                         Add TA
@@ -100,7 +110,11 @@ class ProfoessorOHInfo extends React.Component {
                 {AddTA}
                 <div className="Location">
                     <Icon name="marker" />
-                    <input className="long" placeholder="Building/Location" defaultValue={this.props.locationBuildingDefault} />
+                    <input
+                        className="long"
+                        placeholder="Building/Location"
+                        defaultValue={this.props.locationBuildingDefault}
+                    />
                     <input placeholder="Room Number" defaultValue={this.props.locationRoomNumDefault} />
                 </div>
                 <div className="Time">
@@ -109,7 +123,7 @@ class ProfoessorOHInfo extends React.Component {
                         <DatePicker
                             selected={this.state.startTime}
                             onChange={this.handleStartTime}
-                            dateFormat='dddd MM/DD/YY'
+                            dateFormat="dddd MM/DD/YY"
                             placeholderText={today}
                         />
                     </div >
@@ -117,7 +131,7 @@ class ProfoessorOHInfo extends React.Component {
                         <DatePicker
                             selected={this.state.startTime}
                             onChange={this.handleStartTime}
-                            showTimeSelect
+                            showTimeSelect={true}
                             // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
                             // Will not compile if removed
                             // showTimeSelectOnly
@@ -131,7 +145,7 @@ class ProfoessorOHInfo extends React.Component {
                         <DatePicker
                             selected={this.state.endTime}
                             onChange={this.handleEndTime}
-                            showTimeSelect
+                            showTimeSelect={true}
                             // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
                             // Will not compile if removed
                             // showTimeSelectOnly

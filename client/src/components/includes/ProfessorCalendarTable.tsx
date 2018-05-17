@@ -22,14 +22,14 @@ class ProfessorCalendarTable extends React.Component {
         currentRow: number
         dayIndex: number
         rowIndex: number
-    }
+    };
 
     constructor(props: {}) {
         super(props);
         this.toggleEdit = this.toggleEdit.bind(this);
-        var isExpandedInit = []
+        var isExpandedInit = [];
         for (var i = 0; i < 7; i++) {
-            isExpandedInit.push(new Array<boolean>(this.props.timeStart[i].length).fill(false))
+            isExpandedInit.push(new Array<boolean>(this.props.timeStart[i].length).fill(false));
         }
         this.state = {
             isExpanded: isExpandedInit,
@@ -47,7 +47,7 @@ class ProfessorCalendarTable extends React.Component {
         var cDay = this.state.currentDay;
         var cRow = this.state.currentRow;
 
-        if (!(cDay == day && cRow == row)) {
+        if (!(cDay === day && cRow === row)) {
             this.state.isExpanded[cDay][cRow] = false;
         }
         this.state.isExpanded[day][row] = !this.state.isExpanded[day][row];
@@ -79,7 +79,7 @@ class ProfessorCalendarTable extends React.Component {
 
         var rows = new Array(7);
         for (var i = 0; i < rows.length; i++) {
-            rows[i] =
+            rows[i] = (
                 <ProfessorCalendarRow
                     dayNumber={i}
                     taList={this.props.taList}
@@ -94,6 +94,7 @@ class ProfessorCalendarTable extends React.Component {
                     updateDeleteInfo={this.updateDeleteInfo}
                     updateDeleteVisible={this.updateDeleteVisible}
                 />
+            );
         }
 
         return (
