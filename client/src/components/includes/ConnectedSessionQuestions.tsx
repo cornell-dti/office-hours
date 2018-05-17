@@ -63,7 +63,8 @@ type InputProps = {
 
 const withData = graphql<InputProps, Response>(QUERY, {
     options: ({ sessionId, userId }) => ({
-        variables: { sessionId: sessionId, userId: userId }
+        variables: { sessionId: sessionId, userId: userId },
+        pollInterval: 200
     })
 });
 

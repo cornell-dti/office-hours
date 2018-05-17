@@ -6,9 +6,22 @@ import { Mutation } from 'react-apollo';
 import SelectedTags from '../includes/SelectedTags';
 
 const UPDATE_QUESTION = gql`
-mutation UpdateQuestion($questionId: Int!, $status: String, $timeResolved: Datetime, $answererId: Int) {
-    updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeResolved: $timeResolved,
-        answererId: $answererId}, questionId: $questionId}) {
+mutation UpdateQuestion(
+    $questionId: Int!,
+    $status: String,
+    $timeResolved: Datetime,
+    $answererId: Int
+) {
+    updateQuestionByQuestionId(
+        input: {
+            questionPatch: {
+                status: $status,
+                timeResolved: $timeResolved,
+                answererId: $answererId
+            },
+            questionId: $questionId
+        }
+    ) {
         clientMutationId
     }
 }

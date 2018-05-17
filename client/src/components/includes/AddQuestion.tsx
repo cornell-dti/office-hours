@@ -9,7 +9,7 @@ import SelectedTags from '../includes/SelectedTags';
 
 const CREATE_QUESTION = gql`
 mutation CreateQuestion($content: String!, $tags: [Int], $sessionId: Int!, $askerId: Int!) {
-    addQuestionWithTags(input: {content: $content, tags: $tags, status: "unresolved", 
+    addQuestionWithTags(input: {content: $content, tags: $tags, status: "unresolved",
         sessionId: $sessionId, askerId: $askerId}) {
         clientMutationId
     }
@@ -254,8 +254,8 @@ class AddQuestion extends React.Component {
         return (
             <div className="AddQuestion">
                 <div className="queueHeader">
-                    <span className="xbutton" onClick={this.handleXClick}><Icon name="close" /></span>
-                    <span className="title">Join The Queue</span>
+                    <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
+                    <p className="title">Join The Queue</p>
                 </div>
                 {/* No longer in design - commending out in case it comes back.
                 <hr />
