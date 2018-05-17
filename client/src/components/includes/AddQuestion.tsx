@@ -8,16 +8,14 @@ import { Mutation } from 'react-apollo';
 import SelectedTags from '../includes/SelectedTags';
 
 const INPUT_QUESTION = gql`
-mutation InputQuestion($content: String!, $timeEntered: Datetime!, $sessionId: Int!, $askerId: Int!) {
-    createQuestion(
+mutation InputQuestion($content: String!,  $sessionId: Int!, $askerId: Int!, $tags: [Int]) {
+    addQuestionWithTags(
         input: {
-            question: {
-                content: $content,
-                 timeEntered: $timeEntered,
-                 status: "unresolved",
-                 sessionId: $sessionId,
-                 askerId: $askerId
-            }
+            content: $content,
+            status: "unresolved",
+            sessionId: $sessionId,
+            askerId: $askerId,
+            tags: $tags
         }
     ) {
         clientMutationId
@@ -85,12 +83,24 @@ class AddQuestion extends React.Component {
     }
 
     public handleJoinClick(event: React.MouseEvent<HTMLElement>, f: Function): void {
+        var selectedTags: Number[] = [];
+        this.state.primaryBooleanList.forEach((tag, i) => {
+            if (tag) {
+                selectedTags.push(this.props.primaryTagsIds[i]);
+            }
+        });
+        this.state.secondaryBooleanList.forEach((tag, i) => {
+            if (tag) {
+                selectedTags.push(this.props.secondaryTagsIds[i]);
+            }
+        });
+
         f({
             variables: {
                 content: this.state.question,
-                timeEntered: new Date(),
                 sessionId: this.props.sessionId,
-                askerId: userId
+                askerId: userId,
+                tags: selectedTags
             }
         });
         this.setState({ redirect: true });
