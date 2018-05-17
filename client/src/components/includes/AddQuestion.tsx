@@ -2,8 +2,30 @@ import * as React from 'react';
 
 import { Redirect } from 'react-router';
 import { Icon } from 'semantic-ui-react';
+import gql from 'graphql-tag';
+import { Mutation } from 'react-apollo';
 
 import SelectedTags from '../includes/SelectedTags';
+
+const INPUT_QUESTION = gql`
+mutation InputQuestion($content: String!, $timeEntered: Datetime!, $sessionId: Int!, $askerId: Int!) {
+    createQuestion(
+        input: {
+            question: {
+                content: $content,
+                 timeEntered: $timeEntered,
+                 status: "unresolved",
+                 sessionId: $sessionId,
+                 askerId: $askerId
+            }
+        }
+    ) {
+        clientMutationId
+    }
+}
+`;
+
+const userId = 1;
 
 class AddQuestion extends React.Component {
 
@@ -62,7 +84,15 @@ class AddQuestion extends React.Component {
         this.setState({ redirect: true });
     }
 
-    public handleJoinClick(event: React.MouseEvent<HTMLElement>): void {
+    public handleJoinClick(event: React.MouseEvent<HTMLElement>, f: Function): void {
+        f({
+            variables: {
+                content: this.state.question,
+                timeEntered: new Date(),
+                sessionId: this.props.sessionId,
+                askerId: userId
+            }
+        });
         this.setState({ redirect: true });
     }
 
@@ -222,8 +252,8 @@ class AddQuestion extends React.Component {
         return (
             <div className="AddQuestion">
                 <div className="queueHeader">
-                    <span className="xbutton" onClick={this.handleXClick}><Icon name="close" /></span>
-                    <span className="title">Join The Queue</span>
+                    <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
+                    <p className="title">Join The Queue</p>
                 </div>
                 {/* No longer in design - commending out in case it comes back.
                 <hr />
@@ -281,10 +311,18 @@ class AddQuestion extends React.Component {
                             />
                             : <p className="placeHolder text">Finish selecting tags...</p>}
                     </div>
-                    {this.state.doneSelectingTags ?
-                        <p className="AddButton active" onClick={this.handleJoinClick}> Add My Question </p> :
-                        <p className="AddButton"> Add My Question </p>
-                    }
+                    <Mutation mutation={INPUT_QUESTION}>
+                        {(InputQuestions) =>
+                            this.state.doneSelectingTags ?
+                                <p
+                                    className="AddButton active"
+                                    onClick={(e) => this.handleJoinClick(e, InputQuestions)}
+                                > Add My Question
+                                </p> :
+                                <p className="AddButton"> Add My Question </p>
+                        }
+                    </Mutation>
+
                 </div>
             </div >
         );

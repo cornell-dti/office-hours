@@ -5,6 +5,7 @@ import { Icon } from 'semantic-ui-react';
 class SessionQuestionsContainer extends React.Component {
     props: {
         isTA: boolean,
+        sessionId: number,
         questions: Question[],
         handleJoinClick: Function,
     };
@@ -21,6 +22,8 @@ class SessionQuestionsContainer extends React.Component {
             cardList.push(
                 <SessionQuestionsComponent
                     key={question.id}
+                    questionId={question.id}
+                    sessionId={this.props.sessionId}
                     studentName={question.name}
                     studentPicture={'https://i2.wp.com/puppypassionn.org/wp-content/' +
                         'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
@@ -57,6 +60,8 @@ class SessionQuestionsContainer extends React.Component {
                         {
                             <SessionQuestionsComponent
                                 key={questions[userQuestionIndex].id}
+                                questionId={questions[userQuestionIndex].id}
+                                sessionId={this.props.sessionId}
                                 studentName={questions[userQuestionIndex].name}
                                 studentPicture={'https://i2.wp.com/puppypassionn.org/wp-content/' +
                                     'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}

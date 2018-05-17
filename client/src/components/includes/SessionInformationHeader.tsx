@@ -85,7 +85,7 @@ const QUERY = gql`
     }
 `;
 
-const withData = graphql<Response, InputProps>(QUERY, {
+const withData = graphql<InputProps, Response>(QUERY, {
     options: ({ sessionId }) => ({
         variables: { sessionId: sessionId }
     })
