@@ -7,10 +7,17 @@ import { Mutation } from 'react-apollo';
 
 import SelectedTags from '../includes/SelectedTags';
 
-const CREATE_QUESTION = gql`
-mutation CreateQuestion($content: String!, $tags: [Int], $sessionId: Int!, $askerId: Int!) {
-    addQuestionWithTags(input: {content: $content, tags: $tags, status: "unresolved",
-        sessionId: $sessionId, askerId: $askerId}) {
+const INPUT_QUESTION = gql`
+mutation InputQuestion($content: String!,  $sessionId: Int!, $askerId: Int!, $tags: [Int]) {
+    addQuestionWithTags(
+        input: {
+            content: $content,
+            status: "unresolved",
+            sessionId: $sessionId,
+            askerId: $askerId,
+            tags: $tags
+        }
+    ) {
         clientMutationId
     }
 }
