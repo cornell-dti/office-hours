@@ -31,7 +31,6 @@ class SessionQuestionsComponent extends React.Component {
 
     constructor(props: {}) {
         super(props);
-        this.handleClick = this.handleClick.bind(this);
         this._onClickDelete = this._onClickDelete.bind(this);
         this._onClickResolve = this._onClickResolve.bind(this);
     }
@@ -47,10 +46,6 @@ class SessionQuestionsComponent extends React.Component {
             // It is borrowed from https://stackoverflow.com/revisions/39466341/5
             return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index + 'th';
         }
-    }
-
-    public handleClick(event: React.MouseEvent<HTMLElement>): void {
-        this.setState({ redirect: true });
     }
 
     _onClickDelete(event: React.MouseEvent<HTMLElement>, f: Function) {
