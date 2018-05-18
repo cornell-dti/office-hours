@@ -34,15 +34,6 @@ class SessionQuestionsContainer extends React.Component {
             );
         });
 
-        var tagsList: JSX.Element[] = [];
-        if (questions.length > 0 && userQuestionIndex !== -1) {
-            tagsList = questions[userQuestionIndex].tags.map(
-                (tag) => {
-                    return <p key={tag.id}>{tag.name}</p>;
-                }
-            );
-        }
-
         return (
             <div className="SessionQuestionsContainer" >
                 {!this.props.isTA && questions.length > 0 && userQuestionIndex !== -1 &&

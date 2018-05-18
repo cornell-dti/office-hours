@@ -28,8 +28,8 @@ class SessionQuestionsComponent extends React.Component {
     };
 
     state: {
-      answererId: number
-    }
+        answererId: number
+    };
 
     constructor(props: {}) {
         super(props);
@@ -50,7 +50,7 @@ class SessionQuestionsComponent extends React.Component {
         } else {
             // Disclaimer: none of us wrote this one-line magic :)
             // It is borrowed from https://stackoverflow.com/revisions/39466341/5
-            return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index  + 'th';
+            return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index + 'th';
         }
     }
 
@@ -59,29 +59,27 @@ class SessionQuestionsComponent extends React.Component {
     }
 
     _onClickDelete(event: React.MouseEvent<HTMLElement>, f: Function) {
-      f({
-          variables: {
-              questionId: this.props.questionId,
-              status: "noshow",
-              timeEntered: new Date(),
-              sessionId: this.props.sessionId,
-              answererId: this.state.answererId
-          }
-      });
-      //this.props.handleShowClick(this.props.questionId, "deleted")
+        f({
+            variables: {
+                questionId: this.props.questionId,
+                status: 'noshow',
+                timeResolved: new Date(),
+                sessionId: this.props.sessionId,
+                answererId: this.state.answererId
+            }
+        });
     }
 
     _onClickResolve(event: React.MouseEvent<HTMLElement>, f: Function) {
-      f({
-          variables: {
-              questionId: this.props.questionId,
-              status: "resolved",
-              timeEntered: new Date(),
-              sessionId: this.props.sessionId,
-              answererId: this.state.answererId
-          }
-      });
-      //this.props.handleShowClick(this.props.questionId, "resolved")
+        f({
+            variables: {
+                questionId: this.props.questionId,
+                status: 'resolved',
+                timeResolved: new Date(),
+                sessionId: this.props.sessionId,
+                answererId: this.state.answererId
+            }
+        });
     }
 
     render() {
