@@ -12,6 +12,8 @@ mutation UpdateQuestion($questionId: Int!, $status: String, $timeResolved: Datet
 }
 `;
 
+const userId = 1;   // TODO fetch from cookie
+
 class SessionQuestionsComponent extends React.Component {
 
     props: {
@@ -27,15 +29,8 @@ class SessionQuestionsComponent extends React.Component {
         isMyQuestion: boolean
     };
 
-    state: {
-        answererId: number
-    };
-
     constructor(props: {}) {
         super(props);
-        this.state = {
-            answererId: 1
-        };
         this.handleClick = this.handleClick.bind(this);
         this._onClickDelete = this._onClickDelete.bind(this);
         this._onClickResolve = this._onClickResolve.bind(this);
@@ -65,7 +60,7 @@ class SessionQuestionsComponent extends React.Component {
                 status: 'noshow',
                 timeResolved: new Date(),
                 sessionId: this.props.sessionId,
-                answererId: this.state.answererId
+                answererId: userId
             }
         });
     }
@@ -77,7 +72,7 @@ class SessionQuestionsComponent extends React.Component {
                 status: 'resolved',
                 timeResolved: new Date(),
                 sessionId: this.props.sessionId,
-                answererId: this.state.answererId
+                answererId: userId
             }
         });
     }
@@ -113,8 +108,18 @@ class SessionQuestionsComponent extends React.Component {
                         <Mutation mutation={UPDATE_QUESTION}>
                             {(UpdateQuestions) =>
                                 <div className="TAButtons">
-                                    <p className="Delete" onClick={(e) => this._onClickDelete(e, UpdateQuestions)}>No-Show</p>
-                                    <p className="Resolve" onClick={(e) => this._onClickResolve(e, UpdateQuestions)}><Icon name="check" /> Resolve</p>
+                                    <p
+                                        className="Delete"
+                                        onClick={(e) => this._onClickDelete(e, UpdateQuestions)}
+                                    >
+                                        No-Show
+                                    </p>
+                                    <p
+                                        className="Resolve"
+                                        onClick={(e) => this._onClickResolve(e, UpdateQuestions)}
+                                    >
+                                        <Icon name="check" /> Resolve
+                                    </p>
                                 </div>
                             }
                         </Mutation>

@@ -15,7 +15,7 @@ mutation InputQuestion($content: String!, $timeEntered: Datetime!, $sessionId: I
 }
 `;
 
-const userId = 1;
+const userId = 1;   // TODO fetch from cookie
 
 class AddQuestion extends React.Component {
 
@@ -246,17 +246,17 @@ class AddQuestion extends React.Component {
                     <p className="title">Join The Queue</p>
                     <Mutation mutation={INPUT_QUESTION}>
                         {(InputQuestions) =>
-                          this.state.doneSelectingTags ?
-                            <p
-                                className="joinButtonActivate"
-                                onClick={(e) => this.handleJoinClick(e, InputQuestions)}
-                            >
-                                Join
+                            this.state.doneSelectingTags ?
+                                <p
+                                    className="joinButtonActivate"
+                                    onClick={(e) => this.handleJoinClick(e, InputQuestions)}
+                                >
+                                    Join
                             </p> :
-                            <p
-                                className="joinButton"
-                            >
-                                Join
+                                <p
+                                    className="joinButton"
+                                >
+                                    Join
                             </p>
 
                         }
