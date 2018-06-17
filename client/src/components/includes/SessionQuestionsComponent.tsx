@@ -48,8 +48,8 @@ class SessionQuestionsComponent extends React.Component {
         }
     }
 
-    _onClickDelete(event: React.MouseEvent<HTMLElement>, f: Function) {
-        f({
+    _onClickDelete(event: React.MouseEvent<HTMLElement>, deleteQuestion: Function) {
+        deleteQuestion({
             variables: {
                 questionId: this.props.questionId,
                 status: 'noshow',
@@ -60,8 +60,8 @@ class SessionQuestionsComponent extends React.Component {
         });
     }
 
-    _onClickResolve(event: React.MouseEvent<HTMLElement>, f: Function) {
-        f({
+    _onClickResolve(event: React.MouseEvent<HTMLElement>, resolveQuestion: Function) {
+        resolveQuestion({
             variables: {
                 questionId: this.props.questionId,
                 status: 'resolved',

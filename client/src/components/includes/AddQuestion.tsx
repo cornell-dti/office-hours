@@ -74,8 +74,8 @@ class AddQuestion extends React.Component {
         this.setState({ redirect: true });
     }
 
-    public handleJoinClick(event: React.MouseEvent<HTMLElement>, f: Function): void {
-        f({
+    public handleJoinClick(event: React.MouseEvent<HTMLElement>, createQuestion: Function): void {
+        createQuestion({
             variables: {
                 content: this.state.question,
                 timeEntered: new Date(),
