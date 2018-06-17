@@ -3,10 +3,12 @@ import { Icon } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
+import SelectedTags from '../includes/SelectedTags';
 
 const UPDATE_QUESTION = gql`
-mutation UpdateQuestion($questionId: Int!, $status: String, $timeResolved: Datetime, $sessionId: Int, $answererId: Int) {
-    updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeResolved: $timeResolved, sessionId: $sessionId, answererId: $answererId}, questionId: $questionId}) {
+mutation UpdateQuestion($questionId: Int!, $status: String, $timeResolved: Datetime, $answererId: Int) {
+    updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeResolved: $timeResolved,
+        answererId: $answererId}, questionId: $questionId}) {
         clientMutationId
     }
 }
@@ -18,7 +20,6 @@ class SessionQuestionsComponent extends React.Component {
 
     props: {
         questionId: number,
-        sessionId: number,
         studentPicture: string,
         studentName: string,
         studentQuestion: string,
@@ -33,6 +34,7 @@ class SessionQuestionsComponent extends React.Component {
         super(props);
         this._onClickDelete = this._onClickDelete.bind(this);
         this._onClickResolve = this._onClickResolve.bind(this);
+        this._onClickRetract = this._onClickRetract.bind(this);
     }
 
     // Given an index from [1..n], converts it to text that is displayed
@@ -48,25 +50,35 @@ class SessionQuestionsComponent extends React.Component {
         }
     }
 
-    _onClickDelete(event: React.MouseEvent<HTMLElement>, deleteQuestion: Function) {
-        deleteQuestion({
+    _onClickDelete(event: React.MouseEvent<HTMLElement>, updateQuestion: Function) {
+        updateQuestion({
             variables: {
                 questionId: this.props.questionId,
                 status: 'noshow',
                 timeResolved: new Date(),
-                sessionId: this.props.sessionId,
                 answererId: userId
             }
         });
     }
 
-    _onClickResolve(event: React.MouseEvent<HTMLElement>, resolveQuestion: Function) {
-        resolveQuestion({
+    _onClickResolve(event: React.MouseEvent<HTMLElement>, updateQuestion: Function) {
+        updateQuestion({
             variables: {
                 questionId: this.props.questionId,
                 status: 'resolved',
                 timeResolved: new Date(),
-                sessionId: this.props.sessionId,
+                answererId: userId
+            }
+        });
+    }
+
+    // User retracts (i.e. removes) their own question from the queue
+    _onClickRetract(event: React.MouseEvent<HTMLElement>, updateQuestion: Function) {
+        updateQuestion({
+            variables: {
+                questionId: this.props.questionId,
+                status: 'retracted',
+                timeResolved: new Date(),
                 answererId: userId
             }
         });
@@ -75,12 +87,24 @@ class SessionQuestionsComponent extends React.Component {
     render() {
         var tagsList = this.props.tags.map(
             (tag) => {
-                return <p key={tag.id}>{tag.name}</p>;
+                return (
+                    <SelectedTags
+                        key={tag.id}
+                        ifSelected={false}
+                        tag={tag.name}
+                        level={tag.level}
+                        index={0}
+                        onClick={null}
+                    />
+                );
+                // return <p key={tag.id}>{tag.name}</p>;
             }
         );
 
+        const myQuestionCSS = this.props.isMyQuestion ? ' MyQuestion' : '';
+
         return (
-            <div className="QueueQuestions">
+            <div className={'QueueQuestions' + myQuestionCSS}>
                 {
                     this.props.isTA &&
                     <div className="studentInformation">
@@ -101,17 +125,17 @@ class SessionQuestionsComponent extends React.Component {
                     <div className="Buttons">
                         <hr />
                         <Mutation mutation={UPDATE_QUESTION}>
-                            {(UpdateQuestions) =>
+                            {(updateQuestion) =>
                                 <div className="TAButtons">
                                     <p
                                         className="Delete"
-                                        onClick={(e) => this._onClickDelete(e, UpdateQuestions)}
+                                        onClick={(e) => this._onClickDelete(e, updateQuestion)}
                                     >
                                         No-Show
                                     </p>
                                     <p
                                         className="Resolve"
-                                        onClick={(e) => this._onClickResolve(e, UpdateQuestions)}
+                                        onClick={(e) => this._onClickResolve(e, updateQuestion)}
                                     >
                                         <Icon name="check" /> Resolve
                                     </p>
@@ -120,13 +144,20 @@ class SessionQuestionsComponent extends React.Component {
                         </Mutation>
                     </div>
                 }
-                {
-                    this.props.isMyQuestion &&
-                    <div className="Buttons">
-                        <hr />
-                        <p className="Remove"><Icon name="close" /> Remove</p>
-                    </div>
-                }
+                <Mutation mutation={UPDATE_QUESTION}>
+                    {(updateQuestion) =>
+                        this.props.isMyQuestion &&
+                        <div className="Buttons">
+                            <hr />
+                            <p
+                                className="Remove"
+                                onClick={(e) => this._onClickRetract(e, updateQuestion)}
+                            >
+                                <Icon name="close" /> Remove
+                            </p>
+                        </div>
+                    }
+                </Mutation>
             </div>
         );
     }

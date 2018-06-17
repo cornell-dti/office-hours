@@ -23,7 +23,6 @@
           border-radius: 30px;
           vertical-align: middle;
           object-fit: cover;
-          float: left;
         }
 
         .Name {
@@ -41,43 +40,36 @@
     .Question {
         font-size: 16px;
         text-align: left;
-        padding: 5px 0px 5px 15px;
+        padding: 12px;
         margin: 0em;
         color: #595959;
+        font-weight: 300;
     }
 
     .Tags {
         padding: 5px 0px 10px 13px;
-        float: left;
-
-        p {
-            font-weight: normal;
-            display: block;
-            float: left;
-            font-size: 13px;
-            color: #4FA2E0;
-            border: 0.5px solid #4FA2E0;
-            padding: 2px 8px;
-            margin: 3px;
-            border-radius: 12px;
+        margin-bottom: 5px;
+        text-align: left;
+        .tag {
+            cursor: default;
         }
     }
 
     .BottomBar {
         display: inline-block;
         width: 100%;
+        text-align: left;
 
         p {
             font-size: 15px;
-            display: block;
-            float: left;
+            display: inline-block;
         }
 
         .Order {
-            float: left;
+            display: inline-block;
             font-size: 13px;
-            margin-left: 15px;
-            padding: 0px 5px;
+            margin: 0 0 12px 12px;
+            padding: 1px 5px 0;
             color: white;
             background-color: #a6a6a6;
             border: solid #a6a6a6 0px;
@@ -85,6 +77,7 @@
         }
 
         .Time {
+            font-weight: 300;
             float: right;
             color: gray;
             padding-right: 25px;
@@ -106,6 +99,7 @@
             color: #595959;
             padding: 10px 30px;
             font-size: 15px;
+            cursor: pointer;
         }
 
         .TAButtons {

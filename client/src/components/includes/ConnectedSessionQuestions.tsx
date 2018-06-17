@@ -8,7 +8,7 @@ import { ChildProps } from 'react-apollo';
 const QUERY = gql`
 query FindQuestionsBySessionId($userId: Int!, $sessionId: Int!) {
     sessionBySessionId(sessionId: $sessionId) {
-        questionsBySessionId {
+        questionsBySessionId(orderBy: TIME_ENTERED_ASC) {
             nodes {
                 questionId
                 content
@@ -24,6 +24,7 @@ query FindQuestionsBySessionId($userId: Int!, $sessionId: Int!) {
                         tagId
                         tagByTagId {
                             name
+                            level
                         }
                     }
                 }
@@ -80,14 +81,15 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
             }
 
             this.props.data.sessionBySessionId.questionsBySessionId.nodes.forEach((node: QuestionNode) => {
-                if (node.status !== 'resolved') {
+                if (node.status === 'unresolved') {
                     var questionTags: Tag[] = [];
                     if (node.questionTagsByQuestionId !== undefined) {
                         if (node.questionTagsByQuestionId !== null) {
                             node.questionTagsByQuestionId.nodes.forEach((tagNode: TagNode) => {
                                 questionTags.push({
                                     id: tagNode.tagId,
-                                    name: tagNode.tagByTagId.name
+                                    name: tagNode.tagByTagId.name,
+                                    level: tagNode.tagByTagId.level
                                 });
                             });
                         }
@@ -104,10 +106,6 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
                 }
             });
         }
-
-        questions.sort(function (a: Question, b: Question) {
-            return (a.time > b.time) ? -1 : 1;
-        });
 
         return (
             <SessionQuestionsContainer

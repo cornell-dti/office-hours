@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="906px" height="452px" viewBox="0 0 906 452" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
+    <title>Logo</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <ellipse id="path-1" cx="154.154" cy="159.6595" rx="154.154" ry="159.6595"></ellipse>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-251.000000, -186.000000)">
+            <g id="Logo" transform="translate(251.000000, 186.000000)">
+                <g id="QmeLogoText2" transform="translate(405.405000, 15.015000)">
+                    <text id="me-copy" font-family="PTSans-Narrow, PT Sans Narrow" font-size="270.27" font-style="condensed" font-weight="normal" fill="#787C93">
+                        <tspan x="216.57636" y="243">me</tspan>
+                    </text>
+                    <g id="Q2" transform="translate(0.000000, 75.075000)">
+                        <circle id="Oval-12-Copy" fill="#737694" cx="108.85875" cy="108.85875" r="18.76875"></circle>
+                        <circle id="Oval-12-Copy-3" fill="#737694" cx="168.91875" cy="168.91875" r="18.76875"></circle>
+                        <circle id="Oval-3-Copy" stroke="#737694" stroke-width="30.03" cx="82.5825" cy="82.5825" r="82.5825"></circle>
+                    </g>
+                </g>
+                <text id="analytics" font-family="PTSans-Narrow, PT Sans Narrow" font-size="150.15" font-style="condensed" font-weight="normal" fill="#787C93">
+                    <tspan x="455.40495" y="420.285">analytics</tspan>
+                </text>
+                <g id="QmeLogo">
+                    <circle id="Oval-10" fill="#668AE9" cx="297.297" cy="297.297" r="33.033"></circle>
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="Oval-11"></g>
+                    <rect id="Rectangle-43" fill-opacity="0.678725091" fill="#6DB9EA" mask="url(#mask-2)" x="-88.088" y="0" width="429.429" height="88.088" rx="44.044"></rect>
+                    <rect id="Rectangle-43-Copy" fill="#6BACEA" mask="url(#mask-2)" x="-88.088" y="121.121" width="429.429" height="88.088" rx="44.044"></rect>
+                    <rect id="Rectangle-43-Copy-4" fill="#6DB9EA" mask="url(#mask-2)" x="-88.088" y="55.055" width="429.429" height="77.077" rx="38.5385"></rect>
+                    <rect id="Rectangle-43-Copy-3" fill="#689BE9" mask="url(#mask-2)" x="-88.088" y="198.198" width="429.429" height="88.088" rx="44.044"></rect>
+                    <rect id="Rectangle-43-Copy-2" fill="#6791E9" mask="url(#mask-2)" x="-88.088" y="253.253" width="429.429" height="88.088" rx="44.044"></rect>
+                    <circle id="Oval-10-Copy" fill="#FFFFFF" mask="url(#mask-2)" cx="231.231" cy="231.231" r="33.033"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

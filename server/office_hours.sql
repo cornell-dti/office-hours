@@ -2,15 +2,14 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.3
--- Dumped by pg_dump version 10.3
+-- Dumped from database version 10.2
+-- Dumped by pg_dump version 10.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
@@ -43,15 +42,57 @@ CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
 
 
+SET search_path = public, pg_catalog;
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
+-- Name: questions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE questions (
+    question_id integer NOT NULL,
+    content text NOT NULL,
+    time_entered timestamp without time zone DEFAULT now() NOT NULL,
+    status text NOT NULL,
+    time_resolved timestamp without time zone,
+    session_id integer NOT NULL,
+    asker_id integer NOT NULL,
+    answerer_id integer
+);
+
+
+--
+-- Name: add_question_with_tags(text, text, integer, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION add_question_with_tags(content text, status text, session_id integer, asker_id integer, tags integer[]) RETURNS SETOF questions
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+inserted_question integer;
+tag integer;
+
+BEGIN
+INSERT INTO questions(content, status, session_id, asker_id)
+VALUES
+(content, status, session_id, asker_id) returning question_id INTO inserted_question;
+FOREACH tag in ARRAY tags
+LOOP
+INSERT INTO question_tags(question_id, tag_id) VALUES (inserted_question, tag);
+END LOOP;
+RETURN QUERY select * from questions where question_id = inserted_question;
+END
+$$;
+
+
+--
 -- Name: sessions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.sessions (
+CREATE TABLE sessions (
     session_id integer NOT NULL,
     start_time timestamp without time zone NOT NULL,
     end_time timestamp without time zone NOT NULL,
@@ -63,13 +104,103 @@ CREATE TABLE public.sessions (
 
 
 --
+-- Name: create_sessions_from_session_series(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION create_sessions_from_session_series(series integer) RETURNS SETOF sessions
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+course integer;
+building text;
+room text;
+start_date timestamp;
+end_date timestamp;
+cur_date timestamp;
+session_start_time timestamp;
+session_end_time timestamp;
+session_start_offset interval;
+session_end_offset interval;
+BEGIN
+IF (SELECT COUNT(*) FROM sessions where session_series_id = series) > 0 THEN
+    RAISE EXCEPTION 'sessions with this series_id already exist';
+END IF;
+course := (SELECT course_id FROM session_series WHERE session_series_id = series);
+start_date := date_trunc('week', (SELECT courses.start_date from courses WHERE course_id = course));
+end_date := date_trunc('week', (SELECT courses.end_date from courses WHERE course_id = course));
+SELECT session_series.start_time, session_series.end_time, session_series.building, session_series.room
+	INTO session_start_time, session_end_time, building, room
+	FROM session_series WHERE session_series_id = series;
+session_start_offset := session_start_time - date_trunc('week', session_start_time);
+session_end_offset := session_end_time - date_trunc('week', session_end_time) ;
+cur_date := start_date;
+while cur_date < end_date LOOP
+    INSERT INTO sessions(start_time, end_time, building, room, session_series_id, course_id)
+    VALUES
+    (cur_date + session_start_offset, cur_date + session_end_offset, building, room, series, course);
+
+    cur_date := cur_date + interval '1 week';
+END LOOP;
+RETURN QUERY select * from sessions where session_series_id = series;
+END
+$$;
+
+
+--
+-- Name: delete_session_series(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION delete_session_series(_series_id integer) RETURNS SETOF sessions
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+BEGIN
+DELETE FROM sessions WHERE session_series_id = _series_id AND start_time > now();
+DELETE FROM session_series_tas WHERE session_series_id = _series_id;
+UPDATE sessions
+SET session_series_id = NULL WHERE session_series_id = _series_id;
+DELETE FROM session_series WHERE session_series_id = _series_id;
+END
+$$;
+
+
+--
+-- Name: edit_session_series(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION edit_session_series(series integer) RETURNS SETOF sessions
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+_start_time timestamp;
+_end_time timestamp;
+_building text;
+_room text;
+_course_id integer;
+_session_start_offset interval;
+_session_end_offset interval;
+BEGIN
+SELECT ss.start_time, ss.end_time, ss.building, ss.room, ss.course_id INTO _start_time, _end_time, _building, _room, _course_id
+FROM session_series AS ss WHERE session_series_id = series;
+_session_start_offset := _start_time - date_trunc('week', _start_time);
+_session_end_offset := _end_time - date_trunc('week', _end_time);
+
+UPDATE sessions
+SET (start_time, end_time, _building, _room, course_id) = (date_trunc('week', sessions.start_time) + _session_start_offset, date_trunc('week', sessions.end_time) + _session_end_offset, _building, _room, _course_id)
+WHERE session_series_id = series AND start_time > now();
+RETURN QUERY select * from sessions where session_series_id = series AND start_time > now();
+END
+$$;
+
+
+--
 -- Name: search_session_range(integer, timestamp without time zone, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.search_session_range(course integer, begintime timestamp without time zone, endtime timestamp without time zone) RETURNS SETOF public.sessions
+CREATE FUNCTION search_session_range(course integer, begintime timestamp without time zone, endtime timestamp without time zone) RETURNS SETOF sessions
     LANGUAGE sql STABLE
     AS $$
-select * from sessions where start_time > begintime AND start_time < endtime
+select * from sessions where start_time > begintime AND start_time < endtime AND course_id = course
 $$;
 
 
@@ -77,7 +208,7 @@ $$;
 -- Name: course_users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.course_users (
+CREATE TABLE course_users (
     course_id integer NOT NULL,
     user_id integer NOT NULL,
     role text NOT NULL
@@ -88,7 +219,7 @@ CREATE TABLE public.course_users (
 -- Name: courses; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.courses (
+CREATE TABLE courses (
     course_id integer NOT NULL,
     code text NOT NULL,
     name text NOT NULL,
@@ -102,7 +233,7 @@ CREATE TABLE public.courses (
 -- Name: courses_course_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.courses_course_id_seq
+CREATE SEQUENCE courses_course_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -115,32 +246,16 @@ CREATE SEQUENCE public.courses_course_id_seq
 -- Name: courses_course_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.courses_course_id_seq OWNED BY public.courses.course_id;
+ALTER SEQUENCE courses_course_id_seq OWNED BY courses.course_id;
 
 
 --
 -- Name: question_tags; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.question_tags (
+CREATE TABLE question_tags (
     question_id integer NOT NULL,
     tag_id integer NOT NULL
-);
-
-
---
--- Name: questions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.questions (
-    question_id integer NOT NULL,
-    content text NOT NULL,
-    time_entered timestamp without time zone NOT NULL,
-    status text NOT NULL,
-    time_resolved timestamp without time zone,
-    session_id integer NOT NULL,
-    asker_id integer NOT NULL,
-    answerer_id integer
 );
 
 
@@ -148,7 +263,7 @@ CREATE TABLE public.questions (
 -- Name: questions_question_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.questions_question_id_seq
+CREATE SEQUENCE questions_question_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -161,14 +276,24 @@ CREATE SEQUENCE public.questions_question_id_seq
 -- Name: questions_question_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.questions_question_id_seq OWNED BY public.questions.question_id;
+ALTER SEQUENCE questions_question_id_seq OWNED BY questions.question_id;
+
+
+--
+-- Name: sessionTas; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE "sessionTas" (
+    session_id integer NOT NULL,
+    user_id integer NOT NULL
+);
 
 
 --
 -- Name: session_series; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.session_series (
+CREATE TABLE session_series (
     session_series_id integer NOT NULL,
     start_time timestamp without time zone NOT NULL,
     end_time timestamp without time zone NOT NULL,
@@ -182,7 +307,7 @@ CREATE TABLE public.session_series (
 -- Name: session_series_session_series_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.session_series_session_series_id_seq
+CREATE SEQUENCE session_series_session_series_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -195,25 +320,15 @@ CREATE SEQUENCE public.session_series_session_series_id_seq
 -- Name: session_series_session_series_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.session_series_session_series_id_seq OWNED BY public.session_series.session_series_id;
+ALTER SEQUENCE session_series_session_series_id_seq OWNED BY session_series.session_series_id;
 
 
 --
 -- Name: session_series_tas; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.session_series_tas (
+CREATE TABLE session_series_tas (
     session_series_id integer NOT NULL,
-    user_id integer NOT NULL
-);
-
-
---
--- Name: session_tas; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.session_tas (
-    session_id integer NOT NULL,
     user_id integer NOT NULL
 );
 
@@ -222,7 +337,7 @@ CREATE TABLE public.session_tas (
 -- Name: sessions_session_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.sessions_session_id_seq
+CREATE SEQUENCE sessions_session_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -235,14 +350,14 @@ CREATE SEQUENCE public.sessions_session_id_seq
 -- Name: sessions_session_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.sessions_session_id_seq OWNED BY public.sessions.session_id;
+ALTER SEQUENCE sessions_session_id_seq OWNED BY sessions.session_id;
 
 
 --
 -- Name: tag_relations; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.tag_relations (
+CREATE TABLE tag_relations (
     parent_id integer NOT NULL,
     child_id integer NOT NULL
 );
@@ -252,7 +367,7 @@ CREATE TABLE public.tag_relations (
 -- Name: tags; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.tags (
+CREATE TABLE tags (
     tag_id integer NOT NULL,
     name text NOT NULL,
     course_id integer NOT NULL,
@@ -264,7 +379,7 @@ CREATE TABLE public.tags (
 -- Name: tags_tag_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.tags_tag_id_seq
+CREATE SEQUENCE tags_tag_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -277,21 +392,22 @@ CREATE SEQUENCE public.tags_tag_id_seq
 -- Name: tags_tag_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.tags_tag_id_seq OWNED BY public.tags.tag_id;
+ALTER SEQUENCE tags_tag_id_seq OWNED BY tags.tag_id;
 
 
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.users (
+CREATE TABLE users (
     user_id integer NOT NULL,
-    "netId" text NOT NULL,
-    "googleId" text NOT NULL,
-    "firstName" text,
-    "lastName" text,
-    "createdAt" timestamp without time zone,
-    "lastActivityAt" timestamp without time zone
+    net_id text NOT NULL,
+    google_id text NOT NULL,
+    first_name text,
+    last_name text,
+    created_at timestamp without time zone,
+    last_activity_at timestamp without time zone,
+    photo_url text
 );
 
 
@@ -299,7 +415,7 @@ CREATE TABLE public.users (
 -- Name: users_user_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.users_user_id_seq
+CREATE SEQUENCE users_user_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -312,56 +428,56 @@ CREATE SEQUENCE public.users_user_id_seq
 -- Name: users_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.users_user_id_seq OWNED BY public.users.user_id;
+ALTER SEQUENCE users_user_id_seq OWNED BY users.user_id;
 
 
 --
 -- Name: courses course_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.courses ALTER COLUMN course_id SET DEFAULT nextval('public.courses_course_id_seq'::regclass);
+ALTER TABLE ONLY courses ALTER COLUMN course_id SET DEFAULT nextval('courses_course_id_seq'::regclass);
 
 
 --
 -- Name: questions question_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.questions ALTER COLUMN question_id SET DEFAULT nextval('public.questions_question_id_seq'::regclass);
+ALTER TABLE ONLY questions ALTER COLUMN question_id SET DEFAULT nextval('questions_question_id_seq'::regclass);
 
 
 --
 -- Name: session_series session_series_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.session_series ALTER COLUMN session_series_id SET DEFAULT nextval('public.session_series_session_series_id_seq'::regclass);
+ALTER TABLE ONLY session_series ALTER COLUMN session_series_id SET DEFAULT nextval('session_series_session_series_id_seq'::regclass);
 
 
 --
 -- Name: sessions session_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.sessions ALTER COLUMN session_id SET DEFAULT nextval('public.sessions_session_id_seq'::regclass);
+ALTER TABLE ONLY sessions ALTER COLUMN session_id SET DEFAULT nextval('sessions_session_id_seq'::regclass);
 
 
 --
 -- Name: tags tag_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.tags ALTER COLUMN tag_id SET DEFAULT nextval('public.tags_tag_id_seq'::regclass);
+ALTER TABLE ONLY tags ALTER COLUMN tag_id SET DEFAULT nextval('tags_tag_id_seq'::regclass);
 
 
 --
 -- Name: users user_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.users_user_id_seq'::regclass);
+ALTER TABLE ONLY users ALTER COLUMN user_id SET DEFAULT nextval('users_user_id_seq'::regclass);
 
 
 --
 -- Data for Name: course_users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.course_users (course_id, user_id, role) FROM stdin;
+COPY course_users (course_id, user_id, role) FROM stdin;
 1	8	professor
 1	1	ta
 1	3	ta
@@ -377,7 +493,7 @@ COPY public.course_users (course_id, user_id, role) FROM stdin;
 -- Data for Name: courses; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.courses (course_id, code, name, semester, start_date, end_date) FROM stdin;
+COPY courses (course_id, code, name, semester, start_date, end_date) FROM stdin;
 1	CS 1380	Data Science For All	SP18	2018-01-24	2018-05-13
 \.
 
@@ -386,7 +502,7 @@ COPY public.courses (course_id, code, name, semester, start_date, end_date) FROM
 -- Data for Name: question_tags; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.question_tags (question_id, tag_id) FROM stdin;
+COPY question_tags (question_id, tag_id) FROM stdin;
 1	1
 1	9
 2	2
@@ -402,7 +518,7 @@ COPY public.question_tags (question_id, tag_id) FROM stdin;
 -- Data for Name: questions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.questions (question_id, content, time_entered, status, time_resolved, session_id, asker_id, answerer_id) FROM stdin;
+COPY questions (question_id, content, time_entered, status, time_resolved, session_id, asker_id, answerer_id) FROM stdin;
 2	Dataset parsing for Q2	2018-03-26 10:01:33	unresolved	\N	1	4	\N
 3	Clarifying statistics concept from prelim	2018-03-26 10:03:12	unresolved	\N	1	7	\N
 1	How do you implement recursion in Question 2?	2018-03-26 09:47:33	resolved	2018-03-26 10:06:49	1	2	1
@@ -411,13 +527,23 @@ COPY public.questions (question_id, content, time_entered, status, time_resolved
 
 
 --
+-- Data for Name: sessionTas; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY "sessionTas" (session_id, user_id) FROM stdin;
+7	3
+7	6
+\.
+
+
+--
 -- Data for Name: session_series; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.session_series (session_series_id, start_time, end_time, building, room, course_id) FROM stdin;
+COPY session_series (session_series_id, start_time, end_time, building, room, course_id) FROM stdin;
 1	2018-03-26 10:00:00	2018-03-26 11:00:00	Gates	G21	1
-2	2018-03-26 12:20:00	2018-03-26 13:10:00	Academic Surge 	Office 101	1
-3	2018-03-26 13:00:00	2018-03-26 14:30:00	Academic Surge	Office 102	1
+2	2018-03-26 12:20:00	2018-03-26 13:10:00	Academic Surge A Office	101	1
+3	2018-03-26 13:00:00	2018-03-26 14:30:00	Academic Surge A Office	102	1
 4	2018-03-26 19:00:00	2018-03-26 20:15:00	Gates	G17	1
 \.
 
@@ -426,22 +552,11 @@ COPY public.session_series (session_series_id, start_time, end_time, building, r
 -- Data for Name: session_series_tas; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.session_series_tas (session_series_id, user_id) FROM stdin;
-1	1
+COPY session_series_tas (session_series_id, user_id) FROM stdin;
 2	8
 3	3
 4	6
-\.
-
-
---
--- Data for Name: session_tas; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.session_tas (session_id, user_id) FROM stdin;
-7	3
-7	6
-8	6
+1	3
 \.
 
 
@@ -449,15 +564,27 @@ COPY public.session_tas (session_id, user_id) FROM stdin;
 -- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.sessions (session_id, start_time, end_time, building, room, session_series_id, course_id) FROM stdin;
-1	2018-03-26 10:00:00	2018-03-26 11:00:00	\N	\N	1	\N
-2	2018-03-26 12:20:00	2018-03-26 13:10:00	\N	\N	2	\N
-3	2018-03-26 13:00:00	2018-03-26 14:30:00	Rhodes	412	3	\N
-6	2018-04-02 12:20:00	2018-04-02 13:10:00	Gates	G11	2	\N
-4	2018-03-26 19:00:00	2018-03-26 20:30:00	\N	\N	4	\N
-5	2018-04-02 10:00:00	2018-04-02 11:00:00	\N	\N	1	\N
-7	2018-04-02 19:00:00	2018-04-02 20:30:00	\N	\N	4	\N
-8	2018-04-03 17:00:00	2018-04-03 17:30:00	Upson	B60	\N	1
+COPY sessions (session_id, start_time, end_time, building, room, session_series_id, course_id) FROM stdin;
+143	2018-01-22 12:20:00	2018-01-22 13:10:00	Academic Surge A Office	101	2	1
+144	2018-01-29 12:20:00	2018-01-29 13:10:00	Academic Surge A Office	101	2	1
+145	2018-02-05 12:20:00	2018-02-05 13:10:00	Academic Surge A Office	101	2	1
+146	2018-02-12 12:20:00	2018-02-12 13:10:00	Academic Surge A Office	101	2	1
+147	2018-02-19 12:20:00	2018-02-19 13:10:00	Academic Surge A Office	101	2	1
+148	2018-02-26 12:20:00	2018-02-26 13:10:00	Academic Surge A Office	101	2	1
+149	2018-03-05 12:20:00	2018-03-05 13:10:00	Academic Surge A Office	101	2	1
+150	2018-03-12 12:20:00	2018-03-12 13:10:00	Academic Surge A Office	101	2	1
+151	2018-03-19 12:20:00	2018-03-19 13:10:00	Academic Surge A Office	101	2	1
+152	2018-03-26 12:20:00	2018-03-26 13:10:00	Academic Surge A Office	101	2	1
+153	2018-04-02 12:20:00	2018-04-02 13:10:00	Academic Surge A Office	101	2	1
+154	2018-04-09 12:20:00	2018-04-09 13:10:00	Academic Surge A Office	101	2	1
+155	2018-04-16 12:20:00	2018-04-16 13:10:00	Academic Surge A Office	101	2	1
+156	2018-04-23 12:20:00	2018-04-23 13:10:00	Academic Surge A Office	101	2	1
+157	2018-04-30 12:20:00	2018-04-30 13:10:00	Academic Surge A Office	101	2	1
+4	2018-03-26 19:00:00	2018-03-26 20:30:00	Gates	G12	4	1
+3	2018-03-26 13:00:00	2018-03-26 14:30:00	Rhodes	412	4	1
+1	2018-03-26 10:00:00	2018-03-26 11:00:00	Gates	G14	2	1
+5	2018-04-02 10:00:00	2018-04-02 11:00:00	Gates	G11	2	1
+7	2018-04-02 19:00:00	2018-04-02 20:30:00	Gates	G14	3	1
 \.
 
 
@@ -465,7 +592,7 @@ COPY public.sessions (session_id, start_time, end_time, building, room, session_
 -- Data for Name: tag_relations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.tag_relations (parent_id, child_id) FROM stdin;
+COPY tag_relations (parent_id, child_id) FROM stdin;
 1	8
 1	9
 1	10
@@ -493,7 +620,7 @@ COPY public.tag_relations (parent_id, child_id) FROM stdin;
 -- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.tags (tag_id, name, course_id, level) FROM stdin;
+COPY tags (tag_id, name, course_id, level) FROM stdin;
 1	Assignment 1	1	1
 2	Assignment 2	1	1
 3	Assignment 3	1	1
@@ -528,15 +655,15 @@ COPY public.tags (tag_id, name, course_id, level) FROM stdin;
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.users (user_id, "netId", "googleId", "firstName", "lastName", "createdAt", "lastActivityAt") FROM stdin;
-1	cv231	115064340704113209584	Corey	Valdez	2018-03-25 03:07:23.485	2018-03-25 03:07:26.391
-2	ejs928	139064340704113209582	Edgar	Stewart	2018-03-25 03:08:05.668	2018-03-25 03:08:08.294
-3	asm2292	115064340704118374059	Ada	Morton	2018-03-25 03:08:51.563	2018-03-25 03:08:54.084
-4	cr848	215064340704113209584	Caroline	Robinson	2018-03-25 03:09:25.563	2018-03-25 03:09:28.525
-5	ca449	115064340704113209332	Christopher	Arnold	2018-03-25 03:10:28.166	2018-03-25 03:10:32.518
-6	zz527	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394	2018-03-25 03:11:22.765
-7	sjw748	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328	2018-03-25 03:12:47.826
-8	mjc334	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996	2018-03-25 03:13:29.4
+COPY users (user_id, net_id, google_id, first_name, last_name, created_at, last_activity_at, photo_url) FROM stdin;
+1	cv231	115064340704113209584	Corey	Valdez	2018-03-25 03:07:23.485	2018-03-25 03:07:26.391	\N
+2	ejs928	139064340704113209582	Edgar	Stewart	2018-03-25 03:08:05.668	2018-03-25 03:08:08.294	\N
+3	asm2292	115064340704118374059	Ada	Morton	2018-03-25 03:08:51.563	2018-03-25 03:08:54.084	\N
+4	cr848	215064340704113209584	Caroline	Robinson	2018-03-25 03:09:25.563	2018-03-25 03:09:28.525	\N
+5	ca449	115064340704113209332	Christopher	Arnold	2018-03-25 03:10:28.166	2018-03-25 03:10:32.518	\N
+6	zz527	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394	2018-03-25 03:11:22.765	\N
+7	sjw748	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328	2018-03-25 03:12:47.826	\N
+8	mjc334	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996	2018-03-25 03:13:29.4	\N
 \.
 
 
@@ -544,49 +671,49 @@ COPY public.users (user_id, "netId", "googleId", "firstName", "lastName", "creat
 -- Name: courses_course_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.courses_course_id_seq', 1, true);
+SELECT pg_catalog.setval('courses_course_id_seq', 1, true);
 
 
 --
 -- Name: questions_question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.questions_question_id_seq', 4, true);
+SELECT pg_catalog.setval('questions_question_id_seq', 8, true);
 
 
 --
 -- Name: session_series_session_series_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 4, true);
+SELECT pg_catalog.setval('session_series_session_series_id_seq', 4, true);
 
 
 --
 -- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.sessions_session_id_seq', 8, true);
+SELECT pg_catalog.setval('sessions_session_id_seq', 157, true);
 
 
 --
 -- Name: tags_tag_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.tags_tag_id_seq', 27, true);
+SELECT pg_catalog.setval('tags_tag_id_seq', 35, true);
 
 
 --
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 8, true);
+SELECT pg_catalog.setval('users_user_id_seq', 8, true);
 
 
 --
 -- Name: courses courses_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.courses
+ALTER TABLE ONLY courses
     ADD CONSTRAINT courses_pk PRIMARY KEY (course_id);
 
 
@@ -594,7 +721,7 @@ ALTER TABLE ONLY public.courses
 -- Name: course_users courseusers_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.course_users
+ALTER TABLE ONLY course_users
     ADD CONSTRAINT courseusers_pk PRIMARY KEY (course_id, user_id);
 
 
@@ -602,7 +729,7 @@ ALTER TABLE ONLY public.course_users
 -- Name: questions questions_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.questions
+ALTER TABLE ONLY questions
     ADD CONSTRAINT questions_pk PRIMARY KEY (question_id);
 
 
@@ -610,23 +737,15 @@ ALTER TABLE ONLY public.questions
 -- Name: question_tags questiontags_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.question_tags
+ALTER TABLE ONLY question_tags
     ADD CONSTRAINT questiontags_pk PRIMARY KEY (question_id, tag_id);
-
-
---
--- Name: session_tas session_tas_pk; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.session_tas
-    ADD CONSTRAINT session_tas_pk PRIMARY KEY (session_id, user_id);
 
 
 --
 -- Name: sessions sessions_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.sessions
+ALTER TABLE ONLY sessions
     ADD CONSTRAINT sessions_pk PRIMARY KEY (session_id);
 
 
@@ -634,7 +753,7 @@ ALTER TABLE ONLY public.sessions
 -- Name: session_series sessionseries_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.session_series
+ALTER TABLE ONLY session_series
     ADD CONSTRAINT sessionseries_pk PRIMARY KEY (session_series_id);
 
 
@@ -642,15 +761,23 @@ ALTER TABLE ONLY public.session_series
 -- Name: session_series_tas sessionseriestas_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.session_series_tas
+ALTER TABLE ONLY session_series_tas
     ADD CONSTRAINT sessionseriestas_pk PRIMARY KEY (session_series_id, user_id);
+
+
+--
+-- Name: sessionTas sessiontas_pk; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "sessionTas"
+    ADD CONSTRAINT sessiontas_pk PRIMARY KEY (session_id, user_id);
 
 
 --
 -- Name: tag_relations tagrelations_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.tag_relations
+ALTER TABLE ONLY tag_relations
     ADD CONSTRAINT tagrelations_pk PRIMARY KEY (parent_id, child_id);
 
 
@@ -658,7 +785,7 @@ ALTER TABLE ONLY public.tag_relations
 -- Name: tags tags_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.tags
+ALTER TABLE ONLY tags
     ADD CONSTRAINT tags_pk PRIMARY KEY (tag_id);
 
 
@@ -666,23 +793,23 @@ ALTER TABLE ONLY public.tags
 -- Name: users users_googleId_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT "users_googleId_key" UNIQUE ("googleId");
+ALTER TABLE ONLY users
+    ADD CONSTRAINT "users_googleId_key" UNIQUE (google_id);
 
 
 --
 -- Name: users users_netId_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT "users_netId_key" UNIQUE ("netId");
+ALTER TABLE ONLY users
+    ADD CONSTRAINT "users_netId_key" UNIQUE (net_id);
 
 
 --
 -- Name: users users_pk; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.users
+ALTER TABLE ONLY users
     ADD CONSTRAINT users_pk PRIMARY KEY (user_id);
 
 
@@ -690,138 +817,139 @@ ALTER TABLE ONLY public.users
 -- Name: course_users course_users_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.course_users
-    ADD CONSTRAINT course_users_fk0 FOREIGN KEY (course_id) REFERENCES public.courses(course_id);
+ALTER TABLE ONLY course_users
+    ADD CONSTRAINT course_users_fk0 FOREIGN KEY (course_id) REFERENCES courses(course_id);
 
 
 --
 -- Name: course_users course_users_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.course_users
-    ADD CONSTRAINT course_users_fk1 FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+ALTER TABLE ONLY course_users
+    ADD CONSTRAINT course_users_fk1 FOREIGN KEY (user_id) REFERENCES users(user_id);
 
 
 --
 -- Name: sessions fk_session_course; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.sessions
-    ADD CONSTRAINT fk_session_course FOREIGN KEY (course_id) REFERENCES public.courses(course_id);
+ALTER TABLE ONLY sessions
+    ADD CONSTRAINT fk_session_course FOREIGN KEY (course_id) REFERENCES courses(course_id);
 
 
 --
 -- Name: question_tags question_tags_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.question_tags
-    ADD CONSTRAINT question_tags_fk0 FOREIGN KEY (question_id) REFERENCES public.questions(question_id);
+ALTER TABLE ONLY question_tags
+    ADD CONSTRAINT question_tags_fk0 FOREIGN KEY (question_id) REFERENCES questions(question_id);
 
 
 --
 -- Name: question_tags question_tags_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.question_tags
-    ADD CONSTRAINT question_tags_fk1 FOREIGN KEY (tag_id) REFERENCES public.tags(tag_id);
+ALTER TABLE ONLY question_tags
+    ADD CONSTRAINT question_tags_fk1 FOREIGN KEY (tag_id) REFERENCES tags(tag_id);
 
 
 --
 -- Name: questions questions_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.questions
-    ADD CONSTRAINT questions_fk0 FOREIGN KEY (session_id) REFERENCES public.sessions(session_id);
+ALTER TABLE ONLY questions
+    ADD CONSTRAINT questions_fk0 FOREIGN KEY (session_id) REFERENCES sessions(session_id);
 
 
 --
 -- Name: questions questions_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.questions
-    ADD CONSTRAINT questions_fk1 FOREIGN KEY (asker_id) REFERENCES public.users(user_id);
+ALTER TABLE ONLY questions
+    ADD CONSTRAINT questions_fk1 FOREIGN KEY (asker_id) REFERENCES users(user_id);
 
 
 --
 -- Name: questions questions_fk2; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.questions
-    ADD CONSTRAINT questions_fk2 FOREIGN KEY (answerer_id) REFERENCES public.users(user_id);
+ALTER TABLE ONLY questions
+    ADD CONSTRAINT questions_fk2 FOREIGN KEY (answerer_id) REFERENCES users(user_id);
+
+
+--
+-- Name: sessionTas sessionTas_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "sessionTas"
+    ADD CONSTRAINT "sessionTas_fk0" FOREIGN KEY (session_id) REFERENCES sessions(session_id);
+
+
+--
+-- Name: sessionTas sessionTas_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY "sessionTas"
+    ADD CONSTRAINT "sessionTas_fk1" FOREIGN KEY (user_id) REFERENCES users(user_id);
+
+
+--
+-- Name: session_series_tas session_seriesTas_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY session_series_tas
+    ADD CONSTRAINT "session_seriesTas_fk0" FOREIGN KEY (session_series_id) REFERENCES session_series(session_series_id);
+
+
+--
+-- Name: session_series_tas session_seriesTas_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY session_series_tas
+    ADD CONSTRAINT "session_seriesTas_fk1" FOREIGN KEY (user_id) REFERENCES users(user_id);
 
 
 --
 -- Name: session_series session_series_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.session_series
-    ADD CONSTRAINT session_series_fk0 FOREIGN KEY (course_id) REFERENCES public.courses(course_id);
-
-
---
--- Name: session_series_tas session_series_tas_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.session_series_tas
-    ADD CONSTRAINT session_series_tas_fk0 FOREIGN KEY (session_series_id) REFERENCES public.session_series(session_series_id);
-
-
---
--- Name: session_series_tas session_series_tas_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.session_series_tas
-    ADD CONSTRAINT session_series_tas_fk1 FOREIGN KEY (user_id) REFERENCES public.users(user_id);
-
-
---
--- Name: session_tas session_tas_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.session_tas
-    ADD CONSTRAINT session_tas_fk0 FOREIGN KEY (session_id) REFERENCES public.sessions(session_id);
-
-
---
--- Name: session_tas session_tas_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.session_tas
-    ADD CONSTRAINT session_tas_fk1 FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+ALTER TABLE ONLY session_series
+    ADD CONSTRAINT session_series_fk0 FOREIGN KEY (course_id) REFERENCES courses(course_id);
 
 
 --
 -- Name: sessions sessions_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.sessions
-    ADD CONSTRAINT sessions_fk0 FOREIGN KEY (session_series_id) REFERENCES public.session_series(session_series_id);
+ALTER TABLE ONLY sessions
+    ADD CONSTRAINT sessions_fk0 FOREIGN KEY (session_series_id) REFERENCES session_series(session_series_id);
 
 
 --
 -- Name: tag_relations tag_relations_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.tag_relations
-    ADD CONSTRAINT tag_relations_fk0 FOREIGN KEY (parent_id) REFERENCES public.tags(tag_id);
+ALTER TABLE ONLY tag_relations
+    ADD CONSTRAINT tag_relations_fk0 FOREIGN KEY (parent_id) REFERENCES tags(tag_id);
 
 
 --
 -- Name: tag_relations tag_relations_fk1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.tag_relations
-    ADD CONSTRAINT tag_relations_fk1 FOREIGN KEY (child_id) REFERENCES public.tags(tag_id);
+ALTER TABLE ONLY tag_relations
+    ADD CONSTRAINT tag_relations_fk1 FOREIGN KEY (child_id) REFERENCES tags(tag_id);
 
 
 --
 -- Name: tags tags_fk0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.tags
-    ADD CONSTRAINT tags_fk0 FOREIGN KEY (course_id) REFERENCES public.courses(course_id);
+ALTER TABLE ONLY tags
+    ADD CONSTRAINT tags_fk0 FOREIGN KEY (course_id) REFERENCES courses(course_id);
 
 
 --
 -- PostgreSQL database dump complete
 --
+

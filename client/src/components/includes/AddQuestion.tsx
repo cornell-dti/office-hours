@@ -7,9 +7,10 @@ import { Mutation } from 'react-apollo';
 
 import SelectedTags from '../includes/SelectedTags';
 
-const INPUT_QUESTION = gql`
-mutation InputQuestion($content: String!, $timeEntered: Datetime!, $sessionId: Int!, $askerId: Int!) {
-    createQuestion(input: {question: {content: $content, timeEntered: $timeEntered, status: "unresolved", sessionId: $sessionId, askerId: $askerId}}) {
+const CREATE_QUESTION = gql`
+mutation CreateQuestion($content: String!, $tags: [Int], $sessionId: Int!, $askerId: Int!) {
+    addQuestionWithTags(input: {content: $content, tags: $tags, status: "unresolved", 
+        sessionId: $sessionId, askerId: $askerId}) {
         clientMutationId
     }
 }
@@ -75,10 +76,21 @@ class AddQuestion extends React.Component {
     }
 
     public handleJoinClick(event: React.MouseEvent<HTMLElement>, createQuestion: Function): void {
+        var selectedTagIds: number[] = [];
+        for (var i = 0; i < this.state.primaryBooleanList.length; i++) {
+            if (this.state.primaryBooleanList[i]) {
+                selectedTagIds.push(this.props.primaryTagsIds[i]);
+            }
+        }
+        for (i = 0; i < this.state.secondaryBooleanList.length; i++) {
+            if (this.state.secondaryBooleanList[i]) {
+                selectedTagIds.push(this.props.secondaryTagsIds[i]);
+            }
+        }
         createQuestion({
             variables: {
                 content: this.state.question,
-                timeEntered: new Date(),
+                tags: selectedTagIds,
                 sessionId: this.props.sessionId,
                 askerId: userId
             }
@@ -242,37 +254,21 @@ class AddQuestion extends React.Component {
         return (
             <div className="AddQuestion">
                 <div className="queueHeader">
-                    <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
-                    <p className="title">Join The Queue</p>
-                    <Mutation mutation={INPUT_QUESTION}>
-                        {(InputQuestions) =>
-                            this.state.doneSelectingTags ?
-                                <p
-                                    className="joinButtonActivate"
-                                    onClick={(e) => this.handleJoinClick(e, InputQuestions)}
-                                >
-                                    Join
-                            </p> :
-                                <p
-                                    className="joinButton"
-                                >
-                                    Join
-                            </p>
-
-                        }
-                    </Mutation>
+                    <span className="xbutton" onClick={this.handleXClick}><Icon name="close" /></span>
+                    <span className="title">Join The Queue</span>
                 </div>
+                {/* No longer in design - commending out in case it comes back.
                 <hr />
                 <div className="taHeader">
                     <div className="QuestionTaInfo">
                         <img src={this.props.taPicture} />
                         <p className="taName">{this.props.taName}</p>
                     </div>
-                </div>
+                </div> */}
                 <div className="tagsContainer">
                     <hr />
                     <div className="tagsMiniContainer" onClick={this.handleEditTags}>
-                        <p>Primary Tag</p>
+                        <p className="header">Categories</p>
                         {this.state.doneSelectingTags ?
                             <div className="QuestionTags">
                                 {collapsedPrimary}
@@ -283,7 +279,7 @@ class AddQuestion extends React.Component {
                     </div>
                     <hr />
                     <div className="tagsMiniContainer" onClick={this.handleEditTags}>
-                        <p>Secondary Tags</p>
+                        <p className="header">Tags</p>
                         {this.state.showSecondaryTags ?
                             this.state.doneSelectingTags ?
                                 <div className="QuestionTags">
@@ -291,7 +287,7 @@ class AddQuestion extends React.Component {
                                 </div> :
                                 <div className="QuestionTags">
                                     {secondaryTagsList}
-                                </div> : <p className="placeHolder">Select a primary tag</p>}
+                                </div> : <p className="placeHolder">Select a category</p>}
                     </div>
                     {/*<div className="tagsMiniContainer" onClick={this.handleEditTags}>
                 <hr/>
@@ -307,7 +303,7 @@ class AddQuestion extends React.Component {
               </div>*/}
                     <hr />
                     <div className="tagsMiniContainer">
-                        <p>Question</p>
+                        <p className="header">Question</p>
                         {this.state.showQuestionInput ?
                             <textarea
                                 className="QuestionInput"
@@ -315,8 +311,21 @@ class AddQuestion extends React.Component {
                                 onChange={this.handleClick}
                                 placeholder="What's your question about?"
                             />
-                            : <p className="placeHolder">Finish selecting tags...</p>}
+                            : <p className="placeHolder text">Finish selecting tags...</p>}
                     </div>
+                    <Mutation mutation={CREATE_QUESTION}>
+                        {(createQuestion) =>
+                            this.state.doneSelectingTags ?
+                                <p
+                                    className="AddButton active"
+                                    onClick={(e) => this.handleJoinClick(e, createQuestion)}
+                                >
+                                    Add My Question
+                                </p>
+                                :
+                                <p className="AddButton"> Add My Question </p>
+                        }
+                    </Mutation>
                 </div>
             </div >
         );
