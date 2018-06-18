@@ -18,6 +18,7 @@ This document provides detailed descriptions of the PostgreSQL database schema b
 
 ### courses
 Each row in courses represents a specific course offering that is using Queue Me In. It includes metadata about the course, described below. Note that if the same course is using Queue Me In over different semesters, each semester must have a new entry.
+
 |Key|Column|Datatype|Nullable?|Description|
 |:---:|---|---|:---:|---|
 |🔑|course_id|integer|❌|Auto-incrementing id assigned to each course offering|
@@ -29,6 +30,7 @@ Each row in courses represents a specific course offering that is using Queue Me
 
 ### users
 All the registered users are logged to this table after their first login. This schema assumes that Google login is the authentication method. Note that some of the fields are nullable because they might not have been set in the user's Google profile.
+
 |Key|Column|Datatype|Nullable?|Description|
 |:---:|---|---|:---:|---|
 |🔑|user_id|integer|❌|Auto-incrementing id assigned to each user|
@@ -42,12 +44,11 @@ All the registered users are logged to this table after their first login. This 
 
 ### course-users
 This relation is used to store user roles within courses. It is a junction table (many-to-many relationship) between courses and users, and each entry is assigned a role indicating the user's permissions within the course.
+
 |Key|Column|Datatype|Nullable?|Description|
 |:---:|---|---|:---:|---|
 |🔑✈️|course\_id|integer|❌|References the course being described in this relation (forms a primary key with user\_id); _foreign key from [courses](#courses))_|
 |🔑✈️|user_id|integer|❌|References the user being described in this relation (forms a primary key with course\_id); _foreign key from [users](#users))_|
 ||role|text|❌|One of 'professor', 'ta', or 'student', describing the user's role within the course|
-
-
 
 ## Functions
