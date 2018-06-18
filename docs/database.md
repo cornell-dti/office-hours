@@ -134,4 +134,27 @@ Junction table (many-to-many relationship) between [questions](#questions) and [
 
 ## Functions
 
-TODO
+In addition to the above tables, the following functions have been implemented in PL/pgSQL and are made available in GraphQL by Postgraphile. In most cases that involve multiple GraphQL queries from the client, or complex business logic, it is better to factor the complexity out into the API itself by exposing functions at the database level.
+
+### add-question-with-tags
+Inserts a new question into the database, and attaches the provided tags to it. This is complex to do on the client side without a function since it would require a query per tag association.
+
+#### Parameters
+- content (text): text body of the question
+- status (text): initial status of the question
+- session\_id (integer): id of the session to which the question belongs
+- asker\_id (integer): id of the student (user) who asked the question
+- tags (integer[]): list of tag ids to be associated with the question
+
+#### Returns
+All fields of the newly inserted question in the [questions](#questions) table.
+
+
+### create-sessions-from-session-series
+Given a session series, this function creates weekly session instances for it, for the duration of the course. If session instances for the specified series already exist, the function will throw an error. It is meant to be called only once, when the session series is created.
+
+#### Parameters
+- series (integer): series\_id for the session series whose sessions are to be instantiated
+
+#### Returns
+All fields of the newly inserted sessions in the [sessions](#sessions) table.
