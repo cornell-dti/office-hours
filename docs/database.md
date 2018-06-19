@@ -136,6 +136,12 @@ Junction table (many-to-many relationship) between [questions](#questions) and [
 
 In addition to the above tables, the following functions have been implemented in PL/pgSQL and are made available in GraphQL by Postgraphile. In most cases that involve multiple GraphQL queries from the client, or complex business logic, it is better to factor the complexity out into the API itself by exposing functions at the database level.
 
+- [add\_question\_with\_tags](#add-question-with-tags)
+- [create\_sessions\_from\_session\_series](#create-sessions-from-session-series)
+- [delete\_session\_series](#delete-session-series)
+- [edit\_session\_series](#edit-session-series)
+- [search\_session\_range](#search-session-range)
+
 ### add-question-with-tags
 Inserts a new question into the database, and attaches the provided tags to it. This is complex to do on the client side without a function since it would require a query per tag association.
 
@@ -158,3 +164,32 @@ Given a session series, this function creates weekly session instances for it, f
 
 #### Returns
 All fields of the newly inserted sessions in the [sessions](#sessions) table.
+
+### delete-session-series
+Given a session series, this function deletes all its future instances and effectively removes their footprint from the database. Previously held sessions are maintained, but their session\_series\_id is set to null.
+
+#### Parameters
+- \_series\_id (integer): series\_id for the session series that is to be deleted
+
+#### Returns
+Nothing
+
+### edit-session-series
+Given a session series, this function will update all future session instances of it to comply with its current details (start time, end time, building, room, course). Past sessions are maintained as is.
+
+#### Parameters
+- series (integer): series\_id for the session series whose sessions are to be edited.
+
+#### Returns
+All fields of the future sessions that were edited in the [sessions](#sessions) table.
+
+### search-session-range
+Given a course id, a start time, and an end time, this function searches for all the session instances in the course that start in the specified time range. Note that range queries are impossible to do currently with the Postgraphile-generated GraphQL schema, so this function is necessary for the Calendar View.
+
+#### Parameters
+- course (integer): course\_id of the course whose sessions are to be found
+- begintime (timestamp without time zone): the start of the time range to be queried (exclusive bound)
+- endtime (timestamp without time zone): the end of the time range to be queried (exclusive bound) 
+
+#### Returns
+All fields of the sessions in the [sessions](#sessions) table whose start time is more than begintime and less than endtime.
