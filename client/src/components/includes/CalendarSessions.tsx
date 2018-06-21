@@ -8,7 +8,7 @@ import { Loader } from 'semantic-ui-react';
 
 const QUERY = gql`
 query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Datetime!) {
-    searchSessionRange(course: $courseId, begintime: $beginTime, endtime: $endTime) {
+    apiGetSessions(_courseId: $courseId, _beginTime: $beginTime, _endTime: $endTime) {
         nodes {
             sessionSeryBySessionSeriesId {
                 building
@@ -57,7 +57,7 @@ type InputProps = {
     endTime: Date,
     data: {
         loading: boolean,
-        searchSessionRange?: {
+        apiGetSessions?: {
             nodes: [{}]
         },
     },
@@ -69,8 +69,8 @@ class CalendarSessions extends React.Component<ChildProps<InputProps, Response>>
         const { loading } = this.props.data;
 
         var sessions: Session[] = [];
-        if (this.props.data.searchSessionRange) {
-            this.props.data.searchSessionRange.nodes.forEach((node: SessionNode) => {
+        if (this.props.data.apiGetSessions) {
+            this.props.data.apiGetSessions.nodes.forEach((node: SessionNode) => {
                 var tas: string[] = [];
                 if (node.sessionTasBySessionId) {
                     node.sessionTasBySessionId.nodes.forEach(ta => {
