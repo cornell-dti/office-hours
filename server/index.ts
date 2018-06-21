@@ -101,7 +101,7 @@ const schemaString = readFileSync('schema.gql').toString();
 // Make a GraphQL schema with no resolvers
 const schema = makeExecutableSchema({ typeDefs: schemaString });
 
-app.use(postgraphql(process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5434/postgres', {
+app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
     graphiql: true,
     graphqlRoute: '/__gql/graphql',
     graphiqlRoute: '/__gql/graphiql',
