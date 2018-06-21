@@ -1,5 +1,30 @@
 # Database Documentation
-This document provides detailed descriptions of the PostgreSQL database schema being used for the project, including column-level specifications and function specifications. **Whenever the schema is changed, this document should be updated in the _same_ PR!**
+This document provides detailed descriptions of the PostgreSQL database schema being used for the project, including column-level specifications and function specifications. **Whenever the schema is changed, this document should be updated in the _same_ PR!** It also includes a reference that details the flow of dumping and loading data from Postgres locally for testing purposes.
+
+## Database Setup
+Assuming you have PostgreSQL installed on your machine (we are currently using version 10), run the following from a terminal window to create a new database:
+
+`create_db -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME>`
+
+You will be prompted to enter the password for the username, and then an empty database will be created. Now, we need to use the `psql` command-line tool to load in the schema dump from [`/server/office_hours.sql`](../server/office_hours.sql):
+
+`psql -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME> -f <PATH-TO-office_hours.sql>`
+
+If you get foreign key constraint violations on doing this, it is because Postgres copies over the mock data in an order that doesn't respect the foreign key constraints. If this happens, enter the psql command-line tool and execute:
+
+`SET session_replication_role = replica;`
+
+Then, exit out of psql and execute the previous command. Finally, enter psql again and run:
+
+`SET session_replication_role = DEFAULT;`
+
+This will temporarily disable the foreign key constraint checks. ([Source](https://stackoverflow.com/questions/38112379/disable-postgresql-foreign-key-checks-for-migrations))
+
+Finally, you can play around with the mock data by either using a database management tool ([DBeaver](https://dbeaver.io/) is a tried and tested one that works well, but there are many others) or through GraphiQL or the app! If you want to dump the changed database into a file that others can load, run the following command:
+
+`pg_dump -h <HOST_NAME> -p <PORT> -U <USERNAME> --no-owner <DATABASE_NAME> > <OUTPUT_FILE.sql>`
+
+This will create a dump the same way `office_hours.sql` was created. This file will include all the commands necessary to load in the entire schema, functions, and mock data into a blank database.
 
 ## Symbols
 |Symbol|Description|
