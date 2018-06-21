@@ -211,7 +211,7 @@ All the fields of the updated row in the [session\_series](#session-series) tabl
 #### api\_delete\_series
 
 ##### Description
-This function deletes all the metadata and upcoming session instances of a given session series. Only session instances that have not yet started will be deleted. The other session instances will remain untouched, except their session\_series\_id will be set to NULL indicating that they are no longer owned by a session series. The records for the series in [session\_series](#session-series) and (session\_series\_tas)[#session-series-tas] are removed.
+This function deletes all the metadata and upcoming session instances of a given session series. Only session instances that have not yet started will be deleted. The other session instances will remain untouched, except their session\_series\_id will be set to NULL indicating that they are no longer owned by a session series. The records for the series in [session\_series](#session-series) and [session\_series\_tas](#session-series-tas) are removed.
 
 ##### Parameters
 - \_series\_id (integer): the id of the session series to be deleted
@@ -284,7 +284,7 @@ Given the details of a user-submitted question, this function inserts the data i
 
 ##### Parameters
 - \_content (text): the user-submitted text content of the question
-- \_status (text): the initial status of the question, see the (questions)(#questions) table for more details
+- \_status (text): the initial status of the question, see the [questions](#questions) table for more details
 - \_session\_id (integer): the id of the session in which the question is to be added
 - \_asked\_id (integer): the user\_id of the student who submitted the question
 - \_tags (integer[]): a list of tag\_ids that are to be associated with the question
