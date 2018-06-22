@@ -34,7 +34,7 @@ type InputProps = {
             },
             questionsBySessionId: {
                 nodes: [{
-                    timeResolved: Date
+                    timeAddressed: Date
                 }]
             },
             startTime: Date,
@@ -55,7 +55,7 @@ const QUERY = gql`
             endTime
             questionsBySessionId {
                 nodes {
-                    timeResolved
+                    timeAddressed
                 }
             }
             sessionSeryBySessionSeriesId {
@@ -125,7 +125,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
             }
 
             session.questionsBySessionId.nodes.forEach(question => {
-                if (question.timeResolved === null) {
+                if (question.timeAddressed === null) {
                     queueLength += 1;
                 }
             });
@@ -141,7 +141,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                     </div>
                     <div className="Details">
                         <p className="Location">{location || 'Unknown'}</p>
-                        <p>{session &&
+                        {session &&
                             <React.Fragment>
                                 <Moment date={session.startTime} interval={0} format={'h:mm A'} />
                                 <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
@@ -151,7 +151,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                                 </p>
                                 <p>Held by <span className="black"> {tas.length > 0 && tas[0]} </span></p>
                             </React.Fragment>
-                        }</p>
+                        }
                     </div>
                     <div className="QueueWrap">
                         <div className="QueueInfo">
