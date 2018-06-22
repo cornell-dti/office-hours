@@ -324,7 +324,7 @@ end
 CREATE FUNCTION public.api_get_sessions(_course_id integer, _begin_time timestamp without time zone, _end_time timestamp without time zone) RETURNS SETOF public.sessions
     LANGUAGE sql STABLE
     AS $$
-select * from sessions where start_time >= _begin_time AND start_time <= _end_time AND course_id = _course_id;
+select * from sessions where start_time >= _begin_time AND start_time < _end_time AND course_id = _course_id ORDER BY start_time ASC;
 $$;
 
 
