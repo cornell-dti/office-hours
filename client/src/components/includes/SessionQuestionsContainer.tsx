@@ -4,6 +4,7 @@ import SessionQuestionsComponent from './SessionQuestionsComponent';
 class SessionQuestionsContainer extends React.Component {
     props: {
         isTA: boolean,
+        sessionId: number,
         questions: Question[],
     };
 
@@ -19,6 +20,7 @@ class SessionQuestionsContainer extends React.Component {
             cardList.push(
                 <SessionQuestionsComponent
                     key={question.id}
+                    questionId={question.id}
                     studentName={question.name}
                     studentPicture={'https://i2.wp.com/puppypassionn.org/wp-content/' +
                         'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
@@ -32,15 +34,6 @@ class SessionQuestionsContainer extends React.Component {
             );
         });
 
-        var tagsList: JSX.Element[] = [];
-        if (questions.length > 0 && userQuestionIndex !== -1) {
-            tagsList = questions[userQuestionIndex].tags.map(
-                (tag) => {
-                    return <p key={tag.id}>{tag.name}</p>;
-                }
-            );
-        }
-
         return (
             <div className="SessionQuestionsContainer" >
                 {!this.props.isTA && questions.length > 0 && userQuestionIndex !== -1 &&
@@ -51,6 +44,7 @@ class SessionQuestionsContainer extends React.Component {
                         {
                             <SessionQuestionsComponent
                                 key={questions[userQuestionIndex].id}
+                                questionId={questions[userQuestionIndex].id}
                                 studentName={questions[userQuestionIndex].name}
                                 studentPicture={'https://i2.wp.com/puppypassionn.org/wp-content/' +
                                     'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
