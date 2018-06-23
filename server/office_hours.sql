@@ -43,6 +43,15 @@ CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
 
 
+--
+-- Name: jwt_token; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.jwt_token AS (
+	user_id integer
+);
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -315,6 +324,70 @@ begin
 end
 
  $$;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.users (
+    user_id integer NOT NULL,
+    email text NOT NULL,
+    google_id text NOT NULL,
+    first_name text,
+    last_name text,
+    created_at timestamp without time zone DEFAULT now(),
+    last_activity_at timestamp without time zone DEFAULT now(),
+    photo_url text
+);
+
+
+--
+-- Name: api_find_or_create_user(text, text, text, text, text); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.api_find_or_create_user(_email text, _google_id text, _first_name text, _last_name text, _photo_url text) RETURNS SETOF public.users
+    LANGUAGE plpgsql
+    AS $$ 
+
+declare
+
+_user_id integer;
+
+begin
+
+	if ((select count(*) from users where google_id = _google_id) > 0) then
+
+		select user_id into _user_id from users where google_id = _google_id;
+
+	else
+
+		insert into users (email, google_id, first_name, last_name, photo_url)
+
+		values (_email, _google_id, _first_name, _last_name, _photo_url)
+
+		returning user_id into _user_id;
+
+	end if;
+
+	return query select * from users where user_id = _user_id;
+
+end
+
+ $$;
+
+
+--
+-- Name: api_get_current_user(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.api_get_current_user() RETURNS integer
+    LANGUAGE sql STABLE
+    AS $$
+
+select nullif(current_setting('jwt.claims.userId', true), '')::integer;
+
+$$;
 
 
 --
@@ -630,22 +703,6 @@ ALTER SEQUENCE public.tags_tag_id_seq OWNED BY public.tags.tag_id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.users (
-    user_id integer NOT NULL,
-    email text NOT NULL,
-    google_id text NOT NULL,
-    first_name text,
-    last_name text,
-    created_at timestamp without time zone,
-    last_activity_at timestamp without time zone,
-    photo_url text
-);
-
-
---
 -- Name: users_user_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -944,6 +1001,7 @@ COPY public.users (user_id, email, google_id, first_name, last_name, created_at,
 6	zz527@cornell.edu	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394	2018-03-25 03:11:22.765	\N
 7	sjw748@cornell.edu	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328	2018-03-25 03:12:47.826	https://randomuser.me/api/portraits/women/81.jpg
 8	clarkson@cs.cornell.edu	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996	2018-03-25 03:13:29.4	https://randomuser.me/api/portraits/men/20.jpg
+14	ks939@cornell.edu	114961512147775594594	\N	\N	2018-06-22 14:35:32.112481	2018-06-22 14:35:32.112481	https://lh5.googleusercontent.com/-5atJCQlqmEM/AAAAAAAAAAI/AAAAAAAARN8/-TM5RNTPV0w/photo.jpg
 \.
 
 
@@ -986,7 +1044,7 @@ SELECT pg_catalog.setval('public.tags_tag_id_seq', 35, true);
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 8, true);
+SELECT pg_catalog.setval('public.users_user_id_seq', 14, true);
 
 
 --
@@ -1078,11 +1136,11 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_netid_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_netid_key UNIQUE (email);
+    ADD CONSTRAINT users_email_key UNIQUE (email);
 
 
 --
