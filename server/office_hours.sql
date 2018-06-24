@@ -381,11 +381,11 @@ end
 -- Name: api_get_current_user(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_get_current_user() RETURNS integer
+CREATE FUNCTION public.api_get_current_user() RETURNS SETOF public.users
     LANGUAGE sql STABLE
     AS $$
 
-select nullif(current_setting('jwt.claims.userId', true), '')::integer;
+select * from users where user_id = (current_setting('jwt.claims.userId', true)::integer);
 
 $$;
 
@@ -1136,11 +1136,11 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_netid_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_email_key UNIQUE (email);
+    ADD CONSTRAINT users_netid_key UNIQUE (email);
 
 
 --
