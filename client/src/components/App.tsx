@@ -1,9 +1,48 @@
 import * as React from 'react';
 import LoginView from './pages/LoginView';
 import ProfessorView from './pages/ProfessorView';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import { Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link, Redirect, Switch } from 'react-router-dom';
 import SplitView from './pages/SplitView';
+import gql from 'graphql-tag';
+import { Query } from 'react-apollo';
+
+const GET_USER = gql`
+query {
+    apiGetCurrentUser {
+        nodes {
+            userId
+        }
+    }
+}
+`;
+
+interface Data {
+    apiGetCurrentUser: {
+        nodes: Array<{ userId: number }>;
+    };
+}
+
+class UserQuery extends Query<Data, {}> { }
+
+const PrivateRoute = ({ component, ...rest }: any) => {
+    const routeComponent = (props: any) => (
+        <UserQuery query={GET_USER}>
+            {({ loading, error, data }) => {
+                if (loading) {
+                    return 'Loading...';
+                }
+                if (error) {
+                    return <Redirect to={{ pathname: '/login' }} />;
+                }
+                if (!data || data.apiGetCurrentUser.nodes.length === 0) {
+                    return <Redirect to={{ pathname: '/login' }} />;
+                }
+                return React.createElement(component, props);
+            }}
+        </UserQuery>
+    );
+    return <Route {...rest} render={routeComponent} />;
+};
 
 class App extends React.Component {
     render() {
@@ -16,11 +55,11 @@ class App extends React.Component {
                         <Link to="/course/1"> Split View</Link>
                     </nav>
                     <Switch>
-                        <Route path="/course/:courseId/session/:sessionId/question" component={SplitView} />
+                        <PrivateRoute path="/course/:courseId/session/:sessionId/question" component={SplitView} />
                         <Route path="/login" component={LoginView} />
-                        <Route path="/professor" component={ProfessorView} />
-                        <Route path="/course/:courseId/session/:sessionId" component={SplitView} />
-                        <Route path="/course/:courseId" component={SplitView} />
+                        <PrivateRoute path="/course/:courseId/session/:sessionId" component={SplitView} />
+                        <PrivateRoute path="/course/:courseId" component={SplitView} />
+                        <PrivateRoute path="/professor" component={ProfessorView} />
                     </Switch>
                 </div>
             </Router>

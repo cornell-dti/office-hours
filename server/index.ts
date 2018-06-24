@@ -19,15 +19,13 @@ app.use(sslRedirect());
 // Initialize session middleware
 var sessionOptions = {
     name: 'queue-me-in-cookie',
-    maxAge: 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* milliseconds */,
+    maxAge: 1 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* milliseconds */,
     secure: false,
-    httpOnly: false,
     secret: (process.env.OH_SESSION_SECRET || "<veWHM#Q9a<k8^")
 }
 
 if (app.get('env') === 'production') {
     app.set('trust proxy', 1) // trust first proxy
-    sessionOptions.httpOnly = true // serve encrypted cookies
     sessionOptions.secure = true // serve secure cookies
 }
 
@@ -96,8 +94,6 @@ passport.serializeUser(function (user: any, done) {
 })
 
 passport.deserializeUser(function (token, done) {
-    console.log("DE: ");
-    console.log(token);
     done(null, token);
 })
 
@@ -136,6 +132,9 @@ app.use(function (req, res, next) {
     if (req.url === '/__gql/graphql') {
         if (req.user) {
             req.headers.authorization = `Bearer ${req.user}`;
+        } else {
+            // THIS LINE WILL SET YOU AS USER 1 FOR FRONT-END TESTING (PORT 3000)
+            // req.headers.authorization = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTUyOTg2NTQzNSwiZXhwIjoyNTI5OTUxODM1LCJhdWQiOiJwb3N0Z3JhcGhxbCJ9.2BkEbhO6JBcQ5SaMNkjjxxfhcURnLLUMRwit9XRhTAo`;
         }
     }
     next();
