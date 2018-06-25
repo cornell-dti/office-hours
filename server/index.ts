@@ -12,6 +12,7 @@ import { readFileSync, readFile } from 'fs';
 var session = require('cookie-session');
 var request = require('request');
 var jwt = require('jsonwebtoken');
+var url = require('url');
 
 const app = express();
 app.use(sslRedirect());
@@ -43,6 +44,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
+var ownBaseUrl = 'http://localhost:3001';
 
 passport.use(new GoogleStrategy(
     {
@@ -81,9 +83,10 @@ passport.use(new GoogleStrategy(
             variablesString +
             '"}';
         console.log(bodyContent);
+        console.log(ownBaseUrl);
         request.post({
             headers: { 'content-type': 'application/json' },
-            url: 'http://localhost:3001/__gql/graphql',
+            url: ownBaseUrl + '/__gql/graphql',
             body: bodyContent
         }, function (error, response, body) {
             return (done(null, JSON.parse(body).data.apiFindOrCreateUser.users[0]));
@@ -104,7 +107,19 @@ passport.deserializeUser(function (token, done) {
     done(null, token);
 })
 
+function getOwnUrl(req) {
+    return url.format({
+        protocol: req.protocol,
+        host: req.get('host')
+    });
+}
+
 app.get('/__auth',
+    function (req, res, next) {
+        ownBaseUrl = getOwnUrl(req);
+        console.log("OWN BASE URL: " + ownBaseUrl);
+        next();
+    },
     passport.authenticate('google', {
         scope: ['email'],
         // @ts-ignore: Hosted domain is used by the Google strategy, but not allowed in passport's types
