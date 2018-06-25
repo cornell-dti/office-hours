@@ -11,7 +11,8 @@ type Question = {
     time: Date,
     tags: Tag[],
     userId: number,
-    timeEntered: string
+    timeEntered: string,
+    photoUrl: string
 };
 
 type QuestionNode = {
@@ -21,6 +22,7 @@ type QuestionNode = {
         firstName: string,
         lastName: string,
         userId: number,
+        photoUrl: string
     },
     timeEntered: string,
     status: string,

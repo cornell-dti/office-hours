@@ -5,11 +5,13 @@ import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 
 const QUERY = gql`
-    query isUserTa($userId: Int!, $courseId: Int!) {
-        courseByCourseId(courseId: $courseId) {
-            courseUsersByCourseId(condition: {userId: $userId}) {
-                nodes {
-                    role
+    query isUserTa($courseId:Int!) {
+        apiGetCurrentUser {
+            nodes {
+                courseUsersByUserId(condition:{courseId:$courseId}) {
+                    nodes {
+                        role
+                    }
                 }
             }
         }
@@ -18,21 +20,22 @@ const QUERY = gql`
 interface InputProps {
     currentCourse: string;
     courseId: number;
-    userId: number;
     data?: {
-        courseByCourseId: {
-            courseUsersByCourseId: {
-                nodes: [{
-                    role: string;
-                }]
-            }
+        apiGetCurrentUser: {
+            nodes: [{
+                courseUsersByUserId: {
+                    nodes: [{
+                        role: string;
+                    }]
+                }
+            }]
         }
     };
 }
 
 const withData = graphql<InputProps, Response>(QUERY, {
-    options: ({ userId, courseId }) => ({
-        variables: { userId: userId, courseId: courseId }
+    options: ({ courseId }) => ({
+        variables: { courseId: courseId }
     })
 });
 class CalendarHeader extends React.Component<ChildProps<InputProps, Response>> {
@@ -46,8 +49,9 @@ class CalendarHeader extends React.Component<ChildProps<InputProps, Response>> {
                 <div className="CurrentCourse">
                     {this.props.currentCourse}
                     {data
-                        && data.courseByCourseId
-                        && data.courseByCourseId.courseUsersByCourseId.nodes[0].role === 'ta'
+                        && data.apiGetCurrentUser
+                        && (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role === 'ta'
+                            || data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role === 'professor')
                         && <span className="TAMarker">TA</span>}
                     <button className="CourseSelectButton">
                         <i className="angle down icon" />

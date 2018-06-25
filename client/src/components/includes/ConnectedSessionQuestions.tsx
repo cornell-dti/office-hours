@@ -6,7 +6,7 @@ import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 
 const QUERY = gql`
-query FindQuestionsBySessionId($userId: Int!, $sessionId: Int!) {
+query FindQuestionsBySessionId($sessionId: Int!, $courseId: Int!) {
     sessionBySessionId(sessionId: $sessionId) {
         questionsBySessionId(orderBy: TIME_ENTERED_ASC) {
             nodes {
@@ -17,6 +17,7 @@ query FindQuestionsBySessionId($userId: Int!, $sessionId: Int!) {
                     firstName
                     lastName
                     userId
+                    photoUrl
                 }
                 timeEntered
                 questionTagsByQuestionId {
@@ -30,10 +31,13 @@ query FindQuestionsBySessionId($userId: Int!, $sessionId: Int!) {
                 }
             }
         }
-        courseByCourseId {
-            courseUsersByCourseId(condition: {userId: $userId}), {
+    }
+    apiGetCurrentUser {
+        nodes {
+            courseUsersByUserId(condition:{courseId:$courseId}) {
                 nodes {
                     role
+                    userId
                 }
             }
         }
@@ -43,27 +47,29 @@ query FindQuestionsBySessionId($userId: Int!, $sessionId: Int!) {
 
 type InputProps = {
     sessionId: number,
+    courseId: number,
     data: {
         sessionBySessionId?: {
             questionsBySessionId: {
                 nodes: [{}],
-            },
-            courseByCourseId: {
-                courseUsersByCourseId: {
+            }
+        },
+        apiGetCurrentUser?: {
+            nodes: [{
+                courseUsersByUserId: {
                     nodes: [{
-                        role: string
+                        role: string,
+                        userId: number
                     }]
                 }
-            },
-        },
-    },
-    isTA: boolean,
-    userId: number,
+            }]
+        }
+    }
 };
 
 const withData = graphql<InputProps, Response>(QUERY, {
-    options: ({ sessionId, userId }) => ({
-        variables: { sessionId: sessionId, userId: userId }
+    options: ({ sessionId, courseId }) => ({
+        variables: { sessionId: sessionId, courseId: courseId }
     })
 });
 
@@ -71,15 +77,19 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
     render() {
         var questions: Question[] = [];
         var isTa = false;
-        if (this.props.data.sessionBySessionId) {
+        var myUserId = -1;
 
-            if (this.props.data.sessionBySessionId.courseByCourseId) {
-                var course = this.props.data.sessionBySessionId.courseByCourseId;
-                if (course) {
-                    isTa = course.courseUsersByCourseId.nodes[0].role === 'ta';
-                }
+        if (this.props.data &&
+            this.props.data.apiGetCurrentUser) {
+            if (this.props.data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role === 'ta'
+                || this.props.data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role === 'professor') {
+                isTa = true;
             }
+            myUserId = this.props.data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].userId;
+        }
 
+        if (this.props.data &&
+            this.props.data.sessionBySessionId) {
             this.props.data.sessionBySessionId.questionsBySessionId.nodes.forEach((node: QuestionNode) => {
                 if (node.status === 'unresolved') {
                     var questionTags: Tag[] = [];
@@ -101,7 +111,8 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
                         time: new Date(node.timeEntered),
                         tags: questionTags,
                         userId: node.userByAskerId.userId,
-                        timeEntered: node.timeEntered
+                        timeEntered: node.timeEntered,
+                        photoUrl: node.userByAskerId.photoUrl
                     });
                 }
             });
@@ -112,6 +123,7 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
                 isTA={isTa}
                 sessionId={this.props.sessionId}
                 questions={questions}
+                myUserId={myUserId}
             />
         );
     }

@@ -8,15 +8,13 @@ import { Mutation } from 'react-apollo';
 import SelectedTags from '../includes/SelectedTags';
 
 const CREATE_QUESTION = gql`
-mutation CreateQuestion($content: String!, $tags: [Int], $sessionId: Int!, $askerId: Int!) {
-    addQuestionWithTags(input: {content: $content, tags: $tags, status: "unresolved", 
-        sessionId: $sessionId, askerId: $askerId}) {
+mutation CreateQuestion($content: String!, $tags: [Int], $sessionId: Int!) {
+    apiAddQuestion(input: {_content: $content, _tags: $tags, _status: "unresolved", 
+        _sessionId: $sessionId}) {
         clientMutationId
     }
 }
 `;
-
-const userId = 1;   // TODO fetch from cookie
 
 class AddQuestion extends React.Component {
 
@@ -91,8 +89,7 @@ class AddQuestion extends React.Component {
             variables: {
                 content: this.state.question,
                 tags: selectedTagIds,
-                sessionId: this.props.sessionId,
-                askerId: userId
+                sessionId: this.props.sessionId
             }
         });
         this.setState({ redirect: true });

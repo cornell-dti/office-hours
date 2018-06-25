@@ -16,6 +16,13 @@ var jwt = require('jsonwebtoken');
 const app = express();
 app.use(sslRedirect());
 
+const optionDefinitions = [
+    { name: 'fakeuserid', type: Number }
+];
+
+const commandLineArgs = require('command-line-args');
+const options = commandLineArgs(optionDefinitions);
+
 // Initialize session middleware
 var sessionOptions = {
     name: 'queue-me-in-cookie',
@@ -133,8 +140,13 @@ app.use(function (req, res, next) {
         if (req.user) {
             req.headers.authorization = `Bearer ${req.user}`;
         } else {
-            // THIS LINE WILL SET YOU AS USER 1 FOR FRONT-END TESTING (PORT 3000)
-            // req.headers.authorization = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTUyOTg2NTQzNSwiZXhwIjoyNTI5OTUxODM1LCJhdWQiOiJwb3N0Z3JhcGhxbCJ9.2BkEbhO6JBcQ5SaMNkjjxxfhcURnLLUMRwit9XRhTAo`;
+            if (options.fakeuserid) {
+                const fakeJwt = jwt.sign({ userId: options.fakeuserid }, (process.env.OH_JWT_SECRET || "<veWHM#Q9a<k8^"), {
+                    expiresIn: '1y',
+                    audience: 'postgraphql',
+                });
+                req.headers.authorization = `Bearer ${fakeJwt}`;
+            }
         }
     }
     next();

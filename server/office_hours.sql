@@ -73,23 +73,31 @@ CREATE TABLE public.questions (
 
 
 --
--- Name: api_add_question(text, text, integer, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_add_question(text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_add_question(_content text, _status text, _session_id integer, _asker_id integer, _tags integer[]) RETURNS SETOF public.questions
+CREATE FUNCTION public.api_add_question(_content text, _status text, _session_id integer, _tags integer[]) RETURNS SETOF public.questions
     LANGUAGE plpgsql
     AS $$
 DECLARE
 inserted_question integer;
 tag integer;
-BEGIN
-	INSERT INTO questions(content, status, session_id, asker_id)
-	values (_content, _status, _session_id, _asker_id) returning question_id INTO inserted_question;
-	FOREACH tag in ARRAY _tags
-	LOOP
-		INSERT INTO question_tags(question_id, tag_id) VALUES (inserted_question, tag);
-	END LOOP;
-	RETURN QUERY select * from questions where question_id = inserted_question;
+asker users%rowtype;
+_asker_id integer;
+begin
+	select * into asker from api_get_current_user();
+	if (asker is null) then
+		raise exception 'Cannot add question: no user is logged in.';
+	else
+		_asker_id := asker.user_id;
+		INSERT INTO questions(content, status, session_id, asker_id)
+		values (_content, _status, _session_id, _asker_id) returning question_id INTO inserted_question;
+		FOREACH tag in ARRAY _tags
+		LOOP
+			INSERT INTO question_tags(question_id, tag_id) VALUES (inserted_question, tag);
+		END LOOP;
+		RETURN QUERY select * from questions where question_id = inserted_question;
+	end if;
 END
 $$;
 
@@ -348,32 +356,19 @@ CREATE TABLE public.users (
 
 CREATE FUNCTION public.api_find_or_create_user(_email text, _google_id text, _first_name text, _last_name text, _photo_url text) RETURNS SETOF public.users
     LANGUAGE plpgsql
-    AS $$ 
-
-declare
-
-_user_id integer;
-
-begin
-
-	if ((select count(*) from users where google_id = _google_id) > 0) then
-
-		select user_id into _user_id from users where google_id = _google_id;
-
-	else
-
-		insert into users (email, google_id, first_name, last_name, photo_url)
-
-		values (_email, _google_id, _first_name, _last_name, _photo_url)
-
-		returning user_id into _user_id;
-
-	end if;
-
-	return query select * from users where user_id = _user_id;
-
-end
-
+    AS $$ 
+declare
+_user_id integer;
+begin
+	if ((select count(*) from users where google_id = _google_id) > 0) then
+		select user_id into _user_id from users where google_id = _google_id;
+	else
+		insert into users (email, google_id, first_name, last_name, photo_url)
+		values (_email, _google_id, _first_name, _last_name, _photo_url)
+		returning user_id into _user_id;
+	end if;
+	return query select * from users where user_id = _user_id;
+end
  $$;
 
 
@@ -383,10 +378,8 @@ end
 
 CREATE FUNCTION public.api_get_current_user() RETURNS SETOF public.users
     LANGUAGE sql STABLE
-    AS $$
-
-select * from users where user_id = (current_setting('jwt.claims.userId', true)::integer);
-
+    AS $$
+select * from users where user_id = (current_setting('jwt.claims.userId', true)::integer);
 $$;
 
 
@@ -522,6 +515,30 @@ begin
 
 end
 
+ $$;
+
+
+--
+-- Name: trigger_before_update_question(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.trigger_before_update_question() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+declare
+answerer users%rowtype;
+_answerer_id integer;
+begin
+	select * into answerer from api_get_current_user();
+	if (answerer is null) then
+		raise exception 'Cannot update question: no user is logged in.';
+	else
+		_answerer_id := answerer.user_id;
+		new.answerer_id = _answerer_id;
+		new.time_addressed = NOW();
+		return new;
+	end if;
+END
  $$;
 
 
@@ -794,10 +811,6 @@ COPY public.courses (course_id, code, name, semester, start_date, end_date) FROM
 --
 
 COPY public.question_tags (question_id, tag_id) FROM stdin;
-9	1
-9	9
-10	1
-10	8
 \.
 
 
@@ -806,8 +819,7 @@ COPY public.question_tags (question_id, tag_id) FROM stdin;
 --
 
 COPY public.questions (question_id, content, time_entered, status, time_addressed, session_id, asker_id, answerer_id) FROM stdin;
-9	Stuck on A1 Q2	2018-06-22 00:44:40.244337	unresolved	\N	236	2	\N
-10	Q1 - am I on the right track?	2018-06-22 00:46:56.821684	unresolved	\N	236	4	\N
+13	photoUrl test	2018-06-25 09:05:42.69531	unresolved	\N	262	2	\N
 \.
 
 
@@ -1016,7 +1028,7 @@ SELECT pg_catalog.setval('public.courses_course_id_seq', 1, true);
 -- Name: questions_question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.questions_question_id_seq', 10, true);
+SELECT pg_catalog.setval('public.questions_question_id_seq', 13, true);
 
 
 --
@@ -1149,6 +1161,13 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pk PRIMARY KEY (user_id);
+
+
+--
+-- Name: questions before_update_question; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER before_update_question BEFORE UPDATE ON public.questions FOR EACH ROW EXECUTE PROCEDURE public.trigger_before_update_question();
 
 
 --

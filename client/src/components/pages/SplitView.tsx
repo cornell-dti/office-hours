@@ -159,7 +159,6 @@ class SplitView extends React.Component {
                         <div className="Header">
                             <CalendarHeader
                                 currentCourse="CS 1380"
-                                userId={1}
                                 courseId={this.props.match.params.courseId}
                             />
                             <CalendarWeekSelect handleClick={this.handleWeekClick} />
@@ -198,10 +197,9 @@ class SplitView extends React.Component {
                                 </div>
                                 <div className="splitQuestions">
                                     <ConnectedSessionQuestions
-                                        sessionId={this.state.sessionId}
-                                        isTA={false}
+                                        sessionId={this.state.sessionId || -1}
+                                        courseId={this.props.match.params.courseId}
                                         data={{}}
-                                        userId={1}
                                     />
                                 </div>
                             </React.Fragment>
