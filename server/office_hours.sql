@@ -819,7 +819,6 @@ COPY public.question_tags (question_id, tag_id) FROM stdin;
 --
 
 COPY public.questions (question_id, content, time_entered, status, time_addressed, session_id, asker_id, answerer_id) FROM stdin;
-13	photoUrl test	2018-06-25 09:05:42.69531	unresolved	\N	262	2	\N
 \.
 
 
