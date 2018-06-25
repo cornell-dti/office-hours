@@ -184,7 +184,7 @@ class SplitView extends React.Component {
                         this.state.activeView !== 'calendar')) &&
                     <section className={'StudentSessionView '}>
                         {this.state.sessionId === -1 ?
-                            <p className="noSessionSelected">Please Select an Office Hour from the Calendar.</p>
+                            <p className="noSessionSelected">Please select an office hour from the calendar.</p>
                             : <React.Fragment>
                                 <SessionInformationHeader
                                     sessionId={this.state.sessionId}
