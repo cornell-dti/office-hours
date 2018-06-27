@@ -27,7 +27,7 @@ const options = commandLineArgs(optionDefinitions);
 // Initialize session middleware
 var sessionOptions = {
     name: 'queue-me-in-cookie',
-    maxAge: 1 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* milliseconds */,
+    maxAge: 7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* milliseconds */,
     secure: false,
     secret: (process.env.OH_SESSION_SECRET || "<veWHM#Q9a<k8^")
 }
@@ -94,10 +94,9 @@ passport.use(new GoogleStrategy(
 
 passport.serializeUser(function (user: any, done) {
     var token = jwt.sign(user, (process.env.OH_JWT_SECRET || "<veWHM#Q9a<k8^"), {
-        expiresIn: '1d',
+        expiresIn: '1w',
         audience: 'postgraphql',
     });
-    console.log(token);
     done(null, token);
 })
 
@@ -115,7 +114,6 @@ function getOwnUrl(req) {
 app.get('/__auth',
     function (req, res, next) {
         ownBaseUrl = getOwnUrl(req);
-        console.log("OWN BASE URL: " + ownBaseUrl);
         next();
     },
     passport.authenticate('google', {
@@ -128,8 +126,6 @@ app.get('/__auth',
 app.get('/__auth/callback',
     passport.authenticate('google'),
     function (req, res) {
-        console.log("Callback:")
-        console.log(req.user)
         res.redirect('/');
     }
 )
@@ -145,6 +141,11 @@ app.get('/__sess',
         res.send(req.user)
     }
 )
+
+app.get('/__auth/logout', function (req, res) {
+    req.logout();
+    res.redirect('/');
+})
 
 // Add jwt_token as Authorization header for Postgraphql
 // Alternative: might be able to use pgSettings to directly? (https://www.graphile.org/postgraphile/usage-library/)
