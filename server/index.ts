@@ -82,8 +82,6 @@ passport.use(new GoogleStrategy(
             '","variables":"' +
             variablesString +
             '"}';
-        console.log(bodyContent);
-        console.log(ownBaseUrl);
         request.post({
             headers: { 'content-type': 'application/json' },
             url: ownBaseUrl + '/__gql/graphql',
@@ -121,7 +119,7 @@ app.get('/__auth',
         next();
     },
     passport.authenticate('google', {
-        scope: ['email'],
+        scope: ['profile', 'email'],
         // @ts-ignore: Hosted domain is used by the Google strategy, but not allowed in passport's types
         hostedDomain: "cornell.edu",
         failureRedirect: '/login'
