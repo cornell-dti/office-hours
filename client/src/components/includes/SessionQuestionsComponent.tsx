@@ -6,9 +6,22 @@ import { Mutation } from 'react-apollo';
 import SelectedTags from '../includes/SelectedTags';
 
 const UPDATE_QUESTION = gql`
-mutation UpdateQuestion($questionId: Int!, $status: String, $timeResolved: Datetime, $answererId: Int) {
-    updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeResolved: $timeResolved,
-        answererId: $answererId}, questionId: $questionId}) {
+mutation UpdateQuestion(
+    $questionId: Int!,
+    $status: String,
+    $timeResolved: Datetime,
+    $answererId: Int
+) {
+    updateQuestionByQuestionId(
+        input: {
+            questionPatch: {
+                status: $status,
+                timeResolved: $timeResolved,
+                answererId: $answererId
+            },
+            questionId: $questionId
+        }
+    ) {
         clientMutationId
     }
 }
@@ -109,7 +122,7 @@ class SessionQuestionsComponent extends React.Component {
                     this.props.isTA &&
                     <div className="studentInformation">
                         <img src={this.props.studentPicture} />
-                        <p className="Name">{this.props.studentName}</p>
+                        <span className="Name">{this.props.studentName}</span>
                     </div>
                 }
                 <p className="Question">{this.props.studentQuestion}</p>

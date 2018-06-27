@@ -7,10 +7,17 @@ import { Mutation } from 'react-apollo';
 
 import SelectedTags from '../includes/SelectedTags';
 
-const CREATE_QUESTION = gql`
-mutation CreateQuestion($content: String!, $tags: [Int], $sessionId: Int!, $askerId: Int!) {
-    addQuestionWithTags(input: {content: $content, tags: $tags, status: "unresolved", 
-        sessionId: $sessionId, askerId: $askerId}) {
+const ADD_QUESTION = gql`
+mutation AddQuestion($content: String!, $tags: [Int],  $sessionId: Int!, $askerId: Int!) {
+    apiAddQuestion(
+        input: {
+            _content: $content,
+            _status: "unresolved",
+            _sessionId: $sessionId,
+            _askerId: $askerId,
+            _tags: $tags
+        }
+    ) {
         clientMutationId
     }
 }
@@ -254,8 +261,8 @@ class AddQuestion extends React.Component {
         return (
             <div className="AddQuestion">
                 <div className="queueHeader">
-                    <span className="xbutton" onClick={this.handleXClick}><Icon name="close" /></span>
-                    <span className="title">Join The Queue</span>
+                    <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
+                    <p className="title">Join The Queue</p>
                 </div>
                 {/* No longer in design - commending out in case it comes back.
                 <hr />
@@ -313,7 +320,7 @@ class AddQuestion extends React.Component {
                             />
                             : <p className="placeHolder text">Finish selecting tags...</p>}
                     </div>
-                    <Mutation mutation={CREATE_QUESTION}>
+                    <Mutation mutation={ADD_QUESTION}>
                         {(createQuestion) =>
                             this.state.doneSelectingTags ?
                                 <p
