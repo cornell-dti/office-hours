@@ -7,15 +7,15 @@ import { Mutation } from 'react-apollo';
 
 import SelectedTags from '../includes/SelectedTags';
 
-const INPUT_QUESTION = gql`
-mutation InputQuestion($content: String!,  $sessionId: Int!, $askerId: Int!, $tags: [Int]) {
-    addQuestionWithTags(
+const ADD_QUESTION = gql`
+mutation AddQuestion($content: String!, $tags: [Int],  $sessionId: Int!, $askerId: Int!) {
+    apiAddQuestion(
         input: {
-            content: $content,
-            status: "unresolved",
-            sessionId: $sessionId,
-            askerId: $askerId,
-            tags: $tags
+            _content: $content,
+            _status: "unresolved",
+            _sessionId: $sessionId,
+            _askerId: $askerId,
+            _tags: $tags
         }
     ) {
         clientMutationId
@@ -320,7 +320,7 @@ class AddQuestion extends React.Component {
                             />
                             : <p className="placeHolder text">Finish selecting tags...</p>}
                     </div>
-                    <Mutation mutation={CREATE_QUESTION}>
+                    <Mutation mutation={ADD_QUESTION}>
                         {(createQuestion) =>
                             this.state.doneSelectingTags ?
                                 <p
