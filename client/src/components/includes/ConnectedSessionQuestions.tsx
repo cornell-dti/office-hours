@@ -114,7 +114,8 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
                         tags: questionTags,
                         userId: node.userByAskerId.userId,
                         timeEntered: node.timeEntered,
-                        photoUrl: node.userByAskerId.photoUrl
+                        photoUrl: node.userByAskerId.photoUrl ||
+                            'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png'
                     });
                 }
             });

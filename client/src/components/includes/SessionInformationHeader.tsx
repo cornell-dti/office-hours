@@ -77,7 +77,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
         var queueLength = 0;
 
         var location = 'Unknown';
-        var taPhotoUrl = '';
+        var taPhotoUrl = 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png';
         var tas: string[] = [];
         var session = null;
 
