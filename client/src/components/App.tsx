@@ -26,7 +26,7 @@ class UserQuery extends Query<Data, {}> { }
 
 const PrivateRoute = ({ component, ...rest }: any) => {
     const routeComponent = (props: any) => (
-        <UserQuery query={GET_USER}>
+        <UserQuery query={GET_USER} fetchPolicy="network-only">
             {({ loading, error, data }) => {
                 if (loading) {
                     return 'Loading...';

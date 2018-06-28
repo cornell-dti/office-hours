@@ -6,7 +6,7 @@ Assuming you have PostgreSQL installed on your machine (we are currently using v
 
 `create_db -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME>`
 
-You will be prompted to enter the password for the username, and then an empty database will be created. Now, we need to use the `psql` command-line tool to load in the schema dump from [`/server/office_hours.sql`](../server/office_hours.sql):
+If running locally, the host name will be localhost, and the port and username will be the ones that you set while setting Postgres up. You will be prompted to enter the password for the username, and then an empty database will be created. Now, we need to use the `psql` command-line tool to load in the schema dump from [`/server/office_hours.sql`](../server/office_hours.sql):
 
 `psql -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME> -f <PATH-TO-office_hours.sql>`
 
