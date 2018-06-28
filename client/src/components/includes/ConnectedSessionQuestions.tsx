@@ -64,12 +64,14 @@ type InputProps = {
                 }
             }]
         }
-    }
+    },
+    handleJoinClick: Function,
 };
 
 const withData = graphql<InputProps, Response>(QUERY, {
     options: ({ sessionId, courseId }) => ({
-        variables: { sessionId: sessionId, courseId: courseId }
+        variables: { sessionId: sessionId, courseId: courseId },
+        pollInterval: 500
     })
 });
 
@@ -124,6 +126,7 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
                 sessionId={this.props.sessionId}
                 questions={questions}
                 myUserId={myUserId}
+                handleJoinClick={this.props.handleJoinClick}
             />
         );
     }

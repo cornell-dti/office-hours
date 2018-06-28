@@ -6,7 +6,8 @@ class CalendarWeekSelect extends React.Component {
         'July', 'August', 'September', 'October', 'November', 'December'];
 
     props: {
-        handleClick?: Function
+        handleClick?: Function,
+        selectedWeekEpoch?: number,
     };
 
     state: {
@@ -15,13 +16,20 @@ class CalendarWeekSelect extends React.Component {
 
     constructor(props: {}) {
         super(props);
-        var week = new Date();
-        week.setHours(0, 0, 0, 0);
-        week.setTime(week.getTime() -
-            (week.getDay() - 1) /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
-        this.state = {
-            selectedWeekEpoch: week.getTime()
-        };
+        if (this.props.selectedWeekEpoch) {
+            this.state = {
+                selectedWeekEpoch: this.props.selectedWeekEpoch,
+            };
+        } else {
+            var week = new Date();
+            week.setHours(0, 0, 0, 0);
+            week.setTime(week.getTime() -
+                (week.getDay() - 1) /* days */ * 24 /* hours */
+                * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+            this.state = {
+                selectedWeekEpoch: week.getTime()
+            };
+        }
         this.handleWeekClick = this.handleWeekClick.bind(this);
     }
 

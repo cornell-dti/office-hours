@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Icon } from 'semantic-ui-react'
+import { Icon } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfoessorOHInfo from './ProfessorOHInfo';
 
@@ -29,8 +29,7 @@ class ProfessorAddNewOH extends React.Component {
     render() {
         return (
             <div className="ProfessorAddNewOH">
-                <div className="Delete">
-                </div>
+                <div className="Delete" />
                 <div className={'Add ' + !this.state.editVisible}>
                     <button className="NewOHButton" onClick={() => this.toggleEdit(true)}>
                         <Icon name="plus" />

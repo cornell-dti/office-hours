@@ -251,8 +251,8 @@ class AddQuestion extends React.Component {
         return (
             <div className="AddQuestion">
                 <div className="queueHeader">
-                    <span className="xbutton" onClick={this.handleXClick}><Icon name="close" /></span>
-                    <span className="title">Join The Queue</span>
+                    <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
+                    <p className="title">Join The Queue</p>
                 </div>
                 {/* No longer in design - commending out in case it comes back.
                 <hr />

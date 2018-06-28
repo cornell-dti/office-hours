@@ -100,7 +100,7 @@ class SessionQuestionsComponent extends React.Component {
                     this.props.isTA &&
                     <div className="studentInformation">
                         <img src={this.props.studentPicture} />
-                        <p className="Name">{this.props.studentName}</p>
+                        <span className="Name">{this.props.studentName}</span>
                     </div>
                 }
                 <p className="Question">{this.props.studentQuestion}</p>
@@ -122,7 +122,7 @@ class SessionQuestionsComponent extends React.Component {
                                         className="Delete"
                                         onClick={(e) => this._onClickDelete(e, updateQuestion)}
                                     >
-                                        No-Show
+                                        <Icon name="hourglass end" /> No-show
                                     </p>
                                     <p
                                         className="Resolve"
@@ -144,7 +144,7 @@ class SessionQuestionsComponent extends React.Component {
                                 className="Remove"
                                 onClick={(e) => this._onClickRetract(e, updateQuestion)}
                             >
-                                <Icon name="close" /> Remove
+                                <Icon name="close" /> Retract
                             </p>
                         </div>
                     }

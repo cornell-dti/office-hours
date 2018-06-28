@@ -24,7 +24,10 @@ interface Data {
 
 class UserQuery extends Query<Data, {}> { }
 
+// Since the type is unknown, we have to use the any type in the next two lines.
+// tslint:disable-next-line: no-any
 const PrivateRoute = ({ component, ...rest }: any) => {
+    // tslint:disable-next-line: no-any
     const routeComponent = (props: any) => (
         <UserQuery query={GET_USER} fetchPolicy="network-only">
             {({ loading, error, data }) => {

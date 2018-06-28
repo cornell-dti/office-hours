@@ -1,8 +1,6 @@
 import * as React from 'react';
 import * as H from 'history';
 
-import { Icon } from 'semantic-ui-react';
-
 import SessionInformationHeader from '../includes/SessionInformationHeader';
 import ConnectedSessionQuestions from '../includes/ConnectedSessionQuestions';
 
@@ -17,7 +15,7 @@ const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* m
 const ONE_WEEK = 7 /* days */ * ONE_DAY;
 
 // Also update in the main LESS file
-const MOBILE_BREAKPOINT = 800;
+const MOBILE_BREAKPOINT = 920;
 
 class SplitView extends React.Component {
     props: {
@@ -161,7 +159,10 @@ class SplitView extends React.Component {
                                 currentCourse="CS 1380"
                                 courseId={this.props.match.params.courseId}
                             />
-                            <CalendarWeekSelect handleClick={this.handleWeekClick} />
+                            <CalendarWeekSelect
+                                handleClick={this.handleWeekClick}
+                                selectedWeekEpoch={this.state.selectedWeekEpoch}
+                            />
                         </div>
                         <CalendarDateSelect
                             dayList={days}
@@ -192,14 +193,12 @@ class SplitView extends React.Component {
                                     callback={this.handleBackClick}
                                     isDesktop={this.state.width > MOBILE_BREAKPOINT}
                                 />
-                                <div className="SessionJoinButton" onClick={this.handleJoinClick}>
-                                    <p><Icon name="plus" /> Join the Queue</p>
-                                </div>
                                 <div className="splitQuestions">
                                     <ConnectedSessionQuestions
                                         sessionId={this.state.sessionId || -1}
                                         courseId={this.props.match.params.courseId}
                                         data={{}}
+                                        handleJoinClick={this.handleJoinClick}
                                     />
                                 </div>
                             </React.Fragment>

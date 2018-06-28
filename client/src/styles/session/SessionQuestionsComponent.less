@@ -1,10 +1,11 @@
 .QueueQuestions {
     background-color: white;
     display: block;
-    margin: 12px auto 0;
+    margin: 12px auto 12px;
     position: relative;
     text-align: center;
     width: 100%;
+    display: inline-block;
 
     // &:not(:nth-of-type(2)) {
     //     opacity: 0.6;
@@ -13,11 +14,12 @@
     .studentInformation {
         display: inline-block;
         width: 100%;
-        padding: 20px 0px 0px 15px;
+        padding: 20px 0px 0px 12px;
+        text-align: left;
 
         img {
           display: inline-block;
-          margin-right: 10px;
+          margin-right: 6px;
           width: 30px;
           height: 30px;
           border-radius: 30px;
@@ -30,7 +32,7 @@
           font-weight: bold;
           text-align: left;
           line-height: 12px;
-          padding: 10px 0px 0px 15px;
+        //   padding: 10px 0px 0px 15px;
           margin: 0em;
           color: #595959;
           vertical-align: middle;
@@ -90,7 +92,7 @@
             display: block;
             height: 1px;
             border: 1px;
-            border-top: 1px solid #ccc;
+            border-top: 1px solid #ebebeb;
             margin: 0px 10px;
             padding: 0;
         }
@@ -99,32 +101,36 @@
             color: #595959;
             padding: 10px 30px;
             font-size: 15px;
+            user-select: none;
             cursor: pointer;
         }
 
         .TAButtons {
             display: inline-block;
             padding-top:10px;
+            user-select: none;
 
             p {
+                display: inline-block;
                 border-radius: 5px;
                 color: white;
                 padding: 3px 30px;
                 font-size: 15px;
+                margin-bottom: 10px;
             }
 
             .Delete {
-                float: left;
                 margin-right: 7px;
                 border: 0.5px solid red;
                 color: red;
+                cursor: pointer;
             }
 
             .Resolve {
-                float: right;
                 margin-left: 7px;
                 border: 0.5px solid #4d94ff;
                 color: #4d94ff;
+                cursor: pointer;
             }
         }
     }

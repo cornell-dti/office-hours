@@ -76,7 +76,7 @@ class ProfessorCalendarRow extends React.Component {
         var rowPair = this.props.timeStart.map(
             (row, index) => {
                 return (
-                    <tbody className={'Pair ' + this.props.isExpanded[index]}>
+                    <tbody className={'Pair ' + this.props.isExpanded[index]} key={row}>
                         <tr className="Preview">
                             <td>{timeStart[index]} to {timeEnd[index]}</td>
                             <td>{this.props.taList[this.props.taIndex[index]]}</td>
@@ -87,13 +87,19 @@ class ProfessorCalendarRow extends React.Component {
                                 </button>
                             </td>
                             <td>
-                                <button className="Delete" onClick={() => this.updateDeleteInfo(this.props.dayNumber, index)}>
+                                <button
+                                    className="Delete"
+                                    onClick={() => this.updateDeleteInfo(this.props.dayNumber, index)}
+                                >
                                     <Icon name="x" />
                                 </button>
                             </td>
                         </tr>
                         <tr>
-                            <td colSpan={this.props.tablewidth} className={'ExpandedEdit ' + this.props.isExpanded[index]}>
+                            <td
+                                colSpan={this.props.tablewidth}
+                                className={'ExpandedEdit ' + this.props.isExpanded[index]}
+                            >
                                 <ProfoessorOHInfo
                                     taList={this.props.taList}
                                     taIndexDefault={this.props.taIndex[index]}
@@ -103,7 +109,10 @@ class ProfessorCalendarRow extends React.Component {
                                     endTimeDefault={this.state.endTime[index]}
                                 />
                                 <div className="EditButtons">
-                                    <button className="Delete" onClick={() => this.updateDeleteInfo(this.props.dayNumber, index)}>
+                                    <button
+                                        className="Delete"
+                                        onClick={() => this.updateDeleteInfo(this.props.dayNumber, index)}
+                                    >
                                         Delete
                                     </button>
                                     <button className="Cancel" onClick={() => this.toggleEdit(index)}>

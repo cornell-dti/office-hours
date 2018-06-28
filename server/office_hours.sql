@@ -356,25 +356,38 @@ CREATE TABLE public.users (
 
 CREATE FUNCTION public.api_find_or_create_user(_email text, _google_id text, _first_name text, _last_name text, _photo_url text) RETURNS SETOF public.users
     LANGUAGE plpgsql
-    AS $$ 
-declare
+    AS $$ 
+
+declare
+
 _user_id integer;
-course_row courses%rowtype;
-begin
-	if ((select count(*) from users where google_id = _google_id) > 0) then
-		select user_id into _user_id from users where google_id = _google_id;
-	else
-		insert into users (email, google_id, first_name, last_name, photo_url)
-		values (_email, _google_id, _first_name, _last_name, _photo_url)
+course_row courses%rowtype;
+
+begin
+
+	if ((select count(*) from users where google_id = _google_id) > 0) then
+
+		select user_id into _user_id from users where google_id = _google_id;
+
+	else
+
+		insert into users (email, google_id, first_name, last_name, photo_url)
+
+		values (_email, _google_id, _first_name, _last_name, _photo_url)
+
 		returning user_id into _user_id;
 		for course_row in
 			select * from courses
 		loop
 			insert into course_users (course_id, user_id, role) values (course_row.course_id, _user_id, 'student');
-		end loop;
-	end if;
-	return query select * from users where user_id = _user_id;
-end
+		end loop;
+
+	end if;
+
+	return query select * from users where user_id = _user_id;
+
+end
+
  $$;
 
 
@@ -384,8 +397,10 @@ end
 
 CREATE FUNCTION public.api_get_current_user() RETURNS SETOF public.users
     LANGUAGE sql STABLE
-    AS $$
-select * from users where user_id = (current_setting('jwt.claims.userId', true)::integer);
+    AS $$
+
+select * from users where user_id = (current_setting('jwt.claims.userId', true)::integer);
+
 $$;
 
 
@@ -530,21 +545,35 @@ end
 
 CREATE FUNCTION public.trigger_before_update_question() RETURNS trigger
     LANGUAGE plpgsql
-    AS $$
-declare
-answerer users%rowtype;
-_answerer_id integer;
-begin
-	select * into answerer from api_get_current_user();
-	if (answerer is null) then
-		raise exception 'Cannot update question: no user is logged in.';
-	else
-		_answerer_id := answerer.user_id;
+    AS $$
+
+declare
+
+answerer users%rowtype;
+
+_answerer_id integer;
+
+begin
+
+	select * into answerer from api_get_current_user();
+
+	if (answerer is null) then
+
+		raise exception 'Cannot update question: no user is logged in.';
+
+	else
+
+		_answerer_id := answerer.user_id;
+
 		new.answerer_id = _answerer_id;
-		new.time_addressed = NOW();
-		return new;
-	end if;
-END
+		new.time_addressed = NOW();
+
+		return new;
+
+	end if;
+
+END
+
  $$;
 
 
