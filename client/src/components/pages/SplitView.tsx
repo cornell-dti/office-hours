@@ -76,7 +76,7 @@ interface Variables {
     endTime: Date;
 }
 
-class AppDataQuery extends Query<AppData, Variables> {}
+class AppDataQuery extends Query<AppData, Variables> { }
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 const ONE_WEEK = 7 /* days */ * ONE_DAY;
@@ -228,71 +228,72 @@ class SplitView extends React.Component {
                     if (error) { return <h1>ERROR</h1>; }
                     if (!data) { return <div>no data</div>; }
 
-                    if (this.state.width > MOBILE_BREAKPOINT ||
-                        (this.state.width <= MOBILE_BREAKPOINT &&
-                        this.state.activeView === 'calendar')) {
-                        return (<aside className="CalendarView">
-                            <div className="Header">
-                                <CalendarHeader
-                                    currentCourse="CS 3110"
-                                    userId={1}
-                                    courseId={this.props.match.params.courseId}
-                                />
-                                <CalendarWeekSelect handleClick={this.handleWeekClick} />
-                            </div>
-                            <CalendarDateSelect
-                                dayList={days}
-                                dateList={dates}
-                                handleClick={this.handleDateClick}
-                                selectedIndex={todayIndex}
-                            />
-                            <CalendarSessions
-                                loading={loading}
-                                sessions={data.apiGetSessions ? data.apiGetSessions.nodes : null}
-                                callback={this.handleSessionClick}
-                                activeSessionId={this.state.sessionId}
-                            />
-                        </aside>);
-                    }
-                    if (this.state.width > MOBILE_BREAKPOINT ||
-                        (this.state.width <= MOBILE_BREAKPOINT &&
-                        this.state.activeView !== 'calendar')) {
-                        return ( <section className={'StudentSessionView '}>
-                            {this.state.sessionId === -1 ?
-                                <p className="noSessionSelected">Please Select an Office Hour from the Calendar.</p>
-                                : <React.Fragment>
-                                    <SessionInformationHeader
-                                        sessionId={this.state.sessionId}
-                                        data={{}}
-                                        callback={this.handleBackClick}
-                                        isDesktop={this.state.width > MOBILE_BREAKPOINT}
+                    return (<React.Fragment>
+                        {
+                            (this.state.width > MOBILE_BREAKPOINT ||
+                                (this.state.width <= MOBILE_BREAKPOINT &&
+                                    this.state.activeView === 'calendar')) &&
+                            <aside className="CalendarView">
+                                <div className="Header">
+                                    <CalendarHeader
+                                        currentCourse="CS 3110"
+                                        userId={1}
+                                        courseId={this.props.match.params.courseId}
                                     />
-                                    <div className="splitQuestions">
-                                        <ConnectedSessionQuestions
+                                    <CalendarWeekSelect handleClick={this.handleWeekClick} />
+                                </div>
+                                <CalendarDateSelect
+                                    dayList={days}
+                                    dateList={dates}
+                                    handleClick={this.handleDateClick}
+                                    selectedIndex={todayIndex}
+                                />
+                                <CalendarSessions
+                                    loading={loading}
+                                    sessions={data.apiGetSessions ? data.apiGetSessions.nodes : null}
+                                    callback={this.handleSessionClick}
+                                    activeSessionId={this.state.sessionId}
+                                />
+                            </aside>
+                        }{(this.state.width > MOBILE_BREAKPOINT ||
+                            (this.state.width <= MOBILE_BREAKPOINT &&
+                                this.state.activeView !== 'calendar')) &&
+                            <section className={'StudentSessionView '}>
+                                {this.state.sessionId === -1 ?
+                                    <p className="noSessionSelected">Please Select an Office Hour from the Calendar.</p>
+                                    : <React.Fragment>
+                                        <SessionInformationHeader
                                             sessionId={this.state.sessionId}
                                             data={{}}
-                                            userId={1}
-                                            handleJoinClick={this.handleJoinClick}
+                                            callback={this.handleBackClick}
+                                            isDesktop={this.state.width > MOBILE_BREAKPOINT}
                                         />
-                                    </div>
-                                </React.Fragment>
-                            }
-                        </section>);
-                    }
-                    if (this.state.activeView === 'addQuestion') {
-                        return (<React.Fragment>
-                            <div className="modal">
-                                <ConnectedQuestionView
-                                    sessionId={this.state.sessionId || -1}
-                                    courseId={this.props.match.params.courseId}
-                                    data={{ loading: true }}
-                                />
-                            </div>
-                            <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />
-                        </React.Fragment>);
-                    } else {
-                        return (<p>ERROR</p>);
-                    }
+                                        <div className="splitQuestions">
+                                            <ConnectedSessionQuestions
+                                                sessionId={this.state.sessionId}
+                                                data={{}}
+                                                userId={1}
+                                                handleJoinClick={this.handleJoinClick}
+                                            />
+                                        </div>
+                                    </React.Fragment>
+                                }
+                            </section>
+                        }{
+                            (this.state.activeView === 'addQuestion') &&
+                            <React.Fragment>
+                                <div className="modal">
+                                    <ConnectedQuestionView
+                                        sessionId={this.state.sessionId || -1}
+                                        courseId={this.props.match.params.courseId}
+                                        data={{ loading: true }}
+                                    />
+                                </div>
+                                <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />
+                            </React.Fragment>
+                        }
+
+                    </React.Fragment>);
                 }}
             </AppDataQuery>
         );
