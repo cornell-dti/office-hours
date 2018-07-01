@@ -7,6 +7,7 @@ import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 
 const people = require('../../media/people.svg');
+const avatar = require('../../media/userAvatar.svg');
 
 type InputProps = {
     sessionId: number,
@@ -20,17 +21,7 @@ type InputProps = {
             building: string,
             room: string,
             courseByCourseId: {
-                name: string
-            }
-            sessionSeryBySessionSeriesId: {
-                building: string,
-                room: string,
-                courseByCourseId: {
-                    name: string
-                },
-                sessionSeriesTasBySessionSeriesId: {
-                    nodes: [TANode]
-                }
+                code: string
             },
             questionsBySessionId: {
                 nodes: [{
@@ -50,7 +41,7 @@ const QUERY = gql`
             room
             startTime
             courseByCourseId {
-                name
+                code
             }
             endTime
             questionsBySessionId {
@@ -58,26 +49,12 @@ const QUERY = gql`
                     timeAddressed
                 }
             }
-            sessionSeryBySessionSeriesId {
-                building
-                room
-                courseByCourseId {
-                    name
-                }
-                sessionSeriesTasBySessionSeriesId {
-                    nodes {
-                        userByUserId {
-                            firstName
-                            lastName
-                        }
-                    }
-                }
-            }
             sessionTasBySessionId {
                 nodes {
                     userByUserId {
                         firstName
                         lastName
+                        photoUrl
                     }
                 }
             }
@@ -101,6 +78,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
         var queueLength = 0;
 
         var location = 'Unknown';
+        var taPhotoUrl = avatar;
         var tas: string[] = [];
         var session = null;
 
@@ -110,33 +88,26 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
             session.sessionTasBySessionId.nodes.forEach(ta => {
                 tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
             });
-            if (session.sessionSeryBySessionSeriesId) {
-                if (tas.length === 0) {
-                    session.sessionSeryBySessionSeriesId.sessionSeriesTasBySessionSeriesId.nodes.forEach(ta => {
-                        tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
-                    });
-                }
 
-                location = session.sessionSeryBySessionSeriesId.building +
-                    ' ' + session.sessionSeryBySessionSeriesId.room;
-            }
-            if (session.building !== null) {
-                location = session.building + ' ' + session.room;
-            }
+            location = session.building + ' ' + session.room;
 
             session.questionsBySessionId.nodes.forEach(question => {
                 if (question.timeAddressed === null) {
                     queueLength += 1;
                 }
             });
+
+            // TODO: won't work for multiple TAs
+            if (session.sessionTasBySessionId.nodes[0].userByUserId.photoUrl) {
+                taPhotoUrl = session.sessionTasBySessionId.nodes[0].userByUserId.photoUrl;
+            }
         }
         if (this.props.isDesktop) {
             return (
                 <header className="DesktopSessionInformationHeader" >
                     <div className="Picture">
                         <img
-                            src={'https://i2.wp.com/puppypassionn.org/wp-content/' +
-                                'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
+                            src={taPhotoUrl}
                         />
                     </div>
                     <div className="Details">
@@ -169,9 +140,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                         <i className="left" />
                         {
                             session &&
-                            session.courseByCourseId && session.courseByCourseId.name ||
-                            session &&
-                            session.sessionSeryBySessionSeriesId.courseByCourseId.name
+                            session.courseByCourseId && session.courseByCourseId.code
                         }
                     </p>
                     <div className="CourseInfo">
@@ -185,8 +154,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                         </div>
                         <div className="Picture">
                             <img
-                                src={'https://i2.wp.com/puppypassionn.org/wp-content/' +
-                                    'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
+                                src={taPhotoUrl}
                             />
                         </div>
                     </div>

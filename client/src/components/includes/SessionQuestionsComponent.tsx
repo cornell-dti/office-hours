@@ -6,28 +6,12 @@ import { Mutation } from 'react-apollo';
 import SelectedTags from '../includes/SelectedTags';
 
 const UPDATE_QUESTION = gql`
-mutation UpdateQuestion(
-    $questionId: Int!,
-    $status: String,
-    $timeResolved: Datetime,
-    $answererId: Int
-) {
-    updateQuestionByQuestionId(
-        input: {
-            questionPatch: {
-                status: $status,
-                timeResolved: $timeResolved,
-                answererId: $answererId
-            },
-            questionId: $questionId
-        }
-    ) {
+mutation UpdateQuestion($questionId: Int!, $status: String) {
+    updateQuestionByQuestionId(input: {questionPatch: {status: $status}, questionId: $questionId}) {
         clientMutationId
     }
 }
 `;
-
-const userId = 1;   // TODO fetch from cookie
 
 class SessionQuestionsComponent extends React.Component {
 
@@ -67,9 +51,7 @@ class SessionQuestionsComponent extends React.Component {
         updateQuestion({
             variables: {
                 questionId: this.props.questionId,
-                status: 'noshow',
-                timeResolved: new Date(),
-                answererId: userId
+                status: 'no-show'
             }
         });
     }
@@ -78,9 +60,7 @@ class SessionQuestionsComponent extends React.Component {
         updateQuestion({
             variables: {
                 questionId: this.props.questionId,
-                status: 'resolved',
-                timeResolved: new Date(),
-                answererId: userId
+                status: 'resolved'
             }
         });
     }
@@ -90,9 +70,7 @@ class SessionQuestionsComponent extends React.Component {
         updateQuestion({
             variables: {
                 questionId: this.props.questionId,
-                status: 'retracted',
-                timeResolved: new Date(),
-                answererId: userId
+                status: 'retracted'
             }
         });
     }
@@ -144,7 +122,7 @@ class SessionQuestionsComponent extends React.Component {
                                         className="Delete"
                                         onClick={(e) => this._onClickDelete(e, updateQuestion)}
                                     >
-                                        No-Show
+                                        <Icon name="hourglass end" /> No-show
                                     </p>
                                     <p
                                         className="Resolve"
@@ -166,7 +144,7 @@ class SessionQuestionsComponent extends React.Component {
                                 className="Remove"
                                 onClick={(e) => this._onClickRetract(e, updateQuestion)}
                             >
-                                <Icon name="close" /> Remove
+                                <Icon name="close" /> Retract
                             </p>
                         </div>
                     }

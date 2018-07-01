@@ -7,6 +7,7 @@ class SessionQuestionsContainer extends React.Component {
         isTA: boolean,
         sessionId: number,
         questions: Question[],
+        myUserId: number,
         handleJoinClick: Function,
     };
 
@@ -15,8 +16,7 @@ class SessionQuestionsContainer extends React.Component {
         var userQuestionIndex: number = -1;
         var cardList: JSX.Element[] = [];
         questions.forEach((question, i: number) => {
-            // TODO: change before shipping
-            if (question.userId === 100) {
+            if (question.userId === this.props.myUserId) {
                 userQuestionIndex = i;
             }
             cardList.push(
@@ -24,8 +24,7 @@ class SessionQuestionsContainer extends React.Component {
                     key={question.id}
                     questionId={question.id}
                     studentName={question.name}
-                    studentPicture={'https://i2.wp.com/puppypassionn.org/wp-content/' +
-                        'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
+                    studentPicture={question.photoUrl}
                     studentQuestion={question.content}
                     time={question.timeEntered}
                     tags={question.tags}
@@ -52,8 +51,7 @@ class SessionQuestionsContainer extends React.Component {
                                 key={questions[userQuestionIndex].id}
                                 questionId={questions[userQuestionIndex].id}
                                 studentName={questions[userQuestionIndex].name}
-                                studentPicture={'https://i2.wp.com/puppypassionn.org/wp-content/' +
-                                    'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
+                                studentPicture={questions[userQuestionIndex].photoUrl}
                                 studentQuestion={questions[userQuestionIndex].content}
                                 time={questions[userQuestionIndex].timeEntered}
                                 tags={questions[userQuestionIndex].tags}

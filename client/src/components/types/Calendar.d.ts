@@ -28,5 +28,6 @@ type TANode = {
     userByUserId: {
         firstName: string,
         lastName: string,
+        photoUrl: string
     }
 }

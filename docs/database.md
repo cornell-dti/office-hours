@@ -6,7 +6,7 @@ Assuming you have PostgreSQL installed on your machine (we are currently using v
 
 `create_db -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME>`
 
-You will be prompted to enter the password for the username, and then an empty database will be created. Now, we need to use the `psql` command-line tool to load in the schema dump from [`/server/office_hours.sql`](../server/office_hours.sql):
+If running locally, the host name will be localhost, and the port and username will be the ones that you set while setting Postgres up. You will be prompted to enter the password for the username, and then an empty database will be created. Now, we need to use the `psql` command-line tool to load in the schema dump from [`/server/office_hours.sql`](../server/office_hours.sql):
 
 `psql -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME> -f <PATH-TO-office_hours.sql>`
 
@@ -168,7 +168,7 @@ Junction table (many-to-many relationship) between [questions](#questions) and [
 
 ## Functions
 
-In addition to the above tables, the following functions have been implemented in PL/pgSQL and are made available in GraphQL by Postgraphile. In most cases that involve multiple GraphQL queries from the client, or complex business logic, it is better to factor the complexity out into the API itself by exposing functions at the database level. The functions implemented in PL/pgSQL are made available to the client by Postgraphile. Note that some functions are designed to be called directly from the client (prefixed by 'api'), while the others should not be called directly (prefixed by 'internal').
+In addition to the above tables, the following functions have been implemented in PL/pgSQL and are made available in GraphQL by Postgraphile. In most cases that involve multiple GraphQL queries from the client, or complex business logic, it is better to factor the complexity out into the API itself by exposing functions at the database level. The functions implemented in PL/pgSQL are made available to the client by Postgraphile. Note that some functions are designed to be called directly from the client (prefixed by 'api'), while the others should not be called directly (prefixed by either 'internal' or 'trigger').
 
 ### API Functions
 Functions that are designed to be exposed to the client directly are prefixed with 'api'. Please read this documentation before using those functions!  
@@ -280,17 +280,42 @@ All the fields from the [sessions](#sessions) table of all the sessions in the c
 #### api\_add\_question
 
 ##### Description
-Given the details of a user-submitted question, this function inserts the data into the backend. This function is necessary because without it, the client would have to make multiple calls (one for each tag) to associate tags with the question. This function abstracts away that logic and provides a simpler API to the client.
+Given the details of a user-submitted question, this function inserts the data into the backend. This function is necessary because without it, the client would have to make multiple calls (one for each tag) to associate tags with the question. This function abstracts away that logic and provides a simpler API to the client. Note that the asker\_id is inferred by looking at the logged-in user who made the query. If no user is logged in, the query will fail with an exception.
 
 ##### Parameters
 - \_content (text): the user-submitted text content of the question
 - \_status (text): the initial status of the question, see the [questions](#questions) table for more details
 - \_session\_id (integer): the id of the session in which the question is to be added
-- \_asked\_id (integer): the user\_id of the student who submitted the question
 - \_tags (integer[]): a list of tag\_ids that are to be associated with the question
 
 ##### Returns
 All the fields of the newly-inserted row from the [questions](#questions) table
+
+#### api\_find\_or\_create\_user
+
+##### Description
+Given the details of a user who has just logged in using Google, this function will find and return the user's existing details in the [users](#users) table. If it is a new user, a new row is inserted into [users](#users) for them. This is meant to be used during the login process, right after the user has successfully logged in via Google.
+
+##### Parameters
+- \_email (text): the full email address of the user who logged in
+- \_google\_id (text): the Google-assigned unique identifier of the user who logged in
+- \_first\_name (text): the given name of the user who logged in; if no given name is provided by Google, do not provide this parameter
+- \_last\_name (text): the family name of the user who logged in; if no family name is provided by Google, do not provide this parameter
+- \_photo\_url (text): the profile picture URL of the user who logged in; if no URL is provided by Google, do not provide this parameter
+
+##### Returns
+All the fields of the newly-inserted or retrieved row from the [users](#users) table
+
+#### api\_get\_current\_user
+
+##### Description
+This function is used to securely identify the logged-in user. It relies on the authentication flow; specifically, the logged-in user will pass the signed JWT to the backend in an Authorization header, and Postgraphile will decrypt it and make its claims available as local Postgres settings. In our case, the JWT has one relevant claim, which is the user\_id claim. This function simply retrieves the details of the logged-in user, and null if no one is logged in.
+
+##### Parameters
+None. It relies on Apollo sending the cookies to the backend, which in turn decrypts it into the JWT and attaches it as a header for Postgraphile to handle.
+
+##### Returns
+All the fields of the logged-in user from the [users](#users) table.
 
 ### Internal Functions
 There are other functions in the database that are used only internally by the API functions. These are prefixed by 'internal', and **should never be called directly by the client**. Doing so will likely have strange side effects on the data.
@@ -316,3 +341,24 @@ Given a session series, this function updates its ongoing and upcoming weekly re
 
 ##### Returns
 Nothing (void)
+
+### Trigger Functions
+
+Trigger functions are prefixed by 'trigger' and **should never be called directly by the client**. These functions are called triggers because they are set up to be automatically called when an event is triggered in the database. For example, one can set up a trigger function that will execute whenever a new row is inserted into some table. These are useful for a few things:
+
+- **Injecting variables that should only be trusted on the backend:** for example, we should never let the front-end specify the user's user id, since that _may_ be prone to tampering by the client. Instead, we should only trust the JWT that is decrypted and made available to us at the database level to figure out who the user is.
+
+- **Consistency with timestamps:** trusting clients to pass in timestamps can sometimes lead to inconsistencies (for example, different timezones, or lags in queries). Whenever we're inserting the current timestamp, we should trust the backend to do it to maintain consistent results.
+
+- **Authorization:** once a user has authenticated, they shouldn't be allowed full access to all parts of the database. Certain users are only allowed certain operations within the database. Triggers can help us safeguard tables within the database and prevent misuse.
+
+|Trigger Function|Table|Condition|Description|
+|---|---|---|---|
+trigger\_before\_update\_question|[questions](#questions)|before update|injects answerer\_id and time\_addressed|
+
+## Types
+
+### jwt\_token
+This type is declared so that it can be passed to Postgraphile during initialization as the jwtPgTypeIdentifier.
+
+- user\_id (integer): the id of the logged in user, which is bundled into the signed JWT token

@@ -157,10 +157,12 @@ class SplitView extends React.Component {
                         <div className="Header">
                             <CalendarHeader
                                 currentCourse="CS 1380"
-                                userId={1}
                                 courseId={this.props.match.params.courseId}
                             />
-                            <CalendarWeekSelect handleClick={this.handleWeekClick} />
+                            <CalendarWeekSelect
+                                handleClick={this.handleWeekClick}
+                                selectedWeekEpoch={this.state.selectedWeekEpoch}
+                            />
                         </div>
                         <CalendarDateSelect
                             dayList={days}
@@ -183,7 +185,7 @@ class SplitView extends React.Component {
                         this.state.activeView !== 'calendar')) &&
                     <section className={'StudentSessionView '}>
                         {this.state.sessionId === -1 ?
-                            <p className="noSessionSelected">Please Select an Office Hour from the Calendar.</p>
+                            <p className="noSessionSelected">Please select an office hour from the calendar.</p>
                             : <React.Fragment>
                                 <SessionInformationHeader
                                     sessionId={this.state.sessionId}
@@ -193,9 +195,9 @@ class SplitView extends React.Component {
                                 />
                                 <div className="splitQuestions">
                                     <ConnectedSessionQuestions
-                                        sessionId={this.state.sessionId}
+                                        sessionId={this.state.sessionId || -1}
+                                        courseId={this.props.match.params.courseId}
                                         data={{}}
-                                        userId={1}
                                         handleJoinClick={this.handleJoinClick}
                                     />
                                 </div>
