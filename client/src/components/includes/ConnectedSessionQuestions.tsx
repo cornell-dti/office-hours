@@ -5,6 +5,8 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 
+const avatar = require('../../media/userAvatar.svg');
+
 const QUERY = gql`
 query FindQuestionsBySessionId($sessionId: Int!, $courseId: Int!) {
     sessionBySessionId(sessionId: $sessionId) {
@@ -114,8 +116,7 @@ class ConnectedSessionQuestions extends React.Component<ChildProps<InputProps, R
                         tags: questionTags,
                         userId: node.userByAskerId.userId,
                         timeEntered: node.timeEntered,
-                        photoUrl: node.userByAskerId.photoUrl ||
-                            'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png'
+                        photoUrl: node.userByAskerId.photoUrl || avatar
                     });
                 }
             });

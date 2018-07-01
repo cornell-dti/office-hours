@@ -7,8 +7,8 @@ import { Mutation } from 'react-apollo';
 
 import SelectedTags from '../includes/SelectedTags';
 
-const CREATE_QUESTION = gql`
-mutation CreateQuestion($content: String!, $tags: [Int], $sessionId: Int!) {
+const ADD_QUESTION = gql`
+mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!) {
     apiAddQuestion(input: {_content: $content, _tags: $tags, _status: "unresolved", 
         _sessionId: $sessionId}) {
         clientMutationId
@@ -73,7 +73,7 @@ class AddQuestion extends React.Component {
         this.setState({ redirect: true });
     }
 
-    public handleJoinClick(event: React.MouseEvent<HTMLElement>, createQuestion: Function): void {
+    public handleJoinClick(event: React.MouseEvent<HTMLElement>, addQuestion: Function): void {
         var selectedTagIds: number[] = [];
         for (var i = 0; i < this.state.primaryBooleanList.length; i++) {
             if (this.state.primaryBooleanList[i]) {
@@ -85,7 +85,7 @@ class AddQuestion extends React.Component {
                 selectedTagIds.push(this.props.secondaryTagsIds[i]);
             }
         }
-        createQuestion({
+        addQuestion({
             variables: {
                 content: this.state.question,
                 tags: selectedTagIds,
@@ -310,12 +310,12 @@ class AddQuestion extends React.Component {
                             />
                             : <p className="placeHolder text">Finish selecting tags...</p>}
                     </div>
-                    <Mutation mutation={CREATE_QUESTION}>
-                        {(createQuestion) =>
+                    <Mutation mutation={ADD_QUESTION}>
+                        {(addQuestion) =>
                             this.state.doneSelectingTags ?
                                 <p
                                     className="AddButton active"
-                                    onClick={(e) => this.handleJoinClick(e, createQuestion)}
+                                    onClick={(e) => this.handleJoinClick(e, addQuestion)}
                                 >
                                     Add My Question
                                 </p>

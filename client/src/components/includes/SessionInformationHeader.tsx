@@ -7,6 +7,7 @@ import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 
 const people = require('../../media/people.svg');
+const avatar = require('../../media/userAvatar.svg');
 
 type InputProps = {
     sessionId: number,
@@ -77,7 +78,7 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
         var queueLength = 0;
 
         var location = 'Unknown';
-        var taPhotoUrl = 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png';
+        var taPhotoUrl = avatar;
         var tas: string[] = [];
         var session = null;
 
