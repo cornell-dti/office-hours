@@ -2,161 +2,48 @@ import * as React from 'react';
 import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
 
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import { ChildProps } from 'react-apollo';
-
 const people = require('../../media/people.svg');
 
-type InputProps = {
-    sessionId: number,
-    callback: Function,
-    isDesktop: boolean,
-    data: {
-        sessionBySessionId?: {
-            sessionTasBySessionId: {
-                nodes: [TANode]
-            },
-            building: string,
-            room: string,
-            courseByCourseId: {
-                name: string
-            }
-            sessionSeryBySessionSeriesId: {
-                building: string,
-                room: string,
-                courseByCourseId: {
-                    name: string
-                },
-                sessionSeriesTasBySessionSeriesId: {
-                    nodes: [TANode]
-                }
-            },
-            questionsBySessionId: {
-                nodes: [{
-                    timeAddressed: Date
-                }]
-            },
-            startTime: Date,
-            endTime: Date,
-        },
-    },
-};
-
-const QUERY = gql`
-    query getHeaderInformation($sessionId: Int!) {
-        sessionBySessionId(sessionId: $sessionId) {
-            building
-            room
-            startTime
-            courseByCourseId {
-                name
-            }
-            endTime
-            questionsBySessionId {
-                nodes {
-                    timeAddressed
-                }
-            }
-            sessionSeryBySessionSeriesId {
-                building
-                room
-                courseByCourseId {
-                    name
-                }
-                sessionSeriesTasBySessionSeriesId {
-                    nodes {
-                        userByUserId {
-                            firstName
-                            lastName
-                        }
-                    }
-                }
-            }
-            sessionTasBySessionId {
-                nodes {
-                    userByUserId {
-                        firstName
-                        lastName
-                    }
-                }
-            }
-        }
-    }
-`;
-
-const withData = graphql<InputProps, Response>(QUERY, {
-    options: ({ sessionId }) => ({
-        variables: { sessionId: sessionId }
-    })
-});
-
-class SessionInformationHeader extends React.Component<ChildProps<InputProps, Response>> {
+class SessionInformationHeader extends React.Component {
+    props: {
+        session: AppSession,
+        callback: Function,
+        isDesktop: boolean,
+    };
 
     handleBackClick = () => {
         this.props.callback();
     }
 
     render() {
-        var queueLength = 0;
-
-        var location = 'Unknown';
-        var tas: string[] = [];
-        var session = null;
-
-        if (this.props.data.sessionBySessionId) {
-            session = this.props.data.sessionBySessionId;
-
-            session.sessionTasBySessionId.nodes.forEach(ta => {
-                tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
-            });
-            if (session.sessionSeryBySessionSeriesId) {
-                if (tas.length === 0) {
-                    session.sessionSeryBySessionSeriesId.sessionSeriesTasBySessionSeriesId.nodes.forEach(ta => {
-                        tas.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
-                    });
-                }
-
-                location = session.sessionSeryBySessionSeriesId.building +
-                    ' ' + session.sessionSeryBySessionSeriesId.room;
-            }
-            if (session.building !== null) {
-                location = session.building + ' ' + session.room;
-            }
-
-            session.questionsBySessionId.nodes.forEach(question => {
-                if (question.timeAddressed === null) {
-                    queueLength += 1;
-                }
-            });
-        }
+        const session = this.props.session;
         if (this.props.isDesktop) {
             return (
                 <header className="DesktopSessionInformationHeader" >
                     <div className="Picture">
-                        <img
-                            src={'https://i2.wp.com/puppypassionn.org/wp-content/' +
-                                'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
-                        />
+                        <img src={session.sessionTasBySessionId.nodes[0].userByUserId.photoUrl} />
                     </div>
                     <div className="Details">
-                        <p className="Location">{location || 'Unknown'}</p>
-                        {session &&
-                            <React.Fragment>
-                                <Moment date={session.startTime} interval={0} format={'h:mm A'} />
-                                <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
-                                <p className="Date">
-                                    <Icon name="calendar" />
-                                    <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
-                                </p>
-                                <p>Held by <span className="black"> {tas.length > 0 && tas[0]} </span></p>
-                            </React.Fragment>
-                        }
+                        <p className="Location">{session.building + ' ' + session.room}</p>
+                        <Moment date={session.startTime} interval={0} format={'h:mm A'} />
+                        <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
+                        <p className="Date">
+                            <Icon name="calendar" />
+                            <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
+                        </p>
+                        <p>Held by <span className="black">
+                            {session.sessionTasBySessionId.nodes.map(ta =>
+                                ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName
+                            )}
+                        </span></p>
                     </div>
                     <div className="QueueWrap">
                         <div className="QueueInfo">
                             <img src={people} />
-                            <p><span className="red">{queueLength}</span> ahead</p>
+                            <p>
+                                <span className="red">{session.questionsBySessionId.nodes.length} </span>
+                                ahead
+                            </p>
                         </div>
                     </div>
                 </header>
@@ -167,27 +54,16 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                 <div className="header">
                     <p className="BackButton" onClick={this.handleBackClick}>
                         <i className="left" />
-                        {
-                            session &&
-                            session.courseByCourseId && session.courseByCourseId.name ||
-                            session &&
-                            session.sessionSeryBySessionSeriesId.courseByCourseId.name
-                        }
+                        {/* {data.courseByCourseId.name} */}
                     </p>
                     <div className="CourseInfo">
                         <div className="CourseDetails">
-                            <p className="Location">{location || 'Unknown'}</p>
-                            <p>{session &&
-                                <React.Fragment>
-                                    <Moment date={session.startTime} interval={0} format={'h:mm A'} />
-                                    <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
-                                </React.Fragment>}</p>
+                            <p className="Location">{session.building + ' ' + session.room}</p>
+                            <Moment date={session.startTime} interval={0} format={'h:mm A'} />
+                            <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
                         </div>
                         <div className="Picture">
-                            <img
-                                src={'https://i2.wp.com/puppypassionn.org/wp-content/' +
-                                    'uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1'}
-                            />
+                            <img src={session.sessionTasBySessionId.nodes[0].userByUserId.photoUrl} />
                         </div>
                     </div>
                 </div>
@@ -195,26 +71,22 @@ class SessionInformationHeader extends React.Component<ChildProps<InputProps, Re
                     <hr />
                     <div className="QueueInfo">
                         <img src={people} />
-                        <p><span className="red">{queueLength}</span> ahead</p>
+                        <p>
+                            <span className="red">{session.questionsBySessionId.nodes.length}</span>
+                            ahead
+                        </p>
                     </div>
                     <div className="OfficeHourInfo">
                         <div className="OfficeHourDate">
                             <p><Icon name="calendar" />
-                                {
-                                    session &&
-                                    <Moment
-                                        date={session.startTime}
-                                        interval={0}
-                                        format={'dddd, D MMM'}
-                                    />
-                                }
+                                <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
                             </p>
                         </div>
-                        <p>Held by <span className="black"> {tas.length > 0 && tas[0]} </span></p>
+                        <p>Held by <span className="black"> Ryan Slama </span></p>
                     </div>
                 </div>
             </header>
         );
     }
 }
-export default withData(SessionInformationHeader);
+export default SessionInformationHeader;

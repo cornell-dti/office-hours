@@ -1,9 +1,7 @@
 import * as React from 'react';
 import * as H from 'history';
 
-import SessionInformationHeader from '../includes/SessionInformationHeader';
-import ConnectedSessionQuestions from '../includes/ConnectedSessionQuestions';
-
+import SessionView from '../includes/SessionView';
 import ConnectedQuestionView from '../includes/ConnectedQuestionView';
 
 import CalendarHeader from '../includes/CalendarHeader';
@@ -45,6 +43,7 @@ const GET_DATA = gql`
                             firstName
                             lastName
                             photoUrl
+                            userId
                         }
                         questionTagsByQuestionId {
                             nodes {
@@ -255,30 +254,16 @@ class SplitView extends React.Component {
                                     activeSessionId={this.state.sessionId}
                                 />
                             </aside>
-                        }{(this.state.width > MOBILE_BREAKPOINT ||
-                            (this.state.width <= MOBILE_BREAKPOINT &&
-                                this.state.activeView !== 'calendar')) &&
-                            <section className={'StudentSessionView '}>
-                                {this.state.sessionId === -1 ?
-                                    <p className="noSessionSelected">Please Select an Office Hour from the Calendar.</p>
-                                    : <React.Fragment>
-                                        <SessionInformationHeader
-                                            sessionId={this.state.sessionId}
-                                            data={{}}
-                                            callback={this.handleBackClick}
-                                            isDesktop={this.state.width > MOBILE_BREAKPOINT}
-                                        />
-                                        <div className="splitQuestions">
-                                            <ConnectedSessionQuestions
-                                                sessionId={this.state.sessionId}
-                                                data={{}}
-                                                userId={1}
-                                                handleJoinClick={this.handleJoinClick}
-                                            />
-                                        </div>
-                                    </React.Fragment>
-                                }
-                            </section>
+                        }{
+                            (this.state.width > MOBILE_BREAKPOINT ||
+                                (this.state.width <= MOBILE_BREAKPOINT &&
+                                    this.state.activeView !== 'calendar')) &&
+                            <SessionView
+                                id={this.state.sessionId}
+                                isDesktop={this.state.width > MOBILE_BREAKPOINT}
+                                backCallback={this.handleBackClick}
+                                joinCallback={this.handleJoinClick}
+                            />
                         }{
                             (this.state.activeView === 'addQuestion') &&
                             <React.Fragment>

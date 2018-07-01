@@ -32,14 +32,9 @@ const userId = 1;   // TODO fetch from cookie
 class SessionQuestionsComponent extends React.Component {
 
     props: {
-        questionId: number,
-        studentPicture: string,
-        studentName: string,
-        studentQuestion: string,
-        tags: Tag[],
+        question: AppQuestion,
         index: number,
         isTA: boolean,
-        time: string,
         isMyQuestion: boolean
     };
 
@@ -66,7 +61,7 @@ class SessionQuestionsComponent extends React.Component {
     _onClickDelete(event: React.MouseEvent<HTMLElement>, updateQuestion: Function) {
         updateQuestion({
             variables: {
-                questionId: this.props.questionId,
+                questionId: this.props.question.questionId,
                 status: 'noshow',
                 timeResolved: new Date(),
                 answererId: userId
@@ -77,7 +72,7 @@ class SessionQuestionsComponent extends React.Component {
     _onClickResolve(event: React.MouseEvent<HTMLElement>, updateQuestion: Function) {
         updateQuestion({
             variables: {
-                questionId: this.props.questionId,
+                questionId: this.props.question.questionId,
                 status: 'resolved',
                 timeResolved: new Date(),
                 answererId: userId
@@ -89,7 +84,7 @@ class SessionQuestionsComponent extends React.Component {
     _onClickRetract(event: React.MouseEvent<HTMLElement>, updateQuestion: Function) {
         updateQuestion({
             variables: {
-                questionId: this.props.questionId,
+                questionId: this.props.question.questionId,
                 status: 'retracted',
                 timeResolved: new Date(),
                 answererId: userId
@@ -98,14 +93,15 @@ class SessionQuestionsComponent extends React.Component {
     }
 
     render() {
-        var tagsList = this.props.tags.map(
+        var question = this.props.question;
+        var tagsList = this.props.question.questionTagsByQuestioId.nodes.map(
             (tag) => {
                 return (
                     <SelectedTags
-                        key={tag.id}
+                        key={tag.tagByTagId.name}
                         ifSelected={false}
-                        tag={tag.name}
-                        level={tag.level}
+                        tag={tag.tagByTagId.name}
+                        level={tag.tagByTagId.level}
                         index={0}
                         onClick={null}
                     />
@@ -121,17 +117,19 @@ class SessionQuestionsComponent extends React.Component {
                 {
                     this.props.isTA &&
                     <div className="studentInformation">
-                        <img src={this.props.studentPicture} />
-                        <span className="Name">{this.props.studentName}</span>
+                        <img src={question.userByAskerId.photoUrl} />
+                        <span className="Name">
+                            {question.userByAskerId.firstName + ' ' + question.userByAskerId.lastName}
+                        </span>
                     </div>
                 }
-                <p className="Question">{this.props.studentQuestion}</p>
+                <p className="Question">{question.content}</p>
                 <div className="Tags">
                     {tagsList}
                 </div>
                 <div className="BottomBar">
                     <p className="Order">{this.getDisplayText(this.props.index)}</p>
-                    <p className="Time">{<Moment date={this.props.time} interval={0} format={'hh:mm A'} />}</p>
+                    <p className="Time">{<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}</p>
                 </div>
                 {
                     this.props.isTA &&
