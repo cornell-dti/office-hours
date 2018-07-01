@@ -32,7 +32,6 @@ class SessionQuestionsContainer extends React.Component {
         }
 
         return (
-
             <div className="SessionQuestionsContainer" >
                 {!this.props.isTA && userQuestionIndex === -1 &&
                     <div className="SessionJoinButton" onClick={() => this.props.handleJoinClick()}>
@@ -42,25 +41,18 @@ class SessionQuestionsContainer extends React.Component {
                 {!this.props.isTA && questions && questions.length > 0 && userQuestionIndex !== -1 &&
                     <div className="User">
                         <p className="QuestionHeader">My Question</p>
-                        {
-                            <SessionQuestionsComponent
-                                key={questions[userQuestionIndex].questionId}
-                                question={questions[userQuestionIndex]}
-                                index={userQuestionIndex}
-                                isTA={this.props.isTA}
-                                isMyQuestion={true}
-                            />
-                        }
+                        <SessionQuestionsComponent
+                            key={questions[userQuestionIndex].questionId}
+                            question={questions[userQuestionIndex]}
+                            index={userQuestionIndex}
+                            isTA={this.props.isTA}
+                            isMyQuestion={true}
+                        />
                         <p className="Queue">Queue</p>
                     </div>
                 }
-                {questions && questions.length > 0 &&
-                    <React.Fragment>
-                        {cardList}
-                    </React.Fragment>
-                }
-                {
-                    questions && questions.length === 0 &&
+                {questions && questions.length > 0 && cardList}
+                {questions && questions.length === 0 &&
                     <React.Fragment>
                         <p className="noQuestionsHeading">Queue Currently Empty</p>
                         {!this.props.isTA
@@ -68,9 +60,7 @@ class SessionQuestionsContainer extends React.Component {
                             : <p className="noQuestionsWarning">No questions in the queue yet. </p>
                         }
                     </React.Fragment>
-
                 }
-
             </div>
         );
     }

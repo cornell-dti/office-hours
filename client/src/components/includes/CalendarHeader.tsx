@@ -47,6 +47,7 @@ class CalendarHeader extends React.Component<ChildProps<InputProps, Response>> {
                     {this.props.currentCourse}
                     {data
                         && data.courseByCourseId
+                        && data.courseByCourseId.courseUsersByCourseId
                         && data.courseByCourseId.courseUsersByCourseId.nodes[0].role === 'ta'
                         && <span className="TAMarker">TA</span>}
                     <button className="CourseSelectButton">

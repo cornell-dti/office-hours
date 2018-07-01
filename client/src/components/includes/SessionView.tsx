@@ -56,7 +56,6 @@ interface Variables {
 class SessionDataQuery extends Query<SessionData, Variables> { }
 
 class SessionView extends React.Component {
-
     props: {
         id: number,
         isDesktop: boolean,
@@ -65,39 +64,40 @@ class SessionView extends React.Component {
     };
 
     render() {
-        return (
-            <section className={'StudentSessionView '}>
-                {this.props.id === -1 ?
+        if (this.props.id === -1) {
+            return (
+                <section className="StudentSessionView">
                     <p className="noSessionSelected">Please Select an Office Hour from the Calendar.</p>
-                    :
-                    <SessionDataQuery
-                        query={GET_SESSION_DATA}
-                        variables={{ sessionId: this.props.id }}
-                    >
-                        {({ loading, data, error }) => {
-                            if (error) { return <h1>ERROR</h1>; }
-                            if (!data || !data.sessionBySessionId) { return <div>Loading...</div>; }
-
-                            return (
-                                <React.Fragment>
-                                    <SessionInformationHeader
-                                        session={data.sessionBySessionId}
-                                        callback={this.props.backCallback}
-                                        isDesktop={this.props.isDesktop}
+                </section>
+            );
+        }
+        return (
+            <section className="StudentSessionView">
+                <SessionDataQuery
+                    query={GET_SESSION_DATA}
+                    variables={{ sessionId: this.props.id }}
+                >
+                    {({ loading, data, error }) => {
+                        if (error) { return <h1>ERROR</h1>; }
+                        if (!data || !data.sessionBySessionId) { return <div>Loading...</div>; }
+                        return (
+                            <React.Fragment>
+                                <SessionInformationHeader
+                                    session={data.sessionBySessionId}
+                                    callback={this.props.backCallback}
+                                    isDesktop={this.props.isDesktop}
+                                />
+                                <div className="splitQuestions">
+                                    <SessionQuestionsContainer
+                                        isTA={false}
+                                        questions={data.sessionBySessionId.questionsBySessionId.nodes}
+                                        handleJoinClick={this.props.joinCallback}
                                     />
-                                    <div className="splitQuestions">
-                                        <SessionQuestionsContainer
-                                            isTA={false}
-                                            questions={data.sessionBySessionId.questionsBySessionId.nodes}
-                                            handleJoinClick={this.props.joinCallback}
-                                        />
-                                    </div>
-                                </React.Fragment>
-                            );
-                        }}
-
-                    </SessionDataQuery>
-                }
+                                </div>
+                            </React.Fragment>
+                        );
+                    }}
+                </SessionDataQuery>
             </section>
         );
     }

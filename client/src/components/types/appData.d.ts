@@ -40,7 +40,7 @@ interface AppQuestion {
     status: string;
     timeEntered: Date;
     userByAskerId: AppUser;
-    questionTagsByQuestioId: {
+    questionTagsByQuestionId: {
         nodes: [AppTag]
     }
 }

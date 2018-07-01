@@ -30,7 +30,6 @@ mutation UpdateQuestion(
 const userId = 1;   // TODO fetch from cookie
 
 class SessionQuestionsComponent extends React.Component {
-
     props: {
         question: AppQuestion,
         index: number,
@@ -40,9 +39,7 @@ class SessionQuestionsComponent extends React.Component {
 
     constructor(props: {}) {
         super(props);
-        this._onClickDelete = this._onClickDelete.bind(this);
-        this._onClickResolve = this._onClickResolve.bind(this);
-        this._onClickRetract = this._onClickRetract.bind(this);
+        this._onClick = this._onClick.bind(this);
     }
 
     // Given an index from [1..n], converts it to text that is displayed
@@ -58,34 +55,11 @@ class SessionQuestionsComponent extends React.Component {
         }
     }
 
-    _onClickDelete(event: React.MouseEvent<HTMLElement>, updateQuestion: Function) {
+    _onClick(event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) {
         updateQuestion({
             variables: {
                 questionId: this.props.question.questionId,
-                status: 'noshow',
-                timeResolved: new Date(),
-                answererId: userId
-            }
-        });
-    }
-
-    _onClickResolve(event: React.MouseEvent<HTMLElement>, updateQuestion: Function) {
-        updateQuestion({
-            variables: {
-                questionId: this.props.question.questionId,
-                status: 'resolved',
-                timeResolved: new Date(),
-                answererId: userId
-            }
-        });
-    }
-
-    // User retracts (i.e. removes) their own question from the queue
-    _onClickRetract(event: React.MouseEvent<HTMLElement>, updateQuestion: Function) {
-        updateQuestion({
-            variables: {
-                questionId: this.props.question.questionId,
-                status: 'retracted',
+                status: status,
                 timeResolved: new Date(),
                 answererId: userId
             }
@@ -94,22 +68,6 @@ class SessionQuestionsComponent extends React.Component {
 
     render() {
         var question = this.props.question;
-        var tagsList = this.props.question.questionTagsByQuestioId.nodes.map(
-            (tag) => {
-                return (
-                    <SelectedTags
-                        key={tag.tagByTagId.name}
-                        ifSelected={false}
-                        tag={tag.tagByTagId.name}
-                        level={tag.tagByTagId.level}
-                        index={0}
-                        onClick={null}
-                    />
-                );
-                // return <p key={tag.id}>{tag.name}</p>;
-            }
-        );
-
         const myQuestionCSS = this.props.isMyQuestion ? ' MyQuestion' : '';
 
         return (
@@ -125,7 +83,16 @@ class SessionQuestionsComponent extends React.Component {
                 }
                 <p className="Question">{question.content}</p>
                 <div className="Tags">
-                    {tagsList}
+                    {question.questionTagsByQuestionId.nodes.map(
+                        (tag) => <SelectedTags
+                            key={tag.tagByTagId.name}
+                            ifSelected={false}
+                            tag={tag.tagByTagId.name}
+                            level={tag.tagByTagId.level}
+                            index={0}
+                            onClick={null}
+                        />
+                    )}
                 </div>
                 <div className="BottomBar">
                     <p className="Order">{this.getDisplayText(this.props.index)}</p>
@@ -140,13 +107,13 @@ class SessionQuestionsComponent extends React.Component {
                                 <div className="TAButtons">
                                     <p
                                         className="Delete"
-                                        onClick={(e) => this._onClickDelete(e, updateQuestion)}
+                                        onClick={(e) => this._onClick(e, updateQuestion, 'noshow')}
                                     >
                                         No-Show
                                     </p>
                                     <p
                                         className="Resolve"
-                                        onClick={(e) => this._onClickResolve(e, updateQuestion)}
+                                        onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
                                     >
                                         <Icon name="check" /> Resolve
                                     </p>
@@ -162,7 +129,7 @@ class SessionQuestionsComponent extends React.Component {
                             <hr />
                             <p
                                 className="Remove"
-                                onClick={(e) => this._onClickRetract(e, updateQuestion)}
+                                onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
                             >
                                 <Icon name="close" /> Remove
                             </p>
