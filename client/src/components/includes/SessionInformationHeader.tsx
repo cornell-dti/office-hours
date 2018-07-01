@@ -7,6 +7,7 @@ const people = require('../../media/people.svg');
 class SessionInformationHeader extends React.Component {
     props: {
         session: AppSession,
+        course: AppCourse,
         callback: Function,
         isDesktop: boolean,
     };
@@ -54,7 +55,7 @@ class SessionInformationHeader extends React.Component {
                 <div className="header">
                     <p className="BackButton" onClick={this.handleBackClick}>
                         <i className="left" />
-                        {/* {data.courseByCourseId.name} */}
+                        {this.props.course.name}
                     </p>
                     <div className="CourseInfo">
                         <div className="CourseDetails">
@@ -72,7 +73,7 @@ class SessionInformationHeader extends React.Component {
                     <div className="QueueInfo">
                         <img src={people} />
                         <p>
-                            <span className="red">{session.questionsBySessionId.nodes.length}</span>
+                            <span className="red">{session.questionsBySessionId.nodes.length} </span>
                             ahead
                         </p>
                     </div>
@@ -82,7 +83,11 @@ class SessionInformationHeader extends React.Component {
                                 <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
                             </p>
                         </div>
-                        <p>Held by <span className="black"> Ryan Slama </span></p>
+                        <p>Held by <span className="black">
+                            {session.sessionTasBySessionId.nodes.map(ta =>
+                                ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName
+                            )}
+                        </span></p>
                     </div>
                 </div>
             </header>
