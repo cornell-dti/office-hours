@@ -12,47 +12,39 @@ class SessionQuestionsContainer extends React.Component {
 
     render() {
         var questions = this.props.questions;
-        var userQuestionIndex: number = -1;
-        var cardList: JSX.Element[] = [];
-        if (questions) {
-            questions.forEach((question, i: number) => {
-                // TODO: change before shipping
-                if (question.userByAskerId.userId === this.props.myUserId) {
-                    userQuestionIndex = i;
-                }
-                cardList.push(
-                    <SessionQuestionsComponent
-                        key={question.questionId}
-                        question={question}
-                        index={i}
-                        isTA={this.props.isTA}
-                        isMyQuestion={userQuestionIndex === i && !this.props.isTA}
-                    />
-                );
-            });
-        }
+        var myQuestion = questions && questions.filter(q => q.userByAskerId.userId === this.props.myUserId);
 
         return (
             <div className="SessionQuestionsContainer" >
-                {!this.props.isTA && userQuestionIndex === -1 &&
+                {!this.props.isTA && myQuestion && myQuestion.length === 0 &&
                     <div className="SessionJoinButton" onClick={() => this.props.handleJoinClick()}>
                         <p><Icon name="plus" /> Join the Queue</p>
                     </div>
                 }
-                {!this.props.isTA && questions && questions.length > 0 && userQuestionIndex !== -1 &&
+                {questions && myQuestion && myQuestion.length > 0 &&
                     <div className="User">
                         <p className="QuestionHeader">My Question</p>
                         <SessionQuestionsComponent
-                            key={questions[userQuestionIndex].questionId}
-                            question={questions[userQuestionIndex]}
-                            index={userQuestionIndex}
+                            key={myQuestion[0].questionId}
+                            question={myQuestion[0]}
+                            index={questions.indexOf(myQuestion[0])}
                             isTA={this.props.isTA}
                             isMyQuestion={true}
                         />
                         <p className="Queue">Queue</p>
                     </div>
                 }
-                {questions && questions.length > 0 && cardList}
+                {questions && questions.length > 0 &&
+                    questions.map((question, i: number) => (
+                        <SessionQuestionsComponent
+                            key={question.questionId}
+                            question={question}
+                            index={i}
+                            isTA={this.props.isTA}
+                            isMyQuestion={question.userByAskerId.userId === this.props.myUserId}
+                        />
+                    ))
+                }
                 {questions && questions.length === 0 &&
                     <React.Fragment>
                         <p className="noQuestionsHeading">Queue Currently Empty</p>
