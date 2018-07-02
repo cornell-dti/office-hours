@@ -3,6 +3,7 @@ import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
 
 const people = require('../../media/people.svg');
+const avatar = require('../../media/userAvatar.svg');
 
 class SessionInformationHeader extends React.Component {
     props: {

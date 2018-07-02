@@ -10,11 +10,6 @@ interface AppCourse {
     name: string;
 }
 
-interface SessionData {
-    sessionBySessionId: AppSession;
-    courseByCourseId: AppCourse;
-}
-
 interface AppSession {
     sessionId: number;
     startTime: Date;
@@ -60,4 +55,15 @@ interface AppUser {
     lastName: string;
     photoUrl: string;
     userId: number;
+}
+
+interface CurrentUserRole {
+    nodes: [{
+        courseUsersByUserId: {
+            nodes: [{
+                role: string;
+                userId: number;
+            }]
+        }
+    }]
 }

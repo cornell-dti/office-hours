@@ -6,6 +6,7 @@ class SessionQuestionsContainer extends React.Component {
     props: {
         isTA: boolean,
         questions: AppQuestion[] | null,
+        myUserId: number,
         handleJoinClick: Function,
     };
 
@@ -16,7 +17,7 @@ class SessionQuestionsContainer extends React.Component {
         if (questions) {
             questions.forEach((question, i: number) => {
                 // TODO: change before shipping
-                if (question.userByAskerId.userId === 100) {
+                if (question.userByAskerId.userId === this.props.myUserId) {
                     userQuestionIndex = i;
                 }
                 cardList.push(

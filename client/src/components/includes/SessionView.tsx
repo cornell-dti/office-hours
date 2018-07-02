@@ -6,8 +6,24 @@ import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 
+interface SessionData {
+    sessionBySessionId: AppSession;
+    courseByCourseId: AppCourse;
+    apiGetCurrentUser: CurrentUserRole;
+}
+
 const GET_SESSION_DATA = gql`
 query getDataForSession($sessionId: Int!, $courseId: Int!) {
+    apiGetCurrentUser {
+        nodes {
+            courseUsersByUserId(condition:{courseId:$courseId}) {
+                nodes {
+                    role
+                    userId
+                }
+            }
+        }
+    }
     courseByCourseId(courseId: $courseId) {
         name
         code
@@ -91,9 +107,12 @@ class SessionView extends React.Component {
                                     />
                                     <div className="splitQuestions">
                                         <SessionQuestionsContainer
-                                            isTA={false}
+                                            isTA={data.apiGetCurrentUser.nodes[0].
+                                                courseUsersByUserId.nodes[0].role === 'ta'}
                                             questions={data.sessionBySessionId.questionsBySessionId.nodes}
                                             handleJoinClick={this.props.joinCallback}
+                                            myUserId={data.apiGetCurrentUser.nodes[0].
+                                                courseUsersByUserId.nodes[0].userId}
                                         />
                                     </div>
                                 </React.Fragment>

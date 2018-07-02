@@ -8,22 +8,13 @@ import { Mutation } from 'react-apollo';
 import SelectedTags from '../includes/SelectedTags';
 
 const ADD_QUESTION = gql`
-mutation AddQuestion($content: String!, $tags: [Int],  $sessionId: Int!, $askerId: Int!) {
-    apiAddQuestion(
-        input: {
-            _content: $content,
-            _status: "unresolved",
-            _sessionId: $sessionId,
-            _askerId: $askerId,
-            _tags: $tags
-        }
-    ) {
+mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!) {
+    apiAddQuestion(input: {_content: $content, _tags: $tags, _status: "unresolved", 
+        _sessionId: $sessionId}) {
         clientMutationId
     }
 }
 `;
-
-const userId = 1;   // TODO fetch from cookie
 
 class AddQuestion extends React.Component {
 
@@ -82,7 +73,7 @@ class AddQuestion extends React.Component {
         this.setState({ redirect: true });
     }
 
-    public handleJoinClick(event: React.MouseEvent<HTMLElement>, createQuestion: Function): void {
+    public handleJoinClick(event: React.MouseEvent<HTMLElement>, addQuestion: Function): void {
         var selectedTagIds: number[] = [];
         for (var i = 0; i < this.state.primaryBooleanList.length; i++) {
             if (this.state.primaryBooleanList[i]) {
@@ -94,12 +85,11 @@ class AddQuestion extends React.Component {
                 selectedTagIds.push(this.props.secondaryTagsIds[i]);
             }
         }
-        createQuestion({
+        addQuestion({
             variables: {
                 content: this.state.question,
                 tags: selectedTagIds,
-                sessionId: this.props.sessionId,
-                askerId: userId
+                sessionId: this.props.sessionId
             }
         });
         this.setState({ redirect: true });
@@ -321,11 +311,11 @@ class AddQuestion extends React.Component {
                             : <p className="placeHolder text">Finish selecting tags...</p>}
                     </div>
                     <Mutation mutation={ADD_QUESTION}>
-                        {(createQuestion) =>
+                        {(addQuestion) =>
                             this.state.doneSelectingTags ?
                                 <p
                                     className="AddButton active"
-                                    onClick={(e) => this.handleJoinClick(e, createQuestion)}
+                                    onClick={(e) => this.handleJoinClick(e, addQuestion)}
                                 >
                                     Add My Question
                                 </p>
