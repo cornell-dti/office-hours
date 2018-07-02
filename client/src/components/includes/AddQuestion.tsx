@@ -218,7 +218,7 @@ class AddQuestion extends React.Component {
                 <SelectedTags
                     index={index}
                     tag={tag}
-                    ifSelected={this.state.topicBooleanList[index]}
+                    isSelected={this.state.topicBooleanList[index]}
                     onClick={this.handleTopicSelected}
                 />
             );
@@ -227,14 +227,14 @@ class AddQuestion extends React.Component {
 
         var collapsedPrimary = primaryTagsList.filter(
             (tag) => {
-                return tag.props.ifSelected;
+                return tag.props.isSelected;
             }
         );
 
         var collapsedSecondary = secondaryTagsList.filter(
             (tag) => {
                 if (tag) {
-                    return tag.props.ifSelected;
+                    return tag.props.isSelected;
                 } else {
                     return false;
                 }

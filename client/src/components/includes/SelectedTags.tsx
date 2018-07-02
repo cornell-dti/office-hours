@@ -24,9 +24,9 @@ class SelectedTags extends React.Component {
     render() {
         return (
             <p
-                className={'tag ' +
-                    (this.props.level === 1) ? 'primaryTag' : 'secondaryTag' +
-                    this.props.isSelected && ' selectedTag'}
+                className={['tag',
+                    (this.props.level === 1) ? 'primaryTag' : 'secondaryTag',
+                    this.props.isSelected && 'selectedTag'].join(' ')}
                 onClick={this._onClick}
             >
                 {this.props.tag}
