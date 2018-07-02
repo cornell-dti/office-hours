@@ -60,13 +60,13 @@ passport.use(new GoogleStrategy(
             photoUrl: profile._json.picture
         };
 
-        if (variables.firstName.length == 0) {
+        if (variables.firstName.length === 0) {
             delete variables.firstName;
         }
-        if (variables.lastName.length == 0) {
+        if (variables.lastName.length === 0) {
             delete variables.lastName;
         }
-        if (variables.photoUrl.length == 0) {
+        if (variables.photoUrl.length === 0) {
             delete variables.photoUrl;
         }
 
@@ -93,8 +93,7 @@ passport.use(new GoogleStrategy(
                         userId
                     }
                 }
-            }
-            ",
+            }",
             "variables": "${variablesString}"
         }`;
         request.post({
