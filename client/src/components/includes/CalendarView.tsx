@@ -177,7 +177,7 @@ class CalendarView extends React.Component {
                                     <CalendarHeader
                                         currentCourse="CS 3110"
                                         courseId={this.props.courseId}
-                                        isTa={data.apiGetCurrentUser.nodes[0].
+                                        isTa={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].
                                             courseUsersByUserId.nodes[0].role === 'ta'}
                                     />
                                     <CalendarWeekSelect handleClick={this.handleWeekClick} />
