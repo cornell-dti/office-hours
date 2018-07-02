@@ -34,7 +34,7 @@ var sessionOptions = {
 
 if (app.get('env') === 'production') {
     app.set('trust proxy', 1) // trust first proxy
-    sessionOptions.secure = true // serve secure cookies
+    sessionOptions.secure = true // Only serve cookies on secure connections
 }
 
 app.use(session(sessionOptions))
@@ -72,16 +72,31 @@ passport.use(new GoogleStrategy(
 
         var variablesString = JSON.stringify(variables).replace(/"/g, '\\"');
 
-        var bodyContent = '{"query":"mutation loginUser($email: String!, $googleId: String!, $firstName: String, $lastName: String, $photoUrl: String) {' +
-            'apiFindOrCreateUser(input: {_email: $email, _googleId: $googleId, _firstName: $firstName, _lastName: $lastName, _photoUrl: $photoUrl}) {' +
-            'users {' +
-            'userId' +
-            '}' +
-            '}' +
-            '}' +
-            '","variables":"' +
-            variablesString +
-            '"}';
+        var bodyContent = `{
+            "query": "mutation loginUser(
+                $email: String!,
+                $googleId: String!,
+                $firstName: String,
+                $lastName: String,
+                $photoUrl: String
+            ) {
+                apiFindOrCreateUser(
+                    input: {
+                        _email: $email,
+                        _googleId: $googleId,
+                        _firstName: $firstName,
+                        _lastName: $lastName,
+                        _photoUrl: $photoUrl
+                    }
+                ) {
+                    users {
+                        userId
+                    }
+                }
+            }
+            ",
+            "variables": "${variablesString}"
+        }`;
         request.post({
             headers: { 'content-type': 'application/json' },
             url: ownBaseUrl + '/__gql/graphql',
