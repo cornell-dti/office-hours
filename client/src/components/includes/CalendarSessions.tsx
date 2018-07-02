@@ -19,8 +19,7 @@ class CalendarSessions extends React.Component {
         return (
             <div className="CalendarSessions">
                 {loading && <Loader active={true} content={'Loading'} />}
-                {
-                    !loading && sessions && sessions.length === 0 &&
+                {!loading && sessions && sessions.length === 0 &&
                     <React.Fragment>
                         <p className="noHoursHeading">No Office Hours</p>
                         <p className="noHoursBody">No office hours are scheduled for today.</p>
@@ -28,21 +27,12 @@ class CalendarSessions extends React.Component {
                 }
                 {!loading && sessions && sessions.map(session => (
                     <CalendarSessionCard
-                        start={session.startTime}
-                        end={session.endTime}
-                        ta={
-                            session.sessionTasBySessionId.nodes[0].userByUserId.firstName +
-                            ' ' + session.sessionTasBySessionId.nodes[0].userByUserId.lastName
-                        }
-                        location={session.building + ' ' + session.room}
-                        resolvedNum={0}
-                        aheadNum={0}
-                        id={session.sessionId}
+                        session={session}
                         key={session.sessionId}
                         callback={callback}
                         active={session.sessionId === activeSessionId}
                     />
-                )) }
+                ))}
             </div>
         );
     }
