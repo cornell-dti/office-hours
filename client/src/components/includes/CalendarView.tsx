@@ -8,12 +8,30 @@ import CalendarDateSelect from '../includes/CalendarDateSelect';
 import CalendarSessions from '../includes/CalendarSessions';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
+interface AppData {
+    courseByCourseId: AppCourse;
+    apiGetSessions: {
+        nodes: [AppSession];
+    };
+    apiGetCurrentUser: CurrentUserRole;
+}
+
 const GET_CALENDAR_DATA = gql`
     query getDataForDay(
         $courseId: Int!,
         $beginTime: Datetime,
         $endTime: Datetime
     ) {
+        apiGetCurrentUser {
+            nodes {
+                courseUsersByUserId(condition:{courseId:$courseId}) {
+                    nodes {
+                        role
+                        userId
+                    }
+                }
+            }
+        }
         courseByCourseId(courseId: $courseId) {
             name
             code
@@ -158,9 +176,9 @@ class CalendarView extends React.Component {
                                 <div className="Header">
                                     <CalendarHeader
                                         currentCourse="CS 3110"
-                                        userId={1}
                                         courseId={this.props.courseId}
-                                        isTa={true}
+                                        isTa={data.apiGetCurrentUser.nodes[0].
+                                            courseUsersByUserId.nodes[0].role === 'ta'}
                                     />
                                     <CalendarWeekSelect handleClick={this.handleWeekClick} />
                                 </div>

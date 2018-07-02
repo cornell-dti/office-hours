@@ -4,7 +4,6 @@ class CalendarHeader extends React.Component {
     props: {
         currentCourse: string;
         courseId: number;
-        userId: number;
         isTa: boolean;
     };
 

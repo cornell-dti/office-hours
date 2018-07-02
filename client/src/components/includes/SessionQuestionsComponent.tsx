@@ -68,7 +68,7 @@ class SessionQuestionsComponent extends React.Component {
                     {question.questionTagsByQuestionId.nodes.map(
                         (tag) => <SelectedTags
                             key={tag.tagByTagId.name}
-                            ifSelected={false}
+                            isSelected={false}
                             tag={tag.tagByTagId.name}
                             level={tag.tagByTagId.level}
                             index={0}

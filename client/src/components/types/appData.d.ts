@@ -1,10 +1,3 @@
-interface AppData {
-    courseByCourseId: AppCourse
-    apiGetSessions: {
-        nodes: [AppSession];
-    };
-}
-
 interface AppCourse {
     code: string;
     name: string;
