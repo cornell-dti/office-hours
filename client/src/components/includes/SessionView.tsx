@@ -109,7 +109,8 @@ class SessionView extends React.Component {
                                         <SessionQuestionsContainer
                                             isTA={data.apiGetCurrentUser.nodes[0].
                                                 courseUsersByUserId.nodes[0].role === 'ta'}
-                                            questions={data.sessionBySessionId.questionsBySessionId.nodes}
+                                            questions={data.sessionBySessionId.questionsBySessionId
+                                                .nodes.filter(q => q.status === 'unresolved')}
                                             handleJoinClick={this.props.joinCallback}
                                             myUserId={data.apiGetCurrentUser.nodes[0].
                                                 courseUsersByUserId.nodes[0].userId}
