@@ -29,7 +29,7 @@ var sessionOptions = {
     name: 'queue-me-in-cookie',
     maxAge: 7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* milliseconds */,
     secure: false,
-    secret: (process.env.OH_SESSION_SECRET || "<veWHM#Q9a<k8^")
+    secret: (process.env.OH_SESSION_SECRET || "insecure")
 }
 
 if (app.get('env') === 'production') {
@@ -96,8 +96,14 @@ passport.use(new GoogleStrategy(
             }",
             "variables": "${variablesString}"
         }`;
+
+        const serverJwt = jwt.sign({ userId: -1 }, (process.env.OH_JWT_SECRET || "insecure"), {
+            expiresIn: '30s',
+            audience: 'postgraphql',
+        });
+
         request.post({
-            headers: { 'content-type': 'application/json' },
+            headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${serverJwt}` },
             url: ownBaseUrl + '/__gql/graphql',
             body: bodyContent
         }, function (error, response, body) {
@@ -107,7 +113,7 @@ passport.use(new GoogleStrategy(
 ))
 
 passport.serializeUser(function (user: any, done) {
-    var token = jwt.sign(user, (process.env.OH_JWT_SECRET || "<veWHM#Q9a<k8^"), {
+    var token = jwt.sign(user, (process.env.OH_JWT_SECRET || "insecure"), {
         expiresIn: '1w',
         audience: 'postgraphql',
     });
@@ -169,7 +175,7 @@ app.use(function (req, res, next) {
             req.headers.authorization = `Bearer ${req.user}`;
         } else {
             if (options.fakeuserid) {
-                const fakeJwt = jwt.sign({ userId: options.fakeuserid }, (process.env.OH_JWT_SECRET || "<veWHM#Q9a<k8^"), {
+                const fakeJwt = jwt.sign({ userId: options.fakeuserid }, (process.env.OH_JWT_SECRET || "insecure"), {
                     expiresIn: '1y',
                     audience: 'postgraphql',
                 });
@@ -184,7 +190,7 @@ app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
     graphiql: true,
     graphqlRoute: '/__gql/graphql',
     graphiqlRoute: '/__gql/graphiql',
-    jwtSecret: (process.env.OH_JWT_SECRET || "<veWHM#Q9a<k8^"),
+    jwtSecret: (process.env.OH_JWT_SECRET || "insecure"),
     jwtPgTypeIdentifier: 'public.jwt_token'
 }));
 
