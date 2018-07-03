@@ -294,7 +294,7 @@ All the fields of the newly-inserted row from the [questions](#questions) table
 #### api\_find\_or\_create\_user
 
 ##### Description
-Given the details of a user who has just logged in using Google, this function will find and return the user's existing details in the [users](#users) table. If it is a new user, a new row is inserted into [users](#users) for them. This is meant to be used during the login process, right after the user has successfully logged in via Google.
+Given the details of a user who has just logged in using Google, this function will find and return the user's existing details in the [users](#users) table. If it is a new user, a new row is inserted into [users](#users) for them. This is meant to be used during the login process, right after the user has successfully logged in via Google. Note that only a user that sends a JWT in the Authorization header containing the claim userId=-1 will be allowed to make this call successfully. The server is the only entity that has access to the secret, so only the server is allowed to make this call (after successful Google login); users will not be able to mock the identity of other users by calling this function directly.
 
 ##### Parameters
 - \_email (text): the full email address of the user who logged in
@@ -355,6 +355,7 @@ Trigger functions are prefixed by 'trigger' and **should never be called directl
 |Trigger Function|Table|Condition|Description|
 |---|---|---|---|
 trigger\_before\_update\_question|[questions](#questions)|before update|injects answerer\_id and time\_addressed|
+trigger\_after\_insert\_course|[courses](#courses)|after insert|adds every existing user as a student of the inserted course in [course-users](#course-users)|
 
 ## Types
 
