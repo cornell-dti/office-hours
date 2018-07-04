@@ -8,7 +8,7 @@ class ProfoessorOHInfo extends React.Component {
 
     props: {
         taList: string[]
-        taDefault?: string
+        taDefault?: string[]
         locationBuildingDefault?: string
         locationRoomNumDefault?: string
         startTimeDefault?: (moment.Moment | null)
@@ -27,7 +27,7 @@ class ProfoessorOHInfo extends React.Component {
         this.state = {
             startTime: this.props.startTimeDefault,
             endTime: this.props.endTimeDefault,
-            numAddTA: 0
+            numAddTA: this.props.taDefault !== undefined ? this.props.taDefault.length - 1 : 0
         };
         this.handleStartTime = this.handleStartTime.bind(this);
         this.handleEndTime = this.handleEndTime.bind(this);
@@ -61,7 +61,7 @@ class ProfoessorOHInfo extends React.Component {
             taOptions.push({ value: current, text: current });
         }
 
-        var defaultTA = this.props.taDefault !== undefined ? this.props.taDefault : undefined;
+        var defaultTA = this.props.taDefault !== undefined ? this.props.taDefault : [];
 
         var AddTA = [];
         for (var i = 0; i < this.state.numAddTA; i++) {
@@ -77,7 +77,7 @@ class ProfoessorOHInfo extends React.Component {
             AddTA.push(
                 <div className="AddTA">
                     <Icon name="user" />
-                    <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} />
+                    <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} defaultValue={defaultTA[i + 1]} />
                     {x}
                 </div>
             );
@@ -92,7 +92,7 @@ class ProfoessorOHInfo extends React.Component {
             <div className="ProfessorOHInfo">
                 <div className="TA">
                     <Icon name="user" />
-                    <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} defaultValue={defaultTA} />
+                    <Dropdown className="dropdown" placeholder="TA Name" selection options={taOptions} defaultValue={defaultTA[0]} />
                     <button className={'AddTAButton ' + isMaxTA} disabled={isMaxTA} onClick={() => this.incAddTA(1)}>
                         <Icon name="plus" />
                         Add TA

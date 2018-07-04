@@ -11,7 +11,7 @@ class ProfessorCalendarRow extends React.Component {
         taList: string[]
         timeStart: Date[]
         timeEnd: Date[]
-        officeHoursTas: string[]
+        officeHoursTas: string[][]
         locationBuilding: string[]
         locationRoomNum: string[]
         isSeries: boolean[]
@@ -64,7 +64,7 @@ class ProfessorCalendarRow extends React.Component {
                     <tbody className={'Pair ' + this.props.isExpanded[index]}>
                         <tr className="Preview">
                             <td>{timeStart[index]} to {timeEnd[index]}</td>
-                            <td>{this.props.officeHoursTas[index]}</td>
+                            <td>{this.props.officeHoursTas[index].join(', ')}</td>
                             <td>{this.props.locationBuilding[index]} {this.props.locationRoomNum[index]}</td>
                             <td>
                                 <button className="Edit" onClick={() => this.toggleEdit(index)}>

@@ -15,14 +15,14 @@ class App extends React.Component {
                     <nav>
                         <Link to="/login"> Login View</Link> |
                         <Link to="/course/-1/session/1/question"> Question View</Link> |
-                        <Link to="/professor"> Professor View</Link> |
+                        <Link to="/professor/course/1"> Professor View</Link> |
                         <Link to="/course/-1"> Split View</Link>
                     </nav>
                     <Switch>
                         <Route path="/course/:courseId/session/:sessionId/question" component={ConnectedQuestionView} />
                         <Route path="/login" component={LoginView} />
                         <Route path="/professor-tags" component={ProfessorTags} exact={true} />
-                        <Route path="/professor" component={ProfessorView} exact={true} />
+                        <Route path="/professor/course/:courseId" component={ProfessorView} exact={true} />
                         <Route path="/course/:courseId/session/:sessionId" component={SplitView} />
                         <Route path="/course/:courseId" component={SplitView} />
                     </Switch>

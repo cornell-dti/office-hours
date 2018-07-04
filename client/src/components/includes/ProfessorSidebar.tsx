@@ -32,7 +32,7 @@ class ProfessorSidebar extends React.Component {
                     </div>
                     <div className="divider" />
                     <div className="actions">
-                        <Link to="/professor">
+                        <Link to="/professor/course/1">
                             <button className={selectedArray[2]}>
                                 <Icon name="setting" />
                                 Manage Hours

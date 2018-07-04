@@ -18,7 +18,11 @@
         width: 100%;
         border-collapse: collapse;
 
-        .rows{
+        .ui.loader {
+            left: calc(~'50% + 100px'); // Add sidebar offset
+        }
+
+        .rows {
             width: 100%;
         }
 
@@ -40,6 +44,11 @@
 
         td {
             padding: 7px 0px;
+        }
+
+        td:nth-child(2) {
+            width: 35%;
+            padding-right: 15px;
         }
 
         td:nth-child(4), td:nth-child(5) {

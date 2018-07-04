@@ -18,6 +18,7 @@ query FindSessionsByCourse($courseId: Int!) {
                 userByUserId {
                 firstName
                 lastName
+                userId
                 }
             }
         }
@@ -26,6 +27,7 @@ query FindSessionsByCourse($courseId: Int!) {
                 userByUserId {
                 firstName
                 lastName
+                userId
                 }
             }
         }
@@ -35,16 +37,20 @@ query FindSessionsByCourse($courseId: Int!) {
 
 const withData = graphql<Response, InputProps>(
     QUERY, {
-        options: ({ courseId }) => ({
+        options: ({ match }) => ({
             variables: {
-                courseId: 1
+                courseId: match.params.courseId
             }
         })
     }
 );
 
 type InputProps = {
-    courseId: number
+    match: {
+        params: {
+            courseId: number,
+        },
+    },
     data: {
         courseByCourseId?: {
             tas: {
@@ -58,14 +64,6 @@ type InputProps = {
 };
 
 class ProfessorView extends React.Component<ChildProps<InputProps, Response>> {
-    // props: {
-    //     match: {
-    //         params: {
-    //             courseId: number
-    //         }
-    //     }
-    // };
-
     state: {
         selectedWeekEpoch: number
     };
@@ -135,14 +133,14 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>> {
                         />
                         <div className="Calendar">
                             <ProfessorCalendarTable
-                                // courseId={this.props.match.params.courseId}
-                                courseId={1}
-                                beginTime={new Date(this.state.selectedWeekEpoch)}
-                                endTime={new Date(this.state.selectedWeekEpoch +
+                                _courseId={this.props.match.params.courseId}
+                                _beginTime={new Date(this.state.selectedWeekEpoch)}
+                                _endTime={new Date(this.state.selectedWeekEpoch +
                                     7 /* days */ * 24 /* hours */ * 60 /* minutes */
                                     * 60 /* seconds */ * 1000 /* millis */)}
-                                data={{}}
+                                data={{ loading: true }}
                                 taList={taList}
+                                key={this.state.selectedWeekEpoch}
                             />
                         </div>
                     </div>

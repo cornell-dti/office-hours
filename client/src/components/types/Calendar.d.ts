@@ -10,7 +10,8 @@ type SessionNode = {
     endTime: string,
     building: string,
     room: string,
-    sessionId: number
+    sessionId: number,
+    sessionSeriesId: number,
     sessionSeryBySessionSeriesId: {
         sessionSeriesTasBySessionSeriesId: {
             nodes: [TANode]

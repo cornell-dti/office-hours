@@ -78,7 +78,7 @@ class ProfoessorTagInfo extends React.Component {
                 <div className="NumQuestions">
                     Number of Questions
                     <div className="NumericInput">
-                        <NumericInput min={0} value={defaultNumQuestions} snap strict />
+                        <NumericInput min={0} max={99} value={defaultNumQuestions} snap strict />
                     </div>
                 </div>
             </div>

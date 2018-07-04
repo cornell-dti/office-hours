@@ -5,7 +5,7 @@ import { Checkbox } from 'semantic-ui-react';
 class ProfessorOHInfoDelete extends React.Component {
 
     props: {
-        ta: string
+        ta: string[]
         timeStart: Date,
         timeEnd: Date,
         locationBuilding: string,
@@ -26,7 +26,7 @@ class ProfessorOHInfoDelete extends React.Component {
                 </div>
                 <div className="info">
                     <div className="ta">
-                        {this.props.ta}
+                        {this.props.ta !== undefined && this.props.ta.join(', ')}
                     </div>
                     <div>
                         <span>

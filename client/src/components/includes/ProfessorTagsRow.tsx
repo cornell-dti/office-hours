@@ -62,6 +62,7 @@ class ProfessorTagsRow extends React.Component {
                             <td>{this.props.assignmentName[index]}</td>
                             <td>{timeStart[index].format('MM/DD/YYYY')}</td>
                             <td>{timeEnd[index].format('MM/DD/YYYY')}</td>
+                            <td>{('0' + this.props.numQuestions[index]).slice(-2)}</td>
                             <td>
                                 <button className="Edit" onClick={() => this.toggleEdit(index)}>
                                     <Icon name="pencil" />

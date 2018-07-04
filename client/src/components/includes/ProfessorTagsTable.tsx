@@ -72,13 +72,12 @@ class ProfessorTagsTable extends React.Component {
                     }
                 />
                 <table className="Tags">
-                    <thead className="Header">
-                        <tr>
-                            <th>Title</th>
-                            <th>Assigned</th>
-                            <th className="Due" colSpan={3}>Due</th>
-                        </tr>
-                    </thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Assigned</th>
+                        <th>Due</th>
+                        <th colSpan={3}>Questions</th>
+                    </tr>
                     <ProfessorTagsRow
                         numRows={this.props.assignmentName.length}
                         assignmentName={this.props.assignmentName}
@@ -86,7 +85,7 @@ class ProfessorTagsTable extends React.Component {
                         dateDue={this.props.dateDue}
                         numQuestions={this.props.numQuestions}
 
-                        tableWidth={5}
+                        tableWidth={6}
                         isExpanded={this.state.isExpanded}
                         handleEditToggle={this.toggleEdit}
                         updateDeleteInfo={this.updateDeleteInfo}
