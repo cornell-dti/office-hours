@@ -346,15 +346,16 @@ CREATE TABLE public.users (
     last_name text,
     created_at timestamp without time zone DEFAULT now(),
     last_activity_at timestamp without time zone DEFAULT now(),
-    photo_url text
+    photo_url text,
+    display_name text
 );
 
 
 --
--- Name: api_find_or_create_user(text, text, text, text, text); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_find_or_create_user(text, text, text, text, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_find_or_create_user(_email text, _google_id text, _first_name text, _last_name text, _photo_url text) RETURNS SETOF public.users
+CREATE FUNCTION public.api_find_or_create_user(_email text, _google_id text, _first_name text, _last_name text, _photo_url text, _display_name text) RETURNS SETOF public.users
     LANGUAGE plpgsql
     AS $$ 
 
@@ -373,12 +374,15 @@ begin
 	elsif ((select count(*) from users where google_id = _google_id) > 0) then
 
 		select user_id into _user_id from users where google_id = _google_id;
+		update users set (email, first_name, last_name, photo_url, display_name) =
+			(_email, _first_name, _last_name, _photo_url, _display_name)
+		where user_id = _user_id;
 
 	else
 
-		insert into users (email, google_id, first_name, last_name, photo_url)
+		insert into users (email, google_id, first_name, last_name, photo_url, display_name)
 
-		values (_email, _google_id, _first_name, _last_name, _photo_url)
+		values (_email, _google_id, _first_name, _last_name, _photo_url, _display_name)
 
 		returning user_id into _user_id;
 		for course_row in
@@ -1073,15 +1077,15 @@ COPY public.tags (tag_id, name, course_id, level) FROM stdin;
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.users (user_id, email, google_id, first_name, last_name, created_at, last_activity_at, photo_url) FROM stdin;
-1	cv231@cornell.edu	115064340704113209584	Corey	Valdez	2018-03-25 03:07:23.485	2018-03-25 03:07:26.391	https://randomuser.me/api/portraits/men/46.jpg
-2	ejs928@cornell.edu	139064340704113209582	Edgar	Stewart	2018-03-25 03:08:05.668	2018-03-25 03:08:08.294	https://randomuser.me/api/portraits/men/7.jpg
-3	asm2292@cornell.edu	115064340704118374059	Ada	Morton	2018-03-25 03:08:51.563	2018-03-25 03:08:54.084	https://randomuser.me/api/portraits/women/8.jpg
-4	cr848@cornell.edu	215064340704113209584	Caroline	Robinson	2018-03-25 03:09:25.563	2018-03-25 03:09:28.525	https://randomuser.me/api/portraits/women/59.jpg
-5	ca449@cornell.edu	115064340704113209332	Christopher	Arnold	2018-03-25 03:10:28.166	2018-03-25 03:10:32.518	\N
-6	zz527@cornell.edu	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394	2018-03-25 03:11:22.765	\N
-7	sjw748@cornell.edu	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328	2018-03-25 03:12:47.826	https://randomuser.me/api/portraits/women/81.jpg
-8	clarkson@cs.cornell.edu	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996	2018-03-25 03:13:29.4	https://randomuser.me/api/portraits/men/20.jpg
+COPY public.users (user_id, email, google_id, first_name, last_name, created_at, last_activity_at, photo_url, display_name) FROM stdin;
+1	cv231@cornell.edu	115064340704113209584	Corey	Valdez	2018-03-25 03:07:23.485	2018-03-25 03:07:26.391	https://randomuser.me/api/portraits/men/46.jpg	Corey Valdez
+2	ejs928@cornell.edu	139064340704113209582	Edgar	Stewart	2018-03-25 03:08:05.668	2018-03-25 03:08:08.294	https://randomuser.me/api/portraits/men/7.jpg	Edgar Stewart
+3	asm2292@cornell.edu	115064340704118374059	Ada	Morton	2018-03-25 03:08:51.563	2018-03-25 03:08:54.084	https://randomuser.me/api/portraits/women/8.jpg	Ada Morton
+4	cr848@cornell.edu	215064340704113209584	Caroline	Robinson	2018-03-25 03:09:25.563	2018-03-25 03:09:28.525	https://randomuser.me/api/portraits/women/59.jpg	Caroline Robinson
+5	ca449@cornell.edu	115064340704113209332	Christopher	Arnold	2018-03-25 03:10:28.166	2018-03-25 03:10:32.518	\N	Chris Arnold
+6	zz527@cornell.edu	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394	2018-03-25 03:11:22.765	\N	Zechen Zhang
+7	sjw748@cornell.edu	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328	2018-03-25 03:12:47.826	https://randomuser.me/api/portraits/women/81.jpg	Sue Wilson
+8	clarkson@cs.cornell.edu	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996	2018-03-25 03:13:29.4	https://randomuser.me/api/portraits/men/20.jpg	Michael Clarkson
 \.
 
 
@@ -1124,7 +1128,7 @@ SELECT pg_catalog.setval('public.tags_tag_id_seq', 35, true);
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 15, true);
+SELECT pg_catalog.setval('public.users_user_id_seq', 17, true);
 
 
 --

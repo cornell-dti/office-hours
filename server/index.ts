@@ -57,7 +57,7 @@ passport.use(new GoogleStrategy(
         var variables = {
             googleId: profile._json.sub, email: profile._json.email,
             firstName: profile._json.given_name, lastName: profile._json.family_name,
-            photoUrl: profile._json.picture
+            photoUrl: profile._json.picture, displayName: profile._json.name
         };
 
         if (variables.firstName.length == 0) {
@@ -69,11 +69,14 @@ passport.use(new GoogleStrategy(
         if (variables.photoUrl.length == 0) {
             delete variables.photoUrl;
         }
+        if (variables.displayName.length == 0) {
+            delete variables.displayName;
+        }
 
         var variablesString = JSON.stringify(variables).replace(/"/g, '\\"');
 
-        var bodyContent = '{"query":"mutation loginUser($email: String!, $googleId: String!, $firstName: String, $lastName: String, $photoUrl: String) {' +
-            'apiFindOrCreateUser(input: {_email: $email, _googleId: $googleId, _firstName: $firstName, _lastName: $lastName, _photoUrl: $photoUrl}) {' +
+        var bodyContent = '{"query":"mutation loginUser($email: String!, $googleId: String!, $firstName: String, $lastName: String, $photoUrl: String, $displayName: String) {' +
+            'apiFindOrCreateUser(input: {_email: $email, _googleId: $googleId, _firstName: $firstName, _lastName: $lastName, _photoUrl: $photoUrl, _displayName: $displayName}) {' +
             'users {' +
             'userId' +
             '}' +
@@ -171,7 +174,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
+app.use(postgraphql(process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5434/postgres', {
     graphiql: true,
     graphqlRoute: '/__gql/graphql',
     graphiqlRoute: '/__gql/graphiql',
