@@ -63,9 +63,9 @@ SET default_with_oids = false;
 CREATE TABLE public.questions (
     question_id integer NOT NULL,
     content text NOT NULL,
-    time_entered timestamp without time zone DEFAULT now() NOT NULL,
+    time_entered timestamp with time zone DEFAULT now() NOT NULL,
     status text NOT NULL,
-    time_addressed timestamp without time zone,
+    time_addressed timestamp with time zone,
     session_id integer NOT NULL,
     asker_id integer NOT NULL,
     answerer_id integer
@@ -108,8 +108,8 @@ $$;
 
 CREATE TABLE public.session_series (
     session_series_id integer NOT NULL,
-    start_time timestamp without time zone NOT NULL,
-    end_time timestamp without time zone NOT NULL,
+    start_time timestamp with time zone NOT NULL,
+    end_time timestamp with time zone NOT NULL,
     building text NOT NULL,
     room text NOT NULL,
     course_id integer NOT NULL
@@ -117,10 +117,10 @@ CREATE TABLE public.session_series (
 
 
 --
--- Name: api_create_series(timestamp without time zone, timestamp without time zone, text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_create_series(timestamp with time zone, timestamp with time zone, text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_create_series(_start_time timestamp without time zone, _end_time timestamp without time zone, _building text, _room text, _course_id integer, _tas integer[]) RETURNS SETOF public.session_series
+CREATE FUNCTION public.api_create_series(_start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _course_id integer, _tas integer[]) RETURNS SETOF public.session_series
     LANGUAGE plpgsql
     AS $$
 
@@ -161,8 +161,8 @@ end
 
 CREATE TABLE public.sessions (
     session_id integer NOT NULL,
-    start_time timestamp without time zone NOT NULL,
-    end_time timestamp without time zone NOT NULL,
+    start_time timestamp with time zone NOT NULL,
+    end_time timestamp with time zone NOT NULL,
     building text NOT NULL,
     room text NOT NULL,
     session_series_id integer,
@@ -171,10 +171,10 @@ CREATE TABLE public.sessions (
 
 
 --
--- Name: api_create_session(timestamp without time zone, timestamp without time zone, text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_create_session(timestamp with time zone, timestamp with time zone, text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_create_session(_start_time timestamp without time zone, _end_time timestamp without time zone, _building text, _room text, _course_id integer, _tas integer[]) RETURNS SETOF public.sessions
+CREATE FUNCTION public.api_create_session(_start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _course_id integer, _tas integer[]) RETURNS SETOF public.sessions
     LANGUAGE plpgsql
     AS $$
 
@@ -257,10 +257,10 @@ end
 
 
 --
--- Name: api_edit_series(integer, timestamp without time zone, timestamp without time zone, text, text, integer[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_edit_series(integer, timestamp with time zone, timestamp with time zone, text, text, integer[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_edit_series(_series_id integer, _start_time timestamp without time zone, _end_time timestamp without time zone, _building text, _room text, _tas integer[]) RETURNS SETOF public.session_series
+CREATE FUNCTION public.api_edit_series(_series_id integer, _start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _tas integer[]) RETURNS SETOF public.session_series
     LANGUAGE plpgsql
     AS $$
 
@@ -296,10 +296,10 @@ end
 
 
 --
--- Name: api_edit_session(integer, timestamp without time zone, timestamp without time zone, text, text, integer[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_edit_session(integer, timestamp with time zone, timestamp with time zone, text, text, integer[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_edit_session(_session_id integer, _start_time timestamp without time zone, _end_time timestamp without time zone, _building text, _room text, _tas integer[]) RETURNS SETOF public.sessions
+CREATE FUNCTION public.api_edit_session(_session_id integer, _start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _tas integer[]) RETURNS SETOF public.sessions
     LANGUAGE plpgsql
     AS $$
 
@@ -344,8 +344,8 @@ CREATE TABLE public.users (
     google_id text NOT NULL,
     first_name text,
     last_name text,
-    created_at timestamp without time zone DEFAULT now(),
-    last_activity_at timestamp without time zone DEFAULT now(),
+    created_at timestamp with time zone DEFAULT now(),
+    last_activity_at timestamp with time zone DEFAULT now(),
     photo_url text,
     display_name text
 );
@@ -414,10 +414,10 @@ $$;
 
 
 --
--- Name: api_get_sessions(integer, timestamp without time zone, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_get_sessions(integer, timestamp with time zone, timestamp with time zone); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_get_sessions(_course_id integer, _begin_time timestamp without time zone, _end_time timestamp without time zone) RETURNS SETOF public.sessions
+CREATE FUNCTION public.api_get_sessions(_course_id integer, _begin_time timestamp with time zone, _end_time timestamp with time zone) RETURNS SETOF public.sessions
     LANGUAGE sql STABLE
     AS $$
 select * from sessions where start_time >= _begin_time AND start_time < _end_time AND course_id = _course_id ORDER BY start_time ASC;
@@ -435,13 +435,13 @@ declare
 course integer;
 building text;
 room text;
-start_date_week timestamp without time zone;
-start_date timestamp without time zone;
-end_date_week timestamp without time zone;
-end_date timestamp without time zone;
-cur_date timestamp without time zone;
-session_start_time timestamp without time zone;
-session_end_time timestamp without time zone;
+start_date_week timestamp with time zone;
+start_date timestamp with time zone;
+end_date_week timestamp with time zone;
+end_date timestamp with time zone;
+cur_date timestamp with time zone;
+session_start_time timestamp with time zone;
+session_end_time timestamp with time zone;
 session_start_offset interval;
 session_end_offset interval;
 begin
@@ -483,9 +483,9 @@ CREATE FUNCTION public.internal_sync_series_sessions(_series_id integer) RETURNS
 
 declare
 
-_start_time timestamp without time zone;
+_start_time timestamp with time zone;
 
-_end_time timestamp without time zone;
+_end_time timestamp with time zone;
 
 _building text;
 
@@ -869,7 +869,6 @@ COPY public.course_users (course_id, user_id, role) FROM stdin;
 1	4	student
 1	5	student
 1	7	student
-1	18	student
 \.
 
 
@@ -903,11 +902,9 @@ COPY public.questions (question_id, content, time_entered, status, time_addresse
 --
 
 COPY public.session_series (session_series_id, start_time, end_time, building, room, course_id) FROM stdin;
-18	2018-06-11 11:00:00	2018-06-11 12:00:00	Gates	G17	1
-19	2018-06-11 13:30:00	2018-06-11 14:45:00	Gates	G11	1
-20	2018-06-12 17:30:00	2018-06-11 19:30:00	Rhodes	402	1
-21	2018-06-13 10:30:00	2018-06-13 11:15:00	Surge A	101	1
-22	2018-06-14 09:00:00	2018-06-14 10:00:00	Gates	311	1
+23	2018-07-09 10:00:00-04	2018-07-09 11:00:00-04	Gates	G11	1
+24	2018-07-09 12:30:00-04	2018-07-09 14:00:00-04	Rhodes	402	1
+25	2018-07-03 10:30:00-04	2018-07-03 11:15:00-04	Gates	343	1
 \.
 
 
@@ -916,11 +913,9 @@ COPY public.session_series (session_series_id, start_time, end_time, building, r
 --
 
 COPY public.session_series_tas (session_series_id, user_id) FROM stdin;
-18	8
-19	1
-20	3
-21	6
-22	8
+23	1
+24	3
+25	8
 \.
 
 
@@ -929,42 +924,25 @@ COPY public.session_series_tas (session_series_id, user_id) FROM stdin;
 --
 
 COPY public.session_tas (session_id, user_id) FROM stdin;
-236	8
-237	8
-238	8
-239	8
-240	8
-241	8
-242	8
-243	1
-244	1
-245	1
-246	1
-247	1
-248	1
-249	1
-250	3
-251	3
-252	3
-253	3
-254	3
-255	3
-256	6
-257	6
-258	6
-259	6
-260	6
-261	6
-262	8
-263	8
-264	8
-265	8
-266	8
-267	8
-268	8
-269	3
-270	3
-271	1
+272	1
+273	1
+274	1
+275	1
+276	1
+277	3
+278	3
+279	3
+280	3
+281	3
+282	8
+283	8
+284	8
+285	8
+286	8
+287	1
+287	3
+288	3
+288	8
 \.
 
 
@@ -973,42 +951,23 @@ COPY public.session_tas (session_id, user_id) FROM stdin;
 --
 
 COPY public.sessions (session_id, start_time, end_time, building, room, session_series_id, course_id) FROM stdin;
-250	2018-07-03 17:30:00	2018-07-02 19:30:00	Rhodes	402	20	1
-251	2018-07-10 17:30:00	2018-07-09 19:30:00	Rhodes	402	20	1
-252	2018-07-17 17:30:00	2018-07-16 19:30:00	Rhodes	402	20	1
-253	2018-07-24 17:30:00	2018-07-23 19:30:00	Rhodes	402	20	1
-254	2018-07-31 17:30:00	2018-07-30 19:30:00	Rhodes	402	20	1
-255	2018-08-07 17:30:00	2018-08-06 19:30:00	Rhodes	402	20	1
-256	2018-07-04 10:30:00	2018-07-04 11:15:00	Surge A	101	21	1
-257	2018-07-11 10:30:00	2018-07-11 11:15:00	Surge A	101	21	1
-258	2018-07-18 10:30:00	2018-07-18 11:15:00	Surge A	101	21	1
-259	2018-07-25 10:30:00	2018-07-25 11:15:00	Surge A	101	21	1
-260	2018-08-01 10:30:00	2018-08-01 11:15:00	Surge A	101	21	1
-261	2018-08-08 10:30:00	2018-08-08 11:15:00	Surge A	101	21	1
-262	2018-06-28 09:00:00	2018-06-28 10:00:00	Gates	311	22	1
-263	2018-07-05 09:00:00	2018-07-05 10:00:00	Gates	311	22	1
-264	2018-07-12 09:00:00	2018-07-12 10:00:00	Gates	311	22	1
-265	2018-07-19 09:00:00	2018-07-19 10:00:00	Gates	311	22	1
-266	2018-07-26 09:00:00	2018-07-26 10:00:00	Gates	311	22	1
-267	2018-08-02 09:00:00	2018-08-02 10:00:00	Gates	311	22	1
-268	2018-08-09 09:00:00	2018-08-09 10:00:00	Gates	311	22	1
-269	2018-07-01 12:00:00	2018-07-01 13:00:00	Upson	B60	\N	1
-236	2018-07-02 11:00:00	2018-07-02 12:00:00	Gates	G17	18	1
-237	2018-07-09 11:00:00	2018-07-09 12:00:00	Gates	G17	18	1
-270	2018-07-08 14:00:00	2018-07-08 15:00:00	Upson	B60	\N	1
-238	2018-07-16 11:00:00	2018-07-16 12:00:00	Gates	G17	18	1
-239	2018-07-23 11:00:00	2018-07-23 12:00:00	Gates	G17	18	1
-240	2018-07-30 11:00:00	2018-07-30 12:00:00	Gates	G17	18	1
-241	2018-08-06 11:00:00	2018-08-06 12:00:00	Gates	G17	18	1
-242	2018-08-13 11:00:00	2018-08-13 12:00:00	Gates	G17	18	1
-271	2018-07-15 16:00:00	2018-07-15 17:00:00	Upson	B60	\N	1
-243	2018-07-02 13:30:00	2018-07-02 14:45:00	Gates	G11	19	1
-244	2018-07-09 13:30:00	2018-07-09 14:45:00	Gates	G11	19	1
-245	2018-07-16 13:30:00	2018-07-16 14:45:00	Gates	G11	19	1
-246	2018-07-23 13:30:00	2018-07-23 14:45:00	Gates	G11	19	1
-247	2018-07-30 13:30:00	2018-07-30 14:45:00	Gates	G11	19	1
-248	2018-08-06 13:30:00	2018-08-06 14:45:00	Gates	G11	19	1
-249	2018-08-13 13:30:00	2018-08-13 14:45:00	Gates	G11	19	1
+277	2018-07-16 12:30:00-04	2018-07-16 14:00:00-04	Rhodes	402	24	1
+278	2018-07-23 12:30:00-04	2018-07-23 14:00:00-04	Rhodes	402	24	1
+279	2018-07-30 12:30:00-04	2018-07-30 14:00:00-04	Rhodes	402	24	1
+280	2018-08-06 12:30:00-04	2018-08-06 14:00:00-04	Rhodes	402	24	1
+281	2018-08-13 12:30:00-04	2018-08-13 14:00:00-04	Rhodes	402	24	1
+282	2018-07-10 10:30:00-04	2018-07-10 11:15:00-04	Gates	343	25	1
+283	2018-07-17 10:30:00-04	2018-07-17 11:15:00-04	Gates	343	25	1
+284	2018-07-24 10:30:00-04	2018-07-24 11:15:00-04	Gates	343	25	1
+285	2018-07-31 10:30:00-04	2018-07-31 11:15:00-04	Gates	343	25	1
+286	2018-08-07 10:30:00-04	2018-08-07 11:15:00-04	Gates	343	25	1
+287	2018-07-15 13:30:00-04	2018-07-15 14:30:00-04	Upson	B60	\N	1
+288	2018-07-22 14:30:00-04	2018-07-22 15:30:00-04	Upson	B10	\N	1
+272	2018-07-16 10:00:00-04	2018-07-16 11:00:00-04	Gates	G11	23	1
+273	2018-07-23 10:00:00-04	2018-07-23 11:00:00-04	Gates	G11	23	1
+274	2018-07-30 10:00:00-04	2018-07-30 11:00:00-04	Gates	G11	23	1
+275	2018-08-06 10:00:00-04	2018-08-06 11:00:00-04	Gates	G11	23	1
+276	2018-08-13 10:00:00-04	2018-08-13 11:00:00-04	Gates	G11	23	1
 \.
 
 
@@ -1080,15 +1039,14 @@ COPY public.tags (tag_id, name, course_id, level, activated) FROM stdin;
 --
 
 COPY public.users (user_id, email, google_id, first_name, last_name, created_at, last_activity_at, photo_url, display_name) FROM stdin;
-1	cv231@cornell.edu	115064340704113209584	Corey	Valdez	2018-03-25 03:07:23.485	2018-03-25 03:07:26.391	https://randomuser.me/api/portraits/men/46.jpg	Corey Valdez
-2	ejs928@cornell.edu	139064340704113209582	Edgar	Stewart	2018-03-25 03:08:05.668	2018-03-25 03:08:08.294	https://randomuser.me/api/portraits/men/7.jpg	Edgar Stewart
-3	asm2292@cornell.edu	115064340704118374059	Ada	Morton	2018-03-25 03:08:51.563	2018-03-25 03:08:54.084	https://randomuser.me/api/portraits/women/8.jpg	Ada Morton
-4	cr848@cornell.edu	215064340704113209584	Caroline	Robinson	2018-03-25 03:09:25.563	2018-03-25 03:09:28.525	https://randomuser.me/api/portraits/women/59.jpg	Caroline Robinson
-5	ca449@cornell.edu	115064340704113209332	Christopher	Arnold	2018-03-25 03:10:28.166	2018-03-25 03:10:32.518	\N	Chris Arnold
-6	zz527@cornell.edu	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394	2018-03-25 03:11:22.765	\N	Zechen Zhang
-7	sjw748@cornell.edu	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328	2018-03-25 03:12:47.826	https://randomuser.me/api/portraits/women/81.jpg	Sue Wilson
-8	clarkson@cs.cornell.edu	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996	2018-03-25 03:13:29.4	https://randomuser.me/api/portraits/men/20.jpg	Michael Clarkson
-18	ks939@cornell.edu	114961512147775594594	Karun	Singh	2018-07-09 10:58:58.522978	2018-07-09 10:58:58.522978	https://lh5.googleusercontent.com/-5atJCQlqmEM/AAAAAAAAAAI/AAAAAAAARN8/-TM5RNTPV0w/photo.jpg	Karun Singh
+1	cv231@cornell.edu	115064340704113209584	Corey	Valdez	2018-03-25 03:07:23.485-04	2018-03-25 03:07:26.391-04	https://randomuser.me/api/portraits/men/46.jpg	Corey Valdez
+2	ejs928@cornell.edu	139064340704113209582	Edgar	Stewart	2018-03-25 03:08:05.668-04	2018-03-25 03:08:08.294-04	https://randomuser.me/api/portraits/men/7.jpg	Edgar Stewart
+3	asm2292@cornell.edu	115064340704118374059	Ada	Morton	2018-03-25 03:08:51.563-04	2018-03-25 03:08:54.084-04	https://randomuser.me/api/portraits/women/8.jpg	Ada Morton
+4	cr848@cornell.edu	215064340704113209584	Caroline	Robinson	2018-03-25 03:09:25.563-04	2018-03-25 03:09:28.525-04	https://randomuser.me/api/portraits/women/59.jpg	Caroline Robinson
+5	ca449@cornell.edu	115064340704113209332	Christopher	Arnold	2018-03-25 03:10:28.166-04	2018-03-25 03:10:32.518-04	\N	Chris Arnold
+6	zz527@cornell.edu	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394-04	2018-03-25 03:11:22.765-04	\N	Zechen Zhang
+7	sjw748@cornell.edu	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328-04	2018-03-25 03:12:47.826-04	https://randomuser.me/api/portraits/women/81.jpg	Sue Wilson
+8	clarkson@cs.cornell.edu	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996-04	2018-03-25 03:13:29.4-04	https://randomuser.me/api/portraits/men/20.jpg	Michael Clarkson
 \.
 
 
@@ -1110,14 +1068,14 @@ SELECT pg_catalog.setval('public.questions_question_id_seq', 13, true);
 -- Name: session_series_session_series_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 22, true);
+SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 25, true);
 
 
 --
 -- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.sessions_session_id_seq', 271, true);
+SELECT pg_catalog.setval('public.sessions_session_id_seq', 288, true);
 
 
 --

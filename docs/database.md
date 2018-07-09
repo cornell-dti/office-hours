@@ -32,6 +32,9 @@ If you'd like to reset your local database (for example, to sync it with the lat
 
 And then load in the schema using the dump as described above (using `psql`).
 
+### A note on timestamps
+Wherever timestamps appear in the schema, we default to using the `timestamp with time zone` type, since it gives us consistency across clients in different time zones. Whenever providing timestamps to the database, please include the client's timezone! The most common way to do this is to format the timestamp string as an ISO 8601 string that includes the timezone offset.
+
 ## Symbols
 |Symbol|Description|
 |---|---|
@@ -78,8 +81,8 @@ All the registered users are logged to this table after their first login. This 
 |⭐️|google\_id|text|❌|Google-assigned unique id of this user, provided by Google on login|
 ||first\_name|text|✔️|Google-provided first name of the user (note: may not be set in their Google profile, in which case this is null)|
 ||last\_name|text|✔️|Google-provided last name of the user (note: may not be set in their Google profile, in which case this is null)|
-||created\_at|timestamp without time zone|✔️|Timestamp at which this user record was first created|
-||last\_activity\_at|timestamp without time zone|✔️|Timestamp at which the last activity on Queue Me In from this user was logged|
+||created\_at|timestamp with time zone|✔️|Timestamp at which this user record was first created|
+||last\_activity\_at|timestamp with time zone|✔️|Timestamp at which the last activity on Queue Me In from this user was logged|
 ||photo\_url|text|✔️|Google-provided profile photo URL of the user (note: may not be set in their Google profile, in which case this is null)|
 ||display\_name|text|✔️|Google-provided profile display name of the user (note: may not be set in their Google profile, in which case this is null)|
 
@@ -98,8 +101,8 @@ This relation is used to store metadata about weekly recurring office hour sessi
 |Key|Column|Datatype|Nullable?|Description|
 |:---:|---|---|:---:|---|
 |🔑|session\_series\_id|integer|❌|Auto-incrementing id assigned to each session series|
-||start\_time|timestamp without time zone|❌|Represents the weekly start time and day of the series; the actual date is discarded and does not matter! (eg. '2018-06-22 11:00:00')|
-||end\_time|timestamp without time zone|❌|Represents the weekly end time and day of the series; the actual date is discarded and does not matter! (eg. '2018-06-22 12:00:00')|
+||start\_time|timestamp with time zone|❌|Represents the weekly start time and day of the series; the actual date is discarded and does not matter! (eg. '2018-06-22T11:00:00-04:00')|
+||end\_time|timestamp with time zone|❌|Represents the weekly end time and day of the series; the actual date is discarded and does not matter! (eg. '2018-06-22T12:00:00-04:00')|
 ||building|text|❌|Name of the building in which this series occurs (eg. 'Gates')|
 ||room|text|❌|Name of the room in which this series occurs (eg. 'G17')|
 |✈️|course\_id|integer|❌|References the course to which this session series belongs; foreign key from [courses](#courses)|
@@ -118,8 +121,8 @@ This relation is used to store metadata about office hour session instances. Not
 |Key|Column|Datatype|Nullable?|Description|
 |:---:|---|---|:---:|---|
 |🔑|session\_id|integer|❌|Auto-incrementing id assigned to each session|
-||start\_time|timestamp without time zone|❌|Timestamp at which this particular session is to start (eg. '2018-06-22 11:00:00')|
-||end\_time|timestamp without time zone|❌|Timestamp at which this particular session is to end (eg. '2018-06-22 12:00:00')|
+||start\_time|timestamp with time zone|❌|Timestamp at which this particular session is to start (eg. '2018-06-22T11:00:00-04:00')|
+||end\_time|timestamp with time zone|❌|Timestamp at which this particular session is to end (eg. '2018-06-22T12:00:00-04:00')|
 ||building|text|❌|Name of the building in which this session occurs (eg. 'Gates')|
 ||room|text|❌|Name of the room in which this series occurs (eg. 'G17')|
 |✈️|session\_series\_id|integer|✔️|References the session series to which this session belongs, if any; foreign key from [session\_series](#session-series)|
@@ -140,9 +143,9 @@ This table contains all the details about all the questions asked across differe
 |:---:|---|---|:---:|---|
 |🔑|question\_id|integer|❌|Auto-incrementing id assigned to each question|
 ||content|text|❌|Text content of the question; character limit is imposed by the client|
-||time\_entered|timestamp without time zone|❌|Timestamp at which this question was first entered into the database; it defaults to the current timestamp if not provided|
+||time\_entered|timestamp with time zone|❌|Timestamp at which this question was first entered into the database; it defaults to the current timestamp if not provided|
 ||status|text|❌|Text that represents the current status of the question ('unresolved', 'resolved', 'noshow', 'retracted' are currently used values)|
-||time\_addressed|timestamp without time zone|✔️|Timestamp at which this question was most recently marked as resolved, no-show or retracted|
+||time\_addressed|timestamp with time zone|✔️|Timestamp at which this question was most recently marked as resolved, no-show or retracted|
 ||session\_id|integer|❌|References the session instance in which this question was asked; foreign key from [sessions](#sessions)|
 ||asker\_id|integer|❌|References the student (user) who asked this question; foreign key from [users](#users)|
 ||answerer\_id|integer|✔️|References the TA (user) who most recently marked this question as resolved or as a no-show, and is NULL for unanswered and retracted questions; foreign key from [users](#users)|
@@ -190,8 +193,8 @@ To deal with the intricate logic involving sessions, session series, and their c
 Given all the details of a new weekly-recurring session series, this function will update the database to include the series metadata and will create session instances for the series. Session instances are only created if they end after the current time, and if their start time lies between the course's start and end dates (inclusive).
 
 ##### Parameters
-- \_start\_time (timestamp without time zone): contains the weekly start day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22 11:00:00')
-- \_end\_time (timestamp without time zone): contains the weekly end day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22 12:00:00')
+- \_start\_time (timestamp with time zone): contains the weekly start day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22T11:00:00-04:00')
+- \_end\_time (timestamp with time zone): contains the weekly end day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22T12:00:00-04:00')
 - \_building (text): the name of the building in which the recurring session will take place (eg. 'Gates')
 - \_room (text): the name of the room in which the recurring session will take place (eg. 'G11')
 - \_course\_id (integer): the id of the course to which this session series is to be added
@@ -207,8 +210,8 @@ Given updated details of an existing weekly-recurring session series, this funct
 
 ##### Parameters
 - \_series\_id (integer): the id of the session series to be edited
-- \_start\_time (timestamp without time zone): contains the weekly start day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22 11:00:00')
-- \_end\_time (timestamp without time zone): contains the weekly end day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22 12:00:00')
+- \_start\_time (timestamp with time zone): contains the weekly start day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22T11:00:00-04:00')
+- \_end\_time (timestamp with time zone): contains the weekly end day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22T12:00:00-04:00')
 - \_building (text): the name of the building in which the recurring session will take place (eg. 'Gates')
 - \_room (text): the name of the room in which the recurring session will take place (eg. 'G11')
 - \_tas (integer): a list of integers that represent the user\_ids of the TAs who will host this session series
@@ -233,8 +236,8 @@ Nothing (void)
 Given all the details of a new non-recurring (/independent/one-off) session, this function will create the session instance. The session will only be created if it has not ended yet. If the supplied end time has already passed, an exception will be thrown.
 
 ##### Parameters
-- \_start\_time (timestamp without time zone): the exact time at which the session starts (date matters!) (eg. '2018-06-22 11:00:00')
-- \_end\_time (timestamp without time zone): the exact time at which the session ends (date matters!) (eg. '2018-06-22 12:00:00')
+- \_start\_time (timestamp with time zone): the exact time at which the session starts (date matters!) (eg. '2018-06-22T11:00:00-04:00')
+- \_end\_time (timestamp with time zone): the exact time at which the session ends (date matters!) (eg. '2018-06-22T12:00:00-04:00')
 - \_building (text): the name of the building in which the session will take place (eg. 'Gates')
 - \_room (text): the name of the room in which the session will take place (eg. 'G11')
 - \_course\_id (integer): the id of the course to which this session is to be added
@@ -250,8 +253,8 @@ Given updated details of an existing session, this function will edit the sessio
 
 ##### Parameters
 - \_session\_id (integer): the id of the session to be edited
-- \_start\_time (timestamp without time zone): the exact time at which the session starts (date matters!) (eg. '2018-06-22 11:00:00')
-- \_end\_time (timestamp without time zone): the exact time at which the session ends (date matters!) (eg. '2018-06-22 12:00:00')
+- \_start\_time (timestamp with time zone): the exact time at which the session starts (date matters!) (eg. '2018-06-22T11:00:00-04:00')
+- \_end\_time (timestamp with time zone): the exact time at which the session ends (date matters!) (eg. '2018-06-22T12:00:00-04:00')
 - \_building (text): the name of the building in which the session will take place (eg. 'Gates')
 - \_room (text): the name of the room in which the session will take place (eg. 'G11')
 - \_tas (integer): a list of integers that represent the user\_ids of the TAs who will host this session
@@ -279,8 +282,8 @@ For a particular course, this function finds all the session instances that star
 
 ##### Parameters
 - \_course\_id (integer): the id of the course whose sessions are to be found
-- \_begin\_time (timestamp without time zone): the beginning of the time range to be queried for (inclusive bound) (eg. '2018-06-22 00:00:00')
-- \_end\_time (timestamp without time zone): the end of the time range to be queried for (exclusive bound) (eg. '2018-06-23 00:00:00')
+- \_begin\_time (timestamp with time zone): the beginning of the time range to be queried for (inclusive bound) (eg. '2018-06-22T00:00:00-04:00')
+- \_end\_time (timestamp with time zone): the end of the time range to be queried for (exclusive bound) (eg. '2018-06-23T00:00:00-04:00')
 
 ##### Returns
 All the fields from the [sessions](#sessions) table of all the sessions in the course whose start\_time lies between the supplied begin\_time and end\_time. The returned sessions are sorted in increasing order of their start\_times.
