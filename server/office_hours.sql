@@ -769,7 +769,8 @@ CREATE TABLE public.tags (
     tag_id integer NOT NULL,
     name text NOT NULL,
     course_id integer NOT NULL,
-    level integer NOT NULL
+    level integer NOT NULL,
+    activated boolean
 );
 
 
@@ -868,6 +869,7 @@ COPY public.course_users (course_id, user_id, role) FROM stdin;
 1	4	student
 1	5	student
 1	7	student
+1	18	student
 \.
 
 
@@ -1042,34 +1044,34 @@ COPY public.tag_relations (parent_id, child_id) FROM stdin;
 -- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.tags (tag_id, name, course_id, level) FROM stdin;
-1	Assignment 1	1	1
-2	Assignment 2	1	1
-3	Assignment 3	1	1
-4	Assignment 4	1	1
-5	Prelim	1	1
-6	Final	1	1
-7	General	1	1
-8	Q1	1	2
-9	Q2	1	2
-10	Q3	1	2
-11	Q1	1	2
-12	Q2	1	2
-13	Q3	1	2
-14	Q4	1	2
-15	Q1a	1	2
-16	Q1b	1	2
-17	Q2	1	2
-18	Written Part	1	2
-19	Programming	1	2
-20	Regrade	1	2
-21	Feedback	1	2
-22	Regrade	1	2
-23	Feedback	1	2
-24	Logistics	1	2
-25	Grading	1	2
-26	Office Hours	1	2
-27	Other	1	2
+COPY public.tags (tag_id, name, course_id, level, activated) FROM stdin;
+8	Q1	1	2	\N
+9	Q2	1	2	\N
+10	Q3	1	2	\N
+11	Q1	1	2	\N
+12	Q2	1	2	\N
+13	Q3	1	2	\N
+14	Q4	1	2	\N
+15	Q1a	1	2	\N
+16	Q1b	1	2	\N
+17	Q2	1	2	\N
+18	Written Part	1	2	\N
+19	Programming	1	2	\N
+20	Regrade	1	2	\N
+21	Feedback	1	2	\N
+22	Regrade	1	2	\N
+23	Feedback	1	2	\N
+24	Logistics	1	2	\N
+25	Grading	1	2	\N
+26	Office Hours	1	2	\N
+27	Other	1	2	\N
+1	Assignment 1	1	1	t
+2	Assignment 2	1	1	t
+3	Assignment 3	1	1	t
+4	Assignment 4	1	1	f
+5	Prelim	1	1	t
+6	Final	1	1	f
+7	General	1	1	t
 \.
 
 
@@ -1086,6 +1088,7 @@ COPY public.users (user_id, email, google_id, first_name, last_name, created_at,
 6	zz527@cornell.edu	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394	2018-03-25 03:11:22.765	\N	Zechen Zhang
 7	sjw748@cornell.edu	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328	2018-03-25 03:12:47.826	https://randomuser.me/api/portraits/women/81.jpg	Sue Wilson
 8	clarkson@cs.cornell.edu	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996	2018-03-25 03:13:29.4	https://randomuser.me/api/portraits/men/20.jpg	Michael Clarkson
+18	ks939@cornell.edu	114961512147775594594	Karun	Singh	2018-07-09 10:58:58.522978	2018-07-09 10:58:58.522978	https://lh5.googleusercontent.com/-5atJCQlqmEM/AAAAAAAAAAI/AAAAAAAARN8/-TM5RNTPV0w/photo.jpg	Karun Singh
 \.
 
 
@@ -1128,7 +1131,7 @@ SELECT pg_catalog.setval('public.tags_tag_id_seq', 35, true);
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 17, true);
+SELECT pg_catalog.setval('public.users_user_id_seq', 18, true);
 
 
 --

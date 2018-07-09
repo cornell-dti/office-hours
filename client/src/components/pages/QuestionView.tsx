@@ -13,13 +13,9 @@ class QuestionView extends React.Component {
     };
 
     render() {
-        const imageURL =
-            'https://i2.wp.com/puppypassionn.org/wp-content/uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1';
         return (
             <div className="QuestionView">
                 <AddQuestion
-                    taName="Sangwoo Kim"
-                    taPicture={imageURL}
                     primaryTags={['Assignment', 'Lecture', 'Exam', 'General']}
                     secondaryTags={['Assignment 1', 'Assignment 2', 'Assignment 3', 'Assignment 4',
                         'Assignment 5', 'Assignment 6']}

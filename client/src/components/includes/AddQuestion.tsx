@@ -19,8 +19,6 @@ mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!) {
 class AddQuestion extends React.Component {
 
     props: {
-        taName: string,
-        taPicture: string,
         primaryTags: string[],
         secondaryTags: string[],
         primaryTagsIds: number[],
