@@ -4,7 +4,7 @@ This document provides detailed descriptions of the PostgreSQL database schema b
 ## Database Setup
 Assuming you have PostgreSQL installed on your machine (we are currently using version 10), run the following from a terminal window to create a new database:
 
-`create_db -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME>`
+`createdb -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME>`
 
 If running locally, the host name will be localhost, and the port and username will be the ones that you set while setting Postgres up. You will be prompted to enter the password for the username, and then an empty database will be created. Now, we need to use the `psql` command-line tool to load in the schema dump from [`/server/office_hours.sql`](../server/office_hours.sql):
 
@@ -24,7 +24,13 @@ Finally, you can play around with the mock data by either using a database manag
 
 `pg_dump -h <HOST_NAME> -p <PORT> -U <USERNAME> --no-owner <DATABASE_NAME> > <OUTPUT_FILE.sql>`
 
-This will create a dump the same way `office_hours.sql` was created. This file will include all the commands necessary to load in the entire schema, functions, and mock data into a blank database.
+This will create a dump the same way `office_hours.sql` was created. This file will include all the commands necessary to load in the entire schema, functions, and mock data into a new database.
+
+If you'd like to reset your local database (for example, to sync it with the latest schema), first use the `dropdb` command from your terminal:
+
+`dropdb -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME>`
+
+And then load in the schema using the dump as described above (using `psql`).
 
 ## Symbols
 |Symbol|Description|
@@ -75,6 +81,7 @@ All the registered users are logged to this table after their first login. This 
 ||created\_at|timestamp without time zone|✔️|Timestamp at which this user record was first created|
 ||last\_activity\_at|timestamp without time zone|✔️|Timestamp at which the last activity on Queue Me In from this user was logged|
 ||photo\_url|text|✔️|Google-provided profile photo URL of the user (note: may not be set in their Google profile, in which case this is null)|
+||display\_name|text|✔️|Google-provided profile display name of the user (note: may not be set in their Google profile, in which case this is null)|
 
 ### course-users
 This relation is used to store user roles within courses. It is a junction table (many-to-many relationship) between courses and users, and each entry is assigned a role indicating the user's permissions within the course. If a course-user pair does not occur in this table, it is assumed that the user is not a part of the course in any capacity.
@@ -149,6 +156,7 @@ This relation is a repository of all the tags stored in the system, across diffe
 ||name|text|❌|Name of the tag that is shown to the client|
 |✈️|course\_id|integer|❌|The course offering to which this tag belongs; foreign key from [courses](#courses)|
 ||level|integer|❌|Encodes the tag level in the tag hierarchy: primary = 1, secondary = 2|
+||activated|boolean|✔️|For primary tags, this indicates whether this tag and its children are currently active and should be shown to students or not. NULL for non-primary tags!|
 
 ### tag-relations
 Describes the tree-like tag hierarchy using parent-child relationships. Each entry in the table describes a parent tag and a child tag. 
@@ -294,7 +302,9 @@ All the fields of the newly-inserted row from the [questions](#questions) table
 #### api\_find\_or\_create\_user
 
 ##### Description
-Given the details of a user who has just logged in using Google, this function will find and return the user's existing details in the [users](#users) table. If it is a new user, a new row is inserted into [users](#users) for them. This is meant to be used during the login process, right after the user has successfully logged in via Google. Note that only a user that sends a JWT in the Authorization header containing the claim userId=-1 will be allowed to make this call successfully. The server is the only entity that has access to the secret, so only the server is allowed to make this call (after successful Google login); users will not be able to mock the identity of other users by calling this function directly.
+Given the details of a user who has just logged in using Google, this function will find, update and return the user's existing details in the [users](#users) table. If it is a new user, a new row is inserted into [users](#users) for them. This is meant to be used during the login process, right after the user has successfully logged in via Google. Note that only a user that sends a JWT in the Authorization header containing the claim userId=-1 will be allowed to make this call successfully. The server is the only entity that has access to the secret, so only the server is allowed to make this call (after successful Google login); users will not be able to mock the identity of other users by calling this function directly.
+
+Note that if the user already exists, their details are synced with the latest Google-provided information. Therefore, on login, our user's profile details are updated to match their profile on Google.
 
 ##### Parameters
 - \_email (text): the full email address of the user who logged in
@@ -302,6 +312,7 @@ Given the details of a user who has just logged in using Google, this function w
 - \_first\_name (text): the given name of the user who logged in; if no given name is provided by Google, do not provide this parameter
 - \_last\_name (text): the family name of the user who logged in; if no family name is provided by Google, do not provide this parameter
 - \_photo\_url (text): the profile picture URL of the user who logged in; if no URL is provided by Google, do not provide this parameter
+- \_display\_name (text): the display name of the user who logged in; if no display name is provided by Google, do not provide this parameter
 
 ##### Returns
 All the fields of the newly-inserted or retrieved row from the [users](#users) table
