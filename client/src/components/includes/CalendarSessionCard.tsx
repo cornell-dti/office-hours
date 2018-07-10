@@ -55,6 +55,7 @@ class CalendarSessionCard extends React.Component {
                 </div>
                 <div className="CalendarCard">
                     <div className="TA">
+                        {/* TODO: Handle Multiple TA's */}
                         {session.sessionTasBySessionId.nodes[0].userByUserId.firstName +
                             ' ' + session.sessionTasBySessionId.nodes[0].userByUserId.lastName}
                         <span className={'IndicatorDesc ' + status}>{status}</span>
@@ -65,7 +66,7 @@ class CalendarSessionCard extends React.Component {
                             Waiting: &nbsp;
                             {/* Special class zero exists if we use the num ahead later */}
                             <span className={'AheadNum '}>
-                                {session.questionsBySessionId.nodes.filter(q => q.status !== 'resolved').length}
+                                {session.questionsBySessionId.nodes.filter(q => q.status === 'unresolved').length}
                             </span>
                         </span>
                         <span className="Finished">

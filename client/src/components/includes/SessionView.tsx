@@ -6,12 +6,6 @@ import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 
-interface SessionData {
-    sessionBySessionId: AppSession;
-    courseByCourseId: AppCourse;
-    apiGetCurrentUser: CurrentUserRole;
-}
-
 const GET_SESSION_DATA = gql`
 query getDataForSession($sessionId: Int!, $courseId: Int!) {
     apiGetCurrentUser {
@@ -51,6 +45,7 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
                         tagByTagId {
                             name
                             level
+                            tagId
                         }
                     }
                 }
@@ -68,6 +63,12 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
     }
 }
 `;
+
+interface SessionData {
+    sessionBySessionId: AppSession;
+    courseByCourseId: AppCourse;
+    apiGetCurrentUser: CurrentUserRole;
+}
 
 interface Variables {
     sessionId: number;
@@ -89,14 +90,15 @@ class SessionView extends React.Component {
         return (
             <section className="StudentSessionView">
                 {this.props.id === -1
-                    ? <p className="noSessionSelected">Please Select an Office Hour from the Calendar.</p>
+                    ? <p className="noSessionSelected">Please select an office hour from the calendar.</p>
                     : <SessionDataQuery
                         query={GET_SESSION_DATA}
                         variables={{ sessionId: this.props.id, courseId: this.props.courseId }}
+                        pollInterval={5000}
                     >
                         {({ loading, data, error }) => {
                             if (error) { return <h1>ERROR</h1>; }
-                            if (!data || !data.sessionBySessionId) { return <div>Loading...</div>; }
+                            if (loading || !data || !data.sessionBySessionId) { return <div>Loading...</div>; }
                             return (
                                 <React.Fragment>
                                     <SessionInformationHeader
@@ -108,7 +110,7 @@ class SessionView extends React.Component {
                                     <div className="splitQuestions">
                                         <SessionQuestionsContainer
                                             isTA={data.apiGetCurrentUser.nodes[0].
-                                                courseUsersByUserId.nodes[0].role === 'ta'}
+                                                courseUsersByUserId.nodes[0].role !== 'student'}
                                             questions={data.sessionBySessionId.questionsBySessionId
                                                 .nodes.filter(q => q.status === 'unresolved')}
                                             handleJoinClick={this.props.joinCallback}

@@ -37,7 +37,7 @@ The catch here is that you still need the interaction with the server to work, s
 
 `> yarn start`
 
-Alternatively, if you are only doing front-end work, you may use the proxy key of the `client/package.json` and set it to `https://queue-me-in.herokuapp.com`. This will cause your development build to use the server implementation that we have hosted.
+Alternatively, if you are only doing front-end work, you may use the proxy key of the `client/package.json` and set it to `https://queue-me-in.herokuapp.com`. This will cause your development build to use the server implementation that we have hosted. _Note:_ this only works if the database structure/backend has not changed between your local code and the deployed version.
 
 ### Fake authentication
 

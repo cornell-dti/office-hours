@@ -21,7 +21,7 @@ interface AppTa {
     userByUserId: {
         firstName: string;
         lastName: string;
-        photoUrl: string;
+        photoUrl?: string;
     }
 }
 
@@ -40,6 +40,7 @@ interface AppTag {
     tagByTagId: {
         name: string;
         level: number;
+        tagId: number;
     }
 }
 

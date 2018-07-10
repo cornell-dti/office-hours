@@ -8,19 +8,11 @@ import CalendarDateSelect from '../includes/CalendarDateSelect';
 import CalendarSessions from '../includes/CalendarSessions';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
-interface AppData {
-    courseByCourseId: AppCourse;
-    apiGetSessions: {
-        nodes: [AppSession];
-    };
-    apiGetCurrentUser: CurrentUserRole;
-}
-
 const GET_CALENDAR_DATA = gql`
     query getDataForDay(
         $courseId: Int!,
-        $beginTime: Datetime,
-        $endTime: Datetime
+        $beginTime: Datetime!,
+        $endTime: Datetime!
     ) {
         apiGetCurrentUser {
             nodes {
@@ -65,6 +57,14 @@ const GET_CALENDAR_DATA = gql`
         }
     }
 `;
+
+interface AppData {
+    courseByCourseId: AppCourse;
+    apiGetSessions: {
+        nodes: [AppSession];
+    };
+    apiGetCurrentUser: CurrentUserRole;
+}
 
 interface Variables {
     courseId: number;
@@ -170,13 +170,12 @@ class CalendarView extends React.Component {
                 >
                     {({ loading, data, error }) => {
                         if (error) { return <h1>ERROR</h1>; }
-                        if (!data) { return <div>Loading...</div>; }
+                        if (loading) { return <div>Loading...</div>; }
                         return (
                             <aside className="CalendarView">
                                 <div className="Header">
                                     <CalendarHeader
-                                        currentCourse="CS 3110"
-                                        courseId={this.props.courseId}
+                                        currentCourseCode={data.courseByCourseId.code || 'Loading'}
                                         isTa={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].
                                             courseUsersByUserId.nodes[0].role === 'ta'}
                                     />

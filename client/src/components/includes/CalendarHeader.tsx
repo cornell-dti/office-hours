@@ -2,8 +2,7 @@ import * as React from 'react';
 
 class CalendarHeader extends React.Component {
     props: {
-        currentCourse: string;
-        courseId: number;
+        currentCourseCode: string;
         isTa: boolean;
     };
 
@@ -11,7 +10,7 @@ class CalendarHeader extends React.Component {
         return (
             <div className="CalendarHeader">
                 <div className="CurrentCourse">
-                    {this.props.currentCourse}
+                    {this.props.currentCourseCode}
                     {this.props.isTa && <span className="TAMarker">TA</span>}
                     {/* <button className="CourseSelectButton">
                         <i className="angle down icon" />

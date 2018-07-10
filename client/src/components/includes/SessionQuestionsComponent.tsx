@@ -3,7 +3,10 @@ import { Icon } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
+
 import SelectedTags from '../includes/SelectedTags';
+
+const avatar = require('../../media/userAvatar.svg');
 
 const UPDATE_QUESTION = gql`
 mutation UpdateQuestion($questionId: Int!, $status: String) {
@@ -54,10 +57,9 @@ class SessionQuestionsComponent extends React.Component {
 
         return (
             <div className={'QueueQuestions' + myQuestionCSS}>
-                {
-                    this.props.isTA &&
+                {this.props.isTA &&
                     <div className="studentInformation">
-                        <img src={question.userByAskerId.photoUrl} />
+                        <img src={question.userByAskerId.photoUrl || avatar} />
                         <span className="Name">
                             {question.userByAskerId.firstName + ' ' + question.userByAskerId.lastName}
                         </span>
@@ -67,7 +69,7 @@ class SessionQuestionsComponent extends React.Component {
                 <div className="Tags">
                     {question.questionTagsByQuestionId.nodes.map(
                         (tag) => <SelectedTags
-                            key={tag.tagByTagId.name}
+                            key={tag.tagByTagId.tagId}
                             isSelected={false}
                             tag={tag.tagByTagId.name}
                             level={tag.tagByTagId.level}
@@ -89,7 +91,7 @@ class SessionQuestionsComponent extends React.Component {
                                 <div className="TAButtons">
                                     <p
                                         className="Delete"
-                                        onClick={(e) => this._onClick(e, updateQuestion, 'noshow')}
+                                        onClick={(e) => this._onClick(e, updateQuestion, 'no-show')}
                                     >
                                         <Icon name="hourglass end" /> No-show
                                     </p>

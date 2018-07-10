@@ -34,8 +34,9 @@ class SessionInformationHeader extends React.Component {
                             <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
                         </p>
                         <p>Held by <span className="black">
+                            {/* TODO: Better handle multiple TAs */}
                             {session.sessionTasBySessionId.nodes.map(ta =>
-                                ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName
+                                ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName + ' '
                             )}
                         </span></p>
                     </div>
@@ -43,8 +44,10 @@ class SessionInformationHeader extends React.Component {
                         <div className="QueueInfo">
                             <img src={people} />
                             <p>
-                                <span className="red">{session.questionsBySessionId.nodes.length} </span>
-                                ahead
+                                <span className="red">
+                                    {session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved').length}
+                                </span>
+                                in queue
                             </p>
                         </div>
                     </div>
@@ -74,8 +77,10 @@ class SessionInformationHeader extends React.Component {
                     <div className="QueueInfo">
                         <img src={people} />
                         <p>
-                            <span className="red">{session.questionsBySessionId.nodes.length} </span>
-                            ahead
+                            <span className="red">
+                                {session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved').length}
+                            </span>
+                            in queue
                         </p>
                     </div>
                     <div className="OfficeHourInfo">
@@ -85,8 +90,9 @@ class SessionInformationHeader extends React.Component {
                             </p>
                         </div>
                         <p>Held by <span className="black">
+                            {/* TODO: Better handle multiple TAs */}
                             {session.sessionTasBySessionId.nodes.map(ta =>
-                                ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName
+                                ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName + ' '
                             )}
                         </span></p>
                     </div>

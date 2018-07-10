@@ -62,7 +62,7 @@ class SplitView extends React.Component {
 
     // Keep track of active view for mobile
     handleSessionClick = (sessionId: number) => {
-        this.props.history.push('/course/1/session/' + sessionId);
+        this.props.history.push('/course/' + this.props.match.params.courseId + '/session/' + sessionId);
         this.setState({ sessionId: sessionId, activeView: 'session' });
     }
 
@@ -71,7 +71,7 @@ class SplitView extends React.Component {
     }
 
     handleBackClick = () => {
-        this.props.history.push('/course/1');
+        this.props.history.push('/course/' + this.props.match.params.courseId);
         this.setState({ activeView: 'calendar', sessionId: -1 });
     }
 
