@@ -171,7 +171,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
+app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432/office-hours', {
     graphiql: true,
     graphqlRoute: '/__gql/graphql',
     graphiqlRoute: '/__gql/graphiql',
