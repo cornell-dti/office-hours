@@ -1,10 +1,10 @@
 import * as React from 'react';
 import CalendarDateItem from './CalendarDateItem';
 
-class CalendarDateSelect extends React.Component {
+const dayList = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+class CalendarDateSelect extends React.Component {
     props: {
-        dayList: string[],
         dateList: number[],
         handleClick: Function,
         selectedIndex: number
@@ -30,7 +30,6 @@ class CalendarDateSelect extends React.Component {
     }
 
     render() {
-        const dayList = this.props.dayList;
         const dateList = this.props.dateList;
         const dateItems: {}[] = [];
         for (var i = 0; i < 7; i++) {
@@ -38,16 +37,14 @@ class CalendarDateSelect extends React.Component {
             const iDate = dateList[i];
             const iActive = (i === this.state.active);
             dateItems.push(
-                (
-                    <CalendarDateItem
-                        key={i}
-                        index={i}
-                        day={iDay}
-                        date={iDate}
-                        active={iActive}
-                        handleClick={this.handleClick}
-                    />
-                )
+                <CalendarDateItem
+                    key={i}
+                    index={i}
+                    day={iDay}
+                    date={iDate}
+                    active={iActive}
+                    handleClick={this.handleClick}
+                />
             );
         }
 

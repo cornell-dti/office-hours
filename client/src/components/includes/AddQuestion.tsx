@@ -9,7 +9,7 @@ import SelectedTags from '../includes/SelectedTags';
 
 const ADD_QUESTION = gql`
 mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!) {
-    apiAddQuestion(input: {_content: $content, _tags: $tags, _status: "unresolved", 
+    apiAddQuestion(input: {_content: $content, _tags: $tags, _status: "unresolved",
         _sessionId: $sessionId}) {
         clientMutationId
     }
@@ -180,7 +180,7 @@ class AddQuestion extends React.Component {
                         index={index}
                         tag={tag}
                         level={1}
-                        ifSelected={this.state.primaryBooleanList[index]}
+                        isSelected={this.state.primaryBooleanList[index]}
                         onClick={this.handlePrimarySelected}
                     />
                 );
@@ -202,7 +202,7 @@ class AddQuestion extends React.Component {
                             index={index}
                             tag={tag}
                             level={2}
-                            ifSelected={this.state.secondaryBooleanList[index]}
+                            isSelected={this.state.secondaryBooleanList[index]}
                             onClick={this.handleSecondarySelected}
                         />
                     );
@@ -218,7 +218,7 @@ class AddQuestion extends React.Component {
                 <SelectedTags
                     index={index}
                     tag={tag}
-                    ifSelected={this.state.topicBooleanList[index]}
+                    isSelected={this.state.topicBooleanList[index]}
                     onClick={this.handleTopicSelected}
                 />
             );
@@ -227,14 +227,14 @@ class AddQuestion extends React.Component {
 
         var collapsedPrimary = primaryTagsList.filter(
             (tag) => {
-                return tag.props.ifSelected;
+                return tag.props.isSelected;
             }
         );
 
         var collapsedSecondary = secondaryTagsList.filter(
             (tag) => {
                 if (tag) {
-                    return tag.props.ifSelected;
+                    return tag.props.isSelected;
                 } else {
                     return false;
                 }
