@@ -19,6 +19,7 @@ class SessionInformationHeader extends React.Component {
 
     render() {
         const session = this.props.session;
+        const questions = session.questionsBySessionId.nodes;
         if (this.props.isDesktop) {
             return (
                 <header className="DesktopSessionInformationHeader" >
@@ -45,7 +46,7 @@ class SessionInformationHeader extends React.Component {
                             <img src={people} />
                             <p>
                                 <span className="red">
-                                    {session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved').length}
+                                    {questions.filter((q) => q.status === 'unresolved').length + ' '}
                                 </span>
                                 in queue
                             </p>
@@ -78,7 +79,7 @@ class SessionInformationHeader extends React.Component {
                         <img src={people} />
                         <p>
                             <span className="red">
-                                {session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved').length}
+                                {questions.filter((q) => q.status === 'unresolved').length + ' '}
                             </span>
                             in queue
                         </p>
