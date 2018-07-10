@@ -98,7 +98,7 @@ class SessionView extends React.Component {
                     >
                         {({ loading, data, error }) => {
                             if (error) { return <h1>ERROR</h1>; }
-                            if (loading || !data || !data.sessionBySessionId) { return <div>Loading...</div>; }
+                            if (!data || !data.sessionBySessionId) { return <div>Loading...</div>; }
                             return (
                                 <React.Fragment>
                                     <SessionInformationHeader

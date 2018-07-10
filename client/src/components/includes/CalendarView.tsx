@@ -170,14 +170,15 @@ class CalendarView extends React.Component {
                 >
                     {({ loading, data, error }) => {
                         if (error) { return <h1>ERROR</h1>; }
-                        if (loading) { return <div>Loading...</div>; }
+                        if (!data) { return <div>Loading...</div>; }
                         return (
                             <aside className="CalendarView">
                                 <div className="Header">
                                     <CalendarHeader
-                                        currentCourseCode={data.courseByCourseId.code || 'Loading'}
+                                        currentCourseCode={
+                                            data.courseByCourseId && data.courseByCourseId.code || 'Loading'}
                                         isTa={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].
-                                            courseUsersByUserId.nodes[0].role === 'ta'}
+                                            courseUsersByUserId.nodes[0].role !== 'student'}
                                     />
                                     <CalendarWeekSelect handleClick={this.handleWeekClick} />
                                 </div>
