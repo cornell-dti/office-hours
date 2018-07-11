@@ -374,8 +374,8 @@ begin
 	elsif ((select count(*) from users where google_id = _google_id) > 0) then
 
 		select user_id into _user_id from users where google_id = _google_id;
-		update users set (email, first_name, last_name, photo_url, display_name) =
-			(_email, _first_name, _last_name, _photo_url, _display_name)
+		update users set (email, first_name, last_name, photo_url, display_name, last_activity_at) =
+			(_email, _first_name, _last_name, _photo_url, _display_name, NOW())
 		where user_id = _user_id;
 
 	else
@@ -869,6 +869,7 @@ COPY public.course_users (course_id, user_id, role) FROM stdin;
 1	4	student
 1	5	student
 1	7	student
+1	19	student
 \.
 
 
@@ -1047,6 +1048,7 @@ COPY public.users (user_id, email, google_id, first_name, last_name, created_at,
 6	zz527@cornell.edu	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394-04	2018-03-25 03:11:22.765-04	\N	Zechen Zhang
 7	sjw748@cornell.edu	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328-04	2018-03-25 03:12:47.826-04	https://randomuser.me/api/portraits/women/81.jpg	Sue Wilson
 8	clarkson@cs.cornell.edu	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996-04	2018-03-25 03:13:29.4-04	https://randomuser.me/api/portraits/men/20.jpg	Michael Clarkson
+19	ks939@cornell.edu	114961512147775594594	Karun	Singh	2018-07-11 09:38:34.214871-04	2018-07-11 09:39:07.517853-04	https://lh5.googleusercontent.com/-5atJCQlqmEM/AAAAAAAAAAI/AAAAAAAARN8/-TM5RNTPV0w/photo.jpg	Karun Singh
 \.
 
 
@@ -1089,7 +1091,7 @@ SELECT pg_catalog.setval('public.tags_tag_id_seq', 35, true);
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 18, true);
+SELECT pg_catalog.setval('public.users_user_id_seq', 19, true);
 
 
 --

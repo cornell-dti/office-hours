@@ -82,7 +82,7 @@ All the registered users are logged to this table after their first login. This 
 ||first\_name|text|✔️|Google-provided first name of the user (note: may not be set in their Google profile, in which case this is null)|
 ||last\_name|text|✔️|Google-provided last name of the user (note: may not be set in their Google profile, in which case this is null)|
 ||created\_at|timestamp with time zone|✔️|Timestamp at which this user record was first created|
-||last\_activity\_at|timestamp with time zone|✔️|Timestamp at which the last activity on Queue Me In from this user was logged|
+||last\_activity\_at|timestamp with time zone|✔️|Timestamp at which this user last went through the login flow on the app|
 ||photo\_url|text|✔️|Google-provided profile photo URL of the user (note: may not be set in their Google profile, in which case this is null)|
 ||display\_name|text|✔️|Google-provided profile display name of the user (note: may not be set in their Google profile, in which case this is null)|
 
