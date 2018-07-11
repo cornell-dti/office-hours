@@ -95,7 +95,7 @@ passport.use(new GoogleStrategy(
                 }
             }",
             "variables": "${variablesString}"
-        }`;
+        }`.replace(/\r?\n?/g, '');
 
         const serverJwt = jwt.sign({ userId: -1 }, (process.env.OH_JWT_SECRET || "insecure"), {
             expiresIn: '30s',
