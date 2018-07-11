@@ -159,45 +159,43 @@ class CalendarView extends React.Component {
         const todayIndex = ((selectedDate.getDay() - 1) + 7) % 7;
 
         return (
-            <section className="StudentSessionView">
-                <DaySessionDataQuery
-                    query={GET_CALENDAR_DATA}
-                    variables={{
-                        beginTime: selectedDate,
-                        endTime: new Date(this.state.selectedDateEpoch + ONE_DAY),
-                        courseId: this.props.courseId
-                    }}
-                >
-                    {({ loading, data, error }) => {
-                        if (error) { return <h1>ERROR</h1>; }
-                        if (!data) { return <div>Loading...</div>; }
-                        return (
-                            <aside className="CalendarView">
-                                <div className="Header">
-                                    <CalendarHeader
-                                        currentCourseCode={
-                                            data.courseByCourseId && data.courseByCourseId.code || 'Loading'}
-                                        isTa={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].
-                                            courseUsersByUserId.nodes[0].role !== 'student'}
-                                    />
-                                    <CalendarWeekSelect handleClick={this.handleWeekClick} />
-                                </div>
-                                <CalendarDateSelect
-                                    dateList={dates}
-                                    handleClick={this.handleDateClick}
-                                    selectedIndex={todayIndex}
+            <DaySessionDataQuery
+                query={GET_CALENDAR_DATA}
+                variables={{
+                    beginTime: selectedDate,
+                    endTime: new Date(this.state.selectedDateEpoch + ONE_DAY),
+                    courseId: this.props.courseId
+                }}
+            >
+                {({ loading, data, error }) => {
+                    if (error) { return <h1>ERROR</h1>; }
+                    if (!data) { return <div>Loading...</div>; }
+                    return (
+                        <aside className="CalendarView">
+                            <div className="Header">
+                                <CalendarHeader
+                                    currentCourseCode={
+                                        data.courseByCourseId && data.courseByCourseId.code || 'Loading'}
+                                    isTa={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].
+                                        courseUsersByUserId.nodes[0].role !== 'student'}
                                 />
-                                <CalendarSessions
-                                    loading={loading}
-                                    sessions={data.apiGetSessions ? data.apiGetSessions.nodes : null}
-                                    callback={this.props.sessionCallback}
-                                    activeSessionId={this.props.sessionId}
-                                />
-                            </aside>
-                        );
-                    }}
-                </DaySessionDataQuery>
-            </section>
+                                <CalendarWeekSelect handleClick={this.handleWeekClick} />
+                            </div>
+                            <CalendarDateSelect
+                                dateList={dates}
+                                handleClick={this.handleDateClick}
+                                selectedIndex={todayIndex}
+                            />
+                            <CalendarSessions
+                                loading={loading}
+                                sessions={data.apiGetSessions ? data.apiGetSessions.nodes : null}
+                                callback={this.props.sessionCallback}
+                                activeSessionId={this.props.sessionId}
+                            />
+                        </aside>
+                    );
+                }}
+            </DaySessionDataQuery>
         );
     }
 }

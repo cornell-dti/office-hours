@@ -195,6 +195,8 @@ app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
 }));
 
 app.use(express.static('../client/build'));
+app.use('*', express.static('../client/build'));
+
 app.listen(process.env.PORT || 3001, () => {
     console.log("Now listening on port " + (process.env.PORT || 3001));
 });
