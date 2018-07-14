@@ -474,6 +474,124 @@ $$;
 
 
 --
+-- Name: internal_get_user_id(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_get_user_id() RETURNS integer
+    LANGUAGE sql STABLE
+    AS $$
+
+
+
+select (current_setting('jwt.claims.userId', true)::integer);
+
+
+
+$$;
+
+
+--
+-- Name: internal_get_user_role(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_get_user_role(_course_id integer) RETURNS text
+    LANGUAGE sql STABLE
+    AS $$
+
+
+
+select role from course_users where (course_id, user_id) = (_course_id, (select internal_get_user_id()))
+
+
+
+$$;
+
+
+--
+-- Name: internal_owns_question(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_owns_question(_question_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+
+declare
+
+_asker_id integer;
+
+_session_id integer;
+
+_course_id integer;
+
+_role text;
+
+begin
+
+	select asker_id into _asker_id from questions where question_id = _question_id;
+
+	if ((select internal_get_user_id()) = _asker_id) then 
+
+		return true;
+
+	end if;
+
+	select session_id into _session_id from questions where question_id = _question_id;
+
+	select course_id into _course_id from sessions where session_id = _session_id;
+
+	select internal_get_user_role(_course_id) into _role;
+
+	if (_role = 'professor' or _role = 'ta') then
+
+		return true;
+
+	else
+
+		return false;
+
+	end if;
+
+end
+
+$$;
+
+
+--
+-- Name: internal_owns_tag(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_owns_tag(_tag_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+
+declare
+
+_course_id integer;
+
+_role text;
+
+begin
+
+	select course_id into _course_id from tags where tag_id = _tag_id;
+
+	select internal_get_user_role(_course_id) into _role;
+
+	if (_role = 'professor') then
+
+		return true;
+
+	else
+
+		return false;
+
+	end if;
+
+end
+
+$$;
+
+
+--
 -- Name: internal_sync_series_sessions(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -546,6 +664,76 @@ begin
 end
 
  $$;
+
+
+--
+-- Name: internal_write_policy_series_ta(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_write_policy_series_ta(_series_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+
+declare
+
+_course_id integer;
+
+_role text;
+
+begin
+
+	select course_id into _course_id from session_series where session_series_id = _series_id;
+
+	select internal_get_user_role(_course_id) into _role;
+
+	if (_role = 'professor' or _role = 'ta') then
+
+		return true;
+
+	else
+
+		return false;
+
+	end if;
+
+end
+
+$$;
+
+
+--
+-- Name: internal_write_policy_session_ta(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_write_policy_session_ta(_session_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+
+declare
+
+_course_id integer;
+
+_role text;
+
+begin
+
+	select course_id into _course_id from sessions where session_id = _session_id;
+
+	select internal_get_user_role(_course_id) into _role;
+
+	if (_role = 'professor' or _role = 'ta') then
+
+		return true;
+
+	else
+
+		return false;
+
+	end if;
+
+end
+
+$$;
 
 
 --
@@ -878,7 +1066,7 @@ COPY public.course_users (course_id, user_id, role) FROM stdin;
 --
 
 COPY public.courses (course_id, code, name, semester, start_date, end_date) FROM stdin;
-1	CS 1380	Data Science For All	SU18	2018-06-28	2018-08-13
+1	CS 1380	Data Science For All	FA18	2018-06-28	2018-08-13
 \.
 
 
@@ -1063,14 +1251,14 @@ SELECT pg_catalog.setval('public.courses_course_id_seq', 3, true);
 -- Name: questions_question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.questions_question_id_seq', 13, true);
+SELECT pg_catalog.setval('public.questions_question_id_seq', 17, true);
 
 
 --
 -- Name: session_series_session_series_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 25, true);
+SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 27, true);
 
 
 --
@@ -1091,7 +1279,7 @@ SELECT pg_catalog.setval('public.tags_tag_id_seq', 35, true);
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 19, true);
+SELECT pg_catalog.setval('public.users_user_id_seq', 22, true);
 
 
 --
@@ -1346,6 +1534,463 @@ ALTER TABLE ONLY public.tag_relations
 
 ALTER TABLE ONLY public.tags
     ADD CONSTRAINT tags_fk0 FOREIGN KEY (course_id) REFERENCES public.courses(course_id);
+
+
+--
+-- Name: course_users; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.course_users ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: courses; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.courses ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: session_series delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.session_series FOR DELETE TO backend USING (((( SELECT public.internal_get_user_role(session_series.course_id) AS internal_get_user_role) = 'professor'::text) OR (( SELECT public.internal_get_user_role(session_series.course_id) AS internal_get_user_role) = 'ta'::text)));
+
+
+--
+-- Name: session_series_tas delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.session_series_tas FOR DELETE TO backend USING (( SELECT public.internal_write_policy_series_ta(session_series_tas.session_series_id) AS internal_write_policy_series_ta));
+
+
+--
+-- Name: sessions delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.sessions FOR DELETE TO backend USING (((( SELECT public.internal_get_user_role(sessions.course_id) AS internal_get_user_role) = 'professor'::text) OR (( SELECT public.internal_get_user_role(sessions.course_id) AS internal_get_user_role) = 'ta'::text)));
+
+
+--
+-- Name: session_tas delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.session_tas FOR DELETE TO backend USING (( SELECT public.internal_write_policy_session_ta(session_tas.session_id) AS internal_write_policy_session_ta));
+
+
+--
+-- Name: tags delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.tags FOR DELETE TO backend USING ((( SELECT public.internal_get_user_role(tags.course_id) AS internal_get_user_role) = 'professor'::text));
+
+
+--
+-- Name: tag_relations delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.tag_relations FOR DELETE TO backend USING ((( SELECT public.internal_owns_tag(tag_relations.parent_id) AS internal_owns_tag) AND ( SELECT public.internal_owns_tag(tag_relations.child_id) AS internal_owns_tag)));
+
+
+--
+-- Name: question_tags delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.question_tags FOR DELETE TO backend USING ((( SELECT questions.asker_id
+   FROM public.questions
+  WHERE (questions.question_id = questions.question_id)) = ( SELECT public.internal_get_user_id() AS internal_get_user_id)));
+
+
+--
+-- Name: users insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.users FOR INSERT TO backend WITH CHECK ((( SELECT public.internal_get_user_id() AS internal_get_user_id) = '-1'::integer));
+
+
+--
+-- Name: course_users insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.course_users FOR INSERT TO backend WITH CHECK ((role = 'student'::text));
+
+
+--
+-- Name: session_series insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.session_series FOR INSERT TO backend WITH CHECK (((( SELECT public.internal_get_user_role(session_series.course_id) AS internal_get_user_role) = 'professor'::text) OR (( SELECT public.internal_get_user_role(session_series.course_id) AS internal_get_user_role) = 'ta'::text)));
+
+
+--
+-- Name: session_series_tas insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.session_series_tas FOR INSERT TO backend WITH CHECK (( SELECT public.internal_write_policy_series_ta(session_series_tas.session_series_id) AS internal_write_policy_series_ta));
+
+
+--
+-- Name: sessions insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.sessions FOR INSERT TO backend WITH CHECK (((( SELECT public.internal_get_user_role(sessions.course_id) AS internal_get_user_role) = 'professor'::text) OR (( SELECT public.internal_get_user_role(sessions.course_id) AS internal_get_user_role) = 'ta'::text)));
+
+
+--
+-- Name: session_tas insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.session_tas FOR INSERT TO backend WITH CHECK (( SELECT public.internal_write_policy_session_ta(session_tas.session_id) AS internal_write_policy_session_ta));
+
+
+--
+-- Name: tags insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.tags FOR INSERT TO backend WITH CHECK ((( SELECT public.internal_get_user_role(tags.course_id) AS internal_get_user_role) = 'professor'::text));
+
+
+--
+-- Name: tag_relations insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.tag_relations FOR INSERT TO backend WITH CHECK ((( SELECT public.internal_owns_tag(tag_relations.parent_id) AS internal_owns_tag) AND ( SELECT public.internal_owns_tag(tag_relations.child_id) AS internal_owns_tag)));
+
+
+--
+-- Name: question_tags insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.question_tags FOR INSERT TO backend WITH CHECK ((( SELECT questions.asker_id
+   FROM public.questions
+  WHERE (questions.question_id = questions.question_id)) = ( SELECT public.internal_get_user_id() AS internal_get_user_id)));
+
+
+--
+-- Name: questions insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.questions FOR INSERT TO backend WITH CHECK ((asker_id = ( SELECT public.internal_get_user_id() AS internal_get_user_id)));
+
+
+--
+-- Name: question_tags; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.question_tags ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: questions; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: courses read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.courses FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: users read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.users FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: course_users read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.course_users FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: session_series read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.session_series FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: session_series_tas read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.session_series_tas FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: sessions read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.sessions FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: session_tas read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.session_tas FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: tags read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.tags FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: tag_relations read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.tag_relations FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: question_tags read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.question_tags FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: questions read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.questions FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: session_series; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.session_series ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: session_series_tas; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.session_series_tas ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: session_tas; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.session_tas ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: sessions; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.sessions ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: tag_relations; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tag_relations ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: tags; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tags ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: users update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.users FOR UPDATE TO backend USING ((user_id = ( SELECT public.internal_get_user_id() AS internal_get_user_id)));
+
+
+--
+-- Name: course_users update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.course_users FOR UPDATE TO backend USING ((( SELECT public.internal_get_user_role(course_users.course_id) AS internal_get_user_role) = 'professor'::text));
+
+
+--
+-- Name: session_series update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.session_series FOR UPDATE TO backend USING (((( SELECT public.internal_get_user_role(session_series.course_id) AS internal_get_user_role) = 'professor'::text) OR (( SELECT public.internal_get_user_role(session_series.course_id) AS internal_get_user_role) = 'ta'::text)));
+
+
+--
+-- Name: session_series_tas update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.session_series_tas FOR UPDATE TO backend USING (( SELECT public.internal_write_policy_series_ta(session_series_tas.session_series_id) AS internal_write_policy_series_ta));
+
+
+--
+-- Name: sessions update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.sessions FOR UPDATE TO backend USING (((( SELECT public.internal_get_user_role(sessions.course_id) AS internal_get_user_role) = 'professor'::text) OR (( SELECT public.internal_get_user_role(sessions.course_id) AS internal_get_user_role) = 'ta'::text)));
+
+
+--
+-- Name: session_tas update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.session_tas FOR UPDATE TO backend USING (( SELECT public.internal_write_policy_session_ta(session_tas.session_id) AS internal_write_policy_session_ta));
+
+
+--
+-- Name: tags update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.tags FOR UPDATE TO backend USING ((( SELECT public.internal_get_user_role(tags.course_id) AS internal_get_user_role) = 'professor'::text));
+
+
+--
+-- Name: tag_relations update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.tag_relations FOR UPDATE TO backend USING ((( SELECT public.internal_owns_tag(tag_relations.parent_id) AS internal_owns_tag) AND ( SELECT public.internal_owns_tag(tag_relations.child_id) AS internal_owns_tag)));
+
+
+--
+-- Name: question_tags update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.question_tags FOR UPDATE TO backend USING ((( SELECT questions.asker_id
+   FROM public.questions
+  WHERE (questions.question_id = questions.question_id)) = ( SELECT public.internal_get_user_id() AS internal_get_user_id)));
+
+
+--
+-- Name: questions update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.questions FOR UPDATE TO backend USING (( SELECT public.internal_owns_question(questions.question_id) AS internal_owns_question));
+
+
+--
+-- Name: users; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: TABLE questions; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.questions TO backend;
+
+
+--
+-- Name: TABLE session_series; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.session_series TO backend;
+
+
+--
+-- Name: TABLE sessions; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.sessions TO backend;
+
+
+--
+-- Name: TABLE users; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.users TO backend;
+
+
+--
+-- Name: TABLE course_users; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.course_users TO backend;
+
+
+--
+-- Name: TABLE courses; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.courses TO backend;
+
+
+--
+-- Name: SEQUENCE courses_course_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT USAGE ON SEQUENCE public.courses_course_id_seq TO backend;
+
+
+--
+-- Name: TABLE question_tags; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.question_tags TO backend;
+
+
+--
+-- Name: SEQUENCE questions_question_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT USAGE ON SEQUENCE public.questions_question_id_seq TO backend;
+
+
+--
+-- Name: SEQUENCE session_series_session_series_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT USAGE ON SEQUENCE public.session_series_session_series_id_seq TO backend;
+
+
+--
+-- Name: TABLE session_series_tas; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.session_series_tas TO backend;
+
+
+--
+-- Name: TABLE session_tas; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.session_tas TO backend;
+
+
+--
+-- Name: SEQUENCE sessions_session_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT USAGE ON SEQUENCE public.sessions_session_id_seq TO backend;
+
+
+--
+-- Name: TABLE tag_relations; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.tag_relations TO backend;
+
+
+--
+-- Name: TABLE tags; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.tags TO backend;
+
+
+--
+-- Name: SEQUENCE tags_tag_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT USAGE ON SEQUENCE public.tags_tag_id_seq TO backend;
+
+
+--
+-- Name: SEQUENCE users_user_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT USAGE ON SEQUENCE public.users_user_id_seq TO backend;
 
 
 --

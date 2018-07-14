@@ -1,13 +1,7 @@
 import * as express from 'express';
-import * as bodyparser from 'body-parser';
-import * as path from 'path';
 import postgraphql from 'postgraphql';
 import * as passport from 'passport';
 import * as sslRedirect from 'heroku-ssl-redirect';
-
-import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
-import { graphql } from 'graphql';
-import { readFileSync, readFile } from 'fs';
 
 var session = require('cookie-session');
 var request = require('request');
@@ -164,7 +158,7 @@ app.use(function (req, res, next) {
         } else {
             if (options.fakeuserid) {
                 const fakeJwt = jwt.sign({ userId: options.fakeuserid }, (process.env.OH_JWT_SECRET || "insecure"), {
-                    expiresIn: '1y',
+                    expiresIn: '30s',
                     audience: 'postgraphql',
                 });
                 req.headers.authorization = `Bearer ${fakeJwt}`;
@@ -179,7 +173,8 @@ app.use(postgraphql(process.env.DATABASE_URL || 'postgres://postgres:postgres@lo
     graphqlRoute: '/__gql/graphql',
     graphiqlRoute: '/__gql/graphiql',
     jwtSecret: (process.env.OH_JWT_SECRET || "insecure"),
-    jwtPgTypeIdentifier: 'public.jwt_token'
+    jwtPgTypeIdentifier: 'public.jwt_token',
+    pgDefaultRole: 'backend'
 }));
 
 app.use(express.static('../client/build'));
