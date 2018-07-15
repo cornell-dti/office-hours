@@ -24,11 +24,6 @@ class SessionQuestionsComponent extends React.Component {
         isMyQuestion: boolean
     };
 
-    constructor(props: {}) {
-        super(props);
-        this._onClick = this._onClick.bind(this);
-    }
-
     // Given an index from [1..n], converts it to text that is displayed
     // on the question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
@@ -42,7 +37,7 @@ class SessionQuestionsComponent extends React.Component {
         }
     }
 
-    _onClick(event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) {
+    _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
             variables: {
                 questionId: this.props.question.questionId,
@@ -82,8 +77,7 @@ class SessionQuestionsComponent extends React.Component {
                     <p className="Order">{this.getDisplayText(this.props.index)}</p>
                     <p className="Time">{<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}</p>
                 </div>
-                {
-                    this.props.isTA &&
+                {this.props.isTA &&
                     <div className="Buttons">
                         <hr />
                         <Mutation mutation={UPDATE_QUESTION}>

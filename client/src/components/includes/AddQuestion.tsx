@@ -60,20 +60,13 @@ class AddQuestion extends React.Component {
             // numberTopicTags: 0,
             redirect: false
         };
-        this.handleClick = this.handleClick.bind(this);
-        this.handlePrimarySelected = this.handlePrimarySelected.bind(this);
-        this.handleSecondarySelected = this.handleSecondarySelected.bind(this);
-        /*this.handleTopicSelected = this.handleTopicSelected.bind(this);*/
-        this.handleEditTags = this.handleEditTags.bind(this);
-        this.handleXClick = this.handleXClick.bind(this);
-        this.handleJoinClick = this.handleJoinClick.bind(this);
     }
 
-    public handleXClick(event: React.MouseEvent<HTMLElement>): void {
+    public handleXClick = (event: React.MouseEvent<HTMLElement>): void => {
         this.setState({ redirect: true });
     }
 
-    public handleJoinClick(event: React.MouseEvent<HTMLElement>, addQuestion: Function): void {
+    public handleJoinClick = (event: React.MouseEvent<HTMLElement>, addQuestion: Function): void => {
         var selectedTagIds: number[] = [];
         for (var i = 0; i < this.state.primaryBooleanList.length; i++) {
             if (this.state.primaryBooleanList[i]) {
@@ -95,40 +88,29 @@ class AddQuestion extends React.Component {
         this.setState({ redirect: true });
     }
 
-    public handleClick(event: React.ChangeEvent<HTMLTextAreaElement>): void {
+    public handleClick = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
         if (target.value.length <= 100) {
             this.setState({ question: target.value });
         }
-        if (target.value.length > 0) {
-            this.setState({ doneSelectingTags: true });
-        } else {
-            this.setState({ doneSelectingTags: false });
-        }
+        this.setState({ doneSelectingTags: target.value.length > 0 });
     }
 
-    public handlePrimarySelected(index: number): void {
+    public handlePrimarySelected = (index: number): void => {
         var temp = this.state.primaryBooleanList;
         if (!temp[index]) {
             temp = new Array(this.props.primaryTags.length).fill(false);
             temp[index] = true;
             this.setState({ showSecondaryTags: true });
-            /*if (this.state.numberSecondaryTags > 0) {
-                this.setState({ showTopicTags: true});
-            }
-            else {
-                this.setState({ showTopicTags: false});
-            }*/
         } else {
             temp[index] = false;
             this.setState({ showSecondaryTags: false });
-            /*this.setState({ showTopicTags: false });*/
         }
         var cleanSecondaryBool = new Array(this.props.secondaryTags.length).fill(false);
         this.setState({ primaryBooleanList: temp, secondaryBooleanList: cleanSecondaryBool });
     }
 
-    public handleSecondarySelected(index: number): void {
+    public handleSecondarySelected = (index: number): void => {
         var temp = this.state.secondaryBooleanList;
         temp[index] = !temp[index];
         if (temp[index]) {
@@ -136,34 +118,13 @@ class AddQuestion extends React.Component {
         } else {
             this.state.numberSecondaryTags--;
         }
-        this.setState({ secondaryBooleanList: temp });
-        if (this.state.numberSecondaryTags > 0) {
-            /*this.setState({ showTopicTags: true});
-            }
-            else {
-                this.setState({ showTopicTags: false});
-            }*/
-            this.setState({ showQuestionInput: true });
-        } else {
-            this.setState({ showQuestionInput: false });
-        }
+        this.setState({
+            secondaryBooleanList: temp,
+            showQuestionInput: this.state.numberSecondaryTags > 0
+        });
     }
 
-    /*public handleTopicSelected(index: number) : void {
-        var temp = this.state.topicBooleanList;
-        temp[index] = !temp[index];
-        if (temp[index]) this.state.numberTopicTags++;
-        else this.state.numberTopicTags--;
-        this.setState({ topicBooleanList: temp});
-        if (this.state.numberTopicTags > 0) {
-            this.setState({ showQuestionInput: true});
-        }
-        else {
-            this.setState({ showQuestionInput: false});
-        }
-    }*/
-
-    public handleEditTags(event: React.MouseEvent<HTMLElement>): void {
+    public handleEditTags = (event: React.MouseEvent<HTMLElement>): void => {
         this.setState({ doneSelectingTags: false });
     }
 
@@ -206,125 +167,78 @@ class AddQuestion extends React.Component {
                             onClick={this.handleSecondarySelected}
                         />
                     );
-                } else {
-                    return null;
                 }
+                return null;
             }
         );
 
-        /*var topicTagsList = this.props.topicTags.map(
-        (tag, index) => {
-            return (
-                <SelectedTags
-                    index={index}
-                    tag={tag}
-                    isSelected={this.state.topicBooleanList[index]}
-                    onClick={this.handleTopicSelected}
-                />
-            );
-        }
-        );*/
-
         var collapsedPrimary = primaryTagsList.filter(
-            (tag) => {
-                return tag.props.isSelected;
-            }
+            (tag) => tag.props.isSelected
         );
 
         var collapsedSecondary = secondaryTagsList.filter(
-            (tag) => {
-                if (tag) {
-                    return tag.props.isSelected;
-                } else {
-                    return false;
-                }
-            }
+            (tag) => tag ? tag.props.isSelected : false
         );
 
-        /*var collapsedTopic = this.state.topicBooleanList.map(
-            (tag, index) => {
-                if (tag) return <p className="selectedTag">{this.props.topicTags[index]}</p>
-            else return null
-            }
-        );*/
-
         return (
-            <div className="AddQuestion">
-                <div className="queueHeader">
-                    <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
-                    <p className="title">Join The Queue</p>
-                </div>
-                {/* No longer in design - commending out in case it comes back.
-                <hr />
-                <div className="taHeader">
-                    <div className="QuestionTaInfo">
-                        <img src={this.props.taPicture} />
-                        <p className="taName">{this.props.taName}</p>
+            <div className="QuestionView">
+                <div className="AddQuestion">
+                    <div className="queueHeader">
+                        <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
+                        <p className="title">Join The Queue</p>
                     </div>
-                </div> */}
-                <div className="tagsContainer">
-                    <hr />
-                    <div className="tagsMiniContainer" onClick={this.handleEditTags}>
-                        <p className="header">Categories</p>
-                        {this.state.doneSelectingTags ?
-                            <div className="QuestionTags">
-                                {collapsedPrimary}
-                            </div> :
-                            <div className="QuestionTags">
-                                {primaryTagsList}
-                            </div>}
-                    </div>
-                    <hr />
-                    <div className="tagsMiniContainer" onClick={this.handleEditTags}>
-                        <p className="header">Tags</p>
-                        {this.state.showSecondaryTags ?
-                            this.state.doneSelectingTags ?
+                    <div className="tagsContainer">
+                        <hr />
+                        <div className="tagsMiniContainer" onClick={this.handleEditTags}>
+                            <p className="header">Categories</p>
+                            {this.state.doneSelectingTags ?
                                 <div className="QuestionTags">
-                                    {collapsedSecondary}
+                                    {collapsedPrimary}
                                 </div> :
                                 <div className="QuestionTags">
-                                    {secondaryTagsList}
-                                </div> : <p className="placeHolder">Select a category</p>}
+                                    {primaryTagsList}
+                                </div>}
+                        </div>
+                        <hr />
+                        <div className="tagsMiniContainer" onClick={this.handleEditTags}>
+                            <p className="header">Tags</p>
+                            {this.state.showSecondaryTags ?
+                                this.state.doneSelectingTags ?
+                                    <div className="QuestionTags">
+                                        {collapsedSecondary}
+                                    </div> :
+                                    <div className="QuestionTags">
+                                        {secondaryTagsList}
+                                    </div> : <p className="placeHolder">Select a category</p>}
+                        </div>
+                        <hr />
+                        <div className="tagsMiniContainer">
+                            <p className="header">Question</p>
+                            {this.state.showQuestionInput ?
+                                <textarea
+                                    className="QuestionInput"
+                                    value={this.state.question}
+                                    onChange={this.handleClick}
+                                    placeholder="What's your question about?"
+                                />
+                                : <p className="placeHolder text">Finish selecting tags...</p>}
+                        </div>
+                        <Mutation mutation={ADD_QUESTION}>
+                            {(addQuestion) =>
+                                this.state.doneSelectingTags ?
+                                    <p
+                                        className="AddButton active"
+                                        onClick={(e) => this.handleJoinClick(e, addQuestion)}
+                                    >
+                                        Add My Question
+                                    </p>
+                                    :
+                                    <p className="AddButton"> Add My Question </p>
+                            }
+                        </Mutation>
                     </div>
-                    {/*<div className="tagsMiniContainer" onClick={this.handleEditTags}>
-                <hr/>
-                <p>Topic Tags</p>
-                { this.state.showTopicTags ?
-                    this.state.doneSelectingTags ?
-                    <div className="QuestionTags">
-                        {collapsedTopic}
-                    </div> :
-                    <div className="QuestionTags">
-                        {topicTagsList}
-                    </div> : <p className="placeHolder">Select Secondary Tag first</p> }
-              </div>*/}
-                    <hr />
-                    <div className="tagsMiniContainer">
-                        <p className="header">Question</p>
-                        {this.state.showQuestionInput ?
-                            <textarea
-                                className="QuestionInput"
-                                value={this.state.question}
-                                onChange={this.handleClick}
-                                placeholder="What's your question about?"
-                            />
-                            : <p className="placeHolder text">Finish selecting tags...</p>}
-                    </div>
-                    <Mutation mutation={ADD_QUESTION}>
-                        {(addQuestion) =>
-                            this.state.doneSelectingTags ?
-                                <p
-                                    className="AddButton active"
-                                    onClick={(e) => this.handleJoinClick(e, addQuestion)}
-                                >
-                                    Add My Question
-                                </p>
-                                :
-                                <p className="AddButton"> Add My Question </p>
-                        }
-                    </Mutation>
                 </div>
-            </div >
+            </div>
         );
     }
 }

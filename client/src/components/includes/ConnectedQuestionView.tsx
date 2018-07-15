@@ -98,19 +98,17 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
             }
 
             return (
-                <div className="QuestionView">
-                    <AddQuestion
-                        taName="Sangwoo Kim"
-                        taPicture={imageURL}
-                        primaryTags={primaryTagNames}
-                        secondaryTags={secondaryTagNames}
-                        primaryTagsIds={primaryTagNamesIds}
-                        secondaryTagsIds={secondaryTagNamesIds}
-                        secondaryTagParentIds={secondaryTagParentIds}
-                        sessionId={this.props.sessionId}
-                        courseId={this.props.courseId}
-                    />
-                </div>
+                <AddQuestion
+                    taName="Sangwoo Kim"
+                    taPicture={imageURL}
+                    primaryTags={primaryTagNames}
+                    secondaryTags={secondaryTagNames}
+                    primaryTagsIds={primaryTagNamesIds}
+                    secondaryTagsIds={secondaryTagNamesIds}
+                    secondaryTagParentIds={secondaryTagParentIds}
+                    sessionId={this.props.sessionId}
+                    courseId={this.props.courseId}
+                />
             );
         }
 
