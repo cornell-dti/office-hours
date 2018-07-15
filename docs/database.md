@@ -71,6 +71,14 @@ Each row in courses represents a specific course offering that is using Queue Me
 ||start\_date|date|❌|Date on which office hours for this course are to start|
 ||end\_date|date|❌|Date on which office hours for this course are to end|
 
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|-|
+|Update|-|
+|Delete|-|
+
 ### users
 All the registered users are logged to this table after their first login. This schema assumes that Google login is the authentication method. Note that some of the fields are nullable because they might not have been set in the user's Google profile.
 
@@ -86,6 +94,14 @@ All the registered users are logged to this table after their first login. This 
 ||photo\_url|text|✔️|Google-provided profile photo URL of the user (note: may not be set in their Google profile, in which case this is null)|
 ||display\_name|text|✔️|Google-provided profile display name of the user (note: may not be set in their Google profile, in which case this is null)|
 
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|`user_id = -1` (server-only)|
+|Update|Own row only|
+|Delete|-|
+
 ### course-users
 This relation is used to store user roles within courses. It is a junction table (many-to-many relationship) between courses and users, and each entry is assigned a role indicating the user's permissions within the course. If a course-user pair does not occur in this table, it is assumed that the user is not a part of the course in any capacity.
 
@@ -94,6 +110,14 @@ This relation is used to store user roles within courses. It is a junction table
 |🔑✈️|course\_id|integer|❌|References the course being described in this relation; forms a primary key with user\_id; foreign key from [courses](#courses)|
 |🔑✈️|user\_id|integer|❌|References the user being described in this relation; forms a primary key with course\_id; foreign key from [users](#users)|
 ||role|text|❌|One of 'professor', 'ta', or 'student', describing the user's role within the course|
+
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|All users, but only if `role='student'`|
+|Update|Professors for the course|
+|Delete|-|
 
 ### session-series
 This relation is used to store metadata about weekly recurring office hour sessions. These recurring sessions are referred to as a 'series'. The series stored in this table do not represent actual sessions! Session instances are always stored in [sessions](#sessions) only.
@@ -107,6 +131,14 @@ This relation is used to store metadata about weekly recurring office hour sessi
 ||room|text|❌|Name of the room in which this series occurs (eg. 'G17')|
 |✈️|course\_id|integer|❌|References the course to which this session series belongs; foreign key from [courses](#courses)|
 
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|TAs and professors for the course|
+|Update|TAs and professors for the course|
+|Delete|TAs and professors for the course|
+
 ### session-series-tas
 This is a junction table (many-to-many relationship) between [session\_series](#session-series) and [users](#users) that describes the TAs that host a particular session series. Note that it is possible for sessions to be hosted by multiple TAs.
 
@@ -114,6 +146,14 @@ This is a junction table (many-to-many relationship) between [session\_series](#
 |:---:|---|---|:---:|---|
 |🔑✈️|session\_series\_id|integer|❌|References the session series whose host TA is being described; forms a primary key with user\_id; foreign key from [session\_series](#session-series)|
 |🔑✈️|user\_id|integer|❌|References the user who is the host TA for the session series; forms a primary key with session\_series\_id; foreign key from [users](#users)|
+
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|TAs and professors for the course|
+|Update|TAs and professors for the course|
+|Delete|TAs and professors for the course|
 
 ### sessions
 This relation is used to store metadata about office hour session instances. Note that session instances may be part of a session series, or they may be independent sessions. This is dictated by whether or not the session\_series\_id field is null. Even if the session is part of a session series, all the metadata will be stored here in a replicated manner. If a session from a series is edited in a one-off, indepedent manner, then session\_series\_id will be set to null to prevent it from being affected by series edits.
@@ -128,6 +168,14 @@ This relation is used to store metadata about office hour session instances. Not
 |✈️|session\_series\_id|integer|✔️|References the session series to which this session belongs, if any; foreign key from [session\_series](#session-series)|
 |✈️|course\_id|integer|❌|References the course to which this session series belongs; foreign key from [courses](#courses)|
 
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|TAs and professors for the course|
+|Update|TAs and professors for the course|
+|Delete|TAs and professors for the course|
+
 ### session-tas
 This is a junction table (many-to-many relationship) between [sessions](#sessions) and [users](#users) that describes the TAs that host a particular session instance. Note that it is possible for session instances to be hosted by multiple TAs. In case a session belongs to a series, the information from [session\_series\_tas](#session-series-tas) is stored here in a replicated manner.
 
@@ -135,6 +183,14 @@ This is a junction table (many-to-many relationship) between [sessions](#session
 |:---:|---|---|:---:|---|
 |🔑✈️|session\_id|integer|❌|References the session whose host TA is being described; forms a primary key with user\_id; foreign key from [sessions](#sessions)|
 |🔑✈️|user\_id|integer|❌|References the user who is the host TA for the session; forms a primary key with session\_id; foreign key from [users](#users)|
+
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|TAs and professors for the course|
+|Update|TAs and professors for the course|
+|Delete|TAs and professors for the course|
 
 ### questions
 This table contains all the details about all the questions asked across different sessions and courses. As the question's status is updated, its corresponding entry's 'status' field is changed. 
@@ -150,6 +206,14 @@ This table contains all the details about all the questions asked across differe
 ||asker\_id|integer|❌|References the student (user) who asked this question; foreign key from [users](#users)|
 ||answerer\_id|integer|✔️|References the TA (user) who most recently marked this question as resolved or as a no-show, and is NULL for unanswered and retracted questions; foreign key from [users](#users)|
 
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|All users, as long as `asker_id` is the logged-in user|
+|Update|User who asked the question; TAs and professors for the course|
+|Delete|-|
+
 ### tags
 This relation is a repository of all the tags stored in the system, across different course offerings. Note that two tags in the same course with the same name should be separated if they are fundamentally different entities that need different analytics. For example, Q1 under Assignment 1 and Q1 under Assignment 2 should be separated as two tags, since they are to be analyzed independently.
 
@@ -161,6 +225,14 @@ This relation is a repository of all the tags stored in the system, across diffe
 ||level|integer|❌|Encodes the tag level in the tag hierarchy: primary = 1, secondary = 2|
 ||activated|boolean|✔️|For primary tags, this indicates whether this tag and its children are currently active and should be shown to students or not. NULL for non-primary tags!|
 
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|Professors for the course|
+|Update|Professors for the course|
+|Delete|Professors for the course|
+
 ### tag-relations
 Describes the tree-like tag hierarchy using parent-child relationships. Each entry in the table describes a parent tag and a child tag. 
 
@@ -169,6 +241,14 @@ Describes the tree-like tag hierarchy using parent-child relationships. Each ent
 |🔑✈️|parent\_id|integer|❌|tag\_id of the parent; forms a primary key with child\_id; foreign key from [tags](#tags)|
 |🔑✈️|child\_id|integer|❌|tag\_id of the child; forms a primary key with parent\_id; foreign key from [tags](#tags)|
 
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|Professors for the course|
+|Update|Professors for the course|
+|Delete|Professors for the course|
+
 ### question-tags
 Junction table (many-to-many relationship) between [questions](#questions) and [tags](#tags) that attaches tags to questions.
 
@@ -176,6 +256,14 @@ Junction table (many-to-many relationship) between [questions](#questions) and [
 |:---:|---|---|:---:|---|
 |🔑✈️|question\_id|integer|❌|question\_id of the question that is tagged with tag\_id; forms a primary key with tag\_id; foreign key from [questions](#questions)|
 |🔑✈️|tag\_id|integer|❌|tag\_id of the tag that is to be attached to question\_id; forms a primary key with question\_id; foreign key from [tags](#tags)|
+
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|User who asked the question|
+|Update|User who asked the question|
+|Delete|User who asked the question|
 
 ## Functions
 
