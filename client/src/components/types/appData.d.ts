@@ -51,13 +51,11 @@ interface AppUser {
     userId: number;
 }
 
-interface CurrentUserRole {
-    nodes: [{
-        courseUsersByUserId: {
-            nodes: [{
-                role: string;
-                userId: number;
-            }]
-        }
-    }]
+interface AppUserRole extends AppUser {
+    courseUsersByUserId: {
+        nodes: [{
+            role: string;
+            userId: number;
+        }]
+    }
 }

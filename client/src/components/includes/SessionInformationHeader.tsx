@@ -20,6 +20,7 @@ class SessionInformationHeader extends React.Component {
     render() {
         const session = this.props.session;
         const questions = session.questionsBySessionId.nodes;
+        const tas = session.sessionTasBySessionId.nodes;
         if (this.props.isDesktop) {
             return (
                 <header className="DesktopSessionInformationHeader" >
@@ -35,10 +36,8 @@ class SessionInformationHeader extends React.Component {
                             <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
                         </p>
                         <p>Held by <span className="black">
-                            {/* TODO: Better handle multiple TAs */}
-                            {session.sessionTasBySessionId.nodes.map(ta =>
-                                ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName + ' '
-                            )}
+                            {tas &&
+                                tas.map(ta => ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName).join(' and ')}
                         </span></p>
                     </div>
                     <div className="QueueWrap">
@@ -91,10 +90,7 @@ class SessionInformationHeader extends React.Component {
                             </p>
                         </div>
                         <p>Held by <span className="black">
-                            {/* TODO: Better handle multiple TAs */}
-                            {session.sessionTasBySessionId.nodes.map(ta =>
-                                ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName + ' '
-                            )}
+                            {tas.map(ta => ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName).join(' and ')}
                         </span></p>
                     </div>
                 </div>

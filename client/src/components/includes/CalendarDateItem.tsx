@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-class CalendarDateItem extends React.Component {
+class CalendarDateItem extends React.PureComponent {
     props: {
         index: number,
         active: boolean,
@@ -9,22 +9,13 @@ class CalendarDateItem extends React.Component {
         handleClick: Function
     };
 
-    constructor(props: {}) {
-        super(props);
-        this._onClick = this._onClick.bind(this);
-    }
-
-    _onClick() {
+    _onClick = () => {
         this.props.handleClick(this.props.index);
     }
 
     render() {
-        var activeClass = 'menuDate';
-        if (this.props.active === true) {
-            activeClass = 'menuDate active';
-        }
         return (
-            <div className={activeClass} onClick={this._onClick}>
+            <div className={'menuDate' + (this.props.active ? ' active' : '')} onClick={this._onClick}>
                 <div className="day">{this.props.day}</div>
                 <div className="date">{this.props.date}</div>
             </div>

@@ -63,7 +63,9 @@ interface AppData {
     apiGetSessions: {
         nodes: [AppSession];
     };
-    apiGetCurrentUser: CurrentUserRole;
+    apiGetCurrentUser: {
+        nodes: [AppUserRole]
+    };
 }
 
 interface Variables {

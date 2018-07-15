@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import TopBar from '../includes/TopBar';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 
@@ -10,10 +11,13 @@ const GET_SESSION_DATA = gql`
 query getDataForSession($sessionId: Int!, $courseId: Int!) {
     apiGetCurrentUser {
         nodes {
+            firstName
+            lastName
+            photoUrl
+            userId
             courseUsersByUserId(condition:{courseId:$courseId}) {
                 nodes {
                     role
-                    userId
                 }
             }
         }
@@ -67,7 +71,9 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
 interface SessionData {
     sessionBySessionId: AppSession;
     courseByCourseId: AppCourse;
-    apiGetCurrentUser: CurrentUserRole;
+    apiGetCurrentUser: {
+        nodes: [AppUserRole]
+    };
 }
 
 interface Variables {
@@ -89,40 +95,52 @@ class SessionView extends React.Component {
     render() {
         return (
             <section className="StudentSessionView">
-                {this.props.id === -1
-                    ? <p className="noSessionSelected">Please select an office hour from the calendar.</p>
-                    : <SessionDataQuery
-                        query={GET_SESSION_DATA}
-                        variables={{ sessionId: this.props.id, courseId: this.props.courseId }}
-                        pollInterval={5000}
-                    >
-                        {({ loading, data, error }) => {
-                            if (error) { return <h1>ERROR</h1>; }
-                            if (!data || !data.sessionBySessionId) { return <div>Loading...</div>; }
-                            return (
-                                <React.Fragment>
-                                    <SessionInformationHeader
-                                        session={data.sessionBySessionId}
-                                        course={data.courseByCourseId}
-                                        callback={this.props.backCallback}
-                                        isDesktop={this.props.isDesktop}
-                                    />
-                                    <div className="splitQuestions">
-                                        <SessionQuestionsContainer
-                                            isTA={data.apiGetCurrentUser.nodes[0].
-                                                courseUsersByUserId.nodes[0].role !== 'student'}
-                                            questions={data.sessionBySessionId.questionsBySessionId
-                                                .nodes.filter(q => q.status === 'unresolved')}
-                                            handleJoinClick={this.props.joinCallback}
-                                            myUserId={data.apiGetCurrentUser.nodes[0].
-                                                courseUsersByUserId.nodes[0].userId}
+                <SessionDataQuery
+                    query={GET_SESSION_DATA}
+                    variables={{ sessionId: this.props.id, courseId: this.props.courseId }}
+                    pollInterval={5000}
+                >
+                    {({ loading, data, error }) => {
+                        if (error) { return <h1>ERROR</h1>; }
+                        if (!data || !data.apiGetCurrentUser) {
+                            return <p className="noSessionSelected">Loading...</p>;
+                        }
+                        return (
+                            <React.Fragment>
+                                {this.props.isDesktop && <TopBar user={data.apiGetCurrentUser.nodes[0]} />}
+                                {this.props.id === -1 || !data.sessionBySessionId
+                                    ? <React.Fragment>
+                                        <p className="welcomeMessage">Welcome, <span className="welcomeName">
+                                            {data.apiGetCurrentUser.nodes[0].firstName + ' '
+                                                + data.apiGetCurrentUser.nodes[0].lastName}
+                                        </span></p>
+                                        <p className="noSessionSelected">
+                                            Please select an office hour from the calendar.
+                                        </p>
+                                    </React.Fragment>
+                                    : <React.Fragment>
+                                        <SessionInformationHeader
+                                            session={data.sessionBySessionId}
+                                            course={data.courseByCourseId}
+                                            callback={this.props.backCallback}
+                                            isDesktop={this.props.isDesktop}
                                         />
-                                    </div>
-                                </React.Fragment>
-                            );
-                        }}
-                    </SessionDataQuery>
-                }
+                                        <div className="splitQuestions">
+                                            <SessionQuestionsContainer
+                                                isTA={data.apiGetCurrentUser.nodes[0].
+                                                    courseUsersByUserId.nodes[0].role !== 'student'}
+                                                questions={data.sessionBySessionId.questionsBySessionId
+                                                    .nodes.filter(q => q.status === 'unresolved')}
+                                                handleJoinClick={this.props.joinCallback}
+                                                myUserId={data.apiGetCurrentUser.nodes[0].userId}
+                                            />
+                                        </div>
+                                    </React.Fragment>
+                                }
+                            </React.Fragment>
+                        );
+                    }}
+                </SessionDataQuery>
             </section>
         );
     }
