@@ -68,7 +68,6 @@ class SessionQuestionsComponent extends React.Component {
                             isSelected={false}
                             tag={tag.tagByTagId.name}
                             level={tag.tagByTagId.level}
-                            index={0}
                             onClick={null}
                         />
                     )}

@@ -1,23 +1,17 @@
 import * as React from 'react';
 
-class SelectedTags extends React.Component {
+class SelectedTags extends React.PureComponent {
 
     props: {
-        index: number,
         tag: string,
         isSelected: boolean,
         onClick: Function | null,
         level: number
     };
 
-    constructor(props: {}) {
-        super(props);
-        this._onClick = this._onClick.bind(this);
-    }
-
-    _onClick() {
+    _onClick = () => {
         if (this.props.onClick) {
-            this.props.onClick(this.props.index);
+            this.props.onClick();
         }
     }
 
@@ -25,7 +19,7 @@ class SelectedTags extends React.Component {
         return (
             <p
                 className={['tag',
-                    (this.props.level === 1) ? 'primaryTag' : 'secondaryTag',
+                    this.props.level === 1 ? 'primaryTag' : 'secondaryTag',
                     this.props.isSelected && 'selectedTag'].join(' ')}
                 onClick={this._onClick}
             >

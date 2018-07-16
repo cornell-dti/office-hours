@@ -44,6 +44,17 @@ interface AppTag {
     }
 }
 
+interface AppTagRelations extends AppTag {
+    name: string;
+    level: number;
+    tagId: number;
+    tagRelationsByChildId: {
+        nodes: [{
+            parentId: number
+        }]
+    }
+}
+
 interface AppUser {
     firstName: string;
     lastName: string;
