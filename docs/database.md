@@ -94,8 +94,8 @@ All the registered users are logged to this table after their first login. This 
 ||last\_activity\_at|timestamp with time zone|✔️|Timestamp at which this user last went through the login flow on the app|
 ||photo\_url|text|✔️|Google-provided profile photo URL of the user (note: may not be set in their Google profile, in which case this is null)|
 ||display\_name|text|✔️|Google-provided profile display name of the user (note: may not be set in their Google profile, in which case this is null)|
-||validated\_name|text|❌|Computed (virtual) field that provides a validated, non-null display name for the front-end to use|
-||validated\_avatar|text|❌|Computed (virtual) field that provides a validated, non-null avatar URL for the front-end to use|
+||computed\_name|text|❌|Computed (virtual) field that provides a validated, non-null display name for the front-end to use|
+||computed\_avatar|text|❌|Computed (virtual) field that provides a validated, non-null avatar URL for the front-end to use|
 
 #### Authorization Rules
 |Operation|Who is allowed?|
