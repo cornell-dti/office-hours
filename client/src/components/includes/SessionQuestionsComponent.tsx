@@ -73,7 +73,9 @@ class SessionQuestionsComponent extends React.Component {
                     )}
                 </div>
                 <div className="BottomBar">
-                    <p className="Order">{this.getDisplayText(this.props.index)}</p>
+                    <p className={'Order' + (this.props.index === 0 ? ' now' : '')}>
+                        {this.getDisplayText(this.props.index)}
+                    </p>
                     <p className="Time">{<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}</p>
                 </div>
                 {this.props.isTA &&

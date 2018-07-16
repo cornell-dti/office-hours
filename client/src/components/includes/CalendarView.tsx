@@ -86,7 +86,6 @@ class CalendarView extends React.Component {
     props: {
         courseId: number,
         sessionId: number,
-        // isDesktop: boolean,
         sessionCallback: Function,
     };
 
@@ -108,9 +107,6 @@ class CalendarView extends React.Component {
             selectedWeekEpoch: week.getTime(),
             selectedDateEpoch: today.getTime(),
         };
-
-        this.handleDateClick = this.handleDateClick.bind(this);
-        this.handleWeekClick = this.handleWeekClick.bind(this);
     }
 
     // Currently unused function, might be useful in the future
@@ -127,7 +123,7 @@ class CalendarView extends React.Component {
     }
 
     // Update state used for date picker
-    handleWeekClick(previousWeek: boolean) {
+    handleWeekClick = (previousWeek: boolean) => {
         if (previousWeek) {
             this.setState({
                 selectedWeekEpoch: this.state.selectedWeekEpoch - ONE_WEEK,
@@ -143,7 +139,7 @@ class CalendarView extends React.Component {
 
     // newDateIndex is an index between 0 and 6 inclusive, representing which of the days
     // in the current week has been selected
-    handleDateClick(newDateIndex: number) {
+    handleDateClick = (newDateIndex: number) => {
         this.setState({ selectedDateEpoch: this.state.selectedWeekEpoch + newDateIndex * ONE_DAY });
     }
 
@@ -163,6 +159,7 @@ class CalendarView extends React.Component {
         return (
             <DaySessionDataQuery
                 query={GET_CALENDAR_DATA}
+                pollInterval={30000}
                 variables={{
                     beginTime: selectedDate,
                     endTime: new Date(this.state.selectedDateEpoch + ONE_DAY),
