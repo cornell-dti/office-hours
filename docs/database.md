@@ -70,6 +70,7 @@ Each row in courses represents a specific course offering that is using Queue Me
 ||semester|text|❌|Shorthand reference to the semester the course occurs in, for example 'SP18' or 'FA18'|
 ||start\_date|date|❌|Date on which office hours for this course are to start|
 ||end\_date|date|❌|Date on which office hours for this course are to end|
+||queue\_open\_interval|interval|❌|Amount of time that the queue is to be opened for before each session starts; for example '30 minutes' (which is the default)|
 
 #### Authorization Rules
 |Operation|Who is allowed?|
@@ -93,6 +94,8 @@ All the registered users are logged to this table after their first login. This 
 ||last\_activity\_at|timestamp with time zone|✔️|Timestamp at which this user last went through the login flow on the app|
 ||photo\_url|text|✔️|Google-provided profile photo URL of the user (note: may not be set in their Google profile, in which case this is null)|
 ||display\_name|text|✔️|Google-provided profile display name of the user (note: may not be set in their Google profile, in which case this is null)|
+||validated\_name|text|❌|Computed (virtual) field that provides a validated, non-null display name for the front-end to use|
+||validated\_avatar|text|❌|Computed (virtual) field that provides a validated, non-null avatar URL for the front-end to use|
 
 #### Authorization Rules
 |Operation|Who is allowed?|
@@ -210,7 +213,7 @@ This table contains all the details about all the questions asked across differe
 |Operation|Who is allowed?|
 |:---:|---|
 |Read|All users|
-|Insert|All users, as long as `asker_id` is the logged-in user|
+|Insert|All users, as long as `asker_id` is the logged-in user; queue should be open, i.e. (start time - open interval) <= `NOW()` <= (end time)|
 |Update|User who asked the question; TAs and professors for the course|
 |Delete|-|
 

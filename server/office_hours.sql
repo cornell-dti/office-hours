@@ -508,6 +508,47 @@ $$;
 
 
 --
+-- Name: internal_is_queue_open(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_is_queue_open(_session_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+
+declare
+
+_course_id integer;
+
+_open_interval interval;
+
+_start_time timestamptz;
+
+_end_time timestamptz;
+
+begin
+
+	select course_id, start_time, end_time into _course_id, _start_time, _end_time
+
+		from sessions where session_id = _session_id;
+
+	select queue_open_interval into _open_interval from courses where course_id = _course_id;
+
+	if ((NOW() >= (_start_time - _open_interval)) and (NOW() <= _end_time)) then
+
+		return true;
+
+	else
+
+		return false;
+
+	end if;
+
+end
+
+$$;
+
+
+--
 -- Name: internal_owns_question(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -805,6 +846,60 @@ END
 
 
 --
+-- Name: users_computed_avatar(public.users); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.users_computed_avatar(u public.users) RETURNS text
+    LANGUAGE plpgsql STABLE
+    AS $$
+
+begin
+
+	if (u.photo_url is not null) then
+
+		return u.photo_url;
+
+	else
+
+		return '/static/media/userAvatar.28b5e338.svg';
+
+	end if;
+
+end
+
+$$;
+
+
+--
+-- Name: users_computed_name(public.users); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.users_computed_name(u public.users) RETURNS text
+    LANGUAGE plpgsql STABLE
+    AS $$
+
+begin
+
+	if (u.display_name is not null) then
+
+		return u.display_name;
+
+	elseif ((u.first_name is not null) or (u.last_name is not null)) then
+
+		return concat_ws(' ', u.first_name, u.last_name);
+
+	else
+
+		return u.email;
+
+	end if;
+
+end
+
+$$;
+
+
+--
 -- Name: course_users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -825,7 +920,8 @@ CREATE TABLE public.courses (
     name text NOT NULL,
     semester text NOT NULL,
     start_date date NOT NULL,
-    end_date date NOT NULL
+    end_date date NOT NULL,
+    queue_open_interval interval DEFAULT '00:30:00'::interval NOT NULL
 );
 
 
@@ -1065,8 +1161,8 @@ COPY public.course_users (course_id, user_id, role) FROM stdin;
 -- Data for Name: courses; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.courses (course_id, code, name, semester, start_date, end_date) FROM stdin;
-1	CS 1380	Data Science For All	FA18	2018-06-28	2018-08-13
+COPY public.courses (course_id, code, name, semester, start_date, end_date, queue_open_interval) FROM stdin;
+1	CS 1380	Data Science For All	FA18	2018-06-28	2018-08-13	1 day
 \.
 
 
@@ -1251,7 +1347,7 @@ SELECT pg_catalog.setval('public.courses_course_id_seq', 3, true);
 -- Name: questions_question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.questions_question_id_seq', 17, true);
+SELECT pg_catalog.setval('public.questions_question_id_seq', 20, true);
 
 
 --
@@ -1668,7 +1764,7 @@ CREATE POLICY insert_policy ON public.question_tags FOR INSERT TO backend WITH C
 -- Name: questions insert_policy; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY insert_policy ON public.questions FOR INSERT TO backend WITH CHECK ((asker_id = ( SELECT public.internal_get_user_id() AS internal_get_user_id)));
+CREATE POLICY insert_policy ON public.questions FOR INSERT TO backend WITH CHECK (((asker_id = ( SELECT public.internal_get_user_id() AS internal_get_user_id)) AND ( SELECT public.internal_is_queue_open(questions.session_id) AS internal_is_queue_open)));
 
 
 --

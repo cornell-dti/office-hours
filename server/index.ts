@@ -168,7 +168,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
+app.use(postgraphql(process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5434/postgres', {
     graphiql: true,
     graphqlRoute: '/__gql/graphql',
     graphiqlRoute: '/__gql/graphiql',
