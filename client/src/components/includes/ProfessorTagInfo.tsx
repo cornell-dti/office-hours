@@ -11,7 +11,7 @@ class ProfoessorTagInfo extends React.Component {
         startTimeDefault?: (moment.Moment | null)
         endTimeDefault?: (moment.Moment | null)
         numQuestions?: number
-    }
+    };
 
     state: {
         startTime?: (moment.Moment | null)
@@ -42,7 +42,7 @@ class ProfoessorTagInfo extends React.Component {
 
     render() {
         var today = moment().format('dddd MM/DD/YY');
-        var defaultNumQuestions: number = (this.props.numQuestions === undefined) ? 1 : this.props.numQuestions
+        var defaultNumQuestions: number = (this.props.numQuestions === undefined) ? 1 : this.props.numQuestions;
 
         return (
             <div className="ProfessorTagInfo">
@@ -78,7 +78,7 @@ class ProfoessorTagInfo extends React.Component {
                 <div className="NumQuestions">
                     Number of Questions
                     <div className="NumericInput">
-                        <NumericInput min={0} max={99} value={defaultNumQuestions} snap strict />
+                        <NumericInput min={0} max={99} value={defaultNumQuestions} snap={true} strict={true} />
                     </div>
                 </div>
             </div>

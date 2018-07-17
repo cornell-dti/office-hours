@@ -14,7 +14,7 @@ class ProfessorHeader extends React.Component {
                 <button>
                     <Icon.Group>
                         <Icon name="bell outline" size="big" color="grey" />
-                        <Icon className="notification" corner name="circle" color="pink" />
+                        <Icon className="notification" corner={true} name="circle" color="pink" />
                     </Icon.Group>
                 </button>
                 <img src={this.props.image} />

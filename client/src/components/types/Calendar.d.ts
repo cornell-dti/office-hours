@@ -7,6 +7,7 @@ type Session = {
 };
 
 type SessionNode = {
+    startTime: string
     endTime: string,
     building: string,
     room: string,
@@ -22,12 +23,12 @@ type SessionNode = {
     sessionTasBySessionId: {
         nodes: [TANode]
     },
-    startTime: string
 }
 
 type TANode = {
     userByUserId: {
         firstName: string,
         lastName: string,
+        userId: number
     }
 }

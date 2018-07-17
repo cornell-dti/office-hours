@@ -4,71 +4,24 @@ import ProfessorAddNew from '../includes/ProfessorAddNew';
 import ProfessorHeader from '../includes/ProfessorHeader';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
-
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import { ChildProps } from 'react-apollo';
 import ProfoessorOHInfo from '../includes/ProfessorOHInfo';
+// import * as moment from 'moment';
+import 'moment-timezone';
 
-const QUERY = gql`
-query FindSessionsByCourse($courseId: Int!) {
-    courseByCourseId(courseId: $courseId) {
-        tas: courseUsersByCourseId(condition: {role: "ta"}) {
-            nodes {
-                userByUserId {
-                firstName
-                lastName
-                userId
-                }
+class ProfessorView extends React.Component {
+    props: {
+        match: {
+            params: {
+                courseId: number
             }
         }
-        professors: courseUsersByCourseId(condition: {role: "professor"}) {
-            nodes {
-                userByUserId {
-                firstName
-                lastName
-                userId
-                }
-            }
-        }
-    }
-}
-`;
+    };
 
-const withData = graphql<Response, InputProps>(
-    QUERY, {
-        options: ({ match }) => ({
-            variables: {
-                courseId: match.params.courseId
-            }
-        })
-    }
-);
-
-type InputProps = {
-    match: {
-        params: {
-            courseId: number,
-        },
-    },
-    data: {
-        courseByCourseId?: {
-            tas: {
-                nodes: [{}]
-            }
-            professors: {
-                nodes: [{}]
-            }
-        }
-    }
-};
-
-class ProfessorView extends React.Component<ChildProps<InputProps, Response>> {
     state: {
         selectedWeekEpoch: number
     };
 
-    constructor(props: ChildProps<InputProps, Response>) {
+    constructor(props: {}) {
         super(props);
         var week = new Date();
         week.setHours(0, 0, 0, 0);
@@ -96,16 +49,6 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>> {
     }
 
     render() {
-        var taList: string[] = [];
-
-        if (this.props.data.courseByCourseId) {
-            this.props.data.courseByCourseId.tas.nodes.forEach((node: TANode) => {
-                taList.push(node.userByUserId.firstName + " " + node.userByUserId.lastName);
-            });
-            this.props.data.courseByCourseId.professors.nodes.forEach((node: TANode) => {
-                taList.push(node.userByUserId.firstName + " " + node.userByUserId.lastName);
-            });
-        }
 
         return (
             <div className="ProfessorView">
@@ -124,7 +67,9 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>> {
                             text="Add New Office Hour"
                             content={
                                 <ProfoessorOHInfo
-                                    taList={taList}
+                                    data={{}}
+                                    courseId={this.props.match.params.courseId}
+                                    isNewOH={true}
                                 />
                             }
                         />
@@ -139,7 +84,6 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>> {
                                     7 /* days */ * 24 /* hours */ * 60 /* minutes */
                                     * 60 /* seconds */ * 1000 /* millis */)}
                                 data={{ loading: true }}
-                                taList={taList}
                                 key={this.state.selectedWeekEpoch}
                             />
                         </div>
@@ -150,4 +94,4 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>> {
     }
 }
 
-export default withData(ProfessorView);
+export default ProfessorView;

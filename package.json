@@ -24,6 +24,7 @@
         "concurrently": "^3.5.0",
         "express-graphql": "^0.6.12",
         "global": "^4.3.2",
+        "react-apollo": "^2.1.9",
         "typescript": "^2.8.1"
     }
 }

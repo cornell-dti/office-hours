@@ -7,18 +7,20 @@ import ProfoessorOHInfo from './ProfessorOHInfo';
 class ProfessorCalendarRow extends React.Component {
 
     props: {
-        dayNumber: number
-        taList: string[]
-        timeStart: Date[]
-        timeEnd: Date[]
-        officeHoursTas: string[][]
-        locationBuilding: string[]
-        locationRoomNum: string[]
-        isSeries: boolean[]
-        isExpanded: boolean[]
-        handleEditToggle: Function
-        tablewidth: number
-        updateDeleteInfo: Function
+        courseId: number,
+        dayNumber: number,
+        timeStart: Date[],
+        timeEnd: Date[],
+        taNames: string[][],
+        taUserIds: number[][],
+        locationBuilding: string[],
+        locationRoomNum: string[],
+        sessionId: number[],
+        sessionSeriesId: number[],
+        isExpanded: boolean[],
+        handleEditToggle: Function,
+        tablewidth: number,
+        updateDeleteInfo: Function,
         updateDeleteVisible: Function
     };
 
@@ -40,62 +42,78 @@ class ProfessorCalendarRow extends React.Component {
     render() {
         if (this.props.timeStart.length === 0) {
             return (
-                <tr>
-                    <td colSpan={this.props.tablewidth} className="NoOH">
-                        <i>No office hours scheduled</i>
-                    </td>
-                </tr>
+                <tbody>
+                    <tr>
+                        <td colSpan={this.props.tablewidth} className="NoOH">
+                            <i>No office hours scheduled</i>
+                        </td>
+                    </tr>
+                </tbody>
             );
         }
 
-        // Convert UNIX timestamps to readable time string
-        var date = new Array<string>(this.props.timeStart.length);
-        var timeStart = new Array<string>(this.props.timeStart.length);
-        var timeEnd = new Array<string>(this.props.timeEnd.length);
+        var timeStart = new Array<moment.Moment>(this.props.timeStart.length);
+        var timeEnd = new Array<moment.Moment>(this.props.timeEnd.length);
         for (var index = 0; index < this.props.timeStart.length; index++) {
-            date[index] = moment(this.props.timeStart[index]).format('dddd MM/DD/YY');
-            timeStart[index] = moment(this.props.timeStart[index]).format('h:mm A');
-            timeEnd[index] = moment(this.props.timeEnd[index]).format('h:mm A');
+            timeStart[index] = moment(this.props.timeStart[index]);
+            timeEnd[index] = moment(this.props.timeEnd[index]);
         }
 
         var rowPair = this.props.timeStart.map(
-            (row, index) => {
+            (row, i) => {
                 return (
-                    <tbody className={'Pair ' + this.props.isExpanded[index]}>
+                    <tbody className={'Pair ' + this.props.isExpanded[i]} key={i}>
                         <tr className="Preview">
-                            <td>{timeStart[index]} to {timeEnd[index]}</td>
-                            <td>{this.props.officeHoursTas[index].join(', ')}</td>
-                            <td>{this.props.locationBuilding[index]} {this.props.locationRoomNum[index]}</td>
+                            <td>{timeStart[i].format('h:mm A')} to {timeEnd[i].format('h:mm A')}</td>
+                            <td>{this.props.taNames[i].join(', ')}</td>
+                            <td>{this.props.locationBuilding[i]} {this.props.locationRoomNum[i]}</td>
                             <td>
-                                <button className="Edit" onClick={() => this.toggleEdit(index)}>
+                                <button
+                                    className="Edit"
+                                    onClick={() => this.toggleEdit(i)}
+                                >
                                     <Icon name="pencil" />
                                 </button>
                             </td>
                             <td>
-                                <button className="Delete" onClick={() =>
-                                    this.updateDeleteInfo(this.props.dayNumber, index)}>
+                                <button
+                                    className="Delete"
+                                    onClick={() => this.updateDeleteInfo(this.props.dayNumber, i)}
+                                >
                                     <Icon name="x" />
                                 </button>
                             </td>
                         </tr>
                         <tr>
-                            <td colSpan={this.props.tablewidth}
-                                className={'ExpandedEdit ' + this.props.isExpanded[index]}>
+                            <td
+                                colSpan={this.props.tablewidth}
+                                className={'ExpandedEdit ' + this.props.isExpanded[i]}
+                            >
                                 <ProfoessorOHInfo
-                                    taList={this.props.taList}
-                                    taDefault={this.props.officeHoursTas[index]}
-                                    locationBuildingDefault={this.props.locationBuilding[index]}
-                                    locationRoomNumDefault={this.props.locationRoomNum[index]}
-                                    startTimeDefault={moment(this.props.timeStart[index])}
-                                    endTimeDefault={moment(this.props.timeEnd[index])}
-                                    isSeries={this.props.isSeries[index]}
+                                    data={{}}
+                                    courseId={this.props.courseId}
+                                    isNewOH={false}
+                                    taUserIdsDefault={this.props.taUserIds[i]}
+                                    locationBuildingDefault={this.props.locationBuilding[i]}
+                                    locationRoomNumDefault={this.props.locationRoomNum[i]}
+                                    startTimeDefault={timeStart[i]}
+                                    endTimeDefault={timeEnd[i]}
+                                    sessionId={this.props.sessionId[i]}
+                                    sessionSeriesId={this.props.sessionSeriesId[i]}
                                 />
-                                <div className="EditButtons">
-                                    <button className="Delete" onClick={() =>
-                                        this.updateDeleteInfo(this.props.dayNumber, index)}>
+                                <div
+                                    className="EditButtons"
+                                >
+                                    <button
+                                        className="Delete"
+                                        onClick={() => this.updateDeleteInfo(this.props.dayNumber, i)}
+                                    >
                                         Delete
                                     </button>
-                                    <button className="Cancel" onClick={() => this.toggleEdit(index)}>
+                                    <button
+                                        className="Cancel"
+                                        onClick={() => this.toggleEdit(i)}
+                                    >
                                         Cancel
                                     </button>
                                     <button className="SaveChanges">

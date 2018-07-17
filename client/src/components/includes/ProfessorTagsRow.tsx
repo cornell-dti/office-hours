@@ -55,41 +55,47 @@ class ProfessorTagsRow extends React.Component {
         }
 
         var rowPair = this.props.assignmentName.map(
-            (row, index) => {
+            (row, i) => {
                 return (
-                    <tbody className={'Pair ' + this.props.isExpanded[index]}>
+                    <tbody className={'Pair ' + this.props.isExpanded[i]} key={i}>
                         <tr className="Preview">
-                            <td>{this.props.assignmentName[index]}</td>
-                            <td>{timeStart[index].format('MM/DD/YYYY')}</td>
-                            <td>{timeEnd[index].format('MM/DD/YYYY')}</td>
-                            <td>{('0' + this.props.numQuestions[index]).slice(-2)}</td>
+                            <td>{this.props.assignmentName[i]}</td>
+                            <td>{timeStart[i].format('MM/DD/YYYY')}</td>
+                            <td>{timeEnd[i].format('MM/DD/YYYY')}</td>
+                            <td>{('0' + this.props.numQuestions[i]).slice(-2)}</td>
                             <td>
-                                <button className="Edit" onClick={() => this.toggleEdit(index)}>
+                                <button className="Edit" onClick={() => this.toggleEdit(i)}>
                                     <Icon name="pencil" />
                                 </button>
                             </td>
                             <td>
-                                <button className="Delete" onClick={() =>
-                                    this.updateDeleteInfo(index)}>
+                                <button
+                                    className="Delete"
+                                    onClick={() => this.updateDeleteInfo(i)}
+                                >
                                     <Icon name="x" />
                                 </button>
                             </td>
                         </tr>
                         <tr>
-                            <td colSpan={this.props.tableWidth}
-                                className={'ExpandedEdit ' + this.props.isExpanded[index]}>
+                            <td
+                                colSpan={this.props.tableWidth}
+                                className={'ExpandedEdit ' + this.props.isExpanded[i]}
+                            >
                                 <ProfoessorTagInfo
-                                    assignmentName={this.props.assignmentName[index]}
-                                    startTimeDefault={timeStart[index]}
-                                    endTimeDefault={timeEnd[index]}
-                                    numQuestions={this.props.numQuestions[index]}
+                                    assignmentName={this.props.assignmentName[i]}
+                                    startTimeDefault={timeStart[i]}
+                                    endTimeDefault={timeEnd[i]}
+                                    numQuestions={this.props.numQuestions[i]}
                                 />
                                 <div className="EditButtons">
-                                    <button className="Delete" onClick={() =>
-                                        this.updateDeleteInfo(index)}>
+                                    <button
+                                        className="Delete"
+                                        onClick={() => this.updateDeleteInfo(i)}
+                                    >
                                         Delete
                                     </button>
-                                    <button className="Cancel" onClick={() => this.toggleEdit(index)}>
+                                    <button className="Cancel" onClick={() => this.toggleEdit(i)}>
                                         Cancel
                                     </button>
                                     <button className="SaveChanges">

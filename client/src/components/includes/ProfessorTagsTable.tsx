@@ -9,7 +9,7 @@ class ProfessorTagsTable extends React.Component {
         dateAssigned: number[]
         dateDue: number[]
         numQuestions: number[]
-    }
+    };
 
     state: {
         isExpanded: boolean[]

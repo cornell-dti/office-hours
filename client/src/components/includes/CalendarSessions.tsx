@@ -40,7 +40,7 @@ query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Dat
 }
 `;
 
-const withData = graphql<Response, InputProps>(QUERY, {
+const withData = graphql<InputProps, Response>(QUERY, {
     options: ({ beginTime, endTime, courseId }) => ({
         variables: {
             courseId: courseId,
