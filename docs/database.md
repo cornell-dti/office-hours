@@ -4,7 +4,7 @@ This document provides detailed descriptions of the PostgreSQL database schema b
 ## Database Setup
 Assuming you have PostgreSQL installed on your machine (we are currently using version 10), run the following from a terminal window to create a new database:
 
-`create_db -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME>`
+`createdb -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME>`
 
 If running locally, the host name will be localhost, and the port and username will be the ones that you set while setting Postgres up. You will be prompted to enter the password for the username, and then an empty database will be created. Now, we need to use the `psql` command-line tool to load in the schema dump from [`/server/office_hours.sql`](../server/office_hours.sql):
 
@@ -24,7 +24,16 @@ Finally, you can play around with the mock data by either using a database manag
 
 `pg_dump -h <HOST_NAME> -p <PORT> -U <USERNAME> --no-owner <DATABASE_NAME> > <OUTPUT_FILE.sql>`
 
-This will create a dump the same way `office_hours.sql` was created. This file will include all the commands necessary to load in the entire schema, functions, and mock data into a blank database.
+This will create a dump the same way `office_hours.sql` was created. This file will include all the commands necessary to load in the entire schema, functions, and mock data into a new database.
+
+If you'd like to reset your local database (for example, to sync it with the latest schema), first use the `dropdb` command from your terminal:
+
+`dropdb -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME>`
+
+And then load in the schema using the dump as described above (using `psql`).
+
+### A note on timestamps
+Wherever timestamps appear in the schema, we default to using the `timestamp with time zone` type, since it gives us consistency across clients in different time zones. Whenever providing timestamps to the database, please include the client's timezone! The most common way to do this is to format the timestamp string as an ISO 8601 string that includes the timezone offset.
 
 ## Symbols
 |Symbol|Description|
@@ -61,6 +70,15 @@ Each row in courses represents a specific course offering that is using Queue Me
 ||semester|text|❌|Shorthand reference to the semester the course occurs in, for example 'SP18' or 'FA18'|
 ||start\_date|date|❌|Date on which office hours for this course are to start|
 ||end\_date|date|❌|Date on which office hours for this course are to end|
+||queue\_open\_interval|interval|❌|Amount of time that the queue is to be opened for before each session starts; for example '30 minutes' (which is the default)|
+
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|-|
+|Update|-|
+|Delete|-|
 
 ### users
 All the registered users are logged to this table after their first login. This schema assumes that Google login is the authentication method. Note that some of the fields are nullable because they might not have been set in the user's Google profile.
@@ -72,9 +90,20 @@ All the registered users are logged to this table after their first login. This 
 |⭐️|google\_id|text|❌|Google-assigned unique id of this user, provided by Google on login|
 ||first\_name|text|✔️|Google-provided first name of the user (note: may not be set in their Google profile, in which case this is null)|
 ||last\_name|text|✔️|Google-provided last name of the user (note: may not be set in their Google profile, in which case this is null)|
-||created\_at|timestamp without time zone|✔️|Timestamp at which this user record was first created|
-||last\_activity\_at|timestamp without time zone|✔️|Timestamp at which the last activity on Queue Me In from this user was logged|
+||created\_at|timestamp with time zone|✔️|Timestamp at which this user record was first created|
+||last\_activity\_at|timestamp with time zone|✔️|Timestamp at which this user last went through the login flow on the app|
 ||photo\_url|text|✔️|Google-provided profile photo URL of the user (note: may not be set in their Google profile, in which case this is null)|
+||display\_name|text|✔️|Google-provided profile display name of the user (note: may not be set in their Google profile, in which case this is null)|
+||computed\_name|text|❌|Computed (virtual) field that provides a validated, non-null display name for the front-end to use|
+||computed\_avatar|text|❌|Computed (virtual) field that provides a validated, non-null avatar URL for the front-end to use|
+
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|`user_id = -1` (server-only)|
+|Update|Own row only|
+|Delete|-|
 
 ### course-users
 This relation is used to store user roles within courses. It is a junction table (many-to-many relationship) between courses and users, and each entry is assigned a role indicating the user's permissions within the course. If a course-user pair does not occur in this table, it is assumed that the user is not a part of the course in any capacity.
@@ -85,17 +114,33 @@ This relation is used to store user roles within courses. It is a junction table
 |🔑✈️|user\_id|integer|❌|References the user being described in this relation; forms a primary key with course\_id; foreign key from [users](#users)|
 ||role|text|❌|One of 'professor', 'ta', or 'student', describing the user's role within the course|
 
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|All users, but only if `role='student'`|
+|Update|Professors for the course|
+|Delete|-|
+
 ### session-series
 This relation is used to store metadata about weekly recurring office hour sessions. These recurring sessions are referred to as a 'series'. The series stored in this table do not represent actual sessions! Session instances are always stored in [sessions](#sessions) only.
 
 |Key|Column|Datatype|Nullable?|Description|
 |:---:|---|---|:---:|---|
 |🔑|session\_series\_id|integer|❌|Auto-incrementing id assigned to each session series|
-||start\_time|timestamp without time zone|❌|Represents the weekly start time and day of the series; the actual date is discarded and does not matter! (eg. '2018-06-22 11:00:00')|
-||end\_time|timestamp without time zone|❌|Represents the weekly end time and day of the series; the actual date is discarded and does not matter! (eg. '2018-06-22 12:00:00')|
+||start\_time|timestamp with time zone|❌|Represents the weekly start time and day of the series; the actual date is discarded and does not matter! (eg. '2018-06-22T11:00:00-04:00')|
+||end\_time|timestamp with time zone|❌|Represents the weekly end time and day of the series; the actual date is discarded and does not matter! (eg. '2018-06-22T12:00:00-04:00')|
 ||building|text|❌|Name of the building in which this series occurs (eg. 'Gates')|
 ||room|text|❌|Name of the room in which this series occurs (eg. 'G17')|
 |✈️|course\_id|integer|❌|References the course to which this session series belongs; foreign key from [courses](#courses)|
+
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|TAs and professors for the course|
+|Update|TAs and professors for the course|
+|Delete|TAs and professors for the course|
 
 ### session-series-tas
 This is a junction table (many-to-many relationship) between [session\_series](#session-series) and [users](#users) that describes the TAs that host a particular session series. Note that it is possible for sessions to be hosted by multiple TAs.
@@ -105,18 +150,34 @@ This is a junction table (many-to-many relationship) between [session\_series](#
 |🔑✈️|session\_series\_id|integer|❌|References the session series whose host TA is being described; forms a primary key with user\_id; foreign key from [session\_series](#session-series)|
 |🔑✈️|user\_id|integer|❌|References the user who is the host TA for the session series; forms a primary key with session\_series\_id; foreign key from [users](#users)|
 
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|TAs and professors for the course|
+|Update|TAs and professors for the course|
+|Delete|TAs and professors for the course|
+
 ### sessions
 This relation is used to store metadata about office hour session instances. Note that session instances may be part of a session series, or they may be independent sessions. This is dictated by whether or not the session\_series\_id field is null. Even if the session is part of a session series, all the metadata will be stored here in a replicated manner. If a session from a series is edited in a one-off, indepedent manner, then session\_series\_id will be set to null to prevent it from being affected by series edits.
 
 |Key|Column|Datatype|Nullable?|Description|
 |:---:|---|---|:---:|---|
 |🔑|session\_id|integer|❌|Auto-incrementing id assigned to each session|
-||start\_time|timestamp without time zone|❌|Timestamp at which this particular session is to start (eg. '2018-06-22 11:00:00')|
-||end\_time|timestamp without time zone|❌|Timestamp at which this particular session is to end (eg. '2018-06-22 12:00:00')|
+||start\_time|timestamp with time zone|❌|Timestamp at which this particular session is to start (eg. '2018-06-22T11:00:00-04:00')|
+||end\_time|timestamp with time zone|❌|Timestamp at which this particular session is to end (eg. '2018-06-22T12:00:00-04:00')|
 ||building|text|❌|Name of the building in which this session occurs (eg. 'Gates')|
 ||room|text|❌|Name of the room in which this series occurs (eg. 'G17')|
 |✈️|session\_series\_id|integer|✔️|References the session series to which this session belongs, if any; foreign key from [session\_series](#session-series)|
 |✈️|course\_id|integer|❌|References the course to which this session series belongs; foreign key from [courses](#courses)|
+
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|TAs and professors for the course|
+|Update|TAs and professors for the course|
+|Delete|TAs and professors for the course|
 
 ### session-tas
 This is a junction table (many-to-many relationship) between [sessions](#sessions) and [users](#users) that describes the TAs that host a particular session instance. Note that it is possible for session instances to be hosted by multiple TAs. In case a session belongs to a series, the information from [session\_series\_tas](#session-series-tas) is stored here in a replicated manner.
@@ -126,6 +187,14 @@ This is a junction table (many-to-many relationship) between [sessions](#session
 |🔑✈️|session\_id|integer|❌|References the session whose host TA is being described; forms a primary key with user\_id; foreign key from [sessions](#sessions)|
 |🔑✈️|user\_id|integer|❌|References the user who is the host TA for the session; forms a primary key with session\_id; foreign key from [users](#users)|
 
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|TAs and professors for the course|
+|Update|TAs and professors for the course|
+|Delete|TAs and professors for the course|
+
 ### questions
 This table contains all the details about all the questions asked across different sessions and courses. As the question's status is updated, its corresponding entry's 'status' field is changed. 
 
@@ -133,12 +202,20 @@ This table contains all the details about all the questions asked across differe
 |:---:|---|---|:---:|---|
 |🔑|question\_id|integer|❌|Auto-incrementing id assigned to each question|
 ||content|text|❌|Text content of the question; character limit is imposed by the client|
-||time\_entered|timestamp without time zone|❌|Timestamp at which this question was first entered into the database; it defaults to the current timestamp if not provided|
+||time\_entered|timestamp with time zone|❌|Timestamp at which this question was first entered into the database; it defaults to the current timestamp if not provided|
 ||status|text|❌|Text that represents the current status of the question ('unresolved', 'resolved', 'noshow', 'retracted' are currently used values)|
-||time\_addressed|timestamp without time zone|✔️|Timestamp at which this question was most recently marked as resolved, no-show or retracted|
+||time\_addressed|timestamp with time zone|✔️|Timestamp at which this question was most recently marked as resolved, no-show or retracted|
 ||session\_id|integer|❌|References the session instance in which this question was asked; foreign key from [sessions](#sessions)|
 ||asker\_id|integer|❌|References the student (user) who asked this question; foreign key from [users](#users)|
 ||answerer\_id|integer|✔️|References the TA (user) who most recently marked this question as resolved or as a no-show, and is NULL for unanswered and retracted questions; foreign key from [users](#users)|
+
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|All users, as long as `asker_id` is the logged-in user; queue should be open, i.e. (start time - open interval) <= `NOW()` <= (end time)|
+|Update|User who asked the question; TAs and professors for the course|
+|Delete|-|
 
 ### tags
 This relation is a repository of all the tags stored in the system, across different course offerings. Note that two tags in the same course with the same name should be separated if they are fundamentally different entities that need different analytics. For example, Q1 under Assignment 1 and Q1 under Assignment 2 should be separated as two tags, since they are to be analyzed independently.
@@ -149,6 +226,15 @@ This relation is a repository of all the tags stored in the system, across diffe
 ||name|text|❌|Name of the tag that is shown to the client|
 |✈️|course\_id|integer|❌|The course offering to which this tag belongs; foreign key from [courses](#courses)|
 ||level|integer|❌|Encodes the tag level in the tag hierarchy: primary = 1, secondary = 2|
+||activated|boolean|✔️|For primary tags, this indicates whether this tag and its children are currently active and should be shown to students or not. NULL for non-primary tags!|
+
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|Professors for the course|
+|Update|Professors for the course|
+|Delete|Professors for the course|
 
 ### tag-relations
 Describes the tree-like tag hierarchy using parent-child relationships. Each entry in the table describes a parent tag and a child tag. 
@@ -158,6 +244,14 @@ Describes the tree-like tag hierarchy using parent-child relationships. Each ent
 |🔑✈️|parent\_id|integer|❌|tag\_id of the parent; forms a primary key with child\_id; foreign key from [tags](#tags)|
 |🔑✈️|child\_id|integer|❌|tag\_id of the child; forms a primary key with parent\_id; foreign key from [tags](#tags)|
 
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|Professors for the course|
+|Update|Professors for the course|
+|Delete|Professors for the course|
+
 ### question-tags
 Junction table (many-to-many relationship) between [questions](#questions) and [tags](#tags) that attaches tags to questions.
 
@@ -165,6 +259,14 @@ Junction table (many-to-many relationship) between [questions](#questions) and [
 |:---:|---|---|:---:|---|
 |🔑✈️|question\_id|integer|❌|question\_id of the question that is tagged with tag\_id; forms a primary key with tag\_id; foreign key from [questions](#questions)|
 |🔑✈️|tag\_id|integer|❌|tag\_id of the tag that is to be attached to question\_id; forms a primary key with question\_id; foreign key from [tags](#tags)|
+
+#### Authorization Rules
+|Operation|Who is allowed?|
+|:---:|---|
+|Read|All users|
+|Insert|User who asked the question|
+|Update|User who asked the question|
+|Delete|User who asked the question|
 
 ## Functions
 
@@ -182,8 +284,8 @@ To deal with the intricate logic involving sessions, session series, and their c
 Given all the details of a new weekly-recurring session series, this function will update the database to include the series metadata and will create session instances for the series. Session instances are only created if they end after the current time, and if their start time lies between the course's start and end dates (inclusive).
 
 ##### Parameters
-- \_start\_time (timestamp without time zone): contains the weekly start day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22 11:00:00')
-- \_end\_time (timestamp without time zone): contains the weekly end day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22 12:00:00')
+- \_start\_time (timestamp with time zone): contains the weekly start day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22T11:00:00-04:00')
+- \_end\_time (timestamp with time zone): contains the weekly end day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22T12:00:00-04:00')
 - \_building (text): the name of the building in which the recurring session will take place (eg. 'Gates')
 - \_room (text): the name of the room in which the recurring session will take place (eg. 'G11')
 - \_course\_id (integer): the id of the course to which this session series is to be added
@@ -199,8 +301,8 @@ Given updated details of an existing weekly-recurring session series, this funct
 
 ##### Parameters
 - \_series\_id (integer): the id of the session series to be edited
-- \_start\_time (timestamp without time zone): contains the weekly start day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22 11:00:00')
-- \_end\_time (timestamp without time zone): contains the weekly end day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22 12:00:00')
+- \_start\_time (timestamp with time zone): contains the weekly start day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22T11:00:00-04:00')
+- \_end\_time (timestamp with time zone): contains the weekly end day and time of this series; the actual date in this timestamp does not matter! (eg. '2018-06-22T12:00:00-04:00')
 - \_building (text): the name of the building in which the recurring session will take place (eg. 'Gates')
 - \_room (text): the name of the room in which the recurring session will take place (eg. 'G11')
 - \_tas (integer): a list of integers that represent the user\_ids of the TAs who will host this session series
@@ -225,8 +327,8 @@ Nothing (void)
 Given all the details of a new non-recurring (/independent/one-off) session, this function will create the session instance. The session will only be created if it has not ended yet. If the supplied end time has already passed, an exception will be thrown.
 
 ##### Parameters
-- \_start\_time (timestamp without time zone): the exact time at which the session starts (date matters!) (eg. '2018-06-22 11:00:00')
-- \_end\_time (timestamp without time zone): the exact time at which the session ends (date matters!) (eg. '2018-06-22 12:00:00')
+- \_start\_time (timestamp with time zone): the exact time at which the session starts (date matters!) (eg. '2018-06-22T11:00:00-04:00')
+- \_end\_time (timestamp with time zone): the exact time at which the session ends (date matters!) (eg. '2018-06-22T12:00:00-04:00')
 - \_building (text): the name of the building in which the session will take place (eg. 'Gates')
 - \_room (text): the name of the room in which the session will take place (eg. 'G11')
 - \_course\_id (integer): the id of the course to which this session is to be added
@@ -242,8 +344,8 @@ Given updated details of an existing session, this function will edit the sessio
 
 ##### Parameters
 - \_session\_id (integer): the id of the session to be edited
-- \_start\_time (timestamp without time zone): the exact time at which the session starts (date matters!) (eg. '2018-06-22 11:00:00')
-- \_end\_time (timestamp without time zone): the exact time at which the session ends (date matters!) (eg. '2018-06-22 12:00:00')
+- \_start\_time (timestamp with time zone): the exact time at which the session starts (date matters!) (eg. '2018-06-22T11:00:00-04:00')
+- \_end\_time (timestamp with time zone): the exact time at which the session ends (date matters!) (eg. '2018-06-22T12:00:00-04:00')
 - \_building (text): the name of the building in which the session will take place (eg. 'Gates')
 - \_room (text): the name of the room in which the session will take place (eg. 'G11')
 - \_tas (integer): a list of integers that represent the user\_ids of the TAs who will host this session
@@ -271,8 +373,8 @@ For a particular course, this function finds all the session instances that star
 
 ##### Parameters
 - \_course\_id (integer): the id of the course whose sessions are to be found
-- \_begin\_time (timestamp without time zone): the beginning of the time range to be queried for (inclusive bound) (eg. '2018-06-22 00:00:00')
-- \_end\_time (timestamp without time zone): the end of the time range to be queried for (exclusive bound) (eg. '2018-06-23 00:00:00')
+- \_begin\_time (timestamp with time zone): the beginning of the time range to be queried for (inclusive bound) (eg. '2018-06-22T00:00:00-04:00')
+- \_end\_time (timestamp with time zone): the end of the time range to be queried for (exclusive bound) (eg. '2018-06-23T00:00:00-04:00')
 
 ##### Returns
 All the fields from the [sessions](#sessions) table of all the sessions in the course whose start\_time lies between the supplied begin\_time and end\_time. The returned sessions are sorted in increasing order of their start\_times.
@@ -294,7 +396,9 @@ All the fields of the newly-inserted row from the [questions](#questions) table
 #### api\_find\_or\_create\_user
 
 ##### Description
-Given the details of a user who has just logged in using Google, this function will find and return the user's existing details in the [users](#users) table. If it is a new user, a new row is inserted into [users](#users) for them. This is meant to be used during the login process, right after the user has successfully logged in via Google. Note that only a user that sends a JWT in the Authorization header containing the claim userId=-1 will be allowed to make this call successfully. The server is the only entity that has access to the secret, so only the server is allowed to make this call (after successful Google login); users will not be able to mock the identity of other users by calling this function directly.
+Given the details of a user who has just logged in using Google, this function will find, update and return the user's existing details in the [users](#users) table. If it is a new user, a new row is inserted into [users](#users) for them. This is meant to be used during the login process, right after the user has successfully logged in via Google. Note that only a user that sends a JWT in the Authorization header containing the claim userId=-1 will be allowed to make this call successfully. The server is the only entity that has access to the secret, so only the server is allowed to make this call (after successful Google login); users will not be able to mock the identity of other users by calling this function directly.
+
+Note that if the user already exists, their details are synced with the latest Google-provided information. Therefore, on login, our user's profile details are updated to match their profile on Google.
 
 ##### Parameters
 - \_email (text): the full email address of the user who logged in
@@ -302,6 +406,7 @@ Given the details of a user who has just logged in using Google, this function w
 - \_first\_name (text): the given name of the user who logged in; if no given name is provided by Google, do not provide this parameter
 - \_last\_name (text): the family name of the user who logged in; if no family name is provided by Google, do not provide this parameter
 - \_photo\_url (text): the profile picture URL of the user who logged in; if no URL is provided by Google, do not provide this parameter
+- \_display\_name (text): the display name of the user who logged in; if no display name is provided by Google, do not provide this parameter
 
 ##### Returns
 All the fields of the newly-inserted or retrieved row from the [users](#users) table
