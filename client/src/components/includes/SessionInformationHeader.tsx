@@ -36,8 +36,7 @@ class SessionInformationHeader extends React.Component {
                             <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
                         </p>
                         <p>Held by <span className="black">
-                            {tas &&
-                                tas.map(ta => ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName).join(' and ')}
+                            {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
                         </span></p>
                     </div>
                     <div className="QueueWrap">
@@ -90,7 +89,7 @@ class SessionInformationHeader extends React.Component {
                             </p>
                         </div>
                         <p>Held by <span className="black">
-                            {tas.map(ta => ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName).join(' and ')}
+                            {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
                         </span></p>
                     </div>
                 </div>

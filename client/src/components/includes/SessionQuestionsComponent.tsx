@@ -56,7 +56,7 @@ class SessionQuestionsComponent extends React.Component {
                     <div className="studentInformation">
                         <img src={question.userByAskerId.photoUrl || avatar} />
                         <span className="Name">
-                            {question.userByAskerId.firstName + ' ' + question.userByAskerId.lastName}
+                            {question.userByAskerId.computedName}
                         </span>
                     </div>
                 }

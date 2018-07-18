@@ -18,7 +18,7 @@ class TopBar extends React.PureComponent {
                 </button> */}
                 <img src={this.props.user.photoUrl} />
                 <span className="name">
-                    {this.props.user.firstName + ' ' + this.props.user.lastName}
+                    {this.props.user.computedName}
                 </span>
             </header>
         );
