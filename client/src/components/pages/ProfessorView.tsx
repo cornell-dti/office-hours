@@ -16,7 +16,7 @@ class ProfessorView extends React.Component {
                     <TopBar
                         user={{
                             computedName: 'Michael Clarkson',
-                            photoUrl: 'https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg',
+                            computedAvatar: 'https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg',
                             userId: -1
                         }}
                     />

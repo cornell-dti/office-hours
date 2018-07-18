@@ -12,7 +12,7 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
     apiGetCurrentUser {
         nodes {
             computedName
-            photoUrl
+            computedAvatar
             userId
             courseUsersByUserId(condition:{courseId:$courseId}) {
                 nodes {
@@ -39,7 +39,7 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
                 timeEntered
                 userByAskerId {
                     computedName
-                    photoUrl
+                    computedAvatar
                     userId
                 }
                 questionTagsByQuestionId {
@@ -57,7 +57,7 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
             nodes {
                 userByUserId {
                     computedName
-                    photoUrl
+                    computedAvatar
                 }
             }
         }
