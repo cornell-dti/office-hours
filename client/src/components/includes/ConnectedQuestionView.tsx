@@ -17,6 +17,7 @@ const QUERY = gql`
                                 tagId
                                 name
                                 level
+                                activated
                                 tagRelationsByChildId {
                                     nodes {
                                         parentId

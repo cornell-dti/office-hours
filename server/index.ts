@@ -1,13 +1,7 @@
 import * as express from 'express';
-import * as bodyparser from 'body-parser';
-import * as path from 'path';
 import postgraphql from 'postgraphql';
 import * as passport from 'passport';
 import * as sslRedirect from 'heroku-ssl-redirect';
-
-import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
-import { graphql } from 'graphql';
-import { readFileSync, readFile } from 'fs';
 
 var session = require('cookie-session');
 var request = require('request');
@@ -57,7 +51,7 @@ passport.use(new GoogleStrategy(
         var variables = {
             googleId: profile._json.sub, email: profile._json.email,
             firstName: profile._json.given_name, lastName: profile._json.family_name,
-            photoUrl: profile._json.picture
+            photoUrl: profile._json.picture, displayName: profile._json.name
         };
 
         if (variables.firstName.length === 0) {
@@ -69,6 +63,9 @@ passport.use(new GoogleStrategy(
         if (variables.photoUrl.length === 0) {
             delete variables.photoUrl;
         }
+        if (variables.displayName.length == 0) {
+            delete variables.displayName;
+        }
 
         var variablesString = JSON.stringify(variables).replace(/"/g, '\\"');
 
@@ -78,7 +75,8 @@ passport.use(new GoogleStrategy(
                 $googleId: String!,
                 $firstName: String,
                 $lastName: String,
-                $photoUrl: String
+                $photoUrl: String,
+                $displayName: String
             ) {
                 apiFindOrCreateUser(
                     input: {
@@ -86,7 +84,8 @@ passport.use(new GoogleStrategy(
                         _googleId: $googleId,
                         _firstName: $firstName,
                         _lastName: $lastName,
-                        _photoUrl: $photoUrl
+                        _photoUrl: $photoUrl,
+                        _displayName: $displayName
                     }
                 ) {
                     users {
@@ -176,7 +175,7 @@ app.use(function (req, res, next) {
         } else {
             if (options.fakeuserid) {
                 const fakeJwt = jwt.sign({ userId: options.fakeuserid }, (process.env.OH_JWT_SECRET || "insecure"), {
-                    expiresIn: '1y',
+                    expiresIn: '30s',
                     audience: 'postgraphql',
                 });
                 req.headers.authorization = `Bearer ${fakeJwt}`;
@@ -191,7 +190,8 @@ app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
     graphqlRoute: '/__gql/graphql',
     graphiqlRoute: '/__gql/graphiql',
     jwtSecret: (process.env.OH_JWT_SECRET || "insecure"),
-    jwtPgTypeIdentifier: 'public.jwt_token'
+    jwtPgTypeIdentifier: 'public.jwt_token',
+    pgDefaultRole: 'backend'
 }));
 
 app.use(express.static('../client/build'));

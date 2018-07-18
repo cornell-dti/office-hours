@@ -63,9 +63,9 @@ SET default_with_oids = false;
 CREATE TABLE public.questions (
     question_id integer NOT NULL,
     content text NOT NULL,
-    time_entered timestamp without time zone DEFAULT now() NOT NULL,
+    time_entered timestamp with time zone DEFAULT now() NOT NULL,
     status text NOT NULL,
-    time_addressed timestamp without time zone,
+    time_addressed timestamp with time zone,
     session_id integer NOT NULL,
     asker_id integer NOT NULL,
     answerer_id integer
@@ -108,8 +108,8 @@ $$;
 
 CREATE TABLE public.session_series (
     session_series_id integer NOT NULL,
-    start_time timestamp without time zone NOT NULL,
-    end_time timestamp without time zone NOT NULL,
+    start_time timestamp with time zone NOT NULL,
+    end_time timestamp with time zone NOT NULL,
     building text NOT NULL,
     room text NOT NULL,
     course_id integer NOT NULL
@@ -117,10 +117,10 @@ CREATE TABLE public.session_series (
 
 
 --
--- Name: api_create_series(timestamp without time zone, timestamp without time zone, text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_create_series(timestamp with time zone, timestamp with time zone, text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_create_series(_start_time timestamp without time zone, _end_time timestamp without time zone, _building text, _room text, _course_id integer, _tas integer[]) RETURNS SETOF public.session_series
+CREATE FUNCTION public.api_create_series(_start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _course_id integer, _tas integer[]) RETURNS SETOF public.session_series
     LANGUAGE plpgsql
     AS $$
 
@@ -161,8 +161,8 @@ end
 
 CREATE TABLE public.sessions (
     session_id integer NOT NULL,
-    start_time timestamp without time zone NOT NULL,
-    end_time timestamp without time zone NOT NULL,
+    start_time timestamp with time zone NOT NULL,
+    end_time timestamp with time zone NOT NULL,
     building text NOT NULL,
     room text NOT NULL,
     session_series_id integer,
@@ -171,10 +171,10 @@ CREATE TABLE public.sessions (
 
 
 --
--- Name: api_create_session(timestamp without time zone, timestamp without time zone, text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_create_session(timestamp with time zone, timestamp with time zone, text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_create_session(_start_time timestamp without time zone, _end_time timestamp without time zone, _building text, _room text, _course_id integer, _tas integer[]) RETURNS SETOF public.sessions
+CREATE FUNCTION public.api_create_session(_start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _course_id integer, _tas integer[]) RETURNS SETOF public.sessions
     LANGUAGE plpgsql
     AS $$
 
@@ -257,10 +257,10 @@ end
 
 
 --
--- Name: api_edit_series(integer, timestamp without time zone, timestamp without time zone, text, text, integer[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_edit_series(integer, timestamp with time zone, timestamp with time zone, text, text, integer[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_edit_series(_series_id integer, _start_time timestamp without time zone, _end_time timestamp without time zone, _building text, _room text, _tas integer[]) RETURNS SETOF public.session_series
+CREATE FUNCTION public.api_edit_series(_series_id integer, _start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _tas integer[]) RETURNS SETOF public.session_series
     LANGUAGE plpgsql
     AS $$
 
@@ -296,10 +296,10 @@ end
 
 
 --
--- Name: api_edit_session(integer, timestamp without time zone, timestamp without time zone, text, text, integer[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_edit_session(integer, timestamp with time zone, timestamp with time zone, text, text, integer[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_edit_session(_session_id integer, _start_time timestamp without time zone, _end_time timestamp without time zone, _building text, _room text, _tas integer[]) RETURNS SETOF public.sessions
+CREATE FUNCTION public.api_edit_session(_session_id integer, _start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _tas integer[]) RETURNS SETOF public.sessions
     LANGUAGE plpgsql
     AS $$
 
@@ -344,17 +344,18 @@ CREATE TABLE public.users (
     google_id text NOT NULL,
     first_name text,
     last_name text,
-    created_at timestamp without time zone DEFAULT now(),
-    last_activity_at timestamp without time zone DEFAULT now(),
-    photo_url text
+    created_at timestamp with time zone DEFAULT now(),
+    last_activity_at timestamp with time zone DEFAULT now(),
+    photo_url text,
+    display_name text
 );
 
 
 --
--- Name: api_find_or_create_user(text, text, text, text, text); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_find_or_create_user(text, text, text, text, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_find_or_create_user(_email text, _google_id text, _first_name text, _last_name text, _photo_url text) RETURNS SETOF public.users
+CREATE FUNCTION public.api_find_or_create_user(_email text, _google_id text, _first_name text, _last_name text, _photo_url text, _display_name text) RETURNS SETOF public.users
     LANGUAGE plpgsql
     AS $$ 
 
@@ -373,12 +374,15 @@ begin
 	elsif ((select count(*) from users where google_id = _google_id) > 0) then
 
 		select user_id into _user_id from users where google_id = _google_id;
+		update users set (email, first_name, last_name, photo_url, display_name, last_activity_at) =
+			(_email, _first_name, _last_name, _photo_url, _display_name, NOW())
+		where user_id = _user_id;
 
 	else
 
-		insert into users (email, google_id, first_name, last_name, photo_url)
+		insert into users (email, google_id, first_name, last_name, photo_url, display_name)
 
-		values (_email, _google_id, _first_name, _last_name, _photo_url)
+		values (_email, _google_id, _first_name, _last_name, _photo_url, _display_name)
 
 		returning user_id into _user_id;
 		for course_row in
@@ -410,10 +414,10 @@ $$;
 
 
 --
--- Name: api_get_sessions(integer, timestamp without time zone, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_get_sessions(integer, timestamp with time zone, timestamp with time zone); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_get_sessions(_course_id integer, _begin_time timestamp without time zone, _end_time timestamp without time zone) RETURNS SETOF public.sessions
+CREATE FUNCTION public.api_get_sessions(_course_id integer, _begin_time timestamp with time zone, _end_time timestamp with time zone) RETURNS SETOF public.sessions
     LANGUAGE sql STABLE
     AS $$
 select * from sessions where start_time >= _begin_time AND start_time < _end_time AND course_id = _course_id ORDER BY start_time ASC;
@@ -431,13 +435,13 @@ declare
 course integer;
 building text;
 room text;
-start_date_week timestamp without time zone;
-start_date timestamp without time zone;
-end_date_week timestamp without time zone;
-end_date timestamp without time zone;
-cur_date timestamp without time zone;
-session_start_time timestamp without time zone;
-session_end_time timestamp without time zone;
+start_date_week timestamp with time zone;
+start_date timestamp with time zone;
+end_date_week timestamp with time zone;
+end_date timestamp with time zone;
+cur_date timestamp with time zone;
+session_start_time timestamp with time zone;
+session_end_time timestamp with time zone;
 session_start_offset interval;
 session_end_offset interval;
 begin
@@ -470,6 +474,165 @@ $$;
 
 
 --
+-- Name: internal_get_user_id(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_get_user_id() RETURNS integer
+    LANGUAGE sql STABLE
+    AS $$
+
+
+
+select (current_setting('jwt.claims.userId', true)::integer);
+
+
+
+$$;
+
+
+--
+-- Name: internal_get_user_role(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_get_user_role(_course_id integer) RETURNS text
+    LANGUAGE sql STABLE
+    AS $$
+
+
+
+select role from course_users where (course_id, user_id) = (_course_id, (select internal_get_user_id()))
+
+
+
+$$;
+
+
+--
+-- Name: internal_is_queue_open(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_is_queue_open(_session_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+
+declare
+
+_course_id integer;
+
+_open_interval interval;
+
+_start_time timestamptz;
+
+_end_time timestamptz;
+
+begin
+
+	select course_id, start_time, end_time into _course_id, _start_time, _end_time
+
+		from sessions where session_id = _session_id;
+
+	select queue_open_interval into _open_interval from courses where course_id = _course_id;
+
+	if ((NOW() >= (_start_time - _open_interval)) and (NOW() <= _end_time)) then
+
+		return true;
+
+	else
+
+		return false;
+
+	end if;
+
+end
+
+$$;
+
+
+--
+-- Name: internal_owns_question(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_owns_question(_question_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+
+declare
+
+_asker_id integer;
+
+_session_id integer;
+
+_course_id integer;
+
+_role text;
+
+begin
+
+	select asker_id into _asker_id from questions where question_id = _question_id;
+
+	if ((select internal_get_user_id()) = _asker_id) then 
+
+		return true;
+
+	end if;
+
+	select session_id into _session_id from questions where question_id = _question_id;
+
+	select course_id into _course_id from sessions where session_id = _session_id;
+
+	select internal_get_user_role(_course_id) into _role;
+
+	if (_role = 'professor' or _role = 'ta') then
+
+		return true;
+
+	else
+
+		return false;
+
+	end if;
+
+end
+
+$$;
+
+
+--
+-- Name: internal_owns_tag(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_owns_tag(_tag_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+
+declare
+
+_course_id integer;
+
+_role text;
+
+begin
+
+	select course_id into _course_id from tags where tag_id = _tag_id;
+
+	select internal_get_user_role(_course_id) into _role;
+
+	if (_role = 'professor') then
+
+		return true;
+
+	else
+
+		return false;
+
+	end if;
+
+end
+
+$$;
+
+
+--
 -- Name: internal_sync_series_sessions(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -479,9 +642,9 @@ CREATE FUNCTION public.internal_sync_series_sessions(_series_id integer) RETURNS
 
 declare
 
-_start_time timestamp without time zone;
+_start_time timestamp with time zone;
 
-_end_time timestamp without time zone;
+_end_time timestamp with time zone;
 
 _building text;
 
@@ -542,6 +705,76 @@ begin
 end
 
  $$;
+
+
+--
+-- Name: internal_write_policy_series_ta(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_write_policy_series_ta(_series_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+
+declare
+
+_course_id integer;
+
+_role text;
+
+begin
+
+	select course_id into _course_id from session_series where session_series_id = _series_id;
+
+	select internal_get_user_role(_course_id) into _role;
+
+	if (_role = 'professor' or _role = 'ta') then
+
+		return true;
+
+	else
+
+		return false;
+
+	end if;
+
+end
+
+$$;
+
+
+--
+-- Name: internal_write_policy_session_ta(integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.internal_write_policy_session_ta(_session_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+
+declare
+
+_course_id integer;
+
+_role text;
+
+begin
+
+	select course_id into _course_id from sessions where session_id = _session_id;
+
+	select internal_get_user_role(_course_id) into _role;
+
+	if (_role = 'professor' or _role = 'ta') then
+
+		return true;
+
+	else
+
+		return false;
+
+	end if;
+
+end
+
+$$;
 
 
 --
@@ -613,6 +846,60 @@ END
 
 
 --
+-- Name: users_computed_avatar(public.users); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.users_computed_avatar(u public.users) RETURNS text
+    LANGUAGE plpgsql STABLE
+    AS $$
+
+begin
+
+	if (u.photo_url is not null) then
+
+		return u.photo_url;
+
+	else
+
+		return '/static/media/userAvatar.28b5e338.svg';
+
+	end if;
+
+end
+
+$$;
+
+
+--
+-- Name: users_computed_name(public.users); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.users_computed_name(u public.users) RETURNS text
+    LANGUAGE plpgsql STABLE
+    AS $$
+
+begin
+
+	if (u.display_name is not null) then
+
+		return u.display_name;
+
+	elseif ((u.first_name is not null) or (u.last_name is not null)) then
+
+		return concat_ws(' ', u.first_name, u.last_name);
+
+	else
+
+		return u.email;
+
+	end if;
+
+end
+
+$$;
+
+
+--
 -- Name: course_users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -633,7 +920,8 @@ CREATE TABLE public.courses (
     name text NOT NULL,
     semester text NOT NULL,
     start_date date NOT NULL,
-    end_date date NOT NULL
+    end_date date NOT NULL,
+    queue_open_interval interval DEFAULT '00:30:00'::interval NOT NULL
 );
 
 
@@ -765,7 +1053,8 @@ CREATE TABLE public.tags (
     tag_id integer NOT NULL,
     name text NOT NULL,
     course_id integer NOT NULL,
-    level integer NOT NULL
+    level integer NOT NULL,
+    activated boolean
 );
 
 
@@ -864,6 +1153,7 @@ COPY public.course_users (course_id, user_id, role) FROM stdin;
 1	4	student
 1	5	student
 1	7	student
+1	19	student
 \.
 
 
@@ -871,8 +1161,8 @@ COPY public.course_users (course_id, user_id, role) FROM stdin;
 -- Data for Name: courses; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.courses (course_id, code, name, semester, start_date, end_date) FROM stdin;
-1	CS 1380	Data Science For All	SU18	2018-06-28	2018-08-13
+COPY public.courses (course_id, code, name, semester, start_date, end_date, queue_open_interval) FROM stdin;
+1	CS 1380	Data Science For All	FA18	2018-06-28	2018-08-13	1 day
 \.
 
 
@@ -897,11 +1187,9 @@ COPY public.questions (question_id, content, time_entered, status, time_addresse
 --
 
 COPY public.session_series (session_series_id, start_time, end_time, building, room, course_id) FROM stdin;
-18	2018-06-11 11:00:00	2018-06-11 12:00:00	Gates	G17	1
-19	2018-06-11 13:30:00	2018-06-11 14:45:00	Gates	G11	1
-20	2018-06-12 17:30:00	2018-06-11 19:30:00	Rhodes	402	1
-21	2018-06-13 10:30:00	2018-06-13 11:15:00	Surge A	101	1
-22	2018-06-14 09:00:00	2018-06-14 10:00:00	Gates	311	1
+23	2018-07-09 10:00:00-04	2018-07-09 11:00:00-04	Gates	G11	1
+24	2018-07-09 12:30:00-04	2018-07-09 14:00:00-04	Rhodes	402	1
+25	2018-07-03 10:30:00-04	2018-07-03 11:15:00-04	Gates	343	1
 \.
 
 
@@ -910,11 +1198,9 @@ COPY public.session_series (session_series_id, start_time, end_time, building, r
 --
 
 COPY public.session_series_tas (session_series_id, user_id) FROM stdin;
-18	8
-19	1
-20	3
-21	6
-22	8
+23	1
+24	3
+25	8
 \.
 
 
@@ -923,42 +1209,25 @@ COPY public.session_series_tas (session_series_id, user_id) FROM stdin;
 --
 
 COPY public.session_tas (session_id, user_id) FROM stdin;
-236	8
-237	8
-238	8
-239	8
-240	8
-241	8
-242	8
-243	1
-244	1
-245	1
-246	1
-247	1
-248	1
-249	1
-250	3
-251	3
-252	3
-253	3
-254	3
-255	3
-256	6
-257	6
-258	6
-259	6
-260	6
-261	6
-262	8
-263	8
-264	8
-265	8
-266	8
-267	8
-268	8
-269	3
-270	3
-271	1
+272	1
+273	1
+274	1
+275	1
+276	1
+277	3
+278	3
+279	3
+280	3
+281	3
+282	8
+283	8
+284	8
+285	8
+286	8
+287	1
+287	3
+288	3
+288	8
 \.
 
 
@@ -967,42 +1236,23 @@ COPY public.session_tas (session_id, user_id) FROM stdin;
 --
 
 COPY public.sessions (session_id, start_time, end_time, building, room, session_series_id, course_id) FROM stdin;
-250	2018-07-03 17:30:00	2018-07-02 19:30:00	Rhodes	402	20	1
-251	2018-07-10 17:30:00	2018-07-09 19:30:00	Rhodes	402	20	1
-252	2018-07-17 17:30:00	2018-07-16 19:30:00	Rhodes	402	20	1
-253	2018-07-24 17:30:00	2018-07-23 19:30:00	Rhodes	402	20	1
-254	2018-07-31 17:30:00	2018-07-30 19:30:00	Rhodes	402	20	1
-255	2018-08-07 17:30:00	2018-08-06 19:30:00	Rhodes	402	20	1
-256	2018-07-04 10:30:00	2018-07-04 11:15:00	Surge A	101	21	1
-257	2018-07-11 10:30:00	2018-07-11 11:15:00	Surge A	101	21	1
-258	2018-07-18 10:30:00	2018-07-18 11:15:00	Surge A	101	21	1
-259	2018-07-25 10:30:00	2018-07-25 11:15:00	Surge A	101	21	1
-260	2018-08-01 10:30:00	2018-08-01 11:15:00	Surge A	101	21	1
-261	2018-08-08 10:30:00	2018-08-08 11:15:00	Surge A	101	21	1
-262	2018-06-28 09:00:00	2018-06-28 10:00:00	Gates	311	22	1
-263	2018-07-05 09:00:00	2018-07-05 10:00:00	Gates	311	22	1
-264	2018-07-12 09:00:00	2018-07-12 10:00:00	Gates	311	22	1
-265	2018-07-19 09:00:00	2018-07-19 10:00:00	Gates	311	22	1
-266	2018-07-26 09:00:00	2018-07-26 10:00:00	Gates	311	22	1
-267	2018-08-02 09:00:00	2018-08-02 10:00:00	Gates	311	22	1
-268	2018-08-09 09:00:00	2018-08-09 10:00:00	Gates	311	22	1
-269	2018-07-01 12:00:00	2018-07-01 13:00:00	Upson	B60	\N	1
-236	2018-07-02 11:00:00	2018-07-02 12:00:00	Gates	G17	18	1
-237	2018-07-09 11:00:00	2018-07-09 12:00:00	Gates	G17	18	1
-270	2018-07-08 14:00:00	2018-07-08 15:00:00	Upson	B60	\N	1
-238	2018-07-16 11:00:00	2018-07-16 12:00:00	Gates	G17	18	1
-239	2018-07-23 11:00:00	2018-07-23 12:00:00	Gates	G17	18	1
-240	2018-07-30 11:00:00	2018-07-30 12:00:00	Gates	G17	18	1
-241	2018-08-06 11:00:00	2018-08-06 12:00:00	Gates	G17	18	1
-242	2018-08-13 11:00:00	2018-08-13 12:00:00	Gates	G17	18	1
-271	2018-07-15 16:00:00	2018-07-15 17:00:00	Upson	B60	\N	1
-243	2018-07-02 13:30:00	2018-07-02 14:45:00	Gates	G11	19	1
-244	2018-07-09 13:30:00	2018-07-09 14:45:00	Gates	G11	19	1
-245	2018-07-16 13:30:00	2018-07-16 14:45:00	Gates	G11	19	1
-246	2018-07-23 13:30:00	2018-07-23 14:45:00	Gates	G11	19	1
-247	2018-07-30 13:30:00	2018-07-30 14:45:00	Gates	G11	19	1
-248	2018-08-06 13:30:00	2018-08-06 14:45:00	Gates	G11	19	1
-249	2018-08-13 13:30:00	2018-08-13 14:45:00	Gates	G11	19	1
+277	2018-07-16 12:30:00-04	2018-07-16 14:00:00-04	Rhodes	402	24	1
+278	2018-07-23 12:30:00-04	2018-07-23 14:00:00-04	Rhodes	402	24	1
+279	2018-07-30 12:30:00-04	2018-07-30 14:00:00-04	Rhodes	402	24	1
+280	2018-08-06 12:30:00-04	2018-08-06 14:00:00-04	Rhodes	402	24	1
+281	2018-08-13 12:30:00-04	2018-08-13 14:00:00-04	Rhodes	402	24	1
+282	2018-07-10 10:30:00-04	2018-07-10 11:15:00-04	Gates	343	25	1
+283	2018-07-17 10:30:00-04	2018-07-17 11:15:00-04	Gates	343	25	1
+284	2018-07-24 10:30:00-04	2018-07-24 11:15:00-04	Gates	343	25	1
+285	2018-07-31 10:30:00-04	2018-07-31 11:15:00-04	Gates	343	25	1
+286	2018-08-07 10:30:00-04	2018-08-07 11:15:00-04	Gates	343	25	1
+287	2018-07-15 13:30:00-04	2018-07-15 14:30:00-04	Upson	B60	\N	1
+288	2018-07-22 14:30:00-04	2018-07-22 15:30:00-04	Upson	B10	\N	1
+272	2018-07-16 10:00:00-04	2018-07-16 11:00:00-04	Gates	G11	23	1
+273	2018-07-23 10:00:00-04	2018-07-23 11:00:00-04	Gates	G11	23	1
+274	2018-07-30 10:00:00-04	2018-07-30 11:00:00-04	Gates	G11	23	1
+275	2018-08-06 10:00:00-04	2018-08-06 11:00:00-04	Gates	G11	23	1
+276	2018-08-13 10:00:00-04	2018-08-13 11:00:00-04	Gates	G11	23	1
 \.
 
 
@@ -1038,34 +1288,34 @@ COPY public.tag_relations (parent_id, child_id) FROM stdin;
 -- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.tags (tag_id, name, course_id, level) FROM stdin;
-1	Assignment 1	1	1
-2	Assignment 2	1	1
-3	Assignment 3	1	1
-4	Assignment 4	1	1
-5	Prelim	1	1
-6	Final	1	1
-7	General	1	1
-8	Q1	1	2
-9	Q2	1	2
-10	Q3	1	2
-11	Q1	1	2
-12	Q2	1	2
-13	Q3	1	2
-14	Q4	1	2
-15	Q1a	1	2
-16	Q1b	1	2
-17	Q2	1	2
-18	Written Part	1	2
-19	Programming	1	2
-20	Regrade	1	2
-21	Feedback	1	2
-22	Regrade	1	2
-23	Feedback	1	2
-24	Logistics	1	2
-25	Grading	1	2
-26	Office Hours	1	2
-27	Other	1	2
+COPY public.tags (tag_id, name, course_id, level, activated) FROM stdin;
+8	Q1	1	2	\N
+9	Q2	1	2	\N
+10	Q3	1	2	\N
+11	Q1	1	2	\N
+12	Q2	1	2	\N
+13	Q3	1	2	\N
+14	Q4	1	2	\N
+15	Q1a	1	2	\N
+16	Q1b	1	2	\N
+17	Q2	1	2	\N
+18	Written Part	1	2	\N
+19	Programming	1	2	\N
+20	Regrade	1	2	\N
+21	Feedback	1	2	\N
+22	Regrade	1	2	\N
+23	Feedback	1	2	\N
+24	Logistics	1	2	\N
+25	Grading	1	2	\N
+26	Office Hours	1	2	\N
+27	Other	1	2	\N
+1	Assignment 1	1	1	t
+2	Assignment 2	1	1	t
+3	Assignment 3	1	1	t
+4	Assignment 4	1	1	f
+5	Prelim	1	1	t
+6	Final	1	1	f
+7	General	1	1	t
 \.
 
 
@@ -1073,15 +1323,16 @@ COPY public.tags (tag_id, name, course_id, level) FROM stdin;
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.users (user_id, email, google_id, first_name, last_name, created_at, last_activity_at, photo_url) FROM stdin;
-1	cv231@cornell.edu	115064340704113209584	Corey	Valdez	2018-03-25 03:07:23.485	2018-03-25 03:07:26.391	https://randomuser.me/api/portraits/men/46.jpg
-2	ejs928@cornell.edu	139064340704113209582	Edgar	Stewart	2018-03-25 03:08:05.668	2018-03-25 03:08:08.294	https://randomuser.me/api/portraits/men/7.jpg
-3	asm2292@cornell.edu	115064340704118374059	Ada	Morton	2018-03-25 03:08:51.563	2018-03-25 03:08:54.084	https://randomuser.me/api/portraits/women/8.jpg
-4	cr848@cornell.edu	215064340704113209584	Caroline	Robinson	2018-03-25 03:09:25.563	2018-03-25 03:09:28.525	https://randomuser.me/api/portraits/women/59.jpg
-5	ca449@cornell.edu	115064340704113209332	Christopher	Arnold	2018-03-25 03:10:28.166	2018-03-25 03:10:32.518	\N
-6	zz527@cornell.edu	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394	2018-03-25 03:11:22.765	\N
-7	sjw748@cornell.edu	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328	2018-03-25 03:12:47.826	https://randomuser.me/api/portraits/women/81.jpg
-8	clarkson@cs.cornell.edu	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996	2018-03-25 03:13:29.4	https://randomuser.me/api/portraits/men/20.jpg
+COPY public.users (user_id, email, google_id, first_name, last_name, created_at, last_activity_at, photo_url, display_name) FROM stdin;
+1	cv231@cornell.edu	115064340704113209584	Corey	Valdez	2018-03-25 03:07:23.485-04	2018-03-25 03:07:26.391-04	https://randomuser.me/api/portraits/men/46.jpg	Corey Valdez
+2	ejs928@cornell.edu	139064340704113209582	Edgar	Stewart	2018-03-25 03:08:05.668-04	2018-03-25 03:08:08.294-04	https://randomuser.me/api/portraits/men/7.jpg	Edgar Stewart
+3	asm2292@cornell.edu	115064340704118374059	Ada	Morton	2018-03-25 03:08:51.563-04	2018-03-25 03:08:54.084-04	https://randomuser.me/api/portraits/women/8.jpg	Ada Morton
+4	cr848@cornell.edu	215064340704113209584	Caroline	Robinson	2018-03-25 03:09:25.563-04	2018-03-25 03:09:28.525-04	https://randomuser.me/api/portraits/women/59.jpg	Caroline Robinson
+5	ca449@cornell.edu	115064340704113209332	Christopher	Arnold	2018-03-25 03:10:28.166-04	2018-03-25 03:10:32.518-04	\N	Chris Arnold
+6	zz527@cornell.edu	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394-04	2018-03-25 03:11:22.765-04	\N	Zechen Zhang
+7	sjw748@cornell.edu	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328-04	2018-03-25 03:12:47.826-04	https://randomuser.me/api/portraits/women/81.jpg	Sue Wilson
+8	clarkson@cs.cornell.edu	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996-04	2018-03-25 03:13:29.4-04	https://randomuser.me/api/portraits/men/20.jpg	Michael Clarkson
+19	ks939@cornell.edu	114961512147775594594	Karun	Singh	2018-07-11 09:38:34.214871-04	2018-07-11 09:39:07.517853-04	https://lh5.googleusercontent.com/-5atJCQlqmEM/AAAAAAAAAAI/AAAAAAAARN8/-TM5RNTPV0w/photo.jpg	Karun Singh
 \.
 
 
@@ -1096,21 +1347,21 @@ SELECT pg_catalog.setval('public.courses_course_id_seq', 3, true);
 -- Name: questions_question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.questions_question_id_seq', 13, true);
+SELECT pg_catalog.setval('public.questions_question_id_seq', 20, true);
 
 
 --
 -- Name: session_series_session_series_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 22, true);
+SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 27, true);
 
 
 --
 -- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.sessions_session_id_seq', 271, true);
+SELECT pg_catalog.setval('public.sessions_session_id_seq', 288, true);
 
 
 --
@@ -1124,7 +1375,7 @@ SELECT pg_catalog.setval('public.tags_tag_id_seq', 35, true);
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 15, true);
+SELECT pg_catalog.setval('public.users_user_id_seq', 22, true);
 
 
 --
@@ -1379,6 +1630,463 @@ ALTER TABLE ONLY public.tag_relations
 
 ALTER TABLE ONLY public.tags
     ADD CONSTRAINT tags_fk0 FOREIGN KEY (course_id) REFERENCES public.courses(course_id);
+
+
+--
+-- Name: course_users; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.course_users ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: courses; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.courses ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: session_series delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.session_series FOR DELETE TO backend USING (((( SELECT public.internal_get_user_role(session_series.course_id) AS internal_get_user_role) = 'professor'::text) OR (( SELECT public.internal_get_user_role(session_series.course_id) AS internal_get_user_role) = 'ta'::text)));
+
+
+--
+-- Name: session_series_tas delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.session_series_tas FOR DELETE TO backend USING (( SELECT public.internal_write_policy_series_ta(session_series_tas.session_series_id) AS internal_write_policy_series_ta));
+
+
+--
+-- Name: sessions delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.sessions FOR DELETE TO backend USING (((( SELECT public.internal_get_user_role(sessions.course_id) AS internal_get_user_role) = 'professor'::text) OR (( SELECT public.internal_get_user_role(sessions.course_id) AS internal_get_user_role) = 'ta'::text)));
+
+
+--
+-- Name: session_tas delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.session_tas FOR DELETE TO backend USING (( SELECT public.internal_write_policy_session_ta(session_tas.session_id) AS internal_write_policy_session_ta));
+
+
+--
+-- Name: tags delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.tags FOR DELETE TO backend USING ((( SELECT public.internal_get_user_role(tags.course_id) AS internal_get_user_role) = 'professor'::text));
+
+
+--
+-- Name: tag_relations delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.tag_relations FOR DELETE TO backend USING ((( SELECT public.internal_owns_tag(tag_relations.parent_id) AS internal_owns_tag) AND ( SELECT public.internal_owns_tag(tag_relations.child_id) AS internal_owns_tag)));
+
+
+--
+-- Name: question_tags delete_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY delete_policy ON public.question_tags FOR DELETE TO backend USING ((( SELECT questions.asker_id
+   FROM public.questions
+  WHERE (questions.question_id = questions.question_id)) = ( SELECT public.internal_get_user_id() AS internal_get_user_id)));
+
+
+--
+-- Name: users insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.users FOR INSERT TO backend WITH CHECK ((( SELECT public.internal_get_user_id() AS internal_get_user_id) = '-1'::integer));
+
+
+--
+-- Name: course_users insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.course_users FOR INSERT TO backend WITH CHECK ((role = 'student'::text));
+
+
+--
+-- Name: session_series insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.session_series FOR INSERT TO backend WITH CHECK (((( SELECT public.internal_get_user_role(session_series.course_id) AS internal_get_user_role) = 'professor'::text) OR (( SELECT public.internal_get_user_role(session_series.course_id) AS internal_get_user_role) = 'ta'::text)));
+
+
+--
+-- Name: session_series_tas insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.session_series_tas FOR INSERT TO backend WITH CHECK (( SELECT public.internal_write_policy_series_ta(session_series_tas.session_series_id) AS internal_write_policy_series_ta));
+
+
+--
+-- Name: sessions insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.sessions FOR INSERT TO backend WITH CHECK (((( SELECT public.internal_get_user_role(sessions.course_id) AS internal_get_user_role) = 'professor'::text) OR (( SELECT public.internal_get_user_role(sessions.course_id) AS internal_get_user_role) = 'ta'::text)));
+
+
+--
+-- Name: session_tas insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.session_tas FOR INSERT TO backend WITH CHECK (( SELECT public.internal_write_policy_session_ta(session_tas.session_id) AS internal_write_policy_session_ta));
+
+
+--
+-- Name: tags insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.tags FOR INSERT TO backend WITH CHECK ((( SELECT public.internal_get_user_role(tags.course_id) AS internal_get_user_role) = 'professor'::text));
+
+
+--
+-- Name: tag_relations insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.tag_relations FOR INSERT TO backend WITH CHECK ((( SELECT public.internal_owns_tag(tag_relations.parent_id) AS internal_owns_tag) AND ( SELECT public.internal_owns_tag(tag_relations.child_id) AS internal_owns_tag)));
+
+
+--
+-- Name: question_tags insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.question_tags FOR INSERT TO backend WITH CHECK ((( SELECT questions.asker_id
+   FROM public.questions
+  WHERE (questions.question_id = questions.question_id)) = ( SELECT public.internal_get_user_id() AS internal_get_user_id)));
+
+
+--
+-- Name: questions insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.questions FOR INSERT TO backend WITH CHECK (((asker_id = ( SELECT public.internal_get_user_id() AS internal_get_user_id)) AND ( SELECT public.internal_is_queue_open(questions.session_id) AS internal_is_queue_open)));
+
+
+--
+-- Name: question_tags; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.question_tags ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: questions; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: courses read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.courses FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: users read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.users FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: course_users read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.course_users FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: session_series read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.session_series FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: session_series_tas read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.session_series_tas FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: sessions read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.sessions FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: session_tas read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.session_tas FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: tags read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.tags FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: tag_relations read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.tag_relations FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: question_tags read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.question_tags FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: questions read_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY read_policy ON public.questions FOR SELECT TO backend USING (true);
+
+
+--
+-- Name: session_series; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.session_series ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: session_series_tas; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.session_series_tas ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: session_tas; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.session_tas ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: sessions; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.sessions ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: tag_relations; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tag_relations ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: tags; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tags ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: users update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.users FOR UPDATE TO backend USING ((user_id = ( SELECT public.internal_get_user_id() AS internal_get_user_id)));
+
+
+--
+-- Name: course_users update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.course_users FOR UPDATE TO backend USING ((( SELECT public.internal_get_user_role(course_users.course_id) AS internal_get_user_role) = 'professor'::text));
+
+
+--
+-- Name: session_series update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.session_series FOR UPDATE TO backend USING (((( SELECT public.internal_get_user_role(session_series.course_id) AS internal_get_user_role) = 'professor'::text) OR (( SELECT public.internal_get_user_role(session_series.course_id) AS internal_get_user_role) = 'ta'::text)));
+
+
+--
+-- Name: session_series_tas update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.session_series_tas FOR UPDATE TO backend USING (( SELECT public.internal_write_policy_series_ta(session_series_tas.session_series_id) AS internal_write_policy_series_ta));
+
+
+--
+-- Name: sessions update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.sessions FOR UPDATE TO backend USING (((( SELECT public.internal_get_user_role(sessions.course_id) AS internal_get_user_role) = 'professor'::text) OR (( SELECT public.internal_get_user_role(sessions.course_id) AS internal_get_user_role) = 'ta'::text)));
+
+
+--
+-- Name: session_tas update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.session_tas FOR UPDATE TO backend USING (( SELECT public.internal_write_policy_session_ta(session_tas.session_id) AS internal_write_policy_session_ta));
+
+
+--
+-- Name: tags update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.tags FOR UPDATE TO backend USING ((( SELECT public.internal_get_user_role(tags.course_id) AS internal_get_user_role) = 'professor'::text));
+
+
+--
+-- Name: tag_relations update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.tag_relations FOR UPDATE TO backend USING ((( SELECT public.internal_owns_tag(tag_relations.parent_id) AS internal_owns_tag) AND ( SELECT public.internal_owns_tag(tag_relations.child_id) AS internal_owns_tag)));
+
+
+--
+-- Name: question_tags update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.question_tags FOR UPDATE TO backend USING ((( SELECT questions.asker_id
+   FROM public.questions
+  WHERE (questions.question_id = questions.question_id)) = ( SELECT public.internal_get_user_id() AS internal_get_user_id)));
+
+
+--
+-- Name: questions update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.questions FOR UPDATE TO backend USING (( SELECT public.internal_owns_question(questions.question_id) AS internal_owns_question));
+
+
+--
+-- Name: users; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: TABLE questions; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.questions TO backend;
+
+
+--
+-- Name: TABLE session_series; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.session_series TO backend;
+
+
+--
+-- Name: TABLE sessions; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.sessions TO backend;
+
+
+--
+-- Name: TABLE users; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.users TO backend;
+
+
+--
+-- Name: TABLE course_users; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.course_users TO backend;
+
+
+--
+-- Name: TABLE courses; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.courses TO backend;
+
+
+--
+-- Name: SEQUENCE courses_course_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT USAGE ON SEQUENCE public.courses_course_id_seq TO backend;
+
+
+--
+-- Name: TABLE question_tags; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.question_tags TO backend;
+
+
+--
+-- Name: SEQUENCE questions_question_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT USAGE ON SEQUENCE public.questions_question_id_seq TO backend;
+
+
+--
+-- Name: SEQUENCE session_series_session_series_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT USAGE ON SEQUENCE public.session_series_session_series_id_seq TO backend;
+
+
+--
+-- Name: TABLE session_series_tas; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.session_series_tas TO backend;
+
+
+--
+-- Name: TABLE session_tas; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.session_tas TO backend;
+
+
+--
+-- Name: SEQUENCE sessions_session_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT USAGE ON SEQUENCE public.sessions_session_id_seq TO backend;
+
+
+--
+-- Name: TABLE tag_relations; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.tag_relations TO backend;
+
+
+--
+-- Name: TABLE tags; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON TABLE public.tags TO backend;
+
+
+--
+-- Name: SEQUENCE tags_tag_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT USAGE ON SEQUENCE public.tags_tag_id_seq TO backend;
+
+
+--
+-- Name: SEQUENCE users_user_id_seq; Type: ACL; Schema: public; Owner: -
+--
+
+GRANT USAGE ON SEQUENCE public.users_user_id_seq TO backend;
 
 
 --
