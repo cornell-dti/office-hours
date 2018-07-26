@@ -12,9 +12,8 @@ const GET_SESSION_DATA = gql`
 query getDataForSession($sessionId: Int!, $courseId: Int!) {
     apiGetCurrentUser {
         nodes {
-            firstName
-            lastName
-            photoUrl
+            computedName
+            computedAvatar
             userId
             courseUsersByUserId(condition:{courseId:$courseId}) {
                 nodes {
@@ -40,9 +39,8 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
                 status
                 timeEntered
                 userByAskerId {
-                    firstName
-                    lastName
-                    photoUrl
+                    computedName
+                    computedAvatar
                     userId
                 }
                 questionTagsByQuestionId {
@@ -59,9 +57,8 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
         sessionTasBySessionId {
             nodes {
                 userByUserId {
-                    firstName
-                    lastName
-                    photoUrl
+                    computedName
+                    computedAvatar
                 }
             }
         }
@@ -172,7 +169,7 @@ class SessionView extends React.Component {
                 <SessionDataQuery
                     query={GET_SESSION_DATA}
                     variables={{ sessionId: this.props.id, courseId: this.props.courseId }}
-                    pollInterval={5000}
+                    pollInterval={4000}
                 >
                     {({ loading, data, error }) => {
                         if (error) { return <h1>ERROR</h1>; }
@@ -185,8 +182,7 @@ class SessionView extends React.Component {
                                 {this.props.id === -1 || !data.sessionBySessionId
                                     ? <React.Fragment>
                                         <p className="welcomeMessage">Welcome, <span className="welcomeName">
-                                            {data.apiGetCurrentUser.nodes[0].firstName + ' '
-                                                + data.apiGetCurrentUser.nodes[0].lastName}
+                                            {data.apiGetCurrentUser.nodes[0].computedName}
                                         </span></p>
                                         <p className="noSessionSelected">
                                             Please select an office hour from the calendar.

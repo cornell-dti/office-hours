@@ -6,8 +6,6 @@ import { Mutation } from 'react-apollo';
 
 import SelectedTags from '../includes/SelectedTags';
 
-const avatar = require('../../media/userAvatar.svg');
-
 const UPDATE_QUESTION = gql`
 mutation UpdateQuestion($questionId: Int!, $status: String) {
     updateQuestionByQuestionId(input: {questionPatch: {status: $status}, questionId: $questionId}) {
@@ -58,9 +56,9 @@ class SessionQuestionsComponent extends React.Component {
             <div className={'QueueQuestions' + myQuestionCSS}>
                 {this.props.isTA &&
                     <div className="studentInformation">
-                        <img src={question.userByAskerId.photoUrl || avatar} />
+                        <img src={question.userByAskerId.computedAvatar} />
                         <span className="Name">
-                            {question.userByAskerId.firstName + ' ' + question.userByAskerId.lastName}
+                            {question.userByAskerId.computedName}
                         </span>
                     </div>
                 }

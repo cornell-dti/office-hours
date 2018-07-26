@@ -12,12 +12,11 @@ class ProfessorView extends React.Component {
                 <ProfessorSidebar
                     course="CS 1380"
                 />
-                <div className="rightOfSidebar">
+                <section className="rightOfSidebar">
                     <TopBar
                         user={{
-                            firstName: 'Michael',
-                            lastName: 'Clarkson',
-                            photoUrl: 'https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg',
+                            computedName: 'Michael Clarkson',
+                            computedAvatar: 'https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg',
                             userId: -1
                         }}
                     />
@@ -59,7 +58,7 @@ class ProfessorView extends React.Component {
                             />
                         </div>
                     </div>
-                </div>
+                </section>
             </div>
         );
     }

@@ -19,9 +19,8 @@ interface AppSession {
 
 interface AppTa {
     userByUserId: {
-        firstName: string;
-        lastName: string;
-        photoUrl?: string;
+        computedName: string;
+        computedAvatar: string;
     }
 }
 
@@ -56,9 +55,8 @@ interface AppTagRelations extends AppTag {
 }
 
 interface AppUser {
-    firstName: string;
-    lastName: string;
-    photoUrl: string;
+    computedName: string;
+    computedAvatar: string;
     userId: number;
 }
 

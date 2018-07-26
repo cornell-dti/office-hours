@@ -3,7 +3,6 @@ import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
 
 const people = require('../../media/people.svg');
-const avatar = require('../../media/userAvatar.svg');
 
 class SessionInformationHeader extends React.Component {
     props: {
@@ -25,7 +24,7 @@ class SessionInformationHeader extends React.Component {
             return (
                 <header className="DesktopSessionInformationHeader" >
                     <div className="Picture">
-                        <img src={session.sessionTasBySessionId.nodes[0].userByUserId.photoUrl || avatar} />
+                        <img src={session.sessionTasBySessionId.nodes[0].userByUserId.computedAvatar} />
                     </div>
                     <div className="Details">
                         <p className="Location">{session.building + ' ' + session.room}</p>
@@ -36,8 +35,7 @@ class SessionInformationHeader extends React.Component {
                             <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
                         </p>
                         <p>Held by <span className="black">
-                            {tas &&
-                                tas.map(ta => ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName).join(' and ')}
+                            {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
                         </span></p>
                     </div>
                     <div className="QueueWrap">
@@ -68,7 +66,7 @@ class SessionInformationHeader extends React.Component {
                             <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
                         </div>
                         <div className="Picture">
-                            <img src={session.sessionTasBySessionId.nodes[0].userByUserId.photoUrl || avatar} />
+                            <img src={session.sessionTasBySessionId.nodes[0].userByUserId.computedAvatar} />
                         </div>
                     </div>
                 </div>
@@ -90,7 +88,7 @@ class SessionInformationHeader extends React.Component {
                             </p>
                         </div>
                         <p>Held by <span className="black">
-                            {tas.map(ta => ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName).join(' and ')}
+                            {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
                         </span></p>
                     </div>
                 </div>

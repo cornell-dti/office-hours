@@ -16,9 +16,9 @@ class TopBar extends React.PureComponent {
                         <Icon className="notification" corner={true} name="circle" color="pink" />
                     </Icon.Group>
                 </button> */}
-                <img src={this.props.user.photoUrl} />
+                <img src={this.props.user.computedAvatar} />
                 <span className="name">
-                    {this.props.user.firstName + ' ' + this.props.user.lastName}
+                    {this.props.user.computedName}
                 </span>
             </header>
         );

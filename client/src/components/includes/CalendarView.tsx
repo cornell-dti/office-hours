@@ -47,8 +47,7 @@ const GET_CALENDAR_DATA = gql`
                 sessionTasBySessionId {
                     nodes {
                         userByUserId {
-                            firstName
-                            lastName
+                            computedName
                             photoUrl
                         }
                     }
