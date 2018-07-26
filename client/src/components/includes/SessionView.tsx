@@ -160,7 +160,7 @@ class SessionView extends React.Component {
             } else if (this.state.undoAction === 'no-show') {
                 undoText = this.state.undoName + ' has been marked as a no-show.';
             } else if (this.state.undoAction === 'retracted') {
-                undoText = 'You have removed your question';
+                undoText = 'You have removed your question.';
             }
         }
 
