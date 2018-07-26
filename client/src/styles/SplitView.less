@@ -78,6 +78,33 @@ section .SessionJoinButton {
     font-weight: 500;
 }
 
+.undoContainer {
+    width:100%;
+    background-color: #b0b0b0;
+    color: #ffffff;
+    height: 56px;
+    text-align: left;
+    position: relative;
+    top: -12px;
+
+    .undoClose {
+        position: absolute;
+        top:2px;
+        left:4px;
+        cursor: pointer;
+    }
+
+    .undoText {
+        line-height: 56px;
+        text-align: center;
+
+        .undoLink {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    }
+}
+
 @media only screen and (max-width: @mobile-breakpoint) {
     aside.CalendarView, section.StudentSessionView {
         width: 100%;
@@ -108,5 +135,9 @@ section .SessionJoinButton {
         margin: 15px auto 0;
         width: 90%;
         max-width: 400px;
+    }
+
+    .undoContainer {
+        background-color: #79b8b8;
     }
 }

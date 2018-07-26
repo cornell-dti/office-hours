@@ -21,7 +21,8 @@ class SessionQuestionsComponent extends React.Component {
         question: AppQuestion,
         index: number,
         isTA: boolean,
-        isMyQuestion: boolean
+        isMyQuestion: boolean,
+        triggerUndo: Function,
     };
 
     // Given an index from [1..n], converts it to text that is displayed
@@ -44,6 +45,9 @@ class SessionQuestionsComponent extends React.Component {
                 status: status,
             }
         });
+        const question = this.props.question;
+        this.props.triggerUndo(question.questionId, status,
+                               question.userByAskerId.firstName + ' ' + question.userByAskerId.lastName);
     }
 
     render() {
