@@ -44,8 +44,7 @@ class SessionQuestionsComponent extends React.Component {
             }
         });
         const question = this.props.question;
-        this.props.triggerUndo(question.questionId, status,
-                               question.userByAskerId.firstName + ' ' + question.userByAskerId.lastName);
+        this.props.triggerUndo(question.questionId, status, question.userByAskerId.computedName);
     }
 
     render() {
