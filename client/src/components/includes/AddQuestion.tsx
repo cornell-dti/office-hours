@@ -122,26 +122,18 @@ class AddQuestion extends React.Component {
                         <div className="tagsMiniContainer">
                             <p className="header">Categories</p>
                             <div className="QuestionTags">
-                                {this.state.stage <= 10 ?
-                                    this.props.tags
-                                        .filter((tag) => tag.level === 1)
-                                        .map((tag) => (<SelectedTags
-                                            key={tag.tagId}
-                                            tag={tag.name}
-                                            level={1}
-                                            isSelected={false}
-                                            onClick={() => this.handlePrimarySelected(tag.tagId)}
-                                        />))
-                                    : this.props.tags
-                                        .filter((tag) => tag.level === 1)
-                                        .filter((tag) => this.state.selectedTags.indexOf(tag.tagId) !== -1)
-                                        .map((tag) => (<SelectedTags
-                                            key={tag.tagId}
-                                            tag={tag.name}
-                                            level={1}
-                                            isSelected={true}
-                                            onClick={() => this.handlePrimarySelected(tag.tagId)}
-                                        />))
+                                {this.props.tags
+                                    .filter((tag) => tag.level === 1)
+                                    .filter((tag) =>
+                                        this.state.stage <= 10 || this.state.selectedTags.indexOf(tag.tagId) !== -1
+                                    )
+                                    .map((tag) => (<SelectedTags
+                                        key={tag.tagId}
+                                        tag={tag.name}
+                                        level={1}
+                                        isSelected={this.state.stage > 10}
+                                        onClick={() => this.handlePrimarySelected(tag.tagId)}
+                                    />))
                                 }
                             </div>
                         </div>
