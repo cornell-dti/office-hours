@@ -114,12 +114,9 @@ class SessionView extends React.Component {
             undoQuestionId: undefined,
             timeoutId: null,
         };
-        this.triggerUndo = this.triggerUndo.bind(this);
-        this.dismissUndo = this.dismissUndo.bind(this);
-        this.handleUndoClick = this.handleUndoClick.bind(this);
     }
 
-    triggerUndo(questionId: number, action: string, name: string) {
+    triggerUndo = (questionId: number, action: string, name: string) => {
         if (this.state.timeoutId) {
             clearTimeout(this.state.timeoutId);
         }
@@ -131,7 +128,7 @@ class SessionView extends React.Component {
         });
     }
 
-    dismissUndo() {
+    dismissUndo = () => {
         if (this.state.timeoutId) {
             clearTimeout(this.state.timeoutId);
         }
@@ -143,7 +140,7 @@ class SessionView extends React.Component {
         });
     }
 
-    handleUndoClick(undoQuestion: Function) {
+    handleUndoClick = (undoQuestion: Function) => {
         undoQuestion({
             variables: {
                 questionId: this.state.undoQuestionId
