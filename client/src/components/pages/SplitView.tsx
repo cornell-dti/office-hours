@@ -14,7 +14,8 @@ class SplitView extends React.Component {
         match: {
             params: {
                 courseId: number,
-                sessionId: number | null
+                sessionId: number | null,
+                page: string | null
             }
         }
     };
@@ -45,12 +46,17 @@ class SplitView extends React.Component {
             sessionId: this.props.match.params.sessionId || -1,
             width: window.innerWidth,
             height: window.innerHeight,
-            activeView: this.props.match.params.sessionId ? 'session' : 'calendar'
+            activeView: this.props.match.params.page === 'add'
+                ? 'addQuestion'
+                : this.props.match.params.sessionId ? 'session' : 'calendar'
         };
 
         // Handle browser back button
         this.props.history.listen((location, action) => {
-            this.setState({ activeView: 'session', sessionId: this.props.match.params.sessionId || -1 });
+            this.setState({
+                activeView: location.pathname.indexOf('add') === -1 ? 'session' : 'addQuestion',
+                sessionId: this.props.match.params.sessionId || -1
+            });
         });
     }
 
@@ -61,6 +67,9 @@ class SplitView extends React.Component {
     }
 
     handleJoinClick = () => {
+        this.props.history.push(
+            '/course/' + this.props.match.params.courseId + '/session/' + this.state.sessionId + '/add'
+        );
         this.setState({ activeView: 'addQuestion' });
     }
 

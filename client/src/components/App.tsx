@@ -59,9 +59,8 @@ class App extends React.Component {
                     </nav>
                     <Switch>
                         <Redirect from="/__auth" to="/course/1" />
-                        <PrivateRoute path="/course/:courseId/session/:sessionId/question" component={SplitView} />
                         <Route path="/login" component={LoginView} />
-                        <PrivateRoute path="/course/:courseId/session/:sessionId" component={SplitView} />
+                        <PrivateRoute path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
                         <PrivateRoute path="/course/:courseId" component={SplitView} />
                         <PrivateRoute path="/professor" component={ProfessorView} />
                     </Switch>
