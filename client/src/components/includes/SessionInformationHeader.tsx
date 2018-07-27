@@ -57,7 +57,7 @@ class SessionInformationHeader extends React.Component {
                 <div className="header">
                     <p className="BackButton" onClick={this.handleBackClick}>
                         <i className="left" />
-                        {this.props.course.name}
+                        {this.props.course.code}
                     </p>
                     <div className="CourseInfo">
                         <div className="CourseDetails">
