@@ -38,7 +38,7 @@ class ProfessorSidebar extends React.Component {
                                 Manage Hours
                                 </button>
                         </Link>
-                        <Link to="/professor-tags">
+                        <Link to="/professor-tags/course/1">
                             <button className={selectedArray[3]}>
                                 <Icon name="settings" />
                                 Manage Tags

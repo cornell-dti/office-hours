@@ -1,6 +1,5 @@
 import * as React from 'react';
-import * as moment from 'moment';
-import { Icon } from 'semantic-ui-react';
+import { Icon, Checkbox } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfoessorTagInfo from './ProfessorTagInfo';
 
@@ -9,8 +8,7 @@ class ProfessorTagsRow extends React.Component {
     props: {
         numRows: number
         assignmentName: string[]
-        dateAssigned: number[]
-        dateDue: number[]
+        isActivated: boolean[]
         numQuestions: number[]
 
         tableWidth: number
@@ -46,22 +44,18 @@ class ProfessorTagsRow extends React.Component {
             );
         }
 
-        // Convert UNIX timestamps to readable time string
-        var timeStart = new Array<moment.Moment>(this.props.dateAssigned.length);
-        var timeEnd = new Array<moment.Moment>(this.props.dateDue.length);
-        for (var index = 0; index < this.props.numRows; index++) {
-            timeStart[index] = moment(this.props.dateAssigned[index]);
-            timeEnd[index] = moment(this.props.dateDue[index]);
-        }
-
         var rowPair = this.props.assignmentName.map(
             (row, i) => {
                 return (
                     <tbody className={'Pair ' + this.props.isExpanded[i]} key={i}>
                         <tr className="Preview">
                             <td>{this.props.assignmentName[i]}</td>
-                            <td>{timeStart[i].format('MM/DD/YYYY')}</td>
-                            <td>{timeEnd[i].format('MM/DD/YYYY')}</td>
+                            <td>
+                                <Checkbox
+                                    checked={this.props.isActivated[i]}
+                                    readOnly={true}
+                                />
+                            </td>
                             <td>{('0' + this.props.numQuestions[i]).slice(-2)}</td>
                             <td>
                                 <button className="Edit" onClick={() => this.toggleEdit(i)}>
@@ -83,9 +77,9 @@ class ProfessorTagsRow extends React.Component {
                                 className={'ExpandedEdit ' + this.props.isExpanded[i]}
                             >
                                 <ProfoessorTagInfo
+                                    isNew={false}
                                     assignmentName={this.props.assignmentName[i]}
-                                    startTimeDefault={timeStart[i]}
-                                    endTimeDefault={timeEnd[i]}
+                                    isActivated={this.props.isActivated[i]}
                                     numQuestions={this.props.numQuestions[i]}
                                 />
                                 <div className="EditButtons">
@@ -97,9 +91,6 @@ class ProfessorTagsRow extends React.Component {
                                     </button>
                                     <button className="Cancel" onClick={() => this.toggleEdit(i)}>
                                         Cancel
-                                    </button>
-                                    <button className="SaveChanges">
-                                        Save Changes
                                     </button>
                                 </div>
                             </td>

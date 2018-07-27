@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as moment from 'moment';
-import { Icon } from 'semantic-ui-react';
+import { Icon, DropdownItemProps } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfoessorOHInfo from './ProfessorOHInfo';
 
@@ -9,6 +9,7 @@ class ProfessorCalendarRow extends React.Component {
     props: {
         courseId: number,
         dayNumber: number,
+        taOptions: DropdownItemProps[],
         timeStart: Date[],
         timeEnd: Date[],
         taNames: string[][],
@@ -90,9 +91,9 @@ class ProfessorCalendarRow extends React.Component {
                                 className={'ExpandedEdit ' + this.props.isExpanded[i]}
                             >
                                 <ProfoessorOHInfo
-                                    data={{}}
                                     courseId={this.props.courseId}
                                     isNewOH={false}
+                                    taOptions={this.props.taOptions}
                                     taUserIdsDefault={this.props.taUserIds[i]}
                                     locationBuildingDefault={this.props.locationBuilding[i]}
                                     locationRoomNumDefault={this.props.locationRoomNum[i]}
@@ -101,25 +102,18 @@ class ProfessorCalendarRow extends React.Component {
                                     sessionId={this.props.sessionId[i]}
                                     sessionSeriesId={this.props.sessionSeriesId[i]}
                                 />
-                                <div
-                                    className="EditButtons"
+                                <button
+                                    className="Cancel"
+                                    onClick={() => this.toggleEdit(i)}
                                 >
-                                    <button
-                                        className="Delete"
-                                        onClick={() => this.updateDeleteInfo(this.props.dayNumber, i)}
-                                    >
-                                        Delete
-                                    </button>
-                                    <button
-                                        className="Cancel"
-                                        onClick={() => this.toggleEdit(i)}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button className="SaveChanges">
-                                        Save Changes
-                                    </button>
-                                </div>
+                                    Cancel
+                                </button>
+                                <button
+                                    className="Delete"
+                                    onClick={() => this.updateDeleteInfo(this.props.dayNumber, i)}
+                                >
+                                    Delete
+                                </button>
                             </td>
                         </tr>
                     </tbody >

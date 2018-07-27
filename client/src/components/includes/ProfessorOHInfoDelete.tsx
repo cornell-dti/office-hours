@@ -82,57 +82,59 @@ class ProfessorOHInfoDelete extends React.Component {
         var timeEnd = moment(this.props.timeEnd).format('h:mm A');
 
         return (
-            <div className="ProfessorOHInfoDelete">
-                <div className="question">
-                    Are you sure you want to delete this office hour?
+            <React.Fragment>
+                <div className="ProfessorOHInfoDelete">
+                    <div className="question">
+                        Are you sure you want to delete this office hour?
                 </div>
-                <div className="info">
-                    <div className="ta">
-                        {this.props.ta !== undefined && this.props.ta.join(', ')}
+                    <div className="info">
+                        <div className="ta">
+                            {this.props.ta !== undefined && this.props.ta.join(', ')}
+                        </div>
+                        <div>
+                            <span>
+                                {date}
+                            </span>
+                            <span>
+                                {timeStart} to {timeEnd}
+                            </span>
+                            <span>
+                                {this.props.locationBuilding} {this.props.locationRoomNum}
+                            </span>
+                        </div>
                     </div>
                     <div>
-                        <span>
-                            {date}
-                        </span>
-                        <span>
-                            {timeStart} to {timeEnd}
-                        </span>
-                        <span>
-                            {this.props.locationBuilding} {this.props.locationRoomNum}
-                        </span>
+                        <Checkbox
+                            label="Delete all Office Hours in this series"
+                            disabled={this.props.sessionSeriesId === null}
+                            checked={this.state.isChecked}
+                            onChange={this.toggleCheckbox}
+                        />
                     </div>
-                </div>
-                <div>
-                    <Checkbox
-                        label="Delete all Office Hours in this series"
-                        disabled={this.props.sessionSeriesId === null}
-                        checked={this.state.isChecked}
-                        onChange={this.toggleCheckbox}
-                    />
                 </div>
                 {this.state.isChecked ?
                     <Mutation mutation={DELETE_SERIES}>
                         {(DeleteSeries) =>
                             <button
-                                className="mutation"
+                                className="Delete"
                                 onClick={(e) => this._onClickDeleteSeries(e, DeleteSeries)}
                             >
-                                Delete Series
+                                Delete
                             </button>
                         }
                     </Mutation> :
                     <Mutation mutation={DELETE_SESSION}>
                         {(DeleteSession) =>
                             <button
-                                className="mutation"
+                                className="Delete"
                                 onClick={(e) => this._onClickDeleteSession(e, DeleteSession)}
                             >
-                                Delete Session
+                                Delete
                             </button>
                         }
                     </Mutation>
                 }
-            </div>
+            </React.Fragment>
         );
     }
 }

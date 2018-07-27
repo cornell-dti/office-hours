@@ -29,7 +29,6 @@ class ProfessorAddNew extends React.Component {
     render() {
         return (
             <div className="ProfessorAddNew">
-                <div className="Delete" />
                 <div className={'Add ' + !this.state.editVisible}>
                     <button className="NewOHButton" onClick={() => this.toggleEdit(true)}>
                         <Icon name="plus" />
@@ -44,14 +43,9 @@ class ProfessorAddNew extends React.Component {
                         </button>
                     </div>
                     {this.props.content}
-                    <div className="Buttons">
-                        <button className="Create">
-                            Create
-                        </button>
-                        <button className="Cancel" onClick={() => this.toggleEdit(false)}>
-                            Cancel
-                        </button>
-                    </div>
+                    <button className="Cancel" onClick={() => this.toggleEdit(false)}>
+                        Cancel
+                    </button>
                 </div>
             </div>
         );

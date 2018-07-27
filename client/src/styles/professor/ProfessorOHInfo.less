@@ -1,78 +1,82 @@
 .ProfessorOHInfo {
-    margin-left: 40px;
+    border-bottom: 1px solid #d9d9d9;
+    padding-bottom: 30px;
+    margin-bottom: 60px;
 
-    input {
-        margin: 0px 20px;
-    }
+    .Divider {
+        margin-left: 40px;
 
-    .TA {
-        margin-top: 14px;
-
-        .AddTA.First {
-            i.user.icon {
-                visibility: visible;
-            }
-
-            .AddTAButton {
-                color: dodgerblue;
-                background-color: white;
-            }
-    
-            .AddTAButton.true {
-                color:gainsboro;
-            }
+        .icon {
+            margin-right: 10px;
         }
 
-        .AddTA.Additional {
-            margin-top: 14px;
-            i.user.icon {
-                visibility: hidden;
-            }
+        .shift {
+            margin-left: 27px;
         }
-    }
-
-    .Location {
-        margin-top: 24px;
 
         .long {
             width: 40%;
-        }
-    }
-    
-    .Time {
-        margin-top: 24px;
-
-        .datePicker {
-            display: inline-block;
+            min-width: 200px;
         }
 
-        // CSS to show time select only
-        .timePicker {
-            .react-datepicker__month-container {
-                display:none;
+        .TA {
+            margin-top: 14px;
+
+            .AddTA.First {
+                i.user.icon {
+                    visibility: visible;
+                }
+
+                .AddTAButton {
+                    color: dodgerblue;
+                    background-color: white;
+                }
+        
+                .AddTAButton.true {
+                    color:gainsboro;
+                }
             }
-            .react-datepicker {
-                .react-datepicker__triangle {
-                    left: 35px;
+
+            .AddTA.Additional {
+                margin-top: 14px;
+                i.user.icon {
+                    visibility: hidden;
                 }
-                .react-datepicker__time-container {
-                    border-left: 0;
+            }
+        }
+
+        .Location>input, .Time>.datePicker {
+            margin-top: 24px;
+        }
+        
+        .Time {
+            .datePicker {
+                display: inline-block;
+            }
+
+            // CSS to show time select only
+            .timePicker {
+                .react-datepicker__month-container {
+                    display:none;
                 }
-                .react-datepicker__time {
-                    border-radius: 0.3rem;
-                }
-                .react-datepicker__time-box {
-                    border-radius: 0.3rem;
+                .react-datepicker {
+                    .react-datepicker__triangle {
+                        left: 35px;
                     }
+                    .react-datepicker__time-container {
+                        border-left: 0;
+                    }
+                    .react-datepicker__time {
+                        border-radius: 0.3rem;
+                    }
+                    .react-datepicker__time-box {
+                        border-radius: 0.3rem;
+                        }
+                }
+                .react-datepicker__navigation {
+                    display: none;
+                }
             }
-            .react-datepicker__navigation {
-                display: none;
-            }
-        }
-
-        .repeat {
-            margin-left: 2%;
-            color: black;
         }
     }
 }

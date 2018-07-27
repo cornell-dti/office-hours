@@ -6,9 +6,9 @@ import ProfessorTagsDelete from './ProfessorTagsDelete';
 class ProfessorTagsTable extends React.Component {
     props: {
         assignmentName: string[]
-        dateAssigned: number[]
-        dateDue: number[]
+        isActivated: boolean[]
         numQuestions: number[]
+        numRows: number
     };
 
     state: {
@@ -22,7 +22,8 @@ class ProfessorTagsTable extends React.Component {
         super(props);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.state = {
-            isExpanded: new Array<boolean>(this.props.assignmentName.length).fill(false),
+            // Temporary Number
+            isExpanded: new Array<boolean>(100).fill(false),
             isDeleteVisible: false,
             currentRow: 0,
             rowIndex: 0
@@ -65,8 +66,7 @@ class ProfessorTagsTable extends React.Component {
                     content={
                         <ProfessorTagsDelete
                             assignmentName={this.props.assignmentName[rowIndex]}
-                            dateAssigned={this.props.dateAssigned[rowIndex]}
-                            dateDue={this.props.dateDue[rowIndex]}
+                            isActivated={this.props.isActivated[rowIndex]}
                             numQuestions={this.props.numQuestions[rowIndex]}
                         />
                     }
@@ -74,15 +74,13 @@ class ProfessorTagsTable extends React.Component {
                 <table className="Tags">
                     <tr>
                         <th>Title</th>
-                        <th>Assigned</th>
-                        <th>Due</th>
+                        <th>Activated?</th>
                         <th colSpan={3}>Questions</th>
                     </tr>
                     <ProfessorTagsRow
                         numRows={this.props.assignmentName.length}
                         assignmentName={this.props.assignmentName}
-                        dateAssigned={this.props.dateAssigned}
-                        dateDue={this.props.dateDue}
+                        isActivated={this.props.isActivated}
                         numQuestions={this.props.numQuestions}
 
                         tableWidth={6}

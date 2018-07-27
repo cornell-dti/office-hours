@@ -30,7 +30,12 @@ type QuestionNode = {
 
 type TagNode = {
     tagId: number,
+    name: string,
+    activated: boolean,
     tagByTagId: {
         name: string,
     },
+    questionTagsByTagId: {
+        totalCount: number
+    }
 };

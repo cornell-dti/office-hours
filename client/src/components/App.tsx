@@ -21,7 +21,7 @@ class App extends React.Component {
                     <Switch>
                         <Route path="/course/:courseId/session/:sessionId/question" component={ConnectedQuestionView} />
                         <Route path="/login" component={LoginView} />
-                        <Route path="/professor-tags" component={ProfessorTags} exact={true} />
+                        <Route path="/professor-tags/course/:courseId" component={ProfessorTags} exact={true} />
                         <Route path="/professor/course/:courseId" component={ProfessorView} exact={true} />
                         <Route path="/course/:courseId/session/:sessionId" component={SplitView} />
                         <Route path="/course/:courseId" component={SplitView} />

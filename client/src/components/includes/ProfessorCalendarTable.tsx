@@ -5,7 +5,7 @@ import ProfessorDelete from '../includes/ProfessorDelete';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
-import { Loader } from 'semantic-ui-react';
+import { Loader, DropdownItemProps } from 'semantic-ui-react';
 import ProfessorOHInfoDelete from './ProfessorOHInfoDelete';
 
 const QUERY = gql`
@@ -53,7 +53,8 @@ type InputProps = {
         apiGetSessions?: {
             nodes: [{}]
         }
-    }
+    },
+    taOptions: DropdownItemProps[]
 };
 
 class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Response>> {
@@ -149,7 +150,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         if (this.props.data.apiGetSessions) {
             this.props.data.apiGetSessions.nodes.forEach((node: SessionNode) => {
                 // 0 = Monday..., 5 = Saturday, 6 = Sunday
-                var dayIndexQuery = (new Date(node.startTime).getDay() + 5) % 6;
+                var dayIndexQuery = (new Date(node.startTime).getDay() + 6) % 7;
                 timeStart[dayIndexQuery].push(new Date(node.startTime));
                 timeEnd[dayIndexQuery].push(new Date(node.endTime));
 
@@ -185,32 +186,34 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
 
         var rows = days.map(
             (tag, i) => {
-                return ([(
-                    <tbody key={i}>
-                        <tr>
-                            <th colSpan={tablewidth}>{tag}</th>
-                        </tr>
-                    </tbody>),
-                (
-                    <ProfessorCalendarRow
-                        key={sessionId[i].toString()}
-                        courseId={this.props._courseId}
-                        timeStart={timeStart[i]}
-                        timeEnd={timeEnd[i]}
-                        taNames={taNames[i]}
-                        taUserIds={taUserIds[i]}
-                        locationBuilding={building[i]}
-                        locationRoomNum={room[i]}
-                        sessionId={sessionId[i]}
-                        sessionSeriesId={sessionSeriesId[i]}
-                        tablewidth={5}
-                        dayNumber={i}
-                        isExpanded={this.state.isExpanded[i]}
-                        handleEditToggle={this.toggleEdit}
-                        updateDeleteInfo={this.updateDeleteInfo}
-                        updateDeleteVisible={this.updateDeleteVisible}
-                    />
-                )]);
+                return (
+                    <React.Fragment key={i}>
+                        <tbody>
+                            <tr>
+                                <th colSpan={tablewidth}>{tag}</th>
+                            </tr>
+                        </tbody>
+                        <ProfessorCalendarRow
+                            key={sessionId[i].toString()}
+                            courseId={this.props._courseId}
+                            taOptions={this.props.taOptions}
+                            timeStart={timeStart[i]}
+                            timeEnd={timeEnd[i]}
+                            taNames={taNames[i]}
+                            taUserIds={taUserIds[i]}
+                            locationBuilding={building[i]}
+                            locationRoomNum={room[i]}
+                            sessionId={sessionId[i]}
+                            sessionSeriesId={sessionSeriesId[i]}
+                            tablewidth={5}
+                            dayNumber={i}
+                            isExpanded={this.state.isExpanded[i]}
+                            handleEditToggle={this.toggleEdit}
+                            updateDeleteInfo={this.updateDeleteInfo}
+                            updateDeleteVisible={this.updateDeleteVisible}
+                        />
+                    </React.Fragment>
+                );
             }
         );
 

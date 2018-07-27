@@ -4,16 +4,78 @@ import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorAddNew from './ProfessorAddNew';
 import ProfoessorTagInfo from './ProfessorTagInfo';
 import ProfessorTagsTable from './ProfessorTagsTable';
+import { Loader } from 'semantic-ui-react';
+import gql from 'graphql-tag';
+import { graphql, ChildProps } from 'react-apollo';
 
-class ProfessorTags extends React.Component {
-    props: {
-        courseId: number
-    };
+const QUERY = gql`
+query FindTagsByCourse($_courseId: Int!) {
+    courseByCourseId(courseId: $_courseId) {
+        tagsByCourseId {
+            totalCount
+            nodes {
+                name
+                level
+                activated
+                questionTagsByTagId {
+                totalCount
+                }
+            }
+        }
+    }
+}
+`;
+
+const withData = graphql<InputProps, Response>(
+    QUERY, {
+        options: ({ match }) => ({
+            variables: {
+                _courseId: match.params.courseId
+            }
+        })
+    }
+);
+
+type InputProps = {
+    match: {
+        params: {
+            courseId: number
+        }
+    },
+    data: {
+        loading: boolean,
+        courseByCourseId?: {
+            tagsByCourseId: {
+                totalCount: number
+                nodes: [{}]
+            }
+        }
+    }
+};
+
+class ProfessorTags extends React.Component<ChildProps<InputProps, Response>> {
 
     state: {
         selectedWeekEpoch: number
     };
+
     render() {
+
+        var assignmentName: string[] = [];
+        var isActivated: boolean[] = [];
+        var numQuestions: number[] = [];
+        var numRows: number = 0;
+
+        if (this.props.data.courseByCourseId) {
+            numRows = this.props.data.courseByCourseId.tagsByCourseId.totalCount;
+            this.props.data.courseByCourseId.tagsByCourseId.nodes.forEach((node: TagNode) => {
+                assignmentName.push(node.name);
+                isActivated.push(node.activated);
+                numQuestions.push(node.questionTagsByTagId.totalCount);
+            });
+        }
+
+        const { loading } = this.props.data;
 
         return (
             <div className="ProfessorView">
@@ -31,28 +93,23 @@ class ProfessorTags extends React.Component {
                         <div className="main">
                             <ProfessorAddNew
                                 text={'Add New Assignment'}
-                                content={<ProfoessorTagInfo />}
+                                content={
+                                    <ProfoessorTagInfo
+                                        isNew={true}
+                                    />
+                                }
                             />
-                            <div className="Calendar">
-                                <ProfessorTagsTable
-                                    assignmentName={
-                                        ['Assignment 1', 'Assignment 2',
-                                            'Assignment 3', 'Assignment 4',
-                                            'Prelim 1', 'Prelim 2']
-                                    }
-                                    dateAssigned={
-                                        [1522684800000, 1522688400000,
-                                            1522695600000, 1522713600000,
-                                            1522764000000, 1522764000000]
-                                    }
-                                    dateDue={
-                                        [1522688400000, 1522692000000,
-                                            1522699200000, 1522717200000,
-                                            1522767600000, 1522767600000]
-                                    }
-                                    numQuestions={[1, 2, 3, 4, 5, 15]}
-                                />
-                            </div>
+                            {loading && <Loader active={true} content={'Loading'} />}
+                            {!loading &&
+                                <div className="Calendar">
+                                    <ProfessorTagsTable
+                                        assignmentName={assignmentName}
+                                        isActivated={isActivated}
+                                        numQuestions={numQuestions}
+                                        numRows={numRows}
+                                    />
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -61,4 +118,4 @@ class ProfessorTags extends React.Component {
     }
 }
 
-export default ProfessorTags;
+export default withData(ProfessorTags);

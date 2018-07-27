@@ -49,33 +49,33 @@ tbody:nth-of-type(odd) {
     
     .ExpandedEdit {
         background-color: white;
-        
-        .EditButtons {
-            border-top: 1px solid #d9d9d9;
-            margin-top: 26px;
-            padding-top: 12px;
+        position: relative;
 
-            Button {
-                font-size: 14px;
-                padding: 10px 40px;
-                border-radius: 3px;
-                font-size: 14px;
-                margin: 0px 15px;
-                background-color: white;
-                border: 1px solid gray;
-                float: right;
-            }
+        .Mutation, .Delete, .Cancel {
+            font-size: 14px;
+            padding: 10px 40px;
+            border-radius: 3px;
+            font-size: 14px;
+            background-color: white;
+            border: 1px solid gray;
+            position: absolute;
+            bottom: 15px;
+        }
 
-            .Delete {
-                float: left;
-            }
-    
-            .SaveChanges {
-                background-color: dodgerblue;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-            }
+        .Delete {
+            left: 15px
+        }
+
+        .Cancel {
+            right: 15px;
+        }
+
+        .Mutation {
+            background-color: dodgerblue;
+            color: white;
+            border: 1px solid dodgerblue;
+            padding: 10px 20px;
+            right: 160px;
         }
     }
 }

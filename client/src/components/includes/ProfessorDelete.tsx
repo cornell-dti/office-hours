@@ -29,14 +29,9 @@ class ProfessorDelete extends React.Component {
                         <Icon name="x" />
                     </button>
                     {this.props.content}
-                    <span>
-                        <button className="Delete">
-                            Delete
-                        </button>
-                        <button className="Cancel" onClick={() => this.updateDeleteVisible(false)}>
-                            Cancel
-                        </button>
-                    </span>
+                    <button className="Cancel" onClick={() => this.updateDeleteVisible(false)}>
+                        Cancel
+                    </button>
                 </div>
             </div>
         );
