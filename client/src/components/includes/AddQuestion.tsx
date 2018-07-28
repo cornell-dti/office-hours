@@ -123,7 +123,7 @@ class AddQuestion extends React.Component {
                             <p className="header">Categories</p>
                             <div className="QuestionTags">
                                 {this.props.tags
-                                    .filter((tag) => tag.level === 1)
+                                    .filter((tag) => tag.activated && tag.level === 1)
                                     .filter((tag) =>
                                         this.state.stage <= 10 || this.state.selectedTags.indexOf(tag.tagId) !== -1
                                     )
