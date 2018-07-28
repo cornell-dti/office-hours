@@ -16,6 +16,8 @@ const GET_CALENDAR_DATA = gql`
     ) {
         apiGetCurrentUser {
             nodes {
+                computedName
+                computedAvatar
                 courseUsersByUserId(condition:{courseId:$courseId}) {
                     nodes {
                         role
@@ -48,7 +50,7 @@ const GET_CALENDAR_DATA = gql`
                     nodes {
                         userByUserId {
                             computedName
-                            photoUrl
+                            computedAvatar
                         }
                     }
                 }
@@ -174,8 +176,9 @@ class CalendarView extends React.Component {
                                 <CalendarHeader
                                     currentCourseCode={
                                         data.courseByCourseId && data.courseByCourseId.code || 'Loading'}
-                                    isTa={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].
-                                        courseUsersByUserId.nodes[0].role !== 'student'}
+                                    isTa={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0]
+                                        .courseUsersByUserId.nodes[0].role !== 'student'}
+                                    avatar={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].computedAvatar}
                                 />
                                 <CalendarWeekSelect handleClick={this.handleWeekClick} />
                             </div>

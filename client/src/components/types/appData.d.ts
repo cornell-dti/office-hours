@@ -67,6 +67,7 @@ interface AppUserRole extends AppUser {
         nodes: [{
             role: string;
             userId: number;
+            computedAvatar: string;
         }]
     }
 }

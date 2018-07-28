@@ -23,4 +23,14 @@
             display: inline-block;
         }
     }
+    .mobileHeaderFace {
+        height: 28px;
+        border-radius: 28px;
+        float: right;
+    }
+    @media only screen and (min-width: @mobile-breakpoint) {
+        .mobileHeaderFace {
+            display: none;
+        }
+    }
 }

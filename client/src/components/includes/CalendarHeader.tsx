@@ -4,6 +4,7 @@ class CalendarHeader extends React.PureComponent {
     props: {
         currentCourseCode: string;
         isTa: boolean;
+        avatar: string | null;
     };
 
     render() {
@@ -12,6 +13,7 @@ class CalendarHeader extends React.PureComponent {
                 <div className="CurrentCourse">
                     {this.props.currentCourseCode}
                     {this.props.isTa && <span className="TAMarker">TA</span>}
+                    {this.props.avatar && <img className="mobileHeaderFace" src={this.props.avatar} />}
                     {/* <button className="CourseSelectButton">
                         <i className="angle down icon" />
                     </button> */}
