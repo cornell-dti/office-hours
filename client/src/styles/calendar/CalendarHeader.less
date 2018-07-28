@@ -12,6 +12,9 @@
     }
 
     .CurrentCourse {
+        display: flex;
+        justify-content: space-between;
+
         .TAMarker {
             border-radius: 3px;
             color: white;
@@ -23,14 +26,20 @@
             display: inline-block;
         }
     }
+
     .mobileHeaderFace {
-        height: 28px;
-        border-radius: 28px;
-        float: right;
+        display: none;
     }
-    @media only screen and (min-width: @mobile-breakpoint) {
+
+    @media only screen and (max-width: @mobile-breakpoint) {
         .mobileHeaderFace {
-            display: none;
+            height: 28px;
+            border-radius: 28px;
+            display: inline;
+        }
+
+        span {
+            padding-top: 6px;
         }
     }
 }
