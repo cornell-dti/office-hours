@@ -8,6 +8,7 @@ class SessionQuestionsContainer extends React.Component {
         questions: AppQuestion[] | null,
         myUserId: number,
         handleJoinClick: Function,
+        triggerUndo: Function,
     };
 
     render() {
@@ -30,6 +31,7 @@ class SessionQuestionsContainer extends React.Component {
                             index={questions.indexOf(myQuestion[0])}
                             isTA={this.props.isTA}
                             isMyQuestion={true}
+                            triggerUndo={this.props.triggerUndo}
                         />
                         <p className="Queue">Queue</p>
                     </div>
@@ -42,6 +44,7 @@ class SessionQuestionsContainer extends React.Component {
                             index={i}
                             isTA={this.props.isTA}
                             isMyQuestion={question.userByAskerId.userId === this.props.myUserId}
+                            triggerUndo={this.props.triggerUndo}
                         />
                     ))
                 }
