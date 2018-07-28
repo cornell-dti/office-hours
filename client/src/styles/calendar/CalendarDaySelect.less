@@ -1,25 +1,32 @@
 @red: #f67d7d;
 
-.CalendarDateSelect {
+.CalendarDaySelect {
     background: white;
     color: #4d4d4d;
     border-bottom: solid 1px #e3e3e3;
 
-    .dates {
-        display: flex;
+    .month {
+        font-family: Roboto;
+        font-size: 17px;
+        font-weight: 500;
+        margin: 0 20px;
+        padding: 10px 0;
+        border-bottom: solid 1px #ebebeb;
     }
 
-    .month {
-        font-size: 12px;
-        padding: 2px 10px;
-        text-align: left;
+    .selector {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
     }
-}
+ }
+
 
 .menuDate {
     cursor: pointer;
-    padding-bottom: 5px;
-    width: 14.28%;
+    height: 54px;
+    width: 30px;
 
     &.active {
         cursor: default;

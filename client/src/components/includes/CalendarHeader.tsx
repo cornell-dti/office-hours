@@ -22,17 +22,21 @@ class CalendarHeader extends React.Component {
 
     render() {
         return (
-            <div className="CalendarHeader">
-                <div className="CurrentCourse">
-                    <span>{this.props.currentCourseCode}</span>
-                    {this.props.isTa && <span className="TAMarker">TA</span>}
-                    {this.props.avatar &&
-                        <img
-                            className="mobileHeaderFace"
-                            onClick={() => this.setMenu(!this.state.showMenu)}
-                            src={this.props.avatar}
-                        />
-                    }
+            <div className="Header">
+                <div className="CalendarHeader">
+                    <div className="CurrentCourse">
+                        <span>
+                            {this.props.currentCourseCode}
+                            {this.props.isTa && <span className="TAMarker">TA</span>}
+                        </span>
+                        {this.props.avatar &&
+                            <img
+                                className="mobileHeaderFace"
+                                onClick={() => this.setMenu(!this.state.showMenu)}
+                                src={this.props.avatar}
+                            />
+                        }
+                    </div>
                 </div>
                 {this.state.showMenu && (
                     <ul className="logoutMenu" onClick={() => this.setMenu(false)} >
