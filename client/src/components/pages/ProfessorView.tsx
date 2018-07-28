@@ -19,6 +19,8 @@ class ProfessorView extends React.Component {
                             computedAvatar: 'https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg',
                             userId: -1
                         }}
+                        role="professor"
+                        context="professor"
                     />
                     <div className="main">
                         <ProfessorAddNewOH

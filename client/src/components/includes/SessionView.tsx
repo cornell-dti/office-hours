@@ -83,7 +83,7 @@ class SessionDataQuery extends Query<SessionData, Variables> { }
 
 const UNDO_QUESTION = gql`
 mutation UndoQuestion($questionId: Int!) {
-    updateQuestionByQuestionId(input: {questionPatch: {status: "unresolved", timeAddressed: null, answererId: null}, 
+    updateQuestionByQuestionId(input: {questionPatch: {status: "unresolved", timeAddressed: null, answererId: null},
         questionId: $questionId}) {
         clientMutationId
     }
@@ -175,7 +175,13 @@ class SessionView extends React.Component {
                         }
                         return (
                             <React.Fragment>
-                                {this.props.isDesktop && <TopBar user={data.apiGetCurrentUser.nodes[0]} />}
+                                {this.props.isDesktop &&
+                                    <TopBar
+                                        user={data.apiGetCurrentUser.nodes[0]}
+                                        role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
+                                        context="session"
+                                    />
+                                }
                                 {this.props.id === -1 || !data.sessionBySessionId
                                     ? <React.Fragment>
                                         <p className="welcomeMessage">Welcome, <span className="welcomeName">

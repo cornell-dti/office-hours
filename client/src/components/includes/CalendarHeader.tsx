@@ -35,7 +35,7 @@ class CalendarHeader extends React.Component {
                     }
                 </div>
                 {this.state.showMenu && (
-                    <ul className="mobileLogoutMenu" onClick={() => this.setMenu(false)} >
+                    <ul className="logoutMenu" onClick={() => this.setMenu(false)} >
                         {/* {this.props.isTa &&
                             <React.Fragment>
                                 <li>Cancel Session</li>
