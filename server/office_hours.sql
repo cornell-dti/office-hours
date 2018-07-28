@@ -861,7 +861,7 @@ begin
 
 	else
 
-		return '/static/media/userAvatar.28b5e338.svg';
+		return '/public/placeholder.png';
 
 	end if;
 
