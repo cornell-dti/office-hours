@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as moment from 'moment';
 import { Icon, DropdownItemProps } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
-import ProfoessorOHInfo from './ProfessorOHInfo';
+import ProfessorOHInfo from './ProfessorOHInfo';
 
 class ProfessorCalendarRow extends React.Component {
 
@@ -90,7 +90,7 @@ class ProfessorCalendarRow extends React.Component {
                                 colSpan={this.props.tablewidth}
                                 className={'ExpandedEdit ' + this.props.isExpanded[i]}
                             >
-                                <ProfoessorOHInfo
+                                <ProfessorOHInfo
                                     courseId={this.props.courseId}
                                     isNewOH={false}
                                     taOptions={this.props.taOptions}

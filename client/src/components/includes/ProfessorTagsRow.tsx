@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Icon, Checkbox } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
-import ProfoessorTagInfo from './ProfessorTagInfo';
+import ProfessorTagInfo from './ProfessorTagInfo';
 
 class ProfessorTagsRow extends React.Component {
 
@@ -76,7 +76,7 @@ class ProfessorTagsRow extends React.Component {
                                 colSpan={this.props.tableWidth}
                                 className={'ExpandedEdit ' + this.props.isExpanded[i]}
                             >
-                                <ProfoessorTagInfo
+                                <ProfessorTagInfo
                                     isNew={false}
                                     assignmentName={this.props.assignmentName[i]}
                                     isActivated={this.props.isActivated[i]}

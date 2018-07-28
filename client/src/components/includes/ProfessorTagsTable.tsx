@@ -82,7 +82,6 @@ class ProfessorTagsTable extends React.Component {
                         assignmentName={this.props.assignmentName}
                         isActivated={this.props.isActivated}
                         numQuestions={this.props.numQuestions}
-
                         tableWidth={6}
                         isExpanded={this.state.isExpanded}
                         handleEditToggle={this.toggleEdit}

@@ -1,12 +1,12 @@
 import * as React from 'react';
 import ProfessorCalendarRow from './ProfessorCalendarRow';
-import ProfessorDelete from '../includes/ProfessorDelete';
+import ProfessorDelete from './ProfessorDelete';
+import ProfessorOHInfoDelete from './ProfessorOHInfoDelete';
 
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { ChildProps } from 'react-apollo';
 import { Loader, DropdownItemProps } from 'semantic-ui-react';
-import ProfessorOHInfoDelete from './ProfessorOHInfoDelete';
 
 const QUERY = gql`
 query FindSessionsByCourse($_courseId: Int!, $_beginTime: Datetime!, $_endTime: Datetime!) {
@@ -21,8 +21,7 @@ query FindSessionsByCourse($_courseId: Int!, $_beginTime: Datetime!, $_endTime: 
             sessionTasBySessionId {
                 nodes {
                     userByUserId {
-                        firstName
-                        lastName
+                        computedName
                         userId
                     }
                 }
@@ -72,7 +71,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         this.toggleEdit = this.toggleEdit.bind(this);
         var isExpandedInit: boolean[][] = [];
         // if (this.props.data.apiGetSessions) {
-        //     this.props.data.apiGetSessions.nodes.forEach((node: SessionNode) => {
+        //     this.props.data.apiGetSessions.nodes.forEach((node: AppSession) => {
         //         numOHPerDays[new Date(node.startTime).getDay()] = 10;
         //     })
         // }
@@ -148,7 +147,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         }
 
         if (this.props.data.apiGetSessions) {
-            this.props.data.apiGetSessions.nodes.forEach((node: SessionNode) => {
+            this.props.data.apiGetSessions.nodes.forEach((node: AppSession) => {
                 // 0 = Monday..., 5 = Saturday, 6 = Sunday
                 var dayIndexQuery = (new Date(node.startTime).getDay() + 6) % 7;
                 timeStart[dayIndexQuery].push(new Date(node.startTime));
@@ -157,7 +156,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                 var taNamesQuery: string[] = [];
                 var taUserIdsQuery: number[] = [];
                 node.sessionTasBySessionId.nodes.forEach((ta) => {
-                    taNamesQuery.push(ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName);
+                    taNamesQuery.push(ta.userByUserId.computedName);
                     taUserIdsQuery.push(ta.userByUserId.userId);
                 });
                 building[dayIndexQuery].push(node.building);

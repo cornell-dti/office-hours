@@ -16,8 +16,7 @@ query FindSessionsByCourse($courseId: Int!) {
         tas: courseUsersByCourseId(condition: {role: "ta"}) {
             nodes {
                 userByUserId {
-                    firstName
-                    lastName
+                    computedName
                     userId
                 }
             }
@@ -25,8 +24,7 @@ query FindSessionsByCourse($courseId: Int!) {
         professors: courseUsersByCourseId(condition: {role: "professor"}) {
             nodes {
                 userByUserId {
-                    firstName
-                    lastName
+                    computedName
                     userId
                 }
             }
@@ -54,10 +52,10 @@ type InputProps = {
     data: {
         courseByCourseId?: {
             tas: {
-                nodes: [{}]
+                nodes: [AppTa]
             }
             professors: {
-                nodes: [{}]
+                nodes: [AppTa]
             }
         }
     }
@@ -98,16 +96,16 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
     render() {
         const taOptions: DropdownItemProps[] = [];
         if (this.props.data.courseByCourseId) {
-            this.props.data.courseByCourseId.tas.nodes.forEach((node: TANode) => {
+            this.props.data.courseByCourseId.tas.nodes.forEach((node) => {
                 taOptions.push({
                     value: node.userByUserId.userId,
-                    text: node.userByUserId.firstName + ' ' + node.userByUserId.lastName
+                    text: node.userByUserId.computedName
                 });
             });
-            this.props.data.courseByCourseId.professors.nodes.forEach((node: TANode) => {
+            this.props.data.courseByCourseId.professors.nodes.forEach((node) => {
                 taOptions.push({
                     value: node.userByUserId.userId,
-                    text: node.userByUserId.firstName + ' ' + node.userByUserId.lastName
+                    text: node.userByUserId.computedName
                 });
             });
         }

@@ -3,7 +3,7 @@ import * as NumericInput from 'react-numeric-input';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Checkbox } from 'semantic-ui-react';
 
-class ProfoessorTagInfo extends React.Component {
+class ProfessorTagInfo extends React.Component {
 
     props: {
         isNew: boolean
@@ -57,4 +57,4 @@ class ProfoessorTagInfo extends React.Component {
     }
 }
 
-export default ProfoessorTagInfo;
+export default ProfessorTagInfo;

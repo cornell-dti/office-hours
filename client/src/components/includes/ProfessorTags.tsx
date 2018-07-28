@@ -1,9 +1,9 @@
 import * as React from 'react';
-import ProfessorHeader from '../includes/ProfessorHeader';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorAddNew from './ProfessorAddNew';
-import ProfoessorTagInfo from './ProfessorTagInfo';
+import ProfessorTagInfo from './ProfessorTagInfo';
 import ProfessorTagsTable from './ProfessorTagsTable';
+import TopBar from './TopBar';
 import { Loader } from 'semantic-ui-react';
 import gql from 'graphql-tag';
 import { graphql, ChildProps } from 'react-apollo';
@@ -17,9 +17,6 @@ query FindTagsByCourse($_courseId: Int!) {
                 name
                 level
                 activated
-                questionTagsByTagId {
-                totalCount
-                }
             }
         }
     }
@@ -47,7 +44,7 @@ type InputProps = {
         courseByCourseId?: {
             tagsByCourseId: {
                 totalCount: number
-                nodes: [{}]
+                nodes: [AppTag]
             }
         }
     }
@@ -68,10 +65,10 @@ class ProfessorTags extends React.Component<ChildProps<InputProps, Response>> {
 
         if (this.props.data.courseByCourseId) {
             numRows = this.props.data.courseByCourseId.tagsByCourseId.totalCount;
-            this.props.data.courseByCourseId.tagsByCourseId.nodes.forEach((node: TagNode) => {
+            this.props.data.courseByCourseId.tagsByCourseId.nodes.forEach((node: AppTag) => {
                 assignmentName.push(node.name);
                 isActivated.push(node.activated);
-                numQuestions.push(node.questionTagsByTagId.totalCount);
+                numQuestions.push(0);
             });
         }
 
@@ -85,16 +82,18 @@ class ProfessorTags extends React.Component<ChildProps<InputProps, Response>> {
                         selected={3}
                     />
                     <div className="rightOfSidebar">
-                        <ProfessorHeader
-                            professor="Michael Clarkson"
-                            image="https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg"
-                            notification={true}
+                        <TopBar
+                            user={{
+                                computedName: 'Michael Clarkson',
+                                computedAvatar: 'https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg',
+                                userId: -1
+                            }}
                         />
                         <div className="main">
                             <ProfessorAddNew
                                 text={'Add New Assignment'}
                                 content={
-                                    <ProfoessorTagInfo
+                                    <ProfessorTagInfo
                                         isNew={true}
                                     />
                                 }
