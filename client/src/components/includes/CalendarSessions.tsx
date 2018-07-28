@@ -3,7 +3,7 @@ import { Loader } from 'semantic-ui-react';
 
 import CalendarSessionCard from './CalendarSessionCard';
 
-class CalendarSessions extends React.Component {
+class CalendarSessions extends React.PureComponent {
     props: {
         loading: boolean;
         sessions: AppSession[] | null;

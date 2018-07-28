@@ -26,6 +26,8 @@ class CalendarSessionCard extends React.Component {
         var nowDate = new Date(Date.now());
 
         const session = this.props.session;
+        const questions = session.questionsBySessionId.nodes;
+        const tas = session.sessionTasBySessionId.nodes;
         // To test:
         // var nowDate = new Date(this.props.start); // live
         // var nowDate = new Date(this.props.start.getTime() - 1); // open
@@ -55,9 +57,7 @@ class CalendarSessionCard extends React.Component {
                 </div>
                 <div className="CalendarCard">
                     <div className="TA">
-                        {/* TODO: Handle Multiple TA's */}
-                        {session.sessionTasBySessionId.nodes[0].userByUserId.firstName +
-                            ' ' + session.sessionTasBySessionId.nodes[0].userByUserId.lastName}
+                        {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
                         <span className={'IndicatorDesc ' + status}>{status}</span>
                     </div>
                     <div className="Location">{session.building + ' ' + session.room}</div>
@@ -66,13 +66,13 @@ class CalendarSessionCard extends React.Component {
                             Waiting: &nbsp;
                             {/* Special class zero exists if we use the num ahead later */}
                             <span className={'AheadNum '}>
-                                {session.questionsBySessionId.nodes.filter(q => q.status === 'unresolved').length}
+                                {questions.filter(q => q.status === 'unresolved').length}
                             </span>
                         </span>
                         <span className="Finished">
                             Finished: &nbsp;
                             <span className="FinishedNum">
-                                {session.questionsBySessionId.nodes.filter(q => q.status === 'resolved').length}
+                                {questions.filter(q => q.status === 'resolved').length}
                             </span>
                         </span>
                     </div>

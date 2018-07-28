@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-class CalendarHeader extends React.Component {
+class CalendarHeader extends React.PureComponent {
     props: {
         currentCourseCode: string;
         isTa: boolean;

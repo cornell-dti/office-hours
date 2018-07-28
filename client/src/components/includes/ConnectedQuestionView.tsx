@@ -42,17 +42,7 @@ type InputProps = {
                 sessionSeryBySessionSeriesId: {
                     courseByCourseId: {
                         tagsByCourseId: {
-                            nodes: [{
-                                tagId: number,
-                                name: string,
-                                level: number,
-                                activated: boolean,
-                                tagRelationsByChildId: {
-                                    nodes: [{
-                                        parentId: number
-                                    }]
-                                }
-                            }]
+                            nodes: [AppTagRelations]
                         }
                     }
                 }
@@ -80,40 +70,12 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
             var series = this.props.data.allSessions.nodes[0].sessionSeryBySessionSeriesId;
             var tags = series ? series.courseByCourseId.tagsByCourseId.nodes : [];
 
-            var primaryTagNames = [];
-            var secondaryTagNames = [];
-            var primaryTagIds = [];
-            var secondaryTagIds = [];
-            var secondaryTagParentIds = [];
-            for (var i = 0; i < tags.length; i++) {
-                if (tags[i].level === 1 && tags[i].activated) {
-                    primaryTagNames.push(tags[i].name);
-                    primaryTagIds.push(tags[i].tagId);
-                }
-            }
-            for (i = 0; i < tags.length; i++) {
-                if (tags[i].level === 2) {
-                    var parentId = tags[i].tagRelationsByChildId.nodes[0].parentId;
-                    if (primaryTagIds.indexOf(parentId) !== -1) {
-                        secondaryTagNames.push(tags[i].name);
-                        secondaryTagIds.push(tags[i].tagId);
-                        secondaryTagParentIds.push(parentId);
-                    }
-                }
-            }
-
             return (
-                <div className="QuestionView">
-                    <AddQuestion
-                        primaryTags={primaryTagNames}
-                        secondaryTags={secondaryTagNames}
-                        primaryTagsIds={primaryTagIds}
-                        secondaryTagsIds={secondaryTagIds}
-                        secondaryTagParentIds={secondaryTagParentIds}
-                        sessionId={this.props.sessionId}
-                        courseId={this.props.courseId}
-                    />
-                </div>
+                <AddQuestion
+                    tags={tags}
+                    sessionId={this.props.sessionId}
+                    courseId={this.props.courseId}
+                />
             );
         }
 

@@ -6,8 +6,6 @@ import { Mutation } from 'react-apollo';
 
 import SelectedTags from '../includes/SelectedTags';
 
-const avatar = require('../../media/userAvatar.svg');
-
 const UPDATE_QUESTION = gql`
 mutation UpdateQuestion($questionId: Int!, $status: String) {
     updateQuestionByQuestionId(input: {questionPatch: {status: $status}, questionId: $questionId}) {
@@ -24,11 +22,6 @@ class SessionQuestionsComponent extends React.Component {
         isMyQuestion: boolean
     };
 
-    constructor(props: {}) {
-        super(props);
-        this._onClick = this._onClick.bind(this);
-    }
-
     // Given an index from [1..n], converts it to text that is displayed
     // on the question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
@@ -42,7 +35,7 @@ class SessionQuestionsComponent extends React.Component {
         }
     }
 
-    _onClick(event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) {
+    _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
             variables: {
                 questionId: this.props.question.questionId,
@@ -59,9 +52,9 @@ class SessionQuestionsComponent extends React.Component {
             <div className={'QueueQuestions' + myQuestionCSS}>
                 {this.props.isTA &&
                     <div className="studentInformation">
-                        <img src={question.userByAskerId.photoUrl || avatar} />
+                        <img src={question.userByAskerId.computedAvatar} />
                         <span className="Name">
-                            {question.userByAskerId.firstName + ' ' + question.userByAskerId.lastName}
+                            {question.userByAskerId.computedName}
                         </span>
                     </div>
                 }
@@ -73,17 +66,17 @@ class SessionQuestionsComponent extends React.Component {
                             isSelected={false}
                             tag={tag.tagByTagId.name}
                             level={tag.tagByTagId.level}
-                            index={0}
                             onClick={null}
                         />
                     )}
                 </div>
                 <div className="BottomBar">
-                    <p className="Order">{this.getDisplayText(this.props.index)}</p>
+                    <p className={'Order' + (this.props.index === 0 ? ' now' : '')}>
+                        {this.getDisplayText(this.props.index)}
+                    </p>
                     <p className="Time">{<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}</p>
                 </div>
-                {
-                    this.props.isTA &&
+                {this.props.isTA &&
                     <div className="Buttons">
                         <hr />
                         <Mutation mutation={UPDATE_QUESTION}>

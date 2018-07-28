@@ -14,7 +14,8 @@ class SplitView extends React.Component {
         match: {
             params: {
                 courseId: number,
-                sessionId: number | null
+                sessionId: number | null,
+                page: string | null
             }
         }
     };
@@ -35,7 +36,7 @@ class SplitView extends React.Component {
         window.removeEventListener('resize', this.updateWindowDimensions);
     }
 
-    updateWindowDimensions() {
+    updateWindowDimensions = () => {
         this.setState({ width: window.innerWidth, height: window.innerHeight });
     }
 
@@ -45,18 +46,17 @@ class SplitView extends React.Component {
             sessionId: this.props.match.params.sessionId || -1,
             width: window.innerWidth,
             height: window.innerHeight,
-            activeView: this.props.match.params.sessionId ? 'session' : 'calendar'
+            activeView: this.props.match.params.page === 'add'
+                ? 'addQuestion'
+                : this.props.match.params.sessionId ? 'session' : 'calendar'
         };
-
-        this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
 
         // Handle browser back button
         this.props.history.listen((location, action) => {
-            if (this.props.match.params.sessionId) {
-                this.setState({ activeView: 'session', sessionId: this.props.match.params.sessionId });
-            } else {
-                this.setState({ activeView: 'calendar', sessionId: -1 });
-            }
+            this.setState({
+                activeView: location.pathname.indexOf('add') === -1 ? 'session' : 'addQuestion',
+                sessionId: this.props.match.params.sessionId || -1
+            });
         });
     }
 
@@ -67,6 +67,9 @@ class SplitView extends React.Component {
     }
 
     handleJoinClick = () => {
+        this.props.history.push(
+            '/course/' + this.props.match.params.courseId + '/session/' + this.state.sessionId + '/add'
+        );
         this.setState({ activeView: 'addQuestion' });
     }
 
@@ -78,19 +81,17 @@ class SplitView extends React.Component {
     render() {
         return (
             <React.Fragment>
-                {
-                    (this.state.width > MOBILE_BREAKPOINT ||
-                        (this.state.width <= MOBILE_BREAKPOINT &&
-                            this.state.activeView === 'calendar')) &&
+                {(this.state.width > MOBILE_BREAKPOINT ||
+                    (this.state.width <= MOBILE_BREAKPOINT &&
+                        this.state.activeView === 'calendar')) &&
                     <CalendarView
                         courseId={this.props.match.params.courseId}
                         sessionId={this.state.sessionId}
                         sessionCallback={this.handleSessionClick}
                     />
-                }{
-                    (this.state.width > MOBILE_BREAKPOINT ||
-                        (this.state.width <= MOBILE_BREAKPOINT &&
-                            this.state.activeView !== 'calendar')) &&
+                }{(this.state.width > MOBILE_BREAKPOINT ||
+                    (this.state.width <= MOBILE_BREAKPOINT &&
+                        this.state.activeView !== 'calendar')) &&
                     <SessionView
                         courseId={this.props.match.params.courseId}
                         id={this.state.sessionId}
@@ -98,8 +99,7 @@ class SplitView extends React.Component {
                         backCallback={this.handleBackClick}
                         joinCallback={this.handleJoinClick}
                     />
-                }{
-                    (this.state.activeView === 'addQuestion') &&
+                }{this.state.activeView === 'addQuestion' &&
                     <React.Fragment>
                         <div className="modal">
                             <ConnectedQuestionView

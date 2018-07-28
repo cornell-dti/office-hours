@@ -3,7 +3,6 @@ import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
 
 const people = require('../../media/people.svg');
-const avatar = require('../../media/userAvatar.svg');
 
 class SessionInformationHeader extends React.Component {
     props: {
@@ -20,11 +19,12 @@ class SessionInformationHeader extends React.Component {
     render() {
         const session = this.props.session;
         const questions = session.questionsBySessionId.nodes;
+        const tas = session.sessionTasBySessionId.nodes;
         if (this.props.isDesktop) {
             return (
                 <header className="DesktopSessionInformationHeader" >
                     <div className="Picture">
-                        <img src={session.sessionTasBySessionId.nodes[0].userByUserId.photoUrl || avatar} />
+                        <img src={session.sessionTasBySessionId.nodes[0].userByUserId.computedAvatar} />
                     </div>
                     <div className="Details">
                         <p className="Location">{session.building + ' ' + session.room}</p>
@@ -35,10 +35,7 @@ class SessionInformationHeader extends React.Component {
                             <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
                         </p>
                         <p>Held by <span className="black">
-                            {/* TODO: Better handle multiple TAs */}
-                            {session.sessionTasBySessionId.nodes.map(ta =>
-                                ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName + ' '
-                            )}
+                            {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
                         </span></p>
                     </div>
                     <div className="QueueWrap">
@@ -60,7 +57,7 @@ class SessionInformationHeader extends React.Component {
                 <div className="header">
                     <p className="BackButton" onClick={this.handleBackClick}>
                         <i className="left" />
-                        {this.props.course.name}
+                        {this.props.course.code}
                     </p>
                     <div className="CourseInfo">
                         <div className="CourseDetails">
@@ -69,7 +66,7 @@ class SessionInformationHeader extends React.Component {
                             <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
                         </div>
                         <div className="Picture">
-                            <img src={session.sessionTasBySessionId.nodes[0].userByUserId.photoUrl || avatar} />
+                            <img src={session.sessionTasBySessionId.nodes[0].userByUserId.computedAvatar} />
                         </div>
                     </div>
                 </div>
@@ -91,10 +88,7 @@ class SessionInformationHeader extends React.Component {
                             </p>
                         </div>
                         <p>Held by <span className="black">
-                            {/* TODO: Better handle multiple TAs */}
-                            {session.sessionTasBySessionId.nodes.map(ta =>
-                                ta.userByUserId.firstName + ' ' + ta.userByUserId.lastName + ' '
-                            )}
+                            {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
                         </span></p>
                     </div>
                 </div>

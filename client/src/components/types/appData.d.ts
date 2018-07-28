@@ -19,9 +19,8 @@ interface AppSession {
 
 interface AppTa {
     userByUserId: {
-        firstName: string;
-        lastName: string;
-        photoUrl?: string;
+        computedName: string;
+        computedAvatar: string;
     }
 }
 
@@ -41,23 +40,33 @@ interface AppTag {
         name: string;
         level: number;
         tagId: number;
+        activated: boolean;
+    }
+}
+
+interface AppTagRelations extends AppTag {
+    name: string;
+    level: number;
+    tagId: number;
+    activated: boolean;
+    tagRelationsByChildId: {
+        nodes: [{
+            parentId: number
+        }]
     }
 }
 
 interface AppUser {
-    firstName: string;
-    lastName: string;
-    photoUrl: string;
+    computedName: string;
+    computedAvatar: string;
     userId: number;
 }
 
-interface CurrentUserRole {
-    nodes: [{
-        courseUsersByUserId: {
-            nodes: [{
-                role: string;
-                userId: number;
-            }]
-        }
-    }]
+interface AppUserRole extends AppUser {
+    courseUsersByUserId: {
+        nodes: [{
+            role: string;
+            userId: number;
+        }]
+    }
 }

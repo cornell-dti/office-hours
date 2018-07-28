@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
 import ProfessorAddNewOH from '../includes/ProfessorAddNewOH';
-import ProfessorHeader from '../includes/ProfessorHeader';
+import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
@@ -12,11 +12,13 @@ class ProfessorView extends React.Component {
                 <ProfessorSidebar
                     course="CS 1380"
                 />
-                <div className="rightOfSidebar">
-                    <ProfessorHeader
-                        professor="Michael Clarkson"
-                        image="https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg"
-                        notification={true}
+                <section className="rightOfSidebar">
+                    <TopBar
+                        user={{
+                            computedName: 'Michael Clarkson',
+                            computedAvatar: 'https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg',
+                            userId: -1
+                        }}
                     />
                     <div className="main">
                         <ProfessorAddNewOH
@@ -56,7 +58,7 @@ class ProfessorView extends React.Component {
                             />
                         </div>
                     </div>
-                </div>
+                </section>
             </div>
         );
     }
