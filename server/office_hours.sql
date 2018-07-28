@@ -861,7 +861,7 @@ begin
 
 	else
 
-		return '/public/placeholder.png';
+		return '/placeholder.png';
 
 	end if;
 
