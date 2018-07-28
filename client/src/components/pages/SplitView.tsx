@@ -40,6 +40,14 @@ class SplitView extends React.Component {
         this.setState({ width: window.innerWidth, height: window.innerHeight });
     }
 
+    addedQuestion = () => {
+        console.log(React.version);
+    }
+
+    refetchData = (refetch: Function) => {
+        refetch();
+    }
+
     constructor(props: {}) {
         super(props);
         this.state = {
@@ -106,6 +114,7 @@ class SplitView extends React.Component {
                                 sessionId={this.state.sessionId || -1}
                                 courseId={this.props.match.params.courseId}
                                 data={{ loading: true }}
+                                callback={() => this.addedQuestion()}
                             />
                         </div>
                         <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />

@@ -9,6 +9,7 @@ class SessionQuestionsContainer extends React.Component {
         myUserId: number,
         handleJoinClick: Function,
         triggerUndo: Function,
+        refetch: Function
     };
 
     render() {

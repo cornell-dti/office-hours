@@ -140,12 +140,13 @@ class SessionView extends React.Component {
         });
     }
 
-    handleUndoClick = (undoQuestion: Function) => {
+    handleUndoClick = (undoQuestion: Function, refetch: Function) => {
         undoQuestion({
             variables: {
                 questionId: this.state.undoQuestionId
             }
         });
+        refetch();
     }
 
     render() {
@@ -168,7 +169,7 @@ class SessionView extends React.Component {
                     variables={{ sessionId: this.props.id, courseId: this.props.courseId }}
                     pollInterval={4000}
                 >
-                    {({ loading, data, error }) => {
+                    {({ loading, data, error, refetch }) => {
                         if (error) { return <h1>ERROR</h1>; }
                         if (!data || !data.apiGetCurrentUser) {
                             return <p className="noSessionSelected">Loading...</p>;
@@ -198,8 +199,7 @@ class SessionView extends React.Component {
                                             callback={this.props.backCallback}
                                             isDesktop={this.props.isDesktop}
                                         />
-                                        {
-                                            this.state.undoQuestionId &&
+                                        {this.state.undoQuestionId &&
                                             <Mutation mutation={UNDO_QUESTION} onCompleted={this.dismissUndo}>
                                                 {(undoQuestion) =>
                                                     <div className="undoContainer">
@@ -207,9 +207,12 @@ class SessionView extends React.Component {
                                                             <Icon name="close" />
                                                         </p>
                                                         <p className="undoText">
-                                                            {undoText} <span
+                                                            {undoText}
+                                                            <span
                                                                 className="undoLink"
-                                                                onClick={() => this.handleUndoClick(undoQuestion)}
+                                                                onClick={() =>
+                                                                    this.handleUndoClick(undoQuestion, refetch)
+                                                                }
                                                             >
                                                                 Undo
                                                             </span>

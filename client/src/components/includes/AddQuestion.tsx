@@ -33,6 +33,7 @@ class AddQuestion extends React.Component {
         tags: AppTagRelations[]
         sessionId: number,
         courseId: number,
+        callback: Function,
     };
 
     state: {
@@ -102,6 +103,7 @@ class AddQuestion extends React.Component {
                 sessionId: this.props.sessionId
             }
         });
+        this.props.callback();
         this.setState({ redirect: true });
     }
 
