@@ -1,11 +1,13 @@
 import * as React from 'react';
+const chevron = require('../../media/chevron.svg');
 
 class CalendarWeekSelect extends React.Component {
     monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
 
     props: {
-        handleClick?: Function
+        handleClick?: Function,
+        selectedWeekEpoch?: number,
     };
 
     state: {
@@ -14,13 +16,20 @@ class CalendarWeekSelect extends React.Component {
 
     constructor(props: {}) {
         super(props);
-        var week = new Date();
-        week.setHours(0, 0, 0, 0);
-        week.setTime(week.getTime() -
-            (week.getDay() - 1) /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
-        this.state = {
-            selectedWeekEpoch: week.getTime()
-        };
+        if (this.props.selectedWeekEpoch) {
+            this.state = {
+                selectedWeekEpoch: this.props.selectedWeekEpoch,
+            };
+        } else {
+            var week = new Date();
+            week.setHours(0, 0, 0, 0);
+            week.setTime(week.getTime() -
+                (week.getDay() - 1) /* days */ * 24 /* hours */
+                * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+            this.state = {
+                selectedWeekEpoch: week.getTime()
+            };
+        }
         this.handleWeekClick = this.handleWeekClick.bind(this);
     }
 
@@ -66,7 +75,7 @@ class CalendarWeekSelect extends React.Component {
         return (
             <div className="CalendarWeekSelect">
                 <span className="LastWeek" onClick={() => this.handleWeekClick(true)}>
-                    <i className="angle left icon" />
+                    <img src={chevron} alt="Previous Week" className="flipped" />
                 </span>
                 <span className="CurrentWeek">
                     <div className="Month">
@@ -77,7 +86,7 @@ class CalendarWeekSelect extends React.Component {
                     </div>
                 </span>
                 <span className="NextWeek" onClick={() => this.handleWeekClick(false)}>
-                    <i className="angle right icon" />
+                    <img src={chevron} alt="Next Week" />
                 </span>
             </div>
         );

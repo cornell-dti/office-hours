@@ -1,41 +1,34 @@
 import * as React from 'react';
 import * as H from 'history';
 
-import SessionInformationHeader from '../includes/SessionInformationHeader';
-import SessionJoinButton from '../includes/SessionJoinButton';
-import ConnectedSessionQuestions from '../includes/ConnectedSessionQuestions';
+import SessionView from '../includes/SessionView';
+import CalendarView from '../includes/CalendarView';
+import ConnectedQuestionView from '../includes/ConnectedQuestionView';
 
-import CalendarHeader from '../includes/CalendarHeader';
-import CalendarDateSelect from '../includes/CalendarDateSelect';
-import CalendarSessions from '../includes/CalendarSessions';
-import CalendarWeekSelect from '../includes/CalendarWeekSelect';
+// Also update in the main LESS file
+const MOBILE_BREAKPOINT = 920;
 
 class SplitView extends React.Component {
-
     props: {
+        history: H.History,
         match: {
             params: {
                 courseId: number,
-                sessionId: number | null
+                sessionId: number | null,
+                page: string | null
             }
-        },
-        history: H.History
+        }
     };
 
-    monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'];
-
     state: {
-        selectedWeekEpoch: number,
-        selectedDateEpoch: number,
         sessionId: number,
         width: number,
         height: number,
-        activeView: string
+        activeView: string,
     };
 
+    // Keep window size in state for conditional rendering
     componentDidMount() {
-        this.updateWindowDimensions();
         window.addEventListener('resize', this.updateWindowDimensions);
     }
 
@@ -43,171 +36,84 @@ class SplitView extends React.Component {
         window.removeEventListener('resize', this.updateWindowDimensions);
     }
 
-    updateWindowDimensions() {
+    updateWindowDimensions = () => {
         this.setState({ width: window.innerWidth, height: window.innerHeight });
     }
 
     constructor(props: {}) {
         super(props);
-        var week = new Date();
-        week.setHours(0, 0, 0, 0);
-
-        week.setDate(week.getDate() + 1 - week.getDay());
-        var today = new Date();
-        today.setHours(0, 0, 0, 0);
-
         this.state = {
-            selectedWeekEpoch: week.getTime(),
-            selectedDateEpoch: today.getTime(),
             sessionId: this.props.match.params.sessionId || -1,
-            width: 0,
-            height: 0,
-            activeView: 'calendar'
+            width: window.innerWidth,
+            height: window.innerHeight,
+            activeView: this.props.match.params.page === 'add'
+                ? 'addQuestion'
+                : this.props.match.params.sessionId ? 'session' : 'calendar'
         };
 
-        this.handleDateClick = this.handleDateClick.bind(this);
-        this.handleWeekClick = this.handleWeekClick.bind(this);
-        this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-
+        // Handle browser back button
         this.props.history.listen((location, action) => {
-            if (this.props.match.params.sessionId) {
-                this.setState((prevState) => {
-                    return { activeView: 'session', sessionId: this.props.match.params.sessionId };
-                });
-            } else {
-                this.setState((prevState) => {
-                    return { activeView: 'calendar', sessionId: -1 };
-                });
-            }
+            this.setState({
+                activeView: location.pathname.indexOf('add') === -1 ? 'session' : 'addQuestion',
+                sessionId: this.props.match.params.sessionId || -1
+            });
         });
     }
 
-    // Currently unused function, might be useful in the future
-    getWeekText(epoch: number): string {
-        var now = new Date(epoch);
-        var weekText = '';
-        weekText += now.getDate();
-        weekText += ' - ';
-        now.setTime(now.getTime() +
-            6 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
-        weekText += now.getDate();
-        weekText += ' ';
-        weekText += this.monthNames[now.getMonth()];
-        return weekText;
-    }
-
-    handleWeekClick(previousWeek: boolean) {
-        if (previousWeek) {
-            this.setState({
-                selectedWeekEpoch: this.state.selectedWeekEpoch -
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */,
-                selectedDateEpoch: this.state.selectedDateEpoch -
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
-            });
-        } else {
-            this.setState({
-                selectedWeekEpoch: this.state.selectedWeekEpoch +
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */,
-                selectedDateEpoch: this.state.selectedDateEpoch +
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
-            });
-        }
-    }
-
-    // newDateIndex is an index between 0 and 6 inclusive, representing which of the days
-    // in the current week has been selected
-    handleDateClick(newDateIndex: number) {
-        this.setState({
-            selectedDateEpoch: this.state.selectedWeekEpoch +
-                newDateIndex * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
-        });
-    }
-
+    // Keep track of active view for mobile
     handleSessionClick = (sessionId: number) => {
-        this.props.history.push('/course/1/session/' + sessionId);
-        this.setState((prevState) => {
-            return { sessionId: sessionId, activeView: 'session' };
-        });
+        this.props.history.push('/course/' + this.props.match.params.courseId + '/session/' + sessionId);
+        this.setState({ sessionId: sessionId, activeView: 'session' });
+    }
+
+    handleJoinClick = () => {
+        this.props.history.push(
+            '/course/' + this.props.match.params.courseId + '/session/' + this.state.sessionId + '/add'
+        );
+        this.setState({ activeView: 'addQuestion' });
     }
 
     handleBackClick = () => {
-        this.props.history.push('/course/1');
-        this.setState((prevState) => {
-            return { activeView: 'calendar', sessionId: -1 };
-        });
+        this.props.history.push('/course/' + this.props.match.params.courseId);
+        this.setState({ activeView: 'calendar', sessionId: -1 });
     }
 
     render() {
-        var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        var dates = [];
-
-        var now = new Date(this.state.selectedWeekEpoch);
-
-        for (var i = 0; i < 7; i++) {
-            dates.push(now.getDate());
-            now.setTime(now.getTime() + 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
-        }
-
-        var selectedDate = new Date(this.state.selectedDateEpoch);
-        const todayIndex = ((selectedDate.getDay() - 1) + 7) % 7;
-
         return (
             <React.Fragment>
-                {(this.state.width > 600 || (this.state.width <= 600 && this.state.activeView === 'calendar')) &&
-                    <aside className="CalendarView">
-                        <div className="Header">
-                            <CalendarHeader
-                                currentCourse="CS 1380"
-                                userId={1}
+                {(this.state.width > MOBILE_BREAKPOINT ||
+                    (this.state.width <= MOBILE_BREAKPOINT &&
+                        this.state.activeView === 'calendar')) &&
+                    <CalendarView
+                        courseId={this.props.match.params.courseId}
+                        sessionId={this.state.sessionId}
+                        sessionCallback={this.handleSessionClick}
+                    />
+                }{(this.state.width > MOBILE_BREAKPOINT ||
+                    (this.state.width <= MOBILE_BREAKPOINT &&
+                        this.state.activeView !== 'calendar')) &&
+                    <SessionView
+                        courseId={this.props.match.params.courseId}
+                        id={this.state.sessionId}
+                        isDesktop={this.state.width > MOBILE_BREAKPOINT}
+                        backCallback={this.handleBackClick}
+                        joinCallback={this.handleJoinClick}
+                    />
+                }{this.state.activeView === 'addQuestion' &&
+                    <React.Fragment>
+                        <div className="modal">
+                            <ConnectedQuestionView
+                                sessionId={this.state.sessionId || -1}
                                 courseId={this.props.match.params.courseId}
-                            />
-                            <CalendarWeekSelect
-                                handleClick={this.handleWeekClick}
+                                data={{ loading: true }}
                             />
                         </div>
-                        <CalendarDateSelect
-                            dayList={days}
-                            dateList={dates}
-                            handleClick={this.handleDateClick}
-                            selectedIndex={todayIndex}
-                        />
-                        <CalendarSessions
-                            beginTime={new Date(this.state.selectedDateEpoch)}
-                            endTime={new Date(this.state.selectedDateEpoch + 24 * 60 /* minutes */ * 60 * 1000)}
-                            courseId={this.props.match.params.courseId}
-                            data={{ loading: true }}
-                            callback={this.handleSessionClick}
-                        />
-                    </aside>
-                }
-                {(this.state.width > 600 || (this.state.width <= 600 && this.state.activeView !== 'calendar')) &&
-                    <section className={'StudentSessionView '}>
-                        {this.state.sessionId === -1 ?
-                            <p className="noSessionSelected">Please Select an Office Hour from the Calendar.</p>
-                            : <React.Fragment>
-                                <SessionInformationHeader
-                                    sessionId={this.state.sessionId}
-                                    data={{}}
-                                    callback={this.handleBackClick}
-                                />
-                                <SessionJoinButton
-                                    sessionId={this.state.sessionId}
-                                    courseId={this.props.match.params.courseId}
-                                />
-                                <div className="splitQuestions">
-                                    <ConnectedSessionQuestions
-                                        sessionId={this.state.sessionId}
-                                        isTA={false}
-                                        data={{}}
-                                        userId={1}
-                                    />
-                                </div>
-                            </React.Fragment>
-                        }
-                    </section>
+                        <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />
+                    </React.Fragment>
                 }
             </React.Fragment>
         );
     }
 }
+
 export default SplitView;

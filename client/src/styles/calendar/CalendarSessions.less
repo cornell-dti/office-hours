@@ -18,6 +18,12 @@
     color: #484848;
 }
 
+@media only screen and (min-width: @mobile-breakpoint) {
+    .CalendarSessionCard.active {
+        background-color: #d8d8d8;
+    }
+}
+
 .CalendarSessionCard {
     font-size: 11px;
     padding-top: 20px;
@@ -71,9 +77,9 @@
         text-align: left;
 
         .TA {
-            color: black;
+            color: #474747;
             font-size: 14px;
-            font-weight: bold;
+            font-weight: 500;
 
             .IndicatorDesc {
                 margin-left: 10px;
@@ -116,14 +122,15 @@
         }
 
         .TimeDesc {
-            color: dodgerblue;
+            color: #7ab7fe;
         }
     }
 
     .OpenButton {
         color: @button-color;
         font-size: 30px;
-        margin: auto;
+        margin-top: 15px;
         padding-bottom: 10px;
+        padding-right: 10px;
     }
 }

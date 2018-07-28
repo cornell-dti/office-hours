@@ -1,10 +1,11 @@
 .QueueQuestions {
     background-color: white;
     display: block;
-    margin: 12px auto 0;
+    margin: 12px auto 12px;
     position: relative;
     text-align: center;
     width: 100%;
+    display: inline-block;
 
     // &:not(:nth-of-type(2)) {
     //     opacity: 0.6;
@@ -13,17 +14,17 @@
     .studentInformation {
         display: inline-block;
         width: 100%;
-        padding: 20px 0px 0px 15px;
+        padding: 20px 0px 0px 12px;
+        text-align: left;
 
         img {
           display: inline-block;
-          margin-right: 10px;
+          margin-right: 6px;
           width: 30px;
           height: 30px;
           border-radius: 30px;
           vertical-align: middle;
           object-fit: cover;
-          float: left;
         }
 
         .Name {
@@ -31,7 +32,7 @@
           font-weight: bold;
           text-align: left;
           line-height: 12px;
-          padding: 10px 0px 0px 15px;
+        //   padding: 10px 0px 0px 15px;
           margin: 0em;
           color: #595959;
           vertical-align: middle;
@@ -41,50 +42,51 @@
     .Question {
         font-size: 16px;
         text-align: left;
-        padding: 5px 0px 5px 15px;
+        padding: 12px;
         margin: 0em;
         color: #595959;
+        font-weight: 300;
     }
 
     .Tags {
         padding: 5px 0px 10px 13px;
-        float: left;
-
-        p {
-            font-weight: normal;
-            display: block;
-            float: left;
-            font-size: 13px;
-            color: #4FA2E0;
-            border: 0.5px solid #4FA2E0;
-            padding: 2px 8px;
-            margin: 3px;
-            border-radius: 12px;
+        margin-bottom: 5px;
+        text-align: left;
+        .tag {
+            cursor: default;
         }
     }
 
     .BottomBar {
         display: inline-block;
         width: 100%;
+        text-align: left;
 
         p {
             font-size: 15px;
-            display: block;
-            float: left;
+            display: inline-block;
         }
 
         .Order {
-            float: left;
+            display: inline-block;
             font-size: 13px;
-            margin-left: 15px;
-            padding: 0px 5px;
+            margin: 0 0 12px 12px;
+            padding: 1px 5px 0;
             color: white;
             background-color: #a6a6a6;
             border: solid #a6a6a6 0px;
             border-radius: 5px;
         }
 
+        .Order.now {
+            border-radius: 3px;
+            border: solid 0.5px #ff5a60;
+            color: #ff5a60;
+            background-color: white;
+        }
+
         .Time {
+            font-weight: 300;
             float: right;
             color: gray;
             padding-right: 25px;
@@ -97,7 +99,7 @@
             display: block;
             height: 1px;
             border: 1px;
-            border-top: 1px solid #ccc;
+            border-top: 1px solid #ebebeb;
             margin: 0px 10px;
             padding: 0;
         }
@@ -106,31 +108,36 @@
             color: #595959;
             padding: 10px 30px;
             font-size: 15px;
+            user-select: none;
+            cursor: pointer;
         }
 
         .TAButtons {
             display: inline-block;
             padding-top:10px;
+            user-select: none;
 
             p {
+                display: inline-block;
                 border-radius: 5px;
                 color: white;
                 padding: 3px 30px;
                 font-size: 15px;
+                margin-bottom: 10px;
             }
 
             .Delete {
-                float: left;
                 margin-right: 7px;
                 border: 0.5px solid red;
                 color: red;
+                cursor: pointer;
             }
 
             .Resolve {
-                float: right;
                 margin-left: 7px;
                 border: 0.5px solid #4d94ff;
                 color: #4d94ff;
+                cursor: pointer;
             }
         }
     }

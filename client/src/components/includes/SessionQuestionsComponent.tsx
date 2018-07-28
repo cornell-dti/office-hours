@@ -1,18 +1,26 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import Moment from 'react-moment';
+import gql from 'graphql-tag';
+import { Mutation } from 'react-apollo';
+
+import SelectedTags from '../includes/SelectedTags';
+
+const UPDATE_QUESTION = gql`
+mutation UpdateQuestion($questionId: Int!, $status: String) {
+    updateQuestionByQuestionId(input: {questionPatch: {status: $status}, questionId: $questionId}) {
+        clientMutationId
+    }
+}
+`;
 
 class SessionQuestionsComponent extends React.Component {
-
     props: {
-        studentPicture: string,
-        studentName: string,
-        studentQuestion: string,
-        tags: Tag[],
+        question: AppQuestion,
         index: number,
         isTA: boolean,
-        time: string,
-        isMyQuestion: boolean
+        isMyQuestion: boolean,
+        triggerUndo: Function,
     };
 
     // Given an index from [1..n], converts it to text that is displayed
@@ -24,51 +32,90 @@ class SessionQuestionsComponent extends React.Component {
         } else {
             // Disclaimer: none of us wrote this one-line magic :)
             // It is borrowed from https://stackoverflow.com/revisions/39466341/5
-            return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || 'th';
+            return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index + 'th';
         }
     }
 
-    render() {
-        var tagsList = this.props.tags.map(
-            (tag) => {
-                return <p key={tag.id}>{tag.name}</p>;
+    _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
+        updateQuestion({
+            variables: {
+                questionId: this.props.question.questionId,
+                status: status,
             }
-        );
+        });
+        const question = this.props.question;
+        this.props.triggerUndo(question.questionId, status, question.userByAskerId.computedName);
+    }
+
+    render() {
+        var question = this.props.question;
+        const myQuestionCSS = this.props.isMyQuestion ? ' MyQuestion' : '';
 
         return (
-            <div className="QueueQuestions">
-                {
-                    this.props.isTA &&
+            <div className={'QueueQuestions' + myQuestionCSS}>
+                {this.props.isTA &&
                     <div className="studentInformation">
-                        <img src={this.props.studentPicture} />
-                        <p className="Name">{this.props.studentName}</p>
+                        <img src={question.userByAskerId.computedAvatar} />
+                        <span className="Name">
+                            {question.userByAskerId.computedName}
+                        </span>
                     </div>
                 }
-                <p className="Question">{this.props.studentQuestion}</p>
+                <p className="Question">{question.content}</p>
                 <div className="Tags">
-                    {tagsList}
+                    {question.questionTagsByQuestionId.nodes.map(
+                        (tag) => <SelectedTags
+                            key={tag.tagByTagId.tagId}
+                            isSelected={false}
+                            tag={tag.tagByTagId.name}
+                            level={tag.tagByTagId.level}
+                            onClick={null}
+                        />
+                    )}
                 </div>
                 <div className="BottomBar">
-                    <p className="Order">{this.getDisplayText(this.props.index)}</p>
-                    <p className="Time">{<Moment date={this.props.time} interval={0} format={'hh:mm A'} />}</p>
+                    <p className={'Order' + (this.props.index === 0 ? ' now' : '')}>
+                        {this.getDisplayText(this.props.index)}
+                    </p>
+                    <p className="Time">{<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}</p>
                 </div>
-                {
-                    this.props.isTA &&
+                {this.props.isTA &&
                     <div className="Buttons">
                         <hr />
-                        <div className="TAButtons">
-                            <p className="Delete"><Icon name="close" /> Delete</p>
-                            <p className="Resolve"><Icon name="check" /> Resolve</p>
+                        <Mutation mutation={UPDATE_QUESTION}>
+                            {(updateQuestion) =>
+                                <div className="TAButtons">
+                                    <p
+                                        className="Delete"
+                                        onClick={(e) => this._onClick(e, updateQuestion, 'no-show')}
+                                    >
+                                        <Icon name="hourglass end" /> No-show
+                                    </p>
+                                    <p
+                                        className="Resolve"
+                                        onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
+                                    >
+                                        <Icon name="check" /> Resolve
+                                    </p>
+                                </div>
+                            }
+                        </Mutation>
+                    </div>
+                }
+                <Mutation mutation={UPDATE_QUESTION}>
+                    {(updateQuestion) =>
+                        this.props.isMyQuestion &&
+                        <div className="Buttons">
+                            <hr />
+                            <p
+                                className="Remove"
+                                onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
+                            >
+                                <Icon name="close" /> Retract
+                            </p>
                         </div>
-                    </div>
-                }
-                {
-                    this.props.isMyQuestion &&
-                    <div className="Buttons">
-                        <hr />
-                        <p className="Remove"><Icon name="close" /> Remove</p>
-                    </div>
-                }
+                    }
+                </Mutation>
             </div>
         );
     }

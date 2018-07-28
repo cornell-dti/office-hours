@@ -1,7 +1,7 @@
 import * as React from 'react';
 const QMeLogo = require('../../media/QMeLogo.svg');
 const QLogo = require('../../media/QLogo.svg');
-import LoginButton from '../includes/LoginButton';
+const googleLogo = require('../../media/googleLogo.svg');
 
 class LoginView extends React.Component {
     render() {
@@ -9,11 +9,14 @@ class LoginView extends React.Component {
             <div className="LoginView">
                 <section className="topPanel">
                     <img src={QMeLogo} className="QMeLogo" />
-                    Queue up for office hours remotely. <br /> Skip the wait line
+                    The answer to all your office hour Q's
                 </section>
                 <section className="bottomPanel">
                     <p className="hintText" >Use your Cornell NetID to login</p>
-                    <LoginButton URL="/__auth" />
+                    <a className="loginButton" href="/__auth" >
+                        <img src={googleLogo} className="googleLogo" />
+                        <span className="loginButtonText">Sign in with Google</span>
+                    </a>
                     <img src={QLogo} className="QLogo" />
                 </section>
             </div >

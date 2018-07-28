@@ -1,10 +1,10 @@
 import * as React from 'react';
 import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
-import ProfessorHeader from '../includes/ProfessorHeader';
+import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
-import ProfoessorOHInfo from '../includes/ProfessorOHInfo';
+import ProfessorOHInfo from '../includes/ProfessorOHInfo';
 import gql from 'graphql-tag';
 import { graphql, ChildProps } from 'react-apollo';
 import { DropdownItemProps } from 'semantic-ui-react';
@@ -118,17 +118,19 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
                     course="CS 1380"
                     selected={2}
                 />
-                <div className="rightOfSidebar">
-                    <ProfessorHeader
-                        professor="Michael Clarkson"
-                        image="https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg"
-                        notification={true}
+                <section className="rightOfSidebar">
+                    <TopBar
+                        user={{
+                            computedName: 'Michael Clarkson',
+                            computedAvatar: 'https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg',
+                            userId: -1
+                        }}
                     />
                     <div className="main">
                         <ProfessorAddNew
                             text="Add New Office Hour"
                             content={
-                                <ProfoessorOHInfo
+                                <ProfessorOHInfo
                                     courseId={this.props.match.params.courseId}
                                     isNewOH={true}
                                     taOptions={taOptions}
@@ -151,7 +153,7 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
                             />
                         </div>
                     </div>
-                </div>
+                </section>
             </div>
         );
     }

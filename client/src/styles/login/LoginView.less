@@ -15,7 +15,8 @@
 }
 .QMeLogo {
     display: block;
-    padding-bottom: 40px
+    padding-bottom: 40px;
+    width: 83px;
 }
 .QLogo {
     bottom: 20px;
@@ -23,10 +24,11 @@
     margin-left: auto;
     margin-right: auto;
     left: 0;
-    right: 0
+    right: 0;
+    width: 40px;
 }
 
-@media only screen and (min-width: 800px) {
+@media only screen and (min-width: @mobile-breakpoint) {
     .LoginView {
         display: flex;
         align-content: center;
@@ -34,7 +36,8 @@
         align-items: stretch;
         background-color: #34495eb9;
         min-height: 100%;
-        padding: 128px 0;
+        top: 20vh;
+        padding: 10vh 0;
     }
 
     .LoginView::after {
@@ -51,7 +54,7 @@
     }
 
     .topPanel, .bottomPanel {
-        height: 600px;
+        height: 500px;
         font-size: 20px;
         box-shadow: 10px 10px 111px 0px rgba(0,0,0,0.65);
     }
@@ -75,8 +78,11 @@
         bottom: 20px;
         margin: 0 16px 0 auto;
     }
+    .QMeLogo {
+        width: 118px;
+    }
     .hintText {
-        padding-top: 65%;
+        padding-top: 50%;
     }
 
 }

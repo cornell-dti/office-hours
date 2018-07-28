@@ -1,7 +1,78 @@
+.DesktopSessionInformationHeader {
+    width: 100%;
+    background-color: #77bbfa;
+    font-size: 12px;
+    color: white;
+    text-align: left;
+    font-weight: 300;
+    letter-spacing: 0.6px;
+    margin-bottom: 12px;
+
+    .Picture {
+        height: 100%;
+        width: 72px;
+        margin: 32px 48px 58px;
+        display: inline-block;
+        vertical-align: top;
+
+        img {
+            height: 72px;
+            width: 72px;
+            border-radius: 36px;
+        }
+    }
+
+    .Details {
+        margin-top: 32px;
+        display: inline-block;
+
+        .Location {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        p time {
+            margin-bottom: 8px;
+        }
+
+        .Date {
+            margin-bottom: 25px;
+        }
+    }
+    .QueueWrap {
+        height: 100%;
+        vertical-align: top;
+        margin: 40px 48px 0 0;
+        float: right;
+        font-size: 14px;
+
+        .QueueInfo {
+            width: 84px;
+            height: 84px;
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: #4d4d4d;
+            text-align: center;
+            padding-top: 18px;
+            p {
+                padding-top: 9px;
+            }
+        }
+
+        .red {
+            color: #f46565;
+        }
+    }
+
+}
+
 .SessionInformationHeader {
     background-color: white;
     font-size: 15px;
     width: 100%;
+    border-bottom: solid 1px #e3e3e3;
+    margin-bottom: 12px;
 
     .header {
         padding: 10px 25px 10px 20px;
@@ -15,7 +86,7 @@
 
             .left {
                 border: solid #4d4d4d;
-                border-width: 0 3px 3px 0;
+                border-width: 0 1px 1px 0;
                 display: inline-block;
                 padding: 5px;
             }
@@ -64,8 +135,8 @@
 
     .MoreInformation {
         display: inline-block;
-        width: 85%;
-        padding-bottom: 20px;
+        width: 100%;
+        padding: 0 20px 20px;
 
         hr {
           display: block;

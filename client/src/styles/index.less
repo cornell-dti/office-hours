@@ -1,3 +1,7 @@
+// THIS VALUE ALSO LIVES IN SplitView.tsx,
+// IF YOU UPDATE THIS, UPDATE THAT
+@mobile-breakpoint: 920px;
+
 // Calendar
 @import "./calendar/CalendarDateSelect";
 @import "./calendar/CalendarHeader";
@@ -15,7 +19,6 @@
 @import "./session/SessionPopularQuestionsContainer";
 @import "./session/SessionQuestionsComponent";
 @import "./session/SessionQuestionsContainer";
-@import "./session/StudentSessionView";
 @import "./session/TASessionView";
 
 // Login
@@ -25,9 +28,11 @@
 // Split
 @import "./SplitView";
 
+// Multiple views
+@import "./TopBar";
+
 // Professor
 @import "./professor/ProfessorView";
-@import "./professor/ProfessorHeader";
 @import "./professor/ProfessorSidebar";
 @import "./professor/ProfessorAddNew";
 @import "./professor/ProfessorCalendarTable";
@@ -39,6 +44,7 @@
 @import "./professor/ProfessorDelete";
 @import "./professor/ProfessorOHInfoDelete";
 @import "./professor/ProfessorTagsDelete";
+
 
 #root {
    height: 100%;
@@ -54,12 +60,6 @@ body {
   padding: 0;
   font-family: 'Roboto', 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
   background: #f5f5f5 !important;
-}
-
-header {
-  font-size: 20px;
-  font-weight: bold;
-  padding: 10px 0;
 }
 
 ul {

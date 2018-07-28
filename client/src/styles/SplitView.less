@@ -8,6 +8,8 @@ aside.CalendarView {
     z-index: 1;
     overflow-y:scroll;
     overflow-x:hidden;
+    -webkit-overflow-scrolling: touch;
+    user-select: none;
 }
 
 section.StudentSessionView {
@@ -18,6 +20,7 @@ section.StudentSessionView {
     left: 390px;
     overflow-y:scroll;
     overflow-x:hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 section.StudentSessionView::-webkit-scrollbar , aside.CalendarView::-webkit-scrollbar {
@@ -30,7 +33,6 @@ section.StudentSessionView::-webkit-scrollbar , aside.CalendarView::-webkit-scro
 
 section .SessionJoinButton {
     width: 217px;
-    margin-left: 48px;
     display: block;
 }
 
@@ -38,14 +40,104 @@ section .SessionJoinButton {
     color: #484848;
     font-family: Roboto;
     font-size: 18px;
-    padding-top: 46vh;
+    padding-top: 25vh;
 }
 
-@media only screen and (max-width: 800px) {
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 686px;
+    max-width: 100%;
+    max-height: 100%;
+    z-index: 9999;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.modalShade {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    background-color: rgba(112, 112, 112, 0.8);
+}
+
+.welcomeMessage {
+    padding-top: 100px;
+    font-family: Roboto;
+    font-size: 28px;
+    font-weight: 300;
+    color: #474747;
+}
+
+.welcomeName {
+    font-weight: 500;
+}
+
+.undoContainer {
+    width:100%;
+    background-color: #b0b0b0;
+    color: #ffffff;
+    height: 56px;
+    text-align: left;
+    position: relative;
+    top: -12px;
+
+    .undoClose {
+        position: absolute;
+        top:2px;
+        left:4px;
+        cursor: pointer;
+    }
+
+    .undoText {
+        line-height: 56px;
+        text-align: center;
+
+        .undoLink {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    }
+}
+
+@media only screen and (max-width: @mobile-breakpoint) {
     aside.CalendarView, section.StudentSessionView {
         width: 100%;
         position: relative;
         height: 100%;
         left: 0;
+    }
+
+    .splitQuestions {
+        margin: 0;
+    }
+
+    .modal {
+        border-radius: 0;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        transform: none;
+        height: 100%;
+    }
+
+    .modalShade {
+        display: none;
+    }
+
+    section .SessionJoinButton {
+        margin: 15px auto 0;
+        width: 90%;
+        max-width: 400px;
+    }
+
+    .undoContainer {
+        background-color: #79b8b8;
     }
 }

@@ -1,4 +1,5 @@
-@deselect: #c3c3c3;
+@deselect: #898989;
+
 @selectprimary: #5f87ef;
 @selectsecondary: #e4efff;
 
@@ -13,9 +14,11 @@
     overflow-x: hidden;
     padding-top: 20px;
     box-shadow: 2px 0 8px 1px rgba(190, 190, 190, 0.5);
+    font-weight: 300;
 
     .header {
-        background: dodgerblue;
+        background: #7ab7fe;
+        background-image: linear-gradient(74deg, #668ae9, #6db9ea);
         color: white;
         font-size: 20px;
         padding: 18px 0px;
@@ -51,10 +54,10 @@
 
         .selected {
             margin-left: 0px !important;
+            color: @selectprimary;
             border-left: solid 5px @selectprimary;
             background-color: @selectsecondary;
-            color: @selectprimary;
-            font-weight: bold;
+            font-weight: 500;
 
             i.icon {
                 padding-left: 25px;
@@ -64,8 +67,8 @@
 
     .divider {
         margin: 30px 25px 30px;
-        height: 2px;
-        background-color: @deselect;
+        height: 0.5px;
+        background-color: #ccc;
     }
 
     .logo { // Placeholder
@@ -73,6 +76,4 @@
         margin: auto;
         margin-bottom: 100px;
     }
-
-    
 }

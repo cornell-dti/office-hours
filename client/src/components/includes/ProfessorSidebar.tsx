@@ -49,10 +49,10 @@ class ProfessorSidebar extends React.Component {
                             Logout
                         </button>
                     </div>
-                    <svg className="logo" width="100" height="100">
-                        <circle cx="50" cy="50" r="10" fill="dodgerblue" />
-                    </svg>
                 </div>
+                <svg className="logo" width="100" height="100">
+                    <circle cx="50" cy="50" r="10" fill="#7ab7fe" />
+                </svg>
             </div>
         );
     }
