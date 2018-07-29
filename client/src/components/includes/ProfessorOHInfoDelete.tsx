@@ -30,7 +30,9 @@ class ProfessorOHInfoDelete extends React.Component {
         locationBuilding: string,
         locationRoomNum: string,
         sessionId: number,
-        sessionSeriesId: number
+        sessionSeriesId: number,
+        toggleDelete: Function,
+        toggleEdit: Function
     };
 
     state: {
@@ -46,12 +48,6 @@ class ProfessorOHInfoDelete extends React.Component {
         this._onClickDeleteSession = this._onClickDeleteSession.bind(this);
         this._onClickDeleteSeries = this._onClickDeleteSeries.bind(this);
     }
-
-    // toggleCheckbox() {
-    //     this.setState(prevState => ({
-    //         isChecked: !prevState.isChecked
-    //     }));
-    // }
 
     toggleCheckbox() {
         this.setState({
@@ -117,7 +113,11 @@ class ProfessorOHInfoDelete extends React.Component {
                         {(DeleteSeries) =>
                             <button
                                 className="Delete"
-                                onClick={(e) => this._onClickDeleteSeries(e, DeleteSeries)}
+                                onClick={(e) => {
+                                    this._onClickDeleteSeries(e, DeleteSeries);
+                                    this.props.toggleDelete();
+                                    this.props.toggleEdit();
+                                }}
                             >
                                 Delete
                             </button>
@@ -127,7 +127,11 @@ class ProfessorOHInfoDelete extends React.Component {
                         {(DeleteSession) =>
                             <button
                                 className="Delete"
-                                onClick={(e) => this._onClickDeleteSession(e, DeleteSession)}
+                                onClick={(e) => {
+                                    this._onClickDeleteSession(e, DeleteSession);
+                                    this.props.toggleDelete();
+                                    this.props.toggleEdit();
+                                }}
                             >
                                 Delete
                             </button>

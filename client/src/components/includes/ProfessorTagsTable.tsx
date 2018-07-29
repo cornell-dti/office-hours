@@ -8,7 +8,6 @@ class ProfessorTagsTable extends React.Component {
         assignmentName: string[]
         isActivated: boolean[]
         numQuestions: number[]
-        numRows: number
     };
 
     state: {
@@ -22,8 +21,7 @@ class ProfessorTagsTable extends React.Component {
         super(props);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.state = {
-            // Temporary Number
-            isExpanded: new Array<boolean>(100).fill(false),
+            isExpanded: new Array<boolean>(this.props.assignmentName.length).fill(false),
             isDeleteVisible: false,
             currentRow: 0,
             rowIndex: 0

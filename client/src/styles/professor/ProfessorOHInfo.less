@@ -1,82 +1,107 @@
 .ProfessorOHInfo {
-    border-bottom: 1px solid #d9d9d9;
-    padding-bottom: 30px;
-    margin-bottom: 60px;
+    margin-left: 40px;
 
-    .Divider {
-        margin-left: 40px;
+    .icon {
+        margin-right: 10px;
+    }
 
-        .icon {
-            margin-right: 10px;
+    .shift {
+        margin-left: 27px;
+    }
+
+    .long {
+        width: 40%;
+        min-width: 200px;
+    }
+
+    .TA {
+        margin-top: 14px;
+
+        .AddTA.First {
+            i.user.icon {
+                visibility: visible;
+            }
+
+            .AddTAButton {
+                color: #7ab7fe;
+                background-color: white;
+            }
+    
+            .AddTAButton.true {
+                color:gainsboro;
+            }
         }
 
-        .shift {
-            margin-left: 27px;
-        }
-
-        .long {
-            width: 40%;
-            min-width: 200px;
-        }
-
-        .TA {
+        .AddTA.Additional {
             margin-top: 14px;
-
-            .AddTA.First {
-                i.user.icon {
-                    visibility: visible;
-                }
-
-                .AddTAButton {
-                    color: #7ab7fe;
-                    background-color: white;
-                }
-        
-                .AddTAButton.true {
-                    color:gainsboro;
-                }
-            }
-
-            .AddTA.Additional {
-                margin-top: 14px;
-                i.user.icon {
-                    visibility: hidden;
-                }
+            i.user.icon {
+                visibility: hidden;
             }
         }
+    }
 
-        .Location>input, .Time>.datePicker {
-            margin-top: 24px;
+    .Location>input, .Time>.datePicker {
+        margin-top: 24px;
+    }
+    
+    .Time {
+        .datePicker {
+            display: inline-block;
         }
-        
-        .Time {
-            .datePicker {
-                display: inline-block;
-            }
 
-            // CSS to show time select only
-            .timePicker {
-                .react-datepicker__month-container {
-                    display:none;
-                }
-                .react-datepicker {
-                    .react-datepicker__triangle {
-                        left: 35px;
-                    }
-                    .react-datepicker__time-container {
-                        border-left: 0;
-                    }
-                    .react-datepicker__time {
-                        border-radius: 0.3rem;
-                    }
-                    .react-datepicker__time-box {
-                        border-radius: 0.3rem;
-                        }
-                }
-                .react-datepicker__navigation {
-                    display: none;
-                }
+        // CSS to show time select only
+        .timePicker {
+            .react-datepicker__month-container {
+                display:none;
             }
+            .react-datepicker {
+                .react-datepicker__triangle {
+                    left: 35px;
+                }
+                .react-datepicker__time-container {
+                    border-left: 0;
+                }
+                .react-datepicker__time {
+                    border-radius: 0.3rem;
+                }
+                .react-datepicker__time-box {
+                    border-radius: 0.3rem;
+                    }
+            }
+            .react-datepicker__navigation {
+                display: none;
+            }
+        }
+    }
+}
+
+.ExpandedEdit, .ExpandedAdd {
+    .Bottom {
+        font-size: 14px;
+        padding: 10px 0px;
+        border-radius: 3px;
+        font-size: 14px;
+        margin: 20px 15px 13px;
+        width: 125px;
+    }
+
+    .EditButtons {
+        border-top: 1px solid #d9d9d9;
+        margin-top: 20px;
+        background-color: white;
+        width: 100%;
+
+        .Cancel {
+            float: right;
+            background-color: white;
+            border: 1px solid gray;
+        }
+
+        .Edit {
+            float: right;
+            background-color: #7ab7fe;
+            border: 1px solid #7ab7fe;
+            color: white;
         }
     }
 }

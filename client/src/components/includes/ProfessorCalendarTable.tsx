@@ -53,7 +53,8 @@ type InputProps = {
             nodes: [{}]
         }
     },
-    taOptions: DropdownItemProps[]
+    taOptions: DropdownItemProps[],
+    numMaxOH: number
 };
 
 class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Response>> {
@@ -70,17 +71,8 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         super(props);
         this.toggleEdit = this.toggleEdit.bind(this);
         var isExpandedInit: boolean[][] = [];
-        // if (this.props.data.apiGetSessions) {
-        //     this.props.data.apiGetSessions.nodes.forEach((node: AppSession) => {
-        //         numOHPerDays[new Date(node.startTime).getDay()] = 10;
-        //     })
-        // }
         for (var i = 0; i < 7; i++) {
-            // Temporary fix: assumes no more than 20 office hours per day
-            isExpandedInit.push(new Array<boolean>(20).fill(false));
-
-            // isExpandedInit.push(new Array<boolean>(numOHPerDays[i]).fill(false));
-            // Old way: isExpandedInit.push(new Array<boolean>(this.props.timeStart[i].length).fill(false))
+            isExpandedInit.push(new Array<boolean>(this.props.numMaxOH).fill(false));
         }
         this.state = {
             isExpanded: isExpandedInit,
@@ -94,14 +86,19 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         this.updateDeleteVisible = this.updateDeleteVisible.bind(this);
     }
 
-    toggleEdit(day: number, row: number) {
+    toggleEdit(day: number, row: number, forceClose?: boolean) {
         var cDay = this.state.currentDay;
         var cRow = this.state.currentRow;
 
         if (!(cDay === day && cRow === row)) {
             this.state.isExpanded[cDay][cRow] = false;
         }
-        this.state.isExpanded[day][row] = !this.state.isExpanded[day][row];
+
+        if (forceClose) {
+            this.state.isExpanded[day][row] = false;
+        } else {
+            this.state.isExpanded[day][row] = !this.state.isExpanded[day][row];
+        }
 
         this.setState({
             isExpanded: this.state.isExpanded,
@@ -193,7 +190,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                             </tr>
                         </tbody>
                         <ProfessorCalendarRow
-                            key={sessionId[i].toString()}
+                            key={i}
                             courseId={this.props._courseId}
                             taOptions={this.props.taOptions}
                             timeStart={timeStart[i]}
@@ -230,6 +227,8 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                             locationRoomNum={room[dayIndex][rowIndex]}
                             sessionId={sessionId[dayIndex][rowIndex]}
                             sessionSeriesId={sessionSeriesId[dayIndex][rowIndex]}
+                            toggleDelete={() => this.updateDeleteVisible(false)}
+                            toggleEdit={() => this.toggleEdit(this.state.currentDay, this.state.currentRow, true)}
                         />
                     }
                 />

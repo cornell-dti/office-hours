@@ -1,12 +1,14 @@
 import * as React from 'react';
-import { Icon } from 'semantic-ui-react';
+import { Icon, DropdownItemProps } from 'semantic-ui-react';
+import ProfessorOHInfo from '../includes/ProfessorOHInfo';
+import ProfessorTagInfo from './ProfessorTagInfo';
 import 'react-datepicker/dist/react-datepicker.css';
 
 class ProfessorAddNew extends React.Component {
 
     props: {
-        text: string;
-        content: JSX.Element
+        courseId: number
+        taOptions?: DropdownItemProps[]
     };
 
     state: {
@@ -27,25 +29,36 @@ class ProfessorAddNew extends React.Component {
     }
 
     render() {
+
+        var text = this.props.taOptions ? 'Add New Office Hour' : 'Add New Tag';
+
         return (
             <div className="ProfessorAddNew">
                 <div className={'Add ' + !this.state.editVisible}>
                     <button className="NewOHButton" onClick={() => this.toggleEdit(true)}>
                         <Icon name="plus" />
-                        {this.props.text}
+                        {text}
                     </button>
                 </div>
                 <div className={'ExpandedAdd ' + this.state.editVisible}>
                     <div className="NewOHHeader">
                         <button className="ExpandedNewOHButton" onClick={() => this.toggleEdit(false)}>
                             <Icon name="plus" />
-                            {this.props.text}
+                            {text}
                         </button>
                     </div>
-                    {this.props.content}
-                    <button className="Cancel" onClick={() => this.toggleEdit(false)}>
-                        Cancel
-                    </button>
+                    {this.props.taOptions ?
+                        <ProfessorOHInfo
+                            courseId={this.props.courseId}
+                            isNewOH={true}
+                            taOptions={this.props.taOptions}
+                            toggleEdit={() => this.toggleEdit(false)}
+                        />
+                        :
+                        <ProfessorTagInfo
+                            isNew={true}
+                        />
+                    }
                 </div>
             </div>
         );

@@ -4,7 +4,6 @@ import ProfessorAddNew from '../includes/ProfessorAddNew';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
-import ProfessorOHInfo from '../includes/ProfessorOHInfo';
 import gql from 'graphql-tag';
 import { graphql, ChildProps } from 'react-apollo';
 import { DropdownItemProps } from 'semantic-ui-react';
@@ -29,6 +28,11 @@ query FindSessionsByCourse($courseId: Int!) {
                 }
             }
         }
+        sessionsByCourseId {
+            nodes {
+                sessionSeriesId
+            }
+        }
     }
 }
 `;
@@ -50,12 +54,16 @@ type InputProps = {
         }
     },
     data: {
+        loading: boolean
         courseByCourseId?: {
             tas: {
                 nodes: [AppTa]
             }
             professors: {
                 nodes: [AppTa]
+            }
+            sessionsByCourseId: {
+                nodes: [AppSession]
             }
         }
     }
@@ -94,7 +102,9 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
     }
 
     render() {
-        const taOptions: DropdownItemProps[] = [];
+        var taOptions: DropdownItemProps[] = [];
+        var countMaxOH: number[] = [];
+
         if (this.props.data.courseByCourseId) {
             this.props.data.courseByCourseId.tas.nodes.forEach((node) => {
                 taOptions.push({
@@ -108,7 +118,14 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
                     text: node.userByUserId.computedName
                 });
             });
+            this.props.data.courseByCourseId.sessionsByCourseId.nodes.forEach((node) => {
+                if (countMaxOH.indexOf(node.sessionSeriesId) === -1 || node.sessionSeriesId === null) {
+                    countMaxOH.push(node.sessionSeriesId);
+                }
+            });
         }
+
+        const { loading } = this.props.data;
 
         return (
             <div className="ProfessorView">
@@ -126,30 +143,27 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
                     />
                     <div className="main">
                         <ProfessorAddNew
-                            text="Add New Office Hour"
-                            content={
-                                <ProfessorOHInfo
-                                    courseId={this.props.match.params.courseId}
-                                    isNewOH={true}
-                                    taOptions={taOptions}
-                                />
-                            }
+                            courseId={this.props.match.params.courseId}
+                            taOptions={taOptions}
                         />
                         <CalendarWeekSelect
                             handleClick={this.handleWeekClick}
                         />
-                        <div className="Calendar">
-                            <ProfessorCalendarTable
-                                _courseId={this.props.match.params.courseId}
-                                _beginTime={new Date(this.state.selectedWeekEpoch)}
-                                _endTime={new Date(this.state.selectedWeekEpoch +
-                                    7 /* days */ * 24 /* hours */ * 60 /* minutes */
-                                    * 60 /* seconds */ * 1000 /* millis */)}
-                                data={{ loading: true }}
-                                key={this.state.selectedWeekEpoch}
-                                taOptions={taOptions}
-                            />
-                        </div>
+                        {!loading &&
+                            <div className="Calendar">
+                                <ProfessorCalendarTable
+                                    _courseId={this.props.match.params.courseId}
+                                    _beginTime={new Date(this.state.selectedWeekEpoch)}
+                                    _endTime={new Date(this.state.selectedWeekEpoch +
+                                        7 /* days */ * 24 /* hours */ * 60 /* minutes */
+                                        * 60 /* seconds */ * 1000 /* millis */)}
+                                    data={{ loading: true }}
+                                    key={this.state.selectedWeekEpoch}
+                                    taOptions={taOptions}
+                                    numMaxOH={countMaxOH.length}
+                                />
+                            </div>
+                        }
                     </div>
                 </section>
             </div>

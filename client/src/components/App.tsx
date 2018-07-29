@@ -64,7 +64,6 @@ class App extends React.Component {
                         <PrivateRoute path="/professor/course/:courseId" component={ProfessorView} exact={true} />
                         <PrivateRoute path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
                         <PrivateRoute path="/course/:courseId" component={SplitView} />
-                        <PrivateRoute path="/professor" component={ProfessorView} />
                         <Redirect from="/" to="/course/1" />
                     </Switch>
                 </div>

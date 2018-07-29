@@ -101,15 +101,10 @@ class ProfessorCalendarRow extends React.Component {
                                     endTimeDefault={timeEnd[i]}
                                     sessionId={this.props.sessionId[i]}
                                     sessionSeriesId={this.props.sessionSeriesId[i]}
+                                    toggleEdit={() => this.toggleEdit(i)}
                                 />
                                 <button
-                                    className="Cancel"
-                                    onClick={() => this.toggleEdit(i)}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    className="Delete"
+                                    className="Bottom Delete"
                                     onClick={() => this.updateDeleteInfo(this.props.dayNumber, i)}
                                 >
                                     Delete

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorAddNew from './ProfessorAddNew';
-import ProfessorTagInfo from './ProfessorTagInfo';
 import ProfessorTagsTable from './ProfessorTagsTable';
 import TopBar from './TopBar';
 import { Loader } from 'semantic-ui-react';
@@ -12,7 +11,6 @@ const QUERY = gql`
 query FindTagsByCourse($_courseId: Int!) {
     courseByCourseId(courseId: $_courseId) {
         tagsByCourseId {
-            totalCount
             nodes {
                 name
                 level
@@ -43,7 +41,6 @@ type InputProps = {
         loading: boolean,
         courseByCourseId?: {
             tagsByCourseId: {
-                totalCount: number
                 nodes: [AppTag]
             }
         }
@@ -61,10 +58,8 @@ class ProfessorTags extends React.Component<ChildProps<InputProps, Response>> {
         var assignmentName: string[] = [];
         var isActivated: boolean[] = [];
         var numQuestions: number[] = [];
-        var numRows: number = 0;
 
         if (this.props.data.courseByCourseId) {
-            numRows = this.props.data.courseByCourseId.tagsByCourseId.totalCount;
             this.props.data.courseByCourseId.tagsByCourseId.nodes.forEach((node: AppTag) => {
                 assignmentName.push(node.name);
                 isActivated.push(node.activated);
@@ -91,12 +86,7 @@ class ProfessorTags extends React.Component<ChildProps<InputProps, Response>> {
                         />
                         <div className="main">
                             <ProfessorAddNew
-                                text={'Add New Assignment'}
-                                content={
-                                    <ProfessorTagInfo
-                                        isNew={true}
-                                    />
-                                }
+                                courseId={this.props.match.params.courseId}
                             />
                             {loading && <Loader active={true} content={'Loading'} />}
                             {!loading &&
@@ -105,7 +95,6 @@ class ProfessorTags extends React.Component<ChildProps<InputProps, Response>> {
                                         assignmentName={assignmentName}
                                         isActivated={isActivated}
                                         numQuestions={numQuestions}
-                                        numRows={numRows}
                                     />
                                 </div>
                             }
