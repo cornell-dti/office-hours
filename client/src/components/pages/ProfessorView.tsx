@@ -11,6 +11,12 @@ import 'moment-timezone';
 
 const QUERY = gql`
 query FindSessionsByCourse($courseId: Int!) {
+    apiGetCurrentUser {
+        nodes {
+            computedName
+            computedAvatar
+        }
+    }
     courseByCourseId(courseId: $courseId) {
         tas: courseUsersByCourseId(condition: {role: "ta"}) {
             nodes {
@@ -55,6 +61,9 @@ type InputProps = {
     },
     data: {
         loading: boolean
+        apiGetCurrentUser: {
+            nodes: [AppUserRole]
+        };
         courseByCourseId?: {
             tas: {
                 nodes: [AppTa]
@@ -133,23 +142,20 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
                     course="CS 1380"
                     selected={2}
                 />
-                <section className="rightOfSidebar">
-                    <TopBar
-                        user={{
-                            computedName: 'Michael Clarkson',
-                            computedAvatar: 'https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg',
-                            userId: -1
-                        }}
-                    />
-                    <div className="main">
-                        <ProfessorAddNew
-                            courseId={this.props.match.params.courseId}
-                            taOptions={taOptions}
+                {!loading && // Probably another way to do this
+                    <section className="rightOfSidebar">
+                        <TopBar
+                            user={this.props.data.apiGetCurrentUser.nodes[0]}
                         />
-                        <CalendarWeekSelect
-                            handleClick={this.handleWeekClick}
-                        />
-                        {!loading &&
+                        <div className="main">
+                            <ProfessorAddNew
+                                courseId={this.props.match.params.courseId}
+                                taOptions={taOptions}
+                            />
+                            <CalendarWeekSelect
+                                handleClick={this.handleWeekClick}
+                            />
+
                             <div className="Calendar">
                                 <ProfessorCalendarTable
                                     _courseId={this.props.match.params.courseId}
@@ -163,9 +169,9 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
                                     numMaxOH={countMaxOH.length}
                                 />
                             </div>
-                        }
-                    </div>
-                </section>
+                        </div>
+                    </section>
+                }
             </div>
         );
     }

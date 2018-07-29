@@ -53,6 +53,7 @@ class ProfessorAddNew extends React.Component {
                             isNewOH={true}
                             taOptions={this.props.taOptions}
                             toggleEdit={() => this.toggleEdit(false)}
+                            taUserIdsDefault={[]}
                         />
                         :
                         <ProfessorTagInfo

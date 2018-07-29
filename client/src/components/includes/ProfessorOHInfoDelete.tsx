@@ -77,6 +77,8 @@ class ProfessorOHInfoDelete extends React.Component {
         var timeStart = moment(this.props.timeStart).format('h:mm A');
         var timeEnd = moment(this.props.timeEnd).format('h:mm A');
 
+        var disable = moment(this.props.timeEnd).isBefore();
+
         return (
             <React.Fragment>
                 <div className="ProfessorOHInfoDelete">
@@ -86,6 +88,7 @@ class ProfessorOHInfoDelete extends React.Component {
                     <div className="info">
                         <div className="ta">
                             {this.props.ta !== undefined && this.props.ta.join(', ')}
+                            {this.props.ta !== undefined && this.props.ta.length === 0 && '(No TA Assigned)'}
                         </div>
                         <div>
                             <span>
@@ -107,6 +110,11 @@ class ProfessorOHInfoDelete extends React.Component {
                             onChange={this.toggleCheckbox}
                         />
                     </div>
+                    {disable &&
+                        <div className="EndedText">
+                            This session has already ended!
+                        </div>
+                    }
                 </div>
                 {this.state.isChecked ?
                     <Mutation mutation={DELETE_SERIES}>
@@ -118,6 +126,7 @@ class ProfessorOHInfoDelete extends React.Component {
                                     this.props.toggleDelete();
                                     this.props.toggleEdit();
                                 }}
+                                disabled={disable}
                             >
                                 Delete
                             </button>
@@ -132,6 +141,7 @@ class ProfessorOHInfoDelete extends React.Component {
                                     this.props.toggleDelete();
                                     this.props.toggleEdit();
                                 }}
+                                disabled={disable}
                             >
                                 Delete
                             </button>

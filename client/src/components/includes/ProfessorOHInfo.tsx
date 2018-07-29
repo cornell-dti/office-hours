@@ -53,7 +53,7 @@ class ProfessorOHInfo extends React.Component {
         courseId: number,
         isNewOH: boolean,
         taOptions: DropdownItemProps[],
-        taUserIdsDefault?: number[],
+        taUserIdsDefault: number[],
         locationBuildingDefault?: string,
         locationRoomNumDefault?: string,
         startTimeDefault?: (moment.Moment | null),
@@ -74,12 +74,13 @@ class ProfessorOHInfo extends React.Component {
 
     constructor(props: {}) {
         super(props);
+
         this.state = {
             startTime: this.props.startTimeDefault,
             endTime: this.props.endTimeDefault,
-            taSelected: this.props.taUserIdsDefault !== undefined ? this.props.taUserIdsDefault : [undefined],
-            locationBuildingSelected: this.props.locationBuildingDefault,
-            locationRoomNumSelected: this.props.locationRoomNumDefault,
+            taSelected: this.props.taUserIdsDefault.length > 0 ? this.props.taUserIdsDefault : [undefined],
+            locationBuildingSelected: this.props.locationBuildingDefault || '',
+            locationRoomNumSelected: this.props.locationRoomNumDefault || '',
             isSeriesMutation: this.props.sessionSeriesId !== null
         };
 
@@ -207,8 +208,8 @@ class ProfessorOHInfo extends React.Component {
             startTime: null,
             endTime: null,
             taSelected: [undefined],
-            locationBuildingSelected: null,
-            locationRoomNumSelected: null,
+            locationBuildingSelected: '',
+            locationRoomNumSelected: '',
             isSeriesMutation: false
         });
     }
@@ -273,6 +274,24 @@ class ProfessorOHInfo extends React.Component {
             }
         );
 
+        // Disable saving if fields are empty
+        // Disable saving if end time (state) is in the past
+        // Disable saving if default end time (prop) is in the past
+        var disableEmpty = this.state.startTime == null && this.state.endTime == null;
+        var disableState = this.state.endTime !== null && moment(this.state.endTime).isBefore();
+        var disableProps = this.props.endTimeDefault !== null && moment(this.props.endTimeDefault).isBefore();
+
+        var tooltip = '';
+        if (disableEmpty) {
+            tooltip = 'Please fill in all fields';
+        }
+        if (disableState) {
+            tooltip = 'End time has already passed!';
+        }
+        if (disableProps) {
+            tooltip = 'This session has already ended!';
+        }
+
         return (
             <React.Fragment>
                 <div className="ProfessorOHInfo">
@@ -303,6 +322,7 @@ class ProfessorOHInfo extends React.Component {
                                 dateFormat="dddd MM/DD/YY"
                                 minDate={moment()}
                                 placeholderText={moment().format('dddd MM/DD/YY')}
+                                readOnly={true}
                             />
                         </div >
                         <div className="datePicker timePicker shift">
@@ -316,6 +336,7 @@ class ProfessorOHInfo extends React.Component {
                                 timeIntervals={30}
                                 dateFormat="LT"
                                 placeholderText="12:00 PM"
+                                readOnly={true}
                             />
                         </div >
                         <span className="shift">
@@ -334,6 +355,7 @@ class ProfessorOHInfo extends React.Component {
                                 minTime={this.state.startTime || moment().startOf('day')}
                                 maxTime={moment().endOf('day')}
                                 placeholderText="2:00 PM"
+                                readOnly={true}
                             />
                         </div >
                         <Checkbox
@@ -352,68 +374,74 @@ class ProfessorOHInfo extends React.Component {
                     >
                         Cancel
                     </button>
-                    {this.props.isNewOH ?
-                        this.state.isSeriesMutation ?
-                            <Mutation mutation={CREATE_SERIES}>
-                                {(CreateSeries) =>
-                                    <button
-                                        className="Bottom Edit"
-                                        onClick={(e) => {
-                                            this._onClickCreateSeries(e, CreateSeries);
-                                            this.props.toggleEdit();
-                                            this.clearFields();
-                                        }}
-                                    >
-                                        Create
-                                    </button>
-                                }
-                            </Mutation>
-                            :
-                            <Mutation mutation={CREATE_SESSION}>
-                                {(CreateSession) =>
-                                    <button
-                                        className="Bottom Edit"
-                                        onClick={(e) => {
-                                            this._onClickCreateSession(e, CreateSession);
-                                            this.props.toggleEdit();
-                                            this.clearFields();
-                                        }}
-                                    >
-                                        Create
-                                    </button>
-                                }
-                            </Mutation>
+                    <div className="EditingTooltip" title={tooltip}>
+                        {this.props.isNewOH ?
+                            this.state.isSeriesMutation ?
+                                <Mutation mutation={CREATE_SERIES}>
+                                    {(CreateSeries) =>
+                                        <button
+                                            className="Bottom Edit"
+                                            onClick={(e) => {
+                                                this._onClickCreateSeries(e, CreateSeries);
+                                                this.props.toggleEdit();
+                                                this.clearFields();
+                                            }}
+                                            disabled={disableEmpty || disableState}
+                                        >
+                                            Create
+                                        </button>
+                                    }
+                                </Mutation>
+                                :
+                                <Mutation mutation={CREATE_SESSION}>
+                                    {(CreateSession) =>
+                                        <button
+                                            className="Bottom Edit"
+                                            onClick={(e) => {
+                                                this._onClickCreateSession(e, CreateSession);
+                                                this.props.toggleEdit();
+                                                this.clearFields();
+                                            }}
+                                            disabled={disableEmpty || disableState}
+                                        >
+                                            Create
+                                        </button>
+                                    }
+                                </Mutation>
 
-                        :
-                        this.state.isSeriesMutation ?
-                            <Mutation mutation={EDIT_SERIES}>
-                                {(EditSeries) =>
-                                    <button
-                                        className="Bottom Edit"
-                                        onClick={(e) => {
-                                            this._onClickEditSeries(e, EditSeries);
-                                            this.props.toggleEdit();
-                                        }}
-                                    >
-                                        Save Changes
-                                    </button>
-                                }
-                            </Mutation>
                             :
-                            <Mutation mutation={EDIT_SESSION}>
-                                {(EditSession) =>
-                                    <button
-                                        className="Bottom Edit"
-                                        onClick={(e) => {
-                                            this._onClickEditSession(e, EditSession);
-                                            this.props.toggleEdit();
-                                        }}
-                                    >
-                                        Save Changes
-                                    </button>
-                                }
-                            </Mutation>
-                    }
+                            this.state.isSeriesMutation ?
+                                <Mutation mutation={EDIT_SERIES}>
+                                    {(EditSeries) =>
+                                        <button
+                                            className="Bottom Edit"
+                                            onClick={(e) => {
+                                                this._onClickEditSeries(e, EditSeries);
+                                                this.props.toggleEdit();
+                                            }}
+                                            disabled={disableProps || disableEmpty || disableState}
+                                        >
+                                            Save Changes
+                                        </button>
+                                    }
+                                </Mutation>
+                                :
+                                <Mutation mutation={EDIT_SESSION}>
+                                    {(EditSession) =>
+                                        <button
+                                            className="Bottom Edit"
+                                            onClick={(e) => {
+                                                this._onClickEditSession(e, EditSession);
+                                                this.props.toggleEdit();
+                                            }}
+                                            disabled={disableProps || disableEmpty || disableState}
+                                        >
+                                            Save Changes
+                                        </button>
+                                    }
+                                </Mutation>
+                        }
+                    </div>
                 </div>
             </React.Fragment>
         );
