@@ -9,8 +9,6 @@
 
     .Add {
         .NewOHButton {
-            display:inline-block;
-            white-space: nowrap;
             color: #4a4a4a;
             background-color: white;
             padding: 15px;
@@ -18,9 +16,11 @@
             font-size: 14px;
             box-shadow: 2px 2px 4px 0 rgba(158, 158, 158, 0.5);
             margin-top: 30px;
-            margin-right: calc(~'100% - 190px');
+            float: left;
+
             .plus.icon {
                 margin-right: 10px;
+                color: black;
             }
         }
     }
@@ -40,7 +40,6 @@
                 background-color: white;
                 padding: 15px;
                 border-radius: 3px;
-                font-size: 14px;
                 text-align: left;
                 color: #4a4a4a;
 

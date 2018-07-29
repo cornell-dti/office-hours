@@ -93,6 +93,7 @@ class ProfessorOHInfo extends React.Component {
         this.incAddTA = this.incAddTA.bind(this);
         this.decAddTA = this.decAddTA.bind(this);
         this.toggleCheckbox = this.toggleCheckbox.bind(this);
+        this.filterUniqueTAs = this.filterUniqueTAs.bind(this);
     }
 
     convertToUTC(time: moment.Moment | null | undefined) {
@@ -113,7 +114,7 @@ class ProfessorOHInfo extends React.Component {
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
                 _courseId: this.props.courseId,
-                _tas: this.state.taSelected.filter(index => index !== undefined)
+                _tas: this.state.taSelected.filter(this.filterUniqueTAs)
             }
         });
     }
@@ -126,7 +127,7 @@ class ProfessorOHInfo extends React.Component {
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
                 _courseId: this.props.courseId,
-                _tas: this.state.taSelected
+                _tas: this.state.taSelected.filter(this.filterUniqueTAs)
             }
         });
     }
@@ -139,7 +140,7 @@ class ProfessorOHInfo extends React.Component {
                 _endTime: this.convertToUTC(this.state.endTime),
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
-                _tas: this.state.taSelected.filter(index => index !== undefined)
+                _tas: this.state.taSelected.filter(this.filterUniqueTAs)
             }
         });
     }
@@ -152,14 +153,14 @@ class ProfessorOHInfo extends React.Component {
                 _endTime: this.convertToUTC(this.state.endTime),
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
-                _tas: this.state.taSelected
+                _tas: this.state.taSelected.filter(this.filterUniqueTAs)
             }
         });
     }
 
     handleStartTime(startTime: moment.Moment) {
+        // Prevents end time from occuring before start time
         var newEndTime = moment(startTime);
-
         if (!(this.state.endTime == null)) {
             newEndTime.set({
                 'hour': this.state.endTime.get('hour'),
@@ -214,6 +215,10 @@ class ProfessorOHInfo extends React.Component {
         });
     }
 
+    filterUniqueTAs(value: (number | undefined), index: number, self: (number | undefined)[]) {
+        return value !== undefined && self.indexOf(value) === index;
+    }
+
     incAddTA() {
         this.state.taSelected.push(undefined);
         this.setState({
@@ -238,6 +243,24 @@ class ProfessorOHInfo extends React.Component {
         var isMaxTA = false;
         if (this.state.taSelected.length >= this.props.taOptions.length) {
             isMaxTA = true;
+        }
+
+        // Disable save button if fields are empty
+        // Disable save button if end time (state) is in the past
+        // Disable save button if default end time (prop) is in the past
+        var disableEmpty = this.state.startTime == null || this.state.endTime == null;
+        var disableState = this.state.endTime !== null && moment(this.state.endTime).isBefore();
+        var disableProps = this.props.endTimeDefault !== null && moment(this.props.endTimeDefault).isBefore();
+
+        var tooltip = '';
+        if (disableEmpty) {
+            tooltip = 'Please fill in all fields';
+        }
+        if (disableState) {
+            tooltip = 'End time has already passed!';
+        }
+        if (disableProps) {
+            tooltip = 'This session has already ended!';
         }
 
         var AddTA = this.state.taSelected.map(
@@ -273,24 +296,6 @@ class ProfessorOHInfo extends React.Component {
                 );
             }
         );
-
-        // Disable saving if fields are empty
-        // Disable saving if end time (state) is in the past
-        // Disable saving if default end time (prop) is in the past
-        var disableEmpty = this.state.startTime == null && this.state.endTime == null;
-        var disableState = this.state.endTime !== null && moment(this.state.endTime).isBefore();
-        var disableProps = this.props.endTimeDefault !== null && moment(this.props.endTimeDefault).isBefore();
-
-        var tooltip = '';
-        if (disableEmpty) {
-            tooltip = 'Please fill in all fields';
-        }
-        if (disableState) {
-            tooltip = 'End time has already passed!';
-        }
-        if (disableProps) {
-            tooltip = 'This session has already ended!';
-        }
 
         return (
             <React.Fragment>

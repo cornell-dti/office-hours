@@ -10,6 +10,7 @@ class ProfessorTagInfo extends React.Component {
         assignmentName?: string
         isActivated?: boolean
         numQuestions?: number
+        toggleCancel: Function
     };
 
     constructor(props: {}) {
@@ -22,36 +23,39 @@ class ProfessorTagInfo extends React.Component {
         return (
             <React.Fragment>
                 <div className="ProfessorTagInfo">
-                    <div className="Divider">
-                        <div className="Assignment">
-                            Assignment Name
-                            <div className="AssignmentInput">
-                                <input placeholder="Recursion Lab" value={this.props.assignmentName} />
-                            </div>
-                        </div>
-                        <div className="NumQuestions">
-                            Number of Questions
-                            <div className="NumericInput">
-                                <NumericInput min={0} max={99} value={defaultNumQuestions} snap={true} strict={true} />
-                            </div>
-                        </div>
-                        <div className="IsActivated">
-                            <Checkbox
-                                label="Activated?"
-                                checked={this.props.isActivated}
-                            />
+                    <div className="Assignment">
+                        Assignment Name
+                        <div className="AssignmentInput">
+                            <input placeholder="Recursion Lab" value={this.props.assignmentName} />
                         </div>
                     </div>
+                    <div className="NumQuestions">
+                        Number of Questions
+                        <div className="NumericInput">
+                            <NumericInput min={0} max={99} value={defaultNumQuestions} snap={true} strict={true} />
+                        </div>
+                    </div>
+                    <div className="IsActivated">
+                        <Checkbox
+                            label="Activated?"
+                            checked={this.props.isActivated}
+                        />
+                    </div>
                 </div>
-                {this.props.isNew ?
-                    <button className="Mutation" >
-                        Create
+                <div className="EditButtons">
+                    <button className="Bottom Cancel" onClick={() => this.props.toggleCancel()}>
+                        Cancel
                     </button>
-                    :
-                    <button className="Mutation" >
-                        Save Changes
-                    </button>
-                }
+                    {this.props.isNew ?
+                        <button className="Bottom Edit" >
+                            Create
+                        </button>
+                        :
+                        <button className="Bottom Edit" >
+                            Save Changes
+                        </button>
+                    }
+                </div>
             </React.Fragment>
         );
     }

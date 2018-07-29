@@ -1,36 +1,64 @@
 .ProfessorTagInfo {
+    margin-left: 40px;
+    color: #898989;
 
-    border-bottom: 1px solid #d9d9d9;
-    padding-bottom: 30px;
-    margin-bottom: 60px;
+    .Assignment {
+        margin: 15px 0;
 
-
-    .Divider {
-        margin-left: 40px;
-        color: #898989;
-
-        .Assignment {
-            margin: 15px 0;
-
-            input {
-                width: 95%;
-            }
-        }
-        
-        .IsActivated {
-            margin-top: 25px;
-        }
-
-        .NumQuestions {
-            .react-numeric-input {
-                display: block;
-                width:100px;
-            }
-
-            input {
-                width:100px;
-            }
+        input {
+            width: 95%;
         }
     }
     
+    .IsActivated {
+        margin-top: 25px;
+    }
+
+    .NumQuestions {
+        .react-numeric-input {
+            display: block;
+            width:100px;
+        }
+
+        input {
+            width:100px;
+        }
+    }
+    
+}
+
+.ExpandedEdit, .ExpandedAdd {
+    .Bottom {
+        font-size: 14px;
+        padding: 10px 0px;
+        border-radius: 3px;
+        font-size: 14px;
+        margin: 20px 15px 13px;
+        width: 125px;
+    }
+
+    .EditButtons {
+        border-top: 1px solid #d9d9d9;
+        margin-top: 20px;
+        background-color: white;
+        width: 100%;
+
+        .Cancel {
+            float: right;
+            background-color: white;
+            border: 1px solid gray;
+        }
+
+        .Edit {
+            float: right;
+            background-color: #7ab7fe;
+            border: 1px solid #7ab7fe;
+            color: white;
+        }
+
+        .Edit:disabled {
+            background-color: gainsboro;
+            border: 1px solid gainsboro;
+        }
+    }
 }

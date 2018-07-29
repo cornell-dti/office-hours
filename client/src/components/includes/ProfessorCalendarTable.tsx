@@ -69,7 +69,6 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
 
     constructor(props: ChildProps<InputProps, Response>) {
         super(props);
-        this.toggleEdit = this.toggleEdit.bind(this);
         var isExpandedInit: boolean[][] = [];
         for (var i = 0; i < 7; i++) {
             isExpandedInit.push(new Array<boolean>(this.props.numMaxOH).fill(false));
@@ -84,6 +83,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         };
         this.updateDeleteInfo = this.updateDeleteInfo.bind(this);
         this.updateDeleteVisible = this.updateDeleteVisible.bind(this);
+        this.toggleEdit = this.toggleEdit.bind(this);
     }
 
     toggleEdit(day: number, row: number, forceClose?: boolean) {
@@ -147,15 +147,15 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
             this.props.data.apiGetSessions.nodes.forEach((node: AppSession) => {
                 // 0 = Monday..., 5 = Saturday, 6 = Sunday
                 var dayIndexQuery = (new Date(node.startTime).getDay() + 6) % 7;
-                timeStart[dayIndexQuery].push(new Date(node.startTime));
-                timeEnd[dayIndexQuery].push(new Date(node.endTime));
-
                 var taNamesQuery: string[] = [];
                 var taUserIdsQuery: number[] = [];
                 node.sessionTasBySessionId.nodes.forEach((ta) => {
                     taNamesQuery.push(ta.userByUserId.computedName);
                     taUserIdsQuery.push(ta.userByUserId.userId);
                 });
+
+                timeStart[dayIndexQuery].push(new Date(node.startTime));
+                timeEnd[dayIndexQuery].push(new Date(node.endTime));
                 building[dayIndexQuery].push(node.building);
                 room[dayIndexQuery].push(node.room);
                 taNames[dayIndexQuery].push(taNamesQuery);

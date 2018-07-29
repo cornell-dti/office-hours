@@ -58,6 +58,7 @@ class ProfessorAddNew extends React.Component {
                         :
                         <ProfessorTagInfo
                             isNew={true}
+                            toggleCancel={() => this.toggleEdit(false)}
                         />
                     }
                 </div>

@@ -81,18 +81,14 @@ class ProfessorTagsRow extends React.Component {
                                     assignmentName={this.props.assignmentName[i]}
                                     isActivated={this.props.isActivated[i]}
                                     numQuestions={this.props.numQuestions[i]}
+                                    toggleCancel={() => this.updateDeleteInfo(i)}
                                 />
-                                <div className="EditButtons">
-                                    <button
-                                        className="Delete"
-                                        onClick={() => this.updateDeleteInfo(i)}
-                                    >
-                                        Delete
-                                    </button>
-                                    <button className="Cancel" onClick={() => this.toggleEdit(i)}>
-                                        Cancel
-                                    </button>
-                                </div>
+                                <button
+                                    className="Bottom Delete"
+                                    onClick={() => this.updateDeleteInfo(i)}
+                                >
+                                    Delete
+                                </button>
                             </td>
                         </tr>
                     </tbody >
