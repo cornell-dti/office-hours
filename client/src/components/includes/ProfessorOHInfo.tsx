@@ -69,7 +69,8 @@ class ProfessorOHInfo extends React.Component {
         taSelected: (number | undefined)[],
         locationBuildingSelected?: string,
         locationRoomNumSelected?: string,
-        isSeriesMutation: boolean
+        isSeriesMutation: boolean,
+        notification: string
     };
 
     constructor(props: {}) {
@@ -81,7 +82,9 @@ class ProfessorOHInfo extends React.Component {
             taSelected: this.props.taUserIdsDefault.length > 0 ? this.props.taUserIdsDefault : [undefined],
             locationBuildingSelected: this.props.locationBuildingDefault || '',
             locationRoomNumSelected: this.props.locationRoomNumDefault || '',
-            isSeriesMutation: this.props.sessionSeriesId !== null
+            isSeriesMutation: this.props.sessionSeriesId !== null,
+            notification: !(this.props.startTimeDefault == null) && moment(this.props.startTimeDefault).isBefore() ?
+                'This session has already passed!' : ''
         };
 
         this.handleStartTime = this.handleStartTime.bind(this);
@@ -90,6 +93,7 @@ class ProfessorOHInfo extends React.Component {
         this.handleRoom = this.handleRoom.bind(this);
         this.handleTaList = this.handleTaList.bind(this);
         this.clearFields = this.clearFields.bind(this);
+        this.updateNotification = this.updateNotification.bind(this);
         this.incAddTA = this.incAddTA.bind(this);
         this.decAddTA = this.decAddTA.bind(this);
         this.toggleCheckbox = this.toggleCheckbox.bind(this);
@@ -175,12 +179,14 @@ class ProfessorOHInfo extends React.Component {
             startTime: startTime,
             endTime: newEndTime
         });
+        this.updateNotification('');
     }
 
     handleEndTime(endTime: moment.Moment) {
         this.setState({
             endTime: endTime
         });
+        this.updateNotification('');
     }
 
     handleBuilding(event: React.ChangeEvent<HTMLElement>) {
@@ -188,6 +194,7 @@ class ProfessorOHInfo extends React.Component {
         this.setState({
             locationBuildingSelected: target.value
         });
+        this.updateNotification('');
     }
 
     handleRoom(event: React.ChangeEvent<HTMLElement>) {
@@ -195,6 +202,7 @@ class ProfessorOHInfo extends React.Component {
         this.setState({
             locationRoomNumSelected: target.value
         });
+        this.updateNotification('');
     }
 
     handleTaList(event: React.SyntheticEvent<HTMLElement>, data: DropdownProps, index: number) {
@@ -202,6 +210,7 @@ class ProfessorOHInfo extends React.Component {
         this.setState({
             taSelected: this.state.taSelected
         });
+        this.updateNotification('');
     }
 
     clearFields() {
@@ -213,6 +222,14 @@ class ProfessorOHInfo extends React.Component {
             locationRoomNumSelected: '',
             isSeriesMutation: false
         });
+    }
+
+    updateNotification(n: string) {
+        if (this.state.notification !== 'This session has already passed!') {
+            this.setState({
+                notification: n
+            });
+        }
     }
 
     filterUniqueTAs(value: (number | undefined), index: number, self: (number | undefined)[]) {
@@ -245,23 +262,15 @@ class ProfessorOHInfo extends React.Component {
             isMaxTA = true;
         }
 
-        // Disable save button if fields are empty
-        // Disable save button if end time (state) is in the past
-        // Disable save button if default end time (prop) is in the past
+        // Warning if fields are empty
+        // Warning if end time (state) is in the past
+        // Disable save button if default start time (prop) is in the past
         var disableEmpty = this.state.startTime == null || this.state.endTime == null;
         var disableState = this.state.endTime !== null && moment(this.state.endTime).isBefore();
-        var disableProps = this.props.endTimeDefault !== null && moment(this.props.endTimeDefault).isBefore();
+        var disableProps = !(this.props.startTimeDefault == null) && moment(this.props.startTimeDefault).isBefore();
 
-        var tooltip = '';
-        if (disableEmpty) {
-            tooltip = 'Please fill in all fields';
-        }
-        if (disableState) {
-            tooltip = 'End time has already passed!';
-        }
-        if (disableProps) {
-            tooltip = 'This session has already ended!';
-        }
+        const emptyNotification = 'Please fill in valid times';
+        const stateNotification = 'End time has already passed!';
 
         var AddTA = this.state.taSelected.map(
             (ta, i) => {
@@ -379,74 +388,97 @@ class ProfessorOHInfo extends React.Component {
                     >
                         Cancel
                     </button>
-                    <div className="EditingTooltip" title={tooltip}>
-                        {this.props.isNewOH ?
-                            this.state.isSeriesMutation ?
-                                <Mutation mutation={CREATE_SERIES}>
-                                    {(CreateSeries) =>
-                                        <button
-                                            className="Bottom Edit"
-                                            onClick={(e) => {
+                    {this.props.isNewOH ?
+                        this.state.isSeriesMutation ?
+                            <Mutation mutation={CREATE_SERIES}>
+                                {(CreateSeries) =>
+                                    <button
+                                        className="Bottom Edit"
+                                        onClick={(e) => {
+                                            if (disableEmpty) {
+                                                this.updateNotification(emptyNotification);
+                                            } else if (disableState) {
+                                                this.updateNotification(stateNotification);
+                                            } else {
                                                 this._onClickCreateSeries(e, CreateSeries);
                                                 this.props.toggleEdit();
                                                 this.clearFields();
-                                            }}
-                                            disabled={disableEmpty || disableState}
-                                        >
-                                            Create
-                                        </button>
-                                    }
-                                </Mutation>
-                                :
-                                <Mutation mutation={CREATE_SESSION}>
-                                    {(CreateSession) =>
-                                        <button
-                                            className="Bottom Edit"
-                                            onClick={(e) => {
+                                            }
+                                        }}
+                                    >
+                                        Create
+                                    </button>
+                                }
+                            </Mutation>
+                            :
+                            <Mutation mutation={CREATE_SESSION}>
+                                {(CreateSession) =>
+                                    <button
+                                        className="Bottom Edit"
+                                        onClick={(e) => {
+                                            if (disableEmpty) {
+                                                this.updateNotification(emptyNotification);
+                                            } else if (disableState) {
+                                                this.updateNotification(stateNotification);
+                                            } else {
                                                 this._onClickCreateSession(e, CreateSession);
                                                 this.props.toggleEdit();
                                                 this.clearFields();
-                                            }}
-                                            disabled={disableEmpty || disableState}
-                                        >
-                                            Create
-                                        </button>
-                                    }
-                                </Mutation>
+                                            }
+                                        }}
+                                    >
+                                        Create
+                                    </button>
+                                }
+                            </Mutation>
 
-                            :
-                            this.state.isSeriesMutation ?
-                                <Mutation mutation={EDIT_SERIES}>
-                                    {(EditSeries) =>
-                                        <button
-                                            className="Bottom Edit"
-                                            onClick={(e) => {
+                        :
+                        this.state.isSeriesMutation ?
+                            <Mutation mutation={EDIT_SERIES}>
+                                {(EditSeries) =>
+                                    <button
+                                        className="Bottom Edit"
+                                        onClick={(e) => {
+                                            if (disableEmpty) {
+                                                this.updateNotification(emptyNotification);
+                                            } else if (disableState) {
+                                                this.updateNotification(stateNotification);
+                                            } else {
                                                 this._onClickEditSeries(e, EditSeries);
                                                 this.props.toggleEdit();
-                                            }}
-                                            disabled={disableProps || disableEmpty || disableState}
-                                        >
-                                            Save Changes
-                                        </button>
-                                    }
-                                </Mutation>
-                                :
-                                <Mutation mutation={EDIT_SESSION}>
-                                    {(EditSession) =>
-                                        <button
-                                            className="Bottom Edit"
-                                            onClick={(e) => {
+                                            }
+                                        }}
+                                        disabled={disableProps}
+                                    >
+                                        Save Changes
+                                    </button>
+                                }
+                            </Mutation>
+                            :
+                            <Mutation mutation={EDIT_SESSION}>
+                                {(EditSession) =>
+                                    <button
+                                        className="Bottom Edit"
+                                        onClick={(e) => {
+                                            if (disableEmpty) {
+                                                this.updateNotification(emptyNotification);
+                                            } else if (disableState) {
+                                                this.updateNotification(stateNotification);
+                                            } else {
                                                 this._onClickEditSession(e, EditSession);
                                                 this.props.toggleEdit();
-                                            }}
-                                            disabled={disableProps || disableEmpty || disableState}
-                                        >
-                                            Save Changes
-                                        </button>
-                                    }
-                                </Mutation>
-                        }
-                    </div>
+                                            }
+                                        }}
+                                        disabled={disableProps}
+                                    >
+                                        Save Changes
+                                    </button>
+                                }
+                            </Mutation>
+                    }
+                    <span className="EditNotification">
+                        {this.state.notification}
+                    </span>
                 </div>
             </React.Fragment>
         );

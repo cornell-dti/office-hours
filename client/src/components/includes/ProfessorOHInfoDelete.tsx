@@ -77,7 +77,7 @@ class ProfessorOHInfoDelete extends React.Component {
         var timeStart = moment(this.props.timeStart).format('h:mm A');
         var timeEnd = moment(this.props.timeEnd).format('h:mm A');
 
-        var disable = moment(this.props.timeEnd).isBefore();
+        var disable = moment(this.props.timeStart).isBefore();
 
         return (
             <React.Fragment>
@@ -112,7 +112,7 @@ class ProfessorOHInfoDelete extends React.Component {
                     </div>
                     {disable &&
                         <div className="EndedText">
-                            This session has already ended!
+                            This session has already passed!
                         </div>
                     }
                 </div>
