@@ -18,6 +18,7 @@ query FindSessionsByCourse($courseId: Int!) {
         }
     }
     courseByCourseId(courseId: $courseId) {
+        code
         tas: courseUsersByCourseId(condition: {role: "ta"}) {
             nodes {
                 userByUserId {
@@ -65,6 +66,7 @@ type InputProps = {
             nodes: [AppUserRole]
         };
         courseByCourseId?: {
+            code: string
             tas: {
                 nodes: [AppTa]
             }
@@ -113,8 +115,10 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
     render() {
         var taOptions: DropdownItemProps[] = [];
         var countMaxOH: number[] = [];
+        var courseCode: string = 'Loading...';
 
         if (this.props.data.courseByCourseId) {
+            courseCode = this.props.data.courseByCourseId.code;
             this.props.data.courseByCourseId.tas.nodes.forEach((node) => {
                 taOptions.push({
                     value: node.userByUserId.userId,
@@ -139,7 +143,8 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
         return (
             <div className="ProfessorView">
                 <ProfessorSidebar
-                    course="CS 1380"
+                    courseId={this.props.match.params.courseId}
+                    code={courseCode}
                     selected={2}
                 />
                 {!loading && // Probably another way to do this

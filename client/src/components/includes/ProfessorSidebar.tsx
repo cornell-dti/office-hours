@@ -3,7 +3,8 @@ import { Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 class ProfessorSidebar extends React.Component {
     props: {
-        course: string,
+        courseId: number,
+        code: string,
         selected: number
     };
 
@@ -16,7 +17,7 @@ class ProfessorSidebar extends React.Component {
                 <div className="nav">
                     <div className="header">
                         <span>
-                            {this.props.course}
+                            {this.props.code}
                             <Icon name="dropdown" />
                         </span>
                     </div>
@@ -32,13 +33,13 @@ class ProfessorSidebar extends React.Component {
                     </div>
                     <div className="divider" />
                     <div className="actions">
-                        <Link to="/professor/course/1">
+                        <Link to={'/professor/course/' + this.props.courseId}>
                             <button className={selectedArray[2]}>
                                 <Icon name="setting" />
                                 Manage Hours
                                 </button>
                         </Link>
-                        <Link to="/professor-tags/course/1">
+                        <Link to={'/professor-tags/course/' + this.props.courseId}>
                             <button className={selectedArray[3]}>
                                 <Icon name="settings" />
                                 Manage Tags
