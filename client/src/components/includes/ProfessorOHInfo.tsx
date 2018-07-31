@@ -83,7 +83,7 @@ class ProfessorOHInfo extends React.Component {
             locationBuildingSelected: this.props.locationBuildingDefault || '',
             locationRoomNumSelected: this.props.locationRoomNumDefault || '',
             isSeriesMutation: this.props.sessionSeriesId !== null,
-            notification: !(this.props.startTimeDefault == null) && moment(this.props.startTimeDefault).isBefore() ?
+            notification: !(this.props.endTimeDefault == null) && moment(this.props.endTimeDefault).isBefore() ?
                 'This session has already passed!' : ''
         };
 
@@ -267,7 +267,7 @@ class ProfessorOHInfo extends React.Component {
         // Disable save button if default start time (prop) is in the past
         var disableEmpty = this.state.startTime == null || this.state.endTime == null;
         var disableState = this.state.endTime !== null && moment(this.state.endTime).isBefore();
-        var disableProps = !(this.props.startTimeDefault == null) && moment(this.props.startTimeDefault).isBefore();
+        var disableProps = !(this.props.endTimeDefault == null) && moment(this.props.endTimeDefault).isBefore();
 
         const emptyNotification = 'Please fill in valid times';
         const stateNotification = 'End time has already passed!';
