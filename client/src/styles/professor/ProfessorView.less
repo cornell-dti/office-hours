@@ -1,4 +1,6 @@
 .ProfessorView {
+    overflow: auto;
+    
     .main {
         margin-right: 50px;
         margin-left: 200px+50px;
@@ -13,12 +15,15 @@
     input {
         border:none;
         background-color: #edeff2;
-        margin: 0px 20px;
         height: 25px;
         padding-left: 10px;
+
+        .ProfessorOHInfo {
+        margin: 0px 20px;
+        }
     }
 
-    Button {
+    Button:not(.react-datepicker__navigation) {
         cursor: pointer;
         background-color: transparent;
         border: none;
@@ -28,7 +33,7 @@
     // Dropdown CSS
     .ui.selection.dropdown {
         width: 40%;
-        margin: 0px 20px;
+        margin-right: 20px;
         background-color: #edeff2;
         border-radius: 0px;
         border: none;
@@ -66,4 +71,8 @@
         }
     }
     //End Datepicker CSS
+
+    .rightOfSidebar {
+        min-width: 820px;
+    }
 }

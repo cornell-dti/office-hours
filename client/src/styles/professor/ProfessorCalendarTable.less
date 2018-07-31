@@ -6,17 +6,24 @@
     text-align: left;
     color: #4a4a4a;
 
-    tr:first-child {
-        th:first-child {
-            border-radius: 10px 10px 0px 0px;
+    tbody:first-child{
+        tr:first-child {
+            th:first-child {
+                border-radius: 10px 10px 0px 0px;
+            }
         }
+    }
+
+    .ui.loader {
+        position: relative;
+        margin-top: 100px;
     }
 
     .Calendar {
         width: 100%;
         border-collapse: collapse;
-
-        .rows{
+        
+        .rows {
             width: 100%;
         }
 
@@ -33,16 +40,22 @@
             font-weight: 500;
         }
 
-        .EditButtons {
-            padding-left: 0px;
-        }
-
         td {
             padding: 7px 0px;
         }
 
+        td:nth-child(1) {
+            padding-right: 15px;
+        }
+
+        td:nth-child(2) {
+            width: 35%;
+            padding-right: 15px;
+        }
+
         td:nth-child(4), td:nth-child(5) {
-            width: 5%;
+            width: 1%;
+            padding: 0 10px;
         }
     }
 }

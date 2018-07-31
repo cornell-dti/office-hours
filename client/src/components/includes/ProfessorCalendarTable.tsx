@@ -1,20 +1,63 @@
 import * as React from 'react';
 import ProfessorCalendarRow from './ProfessorCalendarRow';
-import ProfessorDelete from '../includes/ProfessorDelete';
+import ProfessorDelete from './ProfessorDelete';
+import ProfessorOHInfoDelete from './ProfessorOHInfoDelete';
 
-class ProfessorCalendarTable extends React.Component {
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { ChildProps } from 'react-apollo';
+import { Loader, DropdownItemProps } from 'semantic-ui-react';
 
-    props: {
-        taList: string[],
-        // Array lengths are all 7
-        // Index 0 == Monday... Index 6 == Sunday
-        timeStart: number[][],
-        timeEnd: number[][],
-        taIndex: number[][],
-        LocationBuilding: string[][],
-        LocationRoomNum: string[][],
-    };
+const QUERY = gql`
+query FindSessionsByCourse($_courseId: Int!, $_beginTime: Datetime!, $_endTime: Datetime!) {
+    apiGetSessions(_courseId: $_courseId, _beginTime: $_beginTime, _endTime: $_endTime) {
+        nodes {
+            sessionId
+            startTime
+            endTime
+            building
+            room
+            sessionSeriesId
+            sessionTasBySessionId {
+                nodes {
+                    userByUserId {
+                        computedName
+                        userId
+                    }
+                }
+            }
+        }
+    }
+}
+`;
 
+const withData = graphql<InputProps, Response>(
+    QUERY, {
+        options: ({ _courseId, _beginTime, _endTime }) => ({
+            variables: {
+                _courseId: _courseId,
+                _beginTime: _beginTime,
+                _endTime: _endTime
+            }
+        })
+    }
+);
+
+type InputProps = {
+    _courseId: number,
+    _beginTime: Date,
+    _endTime: Date,
+    data: {
+        loading: boolean,
+        apiGetSessions?: {
+            nodes: [{}]
+        }
+    },
+    taOptions: DropdownItemProps[],
+    numMaxOH: number
+};
+
+class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Response>> {
     state: {
         isExpanded: boolean[][]
         isDeleteVisible: boolean
@@ -24,12 +67,11 @@ class ProfessorCalendarTable extends React.Component {
         rowIndex: number
     };
 
-    constructor(props: {}) {
+    constructor(props: ChildProps<InputProps, Response>) {
         super(props);
-        this.toggleEdit = this.toggleEdit.bind(this);
-        var isExpandedInit = [];
+        var isExpandedInit: boolean[][] = [];
         for (var i = 0; i < 7; i++) {
-            isExpandedInit.push(new Array<boolean>(this.props.timeStart[i].length).fill(false));
+            isExpandedInit.push(new Array<boolean>(this.props.numMaxOH).fill(false));
         }
         this.state = {
             isExpanded: isExpandedInit,
@@ -37,20 +79,26 @@ class ProfessorCalendarTable extends React.Component {
             currentDay: 0,
             currentRow: 0,
             dayIndex: 0,
-            rowIndex: 0
+            rowIndex: 0,
         };
         this.updateDeleteInfo = this.updateDeleteInfo.bind(this);
         this.updateDeleteVisible = this.updateDeleteVisible.bind(this);
+        this.toggleEdit = this.toggleEdit.bind(this);
     }
 
-    toggleEdit(day: number, row: number) {
+    toggleEdit(day: number, row: number, forceClose?: boolean) {
         var cDay = this.state.currentDay;
         var cRow = this.state.currentRow;
 
         if (!(cDay === day && cRow === row)) {
             this.state.isExpanded[cDay][cRow] = false;
         }
-        this.state.isExpanded[day][row] = !this.state.isExpanded[day][row];
+
+        if (forceClose) {
+            this.state.isExpanded[day][row] = false;
+        } else {
+            this.state.isExpanded[day][row] = !this.state.isExpanded[day][row];
+        }
 
         this.setState({
             isExpanded: this.state.isExpanded,
@@ -73,74 +121,125 @@ class ProfessorCalendarTable extends React.Component {
     }
 
     render() {
+        const { loading } = this.props.data;
+
+        var timeStart: Date[][] = [];
+        var timeEnd: Date[][] = [];
+        var taNames: Array<string[][]> = [];
+        var taUserIds: Array<number[][]> = [];
+        var building: string[][] = [];
+        var room: string[][] = [];
+        var sessionId: number[][] = [];
+        var sessionSeriesId: number[][] = [];
+
+        for (var day = 0; day < 7; day++) {
+            timeStart.push(new Array<Date>());
+            timeEnd.push(new Array<Date>());
+            taNames.push(new Array<string[]>());
+            taUserIds.push(new Array<number[]>());
+            building.push(new Array<string>());
+            room.push(new Array<string>());
+            sessionId.push(new Array<number>());
+            sessionSeriesId.push(new Array<number>());
+        }
+
+        if (this.props.data.apiGetSessions) {
+            this.props.data.apiGetSessions.nodes.forEach((node: AppSession) => {
+                // 0 = Monday..., 5 = Saturday, 6 = Sunday
+                var dayIndexQuery = (new Date(node.startTime).getDay() + 6) % 7;
+                var taNamesQuery: string[] = [];
+                var taUserIdsQuery: number[] = [];
+                node.sessionTasBySessionId.nodes.forEach((ta) => {
+                    taNamesQuery.push(ta.userByUserId.computedName);
+                    taUserIdsQuery.push(ta.userByUserId.userId);
+                });
+
+                timeStart[dayIndexQuery].push(new Date(node.startTime));
+                timeEnd[dayIndexQuery].push(new Date(node.endTime));
+                building[dayIndexQuery].push(node.building);
+                room[dayIndexQuery].push(node.room);
+                taNames[dayIndexQuery].push(taNamesQuery);
+                taUserIds[dayIndexQuery].push(taUserIdsQuery);
+                sessionId[dayIndexQuery].push(node.sessionId);
+                sessionSeriesId[dayIndexQuery].push(node.sessionSeriesId);
+            });
+        }
+
         var tablewidth = 5;
         var dayIndex = this.state.dayIndex;
         var rowIndex = this.state.rowIndex;
 
-        var rows = new Array(7);
-        for (var i = 0; i < rows.length; i++) {
-            rows[i] = (
-                <ProfessorCalendarRow
-                    dayNumber={i}
-                    taList={this.props.taList}
-                    timeStart={this.props.timeStart[i]}
-                    timeEnd={this.props.timeEnd[i]}
-                    taIndex={this.props.taIndex[i]}
-                    locationBuilding={this.props.LocationBuilding[i]}
-                    locationRoomNum={this.props.LocationRoomNum[i]}
-                    isExpanded={this.state.isExpanded[i]}
-                    handleEditToggle={this.toggleEdit}
-                    tablewidth={5}
-                    updateDeleteInfo={this.updateDeleteInfo}
-                    updateDeleteVisible={this.updateDeleteVisible}
-                />
+        var days = ['Monday', 'Tuesday', 'Wednesday', 'Thurdsay', 'Friday', 'Saturday', 'Sunday'];
+        var headers = new Array(7);
+
+        for (var index = 0; index < headers.length; index++) {
+            headers[index] = (
+                <tr>
+                    <th colSpan={tablewidth}>{days[index]}</th>
+                </tr>
             );
         }
+
+        var rows = days.map(
+            (tag, i) => {
+                return (
+                    <React.Fragment key={i}>
+                        <tbody>
+                            <tr>
+                                <th colSpan={tablewidth}>{tag}</th>
+                            </tr>
+                        </tbody>
+                        <ProfessorCalendarRow
+                            key={i}
+                            courseId={this.props._courseId}
+                            taOptions={this.props.taOptions}
+                            timeStart={timeStart[i]}
+                            timeEnd={timeEnd[i]}
+                            taNames={taNames[i]}
+                            taUserIds={taUserIds[i]}
+                            locationBuilding={building[i]}
+                            locationRoomNum={room[i]}
+                            sessionId={sessionId[i]}
+                            sessionSeriesId={sessionSeriesId[i]}
+                            tablewidth={5}
+                            dayNumber={i}
+                            isExpanded={this.state.isExpanded[i]}
+                            handleEditToggle={this.toggleEdit}
+                            updateDeleteInfo={this.updateDeleteInfo}
+                            updateDeleteVisible={this.updateDeleteVisible}
+                        />
+                    </React.Fragment>
+                );
+            }
+        );
 
         return (
             <div className="ProfessorCalendarTable">
                 <ProfessorDelete
                     isDeleteVisible={this.state.isDeleteVisible}
                     updateDeleteVisible={this.updateDeleteVisible}
-                    ta={this.props.taList[this.props.taIndex[dayIndex][rowIndex]]}
-                    timeStart={this.props.timeStart[dayIndex][rowIndex]}
-                    timeEnd={this.props.timeEnd[dayIndex][rowIndex]}
-                    locationBuilding={this.props.LocationBuilding[dayIndex][rowIndex]}
-                    locationRoomNum={this.props.LocationRoomNum[dayIndex][rowIndex]}
+                    content={
+                        <ProfessorOHInfoDelete
+                            ta={taNames[dayIndex][rowIndex]}
+                            timeStart={timeStart[dayIndex][rowIndex]}
+                            timeEnd={timeEnd[dayIndex][rowIndex]}
+                            locationBuilding={building[dayIndex][rowIndex]}
+                            locationRoomNum={room[dayIndex][rowIndex]}
+                            sessionId={sessionId[dayIndex][rowIndex]}
+                            sessionSeriesId={sessionSeriesId[dayIndex][rowIndex]}
+                            toggleDelete={() => this.updateDeleteVisible(false)}
+                            toggleEdit={() => this.toggleEdit(this.state.currentDay, this.state.currentRow, true)}
+                        />
+                    }
                 />
-                <table className="Calendar">
-                    <tr>
-                        <th colSpan={tablewidth}>Monday</th>
-                    </tr>
-                    {rows[0]}
-                    <tr>
-                        <th colSpan={tablewidth}>Tuesday</th>
-                    </tr>
-                    {rows[1]}
-                    <tr>
-                        <th colSpan={tablewidth}>Wednesday</th>
-                    </tr>
-                    {rows[2]}
-                    <tr>
-                        <th colSpan={tablewidth}>Thursday</th>
-                    </tr>
-                    {rows[3]}
-                    <tr>
-                        <th colSpan={tablewidth}>Friday</th>
-                    </tr>
-                    {rows[4]}
-                    <tr>
-                        <th colSpan={tablewidth}>Saturday</th>
-                    </tr>
-                    {rows[5]}
-                    <tr>
-                        <th colSpan={tablewidth}>Sunday</th>
-                    </tr>
-                    {rows[6]}
-                </table>
+                {loading && <Loader active={true} content={'Loading'} />}
+                {!loading && <table className="Calendar">
+                    {this.state.isExpanded[0]}
+                    {rows}
+                </table>}
             </div>
         );
     }
 }
 
-export default ProfessorCalendarTable;
+export default withData(ProfessorCalendarTable);

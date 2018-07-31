@@ -16,40 +16,25 @@
     .content {
         text-align: center;
         background-color: #fefefe;
-        margin: 15% auto;
         position: relative;
-        left: 0;
-        width: 600px;
+        margin-top: 15%;
+        max-width: 100%;
+        display: inline-block;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        -webkit-font-smoothing: subpixel-antialiased;
+        -webkit-filter: blur(0);
 
         .x {
             padding: 4px;
             float: right;
         }
 
-        .question {
-            padding-top: 28px;
-        }
-
-        .info {
-            background-color: #edeff2   ;
-            margin: 15px 30px;
-            padding: 15px;
-
-            .ta {
-                font-weight: bold;
-                padding-bottom: 15px;
-            }
-
-            span {
-                padding: 0 5%;
-            }
-        }
-
         .Delete, .Cancel {
             font-size: 14px;
             padding: 10px 40px;
             border-radius: 3px;
-            font-size: 14px;
             margin: 20px 15px;
             background-color: white;
             border: 1px solid gray;
@@ -57,8 +42,18 @@
 
         .Delete {
             background-color: #7ab7fe;
+            border: 1px solid #7ab7fe;
             color: white;
-            border: none;
+        }
+
+        .Delete:disabled {
+            background-color: gainsboro;
+            border: 1px solid gainsboro;
+        }
+
+        .EndedText {
+            color: red;
+            padding-top: 15px;
         }
     }
 }
