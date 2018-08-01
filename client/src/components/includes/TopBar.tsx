@@ -47,7 +47,7 @@ class TopBar extends React.PureComponent {
                             </React.Fragment>
                         } */}
                         <li><a href="/__auth/logout">Log Out</a></li>
-                        <li><a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1">Send Feedback</a></li>
+                        <li><a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank">Send Feedback</a></li>
                         {this.props.role === 'professor' && <React.Fragment>{
                             this.props.context === 'professor'
                                 ? <li><a href="/course/1">Switch View</a></li>
