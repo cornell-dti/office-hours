@@ -106,6 +106,8 @@ class SessionView extends React.Component {
         timeoutId: number | null,
     };
 
+    questionsContainer: SessionQuestionsContainer | null = null;
+
     constructor(props: {}) {
         super(props);
         this.state = {
@@ -154,11 +156,11 @@ class SessionView extends React.Component {
         var undoText = '';
         if (this.state.undoAction) {
             if (this.state.undoAction === 'resolved') {
-                undoText = this.state.undoName + ' has been resolved!';
+                undoText = this.state.undoName + ' has been resolved! ';
             } else if (this.state.undoAction === 'no-show') {
-                undoText = this.state.undoName + ' has been marked as a no-show.';
+                undoText = this.state.undoName + ' has been marked as a no-show. ';
             } else if (this.state.undoAction === 'retracted') {
-                undoText = 'You have removed your question.';
+                undoText = 'You have removed your question. ';
             }
         }
 
@@ -230,6 +232,8 @@ class SessionView extends React.Component {
                                                 handleJoinClick={this.props.joinCallback}
                                                 myUserId={data.apiGetCurrentUser.nodes[0].userId}
                                                 triggerUndo={this.triggerUndo}
+                                                refetch={refetch}
+                                                ref={(ref) => this.questionsContainer = ref}
                                             />
                                         </div>
                                     </React.Fragment>
