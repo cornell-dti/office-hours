@@ -88,6 +88,8 @@ class ProfessorTags extends React.Component<ChildProps<InputProps, Response>> {
                                 computedAvatar: 'https://www.cs.cornell.edu/~clarkson/img/mrc_gates300.jpg',
                                 userId: -1
                             }}
+                            role="professor"
+                            context="professor"
                         />
                         <div className="main">
                             <ProfessorAddNew

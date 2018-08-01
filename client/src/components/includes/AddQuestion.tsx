@@ -103,6 +103,9 @@ class AddQuestion extends React.Component {
                 sessionId: this.props.sessionId
             }
         });
+    }
+
+    public qustionAdded = () => {
         this.props.callback();
         this.setState({ redirect: true });
     }
@@ -171,7 +174,7 @@ class AddQuestion extends React.Component {
                                 />
                                 : <p className="placeHolder text">Finish selecting tags...</p>}
                         </div>
-                        <Mutation mutation={ADD_QUESTION}>
+                        <Mutation mutation={ADD_QUESTION} onCompleted={this.qustionAdded}>
                             {(addQuestion) => this.state.stage > 30 ?
                                 <p
                                     className="AddButton active"

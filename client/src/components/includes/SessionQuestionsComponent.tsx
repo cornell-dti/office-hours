@@ -21,6 +21,7 @@ class SessionQuestionsComponent extends React.Component {
         isTA: boolean,
         isMyQuestion: boolean,
         triggerUndo: Function,
+        refetch: Function
     };
 
     // Given an index from [1..n], converts it to text that is displayed
@@ -82,7 +83,7 @@ class SessionQuestionsComponent extends React.Component {
                 {this.props.isTA &&
                     <div className="Buttons">
                         <hr />
-                        <Mutation mutation={UPDATE_QUESTION}>
+                        <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
                             {(updateQuestion) =>
                                 <div className="TAButtons">
                                     <p
@@ -102,7 +103,7 @@ class SessionQuestionsComponent extends React.Component {
                         </Mutation>
                     </div>
                 }
-                <Mutation mutation={UPDATE_QUESTION}>
+                <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
                     {(updateQuestion) =>
                         this.props.isMyQuestion &&
                         <div className="Buttons">

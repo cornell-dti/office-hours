@@ -33,6 +33,7 @@ class SessionQuestionsContainer extends React.Component {
                             isTA={this.props.isTA}
                             isMyQuestion={true}
                             triggerUndo={this.props.triggerUndo}
+                            refetch={this.props.refetch}
                         />
                         <p className="Queue">Queue</p>
                     </div>
@@ -46,6 +47,7 @@ class SessionQuestionsContainer extends React.Component {
                             isTA={this.props.isTA}
                             isMyQuestion={question.userByAskerId.userId === this.props.myUserId}
                             triggerUndo={this.props.triggerUndo}
+                            refetch={this.props.refetch}
                         />
                     ))
                 }
