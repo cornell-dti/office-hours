@@ -1,58 +1,59 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
-
+import { Link } from 'react-router-dom';
 class ProfessorSidebar extends React.Component {
     props: {
-        course: string
+        courseId: number,
+        code: string,
+        selected: number
     };
 
     render() {
+        var selectedArray: string[] = ['', '', '', '', ''];
+        selectedArray[this.props.selected] = 'selected';
+
         return (
             <div className="ProfessorSidebar">
-                <div className="header">
-                    <span>
-                        {this.props.course}
-                        <Icon name="dropdown" />
-                    </span>
-                </div>
-                <div className="manage">
-                    <div>
+                <div className="nav">
+                    <div className="header">
                         <span>
+                            {this.props.code}
+                            <Icon name="dropdown" />
+                        </span>
+                    </div>
+                    <div className="manage">
+                        <button className={selectedArray[0]}>
                             <Icon name="users" />
                             People
-                        </span>
-                    </div>
-                    <div>
-                        <span>
+                            </button>
+                        <button className={selectedArray[1]}>
                             <Icon name="help" />
                             Question
-                        </span>
+                            </button>
                     </div>
-                </div>
-                <div className="divider" />
-                <div className="actions">
-                    <div>
-                        <span className="selected">
-                            <Icon name="setting" />
-                            Manage Hours
-                        </span>
-                    </div>
-                    <div>
-                        <span>
-                            <Icon name="settings" />
-                            Settings
-                        </span>
-                    </div>
-                    <div>
-                        <span>
+                    <div className="divider" />
+                    <div className="actions">
+                        <Link to={'/professor/course/' + this.props.courseId}>
+                            <button className={selectedArray[2]}>
+                                <Icon name="setting" />
+                                Manage Hours
+                                </button>
+                        </Link>
+                        <Link to={'/professor-tags/course/' + this.props.courseId}>
+                            <button className={selectedArray[3]}>
+                                <Icon name="settings" />
+                                Manage Tags
+                                </button>
+                        </Link>
+                        <button className={selectedArray[4]}>
                             <Icon name="log out" />
                             Logout
-                        </span>
+                        </button>
                     </div>
                 </div>
-                <svg className="logo" width="100" height="100">
+                {/* <svg className="logo" width="100" height="100">
                     <circle cx="50" cy="50" r="10" fill="#7ab7fe" />
-                </svg>
+                </svg> */}
             </div>
         );
     }

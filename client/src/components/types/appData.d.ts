@@ -9,6 +9,7 @@ interface AppSession {
     endTime: Date;
     building: string;
     room: string;
+    sessionSeriesId: number;
     questionsBySessionId: {
         nodes: [AppQuestion]
     }
@@ -19,6 +20,7 @@ interface AppSession {
 
 interface AppTa {
     userByUserId: {
+        userId: number;
         computedName: string;
         computedAvatar: string;
     }
@@ -31,17 +33,17 @@ interface AppQuestion {
     timeEntered: Date;
     userByAskerId: AppUser;
     questionTagsByQuestionId: {
-        nodes: [AppTag]
+        nodes: [{
+            tagByTagId: AppTag
+        }]
     }
 }
 
 interface AppTag {
-    tagByTagId: {
-        name: string;
-        level: number;
-        tagId: number;
-        activated: boolean;
-    }
+    name: string;
+    level: number;
+    tagId: number;
+    activated: boolean;
 }
 
 interface AppTagRelations extends AppTag {

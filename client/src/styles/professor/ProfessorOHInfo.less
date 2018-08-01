@@ -1,37 +1,58 @@
 .ProfessorOHInfo {
     margin-left: 40px;
 
+    .icon {
+        margin-right: 15px;
+    }
+
+    .plus {
+        margin-right: 5px;
+    }
+
+    .shift {
+        margin-left: 32px;
+    }
+
+    .long {
+        width: 40%;
+        min-width: 200px;
+    }
+
     .TA {
         margin-top: 14px;
 
-        .AddTAButton {
-            color: #7ab7fe;
-            background-color: white;
+        .AddTA.First {
+            i.user.icon {
+                visibility: visible;
+            }
+
+            .AddTAButton {
+                color: #7ab7fe;
+                background-color: white;
+                font-size: 14px;
+            }
+    
+            .AddTAButton.true {
+                color:gainsboro;
+            }
         }
 
-        .AddTAButton.true {
-            color:gainsboro;
+        .AddTA.Additional {
+            margin-top: 14px;
+            i.user.icon {
+                visibility: hidden;
+            }
+            .AddTAButton {
+                font-size: 14px;
+            }
         }
     }
 
-    .AddTA {
-        margin-top: 14px;
-        i.user.icon {
-            visibility: hidden;
-        }
-    }
-
-    .Location {
+    .Location>input, .Time>.datePicker {
         margin-top: 24px;
-
-        .long {
-            width: 40%;
-        }
     }
-
+    
     .Time {
-        margin-top: 24px;
-
         .datePicker {
             display: inline-block;
         }
@@ -55,11 +76,52 @@
                     border-radius: 0.3rem;
                     }
             }
+            .react-datepicker__navigation {
+                display: none;
+            }
+        }
+    }
+}
+
+.ExpandedEdit, .ExpandedAdd {
+    .Bottom {
+        font-size: 14px;
+        padding: 10px 0px;
+        border-radius: 3px;
+        font-size: 14px;
+        margin: 20px 15px 13px;
+        width: 125px;
+    }
+
+    .EditButtons {
+        border-top: 1px solid #d9d9d9;
+        margin-top: 20px;
+        background-color: white;
+        width: 100%;
+
+        .EditNotification {
+            margin-top: 30px;
+            margin-right: 20px;
+            float: right;
+            color: red;
         }
 
-        .repeat {
-            margin-left: 2%;
-            color: black;
+        .Cancel {
+            float: right;
+            background-color: white;
+            border: 1px solid gray;
+        }
+
+        .Edit {
+            float: right;
+            background-color: #7ab7fe;
+            border: 1px solid #7ab7fe;
+            color: white;
+        }
+
+        .Edit:disabled {
+            background-color: gainsboro;
+            border: 1px solid gainsboro;
         }
     }
 }
