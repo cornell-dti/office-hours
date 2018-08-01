@@ -129,7 +129,7 @@ class SessionView extends React.Component {
             timeoutId: setTimeout(this.dismissUndo, 15000),
         });
         if (this.questionsContainer) {
-            this.questionsContainer.props.refetch();
+            setTimeout(this.questionsContainer.props.refetch.bind(null), 100);
         }
     }
 
@@ -151,7 +151,7 @@ class SessionView extends React.Component {
                 questionId: this.state.undoQuestionId
             }
         });
-        refetch();
+        setTimeout(refetch.bind(null), 100);
     }
 
     render() {

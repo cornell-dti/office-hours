@@ -43,13 +43,13 @@ class SplitView extends React.Component {
     }
 
     addedQuestion = () => {
+        setTimeout(this.refetchData.bind(null), 100);
+    }
+
+    refetchData = () => {
         if (this.sessionView && this.sessionView.questionsContainer) {
             this.sessionView.questionsContainer.props.refetch();
         }
-    }
-
-    refetchData = (refetch: Function) => {
-        refetch();
     }
 
     constructor(props: {}) {
