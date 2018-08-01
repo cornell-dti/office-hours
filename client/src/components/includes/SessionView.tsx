@@ -128,6 +128,9 @@ class SessionView extends React.Component {
             undoName: name,
             timeoutId: setTimeout(this.dismissUndo, 15000),
         });
+        if (this.questionsContainer) {
+            this.questionsContainer.props.refetch();
+        }
     }
 
     dismissUndo = () => {
