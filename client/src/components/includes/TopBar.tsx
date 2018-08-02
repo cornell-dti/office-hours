@@ -8,8 +8,8 @@ class TopBar extends React.PureComponent {
         // A user's role: student, ta, or professor
         // We show TA's and Profs extra links
         role: string,
-        // Whether we're in a professor view or student view
-        // controlls where "switch view" goes
+        // Whether we're in a "professor" view or "student" view
+        // controls where "switch view" goes
         context: string
     };
 

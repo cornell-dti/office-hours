@@ -236,6 +236,8 @@ class SessionView extends React.Component {
                                                 myUserId={data.apiGetCurrentUser.nodes[0].userId}
                                                 triggerUndo={this.triggerUndo}
                                                 refetch={refetch}
+                                                // this sets a ref, which allows a parent to call methods on a child.
+                                                // Here, the parent can't access refetch, but the child can.
                                                 ref={(ref) => this.questionsContainer = ref}
                                             />
                                         </div>

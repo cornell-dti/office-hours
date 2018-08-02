@@ -27,16 +27,17 @@ class CalendarDaySelect extends React.Component {
         week.setTime(week.getTime() - (week.getDay() - 1) * ONE_DAY);
         this.state = {
             selectedWeekEpoch: week.getTime(),
-            active: 0   // index of currently selected date
+            active: week.getDay() + 1 % 7   // index of currently selected date
         };
     }
 
     incrementWeek = (forward: boolean) => {
         if (forward) {
-            this.setState({ selectedWeekEpoch: this.state.selectedWeekEpoch - ONE_WEEK });
-        } else {
             this.setState({ selectedWeekEpoch: this.state.selectedWeekEpoch + ONE_WEEK });
+        } else {
+            this.setState({ selectedWeekEpoch: this.state.selectedWeekEpoch - ONE_WEEK });
         }
+        this.props.callback(this.state.selectedWeekEpoch + this.state.active * ONE_DAY);
     }
 
     handleDateClick = (item: number) => {
@@ -50,7 +51,7 @@ class CalendarDaySelect extends React.Component {
             <div className="CalendarDaySelect">
                 <p className="month">{monthNames[now.getMonth()]}</p>
                 <div className="selector">
-                    <span className="LastWeek" onClick={() => this.incrementWeek(true)}>
+                    <span className="LastWeek" onClick={() => this.incrementWeek(false)}>
                         <img src={chevron} alt="Previous Week" className="flipped" />
                     </span>
                     {dayList.map((day, i) => <CalendarDateItem
@@ -61,7 +62,7 @@ class CalendarDaySelect extends React.Component {
                         active={i === this.state.active}
                         handleClick={this.handleDateClick}
                     />)}
-                    <span className="NextWeek" onClick={() => this.incrementWeek(false)}>
+                    <span className="NextWeek" onClick={() => this.incrementWeek(true)}>
                         <img src={chevron} alt="Next Week" />
                     </span>
                 </div>
