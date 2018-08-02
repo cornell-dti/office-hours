@@ -3,8 +3,13 @@ import * as React from 'react';
 
 class TopBar extends React.PureComponent {
     props: {
+        courseId: number,
         user: AppUser,
+        // A user's role: student, ta, or professor
+        // We show TA's and Profs extra links
         role: string,
+        // Whether we're in a professor view or student view
+        // controlls where "switch view" goes
         context: string
     };
 
@@ -50,8 +55,8 @@ class TopBar extends React.PureComponent {
                         <li><a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank">Send Feedback</a></li>
                         {this.props.role === 'professor' && <React.Fragment>{
                             this.props.context === 'professor'
-                                ? <li><a href="/course/1">Switch View</a></li>
-                                : <li><a href="/professor">Switch View</a></li>
+                                ? <li><a href={'/course/' + this.props.courseId} >Switch View</a></li>
+                                : <li><a href={'/professor/course/' + this.props.courseId}>Switch View</a></li>
                         }</React.Fragment>}
                     </ul>
                 )}

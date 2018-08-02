@@ -185,6 +185,7 @@ class SessionView extends React.Component {
                                         user={data.apiGetCurrentUser.nodes[0]}
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
                                         context="session"
+                                        courseId={this.props.courseId}
                                     />
                                 }
                                 {this.props.id === -1 || !data.sessionBySessionId

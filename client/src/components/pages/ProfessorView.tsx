@@ -153,6 +153,7 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
                             user={this.props.data.apiGetCurrentUser.nodes[0]}
                             context="professor"
                             role="professor"
+                            courseId={this.props.match.params.courseId}
                         />
                         <div className="main">
                             <ProfessorAddNew
