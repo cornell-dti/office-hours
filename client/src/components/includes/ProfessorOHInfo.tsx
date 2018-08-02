@@ -60,7 +60,8 @@ class ProfessorOHInfo extends React.Component {
         endTimeDefault?: (moment.Moment | null),
         sessionId?: number,
         sessionSeriesId?: number,
-        toggleEdit: Function
+        toggleEdit: Function,
+        refreshCallback: Function
     };
 
     state: {
@@ -374,7 +375,7 @@ class ProfessorOHInfo extends React.Component {
                         </div >
                         <Checkbox
                             className="datePicker shift"
-                            label={this.props.isNewOH ? 'Repeat Weekly' : 'Edit all Office Hours in this series'}
+                            label={this.props.isNewOH ? 'Repeat weekly' : 'Edit all office hours in this series'}
                             checked={this.state.isSeriesMutation}
                             disabled={this.props.sessionSeriesId === null}
                             onChange={this.toggleCheckbox}
@@ -390,7 +391,7 @@ class ProfessorOHInfo extends React.Component {
                     </button>
                     {this.props.isNewOH ?
                         this.state.isSeriesMutation ?
-                            <Mutation mutation={CREATE_SERIES}>
+                            <Mutation mutation={CREATE_SERIES} onCompleted={() => this.props.refreshCallback()}>
                                 {(CreateSeries) =>
                                     <button
                                         className="Bottom Edit"
@@ -411,7 +412,7 @@ class ProfessorOHInfo extends React.Component {
                                 }
                             </Mutation>
                             :
-                            <Mutation mutation={CREATE_SESSION}>
+                            <Mutation mutation={CREATE_SESSION} onCompleted={() => this.props.refreshCallback()}>
                                 {(CreateSession) =>
                                     <button
                                         className="Bottom Edit"
@@ -434,7 +435,7 @@ class ProfessorOHInfo extends React.Component {
 
                         :
                         this.state.isSeriesMutation ?
-                            <Mutation mutation={EDIT_SERIES}>
+                            <Mutation mutation={EDIT_SERIES} onCompleted={() => this.props.refreshCallback()}>
                                 {(EditSeries) =>
                                     <button
                                         className="Bottom Edit"
@@ -455,7 +456,7 @@ class ProfessorOHInfo extends React.Component {
                                 }
                             </Mutation>
                             :
-                            <Mutation mutation={EDIT_SESSION}>
+                            <Mutation mutation={EDIT_SESSION} onCompleted={() => this.props.refreshCallback()}>
                                 {(EditSession) =>
                                     <button
                                         className="Bottom Edit"
