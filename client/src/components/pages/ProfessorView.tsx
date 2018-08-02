@@ -8,6 +8,7 @@ import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { DropdownItemProps } from 'semantic-ui-react';
 import 'moment-timezone';
+import { Redirect } from 'react-router';
 
 const METADATA_QUERY = gql`
 query GetMetadata($courseId: Int!) {
@@ -15,6 +16,11 @@ query GetMetadata($courseId: Int!) {
         nodes {
             computedName
             computedAvatar
+            courseUsersByUserId(condition:{courseId:$courseId}) {
+                nodes {
+                    role
+                }
+            }
         }
     }
     courseByCourseId(courseId: $courseId) {
@@ -152,6 +158,9 @@ class ProfessorView extends React.Component {
                         var courseCode: string = 'Loading...';
                         if (!loading && data) {
                             courseCode = data.courseByCourseId.code;
+                            if (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role !== 'professor') {
+                                return <Redirect to={'/course/' + this.props.match.params.courseId} />;
+                            }
                         }
                         return (
                             <React.Fragment>
@@ -162,9 +171,10 @@ class ProfessorView extends React.Component {
                                 />
                                 {data && data.apiGetCurrentUser &&
                                     <TopBar
+                                        courseId={this.props.match.params.courseId}
                                         user={data.apiGetCurrentUser.nodes[0]}
                                         context="professor"
-                                        role="professor"
+                                        role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
                                     />
                                 }
                             </React.Fragment>

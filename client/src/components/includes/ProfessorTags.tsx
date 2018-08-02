@@ -91,6 +91,7 @@ class ProfessorTags extends React.Component<ChildProps<InputProps, Response>> {
                             }}
                             role="professor"
                             context="professor"
+                            courseId={this.props.match.params.courseId}
                         />
                         <div className="main">
                             <ProfessorAddNew

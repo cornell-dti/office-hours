@@ -3,10 +3,9 @@ import * as React from 'react';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 
-import CalendarHeader from '../includes/CalendarHeader';
-import CalendarDaySelect from '../includes/CalendarDaySelect';
-import CalendarSessions from '../includes/CalendarSessions';
-// import CalendarWeekSelect from '../includes/CalendarWeekSelect';
+import CalendarHeader from './CalendarHeader';
+import CalendarDaySelect from './CalendarDaySelect';
+import CalendarSessions from './CalendarSessions';
 
 const GET_CALENDAR_DATA = gql`
     query getDataForDay(
