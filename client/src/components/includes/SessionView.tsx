@@ -83,7 +83,7 @@ class SessionDataQuery extends Query<SessionData, Variables> { }
 
 const UNDO_QUESTION = gql`
 mutation UndoQuestion($questionId: Int!) {
-    updateQuestionByQuestionId(input: {questionPatch: {status: "unresolved", timeAddressed: null, answererId: null}, 
+    updateQuestionByQuestionId(input: {questionPatch: {status: "unresolved", timeAddressed: null, answererId: null},
         questionId: $questionId}) {
         clientMutationId
     }
@@ -105,6 +105,8 @@ class SessionView extends React.Component {
         undoQuestionId?: number,
         timeoutId: number | null,
     };
+
+    questionsContainer: SessionQuestionsContainer | null = null;
 
     constructor(props: {}) {
         super(props);
@@ -138,9 +140,12 @@ class SessionView extends React.Component {
             undoQuestionId: undefined,
             timeoutId: null,
         });
+        if (this.questionsContainer) {
+            this.questionsContainer.props.refetch();
+        }
     }
 
-    handleUndoClick = (undoQuestion: Function) => {
+    handleUndoClick = (undoQuestion: Function, refetch: Function) => {
         undoQuestion({
             variables: {
                 questionId: this.state.undoQuestionId
@@ -153,11 +158,11 @@ class SessionView extends React.Component {
         var undoText = '';
         if (this.state.undoAction) {
             if (this.state.undoAction === 'resolved') {
-                undoText = this.state.undoName + ' has been resolved!';
+                undoText = this.state.undoName + ' has been resolved! ';
             } else if (this.state.undoAction === 'no-show') {
-                undoText = this.state.undoName + ' has been marked as a no-show.';
+                undoText = this.state.undoName + ' has been marked as a no-show. ';
             } else if (this.state.undoAction === 'retracted') {
-                undoText = 'You have removed your question.';
+                undoText = 'You have removed your question. ';
             }
         }
 
@@ -168,14 +173,21 @@ class SessionView extends React.Component {
                     variables={{ sessionId: this.props.id, courseId: this.props.courseId }}
                     pollInterval={4000}
                 >
-                    {({ loading, data, error }) => {
+                    {({ loading, data, error, refetch }) => {
                         if (error) { return <h1>ERROR</h1>; }
                         if (!data || !data.apiGetCurrentUser) {
                             return <p className="noSessionSelected">Loading...</p>;
                         }
                         return (
                             <React.Fragment>
-                                {this.props.isDesktop && <TopBar user={data.apiGetCurrentUser.nodes[0]} />}
+                                {this.props.isDesktop &&
+                                    <TopBar
+                                        user={data.apiGetCurrentUser.nodes[0]}
+                                        role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
+                                        context="session"
+                                        courseId={this.props.courseId}
+                                    />
+                                }
                                 {this.props.id === -1 || !data.sessionBySessionId
                                     ? <React.Fragment>
                                         <p className="welcomeMessage">Welcome, <span className="welcomeName">
@@ -192,8 +204,7 @@ class SessionView extends React.Component {
                                             callback={this.props.backCallback}
                                             isDesktop={this.props.isDesktop}
                                         />
-                                        {
-                                            this.state.undoQuestionId &&
+                                        {this.state.undoQuestionId &&
                                             <Mutation mutation={UNDO_QUESTION} onCompleted={this.dismissUndo}>
                                                 {(undoQuestion) =>
                                                     <div className="undoContainer">
@@ -201,9 +212,12 @@ class SessionView extends React.Component {
                                                             <Icon name="close" />
                                                         </p>
                                                         <p className="undoText">
-                                                            {undoText} <span
+                                                            {undoText}
+                                                            <span
                                                                 className="undoLink"
-                                                                onClick={() => this.handleUndoClick(undoQuestion)}
+                                                                onClick={() =>
+                                                                    this.handleUndoClick(undoQuestion, refetch)
+                                                                }
                                                             >
                                                                 Undo
                                                             </span>
@@ -221,6 +235,10 @@ class SessionView extends React.Component {
                                                 handleJoinClick={this.props.joinCallback}
                                                 myUserId={data.apiGetCurrentUser.nodes[0].userId}
                                                 triggerUndo={this.triggerUndo}
+                                                refetch={refetch}
+                                                // this sets a ref, which allows a parent to call methods on a child.
+                                                // Here, the parent can't access refetch, but the child can.
+                                                ref={(ref) => this.questionsContainer = ref}
                                             />
                                         </div>
                                     </React.Fragment>

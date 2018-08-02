@@ -102,12 +102,12 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
         if (previousWeek) {
             this.setState({
                 selectedWeekEpoch: this.state.selectedWeekEpoch -
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
+                7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
             });
         } else {
             this.setState({
                 selectedWeekEpoch: this.state.selectedWeekEpoch +
-                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
+                7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
             });
         }
     }
@@ -151,6 +151,9 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
                     <section className="rightOfSidebar">
                         <TopBar
                             user={this.props.data.apiGetCurrentUser.nodes[0]}
+                            context="professor"
+                            role="professor"
+                            courseId={this.props.match.params.courseId}
                         />
                         <div className="main">
                             <ProfessorAddNew

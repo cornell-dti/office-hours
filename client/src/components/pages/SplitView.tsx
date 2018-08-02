@@ -27,6 +27,8 @@ class SplitView extends React.Component {
         activeView: string,
     };
 
+    sessionView: SessionView | null = null;
+
     // Keep window size in state for conditional rendering
     componentDidMount() {
         window.addEventListener('resize', this.updateWindowDimensions);
@@ -38,6 +40,12 @@ class SplitView extends React.Component {
 
     updateWindowDimensions = () => {
         this.setState({ width: window.innerWidth, height: window.innerHeight });
+    }
+
+    addedQuestion = () => {
+        if (this.sessionView && this.sessionView.questionsContainer) {
+            this.sessionView.questionsContainer.props.refetch();
+        }
     }
 
     constructor(props: {}) {
@@ -98,6 +106,7 @@ class SplitView extends React.Component {
                         isDesktop={this.state.width > MOBILE_BREAKPOINT}
                         backCallback={this.handleBackClick}
                         joinCallback={this.handleJoinClick}
+                        ref={(ref) => this.sessionView = ref}
                     />
                 }{this.state.activeView === 'addQuestion' &&
                     <React.Fragment>
@@ -106,6 +115,7 @@ class SplitView extends React.Component {
                                 sessionId={this.state.sessionId || -1}
                                 courseId={this.props.match.params.courseId}
                                 data={{ loading: true }}
+                                callback={() => this.addedQuestion()}
                             />
                         </div>
                         <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import LoginView from './pages/LoginView';
 import ProfessorView from './pages/ProfessorView';
-import { BrowserRouter as Router, Route, Link, Redirect, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import SplitView from './pages/SplitView';
 import ProfessorTags from './includes/ProfessorTags';
 import gql from 'graphql-tag';
@@ -53,11 +53,6 @@ class App extends React.Component {
         return (
             <Router>
                 <div className="App">
-                    <nav>
-                        <Link to="/login"> Login View</Link> |
-                        <Link to="/professor/course/1"> Professor View</Link> |
-                        <Link to="/course/1"> Split View</Link>
-                    </nav>
                     <Switch>
                         <Route path="/login" component={LoginView} />
                         <PrivateRoute path="/professor-tags/course/:courseId" component={ProfessorTags} exact={true} />

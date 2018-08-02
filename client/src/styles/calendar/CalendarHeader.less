@@ -1,26 +1,46 @@
 .CalendarHeader {
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 500;
-    overflow: hidden;
-    padding: 10px 27px;
+    padding: 12px 27px;
     text-align: left;
-
-    .CourseSelectButton {
-        background-color: white;
-        border: none;
-        font-size: 25px;
-    }
+    position: absolute;
+    left: 0;
+    right: 0;
+    color: #484848;
 
     .CurrentCourse {
+        display: flex;
+        justify-content: space-between;
+
         .TAMarker {
             border-radius: 3px;
             color: white;
             background-color: #207981;
-            padding: 0 5px;
             font-size: 12px;
-            margin-left: 5px;
+            height: 18px;
+            width: 32px;
             vertical-align: middle;
+            text-align: center;
             display: inline-block;
+            padding-top: 0;
+            margin-left: 5px;
+        }
+    }
+
+    .mobileHeaderFace {
+        display: none;
+    }
+
+    span {
+        padding-top: 3px;
+        display: flex;
+    }
+
+    @media only screen and (max-width: @mobile-breakpoint) {
+        .mobileHeaderFace {
+            height: 28px;
+            border-radius: 28px;
+            display: inline;
         }
     }
 }
