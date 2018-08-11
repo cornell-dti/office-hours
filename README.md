@@ -2,7 +2,7 @@
 by [Cornell Design & Tech Initiative](http://cornelldti.org)
 
 ## For Developers
-View the [setup documentation](./blob/master/docs/setup.md) for instructions on setting up and getting started with development!
+View the [setup documentation](https://github.com/cornell-dti/office-hours/blob/master/docs/setup.md) for instructions on setting up and getting started with development!
 
 ## Contributors
 
