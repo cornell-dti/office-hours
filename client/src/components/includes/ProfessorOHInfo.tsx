@@ -11,7 +11,7 @@ import { Mutation } from 'react-apollo';
 const EDIT_SESSION = gql`
     mutation EditSession($_sessionId: Int!, $_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
         $_room: String!, $_tas: [Int]) {
-        apiEditSession(input: {_sessionId: $_sessionId, _startTime: $_startTime, 
+        apiEditSession(input: {_sessionId: $_sessionId, _startTime: $_startTime,
             _endTime: $_endTime, _building: $_building, _room: $_room, _tas: $_tas }) {
                 clientMutationId
         }
@@ -21,7 +21,7 @@ const EDIT_SESSION = gql`
 const EDIT_SERIES = gql`
     mutation EditSeries($_seriesId: Int!, $_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
         $_room: String!, $_tas: [Int]) {
-        apiEditSeries(input: {_seriesId: $_seriesId, _startTime: $_startTime, 
+        apiEditSeries(input: {_seriesId: $_seriesId, _startTime: $_startTime,
             _endTime: $_endTime, _building: $_building, _room: $_room, _tas: $_tas }) {
             clientMutationId
         }
@@ -31,7 +31,7 @@ const EDIT_SERIES = gql`
 const CREATE_SESSION = gql`
     mutation CreateSession($_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
         $_room: String!, $_courseId: Int!, $_tas: [Int]) {
-        apiCreateSession(input: {_startTime: $_startTime, _endTime: $_endTime, 
+        apiCreateSession(input: {_startTime: $_startTime, _endTime: $_endTime,
             _building: $_building, _room: $_room, _courseId: $_courseId, _tas: $_tas }) {
                 clientMutationId
         }
@@ -41,7 +41,7 @@ const CREATE_SESSION = gql`
 const CREATE_SERIES = gql`
     mutation CreateSeries($_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
         $_room: String!, $_courseId: Int!, $_tas: [Int]) {
-        apiCreateSeries(input: {_startTime: $_startTime, _endTime: $_endTime, 
+        apiCreateSeries(input: {_startTime: $_startTime, _endTime: $_endTime,
             _building: $_building, _room: $_room, _courseId: $_courseId, _tas: $_tas }) {
                 clientMutationId
         }
@@ -165,17 +165,7 @@ class ProfessorOHInfo extends React.Component {
 
     handleStartTime(startTime: moment.Moment) {
         // Prevents end time from occuring before start time
-        var newEndTime = moment(startTime);
-        if (!(this.state.endTime == null)) {
-            newEndTime.set({
-                'hour': this.state.endTime.get('hour'),
-                'minute': this.state.endTime.get('minute')
-            });
-            if (startTime.isAfter(newEndTime)) {
-                newEndTime = moment(startTime);
-            }
-        }
-
+        var newEndTime = moment(startTime).add(1, 'hours');
         this.setState({
             startTime: startTime,
             endTime: newEndTime
