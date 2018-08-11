@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Loader } from 'semantic-ui-react';
 import { groupBy } from 'lodash';
+import { Interval } from '../../utilities/interval';
 
 import CalendarSessionCard from './CalendarSessionCard';
 
@@ -10,15 +11,15 @@ class CalendarSessions extends React.PureComponent {
         loading: boolean;
         sessions: AppSession[] | null;
         callback: Function;
-        interval: AppInterval;
+        interval: AppInterval | null;
     };
 
-    labelSession = (session: AppSession, intervalSeconds: number) => {
+    labelSession = (session: AppSession, intervalMs: number) => {
         if (new Date(session.endTime) < new Date()) {
             return 'Past';
         } else if (new Date(session.startTime) < new Date()) {
             return 'Ongoing';
-        } else if (new Date(session.startTime) < new Date(new Date().getTime() + intervalSeconds * 1000)) {
+        } else if (new Date(session.startTime) < new Date(new Date().getTime() + intervalMs)) {
             return 'Open';
         }
         return 'Upcoming';
@@ -27,19 +28,6 @@ class CalendarSessions extends React.PureComponent {
     render() {
         const loading = this.props.loading;
         const sessions = this.props.sessions;
-        const interval = this.props.interval;
-
-        // Isn't it nice how the +'s align?
-        // ternary is a temporary hack is for while data is loading
-        // Todo: loading states
-
-        const intervalSeconds = !interval ? 0 :
-            interval.years * 31556926 +
-            interval.months * 2629743 +
-            interval.days * 86400 +
-            interval.hours * 3600 +
-            interval.minutes * 60 +
-            interval.seconds;
 
         const sessionCards = sessions && sessions.map(session => (
             <CalendarSessionCard
@@ -47,7 +35,7 @@ class CalendarSessions extends React.PureComponent {
                 key={session.sessionId}
                 callback={this.props.callback}
                 active={session.sessionId === this.props.activeSessionId}
-                status={this.labelSession(session, intervalSeconds)}
+                status={this.labelSession(session, Interval.toMillisecoonds(this.props.interval))}
             />
         ));
 
