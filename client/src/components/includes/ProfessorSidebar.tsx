@@ -18,7 +18,7 @@ class ProfessorSidebar extends React.Component {
                     <div className="header">
                         <span>
                             {this.props.code}
-                            <Icon name="dropdown" />
+                            {/* <Icon name="dropdown" /> */}
                         </span>
                     </div>
                     <div className="manage">
