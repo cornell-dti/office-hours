@@ -37,7 +37,6 @@ class CalendarSessionCard extends React.Component {
                 <div className="CalendarCard">
                     <div className="TA">
                         {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
-                        <span className={'IndicatorDesc ' + this.props.status}>{this.props.status}</span>
                     </div>
                     <div className="Location">{session.building + ' ' + session.room}</div>
                     <div className="Queue">
