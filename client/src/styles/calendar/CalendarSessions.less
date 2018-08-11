@@ -18,6 +18,17 @@
     color: #484848;
 }
 
+.CalendarSessions h6 {
+    font-size: 14px;
+    font-weight: normal;
+    color: #474747;
+    text-align: left;
+    padding-left: 12px;
+    margin: 0;
+    padding-top: 18px;
+    line-height: 0;
+}
+
 @media only screen and (min-width: @mobile-breakpoint) {
     .CalendarSessionCard.active {
         background-color: #d8d8d8;
@@ -51,17 +62,17 @@
             width: 14px;
         }
 
-        &.live * > {
+        &.Ongoing * > {
             background-color: @live;
             box-shadow: 0px 0px 7px @live;
         }
 
-        &.open * > {
+        &.Open * > {
             background-color: @open;
             box-shadow: 0px 0px 7px @open;
         }
 
-        &.closed {
+        &.Past, &.Upcoming {
             .Circle {
                 background-color: @interior-color;
                 border-color: @border-color;
@@ -90,15 +101,15 @@
                 padding: 0px 6px;
                 border-radius: 3px;
 
-                &.live {
+                &.Ongoing {
                     background-color: @live
                 }
 
-                &.open {
+                &.Open {
                     background-color: @open;
                 }
 
-                &.closed {
+                &.Closed {
                     display: none;
                 }
             }

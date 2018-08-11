@@ -7,9 +7,7 @@ class CalendarSessionCard extends React.Component {
         session: AppSession
         callback: Function,
         active: boolean,
-        // Opened is on after we are within the interval period
-        // and never turns off after that. (hence past tense)
-        opened: boolean
+        status: string
     };
 
     handleOnClick = () => {
@@ -20,12 +18,6 @@ class CalendarSessionCard extends React.Component {
         const session = this.props.session;
         const questions = session.questionsBySessionId.nodes;
         const tas = session.sessionTasBySessionId.nodes;
-
-        var status = new Date(session.startTime) < new Date()
-            ? 'closed' :
-            new Date(session.startTime) < new Date()
-                ? 'live' :
-                this.props.opened ? 'open' : 'closed';
 
         var timeDesc = '';
 
@@ -39,13 +31,13 @@ class CalendarSessionCard extends React.Component {
                         <Moment date={session.endTime} interval={0} format={'hh:mm A'} />
                     </div>
                 </div>
-                <div className={'Indicator ' + status}>
+                <div className={'Indicator ' + this.props.status}>
                     <div className="Circle" />
                 </div>
                 <div className="CalendarCard">
                     <div className="TA">
                         {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
-                        <span className={'IndicatorDesc ' + status}>{status}</span>
+                        <span className={'IndicatorDesc ' + this.props.status}>{this.props.status}</span>
                     </div>
                     <div className="Location">{session.building + ' ' + session.room}</div>
                     <div className="Queue">
