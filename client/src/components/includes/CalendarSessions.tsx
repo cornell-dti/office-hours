@@ -6,9 +6,9 @@ import CalendarSessionCard from './CalendarSessionCard';
 
 class CalendarSessions extends React.PureComponent {
     props: {
+        activeSessionId: number;
         loading: boolean;
         sessions: AppSession[] | null;
-        activeSessionId: number;
         callback: Function;
         interval: AppInterval;
     };
