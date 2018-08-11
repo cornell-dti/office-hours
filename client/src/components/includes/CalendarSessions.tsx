@@ -9,12 +9,22 @@ class CalendarSessions extends React.PureComponent {
         sessions: AppSession[] | null;
         activeSessionId: number;
         callback: Function;
+        interval: AppInterval;
     };
+
     render() {
-        const callback = this.props.callback;
-        const activeSessionId = this.props.activeSessionId;
         const loading = this.props.loading;
         const sessions = this.props.sessions;
+        const interval = this.props.interval;
+
+        // Isn't it nice how the +'s align?
+        const intervalSeconds = !interval ? 0 :
+            interval.years * 31556926 +
+            interval.months * 2629743 +
+            interval.days * 86400 +
+            interval.hours * 3600 +
+            interval.minutes * 60 +
+            interval.seconds;
 
         return (
             <div className="CalendarSessions">
@@ -29,8 +39,9 @@ class CalendarSessions extends React.PureComponent {
                     <CalendarSessionCard
                         session={session}
                         key={session.sessionId}
-                        callback={callback}
-                        active={session.sessionId === activeSessionId}
+                        callback={this.props.callback}
+                        active={session.sessionId === this.props.activeSessionId}
+                        opened={new Date(session.startTime) < new Date(new Date().getTime() + intervalSeconds * 1000)}
                     />
                 ))}
             </div>

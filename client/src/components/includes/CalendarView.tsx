@@ -28,6 +28,14 @@ const GET_CALENDAR_DATA = gql`
         courseByCourseId(courseId: $courseId) {
             name
             code
+            queueOpenInterval {
+                seconds
+                minutes
+                hours
+                days
+                months
+                years
+            }
         }
         apiGetSessions(
             _beginTime: $beginTime,
@@ -59,7 +67,7 @@ const GET_CALENDAR_DATA = gql`
 `;
 
 interface AppData {
-    courseByCourseId: AppCourse;
+    courseByCourseId: AppCourseInterval;
     apiGetSessions: {
         nodes: [AppSession];
     };
@@ -129,6 +137,7 @@ class CalendarView extends React.Component {
                                 sessions={data.apiGetSessions && data.apiGetSessions.nodes}
                                 callback={this.props.sessionCallback}
                                 activeSessionId={this.props.sessionId}
+                                interval={data.courseByCourseId && data.courseByCourseId.queueOpenInterval}
                             />
                         </aside>
                     );
