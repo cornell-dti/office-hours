@@ -84,8 +84,17 @@ inserted_question integer;
 tag integer;
 asker users%rowtype;
 _asker_id integer;
+checked_session_ids integer[];
+questions questions%rowtype;
 begin
 	select * into asker from api_get_current_user();
+	select count(*) > 0 into question_asked from questions where asker_id = _asker_id AND status = 'unresolved';
+	if (question_asked > 0) then 
+		-- if there are questions asked, get session ids from questions asked
+		select session_id into session_id from questions where asked_id = _asker_id;
+		-- loop through session ids, if they are all expired, then allow 
+
+
 	if (asker is null) then
 		raise exception 'Cannot add question: no user is logged in.';
 	else
