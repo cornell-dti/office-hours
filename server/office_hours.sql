@@ -85,15 +85,23 @@ tag integer;
 asker users%rowtype;
 _asker_id integer;
 checked_session_ids integer[];
+end_time timestamp without time zone;
 questions questions%rowtype;
 begin
 	select * into asker from api_get_current_user();
 	select count(*) > 0 into question_asked from questions where asker_id = _asker_id AND status = 'unresolved';
+	permission = true;
 	if (question_asked > 0) then 
 		-- if there are questions asked, get session ids from questions asked
-		select session_id into session_id from questions where asked_id = _asker_id;
+		select session_id into checked_session_ids from questions where asked_id = _asker_id;
 		-- loop through session ids, if they are all expired, then allow 
-
+		FOREACH session_id in ARRAY checked_session_ids
+		LOOP
+			select end_time INTO end_time from session_series WHERE session_series_id = session_id;
+			if (end_time < NOW())
+				raise exception 'Cannot add question: currently asking in another queue';
+			end if;
+		END LOOP;
 
 	if (asker is null) then
 		raise exception 'Cannot add question: no user is logged in.';
