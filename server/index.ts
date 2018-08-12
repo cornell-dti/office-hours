@@ -1,13 +1,7 @@
 import * as express from 'express';
-import * as bodyparser from 'body-parser';
-import * as path from 'path';
 import postgraphql from 'postgraphql';
 import * as passport from 'passport';
 import * as sslRedirect from 'heroku-ssl-redirect';
-
-import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
-import { graphql } from 'graphql';
-import { readFileSync, readFile } from 'fs';
 
 var session = require('cookie-session');
 var request = require('request');
@@ -34,7 +28,7 @@ var sessionOptions = {
 
 if (app.get('env') === 'production') {
     app.set('trust proxy', 1) // trust first proxy
-    sessionOptions.secure = true // serve secure cookies
+    sessionOptions.secure = true // Only serve cookies on secure connections
 }
 
 app.use(session(sessionOptions))
@@ -57,36 +51,56 @@ passport.use(new GoogleStrategy(
         var variables = {
             googleId: profile._json.sub, email: profile._json.email,
             firstName: profile._json.given_name, lastName: profile._json.family_name,
-            photoUrl: profile._json.picture
+            photoUrl: profile._json.picture, displayName: profile._json.name
         };
 
-        if (variables.firstName.length == 0) {
+        if (variables.firstName.length === 0) {
             delete variables.firstName;
         }
-        if (variables.lastName.length == 0) {
+        if (variables.lastName.length === 0) {
             delete variables.lastName;
         }
-        if (variables.photoUrl.length == 0) {
+        if (variables.photoUrl.length === 0) {
             delete variables.photoUrl;
+        }
+        if (variables.displayName.length == 0) {
+            delete variables.displayName;
         }
 
         var variablesString = JSON.stringify(variables).replace(/"/g, '\\"');
 
-        var bodyContent = '{"query":"mutation loginUser($email: String!, $googleId: String!, $firstName: String, $lastName: String, $photoUrl: String) {' +
-            'apiFindOrCreateUser(input: {_email: $email, _googleId: $googleId, _firstName: $firstName, _lastName: $lastName, _photoUrl: $photoUrl}) {' +
-            'users {' +
-            'userId' +
-            '}' +
-            '}' +
-            '}' +
-            '","variables":"' +
-            variablesString +
-            '"}';
+        var bodyContent = `{
+            "query": "mutation loginUser(
+                $email: String!,
+                $googleId: String!,
+                $firstName: String,
+                $lastName: String,
+                $photoUrl: String,
+                $displayName: String
+            ) {
+                apiFindOrCreateUser(
+                    input: {
+                        _email: $email,
+                        _googleId: $googleId,
+                        _firstName: $firstName,
+                        _lastName: $lastName,
+                        _photoUrl: $photoUrl,
+                        _displayName: $displayName
+                    }
+                ) {
+                    users {
+                        userId
+                    }
+                }
+            }",
+            "variables": "${variablesString}"
+        }`.replace(/\r?\n?/g, '');
 
         const serverJwt = jwt.sign({ userId: -1 }, (process.env.OH_JWT_SECRET || "insecure"), {
             expiresIn: '30s',
             audience: 'postgraphql',
         });
+
         request.post({
             headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${serverJwt}` },
             url: ownBaseUrl + '/__gql/graphql',
@@ -161,7 +175,7 @@ app.use(function (req, res, next) {
         } else {
             if (options.fakeuserid) {
                 const fakeJwt = jwt.sign({ userId: options.fakeuserid }, (process.env.OH_JWT_SECRET || "insecure"), {
-                    expiresIn: '1y',
+                    expiresIn: '30s',
                     audience: 'postgraphql',
                 });
                 req.headers.authorization = `Bearer ${fakeJwt}`;
@@ -180,6 +194,8 @@ app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
 }));
 
 app.use(express.static('../client/build'));
+app.use('*', express.static('../client/build'));
+
 app.listen(process.env.PORT || 3001, () => {
     console.log("Now listening on port " + (process.env.PORT || 3001));
 });

@@ -17,6 +17,7 @@ const QUERY = gql`
                                 tagId
                                 name
                                 level
+                                activated
                                 tagRelationsByChildId {
                                     nodes {
                                         parentId
@@ -34,6 +35,7 @@ const QUERY = gql`
 type InputProps = {
     sessionId: number,
     courseId: number,
+    callback: Function,
     data: {
         loading: boolean,
         allSessions?: {
@@ -41,16 +43,7 @@ type InputProps = {
                 sessionSeryBySessionSeriesId: {
                     courseByCourseId: {
                         tagsByCourseId: {
-                            nodes: [{
-                                tagId: number,
-                                name: string,
-                                level: number
-                                tagRelationsByChildId: {
-                                    nodes: [{
-                                        parentId: number
-                                    }]
-                                }
-                            }]
+                            nodes: [AppTagRelations]
                         }
                     }
                 }
@@ -68,8 +61,6 @@ const withData = graphql<InputProps, Response>(QUERY, {
 
 class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Response>, {}> {
     render() {
-        const imageURL =
-            'https://i2.wp.com/puppypassionn.org/wp-content/uploads/2017/12/img_0881.jpg?resize=256%2C256&ssl=1';
         const { loading } = this.props.data;
 
         if (loading) {
@@ -80,37 +71,13 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
             var series = this.props.data.allSessions.nodes[0].sessionSeryBySessionSeriesId;
             var tags = series ? series.courseByCourseId.tagsByCourseId.nodes : [];
 
-            var primaryTagNames = [];
-            var secondaryTagNames = [];
-            var primaryTagNamesIds = [];
-            var secondaryTagNamesIds = [];
-            var secondaryTagParentIds = [];
-            for (var i = 0; i < tags.length; i++) {
-                if (tags[i].level === 1) {
-                    primaryTagNames.push(tags[i].name);
-                    primaryTagNamesIds.push(tags[i].tagId);
-                }
-                if (tags[i].level === 2) {
-                    secondaryTagNames.push(tags[i].name);
-                    secondaryTagNamesIds.push(tags[i].tagId);
-                    secondaryTagParentIds.push(tags[i].tagRelationsByChildId.nodes[0].parentId);
-                }
-            }
-
             return (
-                <div className="QuestionView">
-                    <AddQuestion
-                        taName="Sangwoo Kim"
-                        taPicture={imageURL}
-                        primaryTags={primaryTagNames}
-                        secondaryTags={secondaryTagNames}
-                        primaryTagsIds={primaryTagNamesIds}
-                        secondaryTagsIds={secondaryTagNamesIds}
-                        secondaryTagParentIds={secondaryTagParentIds}
-                        sessionId={this.props.sessionId}
-                        courseId={this.props.courseId}
-                    />
-                </div>
+                <AddQuestion
+                    tags={tags}
+                    sessionId={this.props.sessionId}
+                    courseId={this.props.courseId}
+                    callback={this.props.callback}
+                />
             );
         }
 

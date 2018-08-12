@@ -1,8 +1,9 @@
 import * as React from 'react';
 import LoginView from './pages/LoginView';
 import ProfessorView from './pages/ProfessorView';
-import { BrowserRouter as Router, Route, Link, Redirect, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import SplitView from './pages/SplitView';
+import ProfessorTags from './includes/ProfessorTags';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 
@@ -52,17 +53,13 @@ class App extends React.Component {
         return (
             <Router>
                 <div className="App">
-                    <nav>
-                        <Link to="/login"> Login View</Link> |
-                        <Link to="/professor"> Professor View</Link> |
-                        <Link to="/course/1"> Split View</Link>
-                    </nav>
                     <Switch>
-                        <PrivateRoute path="/course/:courseId/session/:sessionId/question" component={SplitView} />
                         <Route path="/login" component={LoginView} />
-                        <PrivateRoute path="/course/:courseId/session/:sessionId" component={SplitView} />
+                        <PrivateRoute path="/professor-tags/course/:courseId" component={ProfessorTags} exact={true} />
+                        <PrivateRoute path="/professor/course/:courseId" component={ProfessorView} exact={true} />
+                        <PrivateRoute path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
                         <PrivateRoute path="/course/:courseId" component={SplitView} />
-                        <PrivateRoute path="/professor" component={ProfessorView} />
+                        <Redirect from="/" to="/course/1" />
                     </Switch>
                 </div>
             </Router>

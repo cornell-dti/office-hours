@@ -1,65 +1,58 @@
 import * as React from 'react';
 
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import { ChildProps } from 'react-apollo';
-
-const QUERY = gql`
-    query isUserTa($courseId:Int!) {
-        apiGetCurrentUser {
-            nodes {
-                courseUsersByUserId(condition:{courseId:$courseId}) {
-                    nodes {
-                        role
-                    }
-                }
-            }
-        }
-    }
-`;
-interface InputProps {
-    currentCourse: string;
-    courseId: number;
-    data?: {
-        apiGetCurrentUser: {
-            nodes: [{
-                courseUsersByUserId: {
-                    nodes: [{
-                        role: string;
-                    }]
-                }
-            }]
-        }
+class CalendarHeader extends React.Component {
+    props: {
+        currentCourseCode: string;
+        isTa: boolean;
+        avatar: string | null;
     };
-}
 
-const withData = graphql<InputProps, Response>(QUERY, {
-    options: ({ courseId }) => ({
-        variables: { courseId: courseId }
-    })
-});
-class CalendarHeader extends React.Component<ChildProps<InputProps, Response>> {
+    state: {
+        showMenu: boolean;
+    };
+
+    constructor(props: {}) {
+        super(props);
+        this.state = { showMenu: false };
+    }
+
+    setMenu = (status: boolean) => {
+        this.setState({ showMenu: status });
+    }
+
     render() {
-        var data;
-        if (this.props.data) {
-            data = this.props.data;
-        }
         return (
-            <div className="CalendarHeader">
-                <div className="CurrentCourse">
-                    {this.props.currentCourse}
-                    {data
-                        && data.apiGetCurrentUser
-                        && (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role === 'ta'
-                            || data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role === 'professor')
-                        && <span className="TAMarker">TA</span>}
-                    <button className="CourseSelectButton">
-                        <i className="angle down icon" />
-                    </button>
+            <div className="Header">
+                <div className="CalendarHeader">
+                    <div className="CurrentCourse">
+                        <span>
+                            {this.props.currentCourseCode}
+                            {this.props.isTa && <span className="TAMarker">TA</span>}
+                        </span>
+                        {this.props.avatar &&
+                            <img
+                                className="mobileHeaderFace"
+                                onClick={() => this.setMenu(!this.state.showMenu)}
+                                src={this.props.avatar}
+                            />
+                        }
+                    </div>
                 </div>
+                {this.state.showMenu && (
+                    <ul className="logoutMenu" onClick={() => this.setMenu(false)} >
+                        {/* {this.props.isTa &&
+                            <React.Fragment>
+                                <li>Cancel Session</li>
+                                <li>Change Session</li>
+                            </React.Fragment>
+                        } */}
+                        <li><a href="/__auth/logout">Log Out</a></li>
+                        <li><a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank">Send Feedback</a></li>
+                    </ul>
+                )}
             </div>
         );
     }
 }
 
-export default withData(CalendarHeader);
+export default CalendarHeader;

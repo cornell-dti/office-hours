@@ -3,6 +3,7 @@ import { Icon } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
+
 import SelectedTags from '../includes/SelectedTags';
 
 const UPDATE_QUESTION = gql`
@@ -14,25 +15,14 @@ mutation UpdateQuestion($questionId: Int!, $status: String) {
 `;
 
 class SessionQuestionsComponent extends React.Component {
-
     props: {
-        questionId: number,
-        studentPicture: string,
-        studentName: string,
-        studentQuestion: string,
-        tags: Tag[],
+        question: AppQuestion,
         index: number,
         isTA: boolean,
-        time: string,
-        isMyQuestion: boolean
+        isMyQuestion: boolean,
+        triggerUndo: Function,
+        refetch: Function
     };
-
-    constructor(props: {}) {
-        super(props);
-        this._onClickDelete = this._onClickDelete.bind(this);
-        this._onClickResolve = this._onClickResolve.bind(this);
-        this._onClickRetract = this._onClickRetract.bind(this);
-    }
 
     // Given an index from [1..n], converts it to text that is displayed
     // on the question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
@@ -47,86 +37,64 @@ class SessionQuestionsComponent extends React.Component {
         }
     }
 
-    _onClickDelete(event: React.MouseEvent<HTMLElement>, updateQuestion: Function) {
+    _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
             variables: {
-                questionId: this.props.questionId,
-                status: 'no-show'
+                questionId: this.props.question.questionId,
+                status: status,
             }
         });
-    }
-
-    _onClickResolve(event: React.MouseEvent<HTMLElement>, updateQuestion: Function) {
-        updateQuestion({
-            variables: {
-                questionId: this.props.questionId,
-                status: 'resolved'
-            }
-        });
-    }
-
-    // User retracts (i.e. removes) their own question from the queue
-    _onClickRetract(event: React.MouseEvent<HTMLElement>, updateQuestion: Function) {
-        updateQuestion({
-            variables: {
-                questionId: this.props.questionId,
-                status: 'retracted'
-            }
-        });
+        const question = this.props.question;
+        this.props.triggerUndo(question.questionId, status, question.userByAskerId.computedName);
     }
 
     render() {
-        var tagsList = this.props.tags.map(
-            (tag) => {
-                return (
-                    <SelectedTags
-                        key={tag.id}
-                        ifSelected={false}
-                        tag={tag.name}
-                        level={tag.level}
-                        index={0}
-                        onClick={null}
-                    />
-                );
-                // return <p key={tag.id}>{tag.name}</p>;
-            }
-        );
-
+        var question = this.props.question;
         const myQuestionCSS = this.props.isMyQuestion ? ' MyQuestion' : '';
 
         return (
             <div className={'QueueQuestions' + myQuestionCSS}>
-                {
-                    this.props.isTA &&
+                {this.props.isTA &&
                     <div className="studentInformation">
-                        <img src={this.props.studentPicture} />
-                        <span className="Name">{this.props.studentName}</span>
+                        <img src={question.userByAskerId.computedAvatar} />
+                        <span className="Name">
+                            {question.userByAskerId.computedName}
+                        </span>
                     </div>
                 }
-                <p className="Question">{this.props.studentQuestion}</p>
+                <p className="Question">{question.content}</p>
                 <div className="Tags">
-                    {tagsList}
+                    {question.questionTagsByQuestionId.nodes.map(
+                        (tag) => <SelectedTags
+                            key={tag.tagByTagId.tagId}
+                            isSelected={false}
+                            tag={tag.tagByTagId.name}
+                            level={tag.tagByTagId.level}
+                            onClick={null}
+                        />
+                    )}
                 </div>
                 <div className="BottomBar">
-                    <p className="Order">{this.getDisplayText(this.props.index)}</p>
-                    <p className="Time">{<Moment date={this.props.time} interval={0} format={'hh:mm A'} />}</p>
+                    <p className={'Order' + (this.props.index === 0 ? ' now' : '')}>
+                        {this.getDisplayText(this.props.index)}
+                    </p>
+                    <p className="Time">{<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}</p>
                 </div>
-                {
-                    this.props.isTA &&
+                {this.props.isTA &&
                     <div className="Buttons">
                         <hr />
-                        <Mutation mutation={UPDATE_QUESTION}>
+                        <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
                             {(updateQuestion) =>
                                 <div className="TAButtons">
                                     <p
                                         className="Delete"
-                                        onClick={(e) => this._onClickDelete(e, updateQuestion)}
+                                        onClick={(e) => this._onClick(e, updateQuestion, 'no-show')}
                                     >
                                         <Icon name="hourglass end" /> No-show
                                     </p>
                                     <p
                                         className="Resolve"
-                                        onClick={(e) => this._onClickResolve(e, updateQuestion)}
+                                        onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
                                     >
                                         <Icon name="check" /> Resolve
                                     </p>
@@ -135,14 +103,14 @@ class SessionQuestionsComponent extends React.Component {
                         </Mutation>
                     </div>
                 }
-                <Mutation mutation={UPDATE_QUESTION}>
+                <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
                     {(updateQuestion) =>
                         this.props.isMyQuestion &&
                         <div className="Buttons">
                             <hr />
                             <p
                                 className="Remove"
-                                onClick={(e) => this._onClickRetract(e, updateQuestion)}
+                                onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
                             >
                                 <Icon name="close" /> Retract
                             </p>

@@ -17,7 +17,7 @@ At the top-level, there are three main directories in the repository:
 - Set the required environment variables by following [this documentation](./environment_variables.md).
 
 ## Running the app
-Once the initial installation is complete, you're ready to run the app. To do so, navigate to `./server` in a terminal window and run `yarn start`. This will start the server on `http://localhost:3001`, and will serve the front-end files that were most recently available in `./client/build`.
+Once the initial installation is complete and Postgres is running, you're ready to run the app. To do so, navigate to `./server` in a terminal window and run `yarn start`. This will start the server on `http://localhost:3001`, and will serve the front-end files that were most recently available in `./client/build`.
 
 ## GraphiQL
 For our backend API, we are using a relatively new technology called [GraphQL](https://graphql.org/). In essence, this automatically creates an extremely flexible API for our client using only our database schema, so we no longer have to write complicated API endpoints. It comes with a handy tool for API exploration called GraphiQL. When you are running the server on `http://localhost:3001`, you can navigate to `http://localhost:3001/__gql/graphiql` to view the GraphiQL interface. Over here, you can view all the functions available to you (+ auto-generated documentation), and also try out queries in the left panel!
@@ -37,6 +37,8 @@ The catch here is that you still need the interaction with the server to work, s
 
 `> yarn start`
 
+Alternatively, if you are only doing front-end work, you may use the proxy key of the `client/package.json` and set it to `https://queue-me-in.herokuapp.com`. This will cause your development build to use the server implementation that we have hosted. _Note:_ this only works if the database structure/backend has not changed between your local code and the deployed version.
+
 ### Fake authentication
 
 There is still one flaw though; our [authentication flow](./authentication.md) will break if the client and server are on different domains. To get around this, we've added a feature in the server that lets you assume the identity of any existing user, thereby temporarily bypassing the need for authentication. There are more details about this in the authentication docs, but here's what you need to do:
@@ -45,7 +47,7 @@ There is still one flaw though; our [authentication flow](./authentication.md) w
 
 `> yarn start --fakeuserid=<user-id-here>`
 
-For example, if we wanted to assume the identity of the user with ID 3 in our database, we could run `> yarn start fakeuserid=3`. This would artifically signal to the server that we are user 3, even though we're really not.
+For example, if we wanted to assume the identity of the user with ID 3 in our database, we could run `> yarn start --fakeuserid=3`. This would artifically signal to the server that we are user 3, even though we're really not.
 
 This is also useful if you're testing features that work differently for different users! For example, if you are testing a feature in the TA view, you can simply start the server with a fake user ID that corresponds to a TA.
 
@@ -64,7 +66,7 @@ If you want to update the database schema, or change the custom functions or tri
 While testing schema changes, be sure to restart the server whenever a change is made. Postgraphile (the library that we use to generate the GraphQL schema using the Postgres schema) is initialized only when the server is first started, so its endpoints will not change dynamically.
 
 ## Pull Requests
-Once you've made changes to the codebase, it's time to get them approved. Please look through [this guide](https://guides.github.com/introduction/flow/) on Github Flow before you start working on any code! It outlines the general process for making and pushing changes to a repository. For us specifically, here are some guidelines:
+Once you've made changes to the codebase, it's time to get them approved. Please look through [this guide](https://guides.github.com/introduction/flow/) on the Github Flow before you start working on any code! It outlines the general process for making and pushing changes to a repository. (Note: This is not the same as Gitflow) For us specifically, here are some guidelines:
 - When you are starting to work on something new, first switch to the master branch and sync it with the remote
 - Create a new branch off master, and give it an informative name, prefixed by your initials. For example, if your initials are ab, name your branch `ab/descriptive-name`.
 - Commit your changes to this feature branch. Commit often so that you don't accidentally lose your progress!
@@ -80,3 +82,4 @@ This folder contains other guides as well, for example on authentication and the
 - [Postgraphile](https://www.graphile.org/postgraphile/)
 - [Apollo Client for GraphQL](https://www.apollographql.com/docs/react/)
 - [Progressive Web Apps documentation](https://developers.google.com/web/progressive-web-apps/)
+- [Git tutorials from beginner to advanced](https://www.atlassian.com/git/tutorials/what-is-version-control)

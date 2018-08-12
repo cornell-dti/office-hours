@@ -3,7 +3,7 @@
 @mobile-breakpoint: 920px;
 
 // Calendar
-@import "./calendar/CalendarDateSelect";
+@import "./calendar/CalendarDaySelect";
 @import "./calendar/CalendarHeader";
 @import "./calendar/CalendarSessions";
 @import "./calendar/CalendarView";
@@ -19,7 +19,6 @@
 @import "./session/SessionPopularQuestionsContainer";
 @import "./session/SessionQuestionsComponent";
 @import "./session/SessionQuestionsContainer";
-@import "./session/StudentSessionView";
 @import "./session/TASessionView";
 
 // Login
@@ -29,15 +28,24 @@
 // Split
 @import "./SplitView";
 
+// Multiple views
+@import "./TopBar";
+@import "./ModalMenu.less";
+
 // Professor
 @import "./professor/ProfessorView";
-@import "./professor/ProfessorHeader";
 @import "./professor/ProfessorSidebar";
-@import "./professor/ProfessorAddNewOH";
+@import "./professor/ProfessorAddNew";
 @import "./professor/ProfessorCalendarTable";
 @import "./professor/ProfessorCalendarRow";
-@import "./professor/ProfessorDelete";
 @import "./professor/ProfessorOHInfo";
+@import "./professor/ProfessorTagsTable";
+@import "./professor/ProfessorTagsRow";
+@import "./professor/ProfessorTagInfo";
+@import "./professor/ProfessorDelete";
+@import "./professor/ProfessorOHInfoDelete";
+@import "./professor/ProfessorTagsDelete";
+
 
 #root {
    height: 100%;

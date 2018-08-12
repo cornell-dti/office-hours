@@ -8,19 +8,13 @@ class CalendarSessionCard extends React.Component {
     };
 
     props: {
-        start: Date,
-        end: Date,
-        ta: string,
-        location: string,
-        resolvedNum: number,
-        aheadNum: number,
-        id: number,
+        session: AppSession
         callback: Function,
         active: boolean,
     };
 
     handleOnClick = () => {
-        this.props.callback(this.props.id);
+        this.props.callback(this.props.session.sessionId);
     }
 
     render() {
@@ -30,33 +24,32 @@ class CalendarSessionCard extends React.Component {
         var status = 'closed';
         var timeDesc = '';
         var nowDate = new Date(Date.now());
+
+        const session = this.props.session;
+        const questions = session.questionsBySessionId.nodes;
+        const tas = session.sessionTasBySessionId.nodes;
         // To test:
         // var nowDate = new Date(this.props.start); // live
         // var nowDate = new Date(this.props.start.getTime() - 1); // open
-        if (this.props.start <= nowDate && nowDate <= this.props.end) {
+        if (session.startTime <= nowDate && nowDate <= session.endTime) {
             status = 'live';
-            var diff = Math.abs(this.props.end.getTime() - nowDate.getTime());
+            var diff = Math.abs(session.endTime.getTime() - nowDate.getTime());
             timeDesc = 'Ends in ' + Math.floor(diff / 60000) + ' minutes';
         } else {
             var nowPlusOpen = new Date(nowDate.getTime() + openPeriod);
-            if (this.props.start <= nowPlusOpen && nowPlusOpen <= this.props.end) {
+            if (session.startTime <= nowPlusOpen && nowPlusOpen <= session.endTime) {
                 status = 'open';
             }
-        }
-
-        var zero = '';
-        if (this.props.aheadNum === 0) {
-            zero = 'zero';
         }
 
         return (
             <div className={(this.props.active ? 'active' : '') + ' CalendarSessionCard'} onClick={this.handleOnClick}>
                 <div className="TimeInfo">
                     <div className="StartTime">
-                        <Moment date={this.props.start} interval={0} format={'hh:mm A'} />
+                        <Moment date={session.startTime} interval={0} format={'hh:mm A'} />
                     </div>
                     <div className="EndTime">
-                        <Moment date={this.props.end} interval={0} format={'hh:mm A'} />
+                        <Moment date={session.endTime} interval={0} format={'hh:mm A'} />
                     </div>
                 </div>
                 <div className={'Indicator ' + status}>
@@ -64,18 +57,23 @@ class CalendarSessionCard extends React.Component {
                 </div>
                 <div className="CalendarCard">
                     <div className="TA">
-                        {this.props.ta}
+                        {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
                         <span className={'IndicatorDesc ' + status}>{status}</span>
                     </div>
-                    <div className="Location">{this.props.location}</div>
+                    <div className="Location">{session.building + ' ' + session.room}</div>
                     <div className="Queue">
                         <span className="Ahead">
-                            Ahead: &nbsp;
-                            <span className={'AheadNum ' + zero}>{this.props.aheadNum}</span>
+                            Waiting: &nbsp;
+                            {/* Special class zero exists if we use the num ahead later */}
+                            <span className={'AheadNum '}>
+                                {questions.filter(q => q.status === 'unresolved').length}
+                            </span>
                         </span>
                         <span className="Finished">
                             Finished: &nbsp;
-                            <span className="FinishedNum">{this.props.resolvedNum}</span>
+                            <span className="FinishedNum">
+                                {questions.filter(q => q.status === 'resolved').length}
+                            </span>
                         </span>
                     </div>
                     <div className="TimeDesc">{timeDesc}</div>

@@ -1,6 +1,6 @@
 aside.CalendarView {
     position: fixed;
-    top: 20px;
+    top: 0;
     bottom: 0;
     left: 0;
     width: 390px;
@@ -14,7 +14,7 @@ aside.CalendarView {
 
 section.StudentSessionView {
     position: fixed;
-    top: 20px;
+    top: 0;
     bottom: 0;
     right: 0;
     left: 390px;
@@ -40,7 +40,7 @@ section .SessionJoinButton {
     color: #484848;
     font-family: Roboto;
     font-size: 18px;
-    padding-top: 46vh;
+    padding-top: 25vh;
 }
 
 .modal {
@@ -64,6 +64,45 @@ section .SessionJoinButton {
     right: 0;
     z-index: 3;
     background-color: rgba(112, 112, 112, 0.8);
+}
+
+.welcomeMessage {
+    padding-top: 100px;
+    font-family: Roboto;
+    font-size: 28px;
+    font-weight: 300;
+    color: #474747;
+}
+
+.welcomeName {
+    font-weight: 500;
+}
+
+.undoContainer {
+    width:100%;
+    background-color: #b0b0b0;
+    color: #ffffff;
+    height: 56px;
+    text-align: left;
+    position: relative;
+    top: -12px;
+
+    .undoClose {
+        position: absolute;
+        top:2px;
+        left:4px;
+        cursor: pointer;
+    }
+
+    .undoText {
+        line-height: 56px;
+        text-align: center;
+
+        .undoLink {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    }
 }
 
 @media only screen and (max-width: @mobile-breakpoint) {
@@ -96,5 +135,9 @@ section .SessionJoinButton {
         margin: 15px auto 0;
         width: 90%;
         max-width: 400px;
+    }
+
+    .undoContainer {
+        background-color: #79b8b8;
     }
 }
