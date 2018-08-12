@@ -93,12 +93,12 @@ begin
 	permission = true;
 	if (question_asked > 0) then 
 		-- if there are questions asked, get session ids from questions asked
-		select session_id into checked_session_ids from questions where asked_id = _asker_id;
+		select session_id into checked_session_ids from questions where asked_id = _asker_id AND status = 'unresolved';
 		-- loop through session ids, if they are all expired, then allow 
 		FOREACH session_id in ARRAY checked_session_ids
 		LOOP
 			select end_time INTO end_time from session_series WHERE session_series_id = session_id;
-			if (end_time < NOW())
+			if (end_time > NOW())
 				raise exception 'Cannot add question: currently asking in another queue';
 			end if;
 		END LOOP;
