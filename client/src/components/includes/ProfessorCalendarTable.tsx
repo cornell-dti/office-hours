@@ -134,12 +134,12 @@ class ProfessorCalendarTable extends React.Component {
         }
 
         var rows = days.map(
-            (tag, i) => {
+            (dayName, i) => {
                 return (
                     <React.Fragment key={i}>
                         <tbody>
                             <tr>
-                                <th colSpan={tablewidth}>{tag}</th>
+                                <th colSpan={tablewidth}>{dayName}</th>
                             </tr>
                         </tbody>
                         <ProfessorCalendarRow

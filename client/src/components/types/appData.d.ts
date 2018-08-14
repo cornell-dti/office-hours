@@ -44,6 +44,11 @@ interface AppTag {
     level: number;
     tagId: number;
     activated: boolean;
+    tagRelationsByParentId?: {
+        nodes: [{
+            tagByChildId: AppTag
+        }]
+    };
 }
 
 interface AppTagRelations extends AppTag {

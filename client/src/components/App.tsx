@@ -3,7 +3,7 @@ import LoginView from './pages/LoginView';
 import ProfessorView from './pages/ProfessorView';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import SplitView from './pages/SplitView';
-import ProfessorTags from './includes/ProfessorTags';
+import ProfessorTags from './pages/ProfessorTagsView';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 

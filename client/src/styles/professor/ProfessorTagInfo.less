@@ -2,29 +2,55 @@
     margin-left: 40px;
     color: #898989;
 
-    .Assignment {
+    .InputSection {
         margin: 15px 0;
 
-        input {
-            width: 95%;
+        .InputHeader {
+            font-size: 12px;
+            font-weight: 500;
+            color: #898989;
+            margin-bottom: 10px;
         }
-    }
-    
-    .IsActivated {
-        margin-top: 25px;
     }
 
-    .NumQuestions {
-        .react-numeric-input {
-            display: block;
-            width:100px;
-        }
+    .Status {
 
-        input {
-            width:100px;
+        .ActiveButton {
+            width: 120px;
+            height: 25px;
+            line-height: 25px;
+            border-radius: 3px;
+            font-size: 12px;
+            border: solid 1px #979797;
+            color: #979797;
+            margin-right: 30px;
+            text-align: center;
+            display: inline-block;
+            cursor: pointer;
+
+            &.Selected {
+                background-color: #d8d8d8;
+                color: #4a4a4a;
+                border: none;
+                cursor: default;
+            }
         }
     }
-    
+
+    .ChildTags {
+        .SelectedChildTag {
+            display: inline-block;
+            width: 120px;
+            height: 30px;
+            border-radius: 10px;
+            background-color: #edeff2;
+            text-align: center;
+            color: #898989;
+            line-height: 30px;
+            font-size: 12px;
+            margin-right: 30px;
+        }
+    }
 }
 
 .ExpandedEdit, .ExpandedAdd {
