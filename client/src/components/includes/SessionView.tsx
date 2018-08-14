@@ -163,8 +163,8 @@ class SessionView extends React.Component {
     }
 
     isOpen = (session: AppSession, interval: AppInterval) => {
-        return !(new Date(session.startTime).getTime() - Interval.toMillisecoonds(interval) < new Date().getTime()
-            && new Date(session.endTime) > new Date());
+        return new Date(session.startTime).getTime() - Interval.toMillisecoonds(interval) < new Date().getTime()
+            && new Date(session.endTime) > new Date();
     }
 
     render() {

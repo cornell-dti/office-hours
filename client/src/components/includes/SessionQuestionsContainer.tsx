@@ -55,7 +55,7 @@ class SessionQuestionsContainer extends React.Component {
                 {questions && questions.length === 0 &&
                     <React.Fragment>
                         <p className="noQuestionsHeading">
-                            {this.props.isOpen ? 'Queue Not Open' : 'Queue Currently Empty'}
+                            {this.props.isOpen ? 'Queue Currently Empty' : 'Queue Not Open'}
                         </p>
                         {!this.props.isOpen ?
                             <p className="noQuestionsWarning">The queue hasn't opened yet or the session ended.</p> :
