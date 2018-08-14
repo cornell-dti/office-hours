@@ -76,16 +76,19 @@ CREATE TABLE public.questions (
 -- Name: api_add_question(text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_add_question(_content text, _status text, _session_id integer, _tags integer[]) RETURNS SETOF public.questions
-    LANGUAGE plpgsql
-    AS $$
+CREATE OR REPLACE FUNCTION public.api_add_question(_content text, _status text, _session_id integer, _tags integer[])
+ RETURNS SETOF questions
+ LANGUAGE plpgsql
+AS $function$
 DECLARE
 inserted_question integer;
 tag integer;
 asker users%rowtype;
 _asker_id integer;
+questions_asked integer;
 checked_session_ids integer[];
-end_time timestamp without time zone;
+checked_session_id integer;
+_end_time timestamp without time zone;
 questions questions%rowtype;
 begin
 	select * into asker from api_get_current_user();
@@ -95,16 +98,17 @@ begin
 		raise exception 'Cannot add question: no user is logged in.';
 	else
 		_asker_id := asker.user_id;
-		select count(*) > 0 into question_asked from questions where asker_id = _asker_id AND status = 'unresolved';
+		select count(*) into questions_asked from questions where asker_id = _asker_id AND status = 'unresolved';
 		
-		if (question_asked > 0) then 
+		if (questions_asked > 0) then 
 		-- if there are questions asked, get session ids from questions asked
-			select session_id into checked_session_ids from questions where asked_id = _asker_id AND status = 'unresolved';
+			checked_session_ids := ARRAY (select session_id from questions where asker_id = _asker_id AND status = 'unresolved');	
+		
 		-- loop through session ids, if they are all expired, then allow 
-			FOREACH session_id in ARRAY checked_session_ids
+			FOREACH checked_session_id in ARRAY checked_session_ids
 			LOOP
-				select end_time INTO end_time from session_series WHERE session_series_id = session_id;
-				if (end_time > NOW())
+				select end_time INTO _end_time from sessions WHERE session_id = checked_session_id;
+				if (_end_time > NOW()) then
 					raise exception 'Cannot add question: currently asking in another queue';
 				end if;
 			END LOOP;
