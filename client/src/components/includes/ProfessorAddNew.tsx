@@ -61,6 +61,8 @@ class ProfessorAddNew extends React.Component {
                         <ProfessorTagInfo
                             isNew={true}
                             cancelCallback={() => this.toggleEdit(false)}
+                            refreshCallback={this.props.refreshCallback}
+                            courseId={this.props.courseId}
                         />
                     }
                 </div>

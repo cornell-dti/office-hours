@@ -77,9 +77,9 @@ CREATE TABLE public.questions (
 --
 
 CREATE OR REPLACE FUNCTION public.api_add_question(_content text, _status text, _session_id integer, _tags integer[])
- RETURNS SETOF questions
+ RETURNS SETOF public.questions
  LANGUAGE plpgsql
-AS $function$
+AS $$
 DECLARE
 inserted_question integer;
 tag integer;
@@ -954,7 +954,7 @@ CREATE TABLE public.courses (
     start_date date NOT NULL,
     end_date date NOT NULL,
     queue_open_interval interval DEFAULT '00:30:00'::interval NOT NULL,
-    char_limit DEFAULT 100 integer NOT NULL
+    char_limit integer DEFAULT 100::integer NOT NULL
 );
 
 

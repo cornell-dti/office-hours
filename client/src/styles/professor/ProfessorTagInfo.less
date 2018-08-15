@@ -49,6 +49,35 @@
             line-height: 30px;
             font-size: 12px;
             margin-right: 30px;
+            position: relative;
+
+            .Remove {
+                position: absolute;
+                right: 10px;
+                cursor: pointer;
+            }
+        }
+
+        .InputChildTag {
+            &:focus {
+                outline: none;
+            }
+        }
+
+        .InputChildTagEnter {
+            background: #7ab7fe;
+            color: #edeff2;
+            height: 25px;
+            padding: 2px 5px;
+            line-height: 20px;
+            width: auto;
+            cursor: pointer;
+
+            &.disabled {
+                background: #898989;
+                opacity: 0.5;
+                cursor: default;
+            }
         }
     }
 }

@@ -149,6 +149,8 @@ class ProfessorView extends React.Component {
                                         <div className="Calendar">
                                             <ProfessorTagsTable
                                                 tags={data.courseByCourseId.tagsByCourseId.nodes}
+                                                refreshCallback={refetch}
+                                                courseId={this.props.match.params.courseId}
                                             />
                                         </div>
                                     }

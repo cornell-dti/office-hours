@@ -9,6 +9,8 @@ class ProfessorTagsRow extends React.Component {
         tags: AppTag[]
         isExpanded: boolean[]
         handleEditToggle: Function
+        courseId: number
+        refreshCallback: Function
     };
 
     constructor(props: {}) {
@@ -31,8 +33,7 @@ class ProfessorTagsRow extends React.Component {
                         <tr className="Preview">
                             <td>
                                 <span
-                                    className={'ChildTag tag primaryTag ' +
-                                        (this.props.isExpanded[i] ? 'selectedTag' : '')}
+                                    className={'ChildTag'}
                                     key={row.tagId}
                                 >
                                     {row.name}
@@ -42,8 +43,7 @@ class ProfessorTagsRow extends React.Component {
                                 {row.tagRelationsByParentId &&
                                     row.tagRelationsByParentId.nodes.map((childTag) =>
                                         <span
-                                            className={'ChildTag tag secondaryTag ' +
-                                                (this.props.isExpanded[i] ? 'selectedTag' : '')}
+                                            className={'ChildTag'}
                                             key={childTag.tagByChildId.tagId}
                                         >
                                             {childTag.tagByChildId.name}
@@ -65,6 +65,8 @@ class ProfessorTagsRow extends React.Component {
                                     isNew={false}
                                     cancelCallback={() => this.toggleEdit(i)}
                                     tag={row}
+                                    courseId={this.props.courseId}
+                                    refreshCallback={this.props.refreshCallback}
                                 />
                             </td>
                         </tr>
