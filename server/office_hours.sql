@@ -76,9 +76,10 @@ CREATE TABLE public.questions (
 -- Name: api_add_question(text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_add_question(_content text, _status text, _session_id integer, _tags integer[]) RETURNS SETOF public.questions
-    LANGUAGE plpgsql
-    AS $$
+CREATE OR REPLACE FUNCTION public.api_add_question(_content text, _status text, _session_id integer, _tags integer[])
+ RETURNS SETOF questions
+ LANGUAGE plpgsql
+AS $function$
 DECLARE
 inserted_question integer;
 tag integer;
@@ -89,6 +90,8 @@ checked_session_ids integer[];
 checked_session_id integer;
 _end_time timestamp without time zone;
 questions questions%rowtype;
+_course_id integer;
+_char_limit integer;
 begin
 	select * into asker from api_get_current_user();
 	
@@ -111,6 +114,12 @@ begin
 					raise exception 'Cannot add question: currently asking in another queue';
 				end if;
 			END LOOP;
+		end if;
+	
+		select course_id into _course_id from sessions where session_id = _session_id;
+		select char_limit into _char_limit from courses where course_id = _course_id;
+		if (length(_content) > _char_limit) then
+			raise exception 'Question asked is longer than character limit';
 		end if;
 
 		INSERT INTO questions(content, status, session_id, asker_id)
@@ -945,7 +954,7 @@ CREATE TABLE public.courses (
     start_date date NOT NULL,
     end_date date NOT NULL,
     queue_open_interval interval DEFAULT '00:30:00'::interval NOT NULL,
-    char_limit integer
+    char_limit DEFAULT 280 integer NOT NULL
 );
 
 
@@ -1186,7 +1195,7 @@ COPY public.course_users (course_id, user_id, role) FROM stdin;
 --
 
 COPY public.courses (course_id, code, name, semester, start_date, end_date, queue_open_interval, char_limit) FROM stdin;
-1	CS 1380	Data Science For All	FA18	2018-06-28	2018-10-13	1 day	\N
+1	CS 1380	Data Science For All	FA18	2018-06-28	2018-10-13	1 day	30
 \.
 
 
