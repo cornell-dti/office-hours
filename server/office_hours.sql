@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.3
+-- Dumped from database version 10.4
 -- Dumped by pg_dump version 10.3
 
 SET statement_timeout = 0;
@@ -76,20 +76,52 @@ CREATE TABLE public.questions (
 -- Name: api_add_question(text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_add_question(_content text, _status text, _session_id integer, _tags integer[]) RETURNS SETOF public.questions
-    LANGUAGE plpgsql
-    AS $$
+CREATE OR REPLACE FUNCTION public.api_add_question(_content text, _status text, _session_id integer, _tags integer[])
+ RETURNS SETOF questions
+ LANGUAGE plpgsql
+AS $function$
 DECLARE
 inserted_question integer;
 tag integer;
 asker users%rowtype;
 _asker_id integer;
+questions_asked integer;
+checked_session_ids integer[];
+checked_session_id integer;
+_end_time timestamp without time zone;
+questions questions%rowtype;
+_course_id integer;
+_char_limit integer;
 begin
 	select * into asker from api_get_current_user();
+	
+
 	if (asker is null) then
 		raise exception 'Cannot add question: no user is logged in.';
 	else
 		_asker_id := asker.user_id;
+		select count(*) into questions_asked from questions where asker_id = _asker_id AND status = 'unresolved';
+		
+		if (questions_asked > 0) then 
+		-- if there are questions asked, get session ids from questions asked
+			checked_session_ids := ARRAY (select session_id from questions where asker_id = _asker_id AND status = 'unresolved');	
+		
+		-- loop through session ids, if they are all expired, then allow 
+			FOREACH checked_session_id in ARRAY checked_session_ids
+			LOOP
+				select end_time INTO _end_time from sessions WHERE session_id = checked_session_id;
+				if (_end_time > NOW()) then
+					raise exception 'Cannot add question: currently asking in another queue';
+				end if;
+			END LOOP;
+		end if;
+	
+		select course_id into _course_id from sessions where session_id = _session_id;
+		select char_limit into _char_limit from courses where course_id = _course_id;
+		if (length(_content) > _char_limit) then
+			raise exception 'Question asked is longer than character limit';
+		end if;
+
 		INSERT INTO questions(content, status, session_id, asker_id)
 		values (_content, _status, _session_id, _asker_id) returning question_id INTO inserted_question;
 		FOREACH tag in ARRAY _tags
@@ -921,7 +953,8 @@ CREATE TABLE public.courses (
     semester text NOT NULL,
     start_date date NOT NULL,
     end_date date NOT NULL,
-    queue_open_interval interval DEFAULT '00:30:00'::interval NOT NULL
+    queue_open_interval interval DEFAULT '00:30:00'::interval NOT NULL,
+    char_limit DEFAULT 100 integer NOT NULL
 );
 
 
@@ -1161,8 +1194,8 @@ COPY public.course_users (course_id, user_id, role) FROM stdin;
 -- Data for Name: courses; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.courses (course_id, code, name, semester, start_date, end_date, queue_open_interval) FROM stdin;
-1	CS 1380	Data Science For All	FA18	2018-06-28	2018-08-13	1 day
+COPY public.courses (course_id, code, name, semester, start_date, end_date, queue_open_interval, char_limit) FROM stdin;
+1	CS 1380	Data Science For All	FA18	2018-06-28	2018-10-13	1 day	30
 \.
 
 
@@ -1171,6 +1204,30 @@ COPY public.courses (course_id, code, name, semester, start_date, end_date, queu
 --
 
 COPY public.question_tags (question_id, tag_id) FROM stdin;
+21	1
+21	9
+22	1
+22	9
+23	1
+23	9
+24	2
+24	13
+25	1
+25	10
+26	1
+26	10
+27	2
+27	13
+28	1
+28	9
+29	1
+29	10
+30	2
+30	14
+31	3
+31	17
+32	3
+32	17
 \.
 
 
@@ -1179,6 +1236,18 @@ COPY public.question_tags (question_id, tag_id) FROM stdin;
 --
 
 COPY public.questions (question_id, content, time_entered, status, time_addressed, session_id, asker_id, answerer_id) FROM stdin;
+27	asdf	2018-08-13 20:53:00.559984-07	retracted	2018-08-13 20:55:03.705274-07	281	2	2
+28	test	2018-08-13 20:55:08.755926-07	unresolved	\N	281	2	\N
+21	asdf	2018-08-13 01:11:43.006901-07	retracted	2018-08-13 20:56:24.330621-07	276	2	2
+22	asdf	2018-08-13 20:44:05.766539-07	retracted	2018-08-13 20:56:25.244772-07	276	2	2
+23	asdf	2018-08-13 20:44:28.721481-07	retracted	2018-08-13 20:56:30.391607-07	276	2	2
+24	asdf	2018-08-13 20:45:40.261475-07	retracted	2018-08-13 20:56:33.598115-07	276	2	2
+26	asdf	2018-08-13 20:52:51.090955-07	retracted	2018-08-13 20:56:41.418089-07	290	2	2
+30	test	2018-08-13 20:56:54.75322-07	retracted	2018-08-13 21:01:02.62037-07	276	2	2
+31	asdf	2018-08-13 21:01:10.213082-07	retracted	2018-08-13 21:03:22.308048-07	276	2	2
+29	test	2018-08-13 20:56:45.78248-07	retracted	2018-08-13 21:09:53.262724-07	290	2	2
+25	asdf	2018-08-13 20:46:27.336446-07	retracted	2018-08-13 21:09:57.147415-07	289	2	2
+32	asdf	2018-08-13 21:10:01.239741-07	unresolved	\N	289	2	\N
 \.
 
 
@@ -1187,9 +1256,13 @@ COPY public.questions (question_id, content, time_entered, status, time_addresse
 --
 
 COPY public.session_series (session_series_id, start_time, end_time, building, room, course_id) FROM stdin;
-23	2018-07-09 10:00:00-04	2018-07-09 11:00:00-04	Gates	G11	1
-24	2018-07-09 12:30:00-04	2018-07-09 14:00:00-04	Rhodes	402	1
-25	2018-07-03 10:30:00-04	2018-07-03 11:15:00-04	Gates	343	1
+23	2018-07-09 07:00:00-07	2018-07-09 08:00:00-07	Gates	G11	1
+24	2018-07-09 09:30:00-07	2018-07-09 11:00:00-07	Rhodes	402	1
+25	2018-07-03 07:30:00-07	2018-07-03 08:15:00-07	Gates	343	1
+28	2018-08-13 00:00:00-07	2018-08-13 01:30:00-07	Gates	123	1
+29	2018-08-14 07:30:00-07	2018-08-14 10:00:00-07	Gates	122	1
+30	2018-08-14 16:30:00-07	2018-08-14 22:30:00-07	Gates	B12	1
+31	2018-08-15 00:30:00-07	2018-08-15 02:00:00-07	Gates	123	1
 \.
 
 
@@ -1201,6 +1274,10 @@ COPY public.session_series_tas (session_series_id, user_id) FROM stdin;
 23	1
 24	3
 25	8
+28	6
+29	8
+30	3
+31	3
 \.
 
 
@@ -1228,6 +1305,16 @@ COPY public.session_tas (session_id, user_id) FROM stdin;
 287	3
 288	3
 288	8
+289	6
+290	3
+291	3
+292	3
+293	3
+294	3
+295	3
+296	3
+297	3
+298	3
 \.
 
 
@@ -1236,23 +1323,33 @@ COPY public.session_tas (session_id, user_id) FROM stdin;
 --
 
 COPY public.sessions (session_id, start_time, end_time, building, room, session_series_id, course_id) FROM stdin;
-277	2018-07-16 12:30:00-04	2018-07-16 14:00:00-04	Rhodes	402	24	1
-278	2018-07-23 12:30:00-04	2018-07-23 14:00:00-04	Rhodes	402	24	1
-279	2018-07-30 12:30:00-04	2018-07-30 14:00:00-04	Rhodes	402	24	1
-280	2018-08-06 12:30:00-04	2018-08-06 14:00:00-04	Rhodes	402	24	1
-281	2018-08-13 12:30:00-04	2018-08-13 14:00:00-04	Rhodes	402	24	1
-282	2018-07-10 10:30:00-04	2018-07-10 11:15:00-04	Gates	343	25	1
-283	2018-07-17 10:30:00-04	2018-07-17 11:15:00-04	Gates	343	25	1
-284	2018-07-24 10:30:00-04	2018-07-24 11:15:00-04	Gates	343	25	1
-285	2018-07-31 10:30:00-04	2018-07-31 11:15:00-04	Gates	343	25	1
-286	2018-08-07 10:30:00-04	2018-08-07 11:15:00-04	Gates	343	25	1
-287	2018-07-15 13:30:00-04	2018-07-15 14:30:00-04	Upson	B60	\N	1
-288	2018-07-22 14:30:00-04	2018-07-22 15:30:00-04	Upson	B10	\N	1
-272	2018-07-16 10:00:00-04	2018-07-16 11:00:00-04	Gates	G11	23	1
-273	2018-07-23 10:00:00-04	2018-07-23 11:00:00-04	Gates	G11	23	1
-274	2018-07-30 10:00:00-04	2018-07-30 11:00:00-04	Gates	G11	23	1
-275	2018-08-06 10:00:00-04	2018-08-06 11:00:00-04	Gates	G11	23	1
-276	2018-08-13 10:00:00-04	2018-08-13 11:00:00-04	Gates	G11	23	1
+277	2018-07-16 09:30:00-07	2018-07-16 11:00:00-07	Rhodes	402	24	1
+278	2018-07-23 09:30:00-07	2018-07-23 11:00:00-07	Rhodes	402	24	1
+279	2018-07-30 09:30:00-07	2018-07-30 11:00:00-07	Rhodes	402	24	1
+280	2018-08-06 09:30:00-07	2018-08-06 11:00:00-07	Rhodes	402	24	1
+281	2018-08-13 09:30:00-07	2018-08-13 11:00:00-07	Rhodes	402	24	1
+282	2018-07-10 07:30:00-07	2018-07-10 08:15:00-07	Gates	343	25	1
+283	2018-07-17 07:30:00-07	2018-07-17 08:15:00-07	Gates	343	25	1
+284	2018-07-24 07:30:00-07	2018-07-24 08:15:00-07	Gates	343	25	1
+285	2018-07-31 07:30:00-07	2018-07-31 08:15:00-07	Gates	343	25	1
+286	2018-08-07 07:30:00-07	2018-08-07 08:15:00-07	Gates	343	25	1
+287	2018-07-15 10:30:00-07	2018-07-15 11:30:00-07	Upson	B60	\N	1
+288	2018-07-22 11:30:00-07	2018-07-22 12:30:00-07	Upson	B10	\N	1
+272	2018-07-16 07:00:00-07	2018-07-16 08:00:00-07	Gates	G11	23	1
+273	2018-07-23 07:00:00-07	2018-07-23 08:00:00-07	Gates	G11	23	1
+274	2018-07-30 07:00:00-07	2018-07-30 08:00:00-07	Gates	G11	23	1
+275	2018-08-06 07:00:00-07	2018-08-06 08:00:00-07	Gates	G11	23	1
+276	2018-08-13 07:00:00-07	2018-08-13 08:00:00-07	Gates	G11	23	1
+289	2018-08-13 00:00:00-07	2018-08-13 01:30:00-07	Gates	123	28	1
+290	2018-08-15 00:30:00-07	2018-08-15 02:00:00-07	Gates	123	31	1
+291	2018-08-22 00:30:00-07	2018-08-22 02:00:00-07	Gates	123	31	1
+292	2018-08-29 00:30:00-07	2018-08-29 02:00:00-07	Gates	123	31	1
+293	2018-09-05 00:30:00-07	2018-09-05 02:00:00-07	Gates	123	31	1
+294	2018-09-12 00:30:00-07	2018-09-12 02:00:00-07	Gates	123	31	1
+295	2018-09-19 00:30:00-07	2018-09-19 02:00:00-07	Gates	123	31	1
+296	2018-09-26 00:30:00-07	2018-09-26 02:00:00-07	Gates	123	31	1
+297	2018-10-03 00:30:00-07	2018-10-03 02:00:00-07	Gates	123	31	1
+298	2018-10-10 00:30:00-07	2018-10-10 02:00:00-07	Gates	123	31	1
 \.
 
 
@@ -1324,15 +1421,15 @@ COPY public.tags (tag_id, name, course_id, level, activated) FROM stdin;
 --
 
 COPY public.users (user_id, email, google_id, first_name, last_name, created_at, last_activity_at, photo_url, display_name) FROM stdin;
-1	cv231@cornell.edu	115064340704113209584	Corey	Valdez	2018-03-25 03:07:23.485-04	2018-03-25 03:07:26.391-04	https://randomuser.me/api/portraits/men/46.jpg	Corey Valdez
-2	ejs928@cornell.edu	139064340704113209582	Edgar	Stewart	2018-03-25 03:08:05.668-04	2018-03-25 03:08:08.294-04	https://randomuser.me/api/portraits/men/7.jpg	Edgar Stewart
-3	asm2292@cornell.edu	115064340704118374059	Ada	Morton	2018-03-25 03:08:51.563-04	2018-03-25 03:08:54.084-04	https://randomuser.me/api/portraits/women/8.jpg	Ada Morton
-4	cr848@cornell.edu	215064340704113209584	Caroline	Robinson	2018-03-25 03:09:25.563-04	2018-03-25 03:09:28.525-04	https://randomuser.me/api/portraits/women/59.jpg	Caroline Robinson
-5	ca449@cornell.edu	115064340704113209332	Christopher	Arnold	2018-03-25 03:10:28.166-04	2018-03-25 03:10:32.518-04	\N	Chris Arnold
-6	zz527@cornell.edu	115064340704113209009	Zechen	Zhang	2018-03-25 03:11:20.394-04	2018-03-25 03:11:22.765-04	\N	Zechen Zhang
-7	sjw748@cornell.edu	115064340704113209877	Susan	Wilson	2018-03-25 03:12:45.328-04	2018-03-25 03:12:47.826-04	https://randomuser.me/api/portraits/women/81.jpg	Sue Wilson
-8	clarkson@cs.cornell.edu	115064340704113209999	Michael	Clarkson	2018-03-25 03:13:26.996-04	2018-03-25 03:13:29.4-04	https://randomuser.me/api/portraits/men/20.jpg	Michael Clarkson
-19	ks939@cornell.edu	114961512147775594594	Karun	Singh	2018-07-11 09:38:34.214871-04	2018-07-11 09:39:07.517853-04	https://lh5.googleusercontent.com/-5atJCQlqmEM/AAAAAAAAAAI/AAAAAAAARN8/-TM5RNTPV0w/photo.jpg	Karun Singh
+1	cv231@cornell.edu	115064340704113209584	Corey	Valdez	2018-03-25 00:07:23.485-07	2018-03-25 00:07:26.391-07	https://randomuser.me/api/portraits/men/46.jpg	Corey Valdez
+2	ejs928@cornell.edu	139064340704113209582	Edgar	Stewart	2018-03-25 00:08:05.668-07	2018-03-25 00:08:08.294-07	https://randomuser.me/api/portraits/men/7.jpg	Edgar Stewart
+3	asm2292@cornell.edu	115064340704118374059	Ada	Morton	2018-03-25 00:08:51.563-07	2018-03-25 00:08:54.084-07	https://randomuser.me/api/portraits/women/8.jpg	Ada Morton
+4	cr848@cornell.edu	215064340704113209584	Caroline	Robinson	2018-03-25 00:09:25.563-07	2018-03-25 00:09:28.525-07	https://randomuser.me/api/portraits/women/59.jpg	Caroline Robinson
+5	ca449@cornell.edu	115064340704113209332	Christopher	Arnold	2018-03-25 00:10:28.166-07	2018-03-25 00:10:32.518-07	\N	Chris Arnold
+6	zz527@cornell.edu	115064340704113209009	Zechen	Zhang	2018-03-25 00:11:20.394-07	2018-03-25 00:11:22.765-07	\N	Zechen Zhang
+7	sjw748@cornell.edu	115064340704113209877	Susan	Wilson	2018-03-25 00:12:45.328-07	2018-03-25 00:12:47.826-07	https://randomuser.me/api/portraits/women/81.jpg	Sue Wilson
+8	clarkson@cs.cornell.edu	115064340704113209999	Michael	Clarkson	2018-03-25 00:13:26.996-07	2018-03-25 00:13:29.4-07	https://randomuser.me/api/portraits/men/20.jpg	Michael Clarkson
+19	ks939@cornell.edu	114961512147775594594	Karun	Singh	2018-07-11 06:38:34.214871-07	2018-07-11 06:39:07.517853-07	https://lh5.googleusercontent.com/-5atJCQlqmEM/AAAAAAAAAAI/AAAAAAAARN8/-TM5RNTPV0w/photo.jpg	Karun Singh
 \.
 
 
@@ -1347,21 +1444,21 @@ SELECT pg_catalog.setval('public.courses_course_id_seq', 3, true);
 -- Name: questions_question_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.questions_question_id_seq', 20, true);
+SELECT pg_catalog.setval('public.questions_question_id_seq', 32, true);
 
 
 --
 -- Name: session_series_session_series_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 27, true);
+SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 31, true);
 
 
 --
 -- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.sessions_session_id_seq', 288, true);
+SELECT pg_catalog.setval('public.sessions_session_id_seq', 298, true);
 
 
 --
@@ -1973,3 +2070,4 @@ ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 --
 -- PostgreSQL database dump complete
 --
+
