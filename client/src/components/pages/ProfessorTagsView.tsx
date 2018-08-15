@@ -145,7 +145,7 @@ class ProfessorView extends React.Component {
                                         refreshCallback={refetch}
                                     />
                                     {loading && <Loader active={true} content={'Loading...'} />}
-                                    {!loading && data &&
+                                    {!loading && data && data.courseByCourseId.tagsByCourseId.nodes.length > 0 &&
                                         <div className="Calendar">
                                             <ProfessorTagsTable
                                                 tags={data.courseByCourseId.tagsByCourseId.nodes}

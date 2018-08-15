@@ -41,13 +41,15 @@ class ProfessorTagsRow extends React.Component {
                             </td>
                             <td>
                                 {row.tagRelationsByParentId &&
-                                    row.tagRelationsByParentId.nodes.map((childTag) =>
-                                        <span
-                                            className={'ChildTag'}
-                                            key={childTag.tagByChildId.tagId}
-                                        >
-                                            {childTag.tagByChildId.name}
-                                        </span>)}
+                                    row.tagRelationsByParentId.nodes
+                                        .filter((childTag) => childTag.tagByChildId.activated)
+                                        .map((childTag) =>
+                                            <span
+                                                className={'ChildTag'}
+                                                key={childTag.tagByChildId.tagId}
+                                            >
+                                                {childTag.tagByChildId.name}
+                                            </span>)}
                             </td>
                             <td>{row.activated ? 'Active' : 'Inactive'}</td>
                             <td>

@@ -7,7 +7,19 @@ const CREATE_ASSIGNMENT = gql`
     mutation CreateAssignment($courseId: Int!, $name: String!, $activated: Boolean!, $childNames: [String]!, 
         $childActivateds:[Int]!) {
         apiCreatePrimaryTag(input: {_courseId: $courseId, _iname: $name, _activated: $activated, 
-            _childNames: $childNames, _childActivateds:$childActivateds}) {
+            _childNames: $childNames, _childActivateds: $childActivateds}) {
+            tags {
+                tagId
+            }
+        }
+    }
+`;
+
+const EDIT_ASSIGNMENT = gql`
+    mutation EditAssignment($id: Int!, $name: String!, $activated: Boolean!, $childNames: [String]!, 
+        $childActivateds:[Int]!, $childIds: [Int]!) {
+        apiEditPrimaryTag(input: {_parentId: $id, _iname: $name, _activated: $activated, 
+            _childNames: $childNames, _childActivateds: $childActivateds, _childIds: $childIds}) {
             tags {
                 tagId
             }
@@ -96,11 +108,16 @@ class ProfessorTagInfo extends React.Component {
             return;
         }
         var newChildTags = Object.assign({}, this.state.tag.tagRelationsByParentId);
+        var filteredTags = newChildTags.nodes.filter((childTag) => childTag.tagByChildId.activated);
+        var newChildTag = Object.assign({}, filteredTags[index]);
+        newChildTag = { tagByChildId: { ...newChildTag.tagByChildId, activated: false } };
         this.setState({
             tag: {
                 ...this.state.tag,
                 tagRelationsByParentId:
-                    { nodes: newChildTags.nodes.filter((value, i) => i !== index) }
+                {
+                    nodes: filteredTags.map((childTag, i) => i === index ? newChildTag : childTag)
+                }
             }
         });
     }
@@ -109,9 +126,12 @@ class ProfessorTagInfo extends React.Component {
         var childNames: string[] = [];
         var childActivateds: boolean[] = [];
         if (this.state.tag.tagRelationsByParentId) {
-            childNames = this.state.tag.tagRelationsByParentId.nodes.map((childTag) => childTag.tagByChildId.name);
-            childActivateds = this.state.tag.tagRelationsByParentId.nodes.map((childTag) =>
-                childTag.tagByChildId.activated);
+            var filteredDeleted = this.state.tag.tagRelationsByParentId.nodes
+                .filter((childTag) => childTag.tagByChildId.activated);
+            childNames = filteredDeleted.map((childTag) => childTag.tagByChildId.name);
+            // Line below is redundant, since it will always be true, but I've kept it here
+            // for verbosity
+            childActivateds = filteredDeleted.map((childTag) => childTag.tagByChildId.activated);
         }
 
         CreateAssignment({
@@ -119,6 +139,30 @@ class ProfessorTagInfo extends React.Component {
                 courseId: this.props.courseId,
                 name: this.state.tag.name,
                 activated: this.state.tag.activated,
+                childNames: childNames,
+                childActivateds: childActivateds
+            }
+        });
+    }
+
+    handleEditAssignment = (EditAssignment: Function): void => {
+        var childIds: number[] = [];
+        var childNames: string[] = [];
+        var childActivateds: boolean[] = [];
+        if (this.state.tag.tagRelationsByParentId) {
+            var filteredDeleted = this.state.tag.tagRelationsByParentId.nodes
+                .filter((childTag) => childTag.tagByChildId.tagId !== -1 || childTag.tagByChildId.activated);
+            childIds = filteredDeleted.map((childTag) => childTag.tagByChildId.tagId);
+            childNames = filteredDeleted.map((childTag) => childTag.tagByChildId.name);
+            childActivateds = filteredDeleted.map((childTag) => childTag.tagByChildId.activated);
+        }
+
+        EditAssignment({
+            variables: {
+                id: this.state.tag.tagId,
+                name: this.state.tag.name,
+                activated: this.state.tag.activated,
+                childIds: childIds,
                 childNames: childNames,
                 childActivateds: childActivateds
             }
@@ -158,21 +202,23 @@ class ProfessorTagInfo extends React.Component {
                         <div className="InputHeader">Tags</div>
                         {
                             this.state.tag.tagRelationsByParentId &&
-                            this.state.tag.tagRelationsByParentId.nodes.map((childTag, i) => {
-                                return (
-                                    <div
-                                        key={i}
-                                        className="SelectedChildTag"
-                                    >
-                                        {childTag.tagByChildId.name}
-                                        <Icon
-                                            className="Remove"
-                                            name="close"
-                                            onClick={() => this.handleRemoveChildTag(i)}
-                                        />
-                                    </div>
-                                );
-                            })
+                            this.state.tag.tagRelationsByParentId.nodes
+                                .filter((childTag) => childTag.tagByChildId.activated)
+                                .map((childTag, i) => {
+                                    return (
+                                        <div
+                                            key={i}
+                                            className="SelectedChildTag"
+                                        >
+                                            {childTag.tagByChildId.name}
+                                            <Icon
+                                                className="Remove"
+                                                name="close"
+                                                onClick={() => this.handleRemoveChildTag(i)}
+                                            />
+                                        </div>
+                                    );
+                                })
                         }
                         <input
                             className="InputChildTag"
@@ -207,9 +253,19 @@ class ProfessorTagInfo extends React.Component {
                             }
                         </Mutation>
                         :
-                        <button className="Bottom Edit" >
-                            Save Changes
-                        </button>
+                        <Mutation mutation={EDIT_ASSIGNMENT} onCompleted={() => this.props.refreshCallback()}>
+                            {(EditAssignment) =>
+                                <button
+                                    className="Bottom Edit"
+                                    onClick={() => {
+                                        this.handleEditAssignment(EditAssignment);
+                                        this.props.cancelCallback();
+                                    }}
+                                >
+                                    Save Changes
+                                </button>
+                            }
+                        </Mutation>
                     }
                 </div>
             </React.Fragment>
