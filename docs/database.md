@@ -71,6 +71,7 @@ Each row in courses represents a specific course offering that is using Queue Me
 ||start\_date|date|❌|Date on which office hours for this course are to start|
 ||end\_date|date|❌|Date on which office hours for this course are to end|
 ||queue\_open\_interval|interval|❌|Amount of time that the queue is to be opened for before each session starts; for example '30 minutes' (which is the default)|
+||char\_limit|integer|❌|Character limit for questions asked for the course|
 
 #### Authorization Rules
 |Operation|Who is allowed?|
@@ -382,7 +383,7 @@ All the fields from the [sessions](#sessions) table of all the sessions in the c
 #### api\_add\_question
 
 ##### Description
-Given the details of a user-submitted question, this function inserts the data into the backend. This function is necessary because without it, the client would have to make multiple calls (one for each tag) to associate tags with the question. This function abstracts away that logic and provides a simpler API to the client. Note that the asker\_id is inferred by looking at the logged-in user who made the query. If no user is logged in, the query will fail with an exception.
+Given the details of a user-submitted question, this function inserts the data into the backend. This function is necessary because without it, the client would have to make multiple calls (one for each tag) to associate tags with the question. This function abstracts away that logic and provides a simpler API to the client. Note that the asker\_id is inferred by looking at the logged-in user who made the query. If no user is logged in, the query will fail with an exception. This function checks to make sure the user doesn't have any unresolved questions in any other currently active sessions. This function also checks that the user's question is under the character limit. 
 
 ##### Parameters
 - \_content (text): the user-submitted text content of the question
