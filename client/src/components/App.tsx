@@ -1,11 +1,16 @@
 import * as React from 'react';
-import LoginView from './pages/LoginView';
-import ProfessorView from './pages/ProfessorView';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
-import SplitView from './pages/SplitView';
-import ProfessorTags from './pages/ProfessorTagsView';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
+import * as ReactGA from 'react-ga';
+
+import LoginView from './pages/LoginView';
+import ProfessorView from './pages/ProfessorView';
+import SplitView from './pages/SplitView';
+import ProfessorTagsView from './pages/ProfessorTagsView';
+import { Analytics } from './includes/Analytics';
+
+ReactGA.initialize('UA-123790900-1');
 
 const GET_USER = gql`
 query {
@@ -53,9 +58,11 @@ class App extends React.Component {
         return (
             <Router>
                 <div className="App">
+                    <Route path="/" component={Analytics} />
                     <Switch>
                         <Route path="/login" component={LoginView} />
-                        <PrivateRoute path="/professor-tags/course/:courseId" component={ProfessorTags} exact={true} />
+                        <PrivateRoute path="/professor-tags/course/:courseId"
+                            component={ProfessorTagsView} exact={true} />
                         <PrivateRoute path="/professor/course/:courseId" component={ProfessorView} exact={true} />
                         <PrivateRoute path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
                         <PrivateRoute path="/course/:courseId" component={SplitView} />

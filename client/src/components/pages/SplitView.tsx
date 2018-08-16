@@ -62,7 +62,9 @@ class SplitView extends React.Component {
         // Handle browser back button
         this.props.history.listen((location, action) => {
             this.setState({
-                activeView: location.pathname.indexOf('add') === -1 ? 'session' : 'addQuestion',
+                activeView: location.pathname.indexOf('add') !== -1
+                    ? 'addQuestion'
+                    : this.props.match.params.sessionId ? 'session' : 'calendar',
                 sessionId: this.props.match.params.sessionId || -1
             });
         });

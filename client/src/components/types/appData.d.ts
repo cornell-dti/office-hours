@@ -3,6 +3,19 @@ interface AppCourse {
     name: string;
 }
 
+interface AppInterval {
+    seconds: number;
+    minutes: number;
+    hours: number;
+    days: number;
+    months: number;
+    years: number;
+}
+
+interface AppCourseInterval extends AppCourse {
+    queueOpenInterval: AppInterval;
+}
+
 interface AppSession {
     sessionId: number;
     startTime: Date;
@@ -52,10 +65,6 @@ interface AppTag {
 }
 
 interface AppTagRelations extends AppTag {
-    name: string;
-    level: number;
-    tagId: number;
-    activated: boolean;
     tagRelationsByChildId: {
         nodes: [{
             parentId: number

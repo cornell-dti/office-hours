@@ -27,17 +27,14 @@ class CalendarDaySelect extends React.Component {
         week.setTime(week.getTime() - (week.getDay() - 1) * ONE_DAY);
         this.state = {
             selectedWeekEpoch: week.getTime(),
-            active: week.getDay() + 1 % 7   // index of currently selected date
+            active: new Date().getDay() - 1 % 7   // index of currently selected date
         };
     }
 
     incrementWeek = (forward: boolean) => {
-        if (forward) {
-            this.setState({ selectedWeekEpoch: this.state.selectedWeekEpoch + ONE_WEEK });
-        } else {
-            this.setState({ selectedWeekEpoch: this.state.selectedWeekEpoch - ONE_WEEK });
-        }
-        this.props.callback(this.state.selectedWeekEpoch + this.state.active * ONE_DAY);
+        let newDate = this.state.selectedWeekEpoch + (forward ? ONE_WEEK : -ONE_WEEK);
+        this.setState({ selectedWeekEpoch: newDate });
+        this.props.callback(newDate + this.state.active * ONE_DAY);
     }
 
     handleDateClick = (item: number) => {

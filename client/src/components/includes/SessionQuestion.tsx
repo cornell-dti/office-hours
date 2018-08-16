@@ -14,7 +14,7 @@ mutation UpdateQuestion($questionId: Int!, $status: String) {
 }
 `;
 
-class SessionQuestionsComponent extends React.Component {
+class SessionQuestion extends React.Component {
     props: {
         question: AppQuestion,
         index: number,
@@ -122,4 +122,4 @@ class SessionQuestionsComponent extends React.Component {
     }
 }
 
-export default SessionQuestionsComponent;
+export default SessionQuestion;
