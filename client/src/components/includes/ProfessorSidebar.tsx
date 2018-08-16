@@ -9,7 +9,7 @@ class ProfessorSidebar extends React.Component {
     };
 
     render() {
-        var selectedArray: string[] = ['', '', '', '', ''];
+        var selectedArray: string[] = ['', '', '', ''];
         selectedArray[this.props.selected] = 'selected';
 
         return (
@@ -18,7 +18,7 @@ class ProfessorSidebar extends React.Component {
                     <div className="header">
                         <span>
                             {this.props.code}
-                            <Icon name="dropdown" />
+                            {/* <Icon name="dropdown" /> */}
                         </span>
                     </div>
                     <div className="manage">
@@ -45,10 +45,6 @@ class ProfessorSidebar extends React.Component {
                                 Manage Tags
                                 </button>
                         </Link>
-                        <button className={selectedArray[4]}>
-                            <Icon name="log out" />
-                            Logout
-                        </button>
                     </div>
                 </div>
                 {/* <svg className="logo" width="100" height="100">

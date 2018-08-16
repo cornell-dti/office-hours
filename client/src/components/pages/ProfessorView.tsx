@@ -5,20 +5,50 @@ import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 import gql from 'graphql-tag';
-import { graphql, ChildProps } from 'react-apollo';
+import { Query } from 'react-apollo';
 import { DropdownItemProps } from 'semantic-ui-react';
 import 'moment-timezone';
+import { Redirect } from 'react-router';
 
-const QUERY = gql`
-query FindSessionsByCourse($courseId: Int!) {
+const METADATA_QUERY = gql`
+query GetMetadata($courseId: Int!) {
     apiGetCurrentUser {
         nodes {
             computedName
             computedAvatar
+            courseUsersByUserId(condition:{courseId:$courseId}) {
+                nodes {
+                    role
+                }
+            }
         }
     }
     courseByCourseId(courseId: $courseId) {
         code
+    }
+}`;
+
+const SESSIONS_QUERY = gql`
+query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Datetime!) {
+    apiGetSessions(_courseId: $courseId, _beginTime: $beginTime, _endTime: $endTime) {
+        nodes {
+            sessionId
+            startTime
+            endTime
+            building
+            room
+            sessionSeriesId
+            sessionTasBySessionId {
+                nodes {
+                    userByUserId {
+                        computedName
+                        userId
+                    }
+                }
+            }
+        }
+    }
+    courseByCourseId(courseId: $courseId) {
         tas: courseUsersByCourseId(condition: {role: "ta"}) {
             nodes {
                 userByUserId {
@@ -35,57 +65,60 @@ query FindSessionsByCourse($courseId: Int!) {
                 }
             }
         }
-        sessionsByCourseId {
-            nodes {
-                sessionSeriesId
-            }
-        }
     }
 }
 `;
 
-const withData = graphql<InputProps, Response>(
-    QUERY, {
-        options: ({ match }) => ({
-            variables: {
-                courseId: match.params.courseId
-            }
-        })
-    }
-);
+interface ProfessorMetadataData {
+    apiGetCurrentUser: {
+        nodes: [AppUserRole]
+    };
+    courseByCourseId: {
+        code: string
+    };
+}
 
-type InputProps = {
-    match: {
-        params: {
-            courseId: number
+interface ProfessorSessionsData {
+    apiGetSessions: {
+        nodes: [AppSession]
+    };
+    courseByCourseId: {
+        tas: {
+            nodes: [AppTa]
         }
-    },
-    data: {
-        loading: boolean
-        apiGetCurrentUser: {
-            nodes: [AppUserRole]
-        };
-        courseByCourseId?: {
-            code: string
-            tas: {
-                nodes: [AppTa]
-            }
-            professors: {
-                nodes: [AppTa]
-            }
-            sessionsByCourseId: {
-                nodes: [AppSession]
-            }
+        professors: {
+            nodes: [AppTa]
         }
-    }
-};
+    };
+}
 
-class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
+interface MetadataVariables {
+    courseId: number;
+}
+
+interface SessionsVariables {
+    courseId: number;
+    beginTime: Date;
+    endTime: Date;
+}
+
+class ProfessorSessionsDataQuery extends Query<ProfessorSessionsData, SessionsVariables> { }
+class ProfessorMetadataDataQuery extends Query<ProfessorMetadataData, MetadataVariables> { }
+
+class ProfessorView extends React.Component {
     state: {
         selectedWeekEpoch: number
     };
 
-    constructor(props: ChildProps<InputProps, Response>) {
+    props: {
+        match: {
+            params: {
+                courseId: number;
+            }
+        }
+    };
+
+    constructor(props: {}) {
         super(props);
         var week = new Date();
         week.setHours(0, 0, 0, 0);
@@ -102,87 +135,108 @@ class ProfessorView extends React.Component<ChildProps<InputProps, Response>>  {
         if (previousWeek) {
             this.setState({
                 selectedWeekEpoch: this.state.selectedWeekEpoch -
-                7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
+                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
             });
         } else {
             this.setState({
                 selectedWeekEpoch: this.state.selectedWeekEpoch +
-                7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
+                    7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
             });
         }
     }
 
     render() {
-        var taOptions: DropdownItemProps[] = [];
-        var countMaxOH: number[] = [];
-        var courseCode: string = 'Loading...';
-
-        if (this.props.data.courseByCourseId) {
-            courseCode = this.props.data.courseByCourseId.code;
-            this.props.data.courseByCourseId.tas.nodes.forEach((node) => {
-                taOptions.push({
-                    value: node.userByUserId.userId,
-                    text: node.userByUserId.computedName
-                });
-            });
-            this.props.data.courseByCourseId.professors.nodes.forEach((node) => {
-                taOptions.push({
-                    value: node.userByUserId.userId,
-                    text: node.userByUserId.computedName
-                });
-            });
-            this.props.data.courseByCourseId.sessionsByCourseId.nodes.forEach((node) => {
-                if (countMaxOH.indexOf(node.sessionSeriesId) === -1 || node.sessionSeriesId === null) {
-                    countMaxOH.push(node.sessionSeriesId);
-                }
-            });
-        }
-
-        const { loading } = this.props.data;
-
         return (
             <div className="ProfessorView">
-                <ProfessorSidebar
-                    courseId={this.props.match.params.courseId}
-                    code={courseCode}
-                    selected={2}
-                />
-                {!loading && // Probably another way to do this
-                    <section className="rightOfSidebar">
-                        <TopBar
-                            user={this.props.data.apiGetCurrentUser.nodes[0]}
-                            context="professor"
-                            role="professor"
-                            courseId={this.props.match.params.courseId}
-                        />
-                        <div className="main">
-                            <ProfessorAddNew
-                                courseId={this.props.match.params.courseId}
-                                taOptions={taOptions}
-                            />
-                            <CalendarWeekSelect
-                                handleClick={this.handleWeekClick}
-                            />
-
-                            <div className="Calendar">
-                                <ProfessorCalendarTable
-                                    _courseId={this.props.match.params.courseId}
-                                    _beginTime={new Date(this.state.selectedWeekEpoch)}
-                                    _endTime={new Date(this.state.selectedWeekEpoch +
-                                        7 /* days */ * 24 /* hours */ * 60 /* minutes */
-                                        * 60 /* seconds */ * 1000 /* millis */)}
-                                    data={{ loading: true }}
-                                    key={this.state.selectedWeekEpoch}
-                                    taOptions={taOptions}
-                                    numMaxOH={countMaxOH.length}
+                <ProfessorMetadataDataQuery
+                    query={METADATA_QUERY}
+                    variables={{
+                        courseId: this.props.match.params.courseId
+                    }}
+                >
+                    {({ loading, data }) => {
+                        var courseCode: string = 'Loading...';
+                        if (!loading && data) {
+                            courseCode = data.courseByCourseId.code;
+                            if (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role !== 'professor') {
+                                return <Redirect to={'/course/' + this.props.match.params.courseId} />;
+                            }
+                        }
+                        return (
+                            <React.Fragment>
+                                <ProfessorSidebar
+                                    courseId={this.props.match.params.courseId}
+                                    code={courseCode}
+                                    selected={2}
                                 />
-                            </div>
-                        </div>
-                    </section>
-                }
+                                {data && data.apiGetCurrentUser &&
+                                    <TopBar
+                                        courseId={this.props.match.params.courseId}
+                                        user={data.apiGetCurrentUser.nodes[0]}
+                                        context="professor"
+                                        role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
+                                    />
+                                }
+                            </React.Fragment>
+                        );
+                    }}
+                </ProfessorMetadataDataQuery>
+
+                <ProfessorSessionsDataQuery
+                    query={SESSIONS_QUERY}
+                    variables={{
+                        courseId: this.props.match.params.courseId,
+                        beginTime: new Date(this.state.selectedWeekEpoch),
+                        endTime: new Date(this.state.selectedWeekEpoch +
+                            7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */)
+                    }}
+                >
+                    {({ loading, data, refetch }) => {
+                        var taOptions: DropdownItemProps[] = [];
+                        if (!loading && data) {
+                            data.courseByCourseId.tas.nodes.forEach((node) => {
+                                taOptions.push({
+                                    value: node.userByUserId.userId,
+                                    text: node.userByUserId.computedName
+                                });
+                            });
+                            data.courseByCourseId.professors.nodes.forEach((node) => {
+                                taOptions.push({
+                                    value: node.userByUserId.userId,
+                                    text: node.userByUserId.computedName
+                                });
+                            });
+                        }
+                        return (
+                            <section className="rightOfSidebar">
+                                <div className="main">
+                                    <ProfessorAddNew
+                                        courseId={this.props.match.params.courseId}
+                                        taOptions={taOptions}
+                                        refreshCallback={refetch}
+                                    />
+                                    <CalendarWeekSelect
+                                        handleClick={this.handleWeekClick}
+                                    />
+
+                                    <div className="Calendar">
+                                        {data && data.apiGetSessions &&
+                                            <ProfessorCalendarTable
+                                                data={data.apiGetSessions}
+                                                taOptions={taOptions}
+                                                refreshCallback={refetch}
+                                                courseId={this.props.match.params.courseId}
+                                            />
+                                        }
+                                    </div>
+                                </div>
+                            </section>
+                        );
+                    }}
+                </ProfessorSessionsDataQuery>
             </div>
         );
     }
 }
 
-export default withData(ProfessorView);
+export default ProfessorView;

@@ -3,6 +3,7 @@ import * as React from 'react';
 import TopBar from '../includes/TopBar';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
+import { Interval } from '../../utilities/interval';
 
 import gql from 'graphql-tag';
 import { Query, Mutation } from 'react-apollo';
@@ -25,6 +26,14 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
     courseByCourseId(courseId: $courseId) {
         name
         code
+        queueOpenInterval {
+            seconds
+            minutes
+            hours
+            days
+            months
+            years
+        }
     }
     sessionBySessionId(sessionId: $sessionId) {
         sessionId
@@ -68,7 +77,7 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
 
 interface SessionData {
     sessionBySessionId: AppSession;
-    courseByCourseId: AppCourse;
+    courseByCourseId: AppCourseInterval;
     apiGetCurrentUser: {
         nodes: [AppUserRole]
     };
@@ -153,8 +162,12 @@ class SessionView extends React.Component {
         });
     }
 
-    render() {
+    isOpen = (session: AppSession, interval: AppInterval) => {
+        return new Date(session.startTime).getTime() - Interval.toMillisecoonds(interval) < new Date().getTime()
+            && new Date(session.endTime) > new Date();
+    }
 
+    render() {
         var undoText = '';
         if (this.state.undoAction) {
             if (this.state.undoAction === 'resolved') {
@@ -226,21 +239,21 @@ class SessionView extends React.Component {
                                                 }
                                             </Mutation>
                                         }
-                                        <div className="splitQuestions">
-                                            <SessionQuestionsContainer
-                                                isTA={data.apiGetCurrentUser.nodes[0].
-                                                    courseUsersByUserId.nodes[0].role !== 'student'}
-                                                questions={data.sessionBySessionId.questionsBySessionId
-                                                    .nodes.filter(q => q.status === 'unresolved')}
-                                                handleJoinClick={this.props.joinCallback}
-                                                myUserId={data.apiGetCurrentUser.nodes[0].userId}
-                                                triggerUndo={this.triggerUndo}
-                                                refetch={refetch}
-                                                // this sets a ref, which allows a parent to call methods on a child.
-                                                // Here, the parent can't access refetch, but the child can.
-                                                ref={(ref) => this.questionsContainer = ref}
-                                            />
-                                        </div>
+                                        <SessionQuestionsContainer
+                                            isTA={data.apiGetCurrentUser.nodes[0].
+                                                courseUsersByUserId.nodes[0].role !== 'student'}
+                                            questions={data.sessionBySessionId.questionsBySessionId
+                                                .nodes.filter(q => q.status === 'unresolved')}
+                                            handleJoinClick={this.props.joinCallback}
+                                            myUserId={data.apiGetCurrentUser.nodes[0].userId}
+                                            triggerUndo={this.triggerUndo}
+                                            refetch={refetch}
+                                            // this sets a ref, which allows a parent to call methods on a child.
+                                            // Here, the parent can't access refetch, but the child can.
+                                            ref={(ref) => this.questionsContainer = ref}
+                                            isOpen={this.isOpen(data.sessionBySessionId,
+                                                                data.courseByCourseId.queueOpenInterval)}
+                                        />
                                     </React.Fragment>
                                 }
                             </React.Fragment>

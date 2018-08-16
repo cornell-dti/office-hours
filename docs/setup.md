@@ -4,6 +4,7 @@
 At the top-level, there are three main directories in the repository:
 - `/client`: contains all the front-end client code
 - `/server`: contains all the backend and database code
+- `/scripts`: contains utility scripts that help in development
 - `/docs`: technical documentation (such as this) about the app's implementation
 
 ## Installation

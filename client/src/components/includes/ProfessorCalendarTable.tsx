@@ -3,61 +3,9 @@ import ProfessorCalendarRow from './ProfessorCalendarRow';
 import ProfessorDelete from './ProfessorDelete';
 import ProfessorOHInfoDelete from './ProfessorOHInfoDelete';
 
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import { ChildProps } from 'react-apollo';
-import { Loader, DropdownItemProps } from 'semantic-ui-react';
+import { DropdownItemProps } from 'semantic-ui-react';
 
-const QUERY = gql`
-query FindSessionsByCourse($_courseId: Int!, $_beginTime: Datetime!, $_endTime: Datetime!) {
-    apiGetSessions(_courseId: $_courseId, _beginTime: $_beginTime, _endTime: $_endTime) {
-        nodes {
-            sessionId
-            startTime
-            endTime
-            building
-            room
-            sessionSeriesId
-            sessionTasBySessionId {
-                nodes {
-                    userByUserId {
-                        computedName
-                        userId
-                    }
-                }
-            }
-        }
-    }
-}
-`;
-
-const withData = graphql<InputProps, Response>(
-    QUERY, {
-        options: ({ _courseId, _beginTime, _endTime }) => ({
-            variables: {
-                _courseId: _courseId,
-                _beginTime: _beginTime,
-                _endTime: _endTime
-            }
-        })
-    }
-);
-
-type InputProps = {
-    _courseId: number,
-    _beginTime: Date,
-    _endTime: Date,
-    data: {
-        loading: boolean,
-        apiGetSessions?: {
-            nodes: [{}]
-        }
-    },
-    taOptions: DropdownItemProps[],
-    numMaxOH: number
-};
-
-class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Response>> {
+class ProfessorCalendarTable extends React.Component {
     state: {
         isExpanded: boolean[][]
         isDeleteVisible: boolean
@@ -67,11 +15,20 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
         rowIndex: number
     };
 
-    constructor(props: ChildProps<InputProps, Response>) {
+    props: {
+        data: {
+            nodes: [AppSession]
+        },
+        taOptions: DropdownItemProps[],
+        refreshCallback: Function,
+        courseId: number
+    };
+
+    constructor(props: {}) {
         super(props);
         var isExpandedInit: boolean[][] = [];
         for (var i = 0; i < 7; i++) {
-            isExpandedInit.push(new Array<boolean>(this.props.numMaxOH).fill(false));
+            isExpandedInit.push(new Array<boolean>(this.props.data.nodes.length).fill(false));
         }
         this.state = {
             isExpanded: isExpandedInit,
@@ -121,8 +78,6 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
     }
 
     render() {
-        const { loading } = this.props.data;
-
         var timeStart: Date[][] = [];
         var timeEnd: Date[][] = [];
         var taNames: Array<string[][]> = [];
@@ -143,33 +98,31 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
             sessionSeriesId.push(new Array<number>());
         }
 
-        if (this.props.data.apiGetSessions) {
-            this.props.data.apiGetSessions.nodes.forEach((node: AppSession) => {
-                // 0 = Monday..., 5 = Saturday, 6 = Sunday
-                var dayIndexQuery = (new Date(node.startTime).getDay() + 6) % 7;
-                var taNamesQuery: string[] = [];
-                var taUserIdsQuery: number[] = [];
-                node.sessionTasBySessionId.nodes.forEach((ta) => {
-                    taNamesQuery.push(ta.userByUserId.computedName);
-                    taUserIdsQuery.push(ta.userByUserId.userId);
-                });
-
-                timeStart[dayIndexQuery].push(new Date(node.startTime));
-                timeEnd[dayIndexQuery].push(new Date(node.endTime));
-                building[dayIndexQuery].push(node.building);
-                room[dayIndexQuery].push(node.room);
-                taNames[dayIndexQuery].push(taNamesQuery);
-                taUserIds[dayIndexQuery].push(taUserIdsQuery);
-                sessionId[dayIndexQuery].push(node.sessionId);
-                sessionSeriesId[dayIndexQuery].push(node.sessionSeriesId);
+        this.props.data.nodes.forEach((node: AppSession) => {
+            // 0 = Monday..., 5 = Saturday, 6 = Sunday
+            var dayIndexQuery = (new Date(node.startTime).getDay() + 6) % 7;
+            var taNamesQuery: string[] = [];
+            var taUserIdsQuery: number[] = [];
+            node.sessionTasBySessionId.nodes.forEach((ta) => {
+                taNamesQuery.push(ta.userByUserId.computedName);
+                taUserIdsQuery.push(ta.userByUserId.userId);
             });
-        }
+
+            timeStart[dayIndexQuery].push(new Date(node.startTime));
+            timeEnd[dayIndexQuery].push(new Date(node.endTime));
+            building[dayIndexQuery].push(node.building);
+            room[dayIndexQuery].push(node.room);
+            taNames[dayIndexQuery].push(taNamesQuery);
+            taUserIds[dayIndexQuery].push(taUserIdsQuery);
+            sessionId[dayIndexQuery].push(node.sessionId);
+            sessionSeriesId[dayIndexQuery].push(node.sessionSeriesId);
+        });
 
         var tablewidth = 5;
         var dayIndex = this.state.dayIndex;
         var rowIndex = this.state.rowIndex;
 
-        var days = ['Monday', 'Tuesday', 'Wednesday', 'Thurdsay', 'Friday', 'Saturday', 'Sunday'];
+        var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         var headers = new Array(7);
 
         for (var index = 0; index < headers.length; index++) {
@@ -191,7 +144,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                         </tbody>
                         <ProfessorCalendarRow
                             key={i}
-                            courseId={this.props._courseId}
+                            courseId={this.props.courseId}
                             taOptions={this.props.taOptions}
                             timeStart={timeStart[i]}
                             timeEnd={timeEnd[i]}
@@ -207,6 +160,7 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                             handleEditToggle={this.toggleEdit}
                             updateDeleteInfo={this.updateDeleteInfo}
                             updateDeleteVisible={this.updateDeleteVisible}
+                            refreshCallback={this.props.refreshCallback}
                         />
                     </React.Fragment>
                 );
@@ -229,17 +183,17 @@ class ProfessorCalendarTable extends React.Component<ChildProps<InputProps, Resp
                             sessionSeriesId={sessionSeriesId[dayIndex][rowIndex]}
                             toggleDelete={() => this.updateDeleteVisible(false)}
                             toggleEdit={() => this.toggleEdit(this.state.currentDay, this.state.currentRow, true)}
+                            refreshCallback={this.props.refreshCallback}
                         />
                     }
                 />
-                {loading && <Loader active={true} content={'Loading'} />}
-                {!loading && <table className="Calendar">
+                <table className="Calendar">
                     {this.state.isExpanded[0]}
                     {rows}
-                </table>}
+                </table>
             </div>
         );
     }
 }
 
-export default withData(ProfessorCalendarTable);
+export default ProfessorCalendarTable;

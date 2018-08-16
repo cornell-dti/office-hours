@@ -11,7 +11,7 @@ import { Mutation } from 'react-apollo';
 const EDIT_SESSION = gql`
     mutation EditSession($_sessionId: Int!, $_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
         $_room: String!, $_tas: [Int]) {
-        apiEditSession(input: {_sessionId: $_sessionId, _startTime: $_startTime, 
+        apiEditSession(input: {_sessionId: $_sessionId, _startTime: $_startTime,
             _endTime: $_endTime, _building: $_building, _room: $_room, _tas: $_tas }) {
                 clientMutationId
         }
@@ -21,7 +21,7 @@ const EDIT_SESSION = gql`
 const EDIT_SERIES = gql`
     mutation EditSeries($_seriesId: Int!, $_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
         $_room: String!, $_tas: [Int]) {
-        apiEditSeries(input: {_seriesId: $_seriesId, _startTime: $_startTime, 
+        apiEditSeries(input: {_seriesId: $_seriesId, _startTime: $_startTime,
             _endTime: $_endTime, _building: $_building, _room: $_room, _tas: $_tas }) {
             clientMutationId
         }
@@ -31,7 +31,7 @@ const EDIT_SERIES = gql`
 const CREATE_SESSION = gql`
     mutation CreateSession($_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
         $_room: String!, $_courseId: Int!, $_tas: [Int]) {
-        apiCreateSession(input: {_startTime: $_startTime, _endTime: $_endTime, 
+        apiCreateSession(input: {_startTime: $_startTime, _endTime: $_endTime,
             _building: $_building, _room: $_room, _courseId: $_courseId, _tas: $_tas }) {
                 clientMutationId
         }
@@ -41,7 +41,7 @@ const CREATE_SESSION = gql`
 const CREATE_SERIES = gql`
     mutation CreateSeries($_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
         $_room: String!, $_courseId: Int!, $_tas: [Int]) {
-        apiCreateSeries(input: {_startTime: $_startTime, _endTime: $_endTime, 
+        apiCreateSeries(input: {_startTime: $_startTime, _endTime: $_endTime,
             _building: $_building, _room: $_room, _courseId: $_courseId, _tas: $_tas }) {
                 clientMutationId
         }
@@ -60,7 +60,8 @@ class ProfessorOHInfo extends React.Component {
         endTimeDefault?: (moment.Moment | null),
         sessionId?: number,
         sessionSeriesId?: number,
-        toggleEdit: Function
+        toggleEdit: Function,
+        refreshCallback: Function
     };
 
     state: {
@@ -164,17 +165,7 @@ class ProfessorOHInfo extends React.Component {
 
     handleStartTime(startTime: moment.Moment) {
         // Prevents end time from occuring before start time
-        var newEndTime = moment(startTime);
-        if (!(this.state.endTime == null)) {
-            newEndTime.set({
-                'hour': this.state.endTime.get('hour'),
-                'minute': this.state.endTime.get('minute')
-            });
-            if (startTime.isAfter(newEndTime)) {
-                newEndTime = moment(startTime);
-            }
-        }
-
+        var newEndTime = moment(startTime).add(1, 'hours');
         this.setState({
             startTime: startTime,
             endTime: newEndTime
@@ -374,7 +365,7 @@ class ProfessorOHInfo extends React.Component {
                         </div >
                         <Checkbox
                             className="datePicker shift"
-                            label={this.props.isNewOH ? 'Repeat Weekly' : 'Edit all Office Hours in this series'}
+                            label={this.props.isNewOH ? 'Repeat weekly' : 'Edit all office hours in this series'}
                             checked={this.state.isSeriesMutation}
                             disabled={this.props.sessionSeriesId === null}
                             onChange={this.toggleCheckbox}
@@ -390,7 +381,7 @@ class ProfessorOHInfo extends React.Component {
                     </button>
                     {this.props.isNewOH ?
                         this.state.isSeriesMutation ?
-                            <Mutation mutation={CREATE_SERIES}>
+                            <Mutation mutation={CREATE_SERIES} onCompleted={() => this.props.refreshCallback()}>
                                 {(CreateSeries) =>
                                     <button
                                         className="Bottom Edit"
@@ -411,7 +402,7 @@ class ProfessorOHInfo extends React.Component {
                                 }
                             </Mutation>
                             :
-                            <Mutation mutation={CREATE_SESSION}>
+                            <Mutation mutation={CREATE_SESSION} onCompleted={() => this.props.refreshCallback()}>
                                 {(CreateSession) =>
                                     <button
                                         className="Bottom Edit"
@@ -434,7 +425,7 @@ class ProfessorOHInfo extends React.Component {
 
                         :
                         this.state.isSeriesMutation ?
-                            <Mutation mutation={EDIT_SERIES}>
+                            <Mutation mutation={EDIT_SERIES} onCompleted={() => this.props.refreshCallback()}>
                                 {(EditSeries) =>
                                     <button
                                         className="Bottom Edit"
@@ -455,7 +446,7 @@ class ProfessorOHInfo extends React.Component {
                                 }
                             </Mutation>
                             :
-                            <Mutation mutation={EDIT_SESSION}>
+                            <Mutation mutation={EDIT_SESSION} onCompleted={() => this.props.refreshCallback()}>
                                 {(EditSession) =>
                                     <button
                                         className="Bottom Edit"

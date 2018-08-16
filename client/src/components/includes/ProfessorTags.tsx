@@ -45,7 +45,8 @@ type InputProps = {
             tagsByCourseId: {
                 nodes: [AppTag]
             }
-        }
+        },
+        refetch: Function
     }
 };
 
@@ -71,7 +72,7 @@ class ProfessorTags extends React.Component<ChildProps<InputProps, Response>> {
             });
         }
 
-        const { loading } = this.props.data;
+        const { loading, refetch } = this.props.data;
 
         return (
             <div className="ProfessorView">
@@ -95,6 +96,7 @@ class ProfessorTags extends React.Component<ChildProps<InputProps, Response>> {
                         <div className="main">
                             <ProfessorAddNew
                                 courseId={this.props.match.params.courseId}
+                                refreshCallback={refetch}
                             />
                             {loading && <Loader active={true} content={'Loading'} />}
                             {!loading &&

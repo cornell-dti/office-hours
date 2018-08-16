@@ -22,7 +22,8 @@ class ProfessorCalendarRow extends React.Component {
         handleEditToggle: Function,
         tablewidth: number,
         updateDeleteInfo: Function,
-        updateDeleteVisible: Function
+        updateDeleteVisible: Function,
+        refreshCallback: Function
     };
 
     constructor(props: {}) {
@@ -63,7 +64,10 @@ class ProfessorCalendarRow extends React.Component {
         var rowPair = this.props.timeStart.map(
             (row, i) => {
                 return (
-                    <tbody className={'Pair ' + this.props.isExpanded[i]} key={i}>
+                    <tbody
+                        className={'Pair ' + this.props.isExpanded[i] + ' ' + (i % 2 === 0 ? 'odd' : 'even')}
+                        key={this.props.sessionId[i]}
+                    >
                         <tr className="Preview">
                             <td>{timeStart[i].format('h:mm A')} to {timeEnd[i].format('h:mm A')}</td>
                             <td>{this.props.taNames[i].join(', ')}</td>
@@ -102,6 +106,8 @@ class ProfessorCalendarRow extends React.Component {
                                     sessionId={this.props.sessionId[i]}
                                     sessionSeriesId={this.props.sessionSeriesId[i]}
                                     toggleEdit={() => this.toggleEdit(i)}
+                                    refreshCallback={this.props.refreshCallback}
+                                    key={this.props.sessionId[i]}
                                 />
                                 <button
                                     className="Bottom Delete"

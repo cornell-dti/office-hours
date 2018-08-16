@@ -9,6 +9,7 @@ class ProfessorAddNew extends React.Component {
     props: {
         courseId: number
         taOptions?: DropdownItemProps[]
+        refreshCallback: Function
     };
 
     state: {
@@ -54,6 +55,7 @@ class ProfessorAddNew extends React.Component {
                             taOptions={this.props.taOptions}
                             toggleEdit={() => this.toggleEdit(false)}
                             taUserIdsDefault={[]}
+                            refreshCallback={this.props.refreshCallback}
                         />
                         :
                         <ProfessorTagInfo
