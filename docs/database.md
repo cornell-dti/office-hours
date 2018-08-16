@@ -227,7 +227,7 @@ This relation is a repository of all the tags stored in the system, across diffe
 ||name|text|❌|Name of the tag that is shown to the client|
 |✈️|course\_id|integer|❌|The course offering to which this tag belongs; foreign key from [courses](#courses)|
 ||level|integer|❌|Encodes the tag level in the tag hierarchy: primary = 1, secondary = 2|
-||activated|boolean|✔️|For primary tags, this indicates whether this tag and its children are currently active and should be shown to students or not. NULL for non-primary tags!|
+||activated|boolean|❌|For primary tags, this indicates whether they are currently inactive (hidden from students) or not. For secondary tags, this enocdes 'soft deletion'; if false, it means that a secondary tag was removed by a professor, but we keep it around since existing questions may refer to it.|
 
 #### Authorization Rules
 |Operation|Who is allowed?|
@@ -422,6 +422,37 @@ None. It relies on Apollo sending the cookies to the backend, which in turn decr
 
 ##### Returns
 All the fields of the logged-in user from the [users](#users) table.
+
+#### api\_create\_primary\_tag
+
+##### Description
+This function is used to create a primary (assignment) tag, along with its children secondary tags, and to associate the parent-child relationships in the database. This is useful because without it, the front-end would have to do multiple queries to the database to insert the tags, and then further queries to associate the tag relations. This function abstracts the sequence of steps away into one function call.
+
+##### Parameters
+- \_course_id (integer): the id of the course within which the tags are to be inserted
+- \_iname (text): name of the primary (assignment) tag to be created; note that there is no reason as to why this is not called `_name`, and can be changed in the future
+- \_activated (bool): active/inactive status of the primary tag being created
+- \_child\_names (text[]): list of names of children secondary tags to be created under the primary tag
+- \_child\_activateds (integer[]): list of active/inactive statuses of the children secondary tags; as of this point, this field is redundant since it is always true for newly-created tags, however it is included for verbosity. Note that this is an `integer[]` instead of `bool[]` because Postgraphile had some trouble with boolean arrays.
+
+##### Returns
+All the fields of the newly-created primary tag from the [tags](#tags) table.
+
+#### api\_edit\_primary\_tag
+
+##### Description
+This function is used to edit a primary (assignment) tag, along with its children secondary tags, and to associate any new parent-child relationships in the database. This is useful because without it, the front-end would have to do multiple queries to the database to update the tags, insert new secondary tags, and to associate the tag relations. This function abstracts the sequence of steps away into one function call. Note that all fields must be provided even if they have not changed! The inputs in totality represent the latest state of the primary tag and its children. For example, leaving out a secondary tag that has not been updated will result in it being (soft) deleted. Instead, please always provide all unupdated fields!
+
+##### Parameters
+- \_parent_id (integer): the id of the parent primary tag being edited
+- \_iname (text): updated name of the primary (assignment) tag; note that there is no reason as to why this is not called `_name`, and can be changed in the future
+- \_activated (bool): updated active/inactive status of the primary tag
+- \_child\_ids (text[]): list of updated ids of children secondary tags under the primary tag; wherever this value is -1, it is assumed that a new secondary tag is to be created
+- \_child\_names (text[]): list of updated names of children secondary tags under the primary tag
+- \_child\_activateds (integer[]): list of updated active/inactive statuses of the children secondary tags; note that this is an `integer[]` instead of `bool[]` because Postgraphile had some trouble with boolean arrays.
+
+##### Returns
+All the fields of the updated primary tag from the [tags](#tags) table.
 
 ### Internal Functions
 There are other functions in the database that are used only internally by the API functions. These are prefixed by 'internal', and **should never be called directly by the client**. Doing so will likely have strange side effects on the data.

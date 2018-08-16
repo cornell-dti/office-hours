@@ -15,3 +15,23 @@ If you're testing schema changes to the database and haven't yet committed them,
 - Drops the local Postgres database (make sure you don't have any uncommitted schema changes!)
 - Creates a new local Postgres database at the same path
 - Populates it with the schema and mock data that lives in `/server/office_hours.sql`
+
+
+## dbProdToStaging.sh
+
+### Prerequisites
+- You will need to have the `.env/db.sh` file in your local repository, which you can download from our Google Drive (ask your PM for this!). Download the `.env` folder that was shared with you on Google Drive, and place it in your local repository folder.
+
+### What's it used for?
+Our staging environment is where we can test any changes against real data before actually shipping them in production. To catch bugs that might appear in production, it is beneficial to mirror the production environment closely in the staging environment. This involves keeping the staging database in sync with the production database as often as possible. This script manually generates a SQL dump of the production database, and then resets the staging database to match this snapshot.
+
+### When should I not use it?
+This may cause some brief downtime in production, so you should only use it during off-peak hours (ask your PMs)! Also, if someone on the team is testing changes in staging, their database will be flushed with the latest production data. You should make sure that no one on the team is in the middle of testing something in staging before running this!
+
+### What does it do?
+- Connects to the production database using the URLs specified in `.env/db.sh`
+- Creates a `pg_dump` of the latest production data and schema
+- Drops the staging database
+- Creates a new staging database at the same path
+- Populates it with the schema and data that was just downloaded from production
+- Note that the generated dump from production is saved in `scripts/.temp`, which you should NOT commit to GitHub! If you need to save it, save it securely in Google Drive.
