@@ -9,6 +9,7 @@ import ProfessorView from './pages/ProfessorView';
 import SplitView from './pages/SplitView';
 import ProfessorTagsView from './pages/ProfessorTagsView';
 import { Analytics } from './includes/Analytics';
+import { Loader } from 'semantic-ui-react';
 
 ReactGA.initialize('UA-123790900-1');
 
@@ -38,7 +39,7 @@ const PrivateRoute = ({ component, ...rest }: any) => {
         <UserQuery query={GET_USER} fetchPolicy="network-only">
             {({ loading, error, data }) => {
                 if (loading) {
-                    return 'Loading...';
+                    return <Loader active={true} content={'Loading'} />;
                 }
                 if (error) {
                     return <Redirect to={{ pathname: '/login' }} />;
