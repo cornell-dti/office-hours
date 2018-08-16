@@ -35,6 +35,7 @@ class ProfessorTagInfo extends React.Component {
         tag?: AppTag
         refreshCallback: Function
         courseId: number
+        suggestedTagNames: string[]
     };
 
     state: {
@@ -44,13 +45,25 @@ class ProfessorTagInfo extends React.Component {
 
     constructor(props: {}) {
         super(props);
-        if (this.props.tag) {
-            this.state = {
-                tag: this.props.tag,
+        this.state = {
+            tag: {
+                level: 1,
+                activated: true,
+                tagId: -1, // new tag
+                name: ''
+            },
+            newTagText: ''
+        };
+    }
+
+    componentWillReceiveProps(props: { tag?: AppTag }) {
+        if (props.tag) {
+            this.setState({
+                tag: props.tag,
                 newTagText: ''
-            };
+            });
         } else {
-            this.state = {
+            this.setState({
                 tag: {
                     level: 1,
                     activated: true,
@@ -58,7 +71,7 @@ class ProfessorTagInfo extends React.Component {
                     name: ''
                 },
                 newTagText: ''
-            };
+            });
         }
     }
 
@@ -80,13 +93,7 @@ class ProfessorTagInfo extends React.Component {
         this.setState({ tag: newState });
     }
 
-    handleNewTagEnter = (): void => {
-        var newTag: AppTag = {
-            activated: true,
-            level: 2,
-            tagId: -1,
-            name: this.state.newTagText
-        };
+    helperAddNewChildTag(newTag: AppTag) {
         if (this.state.tag.tagRelationsByParentId) {
             this.setState({
                 tag: {
@@ -100,7 +107,27 @@ class ProfessorTagInfo extends React.Component {
             newState.tagRelationsByParentId = { nodes: [{ tagByChildId: newTag }] };
             this.setState({ tag: newState });
         }
+    }
+
+    handleNewTagEnter = (): void => {
+        var newTag: AppTag = {
+            activated: true,
+            level: 2,
+            tagId: -1,
+            name: this.state.newTagText
+        };
+        this.helperAddNewChildTag(newTag);
         this.setState({ newTagText: '' });
+    }
+
+    handleAddSuggestedTag = (name: string): void => {
+        var newTag: AppTag = {
+            activated: true,
+            level: 2,
+            tagId: -1,
+            name: name
+        };
+        this.helperAddNewChildTag(newTag);
     }
 
     handleRemoveChildTag = (index: number): void => {
@@ -143,6 +170,16 @@ class ProfessorTagInfo extends React.Component {
                 childActivateds: childActivateds
             }
         });
+
+        this.state = {
+            tag: {
+                level: 1,
+                activated: true,
+                tagId: -1, // new tag
+                name: ''
+            },
+            newTagText: ''
+        };
     }
 
     handleEditAssignment = (EditAssignment: Function): void => {
@@ -170,6 +207,12 @@ class ProfessorTagInfo extends React.Component {
     }
 
     render() {
+        var validSuggestedTags: string[] = this.props.suggestedTagNames
+            .filter((name) => !this.state.tag.tagRelationsByParentId
+                || (this.state.tag.tagRelationsByParentId
+                    && this.state.tag.tagRelationsByParentId.nodes
+                        .filter((childTag) => childTag.tagByChildId.name === name && childTag.tagByChildId.activated)
+                        .length === 0));
         return (
             <React.Fragment>
                 <div className="ProfessorTagInfo">
@@ -180,13 +223,14 @@ class ProfessorTagInfo extends React.Component {
                                 maxLength={30}
                                 value={this.state.tag.name}
                                 onChange={this.handleNameChange}
+                                placeholder={'Example: \'Assignment 1\''}
                             />
                         </div>
                     </div>
                     <div className="Status InputSection">
                         <div className="InputHeader">Status</div>
                         <div
-                            className={'ActiveButton ' + (this.state.tag.activated ? 'Selected' : '')}
+                            className={'ActiveButton first ' + (this.state.tag.activated ? 'Selected' : '')}
                             onClick={() => this.handleActiveChange(true)}
                         >
                             Active
@@ -227,12 +271,33 @@ class ProfessorTagInfo extends React.Component {
                             placeholder="Type to add a new tag..."
                             value={this.state.newTagText}
                         />
-                        <Icon
+                        <div
                             className={'InputChildTagEnter ' + (this.state.newTagText.length > 0 ? '' : 'disabled')}
-                            name="check"
                             onClick={this.handleNewTagEnter}
-                        />
+                        >
+                            +
+                        </div>
                     </div>
+                    {
+                        validSuggestedTags.length > 0 &&
+                        <div className="SuggestedTags InputSection">
+                            <div className="InputHeader">Suggested tags:</div>
+                            {
+                                validSuggestedTags
+                                    .map((name, i) => {
+                                        return (
+                                            <div
+                                                key={i}
+                                                className="SuggestedChildTag"
+                                                onClick={() => this.handleAddSuggestedTag(name)}
+                                            >
+                                                + {name}
+                                            </div>
+                                        );
+                                    })
+                            }
+                        </div>
+                    }
                 </div>
                 <div className="EditButtons">
                     <button className="Bottom Cancel" onClick={() => this.props.cancelCallback()}>

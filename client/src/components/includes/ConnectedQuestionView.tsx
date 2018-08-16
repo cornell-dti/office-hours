@@ -10,18 +10,16 @@ const QUERY = gql`
     query FindTagsBySessionId($sessionId: Int!) {
         allSessions(condition: {sessionId: $sessionId}) {
             nodes {
-                sessionSeryBySessionSeriesId {
-                    courseByCourseId {
-                        tagsByCourseId {
-                            nodes {
-                                tagId
-                                name
-                                level
-                                activated
-                                tagRelationsByChildId {
-                                    nodes {
-                                        parentId
-                                    }
+                courseByCourseId {
+                    tagsByCourseId {
+                        nodes {
+                            tagId
+                            name
+                            level
+                            activated
+                            tagRelationsByChildId {
+                                nodes {
+                                    parentId
                                 }
                             }
                         }
@@ -40,14 +38,11 @@ type InputProps = {
         loading: boolean,
         allSessions?: {
             nodes: [{
-                sessionSeryBySessionSeriesId: {
-                    courseByCourseId: {
-                        tagsByCourseId: {
-                            nodes: [AppTagRelations]
-                        }
+                courseByCourseId: {
+                    tagsByCourseId: {
+                        nodes: [AppTagRelations]
                     }
                 }
-
             }],
         },
     },
@@ -68,8 +63,8 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
         }
 
         if (this.props.data.allSessions !== undefined) {
-            var series = this.props.data.allSessions.nodes[0].sessionSeryBySessionSeriesId;
-            var tags = series ? series.courseByCourseId.tagsByCourseId.nodes : [];
+            var session = this.props.data.allSessions.nodes[0];
+            var tags = session ? session.courseByCourseId.tagsByCourseId.nodes : [];
 
             return (
                 <AddQuestion

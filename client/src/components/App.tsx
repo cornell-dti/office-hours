@@ -61,8 +61,11 @@ class App extends React.Component {
                     <Route path="/" component={Analytics} />
                     <Switch>
                         <Route path="/login" component={LoginView} />
-                        <PrivateRoute path="/professor-tags/course/:courseId"
-                            component={ProfessorTagsView} exact={true} />
+                        <PrivateRoute
+                            path="/professor-tags/course/:courseId"
+                            component={ProfessorTagsView}
+                            exact={true}
+                        />
                         <PrivateRoute path="/professor/course/:courseId" component={ProfessorView} exact={true} />
                         <PrivateRoute path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
                         <PrivateRoute path="/course/:courseId" component={SplitView} />

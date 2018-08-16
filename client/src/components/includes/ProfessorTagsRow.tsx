@@ -25,6 +25,9 @@ class ProfessorTagsRow extends React.Component {
     render() {
         var rowPair = this.props.tags.map(
             (row, i) => {
+                var childTags: { tagByChildId: AppTag }[] | undefined = [];
+                childTags = row.tagRelationsByParentId &&
+                    row.tagRelationsByParentId.nodes.filter((childTag) => childTag.tagByChildId.activated);
                 return (
                     <tbody
                         className={'Pair ' + this.props.isExpanded[i] + ' ' + (i % 2 === 0 ? 'odd' : 'even')}
@@ -33,23 +36,26 @@ class ProfessorTagsRow extends React.Component {
                         <tr className="Preview">
                             <td>
                                 <span
-                                    className={'ChildTag'}
+                                    className={'AssignmentTag'}
                                     key={row.tagId}
                                 >
                                     {row.name}
                                 </span>
                             </td>
                             <td>
-                                {row.tagRelationsByParentId &&
-                                    row.tagRelationsByParentId.nodes
-                                        .filter((childTag) => childTag.tagByChildId.activated)
-                                        .map((childTag) =>
-                                            <span
-                                                className={'ChildTag'}
-                                                key={childTag.tagByChildId.tagId}
-                                            >
-                                                {childTag.tagByChildId.name}
-                                            </span>)}
+                                {childTags && childTags.map((childTag, index) =>
+                                    <span key={childTag.tagByChildId.tagId}>
+                                        <span
+                                            className={'ChildTag'}
+                                        >
+                                            {childTag.tagByChildId.name}
+                                        </span>
+                                        {
+                                            index !== (childTags && childTags.length - 1) &&
+                                            <span className="ChildTagSeparator">&#9679;</span>
+                                        }
+                                    </span>
+                                )}
                             </td>
                             <td>{row.activated ? 'Active' : 'Inactive'}</td>
                             <td>
@@ -69,6 +75,7 @@ class ProfessorTagsRow extends React.Component {
                                     tag={row}
                                     courseId={this.props.courseId}
                                     refreshCallback={this.props.refreshCallback}
+                                    suggestedTagNames={['Debugging', 'Conceptual']}
                                 />
                             </td>
                         </tr>
