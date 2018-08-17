@@ -31,7 +31,7 @@ class ProfessorAddNew extends React.Component {
 
     render() {
 
-        var text = this.props.taOptions ? 'Add New Office Hour' : 'Add New Tag';
+        var text = this.props.taOptions ? 'Add New Office Hour' : 'Add New Assignment';
 
         return (
             <div className="ProfessorAddNew">
@@ -60,7 +60,10 @@ class ProfessorAddNew extends React.Component {
                         :
                         <ProfessorTagInfo
                             isNew={true}
-                            toggleCancel={() => this.toggleEdit(false)}
+                            cancelCallback={() => this.toggleEdit(false)}
+                            refreshCallback={this.props.refreshCallback}
+                            courseId={this.props.courseId}
+                            suggestedTagNames={['Debugging', 'Conceptual']}
                         />
                     }
                 </div>

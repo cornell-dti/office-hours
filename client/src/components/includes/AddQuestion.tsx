@@ -147,7 +147,7 @@ class AddQuestion extends React.Component {
                             <p className="header">Tags</p>
                             {this.state.stage >= 20 ?
                                 this.props.tags
-                                    .filter((tag) => tag.level === 2)
+                                    .filter((tag) => tag.activated && tag.level === 2)
                                     .filter((tag) => this.state.selectedTags.indexOf(
                                         tag.tagRelationsByChildId.nodes[0].parentId)
                                         !== -1)

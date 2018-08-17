@@ -190,6 +190,7 @@ class ProfessorView extends React.Component {
                         endTime: new Date(this.state.selectedWeekEpoch +
                             7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */)
                     }}
+                    fetchPolicy="network-only" // change this to no-cache when it is fixed in Apollo
                 >
                     {({ loading, data, refetch }) => {
                         var taOptions: DropdownItemProps[] = [];

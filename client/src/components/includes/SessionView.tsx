@@ -187,9 +187,9 @@ class SessionView extends React.Component {
                     pollInterval={4000}
                 >
                     {({ loading, data, error, refetch }) => {
-                        if (error) { return <h1>ERROR</h1>; }
+                        if (error) { return null; }
                         if (!data || !data.apiGetCurrentUser) {
-                            return <p className="noSessionSelected">Loading...</p>;
+                            return null;
                         }
                         return (
                             <React.Fragment>

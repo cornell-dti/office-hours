@@ -7,8 +7,9 @@ import * as ReactGA from 'react-ga';
 import LoginView from './pages/LoginView';
 import ProfessorView from './pages/ProfessorView';
 import SplitView from './pages/SplitView';
-import ProfessorTags from './includes/ProfessorTags';
+import ProfessorTagsView from './pages/ProfessorTagsView';
 import { Analytics } from './includes/Analytics';
+import { Loader } from 'semantic-ui-react';
 
 ReactGA.initialize('UA-123790900-1');
 
@@ -38,7 +39,7 @@ const PrivateRoute = ({ component, ...rest }: any) => {
         <UserQuery query={GET_USER} fetchPolicy="network-only">
             {({ loading, error, data }) => {
                 if (loading) {
-                    return 'Loading...';
+                    return <Loader active={true} content={'Loading'} />;
                 }
                 if (error) {
                     return <Redirect to={{ pathname: '/login' }} />;
@@ -61,7 +62,11 @@ class App extends React.Component {
                     <Route path="/" component={Analytics} />
                     <Switch>
                         <Route path="/login" component={LoginView} />
-                        <PrivateRoute path="/professor-tags/course/:courseId" component={ProfessorTags} exact={true} />
+                        <PrivateRoute
+                            path="/professor-tags/course/:courseId"
+                            component={ProfessorTagsView}
+                            exact={true}
+                        />
                         <PrivateRoute path="/professor/course/:courseId" component={ProfessorView} exact={true} />
                         <PrivateRoute path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
                         <PrivateRoute path="/course/:courseId" component={SplitView} />
