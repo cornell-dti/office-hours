@@ -6,9 +6,9 @@ Assuming you have PostgreSQL installed on your machine (we are currently using v
 
 `createdb -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME>`
 
-If running locally, the host name will be localhost, and the port and username will be the ones that you set while setting Postgres up. You will be prompted to enter the password for the username, and then an empty database will be created. Now, we need to use the `psql` command-line tool to load in the schema dump from [`/server/office_hours.sql`](../server/office_hours.sql):
+If running locally, the host name will be localhost, and the port and username will be the ones that you set while setting Postgres up. You will be prompted to enter the password for the username, and then an empty database will be created. Now, we need to use the `psql` command-line tool to load in the schema dump from [`/server/database/mock_database.sql`](../server/database/mock_database.sql):
 
-`psql -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME> -f <PATH-TO-office_hours.sql>`
+`psql -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME> -f <PATH-TO-mock_database.sql>`
 
 If you get foreign key constraint violations on doing this, it is because Postgres copies over the mock data in an order that doesn't respect the foreign key constraints. If this happens, enter the psql command-line tool and execute:
 
@@ -24,7 +24,7 @@ Finally, you can play around with the mock data by either using a database manag
 
 `pg_dump -h <HOST_NAME> -p <PORT> -U <USERNAME> --no-owner <DATABASE_NAME> > <OUTPUT_FILE.sql>`
 
-This will create a dump the same way `office_hours.sql` was created. This file will include all the commands necessary to load in the entire schema, functions, and mock data into a new database.
+This will create a dump the same way `mock_database.sql` was created. This file will include all the commands necessary to load in the entire schema, functions, and mock data into a new database.
 
 If you'd like to reset your local database (for example, to sync it with the latest schema), first use the `dropdb` command from your terminal:
 
