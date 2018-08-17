@@ -26,6 +26,12 @@ echo 'Creating a new local database...'
 createdb -h $host -p $port -U $username $dbname
 echo ''
 
+echo 'Creating backend role on database (do not worry if you get "ERROR: role backend already exists")'
+psql -h $host -p $port -U $username $dbname << EOF
+    CREATE ROLE backend
+EOF
+echo ''
+
 echo 'Populating it with the schema and mock data provided in server/database/mock_database.sql...'
 psql -h $host -p $port -U $username $dbname < ../server/database/mock_database.sql
 echo ''

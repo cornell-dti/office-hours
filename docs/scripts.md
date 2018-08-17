@@ -16,6 +16,19 @@ If you're testing schema changes to the database and haven't yet committed them,
 - Creates a new local Postgres database at the same path
 - Populates it with the schema and mock data that lives in [`/server/database/mock_database.sql`](../server/database/mock_database.sql)
 
+## dbCommitLocal.sh
+
+### What's it used for?
+We maintain our latest schema with some mock data for local development purposes in [`/server/database/mock_database.sql`](../server/database/mock_database.sql). If you make changes to your database, and you'd like to 'commit' them so that others on the team can also get the update, then you need to overwrite `mock_database.sql`. In short, this script acts like a `git commit`; it dumps the state of your current local database into `mock_database.sql`, so that when you push this change, everyone else can update their databases to look just like yours.
+
+### When should I not use it?
+You shouldn't need to use this unless you are making schema changes to the database, in which case you should make sure that you're also checking in your migration into the `server/database/migrations` folder. Before running this script, make sure that there is nothing sensitive in your local database, since it will be pushed to our open-source repository for everyone to see.
+
+### What does it do?
+- Asks the user to specify where their local Postgres database lives
+- Generates a dump of the local database, including schema and data in one file
+- Overwrites `/server/database/mock_database.sql` with this generated dump
+
 
 ## dbProdToStaging.sh
 
