@@ -17,7 +17,6 @@ then
 fi
 
 timestamp=$(date +%s)
-echo "$timestamp"
 
 source '../.env/db.sh'
 
@@ -30,6 +29,7 @@ echo 'Wiping the existing staging database...'
 psql "${STAGING_DATABASE_URL}" << EOF
     DROP SCHEMA public CASCADE;
     CREATE SCHEMA public;
+    CREATE ROLE backend;
 EOF
 echo ''
 

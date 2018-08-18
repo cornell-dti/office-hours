@@ -190,7 +190,8 @@ app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
     graphqlRoute: '/__gql/graphql',
     graphiqlRoute: '/__gql/graphiql',
     jwtSecret: (process.env.OH_JWT_SECRET || "insecure"),
-    jwtPgTypeIdentifier: 'public.jwt_token'
+    jwtPgTypeIdentifier: 'public.jwt_token',
+    pgDefaultRole: 'backend'
 }));
 
 app.use(express.static('../client/build'));
