@@ -11,6 +11,7 @@ const QUERY = gql`
         allSessions(condition: {sessionId: $sessionId}) {
             nodes {
                 courseByCourseId {
+                    charLimit
                     tagsByCourseId {
                         nodes {
                             tagId
@@ -39,6 +40,7 @@ type InputProps = {
         allSessions?: {
             nodes: [{
                 courseByCourseId: {
+                    charLimit: number
                     tagsByCourseId: {
                         nodes: [AppTagRelations]
                     }
@@ -72,6 +74,7 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
                     sessionId={this.props.sessionId}
                     courseId={this.props.courseId}
                     callback={this.props.callback}
+                    charLimit={session.courseByCourseId.charLimit}
                 />
             );
         }

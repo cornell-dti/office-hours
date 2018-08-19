@@ -34,6 +34,7 @@ class AddQuestion extends React.Component {
         sessionId: number,
         courseId: number,
         callback: Function,
+        charLimit: number,
     };
 
     state: {
@@ -90,7 +91,7 @@ class AddQuestion extends React.Component {
     public handleUpdateQuestion = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
         this.setState({
-            question: target.value.length <= 100 ? target.value : this.state.question,
+            question: target.value.length <= this.props.charLimit ? target.value : this.state.question,
             stage: target.value.length > 0 ? 40 : 30
         });
     }
@@ -114,6 +115,8 @@ class AddQuestion extends React.Component {
         if (this.state.redirect) {
             return <Redirect push={true} to={'/course/' + this.props.courseId + '/session/' + this.props.sessionId} />;
         }
+
+        var charsRemaining = this.props.charLimit - this.state.question.length;
 
         return (
             <div className="QuestionView">
@@ -164,7 +167,13 @@ class AddQuestion extends React.Component {
                         </div>
                         <hr />
                         <div className="tagsMiniContainer">
-                            <p className="header">Question</p>
+                            <p className="header">
+                                Question <span
+                                    className={'characterCount ' + (charsRemaining <= 0 ? 'warn' : '')}
+                                >
+                                    ({charsRemaining} character{charsRemaining !== 1 && 's'} left)
+                                </span>
+                            </p>
                             {this.state.stage >= 30 ?
                                 <textarea
                                     className="QuestionInput"
