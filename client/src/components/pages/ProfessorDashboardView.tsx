@@ -1,12 +1,9 @@
 import * as React from 'react';
-import ProfessorTagsTable from '../includes/ProfessorTagsTable';
-import ProfessorAddNew from '../includes/ProfessorAddNew';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Redirect } from 'react-router';
-import { Loader } from 'semantic-ui-react';
 
 const METADATA_QUERY = gql`
 query GetMetadata($courseId: Int!) {
@@ -26,32 +23,6 @@ query GetMetadata($courseId: Int!) {
     }
 }`;
 
-const TAGS_QUERY = gql`
-query FindTagsByCourse($courseId: Int!) {
-    courseByCourseId(courseId: $courseId) {
-        code
-        tagsByCourseId(condition:{level:1}) {
-            nodes {
-              	tagId
-                name
-                level
-                activated
-              	tagRelationsByParentId {
-                  nodes {
-                    tagByChildId {
-                      tagId
-                      name
-                      level
-                      activated
-                    }
-                  }
-                }
-            }
-        }
-    }
-}
-`;
-
 interface ProfessorMetadataData {
     apiGetCurrentUser: {
         nodes: [AppUserRole]
@@ -61,26 +32,14 @@ interface ProfessorMetadataData {
     };
 }
 
-interface ProfessorTagsData {
-    courseByCourseId: {
-        tagsByCourseId: {
-            nodes: [AppTag]
-        }
-    };
-}
-
 interface MetadataVariables {
     courseId: number;
 }
 
-interface TagsVariables {
-    courseId: number;
-}
-
-class ProfessorTagsDataQuery extends Query<ProfessorTagsData, TagsVariables> { }
 class ProfessorMetadataDataQuery extends Query<ProfessorMetadataData, MetadataVariables> { }
 
-class ProfessorView extends React.Component {
+class ProfessorDashboardView extends React.Component {
+
     props: {
         match: {
             params: {
@@ -115,7 +74,7 @@ class ProfessorView extends React.Component {
                                 <ProfessorSidebar
                                     courseId={this.props.match.params.courseId}
                                     code={courseCode}
-                                    selected={1}
+                                    selected={2}
                                 />
                                 {data && data.apiGetCurrentUser &&
                                     <TopBar
@@ -125,43 +84,20 @@ class ProfessorView extends React.Component {
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
                                     />
                                 }
+                                <section className="rightOfSidebar">
+                                    <div className="main">
+                                        <p className="ComingSoon">
+                                            Coming soon!
+                                        </p>
+                                    </div>
+                                </section>
                             </React.Fragment>
                         );
                     }}
                 </ProfessorMetadataDataQuery>
-
-                <ProfessorTagsDataQuery
-                    query={TAGS_QUERY}
-                    variables={{
-                        courseId: this.props.match.params.courseId
-                    }}
-                >
-                    {({ loading, data, refetch }) => {
-                        return (
-                            <section className="rightOfSidebar">
-                                <div className="main">
-                                    <ProfessorAddNew
-                                        courseId={this.props.match.params.courseId}
-                                        refreshCallback={refetch}
-                                    />
-                                    {loading && <Loader active={true} content={'Loading...'} />}
-                                    {!loading && data && data.courseByCourseId.tagsByCourseId.nodes.length > 0 &&
-                                        <div className="Calendar">
-                                            <ProfessorTagsTable
-                                                tags={data.courseByCourseId.tagsByCourseId.nodes}
-                                                refreshCallback={refetch}
-                                                courseId={this.props.match.params.courseId}
-                                            />
-                                        </div>
-                                    }
-                                </div>
-                            </section>
-                        );
-                    }}
-                </ProfessorTagsDataQuery>
             </div>
         );
     }
 }
 
-export default ProfessorView;
+export default ProfessorDashboardView;

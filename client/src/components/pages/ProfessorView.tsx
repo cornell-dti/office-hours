@@ -167,7 +167,7 @@ class ProfessorView extends React.Component {
                                 <ProfessorSidebar
                                     courseId={this.props.match.params.courseId}
                                     code={courseCode}
-                                    selected={2}
+                                    selected={0}
                                 />
                                 {data && data.apiGetCurrentUser &&
                                     <TopBar
