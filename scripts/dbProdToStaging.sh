@@ -25,7 +25,7 @@ mkdir -p '.temp'
 echo 'Creating a dump of the production database...(this may take a couple of minutes)'
 pg_dump --no-owner "${PROD_DATABASE_URL}" > ".temp/${timestamp}_prod_dump.sql"
 
-echo 'Wiping the existing staging database...'
+echo 'Wiping the existing staging database... (do not worry if you get "ERROR: role backend already exists")'
 psql "${STAGING_DATABASE_URL}" << EOF
     DROP SCHEMA public CASCADE;
     CREATE SCHEMA public;
