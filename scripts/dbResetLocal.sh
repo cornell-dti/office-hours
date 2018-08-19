@@ -6,6 +6,13 @@ echo ''
 echo 'Make sure you have filled in your local database details in .env/db.sh before running this! Otherwise the script will not be able to locate your database.'
 echo '---------------'
 echo ''
+echo 'Enter "yes" to continue: '
+read confirmation
+if [ "$confirmation" != "yes" ]
+then
+    exit 1
+fi
+echo ''
 
 source '../.env/db.sh'
 

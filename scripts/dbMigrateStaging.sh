@@ -23,6 +23,11 @@ read migration_file
 
 echo ''
 
+echo 'Creating a backup dump of the staging database in case the migration does not go well...(this may take a couple of minutes)'
+pg_dump --no-owner "${STAGING_DATABASE_URL}" > ".temp/${timestamp}_staging_dump.sql"
+
+echo ''
+
 echo "Are you sure you want to apply the migration at /server/database/migrations/${migration_file}.sql? Enter \"yes\" to continue: "
 read confirmation
 if [ "$confirmation" != "yes" ]
@@ -35,3 +40,5 @@ psql "${STAGING_DATABASE_URL}" < "../server/database/migrations/${migration_file
 echo ''
 
 echo 'Done! The migration has been applied to the staging database :)'
+echo ''
+echo "In case something went terribly wrong, this script generated a backup dump of the staging database at /scripts/.temp/${timestamp}_staging_dump.sql."

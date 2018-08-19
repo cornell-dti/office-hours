@@ -1875,6 +1875,13 @@ CREATE POLICY update_policy ON public.questions FOR UPDATE TO backend USING (( S
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
 --
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: -
+--
+
+GRANT USAGE ON SCHEMA public TO backend;
+
+
+--
 -- Name: TABLE questions; Type: ACL; Schema: public; Owner: -
 --
 
