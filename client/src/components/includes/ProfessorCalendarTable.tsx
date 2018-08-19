@@ -43,6 +43,14 @@ class ProfessorCalendarTable extends React.Component {
         this.toggleEdit = this.toggleEdit.bind(this);
     }
 
+    componentWillReceiveProps(props: { data: { nodes: [AppSession] } }) {
+        var isExpanded: boolean[][] = [];
+        for (var i = 0; i < 7; i++) {
+            isExpanded.push(new Array<boolean>(props.data.nodes.length).fill(false));
+        }
+        this.setState({ isExpanded: isExpanded });
+    }
+
     toggleEdit(day: number, row: number, forceClose?: boolean) {
         var cDay = this.state.currentDay;
         var cRow = this.state.currentRow;
