@@ -1,6 +1,7 @@
 import * as React from 'react';
 import SessionQuestion from './SessionQuestion';
 import { Icon } from 'semantic-ui-react';
+import * as moment from 'moment';
 
 class SessionQuestionsContainer extends React.Component {
     props: {
@@ -10,7 +11,9 @@ class SessionQuestionsContainer extends React.Component {
         handleJoinClick: Function,
         triggerUndo: Function,
         refetch: Function,
-        isOpen: boolean
+        isOpen: boolean,
+        isPast: boolean,
+        openingTime: Date,
     };
 
     render() {
@@ -55,10 +58,21 @@ class SessionQuestionsContainer extends React.Component {
                 {questions && questions.length === 0 &&
                     <React.Fragment>
                         <p className="noQuestionsHeading">
-                            {this.props.isOpen ? 'Queue Currently Empty' : 'Queue Not Open'}
+                            {this.props.isOpen ? 'Queue Currently Empty' :
+                                this.props.isPast ? 'Queue Has Closed' : 'Queue Not Open Yet'}
                         </p>
                         {!this.props.isOpen ?
-                            <p className="noQuestionsWarning">The queue hasn't opened yet or the session ended.</p> :
+                            (
+                                this.props.isPast ?
+                                    <p className="noQuestionsWarning">This office hour session has ended.</p> :
+                                    <p className="noQuestionsWarning">
+                                        Please check back at {moment(this.props.openingTime).format('h:mm A')}
+                                        {
+                                            moment().startOf('day') === moment(this.props.openingTime).startOf('day') ?
+                                                '' : (' on ' + moment(this.props.openingTime).format('D MMM'))
+                                        }!
+                                    </p>
+                            ) :
                             !this.props.isTA
                                 ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
                                 : <p className="noQuestionsWarning">No questions in the queue yet. </p>

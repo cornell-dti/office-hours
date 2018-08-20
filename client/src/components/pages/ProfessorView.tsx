@@ -10,6 +10,8 @@ import { DropdownItemProps } from 'semantic-ui-react';
 import 'moment-timezone';
 import { Redirect } from 'react-router';
 
+const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
+
 const METADATA_QUERY = gql`
 query GetMetadata($courseId: Int!) {
     apiGetCurrentUser {
@@ -122,7 +124,8 @@ class ProfessorView extends React.Component {
         super(props);
         var week = new Date();
         week.setHours(0, 0, 0, 0);
-        week.setDate(week.getDate() + 1 - week.getDay());
+        var daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
+        week.setTime(week.getTime() - daysSinceMonday * ONE_DAY); // beginning of this week's Monday
         var today = new Date();
         today.setHours(0, 0, 0, 0);
         this.state = {
@@ -218,6 +221,7 @@ class ProfessorView extends React.Component {
                                     />
                                     <CalendarWeekSelect
                                         handleClick={this.handleWeekClick}
+                                        selectedWeekEpoch={this.state.selectedWeekEpoch}
                                     />
 
                                     <div className="Calendar">

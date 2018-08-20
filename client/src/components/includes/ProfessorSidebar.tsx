@@ -37,13 +37,13 @@ class ProfessorSidebar extends React.Component {
                             <button className={selectedArray[0]}>
                                 <Icon name="setting" />
                                 Manage Hours
-                                </button>
+                            </button>
                         </Link>
                         <Link to={'/professor-tags/course/' + this.props.courseId}>
                             <button className={selectedArray[1]}>
                                 <Icon name="settings" />
                                 Manage Tags
-                                </button>
+                            </button>
                         </Link>
                         <Link to={'/professor-dashboard/course/' + this.props.courseId}>
                             <button className={selectedArray[2]}>

@@ -1922,9 +1922,7 @@ CREATE POLICY delete_policy ON public.tag_relations FOR DELETE TO backend USING 
 -- Name: question_tags delete_policy; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY delete_policy ON public.question_tags FOR DELETE TO backend USING ((( SELECT questions.asker_id
-   FROM public.questions
-  WHERE (questions.question_id = questions.question_id)) = ( SELECT public.internal_get_user_id() AS internal_get_user_id)));
+CREATE POLICY delete_policy ON public.question_tags FOR DELETE TO backend USING (( SELECT public.internal_owns_question(question_tags.question_id) AS internal_owns_question));
 
 
 --
@@ -1984,19 +1982,17 @@ CREATE POLICY insert_policy ON public.tag_relations FOR INSERT TO backend WITH C
 
 
 --
--- Name: question_tags insert_policy; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY insert_policy ON public.question_tags FOR INSERT TO backend WITH CHECK ((( SELECT questions.asker_id
-   FROM public.questions
-  WHERE (questions.question_id = questions.question_id)) = ( SELECT public.internal_get_user_id() AS internal_get_user_id)));
-
-
---
 -- Name: questions insert_policy; Type: POLICY; Schema: public; Owner: -
 --
 
 CREATE POLICY insert_policy ON public.questions FOR INSERT TO backend WITH CHECK (((asker_id = ( SELECT public.internal_get_user_id() AS internal_get_user_id)) AND ( SELECT public.internal_is_queue_open(questions.session_id) AS internal_is_queue_open)));
+
+
+--
+-- Name: question_tags insert_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY insert_policy ON public.question_tags FOR INSERT TO backend WITH CHECK (( SELECT public.internal_owns_question(question_tags.question_id) AS internal_owns_question));
 
 
 --
@@ -2181,19 +2177,17 @@ CREATE POLICY update_policy ON public.tag_relations FOR UPDATE TO backend USING 
 
 
 --
--- Name: question_tags update_policy; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY update_policy ON public.question_tags FOR UPDATE TO backend USING ((( SELECT questions.asker_id
-   FROM public.questions
-  WHERE (questions.question_id = questions.question_id)) = ( SELECT public.internal_get_user_id() AS internal_get_user_id)));
-
-
---
 -- Name: questions update_policy; Type: POLICY; Schema: public; Owner: -
 --
 
 CREATE POLICY update_policy ON public.questions FOR UPDATE TO backend USING (( SELECT public.internal_owns_question(questions.question_id) AS internal_owns_question));
+
+
+--
+-- Name: question_tags update_policy; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY update_policy ON public.question_tags FOR UPDATE TO backend USING (( SELECT public.internal_owns_question(question_tags.question_id) AS internal_owns_question));
 
 
 --
