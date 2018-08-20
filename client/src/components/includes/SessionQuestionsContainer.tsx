@@ -27,6 +27,11 @@ class SessionQuestionsContainer extends React.Component {
                         <p><Icon name="plus" /> Join the Queue</p>
                     </div>
                 }
+                {questions && questions.length > 0 && this.props.isPast &&
+                    <div className="SessionClosedMessage">
+                        This queue has closed and is no longer accepting new questions.
+                    </div>
+                }
                 {questions && myQuestion && myQuestion.length > 0 &&
                     <div className="User">
                         <p className="QuestionHeader">My Question</p>
@@ -38,6 +43,7 @@ class SessionQuestionsContainer extends React.Component {
                             isMyQuestion={true}
                             triggerUndo={this.props.triggerUndo}
                             refetch={this.props.refetch}
+                            isPast={this.props.isPast}
                         />
                         <p className="Queue">Queue</p>
                     </div>
@@ -52,6 +58,7 @@ class SessionQuestionsContainer extends React.Component {
                             isMyQuestion={question.userByAskerId.userId === this.props.myUserId}
                             triggerUndo={this.props.triggerUndo}
                             refetch={this.props.refetch}
+                            isPast={this.props.isPast}
                         />
                     ))
                 }

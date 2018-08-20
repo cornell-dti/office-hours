@@ -21,7 +21,8 @@ class SessionQuestion extends React.Component {
         isTA: boolean,
         isMyQuestion: boolean,
         triggerUndo: Function,
-        refetch: Function
+        refetch: Function,
+        isPast: boolean,
     };
 
     // Given an index from [1..n], converts it to text that is displayed
@@ -105,7 +106,7 @@ class SessionQuestion extends React.Component {
                 }
                 <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
                     {(updateQuestion) =>
-                        this.props.isMyQuestion &&
+                        this.props.isMyQuestion && !this.props.isPast &&
                         <div className="Buttons">
                             <hr />
                             <p
