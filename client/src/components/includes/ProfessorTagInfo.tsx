@@ -110,6 +110,9 @@ class ProfessorTagInfo extends React.Component {
     }
 
     handleNewTagEnter = (): void => {
+        if (this.state.newTagText.length === 0) {
+            return;
+        }
         var newTag: AppTag = {
             activated: true,
             level: 2,

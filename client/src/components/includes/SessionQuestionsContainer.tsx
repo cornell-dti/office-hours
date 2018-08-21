@@ -14,6 +14,7 @@ class SessionQuestionsContainer extends React.Component {
         isOpen: boolean,
         isPast: boolean,
         openingTime: Date,
+        haveAnotherQuestion: boolean,
     };
 
     render() {
@@ -22,10 +23,23 @@ class SessionQuestionsContainer extends React.Component {
 
         return (
             <div className="SessionQuestionsContainer splitQuestions" >
-                {!this.props.isTA && myQuestion && myQuestion.length === 0 && this.props.isOpen &&
+                {!this.props.isTA && myQuestion && myQuestion.length === 0 && this.props.isOpen
+                    && !this.props.haveAnotherQuestion &&
                     <div className="SessionJoinButton" onClick={() => this.props.handleJoinClick()}>
                         <p><Icon name="plus" /> Join the Queue</p>
                     </div>
+                }
+                {!this.props.isTA && myQuestion && myQuestion.length === 0 && this.props.isOpen
+                    && this.props.haveAnotherQuestion &&
+                    <React.Fragment>
+                        <div className="SessionClosedMessage">
+                            You are holding a spot in another active queue.
+                            To join this queue instead, please retract your question from the other queue!
+                        </div>
+                        <div className="SessionJoinButton disabled">
+                            <p><Icon name="plus" /> Join the Queue</p>
+                        </div>
+                    </React.Fragment>
                 }
                 {questions && questions.length > 0 && this.props.isPast &&
                     <div className="SessionClosedMessage">

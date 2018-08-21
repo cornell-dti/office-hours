@@ -16,9 +16,17 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
             computedName
             computedAvatar
             userId
-            courseUsersByUserId(condition:{courseId:$courseId}) {
+            courseUsersByUserId(condition: {courseId: $courseId}) {
                 nodes {
                     role
+                }
+            }
+            questionsByAskerId(condition:{status:"unresolved"}) {
+                nodes {
+                    sessionBySessionId {
+                        sessionId
+                        endTime
+                    }
                 }
             }
         }
@@ -79,7 +87,7 @@ interface SessionData {
     sessionBySessionId: AppSession;
     courseByCourseId: AppCourseInterval;
     apiGetCurrentUser: {
-        nodes: [AppUserRole]
+        nodes: [AppUserRoleQuestions]
     };
 }
 
@@ -135,7 +143,7 @@ class SessionView extends React.Component {
             undoQuestionId: questionId,
             undoAction: action,
             undoName: name,
-            timeoutId: setTimeout(this.dismissUndo, 15000),
+            timeoutId: setTimeout(this.dismissUndo, 10000),
         });
     }
 
@@ -199,6 +207,10 @@ class SessionView extends React.Component {
                         if (!data || !data.apiGetCurrentUser) {
                             return null;
                         }
+                        var otherQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
+                            .filter((session) => session.sessionBySessionId.sessionId !== this.props.id)
+                            .filter((session) => new Date(session.sessionBySessionId.endTime) >= new Date());
+
                         return (
                             <React.Fragment>
                                 {this.props.isDesktop &&
@@ -265,6 +277,7 @@ class SessionView extends React.Component {
                                             isPast={this.isPast(data.sessionBySessionId)}
                                             openingTime={this.getOpeningTime(
                                                 data.sessionBySessionId, data.courseByCourseId.queueOpenInterval)}
+                                            haveAnotherQuestion={otherQuestions.length > 0}
                                         />
                                     </React.Fragment>
                                 }
