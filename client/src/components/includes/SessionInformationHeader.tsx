@@ -35,7 +35,9 @@ class SessionInformationHeader extends React.Component {
                             <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
                         </p>
                         <p>Held by <span className="black">
-                            {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
+                            {tas.length > 2 ?
+                                tas.map(ta => ta.userByUserId.computedName).join(', ') :
+                                tas.map(ta => ta.userByUserId.computedName).join(' and ')}
                         </span></p>
                     </div>
                     <div className="QueueWrap">

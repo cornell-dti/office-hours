@@ -29,13 +29,9 @@ class SessionQuestion extends React.Component {
     // on the question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
         index++;
-        if (index === 1) {
-            return 'NOW';
-        } else {
-            // Disclaimer: none of us wrote this one-line magic :)
-            // It is borrowed from https://stackoverflow.com/revisions/39466341/5
-            return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index + 'th';
-        }
+        // Disclaimer: none of us wrote this one-line magic :)
+        // It is borrowed from https://stackoverflow.com/revisions/39466341/5
+        return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index + 'th';
     }
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
@@ -76,7 +72,10 @@ class SessionQuestion extends React.Component {
                     )}
                 </div>
                 <div className="BottomBar">
-                    <p className={'Order' + (this.props.index === 0 ? ' now' : '')}>
+                    {/* <p className={'Order' + (this.props.index === 0 ? ' now' : '')}>
+                        {this.getDisplayText(this.props.index)}
+                    </p> */}
+                    <p className="Order">
                         {this.getDisplayText(this.props.index)}
                     </p>
                     <p className="Time">{<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}</p>

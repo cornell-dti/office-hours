@@ -36,7 +36,9 @@ class CalendarSessionCard extends React.Component {
                 </div>
                 <div className="CalendarCard">
                     <div className="TA">
-                        {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
+                        {tas.length > 2 ?
+                            tas.map(ta => ta.userByUserId.computedName).join(', ') :
+                            tas.map(ta => ta.userByUserId.computedName).join(' and ')}
                     </div>
                     <div className="Location">{session.building + ' ' + session.room}</div>
                     <div className="Queue">

@@ -24,6 +24,10 @@
             display: inline-block;
             padding-top: 0;
             margin-left: 5px;
+
+            &.Professor {
+                width: 40px;
+            }
         }
     }
 
@@ -38,9 +42,10 @@
 
     @media only screen and (max-width: @mobile-breakpoint) {
         .mobileHeaderFace {
-            height: 28px;
+            height: 24px;
             border-radius: 28px;
             display: inline;
+            cursor: pointer;
         }
     }
 }
