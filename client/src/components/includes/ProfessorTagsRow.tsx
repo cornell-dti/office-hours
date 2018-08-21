@@ -75,7 +75,7 @@ class ProfessorTagsRow extends React.Component {
                                     tag={row}
                                     courseId={this.props.courseId}
                                     refreshCallback={this.props.refreshCallback}
-                                    suggestedTagNames={['Debugging', 'Conceptual']}
+                                    suggestedTagNames={['Conceptual', 'Coding']}
                                 />
                             </td>
                         </tr>

@@ -9,7 +9,7 @@ class ProfessorSidebar extends React.Component {
     };
 
     render() {
-        var selectedArray: string[] = ['', '', '', ''];
+        var selectedArray: string[] = ['', '', ''];
         selectedArray[this.props.selected] = 'selected';
 
         return (
@@ -21,7 +21,7 @@ class ProfessorSidebar extends React.Component {
                             {/* <Icon name="dropdown" /> */}
                         </span>
                     </div>
-                    <div className="manage">
+                    {/* <div className="manage">
                         <button className={selectedArray[0]}>
                             <Icon name="users" />
                             People
@@ -31,19 +31,25 @@ class ProfessorSidebar extends React.Component {
                             Question
                             </button>
                     </div>
-                    <div className="divider" />
+                    <div className="divider" /> */}
                     <div className="actions">
                         <Link to={'/professor/course/' + this.props.courseId}>
-                            <button className={selectedArray[2]}>
+                            <button className={selectedArray[0]}>
                                 <Icon name="setting" />
                                 Manage Hours
-                                </button>
+                            </button>
                         </Link>
                         <Link to={'/professor-tags/course/' + this.props.courseId}>
-                            <button className={selectedArray[3]}>
+                            <button className={selectedArray[1]}>
                                 <Icon name="settings" />
                                 Manage Tags
-                                </button>
+                            </button>
+                        </Link>
+                        <Link to={'/professor-dashboard/course/' + this.props.courseId}>
+                            <button className={selectedArray[2]}>
+                                <Icon name="line graph" />
+                                Dashboard
+                            </button>
                         </Link>
                     </div>
                 </div>

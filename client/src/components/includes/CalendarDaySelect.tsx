@@ -22,13 +22,21 @@ class CalendarDaySelect extends React.Component {
 
     constructor(props: {}) {
         super(props);
-        var week = new Date();
-        week.setHours(0, 0, 0, 0);
-        week.setTime(week.getTime() - (week.getDay() - 1) * ONE_DAY);
+        var week = new Date(); // now
+        week.setHours(0, 0, 0, 0); // beginning of today (00:00:00.000)
+        var daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
+        week.setTime(week.getTime() - daysSinceMonday * ONE_DAY); // beginning of this week's Monday
         this.state = {
             selectedWeekEpoch: week.getTime(),
-            active: new Date().getDay() - 1 % 7   // index of currently selected date
+            active: daysSinceMonday   // index of currently selected date
         };
+    }
+
+    componentDidMount() {
+        // TODO: this is a super hacky way of getting around the bug where the current day's
+        // sessions do not get displayed on load. This simulates a click on the current day
+        // to refetch the query; if you see a way to fix this sustainably, please do so!
+        this.handleDateClick(this.state.active);
     }
 
     incrementWeek = (forward: boolean) => {

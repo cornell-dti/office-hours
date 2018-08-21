@@ -4,6 +4,7 @@ class CalendarHeader extends React.Component {
     props: {
         currentCourseCode: string;
         isTa: boolean;
+        isProf: boolean;
         avatar: string | null;
     };
 
@@ -28,6 +29,7 @@ class CalendarHeader extends React.Component {
                         <span>
                             {this.props.currentCourseCode}
                             {this.props.isTa && <span className="TAMarker">TA</span>}
+                            {this.props.isProf && <span className="TAMarker Professor">PROF</span>}
                         </span>
                         {this.props.avatar &&
                             <img

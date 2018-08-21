@@ -110,6 +110,9 @@ class ProfessorTagInfo extends React.Component {
     }
 
     handleNewTagEnter = (): void => {
+        if (this.state.newTagText.length === 0) {
+            return;
+        }
         var newTag: AppTag = {
             activated: true,
             level: 2,
@@ -130,20 +133,42 @@ class ProfessorTagInfo extends React.Component {
         this.helperAddNewChildTag(newTag);
     }
 
+    // Sorry, this function is a bit of a mess. Please refactor it when you get spare time.
+    // There are many corner cases to handle, so definitely test your implementation a lot!
     handleRemoveChildTag = (index: number): void => {
+        // This case should never happen
         if (!this.state.tag.tagRelationsByParentId) {
             return;
         }
         var newChildTags = Object.assign({}, this.state.tag.tagRelationsByParentId);
         var filteredTags = newChildTags.nodes.filter((childTag) => childTag.tagByChildId.activated);
         var newChildTag = Object.assign({}, filteredTags[index]);
-        newChildTag = { tagByChildId: { ...newChildTag.tagByChildId, activated: false } };
+        newChildTag.tagByChildId = { ...newChildTag.tagByChildId, activated: false };
+        var allTags = newChildTags.nodes;
+        var newTags = [];
+        var shownIndex = -1;
+        var doneRemoving = false;
+        // Loop through all the tags (activated and not activated) to find the tag that was
+        // removed by the user. We want to match index to the index'th tag that is activated.
+        // For all other tags, we want to add their previous version; for the removed tag, we 
+        // add its previous version with activated = false (stored in newChildTag).
+        for (var i = 0; i < allTags.length; i++) {
+            if (allTags[i].tagByChildId.activated) {
+                shownIndex++;
+            }
+            if (shownIndex === index && !doneRemoving) {
+                newTags.push(newChildTag);
+                doneRemoving = true;
+            } else {
+                newTags.push(allTags[i]);
+            }
+        }
         this.setState({
             tag: {
                 ...this.state.tag,
                 tagRelationsByParentId:
                 {
-                    nodes: filteredTags.map((childTag, i) => i === index ? newChildTag : childTag)
+                    nodes: newTags
                 }
             }
         });
@@ -187,11 +212,10 @@ class ProfessorTagInfo extends React.Component {
         var childNames: string[] = [];
         var childActivateds: boolean[] = [];
         if (this.state.tag.tagRelationsByParentId) {
-            var filteredDeleted = this.state.tag.tagRelationsByParentId.nodes
-                .filter((childTag) => childTag.tagByChildId.tagId !== -1 || childTag.tagByChildId.activated);
-            childIds = filteredDeleted.map((childTag) => childTag.tagByChildId.tagId);
-            childNames = filteredDeleted.map((childTag) => childTag.tagByChildId.name);
-            childActivateds = filteredDeleted.map((childTag) => childTag.tagByChildId.activated);
+            var childTags = this.state.tag.tagRelationsByParentId.nodes;
+            childIds = childTags.map((childTag) => childTag.tagByChildId.tagId);
+            childNames = childTags.map((childTag) => childTag.tagByChildId.name);
+            childActivateds = childTags.map((childTag) => childTag.tagByChildId.activated);
         }
 
         EditAssignment({

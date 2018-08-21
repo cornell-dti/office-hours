@@ -63,7 +63,7 @@ class ProfessorAddNew extends React.Component {
                             cancelCallback={() => this.toggleEdit(false)}
                             refreshCallback={this.props.refreshCallback}
                             courseId={this.props.courseId}
-                            suggestedTagNames={['Debugging', 'Conceptual']}
+                            suggestedTagNames={['Conceptual', 'Coding']}
                         />
                     }
                 </div>

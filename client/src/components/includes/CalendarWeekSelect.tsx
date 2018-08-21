@@ -1,7 +1,10 @@
 import * as React from 'react';
 const chevron = require('../../media/chevron.svg');
 
+const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
+
 class CalendarWeekSelect extends React.Component {
+
     monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -23,9 +26,8 @@ class CalendarWeekSelect extends React.Component {
         } else {
             var week = new Date();
             week.setHours(0, 0, 0, 0);
-            week.setTime(week.getTime() -
-                (week.getDay() - 1) /* days */ * 24 /* hours */
-                * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+            var daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
+            week.setTime(week.getTime() - daysSinceMonday * ONE_DAY); // beginning of this week's Monday
             this.state = {
                 selectedWeekEpoch: week.getTime()
             };

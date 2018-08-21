@@ -128,7 +128,9 @@ class CalendarView extends React.Component {
                                 currentCourseCode={
                                     data.courseByCourseId && data.courseByCourseId.code || 'Loading'}
                                 isTa={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0]
-                                    .courseUsersByUserId.nodes[0].role !== 'student'}
+                                    .courseUsersByUserId.nodes[0].role === 'ta'}
+                                isProf={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0]
+                                    .courseUsersByUserId.nodes[0].role === 'professor'}
                                 avatar={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].computedAvatar}
                             />
                             <CalendarDaySelect callback={this.handleDateClick} />

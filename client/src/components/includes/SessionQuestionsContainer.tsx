@@ -1,6 +1,7 @@
 import * as React from 'react';
 import SessionQuestion from './SessionQuestion';
 import { Icon } from 'semantic-ui-react';
+import * as moment from 'moment';
 
 class SessionQuestionsContainer extends React.Component {
     props: {
@@ -10,7 +11,10 @@ class SessionQuestionsContainer extends React.Component {
         handleJoinClick: Function,
         triggerUndo: Function,
         refetch: Function,
-        isOpen: boolean
+        isOpen: boolean,
+        isPast: boolean,
+        openingTime: Date,
+        haveAnotherQuestion: boolean,
     };
 
     render() {
@@ -19,9 +23,27 @@ class SessionQuestionsContainer extends React.Component {
 
         return (
             <div className="SessionQuestionsContainer splitQuestions" >
-                {!this.props.isTA && myQuestion && myQuestion.length === 0 && this.props.isOpen &&
+                {!this.props.isTA && myQuestion && myQuestion.length === 0 && this.props.isOpen
+                    && !this.props.haveAnotherQuestion &&
                     <div className="SessionJoinButton" onClick={() => this.props.handleJoinClick()}>
                         <p><Icon name="plus" /> Join the Queue</p>
+                    </div>
+                }
+                {!this.props.isTA && myQuestion && myQuestion.length === 0 && this.props.isOpen
+                    && this.props.haveAnotherQuestion &&
+                    <React.Fragment>
+                        <div className="SessionClosedMessage">
+                            You are holding a spot in another active queue.
+                            To join this queue, please retract your question from the other queue!
+                        </div>
+                        <div className="SessionJoinButton disabled">
+                            <p><Icon name="plus" /> Join the Queue</p>
+                        </div>
+                    </React.Fragment>
+                }
+                {questions && questions.length > 0 && this.props.isPast &&
+                    <div className="SessionClosedMessage">
+                        This queue has closed and is no longer accepting new questions.
                     </div>
                 }
                 {questions && myQuestion && myQuestion.length > 0 &&
@@ -35,6 +57,7 @@ class SessionQuestionsContainer extends React.Component {
                             isMyQuestion={true}
                             triggerUndo={this.props.triggerUndo}
                             refetch={this.props.refetch}
+                            isPast={this.props.isPast}
                         />
                         <p className="Queue">Queue</p>
                     </div>
@@ -49,16 +72,28 @@ class SessionQuestionsContainer extends React.Component {
                             isMyQuestion={question.userByAskerId.userId === this.props.myUserId}
                             triggerUndo={this.props.triggerUndo}
                             refetch={this.props.refetch}
+                            isPast={this.props.isPast}
                         />
                     ))
                 }
                 {questions && questions.length === 0 &&
                     <React.Fragment>
                         <p className="noQuestionsHeading">
-                            {this.props.isOpen ? 'Queue Currently Empty' : 'Queue Not Open'}
+                            {this.props.isOpen ? 'Queue Currently Empty' :
+                                this.props.isPast ? 'Queue Has Closed' : 'Queue Not Open Yet'}
                         </p>
                         {!this.props.isOpen ?
-                            <p className="noQuestionsWarning">The queue hasn't opened yet or the session ended.</p> :
+                            (
+                                this.props.isPast ?
+                                    <p className="noQuestionsWarning">This office hour session has ended.</p> :
+                                    <p className="noQuestionsWarning">
+                                        Please check back at {moment(this.props.openingTime).format('h:mm A')}
+                                        {
+                                            moment().startOf('day') === moment(this.props.openingTime).startOf('day') ?
+                                                '' : (' on ' + moment(this.props.openingTime).format('D MMM'))
+                                        }!
+                                    </p>
+                            ) :
                             !this.props.isTA
                                 ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
                                 : <p className="noQuestionsWarning">No questions in the queue yet. </p>

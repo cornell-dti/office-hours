@@ -16,9 +16,17 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
             computedName
             computedAvatar
             userId
-            courseUsersByUserId(condition:{courseId:$courseId}) {
+            courseUsersByUserId(condition: {courseId: $courseId}) {
                 nodes {
                     role
+                }
+            }
+            questionsByAskerId(condition:{status:"unresolved"}) {
+                nodes {
+                    sessionBySessionId {
+                        sessionId
+                        endTime
+                    }
                 }
             }
         }
@@ -79,7 +87,7 @@ interface SessionData {
     sessionBySessionId: AppSession;
     courseByCourseId: AppCourseInterval;
     apiGetCurrentUser: {
-        nodes: [AppUserRole]
+        nodes: [AppUserRoleQuestions]
     };
 }
 
@@ -135,7 +143,7 @@ class SessionView extends React.Component {
             undoQuestionId: questionId,
             undoAction: action,
             undoName: name,
-            timeoutId: setTimeout(this.dismissUndo, 15000),
+            timeoutId: setTimeout(this.dismissUndo, 10000),
         });
     }
 
@@ -162,9 +170,17 @@ class SessionView extends React.Component {
         });
     }
 
-    isOpen = (session: AppSession, interval: AppInterval) => {
+    isOpen = (session: AppSession, interval: AppInterval): boolean => {
         return new Date(session.startTime).getTime() - Interval.toMillisecoonds(interval) < new Date().getTime()
             && new Date(session.endTime) > new Date();
+    }
+
+    isPast = (session: AppSession): boolean => {
+        return new Date() > new Date(session.endTime);
+    }
+
+    getOpeningTime = (session: AppSession, interval: AppInterval): Date => {
+        return new Date(new Date(session.startTime).getTime() - Interval.toMillisecoonds(interval));
     }
 
     render() {
@@ -191,6 +207,10 @@ class SessionView extends React.Component {
                         if (!data || !data.apiGetCurrentUser) {
                             return null;
                         }
+                        var otherQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
+                            .filter((session) => session.sessionBySessionId.sessionId !== this.props.id)
+                            .filter((session) => new Date(session.sessionBySessionId.endTime) >= new Date());
+
                         return (
                             <React.Fragment>
                                 {this.props.isDesktop &&
@@ -251,8 +271,13 @@ class SessionView extends React.Component {
                                             // this sets a ref, which allows a parent to call methods on a child.
                                             // Here, the parent can't access refetch, but the child can.
                                             ref={(ref) => this.questionsContainer = ref}
-                                            isOpen={this.isOpen(data.sessionBySessionId,
-                                                                data.courseByCourseId.queueOpenInterval)}
+                                            isOpen={this.isOpen(
+                                                data.sessionBySessionId,
+                                                data.courseByCourseId.queueOpenInterval)}
+                                            isPast={this.isPast(data.sessionBySessionId)}
+                                            openingTime={this.getOpeningTime(
+                                                data.sessionBySessionId, data.courseByCourseId.queueOpenInterval)}
+                                            haveAnotherQuestion={otherQuestions.length > 0}
                                         />
                                     </React.Fragment>
                                 }
