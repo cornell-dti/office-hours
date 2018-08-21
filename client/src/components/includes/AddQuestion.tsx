@@ -71,9 +71,26 @@ class AddQuestion extends React.Component {
 
     public handleSecondarySelected = (deselected: boolean, id: number): void => {
         if (!deselected) {
+            // Temporary; needs to be factored out into a course setting
+            // Restrict to only one secondary tag (can be made shorter!):
+            var selectedTags = [];
+            for (var i = 0; i < this.state.selectedTags.length; i++) {
+                var keep = false;
+                for (var j = 0; j < this.props.tags.length; j++) {
+                    if (this.props.tags[j].tagId === this.state.selectedTags[i]) {
+                        keep = this.props.tags[j].level === 1;
+                        break;
+                    }
+                }
+                if (keep) {
+                    selectedTags.push(this.state.selectedTags[i]);
+                }
+            }
+            selectedTags.push(id);
             this.setState({
                 stage: this.state.question.length > 0 ? 40 : 30,
-                selectedTags: [...this.state.selectedTags, id]
+                // selectedTags: [...this.state.selectedTags, id]
+                selectedTags: selectedTags
             });
         } else if (this.state.selectedTags.length > 2) {
             this.setState({
