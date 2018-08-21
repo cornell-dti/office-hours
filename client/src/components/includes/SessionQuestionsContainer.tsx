@@ -34,7 +34,7 @@ class SessionQuestionsContainer extends React.Component {
                     <React.Fragment>
                         <div className="SessionClosedMessage">
                             You are holding a spot in another active queue.
-                            To join this queue instead, please retract your question from the other queue!
+                            To join this queue, please retract your question from the other queue!
                         </div>
                         <div className="SessionJoinButton disabled">
                             <p><Icon name="plus" /> Join the Queue</p>
