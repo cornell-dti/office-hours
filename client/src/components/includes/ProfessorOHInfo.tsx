@@ -10,19 +10,33 @@ import { Mutation } from 'react-apollo';
 
 const EDIT_SESSION = gql`
     mutation EditSession($_sessionId: Int!, $_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
-        $_room: String!, $_tas: [Int]) {
-        apiEditSession(input: {_sessionId: $_sessionId, _startTime: $_startTime,
-            _endTime: $_endTime, _building: $_building, _room: $_room, _tas: $_tas }) {
-                clientMutationId
+        $_room: String!, $_tas: [Int], $_title: String!) {
+        apiEditSession( input: {
+            _sessionId: $_sessionId,
+            _startTime: $_startTime,
+            _endTime: $_endTime,
+            _building: $_building,
+            _room: $_room,
+            _tas: $_tas,
+            _title: $_title
+        }) {
+            clientMutationId
         }
     }
 `;
 
 const EDIT_SERIES = gql`
     mutation EditSeries($_seriesId: Int!, $_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
-        $_room: String!, $_tas: [Int]) {
-        apiEditSeries(input: {_seriesId: $_seriesId, _startTime: $_startTime,
-            _endTime: $_endTime, _building: $_building, _room: $_room, _tas: $_tas }) {
+        $_room: String!, $_tas: [Int], $_title: String!) {
+        apiEditSeries( input: {
+            _seriesId: $_seriesId,
+            _startTime: $_startTime,
+            _endTime: $_endTime,
+            _building: $_building,
+            _room: $_room,
+            _tas: $_tas,
+            _title: $_title
+        }) {
             clientMutationId
         }
     }
@@ -30,19 +44,33 @@ const EDIT_SERIES = gql`
 
 const CREATE_SESSION = gql`
     mutation CreateSession($_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
-        $_room: String!, $_courseId: Int!, $_tas: [Int]) {
-        apiCreateSession(input: {_startTime: $_startTime, _endTime: $_endTime,
-            _building: $_building, _room: $_room, _courseId: $_courseId, _tas: $_tas }) {
-                clientMutationId
+        $_room: String!, $_courseId: Int!, $_tas: [Int], $_title: String!) {
+        apiCreateSession(input: {
+            _startTime: $_startTime,
+            _endTime: $_endTime,
+            _building: $_building,
+            _room: $_room,
+            _courseId: $_courseId,
+            _tas: $_tas,
+            _title: $_title
+        }) {
+            clientMutationId
         }
     }
 `;
 
 const CREATE_SERIES = gql`
     mutation CreateSeries($_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
-        $_room: String!, $_courseId: Int!, $_tas: [Int]) {
-        apiCreateSeries(input: {_startTime: $_startTime, _endTime: $_endTime,
-            _building: $_building, _room: $_room, _courseId: $_courseId, _tas: $_tas }) {
+        $_room: String!, $_courseId: Int!, $_tas: [Int], $_title: String!) {
+        apiCreateSeries(input: {
+            _startTime: $_startTime,
+            _endTime: $_endTime,
+            _building: $_building,
+            _room: $_room,
+            _courseId: $_courseId,
+            _tas: $_tas,
+            _title: $_title
+        }) {
                 clientMutationId
         }
     }
@@ -71,7 +99,8 @@ class ProfessorOHInfo extends React.Component {
         locationBuildingSelected?: string,
         locationRoomNumSelected?: string,
         isSeriesMutation: boolean,
-        notification: string
+        notification: string,
+        title: string
     };
 
     constructor(props: {}) {
@@ -85,7 +114,8 @@ class ProfessorOHInfo extends React.Component {
             locationRoomNumSelected: this.props.locationRoomNumDefault || '',
             isSeriesMutation: this.props.sessionSeriesId !== null,
             notification: !(this.props.endTimeDefault == null) && moment(this.props.endTimeDefault).isBefore() ?
-                'This session has already passed!' : ''
+                'This session has already passed!' : '',
+            title: 'Default Title'
         };
 
         this.handleStartTime = this.handleStartTime.bind(this);
@@ -119,7 +149,8 @@ class ProfessorOHInfo extends React.Component {
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
                 _courseId: this.props.courseId,
-                _tas: this.state.taSelected.filter(this.filterUniqueTAs)
+                _tas: this.state.taSelected.filter(this.filterUniqueTAs),
+                _title: this.state.title
             }
         });
     }
@@ -132,7 +163,8 @@ class ProfessorOHInfo extends React.Component {
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
                 _courseId: this.props.courseId,
-                _tas: this.state.taSelected.filter(this.filterUniqueTAs)
+                _tas: this.state.taSelected.filter(this.filterUniqueTAs),
+                _title: this.state.title
             }
         });
     }
@@ -145,7 +177,8 @@ class ProfessorOHInfo extends React.Component {
                 _endTime: this.convertToUTC(this.state.endTime),
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
-                _tas: this.state.taSelected.filter(this.filterUniqueTAs)
+                _tas: this.state.taSelected.filter(this.filterUniqueTAs),
+                _title: this.state.title
             }
         });
     }
@@ -158,7 +191,8 @@ class ProfessorOHInfo extends React.Component {
                 _endTime: this.convertToUTC(this.state.endTime),
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
-                _tas: this.state.taSelected.filter(this.filterUniqueTAs)
+                _tas: this.state.taSelected.filter(this.filterUniqueTAs),
+                _title: this.state.title
             }
         });
     }
