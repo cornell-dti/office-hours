@@ -265,9 +265,9 @@ Junction table (many-to-many relationship) between [questions](#questions) and [
 |Operation|Who is allowed?|
 |:---:|---|
 |Read|All users|
-|Insert|User who asked the question|
-|Update|User who asked the question|
-|Delete|User who asked the question|
+|Insert|Logged-in student; TAs and professors for the course|
+|Update|User who asked the question; TAs and professors for the course|
+|Delete|User who asked the question; TAs and professors for the course|
 
 ## Functions
 
