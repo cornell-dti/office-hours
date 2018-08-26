@@ -6,6 +6,19 @@ View the [setup documentation](./docs/setup.md) for instructions on setting up a
 
 ## Contributors
 
+### 2018-19
+**Developers**
+- Vanessa Wang
+- Shefali Agarwal
+
+**Designers**
+- Joyelle Gilbert
+- Sophia Wang
+
+**Product Managers**
+- Tiffany Wang
+- Ryan Slama
+
 ### 2017-18
 **Developers**
 - Vanessa Wang
