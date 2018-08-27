@@ -24,7 +24,7 @@ class SessionInformationHeader extends React.Component {
             return (
                 <header className="DesktopSessionInformationHeader" >
                     <div className="Picture">
-                        <img src={session.sessionTasBySessionId.nodes[0].userByUserId.computedAvatar} />
+                        <img src={tas[0] ? tas[0].userByUserId.computedAvatar : '/placeholder.png'} />
                     </div>
                     <div className="Details">
                         <p className="Location">{session.building + ' ' + session.room}</p>
@@ -69,7 +69,7 @@ class SessionInformationHeader extends React.Component {
                             <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
                         </div>
                         <div className="Picture">
-                            <img src={session.sessionTasBySessionId.nodes[0].userByUserId.computedAvatar} />
+                            <img src={tas[0] ? tas[0].userByUserId.computedAvatar : '/placeholder.png'} />
                         </div>
                     </div>
                 </div>
