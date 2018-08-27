@@ -329,7 +329,7 @@ class ProfessorOHInfo extends React.Component {
                             onChange={(e) => this.handleTextField(e, 'title')}
                         />
                     </div>
-                    <div className="row">
+                    <div className="row TA">
                         {AddTA}
                     </div>
                     <div className="row">
