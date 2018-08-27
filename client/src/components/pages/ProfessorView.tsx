@@ -40,6 +40,7 @@ query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Dat
             building
             room
             sessionSeriesId
+            title
             sessionTasBySessionId {
                 nodes {
                     userByUserId {

@@ -23,7 +23,8 @@ class ProfessorCalendarRow extends React.Component {
         tablewidth: number,
         updateDeleteInfo: Function,
         updateDeleteVisible: Function,
-        refreshCallback: Function
+        refreshCallback: Function,
+        titles: string[]
     };
 
     constructor(props: {}) {
@@ -105,6 +106,7 @@ class ProfessorCalendarRow extends React.Component {
                                     endTimeDefault={timeEnd[i]}
                                     sessionId={this.props.sessionId[i]}
                                     sessionSeriesId={this.props.sessionSeriesId[i]}
+                                    title={this.props.titles[i]}
                                     toggleEdit={() => this.toggleEdit(i)}
                                     refreshCallback={this.props.refreshCallback}
                                     key={this.props.sessionId[i]}

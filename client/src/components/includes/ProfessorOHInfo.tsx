@@ -88,8 +88,9 @@ class ProfessorOHInfo extends React.Component {
         endTimeDefault?: (moment.Moment | null),
         sessionId?: number,
         sessionSeriesId?: number,
+        title?: string,
         toggleEdit: Function,
-        refreshCallback: Function
+        refreshCallback: Function,
     };
 
     state: {
@@ -115,13 +116,11 @@ class ProfessorOHInfo extends React.Component {
             isSeriesMutation: this.props.sessionSeriesId !== null,
             notification: !(this.props.endTimeDefault == null) && moment(this.props.endTimeDefault).isBefore() ?
                 'This session has already passed!' : '',
-            title: 'Default Title'
+            title: this.props.title || ''
         };
 
         this.handleStartTime = this.handleStartTime.bind(this);
         this.handleEndTime = this.handleEndTime.bind(this);
-        this.handleBuilding = this.handleBuilding.bind(this);
-        this.handleRoom = this.handleRoom.bind(this);
         this.handleTaList = this.handleTaList.bind(this);
         this.clearFields = this.clearFields.bind(this);
         this.updateNotification = this.updateNotification.bind(this);
@@ -140,7 +139,6 @@ class ProfessorOHInfo extends React.Component {
             return time;
         }
     }
-
     _onClickCreateSession(event: React.MouseEvent<HTMLElement>, CreateSession: Function) {
         CreateSession({
             variables: {
@@ -214,27 +212,15 @@ class ProfessorOHInfo extends React.Component {
         this.updateNotification('');
     }
 
-    handleBuilding(event: React.ChangeEvent<HTMLElement>) {
+    handleTextField = (event: React.ChangeEvent<HTMLElement>, key: string) => {
         const target = event.target as HTMLTextAreaElement;
-        this.setState({
-            locationBuildingSelected: target.value
-        });
-        this.updateNotification('');
-    }
-
-    handleRoom(event: React.ChangeEvent<HTMLElement>) {
-        const target = event.target as HTMLTextAreaElement;
-        this.setState({
-            locationRoomNumSelected: target.value
-        });
+        this.setState({ [key]: target.value });
         this.updateNotification('');
     }
 
     handleTaList(event: React.SyntheticEvent<HTMLElement>, data: DropdownProps, index: number) {
         this.state.taSelected[index] = Number(data.value);
-        this.setState({
-            taSelected: this.state.taSelected
-        });
+        this.setState({ taSelected: this.state.taSelected });
         this.updateNotification('');
     }
 
@@ -334,22 +320,31 @@ class ProfessorOHInfo extends React.Component {
         return (
             <React.Fragment>
                 <div className="ProfessorOHInfo">
-                    <div className="TA">
+                    <div className="row">
+                        <Icon name="marker" />
+                        <input
+                            className="long"
+                            placeholder="Name"
+                            value={this.state.title || ''}
+                            onChange={(e) => this.handleTextField(e, 'title')}
+                        />
+                    </div>
+                    <div className="row">
                         {AddTA}
                     </div>
-                    <div className="Location">
+                    <div className="row">
                         <Icon name="marker" />
                         <input
                             className="long"
                             placeholder="Building/Location"
                             value={this.state.locationBuildingSelected || ''}
-                            onChange={this.handleBuilding}
+                            onChange={(e) => this.handleTextField(e, 'locationBuildingSelected')}
                         />
                         <input
                             className="shift"
                             placeholder="Room Number"
                             value={this.state.locationRoomNumSelected || ''}
-                            onChange={this.handleRoom}
+                            onChange={(e) => this.handleTextField(e, 'locationRoomNumSelected')}
                         />
                     </div>
                     <div className="Time">
