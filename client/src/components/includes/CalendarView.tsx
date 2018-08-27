@@ -48,6 +48,7 @@ const GET_CALENDAR_DATA = gql`
                 endTime
                 building
                 room
+                title
                 questionsBySessionId {
                     nodes {
                         status
