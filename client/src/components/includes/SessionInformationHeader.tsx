@@ -37,7 +37,7 @@ class SessionInformationHeader extends React.Component {
                         <p>{session.title || (<React.Fragment>
                             Held by
                                 <span className="black">
-                                {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
+                                {' ' + tas.map(ta => ta.userByUserId.computedName).join(' and ')}
                             </span>
                         </React.Fragment>)}</p>
                     </div>
@@ -93,7 +93,7 @@ class SessionInformationHeader extends React.Component {
                         <p>{session.title || (<React.Fragment>
                             Held by
                                 <span className="black">
-                                {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
+                                {' ' + tas.map(ta => ta.userByUserId.computedName).join(' and ')}
                             </span>
                         </React.Fragment>)}
                         </p>
