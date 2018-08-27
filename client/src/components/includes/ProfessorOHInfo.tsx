@@ -10,19 +10,33 @@ import { Mutation } from 'react-apollo';
 
 const EDIT_SESSION = gql`
     mutation EditSession($_sessionId: Int!, $_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
-        $_room: String!, $_tas: [Int]) {
-        apiEditSession(input: {_sessionId: $_sessionId, _startTime: $_startTime,
-            _endTime: $_endTime, _building: $_building, _room: $_room, _tas: $_tas }) {
-                clientMutationId
+        $_room: String!, $_tas: [Int], $_title: String!) {
+        apiEditSession( input: {
+            _sessionId: $_sessionId,
+            _startTime: $_startTime,
+            _endTime: $_endTime,
+            _building: $_building,
+            _room: $_room,
+            _tas: $_tas,
+            _title: $_title
+        }) {
+            clientMutationId
         }
     }
 `;
 
 const EDIT_SERIES = gql`
     mutation EditSeries($_seriesId: Int!, $_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
-        $_room: String!, $_tas: [Int]) {
-        apiEditSeries(input: {_seriesId: $_seriesId, _startTime: $_startTime,
-            _endTime: $_endTime, _building: $_building, _room: $_room, _tas: $_tas }) {
+        $_room: String!, $_tas: [Int], $_title: String!) {
+        apiEditSeries( input: {
+            _seriesId: $_seriesId,
+            _startTime: $_startTime,
+            _endTime: $_endTime,
+            _building: $_building,
+            _room: $_room,
+            _tas: $_tas,
+            _title: $_title
+        }) {
             clientMutationId
         }
     }
@@ -30,19 +44,33 @@ const EDIT_SERIES = gql`
 
 const CREATE_SESSION = gql`
     mutation CreateSession($_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
-        $_room: String!, $_courseId: Int!, $_tas: [Int]) {
-        apiCreateSession(input: {_startTime: $_startTime, _endTime: $_endTime,
-            _building: $_building, _room: $_room, _courseId: $_courseId, _tas: $_tas }) {
-                clientMutationId
+        $_room: String!, $_courseId: Int!, $_tas: [Int], $_title: String!) {
+        apiCreateSession(input: {
+            _startTime: $_startTime,
+            _endTime: $_endTime,
+            _building: $_building,
+            _room: $_room,
+            _courseId: $_courseId,
+            _tas: $_tas,
+            _title: $_title
+        }) {
+            clientMutationId
         }
     }
 `;
 
 const CREATE_SERIES = gql`
     mutation CreateSeries($_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
-        $_room: String!, $_courseId: Int!, $_tas: [Int]) {
-        apiCreateSeries(input: {_startTime: $_startTime, _endTime: $_endTime,
-            _building: $_building, _room: $_room, _courseId: $_courseId, _tas: $_tas }) {
+        $_room: String!, $_courseId: Int!, $_tas: [Int], $_title: String!) {
+        apiCreateSeries(input: {
+            _startTime: $_startTime,
+            _endTime: $_endTime,
+            _building: $_building,
+            _room: $_room,
+            _courseId: $_courseId,
+            _tas: $_tas,
+            _title: $_title
+        }) {
                 clientMutationId
         }
     }
@@ -60,8 +88,9 @@ class ProfessorOHInfo extends React.Component {
         endTimeDefault?: (moment.Moment | null),
         sessionId?: number,
         sessionSeriesId?: number,
+        title?: string,
         toggleEdit: Function,
-        refreshCallback: Function
+        refreshCallback: Function,
     };
 
     state: {
@@ -71,7 +100,8 @@ class ProfessorOHInfo extends React.Component {
         locationBuildingSelected?: string,
         locationRoomNumSelected?: string,
         isSeriesMutation: boolean,
-        notification: string
+        notification: string,
+        title: string
     };
 
     constructor(props: {}) {
@@ -85,13 +115,12 @@ class ProfessorOHInfo extends React.Component {
             locationRoomNumSelected: this.props.locationRoomNumDefault || '',
             isSeriesMutation: this.props.sessionSeriesId !== null,
             notification: !(this.props.endTimeDefault == null) && moment(this.props.endTimeDefault).isBefore() ?
-                'This session has already passed!' : ''
+                'This session has already passed!' : '',
+            title: this.props.title || ''
         };
 
         this.handleStartTime = this.handleStartTime.bind(this);
         this.handleEndTime = this.handleEndTime.bind(this);
-        this.handleBuilding = this.handleBuilding.bind(this);
-        this.handleRoom = this.handleRoom.bind(this);
         this.handleTaList = this.handleTaList.bind(this);
         this.clearFields = this.clearFields.bind(this);
         this.updateNotification = this.updateNotification.bind(this);
@@ -110,7 +139,6 @@ class ProfessorOHInfo extends React.Component {
             return time;
         }
     }
-
     _onClickCreateSession(event: React.MouseEvent<HTMLElement>, CreateSession: Function) {
         CreateSession({
             variables: {
@@ -119,7 +147,8 @@ class ProfessorOHInfo extends React.Component {
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
                 _courseId: this.props.courseId,
-                _tas: this.state.taSelected.filter(this.filterUniqueTAs)
+                _tas: this.state.taSelected.filter(this.filterUniqueTAs),
+                _title: this.state.title
             }
         });
     }
@@ -132,7 +161,8 @@ class ProfessorOHInfo extends React.Component {
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
                 _courseId: this.props.courseId,
-                _tas: this.state.taSelected.filter(this.filterUniqueTAs)
+                _tas: this.state.taSelected.filter(this.filterUniqueTAs),
+                _title: this.state.title
             }
         });
     }
@@ -145,7 +175,8 @@ class ProfessorOHInfo extends React.Component {
                 _endTime: this.convertToUTC(this.state.endTime),
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
-                _tas: this.state.taSelected.filter(this.filterUniqueTAs)
+                _tas: this.state.taSelected.filter(this.filterUniqueTAs),
+                _title: this.state.title
             }
         });
     }
@@ -158,7 +189,8 @@ class ProfessorOHInfo extends React.Component {
                 _endTime: this.convertToUTC(this.state.endTime),
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
-                _tas: this.state.taSelected.filter(this.filterUniqueTAs)
+                _tas: this.state.taSelected.filter(this.filterUniqueTAs),
+                _title: this.state.title
             }
         });
     }
@@ -180,27 +212,15 @@ class ProfessorOHInfo extends React.Component {
         this.updateNotification('');
     }
 
-    handleBuilding(event: React.ChangeEvent<HTMLElement>) {
+    handleTextField = (event: React.ChangeEvent<HTMLElement>, key: string) => {
         const target = event.target as HTMLTextAreaElement;
-        this.setState({
-            locationBuildingSelected: target.value
-        });
-        this.updateNotification('');
-    }
-
-    handleRoom(event: React.ChangeEvent<HTMLElement>) {
-        const target = event.target as HTMLTextAreaElement;
-        this.setState({
-            locationRoomNumSelected: target.value
-        });
+        this.setState({ [key]: target.value });
         this.updateNotification('');
     }
 
     handleTaList(event: React.SyntheticEvent<HTMLElement>, data: DropdownProps, index: number) {
         this.state.taSelected[index] = Number(data.value);
-        this.setState({
-            taSelected: this.state.taSelected
-        });
+        this.setState({ taSelected: this.state.taSelected });
         this.updateNotification('');
     }
 
@@ -300,22 +320,31 @@ class ProfessorOHInfo extends React.Component {
         return (
             <React.Fragment>
                 <div className="ProfessorOHInfo">
-                    <div className="TA">
+                    <div className="row">
+                        <Icon name="marker" />
+                        <input
+                            className="long"
+                            placeholder="Name"
+                            value={this.state.title || ''}
+                            onChange={(e) => this.handleTextField(e, 'title')}
+                        />
+                    </div>
+                    <div className="row TA">
                         {AddTA}
                     </div>
-                    <div className="Location">
+                    <div className="row">
                         <Icon name="marker" />
                         <input
                             className="long"
                             placeholder="Building/Location"
                             value={this.state.locationBuildingSelected || ''}
-                            onChange={this.handleBuilding}
+                            onChange={(e) => this.handleTextField(e, 'locationBuildingSelected')}
                         />
                         <input
                             className="shift"
                             placeholder="Room Number"
                             value={this.state.locationRoomNumSelected || ''}
-                            onChange={this.handleRoom}
+                            onChange={(e) => this.handleTextField(e, 'locationRoomNumSelected')}
                         />
                     </div>
                     <div className="Time">

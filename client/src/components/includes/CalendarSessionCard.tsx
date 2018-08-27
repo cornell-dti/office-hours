@@ -35,12 +35,14 @@ class CalendarSessionCard extends React.Component {
                     <div className="Circle" />
                 </div>
                 <div className="CalendarCard">
-                    <div className="TA">
-                        {tas.length > 2 ?
-                            tas.map(ta => ta.userByUserId.computedName).join(', ') :
-                            tas.map(ta => ta.userByUserId.computedName).join(' and ')}
+                    <div className="Location">
+                        {session.building + ' ' + session.room}
                     </div>
-                    <div className="Location">{session.building + ' ' + session.room}</div>
+                    <div className="Tas">
+                        {session.title || (tas.length > 2 ?
+                            tas.map(ta => ta.userByUserId.computedName).join(', ') :
+                            tas.map(ta => ta.userByUserId.computedName).join(' and '))}
+                    </div>
                     <div className="Queue">
                         <span className="Ahead">
                             Waiting: &nbsp;

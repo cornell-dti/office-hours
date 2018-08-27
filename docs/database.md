@@ -171,6 +171,7 @@ This relation is used to store metadata about office hour session instances. Not
 ||room|text|❌|Name of the room in which this series occurs (eg. 'G17')|
 |✈️|session\_series\_id|integer|✔️|References the session series to which this session belongs, if any; foreign key from [session\_series](#session-series)|
 |✈️|course\_id|integer|❌|References the course to which this session series belongs; foreign key from [courses](#courses)|
+|✈️|title|string|✔️|The name of the session, shown instead of TA names|
 
 #### Authorization Rules
 |Operation|Who is allowed?|
@@ -197,7 +198,7 @@ This is a junction table (many-to-many relationship) between [sessions](#session
 |Delete|TAs and professors for the course|
 
 ### questions
-This table contains all the details about all the questions asked across different sessions and courses. As the question's status is updated, its corresponding entry's 'status' field is changed. 
+This table contains all the details about all the questions asked across different sessions and courses. As the question's status is updated, its corresponding entry's 'status' field is changed.
 
 |Key|Column|Datatype|Nullable?|Description|
 |:---:|---|---|:---:|---|
@@ -238,7 +239,7 @@ This relation is a repository of all the tags stored in the system, across diffe
 |Delete|Professors for the course|
 
 ### tag-relations
-Describes the tree-like tag hierarchy using parent-child relationships. Each entry in the table describes a parent tag and a child tag. 
+Describes the tree-like tag hierarchy using parent-child relationships. Each entry in the table describes a parent tag and a child tag.
 
 |Key|Column|Datatype|Nullable?|Description|
 |:---:|---|---|:---:|---|
@@ -274,7 +275,7 @@ Junction table (many-to-many relationship) between [questions](#questions) and [
 In addition to the above tables, the following functions have been implemented in PL/pgSQL and are made available in GraphQL by Postgraphile. In most cases that involve multiple GraphQL queries from the client, or complex business logic, it is better to factor the complexity out into the API itself by exposing functions at the database level. The functions implemented in PL/pgSQL are made available to the client by Postgraphile. Note that some functions are designed to be called directly from the client (prefixed by 'api'), while the others should not be called directly (prefixed by either 'internal' or 'trigger').
 
 ### API Functions
-Functions that are designed to be exposed to the client directly are prefixed with 'api'. Please read this documentation before using those functions!  
+Functions that are designed to be exposed to the client directly are prefixed with 'api'. Please read this documentation before using those functions!
 
 #### Sessions / Series API
 To deal with the intricate logic involving sessions, session series, and their creation/mutation/deletion, the following functions have been implemented. **To mutate either one-off indepedent sessions, or a series of sessions, this API must be used rather than direct mutations of the entities. Otherwise, the data will be inconsistent.** For all of these functions, please always provide _all_ of the parameters.
@@ -291,6 +292,7 @@ Given all the details of a new weekly-recurring session series, this function wi
 - \_room (text): the name of the room in which the recurring session will take place (eg. 'G11')
 - \_course\_id (integer): the id of the course to which this session series is to be added
 - \_tas (integer): a list of integers that represent the user\_ids of the TAs who will host this session series
+- \_title (string): the name of the session. For 3110, it's conceptual or debugging
 
 ##### Returns
 All the fields of the newly inserted row in the [session\_series](#session-series) table
@@ -307,6 +309,7 @@ Given updated details of an existing weekly-recurring session series, this funct
 - \_building (text): the name of the building in which the recurring session will take place (eg. 'Gates')
 - \_room (text): the name of the room in which the recurring session will take place (eg. 'G11')
 - \_tas (integer): a list of integers that represent the user\_ids of the TAs who will host this session series
+- \_title (string): the name of the session. For 3110, it's conceptual or debugging
 
 ##### Returns
 All the fields of the updated row in the [session\_series](#session-series) table
@@ -334,6 +337,7 @@ Given all the details of a new non-recurring (/independent/one-off) session, thi
 - \_room (text): the name of the room in which the session will take place (eg. 'G11')
 - \_course\_id (integer): the id of the course to which this session is to be added
 - \_tas (integer): a list of integers that represent the user\_ids of the TAs who will host this session
+- \_title (string): the name of the session. For 3110, it's conceptual or debugging
 
 ##### Returns
 All the fields of the newly inserted row in the [sessions](#sessions) table
@@ -350,6 +354,7 @@ Given updated details of an existing session, this function will edit the sessio
 - \_building (text): the name of the building in which the session will take place (eg. 'Gates')
 - \_room (text): the name of the room in which the session will take place (eg. 'G11')
 - \_tas (integer): a list of integers that represent the user\_ids of the TAs who will host this session
+- \_title (string): the name of the session. For 3110, it's conceptual or debugging
 
 ##### Returns
 All the fields of the updated row in the [sessions](#sessions) table
@@ -383,7 +388,7 @@ All the fields from the [sessions](#sessions) table of all the sessions in the c
 #### api\_add\_question
 
 ##### Description
-Given the details of a user-submitted question, this function inserts the data into the backend. This function is necessary because without it, the client would have to make multiple calls (one for each tag) to associate tags with the question. This function abstracts away that logic and provides a simpler API to the client. Note that the asker\_id is inferred by looking at the logged-in user who made the query. If no user is logged in, the query will fail with an exception. This function checks to make sure the user doesn't have any unresolved questions in any other currently active sessions. This function also checks that the user's question is under the character limit. 
+Given the details of a user-submitted question, this function inserts the data into the backend. This function is necessary because without it, the client would have to make multiple calls (one for each tag) to associate tags with the question. This function abstracts away that logic and provides a simpler API to the client. Note that the asker\_id is inferred by looking at the logged-in user who made the query. If no user is logged in, the query will fail with an exception. This function checks to make sure the user doesn't have any unresolved questions in any other currently active sessions. This function also checks that the user's question is under the character limit.
 
 ##### Parameters
 - \_content (text): the user-submitted text content of the question
@@ -471,7 +476,7 @@ All the fields from the [sessions](#sessions) table of all the sessions that wer
 #### internal\_sync\_series\_sessions
 
 ##### Description
-Given a session series, this function updates its ongoing and upcoming weekly recurring session instances with the latest metadata of the series, including the host TAs. Only session instances in the series that have not yet ended are updated, while the others are left untouched. Note that the sessions are synced with the series data that lies in [session\_series](#session-series) and [session\_series\_tas](#session-series-tas) when this function is called. 
+Given a session series, this function updates its ongoing and upcoming weekly recurring session instances with the latest metadata of the series, including the host TAs. Only session instances in the series that have not yet ended are updated, while the others are left untouched. Note that the sessions are synced with the series data that lies in [session\_series](#session-series) and [session\_series\_tas](#session-series-tas) when this function is called.
 
 ##### Parameters
 - \_series\_id (integer): the id of the session series for which session instances are to be synced

@@ -34,11 +34,12 @@ class SessionInformationHeader extends React.Component {
                             <Icon name="calendar" />
                             <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
                         </p>
-                        <p>Held by <span className="black">
-                            {tas.length > 2 ?
-                                tas.map(ta => ta.userByUserId.computedName).join(', ') :
-                                tas.map(ta => ta.userByUserId.computedName).join(' and ')}
-                        </span></p>
+                        <p>{session.title || (<React.Fragment>
+                            Held by
+                                <span className="black">
+                                {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
+                            </span>
+                        </React.Fragment>)}</p>
                     </div>
                     <div className="QueueWrap">
                         <div className="QueueInfo">
@@ -89,9 +90,13 @@ class SessionInformationHeader extends React.Component {
                                 <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
                             </p>
                         </div>
-                        <p>Held by <span className="black">
-                            {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
-                        </span></p>
+                        <p>{session.title || (<React.Fragment>
+                            Held by
+                                <span className="black">
+                                {tas.map(ta => ta.userByUserId.computedName).join(' and ')}
+                            </span>
+                        </React.Fragment>)}
+                        </p>
                     </div>
                 </div>
             </header>

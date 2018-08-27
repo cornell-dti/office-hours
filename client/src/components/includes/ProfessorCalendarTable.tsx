@@ -94,6 +94,7 @@ class ProfessorCalendarTable extends React.Component {
         var room: string[][] = [];
         var sessionId: number[][] = [];
         var sessionSeriesId: number[][] = [];
+        var titles: string[][] = [];
 
         for (var day = 0; day < 7; day++) {
             timeStart.push(new Array<Date>());
@@ -104,6 +105,7 @@ class ProfessorCalendarTable extends React.Component {
             room.push(new Array<string>());
             sessionId.push(new Array<number>());
             sessionSeriesId.push(new Array<number>());
+            titles.push(new Array<string>());
         }
 
         this.props.data.nodes.forEach((node: AppSession) => {
@@ -124,6 +126,7 @@ class ProfessorCalendarTable extends React.Component {
             taUserIds[dayIndexQuery].push(taUserIdsQuery);
             sessionId[dayIndexQuery].push(node.sessionId);
             sessionSeriesId[dayIndexQuery].push(node.sessionSeriesId);
+            titles[dayIndexQuery].push(node.title);
         });
 
         var tablewidth = 5;
@@ -169,6 +172,7 @@ class ProfessorCalendarTable extends React.Component {
                             updateDeleteInfo={this.updateDeleteInfo}
                             updateDeleteVisible={this.updateDeleteVisible}
                             refreshCallback={this.props.refreshCallback}
+                            titles={titles[i]}
                         />
                     </React.Fragment>
                 );

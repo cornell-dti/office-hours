@@ -23,6 +23,7 @@ interface AppSession {
     building: string;
     room: string;
     sessionSeriesId: number;
+    title: string;
     questionsBySessionId: {
         nodes: [AppQuestion]
     }

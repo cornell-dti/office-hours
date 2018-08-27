@@ -49,6 +49,7 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
         endTime
         building
         room
+        title
         questionsBySessionId {
             nodes {
                 questionId
