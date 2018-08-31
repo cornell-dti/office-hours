@@ -219,7 +219,7 @@ class ProfessorOHInfo extends React.Component {
     }
 
     handleTaList(event: React.SyntheticEvent<HTMLElement>, data: DropdownProps, index: number) {
-        this.state.taSelected[index] = Number(data.value);
+        this.state.taSelected[index] = Number(data.value) || undefined;
         this.setState({ taSelected: this.state.taSelected });
         this.updateNotification('');
     }
@@ -231,7 +231,8 @@ class ProfessorOHInfo extends React.Component {
             taSelected: [undefined],
             locationBuildingSelected: '',
             locationRoomNumSelected: '',
-            isSeriesMutation: false
+            isSeriesMutation: this.props.sessionSeriesId !== null,
+            title: ''
         });
     }
 
@@ -269,7 +270,8 @@ class ProfessorOHInfo extends React.Component {
 
     render() {
         var isMaxTA = false;
-        if (this.state.taSelected.length >= this.props.taOptions.length) {
+        // -1 to account for the "TA Name" placeholder
+        if (this.state.taSelected.length >= this.props.taOptions.length - 1) {
             isMaxTA = true;
         }
 
