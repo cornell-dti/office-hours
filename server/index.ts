@@ -1,5 +1,5 @@
 import * as express from 'express';
-import postgraphql from 'postgraphql';
+import postgraphile from 'postgraphile';
 import * as passport from 'passport';
 import * as sslRedirect from 'heroku-ssl-redirect';
 
@@ -176,7 +176,7 @@ app.use(function (req, res, next) {
             if (options.fakeuserid) {
                 const fakeJwt = jwt.sign({ userId: options.fakeuserid }, (process.env.OH_JWT_SECRET || "insecure"), {
                     expiresIn: '30s',
-                    audience: 'postgraphql',
+                    audience: 'postgraphile',
                 });
                 req.headers.authorization = `Bearer ${fakeJwt}`;
             }
@@ -185,7 +185,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
+app.use(postgraphile(process.env.DATABASE_URL || 'postgres://localhost:5432', {
     graphiql: true,
     graphqlRoute: '/__gql/graphql',
     graphiqlRoute: '/__gql/graphiql',
