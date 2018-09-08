@@ -7,24 +7,15 @@ import ProfessorOHInfo from './ProfessorOHInfo';
 class ProfessorCalendarRow extends React.Component {
 
     props: {
-        courseId: number,
         dayNumber: number,
+        sessions: AppSession[],
+        courseId: number,
         taOptions: DropdownItemProps[],
-        timeStart: Date[],
-        timeEnd: Date[],
-        taNames: string[][],
-        taUserIds: number[][],
-        locationBuilding: string[],
-        locationRoomNum: string[],
-        sessionId: number[],
-        sessionSeriesId: number[],
         isExpanded: boolean[],
         handleEditToggle: Function,
-        tablewidth: number,
         updateDeleteInfo: Function,
         updateDeleteVisible: Function,
-        refreshCallback: Function,
-        titles: string[]
+        refreshCallback: Function
     };
 
     constructor(props: {}) {
@@ -43,11 +34,11 @@ class ProfessorCalendarRow extends React.Component {
     }
 
     render() {
-        if (this.props.timeStart.length === 0) {
+        if (this.props.sessions.length === 0) {
             return (
                 <tbody>
                     <tr>
-                        <td colSpan={this.props.tablewidth} className="NoOH">
+                        <td colSpan={5} className="NoOH">
                             <i>No office hours scheduled</i>
                         </td>
                     </tr>
@@ -55,24 +46,25 @@ class ProfessorCalendarRow extends React.Component {
             );
         }
 
-        var timeStart = new Array<moment.Moment>(this.props.timeStart.length);
-        var timeEnd = new Array<moment.Moment>(this.props.timeEnd.length);
-        for (var index = 0; index < this.props.timeStart.length; index++) {
-            timeStart[index] = moment(this.props.timeStart[index]);
-            timeEnd[index] = moment(this.props.timeEnd[index]);
+        var startTime = new Array<moment.Moment>(this.props.sessions.length);
+        var endTime = new Array<moment.Moment>(this.props.sessions.length);
+        for (var index = 0; index < this.props.sessions.length; index++) {
+            startTime[index] = moment(this.props.sessions[index].startTime);
+            endTime[index] = moment(this.props.sessions[index].endTime);
         }
 
-        var rowPair = this.props.timeStart.map(
+        var rowPair = this.props.sessions.map(
             (row, i) => {
                 return (
                     <tbody
                         className={'Pair ' + this.props.isExpanded[i] + ' ' + (i % 2 === 0 ? 'odd' : 'even')}
-                        key={this.props.sessionId[i]}
+                        key={this.props.sessions[i].sessionId}
                     >
                         <tr className="Preview">
-                            <td>{timeStart[i].format('h:mm A')} to {timeEnd[i].format('h:mm A')}</td>
-                            <td>{this.props.taNames[i].join(', ')}</td>
-                            <td>{this.props.locationBuilding[i]} {this.props.locationRoomNum[i]}</td>
+                            <td>{startTime[i].format('h:mm A')} to {endTime[i].format('h:mm A')}</td>
+                            <td>{this.props.sessions[i].sessionTasBySessionId.nodes
+                                .map(ta => ta.userByUserId.computedName).join(', ')}</td>
+                            <td>{this.props.sessions[i].building} {this.props.sessions[i].room}</td>
                             <td>
                                 <button
                                     className="Edit"
@@ -92,24 +84,17 @@ class ProfessorCalendarRow extends React.Component {
                         </tr>
                         <tr>
                             <td
-                                colSpan={this.props.tablewidth}
+                                colSpan={5}
                                 className={'ExpandedEdit ' + this.props.isExpanded[i]}
                             >
                                 <ProfessorOHInfo
+                                    key={this.props.sessions[i].sessionId}
+                                    session={this.props.sessions[i]}
                                     courseId={this.props.courseId}
                                     isNewOH={false}
                                     taOptions={this.props.taOptions}
-                                    taUserIdsDefault={this.props.taUserIds[i]}
-                                    locationBuildingDefault={this.props.locationBuilding[i]}
-                                    locationRoomNumDefault={this.props.locationRoomNum[i]}
-                                    startTimeDefault={timeStart[i]}
-                                    endTimeDefault={timeEnd[i]}
-                                    sessionId={this.props.sessionId[i]}
-                                    sessionSeriesId={this.props.sessionSeriesId[i]}
-                                    title={this.props.titles[i]}
                                     toggleEdit={() => this.toggleEdit(i)}
                                     refreshCallback={this.props.refreshCallback}
-                                    key={this.props.sessionId[i]}
                                 />
                                 <button
                                     className="Bottom Delete"

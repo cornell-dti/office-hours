@@ -78,17 +78,11 @@ const CREATE_SERIES = gql`
 
 class ProfessorOHInfo extends React.Component {
     props: {
+        session?: AppSession,
         courseId: number,
         isNewOH: boolean,
         taOptions: DropdownItemProps[],
-        taUserIdsDefault: number[],
-        locationBuildingDefault?: string,
-        locationRoomNumDefault?: string,
-        startTimeDefault?: (moment.Moment | null),
-        endTimeDefault?: (moment.Moment | null),
-        sessionId?: number,
-        sessionSeriesId?: number,
-        title?: string,
+        taUserIdsDefault?: number[],
         toggleEdit: Function,
         refreshCallback: Function,
     };
@@ -107,17 +101,31 @@ class ProfessorOHInfo extends React.Component {
     constructor(props: {}) {
         super(props);
 
-        this.state = {
-            startTime: this.props.startTimeDefault,
-            endTime: this.props.endTimeDefault,
-            taSelected: this.props.taUserIdsDefault.length > 0 ? this.props.taUserIdsDefault : [undefined],
-            locationBuildingSelected: this.props.locationBuildingDefault || '',
-            locationRoomNumSelected: this.props.locationRoomNumDefault || '',
-            isSeriesMutation: this.props.sessionSeriesId !== null,
-            notification: !(this.props.endTimeDefault == null) && moment(this.props.endTimeDefault).isBefore() ?
-                'This session has already passed!' : '',
-            title: this.props.title || ''
-        };
+        if (this.props.session) { // Existing Session
+            this.state = {
+                startTime: moment(this.props.session.startTime),
+                endTime: moment(this.props.session.endTime),
+                taSelected: this.props.session.sessionTasBySessionId.nodes.length > 0 ?
+                    this.props.session.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.userId) : [undefined],
+                locationBuildingSelected: this.props.session.building,
+                locationRoomNumSelected: this.props.session.room,
+                isSeriesMutation: this.props.session.sessionSeriesId !== null,
+                notification: !(this.props.session == null) && moment(this.props.session.endTime).isBefore() ?
+                    'This session has already passed!' : '',
+                title: this.props.session.title
+            };
+        } else { // New Session
+            this.state = {
+                startTime: null,
+                endTime: null,
+                taSelected: [undefined],
+                locationBuildingSelected: '',
+                locationRoomNumSelected: '',
+                isSeriesMutation: false,
+                notification: '',
+                title: ''
+            };
+        }
 
         this.handleStartTime = this.handleStartTime.bind(this);
         this.handleEndTime = this.handleEndTime.bind(this);
@@ -170,7 +178,7 @@ class ProfessorOHInfo extends React.Component {
     _onClickEditSession(event: React.MouseEvent<HTMLElement>, EditSession: Function) {
         EditSession({
             variables: {
-                _sessionId: this.props.sessionId,
+                _sessionId: this.props.session ? this.props.session.sessionId : undefined,
                 _startTime: this.convertToUTC(this.state.startTime),
                 _endTime: this.convertToUTC(this.state.endTime),
                 _building: this.state.locationBuildingSelected,
@@ -184,7 +192,7 @@ class ProfessorOHInfo extends React.Component {
     _onClickEditSeries(event: React.MouseEvent<HTMLElement>, EditSeries: Function) {
         EditSeries({
             variables: {
-                _seriesId: this.props.sessionSeriesId,
+                _seriesId: this.props.session ? this.props.session.sessionSeriesId : undefined,
                 _startTime: this.convertToUTC(this.state.startTime),
                 _endTime: this.convertToUTC(this.state.endTime),
                 _building: this.state.locationBuildingSelected,
@@ -219,7 +227,7 @@ class ProfessorOHInfo extends React.Component {
     }
 
     handleTaList(event: React.SyntheticEvent<HTMLElement>, data: DropdownProps, index: number) {
-        this.state.taSelected[index] = Number(data.value);
+        this.state.taSelected[index] = Number(data.value) || undefined;
         this.setState({ taSelected: this.state.taSelected });
         this.updateNotification('');
     }
@@ -231,7 +239,7 @@ class ProfessorOHInfo extends React.Component {
             taSelected: [undefined],
             locationBuildingSelected: '',
             locationRoomNumSelected: '',
-            isSeriesMutation: false
+            title: ''
         });
     }
 
@@ -269,7 +277,8 @@ class ProfessorOHInfo extends React.Component {
 
     render() {
         var isMaxTA = false;
-        if (this.state.taSelected.length >= this.props.taOptions.length) {
+        // -1 to account for the "TA Name" placeholder
+        if (this.state.taSelected.length >= this.props.taOptions.length - 1) {
             isMaxTA = true;
         }
 
@@ -278,7 +287,7 @@ class ProfessorOHInfo extends React.Component {
         // Disable save button if default start time (prop) is in the past
         var disableEmpty = this.state.startTime == null || this.state.endTime == null;
         var disableState = this.state.endTime !== null && moment(this.state.endTime).isBefore();
-        var disableProps = !(this.props.endTimeDefault == null) && moment(this.props.endTimeDefault).isBefore();
+        var disableProps = !(this.props.session == null) && moment(this.props.session.endTime).isBefore();
 
         const emptyNotification = 'Please fill in valid times';
         const stateNotification = 'End time has already passed!';
@@ -396,7 +405,7 @@ class ProfessorOHInfo extends React.Component {
                             className="datePicker shift"
                             label={this.props.isNewOH ? 'Repeat weekly' : 'Edit all office hours in this series'}
                             checked={this.state.isSeriesMutation}
-                            disabled={this.props.sessionSeriesId === null}
+                            disabled={this.props.session ? this.props.session.sessionSeriesId === null : false}
                             onChange={this.toggleCheckbox}
                         />
                     </div>
