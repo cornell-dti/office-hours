@@ -207,47 +207,34 @@ CREATE TABLE public.session_series (
     end_time timestamp with time zone NOT NULL,
     building text NOT NULL,
     room text NOT NULL,
-    course_id integer NOT NULL
+    course_id integer NOT NULL,
+    title text
 );
 
 
 --
--- Name: api_create_series(timestamp with time zone, timestamp with time zone, text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_create_series(timestamp with time zone, timestamp with time zone, text, text, integer, integer[], text); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_create_series(_start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _course_id integer, _tas integer[]) RETURNS SETOF public.session_series
+CREATE FUNCTION public.api_create_series(_start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _course_id integer, _tas integer[], _title text) RETURNS SETOF public.session_series
     LANGUAGE plpgsql
     AS $$
 
 declare
-
 series_id integer;
-
 ta integer;
-
 begin
-
-	insert into session_series (start_time, end_time, building, room, course_id)
-
-		values (_start_time, _end_time, _building, _room, _course_id) returning session_series_id into series_id;
-
+	insert into session_series (start_time, end_time, building, room, course_id, title)
+		values (_start_time, _end_time, _building, _room, _course_id, _title) returning session_series_id into series_id;
 	perform internal_create_sessions_from_series(series_id);
-
 	foreach ta in array _tas loop
-
 		insert into session_series_tas(session_series_id, user_id)
-
 		values (series_id, ta);
-
 	end loop;
-
 	perform internal_sync_series_sessions(series_id);
-
 	return query (select * from session_series where session_series_id = series_id);
-
 end
-
- $$;
+$$;
 
 
 --
@@ -261,44 +248,34 @@ CREATE TABLE public.sessions (
     building text NOT NULL,
     room text NOT NULL,
     session_series_id integer,
-    course_id integer NOT NULL
+    course_id integer NOT NULL,
+    title text
 );
 
 
 --
--- Name: api_create_session(timestamp with time zone, timestamp with time zone, text, text, integer, integer[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_create_session(timestamp with time zone, timestamp with time zone, text, text, integer, integer[], text); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_create_session(_start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _course_id integer, _tas integer[]) RETURNS SETOF public.sessions
+CREATE FUNCTION public.api_create_session(_start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _course_id integer, _tas integer[], _title text) RETURNS SETOF public.sessions
     LANGUAGE plpgsql
     AS $$
 
 declare
-
 _session_id integer;
-
 ta integer;
-
 begin
 	if (_end_time > NOW()) then
-
-		insert into sessions (start_time, end_time, building, room, course_id, session_series_id)
-
-			values (_start_time, _end_time, _building, _room, _course_id, NULL) returning session_id into _session_id;
-
+		insert into sessions (start_time, end_time, building, room, course_id, session_series_id, title)
+			values (_start_time, _end_time, _building, _room, _course_id, NULL, _title) returning session_id into _session_id;
 		foreach ta in array _tas loop
-
 			insert into session_tas(session_id, user_id)
-
 			values (_session_id, ta);
-
 		end loop;
-
 		return query (select * from sessions where session_id = _session_id);
 	else
 		raise exception 'Cannot create a session that has already ended!';
 	end if;
-
 end
 
  $$;
@@ -409,78 +386,54 @@ end
 
 
 --
--- Name: api_edit_series(integer, timestamp with time zone, timestamp with time zone, text, text, integer[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_edit_series(integer, timestamp with time zone, timestamp with time zone, text, text, integer[], text); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_edit_series(_series_id integer, _start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _tas integer[]) RETURNS SETOF public.session_series
+CREATE FUNCTION public.api_edit_series(_series_id integer, _start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _tas integer[], _title text) RETURNS SETOF public.session_series
     LANGUAGE plpgsql
     AS $$
 
 declare
-
 ta integer;
-
 begin
-
 	update session_series
-
-	set start_time=_start_time, end_time=_end_time, building=_building, room=_room
-
+	set start_time=_start_time, end_time=_end_time, building=_building, room=_room, title=_title
 	where session_series_id = _series_id;
-
 	delete from session_series_tas where session_series_id=_series_id;
-
 	foreach ta in array _tas loop
-
 		insert into session_series_tas(session_series_id, user_id)
-
 		values (_series_id, ta);
-
 	end loop;
-
 	perform internal_sync_series_sessions(_series_id);
-
 	return query (select * from session_series where session_series_id = _series_id);
-
 end
 
  $$;
 
 
 --
--- Name: api_edit_session(integer, timestamp with time zone, timestamp with time zone, text, text, integer[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: api_edit_session(integer, timestamp with time zone, timestamp with time zone, text, text, integer[], text); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION public.api_edit_session(_session_id integer, _start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _tas integer[]) RETURNS SETOF public.sessions
+CREATE FUNCTION public.api_edit_session(_session_id integer, _start_time timestamp with time zone, _end_time timestamp with time zone, _building text, _room text, _tas integer[], _title text) RETURNS SETOF public.sessions
     LANGUAGE plpgsql
     AS $$
 
 declare
-
 ta integer;
-
 begin
 	if (select end_time from sessions where session_id = _session_id) > NOW() then
-
-		update sessions set (start_time, end_time, building, room, session_series_id) =
-
-			(_start_time, _end_time, _building, _room, NULL) where session_id = _session_id;
-
+		update sessions set (start_time, end_time, building, room, session_series_id, title) =
+			(_start_time, _end_time, _building, _room, NULL, _title) where session_id = _session_id;
 		delete from session_tas where session_id = _session_id;
-
 		foreach ta in array _tas loop
-
 			insert into session_tas(session_id, user_id)
-
 			values (_session_id, ta);
-
 		end loop;
-
 		return query (select * from sessions where session_id = _session_id);
 	else
 		raise exception 'Cannot edit a session that has already ended!';
 	end if;
-
 end
 
  $$;
@@ -596,6 +549,7 @@ session_start_time timestamp with time zone;
 session_end_time timestamp with time zone;
 session_start_offset interval;
 session_end_offset interval;
+title text;
 begin
 IF (SELECT COUNT(*) FROM sessions where session_series_id = _series_id) > 0 THEN
     RAISE EXCEPTION 'Sessions with this series_id already exist!';
@@ -605,18 +559,18 @@ start_date_week := date_trunc('week', (SELECT courses.start_date from courses WH
 start_date := date_trunc('day', (SELECT courses.start_date from courses WHERE course_id = course));
 end_date_week := date_trunc('week', (SELECT courses.end_date from courses WHERE course_id = course));
 end_date := date_trunc('day', (SELECT courses.end_date from courses WHERE course_id = course));
-SELECT session_series.start_time, session_series.end_time, session_series.building, session_series.room
-    INTO session_start_time, session_end_time, building, room
+SELECT session_series.start_time, session_series.end_time, session_series.building, session_series.room, session_series.title
+    INTO session_start_time, session_end_time, building, room, title
     FROM session_series WHERE session_series_id = _series_id;
 session_start_offset := session_start_time - date_trunc('week', session_start_time);
-session_end_offset := session_end_time - date_trunc('week', session_end_time) ;
+session_end_offset := session_end_time - date_trunc('week', session_start_time) ;
 cur_date := start_date_week;
 while cur_date <= end_date_week loop
 	if ((cur_date + session_end_offset) > NOW()) and ((cur_date + session_start_offset) >= start_date)
 		and ((cur_date + session_start_offset) <= (end_date + interval '1 day')) then
-		INSERT INTO sessions(start_time, end_time, building, room, session_series_id, course_id)
+		INSERT INTO sessions(start_time, end_time, building, room, session_series_id, course_id, title)
 		values
-		(cur_date + session_start_offset, cur_date + session_end_offset, building, room, _series_id, course);
+		(cur_date + session_start_offset, cur_date + session_end_offset, building, room, _series_id, course, title);
     end if;
 	cur_date := cur_date + interval '1 week';
 END LOOP;
@@ -790,70 +744,44 @@ $$;
 
 CREATE FUNCTION public.internal_sync_series_sessions(_series_id integer) RETURNS void
     LANGUAGE plpgsql
-    AS $$ 
+    AS $$
 
 declare
-
 _start_time timestamp with time zone;
-
 _end_time timestamp with time zone;
-
 _building text;
-
 _room text;
-
 _course_id integer;
-
+_title text;
 session_row sessions%rowtype;
-
 ta_row session_series_tas%rowtype;
 session_start_offset interval;
 session_end_offset interval;
 
 begin
-
-	select session_series.start_time, session_series.end_time, session_series.building, session_series.room, session_series.course_id
-
-	into _start_time, _end_time, _building, _room, _course_id
-
+	select session_series.start_time, session_series.end_time, session_series.building, session_series.room, session_series.course_id, session_series.title
+	into _start_time, _end_time, _building, _room, _course_id, _title
 	from session_series
-
 	where session_series_id = _series_id;
-
 	session_start_offset := _start_time - date_trunc('week', _start_time);
 	session_end_offset := _end_time - date_trunc('week', _end_time);
 
-
 	for session_row in
-
 		select * from sessions where session_series_id = _series_id and end_time > now()
-
 	loop
-
 		update sessions
-
 		set start_time=date_trunc('week', sessions.start_time) + session_start_offset,
 			end_time=date_trunc('week', sessions.end_time) + session_end_offset,
-			building=_building, room=_room, course_id=_course_id
-
+			building=_building, room=_room, course_id=_course_id, title=_title
 		where session_id = session_row.session_id;
 
-	
-
 		delete from session_tas where session_id = session_row.session_id;
-
 		for ta_row in
-
 			select * from session_series_tas where session_series_id = _series_id
-
 		loop
-
 			insert into session_tas(session_id, user_id) values (session_row.session_id, ta_row.user_id);
-
 		end loop;
-
 	end loop;
-
 end
 
  $$;
@@ -1362,14 +1290,15 @@ COPY public.questions (question_id, content, time_entered, status, time_addresse
 -- Data for Name: session_series; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.session_series (session_series_id, start_time, end_time, building, room, course_id) FROM stdin;
-23	2018-07-09 10:00:00-04	2018-07-09 11:00:00-04	Gates	G11	1
-24	2018-07-09 12:30:00-04	2018-07-09 14:00:00-04	Rhodes	402	1
-25	2018-07-03 10:30:00-04	2018-07-03 11:15:00-04	Gates	343	1
-28	2018-08-13 03:00:00-04	2018-08-13 04:30:00-04	Gates	123	1
-29	2018-08-14 10:30:00-04	2018-08-14 13:00:00-04	Gates	122	1
-30	2018-08-14 19:30:00-04	2018-08-15 01:30:00-04	Gates	B12	1
-31	2018-08-15 03:30:00-04	2018-08-15 05:00:00-04	Gates	123	1
+COPY public.session_series (session_series_id, start_time, end_time, building, room, course_id, title) FROM stdin;
+23	2018-07-09 10:00:00-04	2018-07-09 11:00:00-04	Gates	G11	1	\N
+24	2018-07-09 12:30:00-04	2018-07-09 14:00:00-04	Rhodes	402	1	\N
+25	2018-07-03 10:30:00-04	2018-07-03 11:15:00-04	Gates	343	1	\N
+28	2018-08-13 03:00:00-04	2018-08-13 04:30:00-04	Gates	123	1	\N
+29	2018-08-14 10:30:00-04	2018-08-14 13:00:00-04	Gates	122	1	\N
+30	2018-08-14 19:30:00-04	2018-08-15 01:30:00-04	Gates	B12	1	\N
+31	2018-08-15 03:30:00-04	2018-08-15 05:00:00-04	Gates	123	1	\N
+32	2018-09-16 15:30:00-04	2018-09-17 00:30:00-04	Rhodes	123	1	Conceptual
 \.
 
 
@@ -1429,34 +1358,38 @@ COPY public.session_tas (session_id, user_id) FROM stdin;
 -- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.sessions (session_id, start_time, end_time, building, room, session_series_id, course_id) FROM stdin;
-277	2018-07-16 12:30:00-04	2018-07-16 14:00:00-04	Rhodes	402	24	1
-278	2018-07-23 12:30:00-04	2018-07-23 14:00:00-04	Rhodes	402	24	1
-279	2018-07-30 12:30:00-04	2018-07-30 14:00:00-04	Rhodes	402	24	1
-280	2018-08-06 12:30:00-04	2018-08-06 14:00:00-04	Rhodes	402	24	1
-281	2018-08-13 12:30:00-04	2018-08-13 14:00:00-04	Rhodes	402	24	1
-282	2018-07-10 10:30:00-04	2018-07-10 11:15:00-04	Gates	343	25	1
-283	2018-07-17 10:30:00-04	2018-07-17 11:15:00-04	Gates	343	25	1
-284	2018-07-24 10:30:00-04	2018-07-24 11:15:00-04	Gates	343	25	1
-285	2018-07-31 10:30:00-04	2018-07-31 11:15:00-04	Gates	343	25	1
-286	2018-08-07 10:30:00-04	2018-08-07 11:15:00-04	Gates	343	25	1
-287	2018-07-15 13:30:00-04	2018-07-15 14:30:00-04	Upson	B60	\N	1
-288	2018-07-22 14:30:00-04	2018-07-22 15:30:00-04	Upson	B10	\N	1
-272	2018-07-16 10:00:00-04	2018-07-16 11:00:00-04	Gates	G11	23	1
-273	2018-07-23 10:00:00-04	2018-07-23 11:00:00-04	Gates	G11	23	1
-274	2018-07-30 10:00:00-04	2018-07-30 11:00:00-04	Gates	G11	23	1
-275	2018-08-06 10:00:00-04	2018-08-06 11:00:00-04	Gates	G11	23	1
-276	2018-08-13 10:00:00-04	2018-08-13 11:00:00-04	Gates	G11	23	1
-289	2018-08-13 03:00:00-04	2018-08-13 04:30:00-04	Gates	123	28	1
-290	2018-08-15 03:30:00-04	2018-08-15 05:00:00-04	Gates	123	31	1
-291	2018-08-22 03:30:00-04	2018-08-22 05:00:00-04	Gates	123	31	1
-292	2018-08-29 03:30:00-04	2018-08-29 05:00:00-04	Gates	123	31	1
-293	2018-09-05 03:30:00-04	2018-09-05 05:00:00-04	Gates	123	31	1
-294	2018-09-12 03:30:00-04	2018-09-12 05:00:00-04	Gates	123	31	1
-295	2018-09-19 03:30:00-04	2018-09-19 05:00:00-04	Gates	123	31	1
-296	2018-09-26 03:30:00-04	2018-09-26 05:00:00-04	Gates	123	31	1
-297	2018-10-03 03:30:00-04	2018-10-03 05:00:00-04	Gates	123	31	1
-298	2018-10-10 03:30:00-04	2018-10-10 05:00:00-04	Gates	123	31	1
+COPY public.sessions (session_id, start_time, end_time, building, room, session_series_id, course_id, title) FROM stdin;
+277	2018-07-16 12:30:00-04	2018-07-16 14:00:00-04	Rhodes	402	24	1	\N
+278	2018-07-23 12:30:00-04	2018-07-23 14:00:00-04	Rhodes	402	24	1	\N
+279	2018-07-30 12:30:00-04	2018-07-30 14:00:00-04	Rhodes	402	24	1	\N
+280	2018-08-06 12:30:00-04	2018-08-06 14:00:00-04	Rhodes	402	24	1	\N
+281	2018-08-13 12:30:00-04	2018-08-13 14:00:00-04	Rhodes	402	24	1	\N
+282	2018-07-10 10:30:00-04	2018-07-10 11:15:00-04	Gates	343	25	1	\N
+283	2018-07-17 10:30:00-04	2018-07-17 11:15:00-04	Gates	343	25	1	\N
+284	2018-07-24 10:30:00-04	2018-07-24 11:15:00-04	Gates	343	25	1	\N
+285	2018-07-31 10:30:00-04	2018-07-31 11:15:00-04	Gates	343	25	1	\N
+286	2018-08-07 10:30:00-04	2018-08-07 11:15:00-04	Gates	343	25	1	\N
+287	2018-07-15 13:30:00-04	2018-07-15 14:30:00-04	Upson	B60	\N	1	\N
+288	2018-07-22 14:30:00-04	2018-07-22 15:30:00-04	Upson	B10	\N	1	\N
+272	2018-07-16 10:00:00-04	2018-07-16 11:00:00-04	Gates	G11	23	1	\N
+273	2018-07-23 10:00:00-04	2018-07-23 11:00:00-04	Gates	G11	23	1	\N
+274	2018-07-30 10:00:00-04	2018-07-30 11:00:00-04	Gates	G11	23	1	\N
+275	2018-08-06 10:00:00-04	2018-08-06 11:00:00-04	Gates	G11	23	1	\N
+276	2018-08-13 10:00:00-04	2018-08-13 11:00:00-04	Gates	G11	23	1	\N
+289	2018-08-13 03:00:00-04	2018-08-13 04:30:00-04	Gates	123	28	1	\N
+290	2018-08-15 03:30:00-04	2018-08-15 05:00:00-04	Gates	123	31	1	\N
+291	2018-08-22 03:30:00-04	2018-08-22 05:00:00-04	Gates	123	31	1	\N
+292	2018-08-29 03:30:00-04	2018-08-29 05:00:00-04	Gates	123	31	1	\N
+293	2018-09-05 03:30:00-04	2018-09-05 05:00:00-04	Gates	123	31	1	\N
+294	2018-09-12 03:30:00-04	2018-09-12 05:00:00-04	Gates	123	31	1	\N
+295	2018-09-19 03:30:00-04	2018-09-19 05:00:00-04	Gates	123	31	1	\N
+296	2018-09-26 03:30:00-04	2018-09-26 05:00:00-04	Gates	123	31	1	\N
+297	2018-10-03 03:30:00-04	2018-10-03 05:00:00-04	Gates	123	31	1	\N
+298	2018-10-10 03:30:00-04	2018-10-10 05:00:00-04	Gates	123	31	1	\N
+299	2018-09-16 15:30:00-04	2018-09-17 00:30:00-04	Rhodes	123	32	1	Conceptual
+300	2018-09-23 15:30:00-04	2018-09-24 00:30:00-04	Rhodes	123	32	1	Conceptual
+301	2018-09-30 15:30:00-04	2018-10-01 00:30:00-04	Rhodes	123	32	1	Conceptual
+302	2018-10-07 15:30:00-04	2018-10-08 00:30:00-04	Rhodes	123	32	1	Conceptual
 \.
 
 
@@ -1586,14 +1519,14 @@ SELECT pg_catalog.setval('public.questions_question_id_seq', 32, true);
 -- Name: session_series_session_series_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 31, true);
+SELECT pg_catalog.setval('public.session_series_session_series_id_seq', 32, true);
 
 
 --
 -- Name: sessions_session_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.sessions_session_id_seq', 298, true);
+SELECT pg_catalog.setval('public.sessions_session_id_seq', 302, true);
 
 
 --
