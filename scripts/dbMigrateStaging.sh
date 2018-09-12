@@ -14,6 +14,8 @@ then
     exit 1
 fi
 
+timestamp=$(date +%s)
+
 source '../.env/db.sh'
 
 echo ''
