@@ -197,7 +197,7 @@ class ProfessorView extends React.Component {
                     fetchPolicy="network-only" // change this to no-cache when it is fixed in Apollo
                 >
                     {({ loading, data, refetch }) => {
-                        var taOptions: DropdownItemProps[] = [{ text: 'TA Name' }];
+                        var taOptions: DropdownItemProps[] = [{ key: -1, text: 'TA Name' }];
                         if (!loading && data) {
                             data.courseByCourseId.tas.nodes.forEach((node) => {
                                 taOptions.push({
