@@ -46,13 +46,6 @@ class ProfessorCalendarRow extends React.Component {
             );
         }
 
-        var startTime = new Array<moment.Moment>(this.props.sessions.length);
-        var endTime = new Array<moment.Moment>(this.props.sessions.length);
-        for (var index = 0; index < this.props.sessions.length; index++) {
-            startTime[index] = moment(this.props.sessions[index].startTime);
-            endTime[index] = moment(this.props.sessions[index].endTime);
-        }
-
         var rowPair = this.props.sessions.map(
             (row, i) => {
                 return (
@@ -61,9 +54,15 @@ class ProfessorCalendarRow extends React.Component {
                         key={this.props.sessions[i].sessionId}
                     >
                         <tr className="Preview">
-                            <td>{startTime[i].format('h:mm A')} to {endTime[i].format('h:mm A')}</td>
-                            <td>{this.props.sessions[i].sessionTasBySessionId.nodes
-                                .map(ta => ta.userByUserId.computedName).join(', ')}</td>
+                            <td>
+                                {moment(this.props.sessions[i].startTime).format('h:mm A')}
+                                {' to '}
+                                {moment(this.props.sessions[i].endTime).format('h:mm A')}
+                            </td>
+                            <td>
+                                {this.props.sessions[i].sessionTasBySessionId.nodes
+                                    .map(ta => ta.userByUserId.computedName).join(', ')}
+                            </td>
                             <td>{this.props.sessions[i].building} {this.props.sessions[i].room}</td>
                             <td>
                                 <button

@@ -138,20 +138,20 @@ class ProfessorOHInfo extends React.Component {
         this.filterUniqueTAs = this.filterUniqueTAs.bind(this);
     }
 
-    convertToUTC(time: moment.Moment | null | undefined) {
-        if (time == null) {
-            return undefined;
-        } else {
-            // Needs testing; depends on whether time zone info is sent or not
-            // return time.tz('UTC', true);
-            return time;
-        }
-    }
+    // convertToUTC(time: moment.Moment | null | undefined) {
+    //     if (time == null) {
+    //         return undefined;
+    //     } else {
+    //         // Needs testing; depends on whether time zone info is sent or not
+    //         // return time.tz('UTC', true);
+    //         return time;
+    //     }
+    // }
     _onClickCreateSession(event: React.MouseEvent<HTMLElement>, CreateSession: Function) {
         CreateSession({
             variables: {
-                _startTime: this.convertToUTC(this.state.startTime),
-                _endTime: this.convertToUTC(this.state.endTime),
+                _startTime: this.state.startTime,
+                _endTime: this.state.endTime,
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
                 _courseId: this.props.courseId,
@@ -164,8 +164,8 @@ class ProfessorOHInfo extends React.Component {
     _onClickCreateSeries(event: React.MouseEvent<HTMLElement>, CreateSeries: Function) {
         CreateSeries({
             variables: {
-                _startTime: this.convertToUTC(this.state.startTime),
-                _endTime: this.convertToUTC(this.state.endTime),
+                _startTime: this.state.startTime,
+                _endTime: this.state.endTime,
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
                 _courseId: this.props.courseId,
@@ -178,9 +178,9 @@ class ProfessorOHInfo extends React.Component {
     _onClickEditSession(event: React.MouseEvent<HTMLElement>, EditSession: Function) {
         EditSession({
             variables: {
-                _sessionId: this.props.session ? this.props.session.sessionId : undefined,
-                _startTime: this.convertToUTC(this.state.startTime),
-                _endTime: this.convertToUTC(this.state.endTime),
+                _sessionId: this.props.session && this.props.session.sessionId,
+                _startTime: this.state.startTime,
+                _endTime: this.state.endTime,
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
                 _tas: this.state.taSelected.filter(this.filterUniqueTAs),
@@ -192,9 +192,9 @@ class ProfessorOHInfo extends React.Component {
     _onClickEditSeries(event: React.MouseEvent<HTMLElement>, EditSeries: Function) {
         EditSeries({
             variables: {
-                _seriesId: this.props.session ? this.props.session.sessionSeriesId : undefined,
-                _startTime: this.convertToUTC(this.state.startTime),
-                _endTime: this.convertToUTC(this.state.endTime),
+                _seriesId: this.props.session && this.props.session.sessionSeriesId,
+                _startTime: this.state.startTime,
+                _endTime: this.state.endTime,
                 _building: this.state.locationBuildingSelected,
                 _room: this.state.locationRoomNumSelected,
                 _tas: this.state.taSelected.filter(this.filterUniqueTAs),
