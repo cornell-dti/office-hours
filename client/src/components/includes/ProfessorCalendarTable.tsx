@@ -6,6 +6,15 @@ import ProfessorOHInfoDelete from './ProfessorOHInfoDelete';
 import { DropdownItemProps } from 'semantic-ui-react';
 
 class ProfessorCalendarTable extends React.Component {
+    props: {
+        courseId: number,
+        data: {
+            nodes: [AppSession]
+        },
+        taOptions: DropdownItemProps[],
+        refreshCallback: Function
+    };
+
     state: {
         isExpanded: boolean[][]
         isDeleteVisible: boolean
@@ -13,15 +22,6 @@ class ProfessorCalendarTable extends React.Component {
         currentRow: number
         dayIndex: number
         rowIndex: number
-    };
-
-    props: {
-        data: {
-            nodes: [AppSession]
-        },
-        taOptions: DropdownItemProps[],
-        refreshCallback: Function,
-        courseId: number
     };
 
     constructor(props: {}) {
@@ -86,52 +86,16 @@ class ProfessorCalendarTable extends React.Component {
     }
 
     render() {
-        var timeStart: Date[][] = [];
-        var timeEnd: Date[][] = [];
-        var taNames: Array<string[][]> = [];
-        var taUserIds: Array<number[][]> = [];
-        var building: string[][] = [];
-        var room: string[][] = [];
-        var sessionId: number[][] = [];
-        var sessionSeriesId: number[][] = [];
-        var titles: string[][] = [];
-
+        var sessions: AppSession[][] = [];
         for (var day = 0; day < 7; day++) {
-            timeStart.push(new Array<Date>());
-            timeEnd.push(new Array<Date>());
-            taNames.push(new Array<string[]>());
-            taUserIds.push(new Array<number[]>());
-            building.push(new Array<string>());
-            room.push(new Array<string>());
-            sessionId.push(new Array<number>());
-            sessionSeriesId.push(new Array<number>());
-            titles.push(new Array<string>());
+            sessions.push(new Array<AppSession>());
         }
 
         this.props.data.nodes.forEach((node: AppSession) => {
             // 0 = Monday..., 5 = Saturday, 6 = Sunday
             var dayIndexQuery = (new Date(node.startTime).getDay() + 6) % 7;
-            var taNamesQuery: string[] = [];
-            var taUserIdsQuery: number[] = [];
-            node.sessionTasBySessionId.nodes.forEach((ta) => {
-                taNamesQuery.push(ta.userByUserId.computedName);
-                taUserIdsQuery.push(ta.userByUserId.userId);
-            });
-
-            timeStart[dayIndexQuery].push(new Date(node.startTime));
-            timeEnd[dayIndexQuery].push(new Date(node.endTime));
-            building[dayIndexQuery].push(node.building);
-            room[dayIndexQuery].push(node.room);
-            taNames[dayIndexQuery].push(taNamesQuery);
-            taUserIds[dayIndexQuery].push(taUserIdsQuery);
-            sessionId[dayIndexQuery].push(node.sessionId);
-            sessionSeriesId[dayIndexQuery].push(node.sessionSeriesId);
-            titles[dayIndexQuery].push(node.title);
+            sessions[dayIndexQuery].push(node);
         });
-
-        var tablewidth = 5;
-        var dayIndex = this.state.dayIndex;
-        var rowIndex = this.state.rowIndex;
 
         var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         var headers = new Array(7);
@@ -139,7 +103,7 @@ class ProfessorCalendarTable extends React.Component {
         for (var index = 0; index < headers.length; index++) {
             headers[index] = (
                 <tr>
-                    <th colSpan={tablewidth}>{days[index]}</th>
+                    <th colSpan={5}>{days[index]}</th>
                 </tr>
             );
         }
@@ -150,29 +114,20 @@ class ProfessorCalendarTable extends React.Component {
                     <React.Fragment key={i}>
                         <tbody>
                             <tr>
-                                <th colSpan={tablewidth}>{dayName}</th>
+                                <th colSpan={5}>{dayName}</th>
                             </tr>
                         </tbody>
                         <ProfessorCalendarRow
                             key={i}
+                            dayNumber={i}
+                            sessions={sessions[i]}
                             courseId={this.props.courseId}
                             taOptions={this.props.taOptions}
-                            timeStart={timeStart[i]}
-                            timeEnd={timeEnd[i]}
-                            taNames={taNames[i]}
-                            taUserIds={taUserIds[i]}
-                            locationBuilding={building[i]}
-                            locationRoomNum={room[i]}
-                            sessionId={sessionId[i]}
-                            sessionSeriesId={sessionSeriesId[i]}
-                            tablewidth={5}
-                            dayNumber={i}
                             isExpanded={this.state.isExpanded[i]}
                             handleEditToggle={this.toggleEdit}
                             updateDeleteInfo={this.updateDeleteInfo}
                             updateDeleteVisible={this.updateDeleteVisible}
                             refreshCallback={this.props.refreshCallback}
-                            titles={titles[i]}
                         />
                     </React.Fragment>
                 );
@@ -181,24 +136,19 @@ class ProfessorCalendarTable extends React.Component {
 
         return (
             <div className="ProfessorCalendarTable">
-                <ProfessorDelete
-                    isDeleteVisible={this.state.isDeleteVisible}
-                    updateDeleteVisible={this.updateDeleteVisible}
-                    content={
-                        <ProfessorOHInfoDelete
-                            ta={taNames[dayIndex][rowIndex]}
-                            timeStart={timeStart[dayIndex][rowIndex]}
-                            timeEnd={timeEnd[dayIndex][rowIndex]}
-                            locationBuilding={building[dayIndex][rowIndex]}
-                            locationRoomNum={room[dayIndex][rowIndex]}
-                            sessionId={sessionId[dayIndex][rowIndex]}
-                            sessionSeriesId={sessionSeriesId[dayIndex][rowIndex]}
-                            toggleDelete={() => this.updateDeleteVisible(false)}
-                            toggleEdit={() => this.toggleEdit(this.state.currentDay, this.state.currentRow, true)}
-                            refreshCallback={this.props.refreshCallback}
-                        />
-                    }
-                />
+                {sessions[this.state.dayIndex][this.state.rowIndex] &&
+                    <ProfessorDelete
+                        isDeleteVisible={this.state.isDeleteVisible}
+                        updateDeleteVisible={this.updateDeleteVisible}
+                        content={
+                            <ProfessorOHInfoDelete
+                                session={sessions[this.state.dayIndex][this.state.rowIndex]}
+                                toggleDelete={() => this.updateDeleteVisible(false)}
+                                toggleEdit={() => this.toggleEdit(this.state.currentDay, this.state.currentRow, true)}
+                                refreshCallback={this.props.refreshCallback}
+                            />
+                        }
+                    />}
                 <table className="Calendar">
                     {this.state.isExpanded[0]}
                     {rows}

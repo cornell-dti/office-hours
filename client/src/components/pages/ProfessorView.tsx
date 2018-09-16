@@ -197,7 +197,7 @@ class ProfessorView extends React.Component {
                     fetchPolicy="network-only" // change this to no-cache when it is fixed in Apollo
                 >
                     {({ loading, data, refetch }) => {
-                        var taOptions: DropdownItemProps[] = [{ text: 'TA Name' }];
+                        var taOptions: DropdownItemProps[] = [{ key: -1, text: 'TA Name' }];
                         if (!loading && data) {
                             data.courseByCourseId.tas.nodes.forEach((node) => {
                                 taOptions.push({
@@ -217,8 +217,8 @@ class ProfessorView extends React.Component {
                                 <div className="main">
                                     <ProfessorAddNew
                                         courseId={this.props.match.params.courseId}
-                                        taOptions={taOptions}
                                         refreshCallback={refetch}
+                                        taOptions={taOptions}
                                     />
                                     <CalendarWeekSelect
                                         handleClick={this.handleWeekClick}
@@ -228,10 +228,10 @@ class ProfessorView extends React.Component {
                                     <div className="Calendar">
                                         {data && data.apiGetSessions &&
                                             <ProfessorCalendarTable
+                                                courseId={this.props.match.params.courseId}
                                                 data={data.apiGetSessions}
                                                 taOptions={taOptions}
                                                 refreshCallback={refetch}
-                                                courseId={this.props.match.params.courseId}
                                             />
                                         }
                                     </div>
