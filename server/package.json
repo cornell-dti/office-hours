@@ -6,7 +6,9 @@
     "types": "lib/index",
     "scripts": {
         "start": "ts-node index.ts",
+        "s": "yarn start",
         "inspect": "ts-node --inspect index.ts",
+        "i": "yarn inspect",
         "build:live": "nodemon -e ts,js,sql,gql --exec ./node_modules/.bin/ts-node -- ./index.ts"
     },
     "repository": {
