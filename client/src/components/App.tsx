@@ -9,6 +9,7 @@ import ProfessorView from './pages/ProfessorView';
 import SplitView from './pages/SplitView';
 import ProfessorTagsView from './pages/ProfessorTagsView';
 import ProfessorDashboardView from './pages/ProfessorDashboardView';
+import ProfessorPeopleView from './pages/ProfessorPeopleView';
 import { Analytics } from './includes/Analytics';
 import { Loader } from 'semantic-ui-react';
 
@@ -69,6 +70,10 @@ class App extends React.Component {
                             exact={true}
                         />
                         <PrivateRoute
+                            path="professor-people/course/:courseId/"
+                            component={ProfessorPeopleView}
+                        />
+                        <PrivateRoute
                             path="/professor-dashboard/course/:courseId"
                             component={ProfessorDashboardView}
                             exact={true}
@@ -76,7 +81,7 @@ class App extends React.Component {
                         <PrivateRoute path="/professor/course/:courseId" component={ProfessorView} exact={true} />
                         <PrivateRoute path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
                         <PrivateRoute path="/course/:courseId" component={SplitView} />
-                        <Redirect from="/" to="/course/1" />
+                        <Redirect from="/" to="/course/1" exact={true}/>
                     </Switch>
                 </div>
             </Router>
