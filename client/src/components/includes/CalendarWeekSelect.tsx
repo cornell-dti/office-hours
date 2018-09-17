@@ -5,8 +5,8 @@ const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* m
 
 class CalendarWeekSelect extends React.Component {
 
-    monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'];
+    monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     props: {
         handleClick?: Function,
@@ -35,20 +35,25 @@ class CalendarWeekSelect extends React.Component {
         this.handleWeekClick = this.handleWeekClick.bind(this);
     }
 
-    getWeek(epoch: number): string {
-        var now = new Date(epoch);
-        var weekText = '';
-        weekText += now.getDate();
-        weekText += ' - ';
-        now.setTime(now.getTime() +
-            6 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
-        weekText += now.getDate();
-        return weekText;
-    }
+    // getWeekText(epoch: number): string {
+    //     var now = new Date(epoch);
+    //     var weekText = '';
+    //     weekText += now.getDate();
+    //     weekText += ' - ';
+    //     now.setTime(now.getTime() +
+    //         6 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */);
+    //     weekText += now.getDate();
+    //     return weekText;
+    // }
 
     getMonth(epoch: number): string {
         var now = new Date(epoch);
         return this.monthNames[now.getMonth()];
+    }
+
+    getDay(epoch: number): number {
+        var now = new Date(epoch);
+        return now.getDate();
     }
 
     // previousWeek = true means that the previous week was clicked in the week selector
@@ -71,22 +76,33 @@ class CalendarWeekSelect extends React.Component {
     }
 
     render() {
-        const thisWeek = this.getWeek(this.state.selectedWeekEpoch);
-        const thisMonth = this.getMonth(this.state.selectedWeekEpoch);
+        // const thisWeek = this.getWeek(this.state.selectedWeekEpoch);
+        // const thisMonth = this.getMonth(this.state.selectedWeekEpoch);
+
+        const thisWeekEpoch = this.state.selectedWeekEpoch;
+        const nextWeekEpoch = this.state.selectedWeekEpoch +
+            7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 
         return (
             <div className="CalendarWeekSelect">
                 <span className="LastWeek" onClick={() => this.handleWeekClick(true)}>
                     <img src={chevron} alt="Previous Week" className="flipped" />
                 </span>
-                <span className="CurrentWeek">
-                    <div className="Month">
-                        {thisMonth}
-                    </div>
-                    <div className="Days">
-                        {thisWeek}
-                    </div>
-                </span>
+                <div className="CurrentWeek">
+                    <span className="Date">
+                        <span className="Month">
+                            {this.getMonth(thisWeekEpoch)}
+                        </span>
+                        {' ' + this.getDay(thisWeekEpoch)}
+                    </span>
+                    -
+                    <span className="Date">
+                        <span className="Month">
+                            {this.getMonth(nextWeekEpoch)}
+                        </span>
+                        {' ' + this.getDay(nextWeekEpoch)}
+                    </span>
+                </div>
                 <span className="NextWeek" onClick={() => this.handleWeekClick(false)}>
                     <img src={chevron} alt="Next Week" />
                 </span>
