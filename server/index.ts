@@ -1,5 +1,5 @@
 import * as express from 'express';
-import postgraphql from 'postgraphql';
+import postgraphile from 'postgraphile';
 import * as passport from 'passport';
 import * as sslRedirect from 'heroku-ssl-redirect';
 
@@ -98,7 +98,7 @@ passport.use(new GoogleStrategy(
 
         const serverJwt = jwt.sign({ userId: -1 }, (process.env.OH_JWT_SECRET || "insecure"), {
             expiresIn: '30s',
-            audience: 'postgraphql',
+            audience: 'postgraphile',
         });
 
         request.post({
@@ -114,7 +114,7 @@ passport.use(new GoogleStrategy(
 passport.serializeUser(function (user: any, done) {
     var token = jwt.sign(user, (process.env.OH_JWT_SECRET || "insecure"), {
         expiresIn: '1w',
-        audience: 'postgraphql',
+        audience: 'postgraphile',
     });
     done(null, token);
 })
@@ -166,7 +166,7 @@ app.get('/__auth/logout', function (req, res) {
     res.redirect('/');
 })
 
-// Add jwt_token as Authorization header for Postgraphql
+// Add jwt_token as Authorization header for Postgraphile
 // Alternative: might be able to use pgSettings to directly? (https://www.graphile.org/postgraphile/usage-library/)
 app.use(function (req, res, next) {
     if (req.url === '/__gql/graphql') {
@@ -176,7 +176,7 @@ app.use(function (req, res, next) {
             if (options.fakeuserid) {
                 const fakeJwt = jwt.sign({ userId: options.fakeuserid }, (process.env.OH_JWT_SECRET || "insecure"), {
                     expiresIn: '30s',
-                    audience: 'postgraphql',
+                    audience: 'postgraphile',
                 });
                 req.headers.authorization = `Bearer ${fakeJwt}`;
             }
@@ -185,7 +185,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(postgraphql(process.env.DATABASE_URL || 'postgres://localhost:5432', {
+app.use(postgraphile(process.env.DATABASE_URL || 'postgres://localhost:5432', {
     graphiql: true,
     graphqlRoute: '/__gql/graphql',
     graphiqlRoute: '/__gql/graphiql',

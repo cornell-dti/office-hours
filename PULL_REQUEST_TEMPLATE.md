@@ -1,12 +1,9 @@
 <!-- Provide a general summary of your changes in the Title above -->
 
-### Description
-<!-- Describe your changes -->
-
 ### Inside This PR
 <!-- Itemize bug fixes, new features, and other changes -->
 <!-- Feel free to break this into sections, i.e. features, fixes, etc. -->
-* 
+*
 
 ### Notes <!-- Optional -->
 <!--- List any important or subtle points, future considerations, or other items of note. -->
@@ -15,6 +12,7 @@
 <!-- Put an `x` in all the boxes that apply: -->
 - [ ] Database schema change (anything that changes Postgres)
 - [ ] I updated existing types in `/src/components/types/`
+- [ ] Other change that could cause problems (Detailed in notes)
 
 ### Checklist:
 <!-- Go over all the following points, and put an `x` in all the boxes that apply. -->

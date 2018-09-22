@@ -1,55 +1,58 @@
 {
-  "name": "office-hours-server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "lib/index",
-  "types": "lib/index",
-  "scripts": {
-    "start": "ts-node index.ts",
-    "build:live": "nodemon -e ts,js,sql,gql --exec ./node_modules/.bin/ts-node -- ./index.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/cornell-dti/office-hours.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/cornell-dti/office-hours/issues"
-  },
-  "homepage": "https://github.com/cornell-dti/office-hours#readme",
-  "dependencies": {
-    "@types/cookie-session": "^2.0.34",
-    "@types/express": "^4.11.1",
-    "@types/express-session": "^1.15.8",
-    "@types/passport": "^0.4.3",
-    "@types/passport-google-oauth2": "^0.1.1",
-    "apollo-server-express": "^1.3.2",
-    "body-parser": "^1.18.2",
-    "command-line-args": "^5.0.2",
-    "cookie-session": "^2.0.0-beta.3",
-    "express": "^4.16.2",
-    "express-graphql": "^0.6.12",
-    "express-session": "^1.15.6",
-    "graphql": "^0.11.7",
-    "graphql-server-express": "^1.2.0",
-    "graphql-subscriptions": "^0.5.4",
-    "graphql-tools": "^2.8.0",
-    "heroku-ssl-redirect": "^0.0.4",
-    "jsonwebtoken": "^8.3.0",
-    "nodemon": "^1.12.1",
-    "passport": "^0.4.0",
-    "passport-google-oauth20": "^1.0.0",
-    "pg": "^7.4.1",
-    "postgraphql": "^3.5.6",
-    "request": "^2.87.0",
-    "subscriptions-transport-ws": "^0.9.1",
-    "tslint": "^5.8.0"
-  },
-  "devDependencies": {
-    "@types/node": "^8.5.9",
-    "concurrently": "^3.5.0",
-    "ts-node": "^3.3.0",
-    "typescript": "^2.6.1"
-  }
+    "name": "office-hours-server",
+    "version": "1.0.0",
+    "description": "",
+    "main": "lib/index",
+    "types": "lib/index",
+    "scripts": {
+        "start": "ts-node index.ts",
+        "s": "yarn start",
+        "inspect": "ts-node --inspect index.ts",
+        "i": "yarn inspect",
+        "build:live": "nodemon -e ts,js,sql,gql --exec ./node_modules/.bin/ts-node -- ./index.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/cornell-dti/office-hours.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/cornell-dti/office-hours/issues"
+    },
+    "homepage": "https://github.com/cornell-dti/office-hours#readme",
+    "dependencies": {
+        "@types/cookie-session": "^2.0.34",
+        "@types/express": "^4.11.1",
+        "@types/express-session": "^1.15.8",
+        "@types/passport": "^0.4.3",
+        "@types/passport-google-oauth2": "^0.1.1",
+        "apollo-server-express": "^1.3.2",
+        "body-parser": "^1.18.2",
+        "command-line-args": "^5.0.2",
+        "cookie-session": "^2.0.0-beta.3",
+        "express": "^4.16.2",
+        "express-graphql": "^0.6.12",
+        "express-session": "^1.15.6",
+        "graphql": "^0.11.7",
+        "graphql-server-express": "^1.2.0",
+        "graphql-subscriptions": "^0.5.4",
+        "graphql-tools": "^2.8.0",
+        "heroku-ssl-redirect": "^0.0.4",
+        "jsonwebtoken": "^8.3.0",
+        "nodemon": "^1.12.1",
+        "passport": "^0.4.0",
+        "passport-google-oauth20": "^1.0.0",
+        "pg": "^7.4.1",
+        "postgraphile": "^4.0.0-rc.4.1",
+        "request": "^2.87.0",
+        "subscriptions-transport-ws": "^0.9.1",
+        "tslint": "^5.8.0"
+    },
+    "devDependencies": {
+        "@types/node": "^8.5.9",
+        "concurrently": "^3.5.0",
+        "ts-node": "^3.3.0",
+        "typescript": "^2.6.1"
+    }
 }

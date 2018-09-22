@@ -26,17 +26,15 @@ class TopBar extends React.PureComponent {
         this.setState({ showMenu: status });
     }
 
+    redirect = (href: string) => {
+        document.location.href = href;
+    }
+
     render() {
         return (
-            <React.Fragment>
+            <div tabIndex={1} onBlur={() => this.setMenu(false)}>
                 <header className="topBar">
-                    {/* <button>
-                    <Icon.Group>
-                        <Icon name="bell outline" size="big" color="grey" />
-                        <Icon className="notification" corner={true} name="circle" color="pink" />
-                    </Icon.Group>
-                </button> */}
-                    <div className="triggerArea" onClick={() => this.setMenu(!this.state.showMenu)}>
+                    <div className="triggerArea" onClick={() => this.setMenu(!this.state.showMenu)} >
                         <img src={this.props.user.computedAvatar} />
                         <span className="name">
                             {this.props.user.computedName}
@@ -44,23 +42,25 @@ class TopBar extends React.PureComponent {
                     </div>
                 </header>
                 {this.state.showMenu && (
-                    <ul className="desktop logoutMenu" onClick={() => this.setMenu(false)} >
-                        {/* {this.props.isTa &&
-                            <React.Fragment>
-                                <li>Cancel Session</li>
-                                <li>Change Session</li>
-                            </React.Fragment>
-                        } */}
-                        <li><a href="/__auth/logout">Log Out</a></li>
-                        <li><a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank">Send Feedback</a></li>
-                        {this.props.role === 'professor' && <React.Fragment>{
-                            this.props.context === 'professor'
-                                ? <li><a href={'/course/' + this.props.courseId} >Switch View</a></li>
-                                : <li><a href={'/professor/course/' + this.props.courseId}>Switch View</a></li>
-                        }</React.Fragment>}
-                    </ul>
+                    <React.Fragment>
+                        <ul className="desktop logoutMenu" tabIndex={1} onClick={() => this.setMenu(false)} >
+                            <li onMouseDown={() => this.redirect('/__auth/logout')} > Log Out </li>
+                            <li onMouseDown={() => window.open('https://goo.gl/forms/7ozmsHfXYWNs8Y2i1', '_blank')}>
+                                Send Feedback
+                            </li>
+                            {this.props.role === 'professor' && <React.Fragment>{
+                                this.props.context === 'professor'
+                                    ? <li onMouseDown={() => this.redirect('/course/' + this.props.courseId)}>
+                                        Switch View
+                                    </li>
+                                    : <li onMouseDown={() => this.redirect('/professor/course/' + this.props.courseId)}>
+                                        Switch View
+                                </li>
+                            }</React.Fragment>}
+                        </ul>
+                    </React.Fragment>
                 )}
-            </React.Fragment>
+            </div>
         );
     }
 }

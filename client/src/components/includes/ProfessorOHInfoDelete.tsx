@@ -24,13 +24,7 @@ const DELETE_SERIES = gql`
 class ProfessorOHInfoDelete extends React.Component {
 
     props: {
-        ta: string[],
-        timeStart: Date,
-        timeEnd: Date,
-        locationBuilding: string,
-        locationRoomNum: string,
-        sessionId: number,
-        sessionSeriesId: number,
+        session: AppSession,
         toggleDelete: Function,
         toggleEdit: Function,
         refreshCallback: Function
@@ -59,7 +53,7 @@ class ProfessorOHInfoDelete extends React.Component {
     _onClickDeleteSession(event: React.MouseEvent<HTMLElement>, DeleteSession: Function) {
         DeleteSession({
             variables: {
-                _sessionId: this.props.sessionId
+                _sessionId: this.props.session.sessionId
             }
         });
     }
@@ -67,18 +61,19 @@ class ProfessorOHInfoDelete extends React.Component {
     _onClickDeleteSeries(event: React.MouseEvent<HTMLElement>, DeleteSeries: Function) {
         DeleteSeries({
             variables: {
-                _seriesId: this.props.sessionSeriesId
+                _seriesId: this.props.session.sessionSeriesId
             }
         });
     }
 
     render() {
         // Convert UNIX timestamps to readable time string
-        var date = moment(this.props.timeStart).format('dddd MM/DD/YY');
-        var timeStart = moment(this.props.timeStart).format('h:mm A');
-        var timeEnd = moment(this.props.timeEnd).format('h:mm A');
+        var date = moment(this.props.session.startTime).format('dddd MM/DD/YY');
+        var timeStart = moment(this.props.session.startTime).format('h:mm A');
+        var timeEnd = moment(this.props.session.endTime).format('h:mm A');
 
-        var disable = moment(this.props.timeStart).isBefore();
+        var disable = moment(this.props.session.startTime).isBefore();
+        var taList = this.props.session.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.computedName);
 
         return (
             <React.Fragment>
@@ -88,8 +83,8 @@ class ProfessorOHInfoDelete extends React.Component {
                 </div>
                     <div className="info">
                         <div className="ta">
-                            {this.props.ta !== undefined && this.props.ta.join(', ')}
-                            {this.props.ta !== undefined && this.props.ta.length === 0 && '(No TA Assigned)'}
+                            {taList.join(', ')}
+                            {taList.length === 0 && '(No TA Assigned)'}
                         </div>
                         <div>
                             <span>
@@ -99,14 +94,14 @@ class ProfessorOHInfoDelete extends React.Component {
                                 {timeStart} to {timeEnd}
                             </span>
                             <span>
-                                {this.props.locationBuilding} {this.props.locationRoomNum}
+                                {this.props.session.building} {this.props.session.room}
                             </span>
                         </div>
                     </div>
                     <div>
                         <Checkbox
                             label="Delete all office hours in this series"
-                            disabled={this.props.sessionSeriesId === null}
+                            disabled={this.props.session.sessionSeriesId === null}
                             checked={this.state.isChecked}
                             onChange={this.toggleCheckbox}
                         />
