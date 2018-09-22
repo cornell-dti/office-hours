@@ -32,7 +32,7 @@ class TopBar extends React.PureComponent {
 
     render() {
         return (
-            <div tabIndex={1} onBlur={() => this.setMenu(false)}>
+            <div className="MenuBox" tabIndex={1} onBlur={() => this.setMenu(false)}>
                 <header className="topBar">
                     <div className="triggerArea" onClick={() => this.setMenu(!this.state.showMenu)} >
                         <img src={this.props.user.computedAvatar} />
