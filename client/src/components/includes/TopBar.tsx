@@ -1,5 +1,5 @@
 import * as React from 'react';
-// import { Icon } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 
 class TopBar extends React.PureComponent {
     props: {
@@ -51,12 +51,12 @@ class TopBar extends React.PureComponent {
                                 <li>Change Session</li>
                             </React.Fragment>
                         } */}
-                        <li><a href="/__auth/logout">Log Out</a></li>
-                        <li><a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank">Send Feedback</a></li>
+                        <li><a href="/__auth/logout"><span><Icon name="sign out" /></span>Log Out</a></li>
+                        <li><a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank"><span><Icon name="edit" /></span>Send Feedback</a></li>
                         {this.props.role === 'professor' && <React.Fragment>{
                             this.props.context === 'professor'
-                                ? <li><a href={'/course/' + this.props.courseId} >Switch View</a></li>
-                                : <li><a href={'/professor/course/' + this.props.courseId}>Switch View</a></li>
+                                ? <li><a href={'/course/' + this.props.courseId} ><span><Icon name="sync alternate" /></span>Switch View</a></li>
+                                : <li><a href={'/professor/course/' + this.props.courseId}><span><Icon name="sync alternate" /></span>Switch View</a></li>
                         }</React.Fragment>}
                     </ul>
                 )}
