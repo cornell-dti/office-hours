@@ -201,7 +201,7 @@ class SessionView extends React.Component {
                 <SessionDataQuery
                     query={GET_SESSION_DATA}
                     variables={{ sessionId: this.props.id, courseId: this.props.courseId }}
-                    pollInterval={15000}
+                    pollInterval={5000}
                 >
                     {({ loading, data, error, refetch }) => {
                         if (error) { return null; }
