@@ -19,10 +19,10 @@ _Last updated **09/22/2018**_.
 
 _Screenshots showing major parts of app_
 
-<img src="https://raw.githubusercontent.com/cornell-dti/office-hours/master/Screenshots/1.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;"> 
-<img src="https://raw.githubusercontent.com/cornell-dti/office-hours/master/Screenshots/2.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;"> 
-<img src="https://raw.githubusercontent.com/cornell-dti/office-hours/master/Screenshots/3.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;">
-<img src="https://raw.githubusercontent.com/cornell-dti/office-hours/master/Screenshots/4.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;">
+<img src="Screenshots/1.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;"> 
+<img src="Screenshots/2.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;"> 
+<img src="Screenshots/3.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;">
+<img src="Screenshots/4.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;">
 
 ## Contributors
 
