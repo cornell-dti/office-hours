@@ -8,7 +8,7 @@ by [Cornell Design & Tech Initiative](http://cornelldti.org)
   - [Contributors](#contributors)
 
 ## About
-A progressive web app for streamlining office hours for Cornell students.
+Office hours are too crowded and unorganized. Queue Me In removes the frustration from office hours by helping students get support and professors better understand their class.
 
 ## Getting Started
 View the [setup documentation](./docs/setup.md) for instructions on setting up and getting started with development!
