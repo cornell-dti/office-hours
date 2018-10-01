@@ -21,8 +21,6 @@
         "strictNullChecks": true,
         "suppressImplicitAnyIndexErrors": true,
         "noUnusedLocals": true,
-        // TEMP - https://github.com/DefinitelyTyped/DefinitelyTyped/issues/28881
-        "skipLibCheck": true
     },
     "exclude": [
         "node_modules",
