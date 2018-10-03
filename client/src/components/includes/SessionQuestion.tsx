@@ -112,7 +112,7 @@ class SessionQuestion extends React.Component {
                                 className="Remove"
                                 onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
                             >
-                                <Icon name="close" /> Retract
+                                <Icon name="close" /> Remove
                             </p>
                         </div>
                     }

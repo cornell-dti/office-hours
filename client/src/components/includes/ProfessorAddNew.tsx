@@ -8,8 +8,8 @@ class ProfessorAddNew extends React.Component {
 
     props: {
         courseId: number
-        taOptions?: DropdownItemProps[]
         refreshCallback: Function
+        taOptions?: DropdownItemProps[]
     };
 
     state: {

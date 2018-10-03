@@ -20,6 +20,11 @@ class SessionQuestionsContainer extends React.Component {
     render() {
         var questions = this.props.questions;
         var myQuestion = questions && questions.filter(q => q.userByAskerId.userId === this.props.myUserId);
+        if (questions && myQuestion && myQuestion.length > 0) {
+            document.title = '[' + (1 + questions.indexOf(myQuestion[0])) + '] Queue Me In';
+        } else {
+            document.title = 'Queue Me In';
+        }
 
         return (
             <div className="SessionQuestionsContainer splitQuestions" >
