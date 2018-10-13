@@ -17,13 +17,51 @@ class SessionQuestionsContainer extends React.Component {
         haveAnotherQuestion: boolean,
     };
 
+    state: {
+        sentNotification: boolean
+    };
+
+    componentDidMount() {
+        // Request permission to send desktop notifications
+        // @ts-ignore Permission is added in TS 3.0, remove then
+        // https://github.com/Microsoft/TypeScript/issues/14701
+        if (Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    }
+
+    constructor(props: {}) {
+        super(props);
+        this.state = {
+            sentNotification: false,
+        };
+    }
+
     render() {
         var questions = this.props.questions;
+        // If the user has questions, store them in myQuestion[]
         var myQuestion = questions && questions.filter(q => q.userByAskerId.userId === this.props.myUserId);
+        // Make sure that the data has loaded and user has a question
         if (questions && myQuestion && myQuestion.length > 0) {
-            document.title = '[' + (1 + questions.indexOf(myQuestion[0])) + '] Queue Me In';
+            // Get user's position in queue (0 indexed)
+            let myQuestionIndex = questions.indexOf(myQuestion[0]);
+            // Update tab with user position
+            document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
+            // if user is up and we haven't already sent a notification, send one.
+            if (myQuestionIndex === 0 && !this.state.sentNotification) {
+                this.setState({ sentNotification: true });
+                var n = new Notification('Your question is up!');
+                setTimeout(n.close.bind(n), 4000);
+                // If next render, the user isn't at 0 anymore, reset state
+            } else if (myQuestionIndex !== 0 && this.state.sentNotification) {
+                this.setState({ sentNotification: false });
+            }
         } else {
+            // Reset title and notif state
             document.title = 'Queue Me In';
+            if (this.state.sentNotification) {
+                this.setState({ sentNotification: false });
+            }
         }
 
         return (

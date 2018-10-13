@@ -45,6 +45,7 @@
         "test": "react-scripts-ts test --env=jsdom"
     },
     "devDependencies": {
+        "@types/prop-types": "^15.5.6",
         "@types/graphql": "^0.12.4",
         "@types/jest": "^21.1.6",
         "@types/lodash.flowright": "^3.5.3",
@@ -56,8 +57,5 @@
         "@types/react-numeric-input": "^2.2.1",
         "@types/react-router-dom": "^4.3.0",
         "typescript": "^2.9.2"
-    },
-    "resolutions": {
-        "@types/react": "16.3.11"
     }
 }
