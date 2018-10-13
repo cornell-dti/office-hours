@@ -70,7 +70,7 @@ class App extends React.Component {
                             exact={true}
                         />
                         <PrivateRoute
-                            path="professor-people/course/:courseId/"
+                            path="/professor-people/course/:courseId"
                             component={ProfessorPeopleView}
                         />
                         <PrivateRoute
