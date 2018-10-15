@@ -30,7 +30,7 @@ class SessionQuestionsContainer extends React.Component {
                 Notification.requestPermission();
             }
         } catch (error) {
-            // Do nothing. iOS crashes because Notification isn't
+            // Do nothing. iOS crashes because Notification isn't defined
         }
     }
 
@@ -58,7 +58,7 @@ class SessionQuestionsContainer extends React.Component {
                     var n = new Notification('Your question is up!');
                     setTimeout(n.close.bind(n), 4000);
                 } catch (error) {
-                    // Do nothing. iOS crashes because Notification isn't
+                    // Do nothing. iOS crashes because Notification isn't defined
                 }
                 // If next render, the user isn't at 0 anymore, reset state
             } else if (myQuestionIndex !== 0 && this.state.sentNotification) {
