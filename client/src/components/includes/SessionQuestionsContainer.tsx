@@ -22,11 +22,15 @@ class SessionQuestionsContainer extends React.Component {
     };
 
     componentDidMount() {
-        // Request permission to send desktop notifications
-        // @ts-ignore Permission is added in TS 3.0, remove then
-        // https://github.com/Microsoft/TypeScript/issues/14701
-        if (Notification.permission === 'default') {
-            Notification.requestPermission();
+        try {
+            // Request permission to send desktop notifications
+            // @ts-ignore Permission is added in TS 3.0, remove then
+            // https://github.com/Microsoft/TypeScript/issues/14701
+            if (Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        } catch (error) {
+            // Do nothing. iOS crashes because Notification isn't
         }
     }
 
@@ -50,8 +54,12 @@ class SessionQuestionsContainer extends React.Component {
             // if user is up and we haven't already sent a notification, send one.
             if (myQuestionIndex === 0 && !this.state.sentNotification) {
                 this.setState({ sentNotification: true });
-                var n = new Notification('Your question is up!');
-                setTimeout(n.close.bind(n), 4000);
+                try {
+                    var n = new Notification('Your question is up!');
+                    setTimeout(n.close.bind(n), 4000);
+                } catch (error) {
+                    // Do nothing. iOS crashes because Notification isn't
+                }
                 // If next render, the user isn't at 0 anymore, reset state
             } else if (myQuestionIndex !== 0 && this.state.sentNotification) {
                 this.setState({ sentNotification: false });

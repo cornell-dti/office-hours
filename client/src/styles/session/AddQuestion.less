@@ -1,7 +1,7 @@
 .QuestionView {
   background-color: white;
   height: 100%;
-  color: #484848;
+  color: @text-grey;
   position: relative;
 
   .AddQuestion {
@@ -91,10 +91,10 @@
 
         .header {
             font-size: 15px;
-            
+
             .characterCount {
               color: #717171;
-              
+
               &.warn {
                 color: #ce2a2a;
               }
@@ -115,7 +115,7 @@
         .QuestionInput {
             font-weight: normal;
             border: 0px;
-            color: #484848;
+            color: @text-grey;
             width: 100%;
             font-size:15px;
             height: 72px;
@@ -160,7 +160,7 @@
     }
     .AddButton.active {
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-        background-color: #77bbfa;
+        background-color: @brand-primary;
     }
   }
 }

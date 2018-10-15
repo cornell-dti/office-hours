@@ -3,7 +3,6 @@
 @time-color: #696969;
 @border-color: #bfbfbf;
 @interior-color: #e6e6e6;
-@button-color: #454545;
 @live: #70d59d;
 @open: #ffdba6;
 
@@ -15,13 +14,13 @@
 .noHoursBody {
     font-family: Roboto;
     font-size: 15px;
-    color: #484848;
+    color: @text-grey;
 }
 
 .CalendarSessions h6 {
     font-size: 14px;
     font-weight: normal;
-    color: #474747;
+    color: @text-grey;
     text-align: left;
     padding-left: 12px;
     margin: 0;
@@ -88,7 +87,7 @@
         text-align: left;
 
         .Location {
-            color: #474747;
+            color: @text-grey;
             font-size: 14px;
             font-weight: 500;
         }
@@ -120,7 +119,7 @@
     }
 
     .OpenButton {
-        color: @button-color;
+        color: @text-grey;
         font-size: 30px;
         margin-top: 15px;
         padding-bottom: 10px;
