@@ -5,6 +5,7 @@
     "proxy": "http://localhost:3001",
     "dependencies": {
         "@nivo/pie": "^0.49.0",
+        "@nivo/line": "^0.50.0",
         "@types/moment": "^2.13.0",
         "@types/react-dates": "^17.1.2",
         "add": "^2.0.6",
