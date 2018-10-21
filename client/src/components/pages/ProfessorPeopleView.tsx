@@ -1,5 +1,4 @@
 import * as React from 'react';
-// import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import QuestionsPieChart from '../includes/QuestionsPieChart';
 // import QuestionsLineChart from '../includes/QuestionsLineChart';
@@ -11,7 +10,6 @@ import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import * as moment from 'moment';
 import TopBar from '../includes/TopBar';
-// import { Loader } from 'semantic-ui-react';
 
 const METADATA_QUERY = gql`
 query GetMetadata($courseId: Int!, $startDate: Datetime!, $endDate: Datetime!) {
