@@ -19,14 +19,16 @@ class QuestionsPieChart extends React.Component {
       this.state = {
         data: [
                 {
-                  'id': 'answered',
+                  'id': '% Answered',
                    'value': this.props.percentResolved,
-                  'key': 'answer'
+                  'key': 'answer',
+                  'color': 'rgba(65, 129, 227, 0.5)'
                 },
                 {
-                  'id': 'unanswered',
+                  'id': '% Unanswered',
                   'value': this.props.percentUnresolved,
-                  'key': 'no-answer'
+                  'key': 'no-answer',
+                  'color': 'rgba(65, 100, 227, 0.5)'
                 }
               ] as PieDatum[]
       };
@@ -34,36 +36,40 @@ class QuestionsPieChart extends React.Component {
 
 render() {
       return (
-          <div className="QuestionsPieChart" style={{ height: 400 }}>
+          <div className="QuestionsPieChart" style={{ height: 300}}>
 
                             <ResponsivePie
                               data={(this.state = {
                                 data: [
                                         {
-                                          'id': 'answered',
+                                          'id': '% Answered',
                                            'value': this.props.percentResolved,
-                                          'key': 'answer'
+                                          'key': 'answer',
+                                          'color': 'rgba(65, 129, 227, 0.5)'
                                         },
                                         {
-                                          'id': 'unanswered',
+                                          'id': '% Unanswered',
                                           'value': this.props.percentUnresolved,
-                                          'key': 'no-answer'
+                                          'key': 'no-answer',
+                                          'color': 'rgba(65, 100, 227, 0.5)'
                                         }
                                       ] as PieDatum[]
                               }, this.state.data)}
                               margin={{
                                   'top': 5,
-                                  'right': 40,
-                                  'bottom': 10,
-                                  'left': 40
+                                  'right': 45,
+                                  'bottom': 5,
+                                  'left': 45
                               }}
                               innerRadius={0.5}
                               padAngle={0.7}
                               cornerRadius={3}
-                              colors="nivo"
+                              colors="paired"
                               colorBy="id"
                               borderWidth={1}
                               borderColor="inherit:darker(0.2)"
+                              enableRadialLabels={true}
+                              enableSlicesLabels={true}
                               radialLabelsSkipAngle={10}
                               radialLabelsTextXOffset={6}
                               radialLabelsTextColor="#333333"
@@ -78,24 +84,10 @@ render() {
                               motionStiffness={90}
                               motionDamping={15}
                               defs={[
-                                      {
-                                      'id': 'dots'
 
-                                      }
                                   ]}
                               fill={[
-                                  {
-                                      'match': {
-                                          'id': 'answered'
-                                      },
-                                      'id': 'dots'
-                                  },
-                                  {
-                                      'match': {
-                                          'id': 'unanswered'
-                                      },
-                                      'id': 'dots'
-                                  }
+
                               ]}
 
                             />
