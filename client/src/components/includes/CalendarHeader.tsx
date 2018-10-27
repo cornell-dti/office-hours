@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
+// const QMeLogo = require('../../media/QMeLogo.svg');
+const QMeLogo = require('../../media/QLogo.svg');
 
 class CalendarHeader extends React.Component {
     props: {
@@ -25,6 +27,9 @@ class CalendarHeader extends React.Component {
     render() {
         return (
             <div className="Header">
+                <div className="LogoContainer">
+                    <img src={QMeLogo} className="QMeLogo" />
+                </div>
                 <div className="CalendarHeader">
                     <div className="CurrentCourse">
                         <span>
