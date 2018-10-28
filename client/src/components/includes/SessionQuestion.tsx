@@ -94,9 +94,9 @@ class SessionQuestion extends React.Component {
                                     </p>
                                     <p
                                         className="Resolve"
-                                        onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
+                                        onClick={(e) => this._onClick(e, updateQuestion, 'in-progress')}
                                     >
-                                        <Icon name="check" /> Resolve
+                                        <Icon name="check" /> Begin Help
                                     </p>
                                 </div>
                             }
