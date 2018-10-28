@@ -51,7 +51,6 @@
         "@types/lodash.flowright": "^3.5.4",
         "@types/moment-timezone": "^0.5.9",
         "@types/node": "^10.12.0",
-        "@types/react": "^16.4.18",
         "@types/react-datepicker": "^1.1.7",
         "@types/react-dom": "^16.0.9",
         "@types/react-numeric-input": "^2.2.3",
