@@ -141,7 +141,7 @@ class SessionQuestionsContainer extends React.Component {
                                         Please check back at {moment(this.props.openingTime).format('h:mm A')}
                                         {
                                             moment().startOf('day') === moment(this.props.openingTime).startOf('day') ?
-                                                '' : (' on ' + moment(this.props.openingTime).format('D MMM'))
+                                                '' : (' on ' + moment(this.props.openingTime).format('MMM D'))
                                         }!
                                     </p>
                             ) :
