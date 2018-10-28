@@ -31,7 +31,8 @@ class SessionQuestion extends React.Component {
         index++;
         // Disclaimer: none of us wrote this one-line magic :)
         // It is borrowed from https://stackoverflow.com/revisions/39466341/5
-        return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index + 'th';
+        // return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index + 'th';
+        return String(index);
     }
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
@@ -48,37 +49,36 @@ class SessionQuestion extends React.Component {
     render() {
         var question = this.props.question;
         const myQuestionCSS = this.props.isMyQuestion ? ' MyQuestion' : '';
-
         return (
             <div className={'QueueQuestions' + myQuestionCSS}>
-                {this.props.isTA &&
-                    <div className="studentInformation">
-                        <img src={question.userByAskerId.computedAvatar} />
-                        <span className="Name">
-                            {question.userByAskerId.computedName}
-                        </span>
-                    </div>
-                }
-                <p className="Question">{question.content}</p>
-                <div className="Tags">
-                    {question.questionTagsByQuestionId.nodes.map(
-                        (tag) => <SelectedTags
-                            key={tag.tagByTagId.tagId}
-                            isSelected={false}
-                            tag={tag.tagByTagId.name}
-                            level={tag.tagByTagId.level}
-                            onClick={null}
-                        />
-                    )}
+                <p className="Order">{this.getDisplayText(this.props.index)}</p>
+                <div className="QuestionInfo">
+                    {this.props.isTA &&
+                        <div className="studentInformation">
+                            <img src={question.userByAskerId.computedAvatar} />
+                            <span className="Name">
+                                {question.userByAskerId.computedName}
+                            </span>
+                        </div>
+                    }
+                    <p className="Question">{question.content}</p>
                 </div>
                 <div className="BottomBar">
-                    {/* <p className={'Order' + (this.props.index === 0 ? ' now' : '')}>
-                        {this.getDisplayText(this.props.index)}
-                    </p> */}
-                    <p className="Order">
-                        {this.getDisplayText(this.props.index)}
+                    {this.props.isTA && <span className="Spacer" />}
+                    <div className="Tags">
+                        {question.questionTagsByQuestionId.nodes.map(
+                            (tag) => <SelectedTags
+                                key={tag.tagByTagId.tagId}
+                                isSelected={false}
+                                tag={tag.tagByTagId.name}
+                                level={tag.tagByTagId.level}
+                                onClick={null}
+                            />
+                        )}
+                    </div>
+                    <p className="Time">
+                        {<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}
                     </p>
-                    <p className="Time">{<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}</p>
                 </div>
                 {this.props.isTA &&
                     <div className="Buttons">
@@ -90,13 +90,15 @@ class SessionQuestion extends React.Component {
                                         className="Delete"
                                         onClick={(e) => this._onClick(e, updateQuestion, 'no-show')}
                                     >
-                                        <Icon name="hourglass end" /> No-show
+                                        {/* <Icon name="hourglass end" /> No-show */}
+                                        No-Show
                                     </p>
                                     <p
                                         className="Resolve"
                                         onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
                                     >
-                                        <Icon name="check" /> Resolve
+                                        {/* <Icon name="check" /> Resolve */}
+                                        Begin Help
                                     </p>
                                 </div>
                             }
