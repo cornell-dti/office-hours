@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 // const QMeLogo = require('../../media/QMeLogo.svg');
 const QMeLogo = require('../../media/QLogo.svg');
+const chevron = require('../../media/chevron.svg'); // Replace with dropdown cheveron
 
 class CalendarHeader extends React.Component {
     props: {
@@ -31,20 +32,21 @@ class CalendarHeader extends React.Component {
                     <img src={QMeLogo} className="QMeLogo" />
                 </div>
                 <div className="CalendarHeader">
-                    <div className="CurrentCourse">
-                        <span>
-                            {this.props.currentCourseCode}
-                            {this.props.isTa && <span className="TAMarker">TA</span>}
-                            {this.props.isProf && <span className="TAMarker Professor">PROF</span>}
+                    <span>
+                        <span>{this.props.currentCourseCode}</span>
+                        {this.props.isTa && <span className="TAMarker">TA</span>}
+                        {this.props.isProf && <span className="TAMarker Professor">PROF</span>}
+                        <span className="CourseSelect">
+                            <img src={chevron} alt="Course Select" className="RotateDown" />
                         </span>
-                        {this.props.avatar &&
-                            <img
-                                className="mobileHeaderFace"
-                                onClick={() => this.setMenu(!this.state.showMenu)}
-                                src={this.props.avatar}
-                            />
-                        }
-                    </div>
+                    </span>
+                    {this.props.avatar &&
+                        <img
+                            className="mobileHeaderFace"
+                            onClick={() => this.setMenu(!this.state.showMenu)}
+                            src={this.props.avatar}
+                        />
+                    }
                 </div>
                 {this.state.showMenu && (
                     <ul className="logoutMenu" onClick={() => this.setMenu(false)} >
