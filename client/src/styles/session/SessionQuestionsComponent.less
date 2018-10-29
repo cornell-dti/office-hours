@@ -14,7 +14,7 @@
     .Order {
         float: left;
         font-size: 17px;
-        margin: 12px 0 12px 12px;
+        margin: 13px 0 12px 12px;
         padding: 1px 10px;
         color: white;
         background-color: #7c8fba;
@@ -31,10 +31,13 @@
 
     .QuestionInfo {
         float: left;
+        font-size: 14px;
         .studentInformation {
             display: inline-block;
             width: 100%;
-            padding: 12px 0px 0px 12px;
+            padding-top: 11px;
+            padding-left: 12px;
+            // padding: 11px 0px 0px 12px;
             text-align: left;
 
             img {
@@ -48,7 +51,6 @@
             }
 
             .Name {
-            font-size: 16px;
             font-weight: bold;
             text-align: left;
             line-height: 12px;
@@ -60,13 +62,15 @@
         }
 
         .Question {
-            font-size: 16px;
             text-align: left;
-            padding: 12px;
-            padding-top: 12px;
+            padding: 8px 12px;
             margin: 0em;
             color: #595959;
             font-weight: 300;
+        }
+
+        .Question.Student {
+            padding-top: 16px;
         }
     }
     
@@ -75,7 +79,7 @@
         overflow: hidden;
         
         p {
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .Spacer {
@@ -87,8 +91,8 @@
         .Tags {
             float: left;
             margin-left: 0px;
-            padding: 5px 0px 10px 13px;
             margin-bottom: 5px;
+            padding: 1px 0px 8px 13px;
             text-align: left;
             .tag {
                 cursor: default;
@@ -130,7 +134,7 @@
                 display: inline-block;
                 border-radius: 5px;
                 color: white;
-                padding: 3px 30px;
+                padding: 2px 30px;
                 font-size: 15px;
                 margin-bottom: 10px;
             }
