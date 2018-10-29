@@ -49,6 +49,8 @@ class SessionQuestion extends React.Component {
     render() {
         var question = this.props.question;
         const myQuestionCSS = this.props.isMyQuestion ? ' MyQuestion' : '';
+        const studentCSS = this.props.isTA ? '' : ' Student';
+
         return (
             <div className={'QueueQuestions' + myQuestionCSS}>
                 <p className="Order">{this.getDisplayText(this.props.index)}</p>
@@ -61,7 +63,7 @@ class SessionQuestion extends React.Component {
                             </span>
                         </div>
                     }
-                    <p className="Question">{question.content}</p>
+                    <p className={'Question' + studentCSS}>{question.content}</p>
                 </div>
                 <div className="BottomBar">
                     {this.props.isTA && <span className="Spacer" />}
