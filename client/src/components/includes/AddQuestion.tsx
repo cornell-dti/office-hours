@@ -124,7 +124,10 @@ class AddQuestion extends React.Component {
     }
 
     public handleKeyPressDown = (event: React.KeyboardEvent<HTMLElement>, addQuestion: Function): void => {
-        if (!event.repeat && (event.ctrlKey || event.metaKey) && event.keyCode === 13) {
+        // CTRL + ENTER or CMD + ENTER adds the question to the queue
+        // TODO: Doesn't work if cursor wasn't in the text box input
+        if (!event.repeat && (event.ctrlKey || event.metaKey) && event.keyCode === 13 && this.state.stage > 30) {
+            alert('testtest');
             addQuestion({
                 variables: {
                     content: this.state.question,
@@ -132,6 +135,9 @@ class AddQuestion extends React.Component {
                     sessionId: this.props.sessionId
                 }
             });
+        } else if (!event.repeat && event.keyCode === 27) {
+            alert('test');
+            this.handleXClick();
         }
     }
 
@@ -226,7 +232,8 @@ class AddQuestion extends React.Component {
                                 }
                             </div>
                         </div>
-                    </div>)}
+                    </div>
+                )}
             </Mutation>
         );
     }
