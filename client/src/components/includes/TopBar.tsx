@@ -35,10 +35,12 @@ class TopBar extends React.PureComponent {
             <div className="MenuBox" tabIndex={1} onBlur={() => this.setMenu(false)}>
                 <header className="topBar">
                     <div className="triggerArea" onClick={() => this.setMenu(!this.state.showMenu)} >
-                        <img src={this.props.user.computedAvatar} />
-                        <span className="name">
-                            {this.props.user.computedName}
-                        </span>
+                        <div className="userProfile">
+                            <img src={this.props.user.computedAvatar} />
+                            <span className="name">
+                                {this.props.user.computedName}
+                            </span>
+                        </div>
                     </div>
                 </header>
                 {this.state.showMenu && (
