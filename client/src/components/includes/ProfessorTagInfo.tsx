@@ -230,6 +230,12 @@ class ProfessorTagInfo extends React.Component {
         });
     }
 
+    handleEnterPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === 'Enter') {
+            this.handleNewTagEnter();
+        }
+    }
+
     render() {
         var validSuggestedTags: string[] = this.props.suggestedTagNames
             .filter((name) => !this.state.tag.tagRelationsByParentId
@@ -266,7 +272,7 @@ class ProfessorTagInfo extends React.Component {
                             Inactive
                         </div>
                     </div>
-                    <div className="ChildTags InputSection">
+                    <div className="ChildTags InputSection" onKeyDown={(e) => this.handleEnterPress(e)}>
                         <div className="InputHeader">Tags</div>
                         {
                             this.state.tag.tagRelationsByParentId &&
