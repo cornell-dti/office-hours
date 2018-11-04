@@ -124,8 +124,7 @@ class AddQuestion extends React.Component {
     }
 
     public handleKeyPressDown = (event: React.KeyboardEvent<HTMLElement>, addQuestion: Function): void => {
-        // CTRL + ENTER or CMD + ENTER adds the question to the queue
-        // TODO: Doesn't work if cursor wasn't in the text box input
+        // CTRL + ENTER or CMD + ENTER adds the question ONLY if cursor in Question textbox
         if (!event.repeat && (event.ctrlKey || event.metaKey) && event.keyCode === 13 && this.state.stage > 30) {
             addQuestion({
                 variables: {
