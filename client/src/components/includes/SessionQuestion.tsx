@@ -19,7 +19,8 @@ class SessionQuestion extends React.Component {
         question: AppQuestion,
         index: number,
         isTA: boolean,
-        isMyQuestion: boolean,
+        includeRemove: boolean,
+        includeBookmark: boolean,
         triggerUndo: Function,
         refetch: Function,
         isPast: boolean,
@@ -48,11 +49,13 @@ class SessionQuestion extends React.Component {
 
     render() {
         var question = this.props.question;
-        const myQuestionCSS = this.props.isMyQuestion ? ' MyQuestion' : '';
+        // const myQuestionCSS = this.props.includeRemove ? ' MyQuestion' : '';
+        // const bookmarkCSS = this.props.includeBookmark ? ' Bookmark' : '';
         const studentCSS = this.props.isTA ? '' : ' Student';
 
         return (
-            <div className={'QueueQuestions' + myQuestionCSS}>
+            <div className="QueueQuestions">
+                {this.props.includeBookmark && <div className="Bookmark" />}
                 <p className="Order">{this.getDisplayText(this.props.index)}</p>
                 <div className="QuestionInfo">
                     {this.props.isTA &&
@@ -79,6 +82,7 @@ class SessionQuestion extends React.Component {
                         )}
                     </div>
                     <p className="Time">
+                        posted at&nbsp;
                         {<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}
                     </p>
                 </div>
@@ -109,7 +113,7 @@ class SessionQuestion extends React.Component {
                 }
                 <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
                     {(updateQuestion) =>
-                        this.props.isMyQuestion && !this.props.isPast &&
+                        this.props.includeRemove && !this.props.includeBookmark && !this.props.isPast &&
                         <div className="Buttons">
                             <hr />
                             <p
