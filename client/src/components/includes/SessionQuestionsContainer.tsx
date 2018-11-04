@@ -105,7 +105,8 @@ class SessionQuestionsContainer extends React.Component {
                             question={myQuestion[0]}
                             index={questions.indexOf(myQuestion[0])}
                             isTA={this.props.isTA}
-                            isMyQuestion={true}
+                            includeRemove={true}
+                            includeBookmark={false}
                             triggerUndo={this.props.triggerUndo}
                             refetch={this.props.refetch}
                             isPast={this.props.isPast}
@@ -120,7 +121,8 @@ class SessionQuestionsContainer extends React.Component {
                             question={question}
                             index={i}
                             isTA={this.props.isTA}
-                            isMyQuestion={question.userByAskerId.userId === this.props.myUserId}
+                            includeRemove={false}
+                            includeBookmark={question.userByAskerId.userId === this.props.myUserId}
                             triggerUndo={this.props.triggerUndo}
                             refetch={this.props.refetch}
                             isPast={this.props.isPast}
