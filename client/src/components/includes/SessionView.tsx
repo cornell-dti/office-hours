@@ -21,7 +21,7 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
                     role
                 }
             }
-            questionsByAskerId(condition:{status:"unresolved"}) {
+            questionsByAskerId {
                 nodes {
                     sessionBySessionId {
                         sessionId
@@ -264,7 +264,8 @@ class SessionView extends React.Component {
                                             isTA={data.apiGetCurrentUser.nodes[0].
                                                 courseUsersByUserId.nodes[0].role !== 'student'}
                                             questions={data.sessionBySessionId.questionsBySessionId
-                                                .nodes.filter(q => q.status === 'unresolved')}
+                                                .nodes.filter(
+                                                    q => q.status === 'unresolved' || q.status === 'in-progress')}
                                             handleJoinClick={this.props.joinCallback}
                                             myUserId={data.apiGetCurrentUser.nodes[0].userId}
                                             triggerUndo={this.triggerUndo}

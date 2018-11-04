@@ -86,18 +86,34 @@ class SessionQuestion extends React.Component {
                         <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
                             {(updateQuestion) =>
                                 <div className="TAButtons">
-                                    <p
-                                        className="Delete"
-                                        onClick={(e) => this._onClick(e, updateQuestion, 'no-show')}
-                                    >
-                                        <Icon name="hourglass end" /> No-show
-                                    </p>
-                                    <p
-                                        className="Resolve"
-                                        onClick={(e) => this._onClick(e, updateQuestion, 'in-progress')}
-                                    >
-                                        <Icon name="check" /> Begin Help
-                                    </p>
+                                    {question.status !== 'in-progress' ?
+                                        <React.Fragment>
+                                            <p
+                                                className="Delete"
+                                                onClick={(e) => this._onClick(e, updateQuestion, 'no-show')}
+                                            >
+                                                <Icon name="user times" /> No-show
+                                            </p>
+                                            <p
+                                                className="Begin"
+                                                onClick={(e) => this._onClick(e, updateQuestion, 'in-progress')}
+                                            >
+                                                <Icon name="handshake" /> Begin Help
+                                            </p>
+                                        </React.Fragment>
+                                        :
+                                        <React.Fragment>
+                                            <p className="Progress" >
+                                                <Icon name="clock" /> In Progress
+                                        </p>
+                                            <p
+                                                className="Done"
+                                                onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
+                                            >
+                                                <Icon name="check" /> Done
+                                            </p>
+                                        </React.Fragment>
+                                    }
                                 </div>
                             }
                         </Mutation>
