@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { ResponsiveLine, LineDatum } from '@nivo/line';
+import { ResponsiveLine, LineSerieData } from '@nivo/line';
 
 class QuestionsLineChart extends React.Component {
 
   state: {
-    data: LineDatum[];
+    data: LineSerieData[];
   };
 
   constructor(props: {}) {
@@ -103,7 +103,7 @@ class QuestionsLineChart extends React.Component {
             }
           ]
         }
-      ] as LineDatum[]
+      ] as LineSerieData[]
     };
   }
 
@@ -112,6 +112,8 @@ class QuestionsLineChart extends React.Component {
       <div className="QuestionsLineChart" style={{ height: 400 }}>
 
         <ResponsiveLine
+          colors="nivo"
+          colorBy="id"
           data={this.state.data}
           margin={{
             'top': 50,
@@ -128,34 +130,34 @@ class QuestionsLineChart extends React.Component {
             'min': 'auto',
             'max': 'auto'
           }}
-          minY="auto"
-          maxY="auto"
-          stacked={true}
-          axisBottom={{
-            'orient': 'bottom',
-            'tickSize': 5,
-            'tickPadding': 5,
-            'tickRotation': 0,
-            'legend': 'transportation',
-            'legendOffset': 36,
-            'legendPosition': 'center'
-          }}
-          axisLeft={{
-            'orient': 'left',
-            'tickSize': 5,
-            'tickPadding': 5,
-            'tickRotation': 0,
-            'legend': 'count',
-            'legendOffset': -40,
-            'legendPosition': 'center'
-          }}
+          // minY="auto"
+          // maxY="auto"
+          // stacked={true}
+          // axisBottom={{
+          //   'orient': 'bottom',
+          //   'tickSize': 5,
+          //   'tickPadding': 5,
+          //   'tickRotation': 0,
+          //   'legend': 'transportation',
+          //   'legendOffset': 36,
+          //   'legendPosition': 'center'
+          // }}
+          // axisLeft={{
+          //   'orient': 'left',
+          //   'tickSize': 5,
+          //   'tickPadding': 5,
+          //   'tickRotation': 0,
+          //   'legend': 'count',
+          //   'legendOffset': -40,
+          //   'legendPosition': 'center'
+          // }}
           dotSize={10}
           dotColor="inherit:darker(0.3)"
           dotBorderWidth={2}
           dotBorderColor="#ffffff"
           enableDotLabel={true}
-          dotLabel="y"
-          dotLabelYOffset={-12}
+          // dotLabel="y"
+          // dotLabelYOffset={-12}
           animate={true}
           motionStiffness={90}
           motionDamping={15}
@@ -170,19 +172,19 @@ class QuestionsLineChart extends React.Component {
               'itemDirection': 'left-to-right',
               'itemWidth': 80,
               'itemHeight': 20,
-              'itemOpacity': 0.75,
+              // 'itemOpacity': 0.75,
               'symbolSize': 12,
               'symbolShape': 'circle',
-              'symbolBorderColor': 'rgba(0, 0, 0, .5)',
-              'effects': [
-                {
-                  'on': 'hover',
-                  'style': {
-                    'itemBackground': 'rgba(0, 0, 0, .03)',
-                    'itemOpacity': 1
-                  }
-                }
-              ]
+              // 'symbolBorderColor': 'rgba(0, 0, 0, .5)',
+              // 'effects': [
+              //   {
+              //     'on': 'hover',
+              //     'style': {
+              //       'itemBackground': 'rgba(0, 0, 0, .03)',
+              //       'itemOpacity': 1
+              //     }
+              //   }
+              // ]
             }
           ]}
 
