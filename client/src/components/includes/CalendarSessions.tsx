@@ -8,7 +8,7 @@ import CalendarSessionCard from './CalendarSessionCard';
 class CalendarSessions extends React.PureComponent {
     props: {
         activeSessionId: number;
-        myUserId: number;
+        myUserId: number | null;
         loading: boolean;
         sessions: AppSession[] | null;
         callback: Function;
@@ -31,20 +31,23 @@ class CalendarSessions extends React.PureComponent {
         const sessions = this.props.sessions;
 
         const sessionCards = sessions && sessions.map(session => {
-            const sessionAskerIds = session.questionsBySessionId.nodes.map(question => (
-                question.userByAskerId && question.userByAskerId.userId
-            ));
-            const sessionStatuses = session.questionsBySessionId.nodes.map(question => (
-                question.status
-            ));
+            const userQuestions = session.questionsBySessionId.nodes.filter((question) =>
+                question.status === 'unresolved' && question.userByAskerId.userId === this.props.myUserId);
 
-            const userQuestionIndex = sessionAskerIds.lastIndexOf(this.props.myUserId);
-            const userInQueue = userQuestionIndex === -1 ? false
-                : sessionStatuses[userQuestionIndex] === 'unresolved';
+            // const sessionAskerIds = session.questionsBySessionId.nodes.map(question => (
+            //     question.userByAskerId && question.userByAskerId.userId
+            // ));
+
+            // const userQuestionIndex = this.props.myUserId === null ?
+            //     -1 : sessionAskerIds.lastIndexOf(this.props.myUserId);
+            // const sessionStatuses = session.questionsBySessionId.nodes[userQuestionIndex].status;
+
+            // const userInQueue = userQuestionIndex === -1 ? false
+            //     : sessionStatuses[userQuestionIndex] === 'unresolved';
 
             return (
                 <CalendarSessionCard
-                    includeBookmark={userInQueue}
+                    includeBookmark={userQuestions.length > 0}
                     session={session}
                     key={session.sessionId}
                     callback={this.props.callback}
