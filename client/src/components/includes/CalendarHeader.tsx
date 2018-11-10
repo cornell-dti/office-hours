@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 // const QMeLogo = require('../../media/QMeLogo.svg');
 const QMeLogo = require('../../media/QLogo.svg');
-const chevron = require('../../media/chevron.svg'); // Replace with dropdown cheveron
+// const chevron = require('../../media/chevron.svg'); // Replace with dropdown cheveron
 
 class CalendarHeader extends React.Component {
     props: {
@@ -36,9 +36,9 @@ class CalendarHeader extends React.Component {
                         <span>{this.props.currentCourseCode}</span>
                         {this.props.isTa && <span className="TAMarker">TA</span>}
                         {this.props.isProf && <span className="TAMarker Professor">PROF</span>}
-                        <span className="CourseSelect">
+                        {/* <span className="CourseSelect">
                             <img src={chevron} alt="Course Select" className="RotateDown" />
-                        </span>
+                        </span> */}
                     </span>
                     {this.props.avatar &&
                         <img
