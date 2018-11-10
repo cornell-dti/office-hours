@@ -8,13 +8,14 @@ import { Mutation } from 'react-apollo';
 import SelectedTags from '../includes/SelectedTags';
 
 const ADD_QUESTION = gql`
-mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!) {
+mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!, $location: String!) {
     apiAddQuestion(
         input: {
             _content: $content,
             _tags: $tags,
             _status: "unresolved",
-            _sessionId: $sessionId
+            _sessionId: $sessionId,
+            _location: $location
         }) {
         clientMutationId
     }
@@ -118,7 +119,8 @@ class AddQuestion extends React.Component {
             variables: {
                 content: this.state.question,
                 tags: this.state.selectedTags,
-                sessionId: this.props.sessionId
+                sessionId: this.props.sessionId,
+                location: 'TODO'
             }
         });
     }
@@ -130,7 +132,8 @@ class AddQuestion extends React.Component {
                 variables: {
                     content: this.state.question,
                     tags: this.state.selectedTags,
-                    sessionId: this.props.sessionId
+                    sessionId: this.props.sessionId,
+                    location: 'TODO'
                 }
             });
         } else if (!event.repeat && event.keyCode === 27) {
