@@ -52,6 +52,9 @@ const GET_CALENDAR_DATA = gql`
                 questionsBySessionId {
                     nodes {
                         status
+                        userByAskerId {
+                            userId
+                        }
                     }
                 }
                 sessionTasBySessionId {
