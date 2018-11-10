@@ -86,7 +86,7 @@ class SessionQuestion extends React.Component {
                         <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
                             {(updateQuestion) =>
                                 <div className="TAButtons">
-                                    {question.status !== 'in-progress' ?
+                                    {question.status === 'assigned' &&
                                         <React.Fragment>
                                             <p
                                                 className="Delete"
@@ -101,18 +101,14 @@ class SessionQuestion extends React.Component {
                                                 <Icon name="handshake" /> Begin Help
                                             </p>
                                         </React.Fragment>
-                                        :
-                                        <React.Fragment>
-                                            <p className="Progress" >
-                                                <Icon name="clock" /> In Progress
+                                    }
+                                    {question.status === 'in-progress' &&
+                                        <p
+                                            className="Done"
+                                            onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
+                                        >
+                                            <Icon name="check" /> Done
                                         </p>
-                                            <p
-                                                className="Done"
-                                                onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
-                                            >
-                                                <Icon name="check" /> Done
-                                            </p>
-                                        </React.Fragment>
                                     }
                                 </div>
                             }
