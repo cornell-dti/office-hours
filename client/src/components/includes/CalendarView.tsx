@@ -17,6 +17,7 @@ const GET_CALENDAR_DATA = gql`
             nodes {
                 computedName
                 computedAvatar
+                userId
                 courseUsersByUserId(condition:{courseId:$courseId}) {
                     nodes {
                         role
@@ -52,6 +53,9 @@ const GET_CALENDAR_DATA = gql`
                 questionsBySessionId {
                     nodes {
                         status
+                        userByAskerId {
+                            userId
+                        }
                     }
                 }
                 sessionTasBySessionId {
@@ -136,10 +140,11 @@ class CalendarView extends React.Component {
                             />
                             <CalendarDaySelect callback={this.handleDateClick} />
                             <CalendarSessions
+                                activeSessionId={this.props.sessionId}
+                                myUserId={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].userId}
                                 loading={loading}
                                 sessions={data.apiGetSessions && data.apiGetSessions.nodes}
                                 callback={this.props.sessionCallback}
-                                activeSessionId={this.props.sessionId}
                                 interval={data.courseByCourseId && data.courseByCourseId.queueOpenInterval}
                             />
                         </aside>
