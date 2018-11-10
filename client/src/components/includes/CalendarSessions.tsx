@@ -34,17 +34,6 @@ class CalendarSessions extends React.PureComponent {
             const userQuestions = session.questionsBySessionId.nodes.filter((question) =>
                 question.status === 'unresolved' && question.userByAskerId.userId === this.props.myUserId);
 
-            // const sessionAskerIds = session.questionsBySessionId.nodes.map(question => (
-            //     question.userByAskerId && question.userByAskerId.userId
-            // ));
-
-            // const userQuestionIndex = this.props.myUserId === null ?
-            //     -1 : sessionAskerIds.lastIndexOf(this.props.myUserId);
-            // const sessionStatuses = session.questionsBySessionId.nodes[userQuestionIndex].status;
-
-            // const userInQueue = userQuestionIndex === -1 ? false
-            //     : sessionStatuses[userQuestionIndex] === 'unresolved';
-
             return (
                 <CalendarSessionCard
                     includeBookmark={userQuestions.length > 0}
