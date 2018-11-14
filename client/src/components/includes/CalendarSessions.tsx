@@ -8,6 +8,7 @@ import CalendarSessionCard from './CalendarSessionCard';
 class CalendarSessions extends React.PureComponent {
     props: {
         activeSessionId: number;
+        myUserId: number | null;
         loading: boolean;
         sessions: AppSession[] | null;
         callback: Function;
@@ -29,15 +30,21 @@ class CalendarSessions extends React.PureComponent {
         const loading = this.props.loading;
         const sessions = this.props.sessions;
 
-        const sessionCards = sessions && sessions.map(session => (
-            <CalendarSessionCard
-                session={session}
-                key={session.sessionId}
-                callback={this.props.callback}
-                active={session.sessionId === this.props.activeSessionId}
-                status={this.labelSession(session, Interval.toMillisecoonds(this.props.interval))}
-            />
-        ));
+        const sessionCards = sessions && sessions.map(session => {
+            const userQuestions = session.questionsBySessionId.nodes.filter((question) =>
+                question.status === 'unresolved' && question.userByAskerId.userId === this.props.myUserId);
+
+            return (
+                <CalendarSessionCard
+                    includeBookmark={userQuestions.length > 0}
+                    session={session}
+                    key={session.sessionId}
+                    callback={this.props.callback}
+                    active={session.sessionId === this.props.activeSessionId}
+                    status={this.labelSession(session, Interval.toMillisecoonds(this.props.interval))}
+                />
+            );
+        });
 
         const groupedCards = sessionCards && groupBy(sessionCards, (card: CalendarSessionCard) => card.props.status);
 

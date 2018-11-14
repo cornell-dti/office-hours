@@ -4,6 +4,7 @@ const chevron = require('../../media/chevron.svg');
 
 class CalendarSessionCard extends React.Component {
     props: {
+        includeBookmark: boolean | null,
         session: AppSession
         callback: Function,
         active: boolean,
@@ -23,6 +24,7 @@ class CalendarSessionCard extends React.Component {
 
         return (
             <div className={(this.props.active && 'active') + ' CalendarSessionCard'} onClick={this.handleOnClick}>
+                {this.props.includeBookmark && <div className="Bookmark" />}
                 <div className="TimeInfo">
                     <div className="StartTime">
                         <Moment date={session.startTime} interval={0} format={'hh:mm A'} />

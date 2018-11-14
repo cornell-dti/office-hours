@@ -19,7 +19,8 @@ class SessionQuestion extends React.Component {
         question: AppQuestion,
         index: number,
         isTA: boolean,
-        isMyQuestion: boolean,
+        includeRemove: boolean,
+        includeBookmark: boolean,
         triggerUndo: Function,
         refetch: Function,
         isPast: boolean,
@@ -31,7 +32,8 @@ class SessionQuestion extends React.Component {
         index++;
         // Disclaimer: none of us wrote this one-line magic :)
         // It is borrowed from https://stackoverflow.com/revisions/39466341/5
-        return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index + 'th';
+        // return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index + 'th';
+        return String(index);
     }
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
@@ -47,38 +49,42 @@ class SessionQuestion extends React.Component {
 
     render() {
         var question = this.props.question;
-        const myQuestionCSS = this.props.isMyQuestion ? ' MyQuestion' : '';
+        // const myQuestionCSS = this.props.includeRemove ? ' MyQuestion' : '';
+        // const bookmarkCSS = this.props.includeBookmark ? ' Bookmark' : '';
+        const studentCSS = this.props.isTA ? '' : ' Student';
 
         return (
-            <div className={'QueueQuestions' + myQuestionCSS}>
-                {this.props.isTA &&
-                    <div className="studentInformation">
-                        <img src={question.userByAskerId.computedAvatar} />
-                        <span className="Name">
-                            {question.userByAskerId.computedName}
-                        </span>
-                    </div>
-                }
-                <p className="Question">{question.content}</p>
-                <div className="Tags">
-                    {question.questionTagsByQuestionId.nodes.map(
-                        (tag) => <SelectedTags
-                            key={tag.tagByTagId.tagId}
-                            isSelected={false}
-                            tag={tag.tagByTagId.name}
-                            level={tag.tagByTagId.level}
-                            onClick={null}
-                        />
-                    )}
+            <div className="QueueQuestions">
+                {this.props.includeBookmark && <div className="Bookmark" />}
+                <p className="Order">{this.getDisplayText(this.props.index)}</p>
+                <div className="QuestionInfo">
+                    {this.props.isTA &&
+                        <div className="studentInformation">
+                            <img src={question.userByAskerId.computedAvatar} />
+                            <span className="Name">
+                                {question.userByAskerId.computedName}
+                            </span>
+                        </div>
+                    }
+                    <p className={'Question' + studentCSS}>{question.content}</p>
                 </div>
                 <div className="BottomBar">
-                    {/* <p className={'Order' + (this.props.index === 0 ? ' now' : '')}>
-                        {this.getDisplayText(this.props.index)}
-                    </p> */}
-                    <p className="Order">
-                        {this.getDisplayText(this.props.index)}
+                    {this.props.isTA && <span className="Spacer" />}
+                    <div className="Tags">
+                        {question.questionTagsByQuestionId.nodes.map(
+                            (tag) => <SelectedTags
+                                key={tag.tagByTagId.tagId}
+                                isSelected={false}
+                                tag={tag.tagByTagId.name}
+                                level={tag.tagByTagId.level}
+                                onClick={null}
+                            />
+                        )}
+                    </div>
+                    <p className="Time">
+                        posted at&nbsp;
+                        {<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}
                     </p>
-                    <p className="Time">{<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}</p>
                 </div>
                 {this.props.isTA &&
                     <div className="Buttons">
@@ -117,7 +123,7 @@ class SessionQuestion extends React.Component {
                 }
                 <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
                     {(updateQuestion) =>
-                        this.props.isMyQuestion && !this.props.isPast &&
+                        this.props.includeRemove && !this.props.includeBookmark && !this.props.isPast &&
                         <div className="Buttons">
                             <hr />
                             <p
