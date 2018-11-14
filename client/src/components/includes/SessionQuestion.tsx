@@ -21,6 +21,7 @@ class SessionQuestion extends React.Component {
         isTA: boolean,
         includeRemove: boolean,
         includeBookmark: boolean,
+        myUserId: number,
         triggerUndo: Function,
         refetch: Function,
         isPast: boolean,
@@ -56,13 +57,25 @@ class SessionQuestion extends React.Component {
         return (
             <div className="QueueQuestions">
                 {this.props.includeBookmark && <div className="Bookmark" />}
-                <p className="Order">{this.getDisplayText(this.props.index)}</p>
+                <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
+                    {this.getDisplayText(this.props.index)}
+                </p>
                 <div className="QuestionInfo">
                     {this.props.isTA &&
                         <div className="studentInformation">
                             <img src={question.userByAskerId.computedAvatar} />
                             <span className="Name">
                                 {question.userByAskerId.computedName}
+                                {question.status === 'assigned' &&
+                                    <React.Fragment>
+                                        <span className="assigned"> is assigned
+                                        {question.userByAnswererId &&
+                                                (' to ' + (question.userByAnswererId.userId === this.props.myUserId
+                                                    ? 'you'
+                                                    : question.userByAnswererId.computedName))}
+                                        </span>
+                                    </React.Fragment>
+                                }
                             </span>
                         </div>
                     }
@@ -92,29 +105,29 @@ class SessionQuestion extends React.Component {
                         <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
                             {(updateQuestion) =>
                                 <div className="TAButtons">
+                                    {question.status === 'unresolved' &&
+                                        <p
+                                            className="Begin"
+                                            onClick={(e) => this._onClick(e, updateQuestion, 'assigned')}
+                                        >
+                                            Assign to Me
+                                        </p>
+                                    }
                                     {question.status === 'assigned' &&
                                         <React.Fragment>
                                             <p
                                                 className="Delete"
                                                 onClick={(e) => this._onClick(e, updateQuestion, 'no-show')}
                                             >
-                                                <Icon name="user times" /> No-show
+                                                No show
                                             </p>
                                             <p
-                                                className="Begin"
-                                                onClick={(e) => this._onClick(e, updateQuestion, 'in-progress')}
+                                                className="Done"
+                                                onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
                                             >
-                                                <Icon name="handshake" /> Begin Help
+                                                Done
                                             </p>
                                         </React.Fragment>
-                                    }
-                                    {question.status === 'in-progress' &&
-                                        <p
-                                            className="Done"
-                                            onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
-                                        >
-                                            <Icon name="check" /> Done
-                                        </p>
                                     }
                                 </div>
                             }

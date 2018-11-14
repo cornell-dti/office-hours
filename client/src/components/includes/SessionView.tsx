@@ -61,6 +61,10 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
                     computedAvatar
                     userId
                 }
+                userByAnswererId {
+                    computedName
+                    userId
+                }
                 questionTagsByQuestionId {
                     nodes {
                         tagByTagId {
@@ -265,7 +269,7 @@ class SessionView extends React.Component {
                                                 courseUsersByUserId.nodes[0].role !== 'student'}
                                             questions={data.sessionBySessionId.questionsBySessionId
                                                 .nodes.filter(
-                                                    q => q.status === 'unresolved' || q.status === 'in-progress')}
+                                                    q => q.status === 'unresolved' || q.status === 'assigned')}
                                             handleJoinClick={this.props.joinCallback}
                                             myUserId={data.apiGetCurrentUser.nodes[0].userId}
                                             triggerUndo={this.triggerUndo}
