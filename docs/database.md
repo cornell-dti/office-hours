@@ -205,7 +205,7 @@ This table contains all the details about all the questions asked across differe
 |🔑|question\_id|integer|❌|Auto-incrementing id assigned to each question|
 ||content|text|❌|Text content of the question; character limit is imposed by the client|
 ||time\_entered|timestamp with time zone|❌|Timestamp at which this question was first entered into the database; it defaults to the current timestamp if not provided|
-||status|text|❌|Text that represents the current status of the question ('unresolved', 'resolved', 'noshow', 'retracted' are currently used values)|
+||status|text|❌|Text that represents the current status of the question ('unresolved', 'resolved', 'noshow', 'retracted', and 'assigned' are currently used values)|
 ||time\_addressed|timestamp with time zone|✔️|Timestamp at which this question was most recently marked as resolved, no-show or retracted|
 ||session\_id|integer|❌|References the session instance in which this question was asked; foreign key from [sessions](#sessions)|
 ||asker\_id|integer|❌|References the student (user) who asked this question; foreign key from [users](#users)|
