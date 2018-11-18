@@ -104,8 +104,8 @@ interface Variables {
 class SessionDataQuery extends Query<SessionData, Variables> { }
 
 const UNDO_QUESTION = gql`
-mutation UndoQuestion($questionId: Int!) {
-    updateQuestionByQuestionId(input: {questionPatch: {status: "unresolved", timeAddressed: null, answererId: null},
+mutation UndoQuestion($questionId: Int!, $status: String!) {
+    updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeAddressed: null, answererId: null},
         questionId: $questionId}) {
         clientMutationId
     }
@@ -170,7 +170,10 @@ class SessionView extends React.Component {
     handleUndoClick = (undoQuestion: Function, refetch: Function) => {
         undoQuestion({
             variables: {
-                questionId: this.state.undoQuestionId
+                questionId: this.state.undoQuestionId,
+                // Set question status to unresolved if it's in the assigned state
+                // Otherwise, default it to assigned
+                status: this.state.undoAction === 'assigned' ? 'unresolved' : 'assigned'
             }
         });
     }
@@ -197,6 +200,8 @@ class SessionView extends React.Component {
                 undoText = this.state.undoName + ' has been marked as a no-show. ';
             } else if (this.state.undoAction === 'retracted') {
                 undoText = 'You have removed your question. ';
+            } else if (this.state.undoAction === 'assigned') {
+                undoText = this.state.undoName + ' has been assigned to you! ';
             }
         }
 
