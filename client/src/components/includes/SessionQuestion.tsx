@@ -58,7 +58,7 @@ class SessionQuestion extends React.Component {
             <div className="QueueQuestions">
                 {this.props.includeBookmark && <div className="Bookmark" />}
                 <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
-                    {question.status === 'assigned' ? 1 : this.getDisplayText(this.props.index)}
+                    {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                 </p>
                 <div className="QuestionInfo">
                     {this.props.isTA &&
