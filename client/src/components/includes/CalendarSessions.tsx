@@ -31,12 +31,17 @@ class CalendarSessions extends React.PureComponent {
         const sessions = this.props.sessions;
 
         const sessionCards = sessions && sessions.map(session => {
-            const userQuestions = session.questionsBySessionId.nodes.filter((question) =>
+            const questions = session.questionsBySessionId.nodes;
+            const userQuestions = questions.filter((question) =>
                 question.status === 'unresolved' && question.userByAskerId.userId === this.props.myUserId);
+            const numAhead = userQuestions.length === 0 ?
+                questions.length : questions.filter((q) => q.status === 'unresolved' &&
+                    q.timeEntered >= userQuestions[0].timeEntered).length;
 
             return (
                 <CalendarSessionCard
                     includeBookmark={userQuestions.length > 0}
+                    numAhead={numAhead}
                     session={session}
                     key={session.sessionId}
                     callback={this.props.callback}

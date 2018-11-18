@@ -9,6 +9,7 @@ class SessionInformationHeader extends React.Component {
         session: AppSession,
         course: AppCourse,
         callback: Function,
+        myUserId: number,
         isDesktop: boolean,
     };
 
@@ -20,6 +21,12 @@ class SessionInformationHeader extends React.Component {
         const session = this.props.session;
         const questions = session.questionsBySessionId.nodes;
         const tas = session.sessionTasBySessionId.nodes;
+
+        const userQuestions = questions.filter((question) =>
+            question.status === 'unresolved' && question.userByAskerId.userId === this.props.myUserId);
+        const numAhead = userQuestions.length === 0 ? questions.length :
+            questions.filter((q) => q.status === 'unresolved' && q.timeEntered >= userQuestions[0].timeEntered).length;
+
         if (this.props.isDesktop) {
             return (
                 <header className="DesktopSessionInformationHeader" >
@@ -46,9 +53,9 @@ class SessionInformationHeader extends React.Component {
                             <img src={people} />
                             <p>
                                 <span className="red">
-                                    {questions.filter((q) => q.status === 'unresolved').length + ' '}
+                                    {numAhead + ' '}
                                 </span>
-                                in queue
+                                ahead
                             </p>
                         </div>
                     </div>
@@ -79,7 +86,7 @@ class SessionInformationHeader extends React.Component {
                         <img src={people} />
                         <p>
                             <span className="red">
-                                {questions.filter((q) => q.status === 'unresolved').length + ' '}
+                                {numAhead + ' '}
                             </span>
                             in queue
                         </p>
