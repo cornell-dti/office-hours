@@ -4,9 +4,9 @@ import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
 
 const CREATE_ASSIGNMENT = gql`
-    mutation CreateAssignment($courseId: Int!, $name: String!, $activated: Boolean!, $childNames: [String]!, 
+    mutation CreateAssignment($courseId: Int!, $name: String!, $activated: Boolean!, $childNames: [String]!,
         $childActivateds:[Int]!) {
-        apiCreatePrimaryTag(input: {_courseId: $courseId, _iname: $name, _activated: $activated, 
+        apiCreatePrimaryTag(input: {_courseId: $courseId, _iname: $name, _activated: $activated,
             _childNames: $childNames, _childActivateds: $childActivateds}) {
             tags {
                 tagId
@@ -16,9 +16,9 @@ const CREATE_ASSIGNMENT = gql`
 `;
 
 const EDIT_ASSIGNMENT = gql`
-    mutation EditAssignment($id: Int!, $name: String!, $activated: Boolean!, $childNames: [String]!, 
+    mutation EditAssignment($id: Int!, $name: String!, $activated: Boolean!, $childNames: [String]!,
         $childActivateds:[Int]!, $childIds: [Int]!) {
-        apiEditPrimaryTag(input: {_parentId: $id, _iname: $name, _activated: $activated, 
+        apiEditPrimaryTag(input: {_parentId: $id, _iname: $name, _activated: $activated,
             _childNames: $childNames, _childActivateds: $childActivateds, _childIds: $childIds}) {
             tags {
                 tagId
@@ -35,7 +35,6 @@ class ProfessorTagInfo extends React.Component {
         tag?: AppTag
         refreshCallback: Function
         courseId: number
-        suggestedTagNames: string[]
     };
 
     state: {
@@ -123,16 +122,6 @@ class ProfessorTagInfo extends React.Component {
         this.setState({ newTagText: '' });
     }
 
-    handleAddSuggestedTag = (name: string): void => {
-        var newTag: AppTag = {
-            activated: true,
-            level: 2,
-            tagId: -1,
-            name: name
-        };
-        this.helperAddNewChildTag(newTag);
-    }
-
     // Sorry, this function is a bit of a mess. Please refactor it when you get spare time.
     // There are many corner cases to handle, so definitely test your implementation a lot!
     handleRemoveChildTag = (index: number): void => {
@@ -150,7 +139,7 @@ class ProfessorTagInfo extends React.Component {
         var doneRemoving = false;
         // Loop through all the tags (activated and not activated) to find the tag that was
         // removed by the user. We want to match index to the index'th tag that is activated.
-        // For all other tags, we want to add their previous version; for the removed tag, we 
+        // For all other tags, we want to add their previous version; for the removed tag, we
         // add its previous version with activated = false (stored in newChildTag).
         for (var i = 0; i < allTags.length; i++) {
             if (allTags[i].tagByChildId.activated) {
@@ -237,12 +226,6 @@ class ProfessorTagInfo extends React.Component {
     }
 
     render() {
-        var validSuggestedTags: string[] = this.props.suggestedTagNames
-            .filter((name) => !this.state.tag.tagRelationsByParentId
-                || (this.state.tag.tagRelationsByParentId
-                    && this.state.tag.tagRelationsByParentId.nodes
-                        .filter((childTag) => childTag.tagByChildId.name === name && childTag.tagByChildId.activated)
-                        .length === 0));
         return (
             <React.Fragment>
                 <div className="ProfessorTagInfo">
@@ -308,26 +291,6 @@ class ProfessorTagInfo extends React.Component {
                             +
                         </div>
                     </div>
-                    {
-                        validSuggestedTags.length > 0 &&
-                        <div className="SuggestedTags InputSection">
-                            <div className="InputHeader">Suggested tags:</div>
-                            {
-                                validSuggestedTags
-                                    .map((name, i) => {
-                                        return (
-                                            <div
-                                                key={i}
-                                                className="SuggestedChildTag"
-                                                onClick={() => this.handleAddSuggestedTag(name)}
-                                            >
-                                                + {name}
-                                            </div>
-                                        );
-                                    })
-                            }
-                        </div>
-                    }
                 </div>
                 <div className="EditButtons">
                     <button className="Bottom Cancel" onClick={() => this.props.cancelCallback()}>
