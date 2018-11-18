@@ -19,13 +19,12 @@ class SessionInformationHeader extends React.Component {
 
     render() {
         const session = this.props.session;
-        const questions = session.questionsBySessionId.nodes;
         const tas = session.sessionTasBySessionId.nodes;
 
-        const userQuestions = questions.filter((question) =>
-            question.status === 'unresolved' && question.userByAskerId.userId === this.props.myUserId);
-        const numAhead = userQuestions.length === 0 ? questions.length :
-            questions.filter((q) => q.status === 'unresolved' && q.timeEntered >= userQuestions[0].timeEntered).length;
+        const unresolvedQuestions = session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved');
+        const userQuestions = unresolvedQuestions.filter((q) => q.userByAskerId.userId === this.props.myUserId);
+        const numAhead = userQuestions.length === 0 ? unresolvedQuestions.length :
+            unresolvedQuestions.filter((q) => q.timeEntered <= userQuestions[0].timeEntered).length - 1;
 
         if (this.props.isDesktop) {
             return (
