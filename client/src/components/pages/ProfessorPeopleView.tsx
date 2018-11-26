@@ -2,6 +2,7 @@ import * as React from 'react';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import QuestionsPieChart from '../includes/QuestionsPieChart';
 import QuestionsLineChart from '../includes/QuestionsLineChart';
+import QuestionsBarChart from '../includes/QuestionsBarChart';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Redirect } from 'react-router';
@@ -47,7 +48,7 @@ query GetMetadata($courseId: Int!, $startDate: Datetime!, $endDate: Datetime!) {
         sessionTasBySessionId{
          nodes{
             userByUserId{
-              userId
+                computedName
             }
          }
        }
@@ -95,15 +96,30 @@ class ProfessorPeopleView extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = {
-            startDate: moment(new Date()).add(-9, 'months'),
+            startDate: moment(new Date()).add(-4, 'months'),
             endDate: moment(new Date()),
             focusedInput: null
         };
     }
 
+    calcTickVals(yMax: number) {
+        if (yMax === 0) {
+            return [0];
+        }
+        let end = yMax + (6 - (yMax % 6));
+        let start = 0;
+        let step = end / 6;
+        let tickVals = [];
+        while ((end + step) >= start) {
+            tickVals.push(start);
+            start += step;
+        }
+        return tickVals;
+    }
+
     render() {
         return (
-            <div className="ProfessorPeopleView">
+            <div className="ProfessorView">
                 <ProfessorMetadataDataQuery
                     query={METADATA_QUERY}
                     variables={{
@@ -120,22 +136,34 @@ class ProfessorPeopleView extends React.Component {
                         let percentUnresolved: number = 0;
                         let totalQuestions: number = 0;
                         let questionsInBusiestSession: number = 0;
-                        let questionsByDate: { date: string, questions: number }[] = [];
+                        let questionsByDate: {
+                            date: string,
+                            DOW: string,
+                            totalQuestions: number,
+                            calendar: string,
+                            tasQuestions: { ta: string, questions: number }[]
+                        }[] = [];
                         let mostCrowdedDay: string = '';
+                        let mostCrowdedDOW: string = '';
+                        let lineQuestionsPerDay: {
+                            'x': string,
+                            'y': number
+                        }[] = [];
+                        let questionsOfBusiestDay: number = 0;
+                        let barGraphData: {}[] = [];
+                        let taList: string[] = [];
                         let busiestSessionInfo: {
-                            taId: number,
-                            firstName: string,
-                            lastName: string,
-                            startTime: string,
-                            endTime: string,
+                            taName: string,
+                            ohDate: string,
+                            startHour: string,
+                            endHour: string,
                             building: string,
                             room: string
                         } = {
-                            taId: 0,
-                            firstName: '',
-                            lastName: '',
-                            startTime: '',
-                            endTime: '',
+                            taName: '',
+                            ohDate: '',
+                            startHour: '',
+                            endHour: '',
                             building: '',
                             room: ''
                         };
@@ -157,30 +185,67 @@ class ProfessorPeopleView extends React.Component {
                                 });
                                 if (questionsInThisSession >= questionsInBusiestSession) {
                                     questionsInBusiestSession = questionsInThisSession;
-                                    busiestSessionInfo.taId = n.sessionTasBySessionId.nodes[0].userByUserId.userId;
-                                    busiestSessionInfo.firstName = '';
-                                    busiestSessionInfo.lastName = '';
-                                    busiestSessionInfo.startTime = moment(n.startTime).format('MMMM Do YYYY, h:mm a');
-                                    busiestSessionInfo.endTime = moment(n.endTime).format('h:mm a');
+                                    busiestSessionInfo.taName =
+                                        n.sessionTasBySessionId.nodes[0].userByUserId.computedName;
+                                    busiestSessionInfo.ohDate = moment(n.startTime).format('MMMM Do');
+                                    busiestSessionInfo.startHour = moment(n.startTime).format('h:mm a');
+                                    busiestSessionInfo.endHour = moment(n.endTime).format('h:mm a');
                                     busiestSessionInfo.building = n.building;
                                     busiestSessionInfo.room = n.room;
                                 }
+                                let taName = n.sessionTasBySessionId.nodes[0].userByUserId.computedName;
                                 let dateString = moment(n.startTime).format('MMMM Do YYYY');
-                                if (dateString in questionsByDate) {
-                                    questionsByDate[dateString].questions += questionsInThisSession;
-                                } else {
-                                    questionsByDate.push({ date: dateString, questions: questionsInThisSession });
+                                let dateOfWeek = moment(n.startTime).format('dddd');
+                                let calString = moment(n.startTime).format('MMM D');
+                                let newDate = true;
+                                questionsByDate.forEach((d) => {
+                                    if (d.date === dateString) {
+                                        d.totalQuestions += questionsInThisSession;
+                                        d.tasQuestions.push({
+                                            ta: taName,
+                                            questions: questionsInThisSession
+                                        });
+                                        newDate = false;
+                                    }
+                                });
+                                if (taList.indexOf(taName) === -1) {
+                                    taList.push(taName);
+                                }
+                                if (newDate) {
+                                    questionsByDate.push({
+                                        date: dateString,
+                                        DOW: dateOfWeek,
+                                        totalQuestions: questionsInThisSession,
+                                        calendar: calString,
+                                        tasQuestions: [{
+                                            ta: taName,
+                                            questions: questionsInThisSession
+                                        }]
+                                    });
                                 }
                             });
                             percentResolved = Math.round((resolvedQuestions /
                                 (resolvedQuestions + unresolvedQuestions)) * 100);
                             percentUnresolved = 100 - percentResolved;
-                            let questionsOfBusiestDay = 0;
                             questionsByDate.forEach((d) => {
-                                if (d.questions >= questionsOfBusiestDay) {
+                                if (d.totalQuestions >= questionsOfBusiestDay) {
                                     mostCrowdedDay = d.date;
-                                    questionsOfBusiestDay = d.questions;
+                                    mostCrowdedDOW = d.DOW;
+                                    questionsOfBusiestDay = d.totalQuestions;
                                 }
+                                // alert(d.questions);
+                                lineQuestionsPerDay.push({
+                                    'x': d.calendar,
+                                    'y': d.totalQuestions
+                                });
+                                let newBar = {
+                                    'date': d.calendar
+                                };
+                                d.tasQuestions.forEach((t) => {
+                                    newBar[t.ta] = t.questions;
+                                });
+                                barGraphData.push(newBar);
+
                             });
                         }
                         return (
@@ -198,42 +263,77 @@ class ProfessorPeopleView extends React.Component {
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
                                     />
                                 }
-                                <div className="Date-picker-container">
-                                    <DateRangePicker
+                                <section className="rightOfSidebar">
+                                    <div className="main">
+                                        <div className="Date-picker-container">
+                                            <DateRangePicker
 
-                                        startDate={this.state.startDate} // momentPropTypes.momentObj or null,
-                                        startDateId="start1" // PropTypes.string.isRequired,
-                                        endDate={this.state.endDate} // momentPropTypes.momentObj or null,
-                                        endDateId="end1" // PropTypes.string.isRequired,
-                                        onDatesChange={
-                                            ({ startDate, endDate }) => this.setState({ startDate, endDate })}
-                                        focusedInput={this.state.focusedInput}
-                                        onFocusChange={focusedInput => this.setState({ focusedInput })}
-                                    />
-                                </div>
-                                <div className="Total-Questions-Box">
-                                    <QuestionsPieChart
-                                        percentResolved={percentResolved}
-                                        percentUnresolved={percentUnresolved}
-                                    />
-                                    <div>
-                                        <p> <span className="Question-Number">{totalQuestions} </span>
-                                            <br /> questions total</p>
+                                                startDate={this.state.startDate} // momentPropTypes.momentObj or null,
+                                                startDateId="start1" // PropTypes.string.isRequired,
+                                                endDate={this.state.endDate} // momentPropTypes.momentObj or null,
+                                                endDateId="end1" // PropTypes.string.isRequired,
+                                                onDatesChange={
+                                                    ({ startDate, endDate }) => this.setState({ startDate, endDate })}
+                                                focusedInput={this.state.focusedInput}
+                                                onFocusChange={focusedInput => this.setState({ focusedInput })}
+                                            />
+                                        </div>
+                                        <div className="first-row-container">
+                                            <div className="Total-Questions-Box">
+                                                <QuestionsPieChart
+                                                    percentResolved={percentResolved}
+                                                    percentUnresolved={percentUnresolved}
+                                                />
+                                                <div className="percent-overlay">
+                                                    <p> <span className="Question-Percent">{percentResolved}%</span>
+                                                        <br />answered</p>
+                                                </div>
+                                                <div className="q-total-container">
+                                                    <p> <span className="Question-Number">{totalQuestions} </span>
+                                                        <br /> questions total</p>
+                                                </div>
+                                            </div>
+                                            <div className="questions-bar-container">
+                                                <div className="bar-graph">
+                                                    <QuestionsBarChart
+                                                        barData={barGraphData}
+                                                        taKeys={taList}
+                                                        yMax={questionsOfBusiestDay}
+                                                        calcTickVals={this.calcTickVals}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="Most-Crowded-Box">
+                                            <div className="most-crowded-text">
+                                                <div>
+                                                    <p className="crowd-title"> Most Crowded Day </p>
+                                                    <p className="maroon-date"> {mostCrowdedDOW}, <br />
+                                                        {mostCrowdedDay} </p>
+                                                </div>
+                                                <hr />
+                                                <div>
+                                                    <p className="crowd-title"> Most Crowded Office Hour </p>
+                                                    <p className="maroon-descript"> {busiestSessionInfo.ohDate}</p>
+                                                    <p className="maroon-descript">
+                                                        {busiestSessionInfo.startHour} - {busiestSessionInfo.endHour}
+                                                    </p>
+                                                    <p className="maroon-descript">
+                                                        {busiestSessionInfo.building} {busiestSessionInfo.room} </p>
+                                                    <p className="maroon-descript">
+                                                        {busiestSessionInfo.taName}</p>
+                                                </div>
+                                            </div>
+                                            <div className="questions-line-container">
+                                                <QuestionsLineChart
+                                                    lineData={lineQuestionsPerDay}
+                                                    yMax={questionsOfBusiestDay}
+                                                    calcTickVals={this.calcTickVals}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="Most-Crowded-Box">
-                                    <div>
-                                        <p> Most Crowded Day </p>
-                                        <p> {mostCrowdedDay} </p>
-                                    </div>
-                                    <hr />
-                                    <div>
-                                        <p> Most Crowded Office Hour </p>
-                                        <p> {busiestSessionInfo.startTime} - {busiestSessionInfo.endTime} </p>
-                                        <p> {busiestSessionInfo.building} {busiestSessionInfo.room} </p>
-                                    </div>
-                                    <QuestionsLineChart />
-                                </div>
+                                </section>
                             </React.Fragment>
                         );
                     }}

@@ -3,105 +3,34 @@ import { ResponsiveLine, LineSerieData } from '@nivo/line';
 
 class QuestionsLineChart extends React.Component {
 
+  props: {
+    lineData: {
+      'x': string,
+      'y': number
+    }[],
+    yMax: number,
+    calcTickVals: (yMax: number) => number[]
+  };
+
   state: {
     data: LineSerieData[];
   };
 
-  constructor(props: {}) {
+  constructor(props: {
+    lineData: {
+      'x': string,
+      'y': number
+    }[],
+    yMax: number,
+    calcTickVals: (yMax: number) => number[]
+  }) {
     super(props);
     this.state = {
       data: [
         {
-          'id': 'japan',
-          'color': 'hsl(54, 70%, 50%)',
-          'data': [
-            {
-              'x': 'plane',
-              'y': 43
-            },
-            {
-              'x': 'helicopter',
-              'y': 35
-            },
-            {
-              'x': 'boat',
-              'y': 25
-            },
-            {
-              'x': 'train',
-              'y': 78
-            },
-            {
-              'x': 'subway',
-              'y': 62
-            },
-            {
-              'x': 'bus',
-              'y': 140
-            },
-            {
-              'x': 'car',
-              'y': 232
-            },
-            {
-              'x': 'moto',
-              'y': 8
-            },
-            {
-              'x': 'bicycle',
-              'y': 235
-            },
-            {
-              'x': 'others',
-              'y': 64
-            }
-          ]
-        },
-        {
-          'id': 'france',
-          'color': 'hsl(170, 70%, 50%)',
-          'data': [
-            {
-              'x': 'plane',
-              'y': 102
-            },
-            {
-              'x': 'helicopter',
-              'y': 18
-            },
-            {
-              'x': 'boat',
-              'y': 284
-            },
-            {
-              'x': 'train',
-              'y': 139
-            },
-            {
-              'x': 'subway',
-              'y': 146
-            },
-            {
-              'x': 'bus',
-              'y': 106
-            },
-            {
-              'x': 'car',
-              'y': 187
-            },
-            {
-              'x': 'moto',
-              'y': 79
-            },
-            {
-              'x': 'bicycle',
-              'y': 58
-            },
-            {
-              'x': 'others',
-              'y': 290
-            }
-          ]
+          'id': 'questions',
+          'color': 'hsl(100, 20%, 34%)',
+          'data': this.props.lineData
         }
       ] as LineSerieData[]
     };
@@ -109,26 +38,37 @@ class QuestionsLineChart extends React.Component {
 
   render() {
     return (
-      <div className="QuestionsLineChart" style={{ height: 400 }}>
+      <div className="QuestionsLineChart" style={{ height: 300 }}>
 
         <ResponsiveLine
-          colors="nivo"
-          colorBy="id"
-          data={this.state.data}
+          colorBy={
+            function (e: LineSerieData) {
+              return '#979797';
+            }
+          }
+          data={(this.state = {
+            data: [
+              {
+                'id': 'questions',
+                'color': 'hsl(100, 20%, 34%)',
+                'data': this.props.lineData
+              }
+            ] as LineSerieData[]
+          }, this.state.data)}
           margin={{
-            'top': 50,
-            'right': 110,
+            'top': 20,
+            'right': 20,
             'bottom': 50,
-            'left': 60
+            'left': 80
           }}
           xScale={{
             'type': 'point'
           }}
           yScale={{
             'type': 'linear',
-            'stacked': true,
-            'min': 'auto',
-            'max': 'auto'
+            'stacked': false,
+            'min': 0,
+            'max': this.props.yMax
           }}
           // minY="auto"
           // maxY="auto"
@@ -142,50 +82,36 @@ class QuestionsLineChart extends React.Component {
           //   'legendOffset': 36,
           //   'legendPosition': 'center'
           // }}
-          // axisLeft={{
-          //   'orient': 'left',
-          //   'tickSize': 5,
-          //   'tickPadding': 5,
-          //   'tickRotation': 0,
-          //   'legend': 'count',
-          //   'legendOffset': -40,
-          //   'legendPosition': 'center'
-          // }}
-          dotSize={10}
-          dotColor="inherit:darker(0.3)"
+          axisLeft={{
+            'legend': 'questions',
+            'tickSize': 1,
+            'tickPadding': 12,
+            'tickRotation': 0,
+            'legendOffset': -40,
+            'legendPosition': 'middle',
+            'tickValues': this.props.calcTickVals(this.props.yMax)
+          }}
+          axisBottom={{
+            'legend': '',
+            'tickSize': 1,
+            'tickPadding': 12,
+            'tickRotation': -60,
+            'legendOffset': 40,
+            'legendPosition': 'middle'
+          }}
+          enableGridX={false}
+          dotSize={8}
+          dotColor="#ffffff"
           dotBorderWidth={2}
-          dotBorderColor="#ffffff"
-          enableDotLabel={true}
+          dotBorderColor="#000000"
+          enableDotLabel={false}
           // dotLabel="y"
           // dotLabelYOffset={-12}
           animate={true}
           motionStiffness={90}
           motionDamping={15}
           legends={[
-            {
-              'anchor': 'bottom-right',
-              'direction': 'column',
-              'justify': false,
-              'translateX': 100,
-              'translateY': 0,
-              'itemsSpacing': 0,
-              'itemDirection': 'left-to-right',
-              'itemWidth': 80,
-              'itemHeight': 20,
-              // 'itemOpacity': 0.75,
-              'symbolSize': 12,
-              'symbolShape': 'circle',
-              // 'symbolBorderColor': 'rgba(0, 0, 0, .5)',
-              // 'effects': [
-              //   {
-              //     'on': 'hover',
-              //     'style': {
-              //       'itemBackground': 'rgba(0, 0, 0, .03)',
-              //       'itemOpacity': 1
-              //     }
-              //   }
-              // ]
-            }
+
           ]}
 
         />
