@@ -1,28 +1,81 @@
-.ProfessorPeopleView{
+.ProfessorView{
+    //Datepicker CSS
   .Date-picker-container{
-    width: 500px;
-    margin-left: 10%;
-    margin-top: 2%;
+    width: 285.97px;
+    margin-top: 1.5%;
   }
+  .react-datepicker-popper {
+    left: 20px !important;
+  }
+  .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list {
+      padding-right: 0;
+      text-align: center;
 
+      li.react-datepicker__time-list-item {
+          padding: 5px 0;
+      }
+  }
+  //End Datepicker CSS
+  .first-row-container{
+    display:flex;
+    margin-top: 1.5%;
+    .questions-bar-container{
+      width: 80%;
+      background-color: white;
+      border-radius: 6px;
+      margin-left: 1.5%;
+      padding: 40px 20px 20px 20px;
+    }
+  }
   .Total-Questions-Box{
-    margin-top: 2%;
+    height: 360px;
     background-color: white;
     border-radius: 6px;
-    margin-left: 17.5%;
     width: 20%;
     padding-bottom: 20px;
+    .percent-overlay{
+      margin-top: -165px;
+    }
     .Question-Number{
-      font-size: 50px;
+      font-size: 45px;
       color: #a8c7eb;
+    }
+    .Question-Percent{
+      font-size: 45px;
+      color: #a8c7eb;
+    }
+    .q-total-container{
+      margin-top: 100px;
     }
   }
   .Most-Crowded-Box{
-    margin-top: 2%;
+    display: flex;
+    margin-top: 1.5%;
     background-color: white;
     border-radius: 6px;
-    margin-left: 17.5%;
-    width: 20%;
-    padding-bottom: 20px;
+    width: 100%;
+    padding: 20px;
+    .most-crowded-text{
+      width: 20%;
+      text-align: left;
+      .crowd-title{
+        font-size: 15px;
+      }
+      .maroon-date{
+        color: #933131;
+        font-size: 20px;
+      }
+      .maroon-descript{
+        color: #933131;
+        margin-bottom: 1px;
+        font-size: 15xpx;
+      }
+      hr{
+        margin: 24px 0px;
+      }
+    }
+  .questions-line-container{
+    width: 80%;
+  }
   }
 }
