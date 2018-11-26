@@ -70,18 +70,7 @@ class QuestionsLineChart extends React.Component {
             'min': 0,
             'max': this.props.yMax
           }}
-          // minY="auto"
-          // maxY="auto"
-          // stacked={true}
-          // axisBottom={{
-          //   'orient': 'bottom',
-          //   'tickSize': 5,
-          //   'tickPadding': 5,
-          //   'tickRotation': 0,
-          //   'legend': 'transportation',
-          //   'legendOffset': 36,
-          //   'legendPosition': 'center'
-          // }}
+          // no custom tooltip for line yet
           axisLeft={{
             'legend': 'questions',
             'tickSize': 1,
