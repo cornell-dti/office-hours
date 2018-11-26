@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ResponsiveBar, BarDatum } from '@nivo/bar';
+import { ResponsiveBar, BarDatum, BarExtendedDatum } from '@nivo/bar';
 
 class QuestionsBarChart extends React.Component {
   props: {
@@ -46,11 +46,6 @@ class QuestionsBarChart extends React.Component {
             'bottom': 50,
             'left': 50
           }}
-          // onClick={
-          //   function (datum: BarExtendedDatum, event: any) {
-          //     alert('hi');
-          //   }
-          // }
           enableLabel={false}
           maxValue={this.props.yMax}
           innerPadding={3}
@@ -60,10 +55,39 @@ class QuestionsBarChart extends React.Component {
               return '#d8d8d8';
             }
           }
-          defs={[
-          ]}
-          fill={[
-          ]}
+          tooltip={
+            function (e: BarExtendedDatum) {
+              return <div className="bar-tooltip">
+                <div className="tooltip-section">
+                  {e.id} <br />
+                  1:30 - 3:00 pm <br />
+                  Gates G21 <br />
+                </div>
+                < hr />
+                <div className="tooltip-nums">
+                  <div className="tool-flex">
+                    <span className="tool-stat">{e.value} </span>
+                    <br /> questions</div>
+                  <div className="tool-flex">
+                    <span className="tool-stat"> 60% </span>
+                    <br /> answered</div>
+                </div>
+              </div>;
+            }
+          }
+          theme={{
+            tooltip: {
+              container: {
+                background: '#464646',
+                width: '130px'
+              }
+            }
+          }}
+          // tooltip={({ id, value, color }) => (
+          //   <strong style={{ color }}>
+          //     {id}: {value}
+          //   </strong>
+          // )}
           axisLeft={{
             'legend': 'questions',
             'tickSize': 1,
