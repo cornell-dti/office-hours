@@ -74,6 +74,7 @@ class QuestionsPieChart extends React.Component {
               }
             }
           }
+
           borderWidth={1}
           borderColor="inherit:darker(0.2)"
           enableRadialLabels={false}
@@ -91,8 +92,8 @@ class QuestionsPieChart extends React.Component {
           animate={true}
           motionStiffness={90}
           motionDamping={15}
+          isInteractive={false}
           defs={[
-
           ]}
           fill={[
 
