@@ -278,60 +278,75 @@ class ProfessorPeopleView extends React.Component {
                                                 onFocusChange={focusedInput => this.setState({ focusedInput })}
                                             />
                                         </div>
-                                        <div className="first-row-container">
-                                            <div className="Total-Questions-Box">
-                                                <QuestionsPieChart
-                                                    percentResolved={percentResolved}
-                                                    percentUnresolved={percentUnresolved}
-                                                />
-                                                <div className="percent-overlay">
-                                                    <p> <span className="Question-Percent">{percentResolved}%</span>
-                                                        <br />answered</p>
+                                        {totalQuestions > 0 ?
+                                            <div>
+                                                <div className="first-row-container">
+                                                    <div className="Total-Questions-Box">
+                                                        <QuestionsPieChart
+                                                            percentResolved={percentResolved}
+                                                            percentUnresolved={percentUnresolved}
+                                                        />
+                                                        <div className="percent-overlay">
+                                                            <p> <span className="Question-Percent">
+                                                                {percentResolved}%</span>
+                                                                <br />answered</p>
+                                                        </div>
+                                                        <div className="q-total-container">
+                                                            <p> <span className="Question-Number">
+                                                                {totalQuestions} </span>
+                                                                <br /> questions total</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="questions-bar-container">
+                                                        <div className="bar-graph">
+                                                            <QuestionsBarChart
+                                                                barData={barGraphData}
+                                                                taKeys={taList}
+                                                                yMax={questionsOfBusiestDay}
+                                                                calcTickVals={this.calcTickVals}
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="q-total-container">
-                                                    <p> <span className="Question-Number">{totalQuestions} </span>
-                                                        <br /> questions total</p>
+                                                <div className="Most-Crowded-Box">
+                                                    <div className="most-crowded-text">
+                                                        <div>
+                                                            <p className="crowd-title"> Most Crowded Day </p>
+                                                            <p className="maroon-date"> {mostCrowdedDOW}, <br />
+                                                                {mostCrowdedDay} </p>
+                                                        </div>
+                                                        <hr />
+                                                        <div>
+                                                            <p className="crowd-title"> Most Crowded Office Hour </p>
+                                                            <p className="maroon-descript">
+                                                                {busiestSessionInfo.ohDate}</p>
+                                                            <p className="maroon-descript">
+                                                                {busiestSessionInfo.startHour} -
+                                                            {busiestSessionInfo.endHour}
+                                                            </p>
+                                                            <p className="maroon-descript">
+                                                                {busiestSessionInfo.building}
+                                                                {busiestSessionInfo.room} </p>
+                                                            <p className="maroon-descript">
+                                                                {busiestSessionInfo.taName}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="questions-line-container">
+                                                        <QuestionsLineChart
+                                                            lineData={lineQuestionsPerDay}
+                                                            yMax={questionsOfBusiestDay}
+                                                            calcTickVals={this.calcTickVals}
+                                                        />
+                                                    </div>
+
                                                 </div>
                                             </div>
-                                            <div className="questions-bar-container">
-                                                <div className="bar-graph">
-                                                    <QuestionsBarChart
-                                                        barData={barGraphData}
-                                                        taKeys={taList}
-                                                        yMax={questionsOfBusiestDay}
-                                                        calcTickVals={this.calcTickVals}
-                                                    />
-                                                </div>
+                                            :
+                                            <div className="no-question-warning">
+                                                <p> No questions were asked during the selected time range.
+                                                    <br /> Please select a new time range. </p>
                                             </div>
-                                        </div>
-                                        <div className="Most-Crowded-Box">
-                                            <div className="most-crowded-text">
-                                                <div>
-                                                    <p className="crowd-title"> Most Crowded Day </p>
-                                                    <p className="maroon-date"> {mostCrowdedDOW}, <br />
-                                                        {mostCrowdedDay} </p>
-                                                </div>
-                                                <hr />
-                                                <div>
-                                                    <p className="crowd-title"> Most Crowded Office Hour </p>
-                                                    <p className="maroon-descript"> {busiestSessionInfo.ohDate}</p>
-                                                    <p className="maroon-descript">
-                                                        {busiestSessionInfo.startHour} - {busiestSessionInfo.endHour}
-                                                    </p>
-                                                    <p className="maroon-descript">
-                                                        {busiestSessionInfo.building} {busiestSessionInfo.room} </p>
-                                                    <p className="maroon-descript">
-                                                        {busiestSessionInfo.taName}</p>
-                                                </div>
-                                            </div>
-                                            <div className="questions-line-container">
-                                                <QuestionsLineChart
-                                                    lineData={lineQuestionsPerDay}
-                                                    yMax={questionsOfBusiestDay}
-                                                    calcTickVals={this.calcTickVals}
-                                                />
-                                            </div>
-                                        </div>
+                                        }
                                     </div>
                                 </section>
                             </React.Fragment>
