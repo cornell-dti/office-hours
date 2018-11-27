@@ -5,25 +5,108 @@ class QuestionsBarChart extends React.Component {
   props: {
     barData: {}[],
     yMax: number,
-    taKeys: string[],
+    sessionKeys: string[],
+    sessionDict: {},
     calcTickVals: (yMax: number) => number[]
   };
 
   state: {
     data: BarDatum[];
-    taKeys: string[];
+    sessionKeys: string[];
   };
 
   constructor(props: {
     barData: {}[],
     yMax: number,
+    sessionDict: {},
     calcTickVals: (yMax: number) => number[]
   }) {
     super(props);
     this.state = {
       data: this.props.barData as BarDatum[],
-      taKeys: this.props.taKeys
+      sessionKeys: this.props.sessionKeys
     };
+  }
+
+  isEmpty(obj: {}) {
+    for (var k in obj) {
+      if (obj.hasOwnProperty(k)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  tooltipFunc(e: BarExtendedDatum) {
+    if (this.props.sessionDict === null || this.isEmpty(this.props.sessionDict)) {
+      return <div>N/A</div>;
+    } else {
+      let sessionId = e.id;
+      var ta = this.props.sessionDict[sessionId].ta;
+      var start = this.props.sessionDict[sessionId].startHour;
+      var end = this.props.sessionDict[sessionId].endHour;
+      var answered = this.props.sessionDict[sessionId].answered;
+      var questions = this.props.sessionDict[sessionId].questions;
+      var percent = Math.round((answered / (questions)) * 100);
+      var building = this.props.sessionDict[sessionId].building;
+      var room = this.props.sessionDict[sessionId].room;
+      return (
+        <div className="bar-tooltip">
+          <div className="tooltip-section">
+            {ta} <br />
+            {start} - {end} <br />
+            {building} {room} <br />
+          </div>
+          < hr />
+          <div className="tooltip-nums">
+            <div className="tool-flex">
+              <span className="tool-stat">{questions} </span>
+              <br /> questions</div>
+            <div className="tool-flex">
+              <span className="tool-stat"> {percent}% </span>
+              <br /> answered</div>
+          </div>
+        </div>
+      );
+    }
+  }
+
+  createTooltipFunc(sessionId: string) {
+
+    if (!(this.isEmpty(this.props.sessionDict))) {
+
+      var ta = this.props.sessionDict[sessionId].ta;
+      var start = this.props.sessionDict[sessionId].startHour;
+      var end = this.props.sessionDict[sessionId].endHour;
+      var answered = this.props.sessionDict[sessionId].answered;
+      var questions = this.props.sessionDict[sessionId].questions;
+      var percent = Math.round((answered / (questions)) * 100);
+      var building = this.props.sessionDict[sessionId].building;
+      var room = this.props.sessionDict[sessionId].room;
+      return (function (e: BarExtendedDatum) {
+        return (
+          <div className="bar-tooltip">
+            <div className="tooltip-section">
+              {ta} <br />
+              {start} - {end} <br />
+              {building} {room} <br />
+            </div>
+            < hr />
+            <div className="tooltip-nums">
+              <div className="tool-flex">
+                <span className="tool-stat">{questions} </span>
+                <br /> questions</div>
+              <div className="tool-flex">
+                <span className="tool-stat"> {percent}% </span>
+                <br /> answered</div>
+            </div>
+          </div>);
+      });
+    } else {
+      return (function (e: BarExtendedDatum) {
+        return <div>N/A</div>;
+      });
+    }
   }
 
   render() {
@@ -33,12 +116,12 @@ class QuestionsBarChart extends React.Component {
         <ResponsiveBar
           data={(this.state = {
             data: this.props.barData as BarDatum[],
-            taKeys: this.props.taKeys
+            sessionKeys: this.props.sessionKeys
           }, this.state.data)}
           keys={(this.state = {
             data: this.props.barData as BarDatum[],
-            taKeys: this.props.taKeys
-          }, this.state.taKeys)}
+            sessionKeys: this.props.sessionKeys
+          }, this.state.sessionKeys)}
           indexBy="date"
           margin={{
             'top': 5,
@@ -55,26 +138,29 @@ class QuestionsBarChart extends React.Component {
               return '#d8d8d8';
             }
           }
-          tooltip={
-            function (e: BarExtendedDatum) {
-              return <div className="bar-tooltip">
-                <div className="tooltip-section">
-                  {e.id} <br />
-                  1:30 - 3:00 pm <br />
-                  Gates G21 <br />
-                </div>
-                < hr />
-                <div className="tooltip-nums">
-                  <div className="tool-flex">
-                    <span className="tool-stat">{e.value} </span>
-                    <br /> questions</div>
-                  <div className="tool-flex">
-                    <span className="tool-stat"> 60% </span>
-                    <br /> answered</div>
-                </div>
-              </div>;
-            }
-          }
+          tooltip={this.createTooltipFunc('276')}
+
+          // {this.tooltipFunc}
+
+          // {function (e: BarExtendedDatum) {
+          //   return (
+          //     <div className="bar-tooltip">
+          //       <div className="tooltip-section">
+          //         {e.id} <br />
+          //         {/* {start} - {end} <br />
+          //          {building} {room} <br /> */}
+          //       </div>
+          //       < hr />
+          //       {/* <div className="tooltip-nums">
+          //         <div className="tool-flex">
+          //           <span className="tool-stat">{questions} </span>
+          //           <br /> questions</div>
+          //         <div className="tool-flex">
+          //           <span className="tool-stat"> {percent}% </span>
+          //           <br /> answered</div>
+          //       </div> */}
+          //     </div>);
+          // }}
           theme={{
             tooltip: {
               container: {
@@ -83,11 +169,7 @@ class QuestionsBarChart extends React.Component {
               }
             }
           }}
-          // tooltip={({ id, value, color }) => (
-          //   <strong style={{ color }}>
-          //     {id}: {value}
-          //   </strong>
-          // )}
+
           axisLeft={{
             'legend': 'questions',
             'tickSize': 1,
