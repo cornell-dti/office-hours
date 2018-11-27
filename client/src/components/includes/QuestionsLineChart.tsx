@@ -71,6 +71,7 @@ class QuestionsLineChart extends React.Component {
             'max': this.props.yMax
           }}
           // no custom tooltip for line yet
+          isInteractive={false}
           axisLeft={{
             'legend': 'questions',
             'tickSize': 1,

@@ -131,7 +131,6 @@ class ProfessorPeopleView extends React.Component {
                     {({ loading, data }) => {
                         var courseCode: string = 'Loading...';
                         var resolvedQuestions: number = 0;
-                        var unresolvedQuestions: number = 0;
                         let percentResolved: number = 0;
                         let percentUnresolved: number = 0;
                         let totalQuestions: number = 0;
@@ -141,7 +140,16 @@ class ProfessorPeopleView extends React.Component {
                             DOW: string,
                             totalQuestions: number,
                             calendar: string,
-                            tasQuestions: { ta: string, questions: number }[]
+                            sessionQuestions: {
+                                ta: string,
+                                sessionId: number,
+                                questions: number,
+                                answered: number,
+                                startHour: string,
+                                endHour: string,
+                                building: string,
+                                room: string
+                            }[]
                         }[] = [];
                         let mostCrowdedDay: string = '';
                         let mostCrowdedDOW: string = '';
@@ -151,7 +159,8 @@ class ProfessorPeopleView extends React.Component {
                         }[] = [];
                         let questionsOfBusiestDay: number = 0;
                         let barGraphData: {}[] = [];
-                        let taList: string[] = [];
+                        let sessionIdList: string[] = [];
+                        let sessionDict = {};
                         let busiestSessionInfo: {
                             taName: string,
                             ohDate: string,
@@ -174,13 +183,13 @@ class ProfessorPeopleView extends React.Component {
                             }
                             data.apiGetSessions.nodes.forEach((n) => {
                                 let questionsInThisSession = 0;
+                                var resolvedInThisSession = 0;
                                 n.questionsBySessionId.nodes.forEach((q) => {
                                     totalQuestions++;
                                     questionsInThisSession++;
                                     if (q.status === 'resolved' || q.status === 'retracted') {
                                         resolvedQuestions++;
-                                    } else if (q.status === 'unresolved') {
-                                        unresolvedQuestions++;
+                                        resolvedInThisSession++;
                                     }
                                 });
                                 if (questionsInThisSession >= questionsInBusiestSession) {
@@ -198,18 +207,25 @@ class ProfessorPeopleView extends React.Component {
                                 let dateOfWeek = moment(n.startTime).format('dddd');
                                 let calString = moment(n.startTime).format('MMM D');
                                 let newDate = true;
+                                let newSessionObj = {
+                                    ta: taName,
+                                    sessionId: n.sessionId,
+                                    questions: questionsInThisSession,
+                                    answered: resolvedInThisSession,
+                                    startHour: moment(n.startTime).format('h:mm a'),
+                                    endHour: moment(n.endTime).format('h:mm a'),
+                                    building: n.building,
+                                    room: n.room
+                                };
                                 questionsByDate.forEach((d) => {
                                     if (d.date === dateString) {
                                         d.totalQuestions += questionsInThisSession;
-                                        d.tasQuestions.push({
-                                            ta: taName,
-                                            questions: questionsInThisSession
-                                        });
+                                        d.sessionQuestions.push(newSessionObj);
                                         newDate = false;
                                     }
                                 });
-                                if (taList.indexOf(taName) === -1) {
-                                    taList.push(taName);
+                                if (questionsInThisSession > 0) {
+                                    sessionIdList.push(String(n.sessionId));
                                 }
                                 if (newDate) {
                                     questionsByDate.push({
@@ -217,15 +233,12 @@ class ProfessorPeopleView extends React.Component {
                                         DOW: dateOfWeek,
                                         totalQuestions: questionsInThisSession,
                                         calendar: calString,
-                                        tasQuestions: [{
-                                            ta: taName,
-                                            questions: questionsInThisSession
-                                        }]
+                                        sessionQuestions: [newSessionObj]
                                     });
                                 }
                             });
                             percentResolved = Math.round((resolvedQuestions /
-                                (resolvedQuestions + unresolvedQuestions)) * 100);
+                                (totalQuestions)) * 100);
                             percentUnresolved = 100 - percentResolved;
                             questionsByDate.forEach((d) => {
                                 if (d.totalQuestions >= questionsOfBusiestDay) {
@@ -241,8 +254,17 @@ class ProfessorPeopleView extends React.Component {
                                 let newBar = {
                                     'date': d.calendar
                                 };
-                                d.tasQuestions.forEach((t) => {
-                                    newBar[t.ta] = t.questions;
+                                d.sessionQuestions.forEach((t) => {
+                                    newBar[String(t.sessionId)] = t.questions;
+                                    sessionDict[String(t.sessionId)] = {
+                                        ta: t.ta,
+                                        questions: t.questions,
+                                        answered: t.answered,
+                                        startHour: t.startHour,
+                                        endHour: t.endHour,
+                                        building: t.building,
+                                        room: t.room
+                                    };
                                 });
                                 barGraphData.push(newBar);
 
@@ -301,7 +323,8 @@ class ProfessorPeopleView extends React.Component {
                                                         <div className="bar-graph">
                                                             <QuestionsBarChart
                                                                 barData={barGraphData}
-                                                                taKeys={taList}
+                                                                sessionKeys={sessionIdList}
+                                                                sessionDict={sessionDict}
                                                                 yMax={questionsOfBusiestDay}
                                                                 calcTickVals={this.calcTickVals}
                                                             />
@@ -325,8 +348,8 @@ class ProfessorPeopleView extends React.Component {
                                                             {busiestSessionInfo.endHour}
                                                             </p>
                                                             <p className="maroon-descript">
-                                                                {busiestSessionInfo.building}
-                                                                {busiestSessionInfo.room} </p>
+                                                                {busiestSessionInfo.building} {busiestSessionInfo.room}
+                                                            </p>
                                                             <p className="maroon-descript">
                                                                 {busiestSessionInfo.taName}</p>
                                                         </div>
