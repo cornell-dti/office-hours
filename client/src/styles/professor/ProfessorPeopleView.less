@@ -1,4 +1,22 @@
 .ProfessorView{
+
+    .DateInput_input__focused {
+        border-bottom: 2px solid @brand-primary;
+    }
+    .CalendarDay__selected {
+        background: @tag-blue;
+        border-color: @tag-blue;
+    }
+
+    .CalendarDay__selected_span {
+        background: @brand-primary;
+        border-color: @tag-blue;
+    }
+
+    .CalendarMonth_caption {
+        padding-bottom: 52px;
+    }
+
     //Datepicker CSS
   .Date-picker-container{
     width: 286px;
@@ -82,11 +100,11 @@
 }
 .bar-tooltip{
   color: white;
-  font-size: 8px;
+  font-size: 12px;
   padding: 3px 0px;
   letter-spacing: 1px;
   .tooltip-section{
-    padding-left: 20px;
+    padding-left: 10px;
     text-align: left;
   }
   .tooltip-nums{
