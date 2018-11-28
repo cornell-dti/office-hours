@@ -289,7 +289,7 @@ class ProfessorPeopleView extends React.Component {
                                     <div className="main">
                                         <div className="Date-picker-container">
                                             <DateRangePicker
-
+                                                isOutsideRange={() => false}
                                                 startDate={this.state.startDate} // momentPropTypes.momentObj or null,
                                                 startDateId="start1" // PropTypes.string.isRequired,
                                                 endDate={this.state.endDate} // momentPropTypes.momentObj or null,
