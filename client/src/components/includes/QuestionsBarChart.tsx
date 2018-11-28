@@ -166,7 +166,7 @@ class QuestionsBarChart extends React.Component {
                         tooltip: {
                             container: {
                                 background: '#464646',
-                                width: '130px'
+                                width: '180px'
                             }
                         }
                     }}
