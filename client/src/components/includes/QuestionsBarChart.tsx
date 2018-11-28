@@ -37,40 +37,6 @@ class QuestionsBarChart extends React.Component {
         return true;
     }
 
-    tooltipFunc(e: BarExtendedDatum) {
-        if (this.props.sessionDict === null || this.isEmpty(this.props.sessionDict)) {
-            return <div>N/A</div>;
-        } else {
-            let sessionId = e.id;
-            var ta = this.props.sessionDict[sessionId].ta;
-            var start = this.props.sessionDict[sessionId].startHour;
-            var end = this.props.sessionDict[sessionId].endHour;
-            var answered = this.props.sessionDict[sessionId].answered;
-            var questions = this.props.sessionDict[sessionId].questions;
-            var percent = Math.round((answered / (questions)) * 100);
-            var building = this.props.sessionDict[sessionId].building;
-            var room = this.props.sessionDict[sessionId].room;
-            return (
-                <div className="bar-tooltip">
-                    <div className="tooltip-section">
-                        {ta} <br />
-                        {start} - {end} <br />
-                        {building} {room} <br />
-                    </div>
-                    < hr />
-                    <div className="tooltip-nums">
-                        <div className="tool-flex">
-                            <span className="tool-stat">{questions} </span>
-                            <br /> questions</div>
-                        <div className="tool-flex">
-                            <span className="tool-stat"> {percent}% </span>
-                            <br /> answered</div>
-                    </div>
-                </div>
-            );
-        }
-    }
-
     createTooltipFunc(sessionId: string) {
 
         if (!(this.isEmpty(this.props.sessionDict))) {
@@ -138,30 +104,9 @@ class QuestionsBarChart extends React.Component {
                             return '#d8d8d8';
                         }
                     }
-                    // @ts-ignore
+                    // @ts-ignore - TODO: Figure out how to avoid this and get a string from Reacttext
                     tooltip={(node) => { return this.createTooltipFunc(node.id)(); }}
 
-                    // {this.tooltipFunc}
-
-                    // {function (e: BarExtendedDatum) {
-                    //   return (
-                    //     <div className="bar-tooltip">
-                    //       <div className="tooltip-section">
-                    //         {e.id} <br />
-                    //         {/* {start} - {end} <br />
-                    //          {building} {room} <br /> */}
-                    //       </div>
-                    //       < hr />
-                    //       {/* <div className="tooltip-nums">
-                    //         <div className="tool-flex">
-                    //           <span className="tool-stat">{questions} </span>
-                    //           <br /> questions</div>
-                    //         <div className="tool-flex">
-                    //           <span className="tool-stat"> {percent}% </span>
-                    //           <br /> answered</div>
-                    //       </div> */}
-                    //     </div>);
-                    // }}
                     theme={{
                         tooltip: {
                             container: {
