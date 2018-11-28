@@ -176,7 +176,7 @@ class QuestionsBarChart extends React.Component {
             'tickPadding': 12,
             'tickRotation': 0,
             'legendOffset': -40,
-            'legendPosition': 'start',
+            'legendPosition': 'end',
             'tickValues': this.props.calcTickVals(this.props.yMax)
           }}
           axisBottom={{
