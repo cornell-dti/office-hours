@@ -33,6 +33,7 @@ class QuestionsLineChart extends React.Component {
                     'data': this.props.lineData
                 }
             ] as LineSerieData[]
+<<<<<<< HEAD
         };
     }
 
@@ -101,6 +102,55 @@ class QuestionsLineChart extends React.Component {
                     motionStiffness={90}
                     motionDamping={15}
                     legends={[
+=======
+          }, this.state.data)}
+          margin={{
+            'top': 20,
+            'right': 20,
+            'bottom': 50,
+            'left': 80
+          }}
+          xScale={{
+            'type': 'point'
+          }}
+          yScale={{
+            'type': 'linear',
+            'stacked': false,
+            'min': 0,
+            'max': this.props.yMax
+          }}
+          // no custom tooltip for line yet
+          isInteractive={false}
+          axisLeft={{
+            'legend': 'questions',
+            'tickSize': 1,
+            'tickPadding': 12,
+            'tickRotation': 0,
+            'legendOffset': -40,
+            'legendPosition': 'end',
+            'tickValues': this.props.calcTickVals(this.props.yMax)
+          }}
+          axisBottom={{
+            'legend': '',
+            'tickSize': 1,
+            'tickPadding': 12,
+            'tickRotation': -60,
+            'legendOffset': 40,
+            'legendPosition': 'middle'
+          }}
+          enableGridX={false}
+          dotSize={8}
+          dotColor="#ffffff"
+          dotBorderWidth={2}
+          dotBorderColor="#000000"
+          enableDotLabel={false}
+          // dotLabel="y"
+          // dotLabelYOffset={-12}
+          animate={true}
+          motionStiffness={90}
+          motionDamping={15}
+          legends={[
+>>>>>>> idk
 
                     ]}
 
