@@ -10,6 +10,7 @@ class CalendarHeader extends React.Component {
         isTa: boolean;
         isProf: boolean;
         avatar: string | null;
+        allCoursesList: string[];
     };
 
     state: {
