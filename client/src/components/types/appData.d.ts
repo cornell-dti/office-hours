@@ -93,7 +93,8 @@ interface AppUserRole extends AppUser {
 interface AppUserRoleQuestions extends AppUserRole {
     questionsByAskerId: {
         nodes: [{
-            sessionBySessionId: AppSession
+            status: string;
+            sessionBySessionId: AppSession;
         }]
     }
 }
