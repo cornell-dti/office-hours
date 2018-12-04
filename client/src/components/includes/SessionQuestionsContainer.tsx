@@ -110,6 +110,7 @@ class SessionQuestionsContainer extends React.Component {
                             triggerUndo={this.props.triggerUndo}
                             refetch={this.props.refetch}
                             isPast={this.props.isPast}
+                            myUserId={this.props.myUserId}
                         />
                         <p className="Queue">Queue</p>
                     </div>
@@ -126,6 +127,7 @@ class SessionQuestionsContainer extends React.Component {
                             triggerUndo={this.props.triggerUndo}
                             refetch={this.props.refetch}
                             isPast={this.props.isPast}
+                            myUserId={this.props.myUserId}
                         />
                     ))
                 }
