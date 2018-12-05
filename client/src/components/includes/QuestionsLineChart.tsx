@@ -87,7 +87,7 @@ class QuestionsLineChart extends React.Component {
                         'tickPadding': 12,
                         'tickRotation': -60,
                         'legendOffset': 40,
-                        'legendPosition': 'middle'
+                        'legendPosition': 'end'
                     }}
                     enableGridX={false}
                     dotSize={8}

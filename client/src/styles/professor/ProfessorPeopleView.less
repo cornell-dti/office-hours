@@ -4,13 +4,19 @@
         border-bottom: 2px solid @brand-primary;
     }
     .CalendarDay__selected {
-        background: @brand-secondary;
-        border-color: @brand-secondary;
+        background: @tag-blue;
+        border-color: @tag-blue;
     }
 
     .CalendarDay__selected_span {
         background: @brand-primary;
-        border-color: @brand-secondary;
+        border-color: @tag-blue;
+    }
+
+    .CalendarDay__hovered_span, .CalendarDay__hovered_span:hover {
+        background: #e4efff;
+        border: 1px double #d0def5;
+        color: #355372;
     }
 
     .CalendarMonth_caption {
@@ -37,7 +43,7 @@
   .first-row-container{
     display:flex;
     margin-top: 15px;
-    width: 980px;
+    width: 980px; /* rsn55 */
     .questions-bar-container{
       width: 80%;
       background-color: white;
@@ -72,7 +78,7 @@
     margin-top: 15px;
     background-color: white;
     border-radius: 6px;
-    width: 980px;
+    width: 980px; /* rsn55 */
     padding: 20px;
     .most-crowded-text{
       width: 20%;
@@ -104,7 +110,7 @@
   padding: 3px 0px;
   letter-spacing: 1px;
   .tooltip-section{
-    padding-left: 20px;
+    padding-left: 10px;
     text-align: left;
   }
   .tooltip-nums{
