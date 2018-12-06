@@ -37,7 +37,6 @@ _Screenshots showing major parts of app_
 * **Ryan Slama** - Product Manager
 
 ### 2017-18
-**Developers**
 * **Vanessa Wang** - Software Developer
 * **Shefali Agarwal** - Software Developer
 * **Horace He** - Software Developer
@@ -49,7 +48,6 @@ _Screenshots showing major parts of app_
 * **Karun Singh** - Product Manager
 
 
-<br/>
 We are a team within **Cornell Design & Tech Initiative**. For more information, see our website [here](https://cornelldti.org/).
 <img src="https://raw.githubusercontent.com/cornell-dti/design/master/Branding/Wordmark/Dark%20Text/Transparent/Wordmark-Dark%20Text-Transparent%403x.png">
 ​
