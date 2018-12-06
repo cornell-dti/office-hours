@@ -31,7 +31,7 @@ class SessionInformationHeader extends React.Component {
                         <Moment date={session.startTime} interval={0} format={'h:mm A'} />
                         <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
                         <p className="Date">
-                            <Icon name="calendar" />
+                            <Icon name="calendar alternate outline" />
                             <Moment date={session.startTime} interval={0} format={'dddd, MMM D'} />
                         </p>
                         <p>{session.title || (<React.Fragment>
