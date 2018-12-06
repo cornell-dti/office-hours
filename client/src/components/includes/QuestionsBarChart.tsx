@@ -41,30 +41,23 @@ class QuestionsBarChart extends React.Component {
     createTooltipFunc(sessionId: string) {
 
         if (!(this.isEmpty(this.props.sessionDict))) {
-
-            var ta = this.props.sessionDict[sessionId].ta;
-            var start = this.props.sessionDict[sessionId].startHour;
-            var end = this.props.sessionDict[sessionId].endHour;
-            var answered = this.props.sessionDict[sessionId].answered;
-            var questions = this.props.sessionDict[sessionId].questions;
-            var percent = Math.round((answered / (questions)) * 100);
-            var building = this.props.sessionDict[sessionId].building;
-            var room = this.props.sessionDict[sessionId].room;
+            var session = this.props.sessionDict[sessionId];
+            var percent = Math.round((session.answered / (session.questions)) * 100);
             return (function (e: BarExtendedDatum) {
                 return (
                     <div className="bar-tooltip">
                         <div className="tooltip-section">
                             <Icon name="user" />
-                            {ta} <br />
+                            {session.ta} <br />
                             <Icon name="clock" />
-                            {start} - {end} <br />
+                            {session.startHour} - {session.endHour} <br />
                             <Icon name="map marker alternate" />
-                            {building} {room} <br />
+                            {session.building} {session.room} <br />
                         </div>
                         < hr />
                         <div className="tooltip-nums">
                             <div className="tool-flex">
-                                <span className="tool-stat">{questions} </span>
+                                <span className="tool-stat">{session.questions} </span>
                                 <br /> questions</div>
                             <div className="tool-flex">
                                 <span className="tool-stat"> {percent}% </span>
