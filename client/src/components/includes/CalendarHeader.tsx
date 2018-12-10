@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Icon } from 'semantic-ui-react';
+// import { Icon } from 'semantic-ui-react';
 // const QMeLogo = require('../../media/QMeLogo.svg');
 const QMeLogo = require('../../media/QLogo.svg');
 // const chevron = require('../../media/chevron.svg'); // Replace with dropdown cheveron
@@ -15,15 +15,21 @@ class CalendarHeader extends React.Component {
 
     state: {
         showMenu: boolean;
+        showCourses: boolean;
     };
 
     constructor(props: {}) {
         super(props);
-        this.state = { showMenu: false };
+        this.state = { showMenu: false, showCourses: false };
+        // this.state = { showCourses: false };
     }
 
     setMenu = (status: boolean) => {
         this.setState({ showMenu: status });
+    }
+
+    setCourses = (status: boolean) => {
+        this.setState({ showCourses: status });
     }
 
     render() {
@@ -32,11 +38,11 @@ class CalendarHeader extends React.Component {
                 <div className="LogoContainer">
                     <img src={QMeLogo} className="QMeLogo" />
                 </div>
-                <div className="CalendarHeader">
+                <div className="CalendarHeader" onClick={() => this.setCourses(!this.state.showCourses)}>
                     <span>
                         <span>{this.props.currentCourseCode}</span>
-                        {this.props.isTa && <span className="TAMarker">TA</span>}
-                        {this.props.isProf && <span className="TAMarker Professor">PROF</span>}
+                         {this.props.isTa && <span className="TAMarker">TA</span>}
+                         {this.props.isProf && <span className="TAMarker Professor">PROF</span>}
                         {/* <span className="CourseSelect">
                             <img src={chevron} alt="Course Select" className="RotateDown" />
                         </span> */}
@@ -48,21 +54,33 @@ class CalendarHeader extends React.Component {
                             src={this.props.avatar}
                         />
                     }
+                    {this.state.showCourses && (
+                        <React.Fragment>
+                            <ul className="logoutMenu" tabIndex={1} onClick={() => this.setCourses(false)} >
+                                <li >
+                                    <a>Cheese</a>
+                                </li>
+                                <li>
+                                    <a>Chocolate</a>
+                                </li>
+                            </ul>
+                        </React.Fragment>
+                    )}
                 </div>
-                {this.state.showMenu && (
+                {/*this.state.showMenu && (
                     <ul className="logoutMenu" onClick={() => this.setMenu(false)} >
-                        {/* {this.props.isTa &&
+                        { {this.props.isTa &&
                             <React.Fragment>
                                 <li>Cancel Session</li>
                                 <li>Change Session</li>
                             </React.Fragment>
-                        } */}
+                        } }
                         <li><a href="/__auth/logout"><span><Icon name="sign out" /></span>Log Out</a></li>
                         <li><a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank">
                             <span><Icon name="edit" /></span>Send Feedback</a>
                         </li>
                     </ul>
-                )}
+                )*/}
             </div>
         );
     }
