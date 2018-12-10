@@ -21,14 +21,16 @@ mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!, $locatio
     }
 }
 `;
+const LOCATION_CHAR_LIMIT = 40;
 
 class AddQuestion extends React.Component {
     /*
      * State machine states
-     * 10 - initial state - nothing selected, secondary & text field locked
+     * 10 - initial state - nothing selected, secondary & text fields locked
      * 20 - primary selected - shows a single primary tag, unlocks secondary
-     * 30 - one or more secondary tags selected - unlocks text field
-     * 40 - contents in text field - unlocks submit button
+     * 30 - one or more secondary tags selected - unlocks location field
+     * 40 - location inputted - unlocks question field
+     * 50 - contents in question field - unlocks submit button
      */
     props: {
         tags: AppTagRelations[]
@@ -39,6 +41,7 @@ class AddQuestion extends React.Component {
     };
 
     state: {
+        location: string,
         question: string,
         selectedTags: number[],
         stage: number,
@@ -48,6 +51,7 @@ class AddQuestion extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = {
+            location: '',
             question: '',
             stage: 10,
             selectedTags: [],
@@ -88,15 +92,16 @@ class AddQuestion extends React.Component {
                 }
             }
             selectedTags.push(id);
+            let stage;
+            if (this.state.location.length > 0) {
+                if (this.state.question.length > 0) {
+                    stage = 50;
+                } else { stage = 40; }
+            } else { stage = 30; }
             this.setState({
-                stage: this.state.question.length > 0 ? 40 : 30,
+                stage: stage,
                 // selectedTags: [...this.state.selectedTags, id]
                 selectedTags: selectedTags
-            });
-        } else if (this.state.selectedTags.length > 2) {
-            this.setState({
-                stage: this.state.question.length > 0 ? 40 : 30,
-                selectedTags: this.state.selectedTags.filter((t) => t !== id)
             });
         } else {
             this.setState({
@@ -106,11 +111,25 @@ class AddQuestion extends React.Component {
         }
     }
 
+    public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+        const target = event.target as HTMLTextAreaElement;
+        let stage;
+        if (target.value.length > 0) {
+            if (this.state.question.length > 0) {
+                stage = 50;
+            } else { stage = 40; }
+        } else { stage = 30; }
+        this.setState({
+            location: target.value.length <= LOCATION_CHAR_LIMIT ? target.value : this.state.location,
+            stage: stage
+        });
+    }
+
     public handleUpdateQuestion = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
         this.setState({
             question: target.value.length <= this.props.charLimit ? target.value : this.state.question,
-            stage: target.value.length > 0 ? 40 : 30
+            stage: target.value.length > 0 ? 50 : 40
         });
     }
 
@@ -120,20 +139,20 @@ class AddQuestion extends React.Component {
                 content: this.state.question,
                 tags: this.state.selectedTags,
                 sessionId: this.props.sessionId,
-                location: 'TODO'
+                location: this.state.location
             }
         });
     }
 
     public handleKeyPressDown = (event: React.KeyboardEvent<HTMLElement>, addQuestion: Function): void => {
         // CTRL + ENTER or CMD + ENTER adds the question ONLY if cursor in Question textbox
-        if (!event.repeat && (event.ctrlKey || event.metaKey) && event.keyCode === 13 && this.state.stage > 30) {
+        if (!event.repeat && (event.ctrlKey || event.metaKey) && event.keyCode === 13 && this.state.stage > 40) {
             addQuestion({
                 variables: {
                     content: this.state.question,
                     tags: this.state.selectedTags,
                     sessionId: this.props.sessionId,
-                    location: 'TODO'
+                    location: this.state.location
                 }
             });
         } else if (!event.repeat && event.keyCode === 27) {
@@ -151,7 +170,7 @@ class AddQuestion extends React.Component {
             return <Redirect push={true} to={'/course/' + this.props.courseId + '/session/' + this.props.sessionId} />;
         }
 
-        var charsRemaining = this.props.charLimit - this.state.question.length;
+        var questionCharsLeft = this.props.charLimit - this.state.question.length;
 
         return (
             <Mutation mutation={ADD_QUESTION} onCompleted={this.questionAdded}>
@@ -206,22 +225,41 @@ class AddQuestion extends React.Component {
                                 <hr />
                                 <div className="tagsMiniContainer">
                                     <p className="header">
-                                        Question <span
-                                            className={'characterCount ' + (charsRemaining <= 0 ? 'warn' : '')}
+                                        Location <span
+                                            className={'characterCount ' +
+                                                (this.state.location.length >= 40 ? 'warn' : '')}
                                         >
-                                            ({charsRemaining} character{charsRemaining !== 1 && 's'} left)
+                                            {this.state.location.length}/{LOCATION_CHAR_LIMIT}
                                         </span>
                                     </p>
                                     {this.state.stage >= 30 ?
+                                        <textarea
+                                            className="QuestionInput"
+                                            value={this.state.location}
+                                            onChange={this.handleUpdateLocation}
+                                            placeholder="Where will you be?"
+                                        />
+                                        : <p className="placeHolder text">Finish selecting tags...</p>}
+                                </div>
+                                <hr />
+                                <div className="tagsMiniContainer">
+                                    <p className="header">
+                                        Question <span
+                                            className={'characterCount ' + (questionCharsLeft <= 0 ? 'warn' : '')}
+                                        >
+                                            ({questionCharsLeft} character{questionCharsLeft !== 1 && 's'} left)
+                                        </span>
+                                    </p>
+                                    {this.state.stage >= 40 ?
                                         <textarea
                                             className="QuestionInput"
                                             value={this.state.question}
                                             onChange={this.handleUpdateQuestion}
                                             placeholder="What's your question about?"
                                         />
-                                        : <p className="placeHolder text">Finish selecting tags...</p>}
+                                        : <p className="placeHolder text">Enter your location...</p>}
                                 </div>
-                                {this.state.stage > 30 ?
+                                {this.state.stage > 40 ?
                                     <p
                                         className="AddButton active"
                                         onClick={(e) => this.handleJoinClick(e, addQuestion)}
