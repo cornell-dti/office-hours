@@ -233,12 +233,15 @@ class AddQuestion extends React.Component {
                                         </span>
                                     </p>
                                     {this.state.stage >= 30 ?
-                                        <textarea
-                                            className="QuestionInput"
-                                            value={this.state.location}
-                                            onChange={this.handleUpdateLocation}
-                                            placeholder="Where will you be?"
-                                        />
+                                        <div className="locationInput">
+                                            <Icon name="map marker alternate" />
+                                            <textarea
+                                                className="TextInput location"
+                                                value={this.state.location}
+                                                onChange={this.handleUpdateLocation}
+                                                placeholder="Where will you be?"
+                                            />
+                                        </div>
                                         : <p className="placeHolder text">Finish selecting tags...</p>}
                                 </div>
                                 <hr />
@@ -252,7 +255,7 @@ class AddQuestion extends React.Component {
                                     </p>
                                     {this.state.stage >= 40 ?
                                         <textarea
-                                            className="QuestionInput"
+                                            className="TextInput question"
                                             value={this.state.question}
                                             onChange={this.handleUpdateQuestion}
                                             placeholder="What's your question about?"
