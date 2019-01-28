@@ -51,6 +51,12 @@ class ProfessorSidebar extends React.Component {
                                 Dashboard
                             </button>
                         </Link>
+                        <Link to={'/professor-roles/course/' + this.props.courseId}>
+                            <button className={selectedArray[3]}>
+                                <Icon name="id card outline" />
+                                Manage Roles
+                            </button>
+                        </Link>
                     </div>
                 </div>
                 {/* <svg className="logo" width="100" height="100">
