@@ -9,7 +9,7 @@ class ProfessorSidebar extends React.Component {
     };
 
     render() {
-        var selectedArray: string[] = ['', '', ''];
+        var selectedArray: string[] = ['', '', '', ''];
         selectedArray[this.props.selected] = 'selected';
 
         return (
@@ -49,6 +49,18 @@ class ProfessorSidebar extends React.Component {
                             <button className={selectedArray[2]}>
                                 <Icon name="line graph" />
                                 Dashboard
+                            </button>
+                        </Link>
+                        <Link to={'/professor-people/course/' + this.props.courseId}>
+                            <button className={selectedArray[3]}>
+                                <Icon name="users" />
+                                People
+                                </button>
+                        </Link>
+                        <Link to={'/professor-roles/course/' + this.props.courseId}>
+                            <button className={selectedArray[4]}>
+                                <Icon name="id card outline" />
+                                Manage Roles
                             </button>
                         </Link>
                     </div>

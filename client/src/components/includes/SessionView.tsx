@@ -244,6 +244,7 @@ class SessionView extends React.Component {
                                         <SessionInformationHeader
                                             session={data.sessionBySessionId}
                                             course={data.courseByCourseId}
+                                            myUserId={data.apiGetCurrentUser.nodes[0].userId}
                                             callback={this.props.backCallback}
                                             isDesktop={this.props.isDesktop}
                                         />
