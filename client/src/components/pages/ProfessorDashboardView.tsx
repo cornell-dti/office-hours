@@ -53,12 +53,13 @@ class ProfessorDashboardView extends React.Component {
     }
 
     render() {
+        let courseId = parseInt(this.props.match.params.courseId, 10);
         return (
             <div className="ProfessorView">
                 <ProfessorMetadataDataQuery
                     query={METADATA_QUERY}
                     variables={{
-                        courseId: parseInt(this.props.match.params.courseId, 10)
+                        courseId: courseId
                     }}
                 >
                     {({ loading, data }) => {
@@ -72,13 +73,13 @@ class ProfessorDashboardView extends React.Component {
                         return (
                             <React.Fragment>
                                 <ProfessorSidebar
-                                    courseId={parseInt(this.props.match.params.courseId, 10)}
+                                    courseId={courseId}
                                     code={courseCode}
                                     selected={2}
                                 />
                                 {data && data.apiGetCurrentUser &&
                                     <TopBar
-                                        courseId={parseInt(this.props.match.params.courseId, 10)}
+                                        courseId={courseId}
                                         user={data.apiGetCurrentUser.nodes[0]}
                                         context="professor"
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}

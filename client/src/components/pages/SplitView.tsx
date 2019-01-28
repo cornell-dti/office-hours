@@ -89,13 +89,14 @@ class SplitView extends React.Component {
     }
 
     render() {
+        let courseId = parseInt(this.props.match.params.courseId, 10);
         return (
             <React.Fragment>
                 {(this.state.width > MOBILE_BREAKPOINT ||
                     (this.state.width <= MOBILE_BREAKPOINT &&
                         this.state.activeView === 'calendar')) &&
                     <CalendarView
-                        courseId={parseInt(this.props.match.params.courseId, 10)}
+                        courseId={courseId}
                         sessionId={this.state.sessionId}
                         sessionCallback={this.handleSessionClick}
                     />
@@ -103,7 +104,7 @@ class SplitView extends React.Component {
                     (this.state.width <= MOBILE_BREAKPOINT &&
                         this.state.activeView !== 'calendar')) &&
                     <SessionView
-                        courseId={parseInt(this.props.match.params.courseId, 10)}
+                        courseId={courseId}
                         id={this.state.sessionId}
                         isDesktop={this.state.width > MOBILE_BREAKPOINT}
                         backCallback={this.handleBackClick}
@@ -115,7 +116,7 @@ class SplitView extends React.Component {
                         <div className="modal">
                             <ConnectedQuestionView
                                 sessionId={this.state.sessionId || -1}
-                                courseId={parseInt(this.props.match.params.courseId, 10)}
+                                courseId={courseId}
                                 data={{ loading: true }}
                                 callback={() => this.addedQuestion()}
                             />

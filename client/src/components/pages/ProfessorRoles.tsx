@@ -65,14 +65,10 @@ class ProfessorDashboardView extends React.Component {
     }
 
     render() {
+        let courseId = parseInt(this.props.match.params.courseId, 10);
         return (
             <div className="ProfessorView">
-                <ProfessorMetadataDataQuery
-                    query={METADATA_QUERY}
-                    variables={{
-                        courseId: parseInt(this.props.match.params.courseId, 10)
-                    }}
-                >
+                <ProfessorMetadataDataQuery query={METADATA_QUERY} variables={{ courseId: courseId }} >
                     {({ loading, data }) => {
                         var courseCode: string = 'Loading...';
                         if (!loading && data) {
@@ -84,13 +80,13 @@ class ProfessorDashboardView extends React.Component {
                         return (
                             <React.Fragment>
                                 <ProfessorSidebar
-                                    courseId={parseInt(this.props.match.params.courseId, 10)}
+                                    courseId={courseId}
                                     code={courseCode}
                                     selected={4}
                                 />
                                 {data && data.apiGetCurrentUser &&
                                     <TopBar
-                                        courseId={parseInt(this.props.match.params.courseId, 10)}
+                                        courseId={courseId}
                                         user={data.apiGetCurrentUser.nodes[0]}
                                         context="professor"
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
@@ -100,7 +96,7 @@ class ProfessorDashboardView extends React.Component {
                                     <div className="main">
                                         {data && data.courseByCourseId &&
                                             <ProfessorRolesTable
-                                                courseId={parseInt(this.props.match.params.courseId, 10)}
+                                                courseId={courseId}
                                                 data={data.courseByCourseId.courseUsersByCourseIdList}
                                             />
                                         }
