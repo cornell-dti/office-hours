@@ -8,6 +8,7 @@ import LoginView from './pages/LoginView';
 import ProfessorView from './pages/ProfessorView';
 import SplitView from './pages/SplitView';
 import ProfessorTagsView from './pages/ProfessorTagsView';
+import ProfessorRoles from './pages/ProfessorRoles';
 import ProfessorDashboardView from './pages/ProfessorDashboardView';
 import ProfessorPeopleView from './pages/ProfessorPeopleView';
 import { Analytics } from './includes/Analytics';
@@ -78,10 +79,15 @@ class App extends React.Component {
                             component={ProfessorDashboardView}
                             exact={true}
                         />
+                        <PrivateRoute
+                            path="/professor-roles/course/:courseId"
+                            component={ProfessorRoles}
+                            exact={true}
+                        />
                         <PrivateRoute path="/professor/course/:courseId" component={ProfessorView} exact={true} />
                         <PrivateRoute path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
                         <PrivateRoute path="/course/:courseId" component={SplitView} />
-                        <Redirect from="/" to="/course/1" exact={true}/>
+                        <Redirect from="/" to="/course/2" />
                     </Switch>
                 </div>
             </Router>

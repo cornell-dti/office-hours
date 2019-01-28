@@ -1,6 +1,7 @@
 import * as React from 'react';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
+import ProfessorRolesTable from '../includes/ProfessorRolesTable';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Redirect } from 'react-router';
@@ -19,7 +20,15 @@ query GetMetadata($courseId: Int!) {
         }
     }
     courseByCourseId(courseId: $courseId) {
-        code
+        courseUsersByCourseIdList {
+          role
+          userByUserId {
+            firstName
+            lastName
+            email
+            userId
+          }
+        }
     }
 }`;
 
@@ -28,7 +37,10 @@ interface ProfessorMetadataData {
         nodes: [AppUserRole]
     };
     courseByCourseId: {
-        code: string
+        courseUsersByCourseIdList: [{
+            role: string;
+            userByUserId: AppUser;
+        }]
     };
 }
 
@@ -64,7 +76,7 @@ class ProfessorDashboardView extends React.Component {
                     {({ loading, data }) => {
                         var courseCode: string = 'Loading...';
                         if (!loading && data) {
-                            courseCode = data.courseByCourseId.code;
+                            // Redirect if current user != professor
                             if (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role !== 'professor') {
                                 return <Redirect to={'/course/' + this.props.match.params.courseId} />;
                             }
@@ -74,7 +86,7 @@ class ProfessorDashboardView extends React.Component {
                                 <ProfessorSidebar
                                     courseId={parseInt(this.props.match.params.courseId, 10)}
                                     code={courseCode}
-                                    selected={2}
+                                    selected={3}
                                 />
                                 {data && data.apiGetCurrentUser &&
                                     <TopBar
@@ -86,9 +98,12 @@ class ProfessorDashboardView extends React.Component {
                                 }
                                 <section className="rightOfSidebar">
                                     <div className="main">
-                                        <p className="ComingSoon">
-                                            Coming soon!
-                                        </p>
+                                        {data && data.courseByCourseId &&
+                                            <ProfessorRolesTable
+                                                courseId={parseInt(this.props.match.params.courseId, 10)}
+                                                data={data.courseByCourseId.courseUsersByCourseIdList}
+                                            />
+                                        }
                                     </div>
                                 </section>
                             </React.Fragment>

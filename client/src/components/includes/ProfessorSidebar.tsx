@@ -55,6 +55,12 @@ class ProfessorSidebar extends React.Component {
                             <button className={selectedArray[3]}>
                                 <Icon name="users" />
                                 People
+                                </button>
+                        </Link>
+                        <Link to={'/professor-roles/course/' + this.props.courseId}>
+                            <button className={selectedArray[4]}>
+                                <Icon name="id card outline" />
+                                Manage Roles
                             </button>
                         </Link>
                     </div>
