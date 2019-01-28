@@ -122,7 +122,7 @@ export default class ProfessorRolesTable extends React.Component {
                             sorted={column === 'role' ? direction : undefined}
                             onClick={this.handleSort('role')}
                         >
-                            Roll
+                            Role
                         </Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
