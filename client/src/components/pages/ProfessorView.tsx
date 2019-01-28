@@ -116,7 +116,7 @@ class ProfessorView extends React.Component {
     props: {
         match: {
             params: {
-                courseId: number;
+                courseId: string;
             }
         }
     };
@@ -155,7 +155,7 @@ class ProfessorView extends React.Component {
                 <ProfessorMetadataDataQuery
                     query={METADATA_QUERY}
                     variables={{
-                        courseId: this.props.match.params.courseId
+                        courseId: parseInt(this.props.match.params.courseId, 10)
                     }}
                 >
                     {({ loading, data }) => {
@@ -169,13 +169,13 @@ class ProfessorView extends React.Component {
                         return (
                             <React.Fragment>
                                 <ProfessorSidebar
-                                    courseId={this.props.match.params.courseId}
+                                    courseId={parseInt(this.props.match.params.courseId, 10)}
                                     code={courseCode}
                                     selected={0}
                                 />
                                 {data && data.apiGetCurrentUser &&
                                     <TopBar
-                                        courseId={this.props.match.params.courseId}
+                                        courseId={parseInt(this.props.match.params.courseId, 10)}
                                         user={data.apiGetCurrentUser.nodes[0]}
                                         context="professor"
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
@@ -189,7 +189,7 @@ class ProfessorView extends React.Component {
                 <ProfessorSessionsDataQuery
                     query={SESSIONS_QUERY}
                     variables={{
-                        courseId: this.props.match.params.courseId,
+                        courseId: parseInt(this.props.match.params.courseId, 10),
                         beginTime: new Date(this.state.selectedWeekEpoch),
                         endTime: new Date(this.state.selectedWeekEpoch +
                             7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */)
@@ -216,7 +216,7 @@ class ProfessorView extends React.Component {
                             <section className="rightOfSidebar">
                                 <div className="main">
                                     <ProfessorAddNew
-                                        courseId={this.props.match.params.courseId}
+                                        courseId={parseInt(this.props.match.params.courseId, 10)}
                                         refreshCallback={refetch}
                                         taOptions={taOptions}
                                     />
@@ -228,7 +228,7 @@ class ProfessorView extends React.Component {
                                     <div className="Calendar">
                                         {data && data.apiGetSessions &&
                                             <ProfessorCalendarTable
-                                                courseId={this.props.match.params.courseId}
+                                                courseId={parseInt(this.props.match.params.courseId, 10)}
                                                 data={data.apiGetSessions}
                                                 taOptions={taOptions}
                                                 refreshCallback={refetch}

@@ -84,7 +84,7 @@ class ProfessorView extends React.Component {
     props: {
         match: {
             params: {
-                courseId: number;
+                courseId: string;
             }
         }
     };
@@ -99,7 +99,7 @@ class ProfessorView extends React.Component {
                 <ProfessorMetadataDataQuery
                     query={METADATA_QUERY}
                     variables={{
-                        courseId: this.props.match.params.courseId
+                        courseId: parseInt(this.props.match.params.courseId, 10)
                     }}
                 >
                     {({ loading, data }) => {
@@ -113,13 +113,13 @@ class ProfessorView extends React.Component {
                         return (
                             <React.Fragment>
                                 <ProfessorSidebar
-                                    courseId={this.props.match.params.courseId}
+                                    courseId={parseInt(this.props.match.params.courseId, 10)}
                                     code={courseCode}
                                     selected={1}
                                 />
                                 {data && data.apiGetCurrentUser &&
                                     <TopBar
-                                        courseId={this.props.match.params.courseId}
+                                        courseId={parseInt(this.props.match.params.courseId, 10)}
                                         user={data.apiGetCurrentUser.nodes[0]}
                                         context="professor"
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
@@ -133,7 +133,7 @@ class ProfessorView extends React.Component {
                 <ProfessorTagsDataQuery
                     query={TAGS_QUERY}
                     variables={{
-                        courseId: this.props.match.params.courseId
+                        courseId: parseInt(this.props.match.params.courseId, 10)
                     }}
                 >
                     {({ loading, data, refetch }) => {
@@ -141,7 +141,7 @@ class ProfessorView extends React.Component {
                             <section className="rightOfSidebar">
                                 <div className="main">
                                     <ProfessorAddNew
-                                        courseId={this.props.match.params.courseId}
+                                        courseId={parseInt(this.props.match.params.courseId, 10)}
                                         refreshCallback={refetch}
                                     />
                                     {loading && <Loader active={true} content={'Loading...'} />}
@@ -150,7 +150,7 @@ class ProfessorView extends React.Component {
                                             <ProfessorTagsTable
                                                 tags={data.courseByCourseId.tagsByCourseId.nodes}
                                                 refreshCallback={refetch}
-                                                courseId={this.props.match.params.courseId}
+                                                courseId={parseInt(this.props.match.params.courseId, 10)}
                                             />
                                         </div>
                                     }
