@@ -86,7 +86,7 @@ class ProfessorDashboardView extends React.Component {
                                 <ProfessorSidebar
                                     courseId={parseInt(this.props.match.params.courseId, 10)}
                                     code={courseCode}
-                                    selected={3}
+                                    selected={4}
                                 />
                                 {data && data.apiGetCurrentUser &&
                                     <TopBar
