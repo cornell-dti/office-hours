@@ -203,13 +203,14 @@ class ProfessorPeopleView extends React.Component {
                                     busiestSessionInfo.building = n.building;
                                     busiestSessionInfo.room = n.room;
                                 }
-                                let taName = n.sessionTasBySessionId.nodes[0].userByUserId.computedName;
                                 let dateString = moment(n.startTime).format('MMMM Do YYYY');
                                 let dateOfWeek = moment(n.startTime).format('dddd');
                                 let calString = moment(n.startTime).format('MMM D');
                                 let newDate = true;
                                 let newSessionObj = {
-                                    ta: taName,
+                                    ta: n.sessionTasBySessionId.nodes[0] &&
+                                        n.sessionTasBySessionId.nodes[0].userByUserId.computedName ||
+                                        'No TA Assigned',
                                     sessionId: n.sessionId,
                                     questions: questionsInThisSession,
                                     answered: resolvedInThisSession,
