@@ -195,8 +195,9 @@ class ProfessorPeopleView extends React.Component {
                                 });
                                 if (questionsInThisSession >= questionsInBusiestSession) {
                                     questionsInBusiestSession = questionsInThisSession;
-                                    busiestSessionInfo.taName =
-                                        n.sessionTasBySessionId.nodes[0].userByUserId.computedName;
+                                    busiestSessionInfo.taName = n.sessionTasBySessionId.nodes[0] &&
+                                        n.sessionTasBySessionId.nodes[0].userByUserId.computedName ||
+                                        'No TA Assigned';
                                     busiestSessionInfo.ohDate = moment(n.startTime).format('MMMM Do');
                                     busiestSessionInfo.startHour = moment(n.startTime).format('h:mm a');
                                     busiestSessionInfo.endHour = moment(n.endTime).format('h:mm a');
