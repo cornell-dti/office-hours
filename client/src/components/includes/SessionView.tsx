@@ -56,6 +56,7 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
                 content
                 status
                 timeEntered
+                location
                 userByAskerId {
                     computedName
                     computedAvatar

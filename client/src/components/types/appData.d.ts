@@ -46,6 +46,7 @@ interface AppQuestion {
     status: string;
     timeEntered: Date;
     userByAskerId: AppUser;
+    location: string;
     questionTagsByQuestionId: {
         nodes: [{
             tagByTagId: AppTag

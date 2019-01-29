@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Icon } from 'semantic-ui-react';
+import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
@@ -13,6 +13,14 @@ mutation UpdateQuestion($questionId: Int!, $status: String) {
     }
 }
 `;
+const UPDATE_LOCATION = gql`
+mutation UpdateLocation($questionId: Int!, $location: String) {
+    updateQuestionByQuestionId(input: {questionPatch: {location: $location}, questionId: $questionId}) {
+        clientMutationId
+    }
+}
+`;
+const LOCATION_CHAR_LIMIT = 40;
 
 class SessionQuestion extends React.Component {
     props: {
@@ -25,6 +33,21 @@ class SessionQuestion extends React.Component {
         isPast: boolean,
     };
 
+    state: {
+        showLocation: boolean,
+        location: string,
+        isEditingLocation: boolean
+    };
+
+    constructor(props: {}) {
+        super(props);
+        this.state = {
+            showLocation: false,
+            location: this.props.question.location,
+            isEditingLocation: false
+        };
+    }
+
     // Given an index from [1..n], converts it to text that is displayed
     // on the question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
@@ -32,6 +55,30 @@ class SessionQuestion extends React.Component {
         // Disclaimer: none of us wrote this one-line magic :)
         // It is borrowed from https://stackoverflow.com/revisions/39466341/5
         return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index + 'th';
+    }
+
+    public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>,
+                                   updateLocation: Function): void => {
+        this.state.isEditingLocation = true;
+        const target = event.target as HTMLTextAreaElement;
+        if (target.value.length <= LOCATION_CHAR_LIMIT) {
+            this.setState({
+                location: target.value
+            });
+            updateLocation({
+                variables: {
+                    questionId: this.props.question.questionId,
+                    location: target.value,
+                }
+            });
+            setTimeout(() => { this.state.isEditingLocation = false; }, 100);
+        }
+    }
+
+    toggleLocationTooltip = () => {
+        this.setState({
+          showLocation: !this.state.showLocation
+        });
     }
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
@@ -59,7 +106,47 @@ class SessionQuestion extends React.Component {
                         </span>
                     </div>
                 }
-                <p className="Question">{question.content}</p>
+                <div className="Question">
+                    {question.content}
+                    {this.props.isMyQuestion ?
+                        <div>
+                            <Icon
+                                onClick={this.toggleLocationTooltip}
+                                name="map marker alternate"
+                            />
+                            <Mutation mutation={UPDATE_LOCATION}>
+                                {(updateLocation) => (
+                                    <div
+                                        className="LocationInfo"
+                                        style={{visibility: this.state.showLocation ? 'visible' : 'hidden' }}
+                                    >
+                                        <p>
+                                            Location &nbsp; <span
+                                                className={'characterCount ' +
+                                                    (this.state.location.length >= 40 ? 'warn' : '')}
+                                            >
+                                                {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                            </span>
+                                        </p>
+                                        <textarea
+                                            className="TextInput question"
+                                            value={this.state.location}
+                                            onChange={(e) => this.handleUpdateLocation(e, updateLocation)}
+                                        />
+                                        {this.state.isEditingLocation ?
+                                            <Loader
+                                                className={'locationLoader'}
+                                                active={true}
+                                                inline={true}
+                                                size={'tiny'}
+                                            /> : <Icon name="check"/>}
+                                    </div>
+                                )}
+                            </Mutation>
+                        </div>
+                        : ''
+                    }
+                </div>
                 <div className="Tags">
                     {question.questionTagsByQuestionId.nodes.map(
                         (tag) => <SelectedTags

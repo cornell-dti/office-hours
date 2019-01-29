@@ -234,7 +234,7 @@ class AddQuestion extends React.Component {
                                     </p>
                                     {this.state.stage >= 30 ?
                                         <div className="locationInput">
-                                            <Icon name="map marker alternate" />
+                                            <Icon name="map marker alternate"/>
                                             <textarea
                                                 className="TextInput location"
                                                 value={this.state.location}

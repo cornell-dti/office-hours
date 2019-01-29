@@ -132,9 +132,12 @@
             }
         }
         .TextInput.location {
-            width: 60%;
+            width: 100%;
             height: 36px;
-            text-indent: 21px;
+            @media only screen and (min-width: 800px) {
+                text-indent: 21px;
+                width: 60%;
+            }
         }
 
         .TextInput.question {
@@ -146,14 +149,17 @@
 
     .locationInput {
         position: relative;
-    }
-
-    .map.marker.alternate.icon {
-        position: absolute;
-        top: 11px;
-        left: 4px;
-        font-size: 20px;
-        color: #e6e6e6;
+        .map.marker.alternate.icon {
+            display: none;
+            @media only screen and (min-width: 800px) {
+                display: block;
+                position: absolute;
+                top: 11px;
+                left: 4px;
+                font-size: 20px;
+                color: #e6e6e6;
+            }
+        }
     }
 
     .AddButton {

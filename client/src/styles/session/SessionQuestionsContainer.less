@@ -3,6 +3,26 @@
     .QueueQuestions {
         &.MyQuestion {
             border: solid 3px #ffdba6;
+
+            .map.marker.alternate.icon {
+                display: none;
+            }
+        }
+    }
+
+    .User .QueueQuestions {
+        &.MyQuestion {
+            .map.marker.alternate.icon {
+                @media only screen and (min-width: 800px) {
+                    display: block;
+                    position: absolute;
+                    top: 14px;
+                    right: 5px;
+                    font-size: 20px;
+                    color: #5599db;
+                    cursor: pointer;
+                }
+            }
         }
     }
 
