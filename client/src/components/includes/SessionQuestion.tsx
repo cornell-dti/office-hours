@@ -4,7 +4,7 @@ import Moment from 'react-moment';
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
 
-import SelectedTags from '../includes/SelectedTags';
+import SelectedTags from './SelectedTags';
 
 const UPDATE_QUESTION = gql`
 mutation UpdateQuestion($questionId: Int!, $status: String) {
@@ -79,7 +79,8 @@ class SessionQuestion extends React.Component {
                             </span>
                         </div>
                     }
-                    <p className={'Question' + studentCSS}>{question.content}</p>
+                    {(this.props.isTA || this.props.includeBookmark || this.props.includeRemove) &&
+                        <p className={'Question' + studentCSS}>{question.content}</p>}
                 </div>
                 <div className="BottomBar">
                     {this.props.isTA && <span className="Spacer" />}

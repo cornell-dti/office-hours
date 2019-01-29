@@ -20,6 +20,7 @@ query GetMetadata($courseId: Int!) {
         }
     }
     courseByCourseId(courseId: $courseId) {
+        code
         courseUsersByCourseIdList {
           role
           userByUserId {
@@ -37,6 +38,7 @@ interface ProfessorMetadataData {
         nodes: [AppUserRole]
     };
     courseByCourseId: {
+        code: string;
         courseUsersByCourseIdList: [{
             role: string;
             userByUserId: AppUser;
@@ -72,6 +74,7 @@ class ProfessorDashboardView extends React.Component {
                     {({ loading, data }) => {
                         var courseCode: string = 'Loading...';
                         if (!loading && data) {
+                            courseCode = data.courseByCourseId.code;
                             // Redirect if current user != professor
                             if (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role !== 'professor') {
                                 return <Redirect to={'/course/' + this.props.match.params.courseId} />;
