@@ -106,6 +106,9 @@ class SessionQuestion extends React.Component {
                         </span>
                     </div>
                 }
+                <div className="Location">
+                    {this.props.isTA && question.location}
+                </div>
                 <div className="Question">
                     {question.content}
                     {this.props.isMyQuestion ?
@@ -117,7 +120,7 @@ class SessionQuestion extends React.Component {
                             <Mutation mutation={UPDATE_LOCATION}>
                                 {(updateLocation) => (
                                     <div
-                                        className="LocationInfo"
+                                        className="LocationTooltip"
                                         style={{visibility: this.state.showLocation ? 'visible' : 'hidden' }}
                                     >
                                         <p>

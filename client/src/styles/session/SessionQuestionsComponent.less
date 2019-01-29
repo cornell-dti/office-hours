@@ -42,13 +42,22 @@
     .Question {
         font-size: 16px;
         text-align: left;
-        padding: 12px;
+        padding: 10px 12px 12px;
         margin: 0em;
         color: #595959;
         font-weight: 300;
     }
 
-    .LocationInfo {
+    .Location {
+        font-size: 12px;
+        text-align: left;
+        padding: 5px 12px 0 12px;
+        margin: 0em;
+        color: #595959;
+        font-weight: 300;
+    }
+
+    .LocationTooltip {
         position: absolute;
         top: 45px;
         right: 8px;
@@ -95,7 +104,7 @@
         }
     }
 
-    .LocationInfo::after
+    .LocationTooltip::after
     {
         content: "";
         position: absolute;
