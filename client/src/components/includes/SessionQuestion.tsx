@@ -43,7 +43,7 @@ class SessionQuestion extends React.Component {
         super(props);
         this.state = {
             showLocation: false,
-            location: this.props.question.location,
+            location: this.props.question.location || '',
             isEditingLocation: false
         };
     }
@@ -77,7 +77,7 @@ class SessionQuestion extends React.Component {
 
     toggleLocationTooltip = () => {
         this.setState({
-          showLocation: !this.state.showLocation
+            showLocation: !this.state.showLocation
         });
     }
 
@@ -121,7 +121,7 @@ class SessionQuestion extends React.Component {
                                 {(updateLocation) => (
                                     <div
                                         className="LocationTooltip"
-                                        style={{visibility: this.state.showLocation ? 'visible' : 'hidden' }}
+                                        style={{ visibility: this.state.showLocation ? 'visible' : 'hidden' }}
                                     >
                                         <p>
                                             Location &nbsp; <span
@@ -142,7 +142,7 @@ class SessionQuestion extends React.Component {
                                                 active={true}
                                                 inline={true}
                                                 size={'tiny'}
-                                            /> : <Icon name="check"/>}
+                                            /> : <Icon name="check" />}
                                     </div>
                                 )}
                             </Mutation>
