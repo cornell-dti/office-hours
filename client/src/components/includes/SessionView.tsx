@@ -21,7 +21,7 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
                     role
                 }
             }
-            questionsByAskerId(condition:{status:"unresolved"}) {
+            questionsByAskerId {
                 nodes {
                     sessionBySessionId {
                         sessionId
@@ -60,6 +60,10 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
                 userByAskerId {
                     computedName
                     computedAvatar
+                    userId
+                }
+                userByAnswererId {
+                    computedName
                     userId
                 }
                 questionTagsByQuestionId {
@@ -101,8 +105,8 @@ interface Variables {
 class SessionDataQuery extends Query<SessionData, Variables> { }
 
 const UNDO_QUESTION = gql`
-mutation UndoQuestion($questionId: Int!) {
-    updateQuestionByQuestionId(input: {questionPatch: {status: "unresolved", timeAddressed: null, answererId: null},
+mutation UndoQuestion($questionId: Int!, $status: String!) {
+    updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeAddressed: null, answererId: null},
         questionId: $questionId}) {
         clientMutationId
     }
@@ -167,7 +171,10 @@ class SessionView extends React.Component {
     handleUndoClick = (undoQuestion: Function, refetch: Function) => {
         undoQuestion({
             variables: {
-                questionId: this.state.undoQuestionId
+                questionId: this.state.undoQuestionId,
+                // Set question status to unresolved if it's in the assigned state
+                // Otherwise, default it to assigned
+                status: this.state.undoAction === 'assigned' ? 'unresolved' : 'assigned'
             }
         });
     }
@@ -194,6 +201,8 @@ class SessionView extends React.Component {
                 undoText = this.state.undoName + ' has been marked as a no-show. ';
             } else if (this.state.undoAction === 'retracted') {
                 undoText = 'You have removed your question. ';
+            } else if (this.state.undoAction === 'assigned') {
+                undoText = this.state.undoName + ' has been assigned to you! ';
             }
         }
 
@@ -236,6 +245,7 @@ class SessionView extends React.Component {
                                         <SessionInformationHeader
                                             session={data.sessionBySessionId}
                                             course={data.courseByCourseId}
+                                            myUserId={data.apiGetCurrentUser.nodes[0].userId}
                                             callback={this.props.backCallback}
                                             isDesktop={this.props.isDesktop}
                                         />
@@ -265,7 +275,8 @@ class SessionView extends React.Component {
                                             isTA={data.apiGetCurrentUser.nodes[0].
                                                 courseUsersByUserId.nodes[0].role !== 'student'}
                                             questions={data.sessionBySessionId.questionsBySessionId
-                                                .nodes.filter(q => q.status === 'unresolved')}
+                                                .nodes.filter(
+                                                    q => q.status === 'unresolved' || q.status === 'assigned')}
                                             handleJoinClick={this.props.joinCallback}
                                             myUserId={data.apiGetCurrentUser.nodes[0].userId}
                                             triggerUndo={this.triggerUndo}

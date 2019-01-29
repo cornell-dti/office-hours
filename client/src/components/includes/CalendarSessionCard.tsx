@@ -4,6 +4,8 @@ const chevron = require('../../media/chevron.svg');
 
 class CalendarSessionCard extends React.Component {
     props: {
+        includeBookmark: boolean | null,
+        numAhead: number,
         session: AppSession
         callback: Function,
         active: boolean,
@@ -23,6 +25,7 @@ class CalendarSessionCard extends React.Component {
 
         return (
             <div className={(this.props.active && 'active') + ' CalendarSessionCard'} onClick={this.handleOnClick}>
+                {this.props.includeBookmark && <div className="Bookmark" />}
                 <div className="TimeInfo">
                     <div className="StartTime">
                         <Moment date={session.startTime} interval={0} format={'hh:mm A'} />
@@ -45,10 +48,9 @@ class CalendarSessionCard extends React.Component {
                     </div>
                     <div className="Queue">
                         <span className="Ahead">
-                            Waiting: &nbsp;
-                            {/* Special class zero exists if we use the num ahead later */}
-                            <span className={'AheadNum '}>
-                                {questions.filter(q => q.status === 'unresolved').length}
+                            Ahead: &nbsp;
+                            <span className={'AheadNum ' + (this.props.numAhead === 0 && 'zero')}>
+                                {this.props.numAhead}
                             </span>
                         </span>
                         <span className="Finished">

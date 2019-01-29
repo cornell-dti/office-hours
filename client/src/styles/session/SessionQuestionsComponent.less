@@ -6,46 +6,87 @@
     text-align: center;
     width: 100%;
     display: inline-block;
+    border-radius: 10px;
 
-    // &:not(:nth-of-type(2)) {
-    //     opacity: 0.6;
-    // }
+    .Bookmark {
+        right: 20px;
+    }
 
-    .studentInformation {
-        display: inline-block;
-        width: 100%;
-        padding: 20px 0px 0px 12px;
-        text-align: left;
+    .Order {
+        float: left;
+        font-size: 17px;
+        width: 30px;
+        margin: 13px 0 12px 12px;
+        color: white;
+        background-color: @number-blue;
+        border: solid @number-blue 0px;
+        border-radius: 5px;
+        text-align: center;
+    }
 
-        img {
-          display: inline-block;
-          margin-right: 6px;
-          width: 30px;
-          height: 30px;
-          border-radius: 30px;
-          vertical-align: middle;
-          object-fit: cover;
+    .Order.assigned {
+        background-color: #ffcd83;
+    }
+
+    .QuestionInfo {
+        float: left;
+        font-size: 14px;
+
+        .studentInformation {
+            display: inline-block;
+            width: 100%;
+            padding-top: 11px;
+            padding-left: 12px;
+            // padding: 11px 0px 0px 12px;
+            text-align: left;
+
+            img {
+                display: inline-block;
+                margin-right: 6px;
+                width: 30px;
+                height: 30px;
+                border-radius: 30px;
+                vertical-align: middle;
+                object-fit: cover;
+            }
+
+            .Name {
+                font-weight: 500;
+                text-align: left;
+                line-height: 12px;
+                //   padding: 10px 0px 0px 15px;
+                margin: 0em;
+                color: #595959;
+                vertical-align: middle;
+                letter-spacing: 0.1px;
+
+                .assigned {
+                    font-weight: normal;
+                    color: #9e9e9e;
+                }
+            }
         }
 
-        .Name {
-          font-size: 16px;
-          font-weight: bold;
-          text-align: left;
-          line-height: 12px;
-        //   padding: 10px 0px 0px 15px;
-          margin: 0em;
-          color: #595959;
-          vertical-align: middle;
+        .Question {
+            text-align: left;
+            padding: 8px 12px;
+            margin: 0em;
+            color: #595959;
+            font-weight: 300;
+        }
+
+        .Question.Student {
+            padding-top: 16px;
         }
     }
 
-    .Question {
-        font-size: 16px;
-        text-align: left;
-        padding: 10px 12px 12px;
-        margin: 0em;
-        color: #595959;
-        font-weight: 300;
+    .LocationPin {
+        display: inline-block;
+        float: right;
+        padding: 14px;
+        i {
+            color: @number-blue;
+        }
     }
 
     .Location {
@@ -89,9 +130,8 @@
             color: @text-grey;
             padding: 5px 20px 5px 8px;
             resize: none;
-            opacity: 0.3;
             border-radius: 3px;
-            background-color: #d8d8d8;
+            background-color: #edeff2;
             height: 24px;
             width: 176px;
         }
@@ -120,53 +160,42 @@
         box-shadow: 1px -1px 1px 0 rgba(0, 0, 0, 0.15);
     }
 
-    .Tags {
-        padding: 5px 0px 10px 13px;
-        margin-bottom: 5px;
-        text-align: left;
-        .tag {
-            cursor: default;
-        }
-    }
 
     .BottomBar {
-        display: inline-block;
         width: 100%;
-        text-align: left;
+        overflow: hidden;
 
         p {
-            font-size: 15px;
-            display: inline-block;
+            font-size: 12px;
         }
 
-        .Order {
-            display: inline-block;
-            font-size: 13px;
-            margin: 0 0 12px 12px;
-            padding: 1px 5px 0;
-            color: white;
-            background-color: #a6a6a6;
-            border: solid #a6a6a6 0px;
-            border-radius: 5px;
+        .Spacer {
+            float: left;
+            width: 40px;
+            height: 23px;
         }
 
-        .Order.now {
-            border-radius: 3px;
-            border: solid 0.5px #ff5a60;
-            color: #ff5a60;
-            background-color: white;
+        .Tags {
+            float: left;
+            margin-left: 0px;
+            margin-bottom: 5px;
+            padding: 1px 0px 8px 13px;
+            text-align: left;
+
+            .tag {
+                cursor: default;
+            }
         }
 
         .Time {
-            font-weight: 300;
             float: right;
+            font-weight: 300;
             color: gray;
             padding-right: 25px;
         }
     }
 
     .Buttons {
-
         hr {
             display: block;
             height: 1px;
@@ -193,23 +222,26 @@
                 display: inline-block;
                 border-radius: 5px;
                 color: white;
-                padding: 3px 30px;
+                padding: 2px 30px;
                 font-size: 15px;
-                margin-bottom: 10px;
+                cursor: pointer;
+                margin: 0 3px 10px;
+                width: 166px;
             }
 
             .Delete {
-                margin-right: 7px;
                 border: 0.5px solid red;
                 color: red;
-                cursor: pointer;
             }
 
-            .Resolve {
-                margin-left: 7px;
-                border: 0.5px solid #4d94ff;
-                color: #4d94ff;
-                cursor: pointer;
+            .Begin {
+                border: 0.5px solid @number-blue;
+                color: @number-blue;
+            }
+
+            .Done {
+                border: 0.5px solid @tag-blue;
+                color: @tag-blue;
             }
         }
     }

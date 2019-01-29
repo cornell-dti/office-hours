@@ -4,7 +4,7 @@ import Moment from 'react-moment';
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
 
-import SelectedTags from '../includes/SelectedTags';
+import SelectedTags from './SelectedTags';
 
 const UPDATE_QUESTION = gql`
 mutation UpdateQuestion($questionId: Int!, $status: String) {
@@ -27,7 +27,9 @@ class SessionQuestion extends React.Component {
         question: AppQuestion,
         index: number,
         isTA: boolean,
-        isMyQuestion: boolean,
+        includeRemove: boolean,
+        includeBookmark: boolean,
+        myUserId: number,
         triggerUndo: Function,
         refetch: Function,
         isPast: boolean,
@@ -54,7 +56,8 @@ class SessionQuestion extends React.Component {
         index++;
         // Disclaimer: none of us wrote this one-line magic :)
         // It is borrowed from https://stackoverflow.com/revisions/39466341/5
-        return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index + 'th';
+        // return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index + 'th';
+        return String(index);
     }
 
     public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>,
@@ -94,81 +97,93 @@ class SessionQuestion extends React.Component {
 
     render() {
         var question = this.props.question;
-        const myQuestionCSS = this.props.isMyQuestion ? ' MyQuestion' : '';
+        const studentCSS = this.props.isTA ? '' : ' Student';
 
         return (
-            <div className={'QueueQuestions' + myQuestionCSS}>
-                {this.props.isTA &&
-                    <div className="studentInformation">
-                        <img src={question.userByAskerId.computedAvatar} />
-                        <span className="Name">
-                            {question.userByAskerId.computedName}
-                        </span>
+            <div className="QueueQuestions">
+                {this.props.includeBookmark && <div className="Bookmark" />}
+                <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
+                    {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
+                </p>
+                {this.props.includeRemove &&
+                    <div className="LocationPin">
+                        <Icon
+                            onClick={this.toggleLocationTooltip}
+                            name="map marker alternate"
+                        />
+                        <Mutation mutation={UPDATE_LOCATION}>
+                            {(updateLocation) => (
+                                <div
+                                    className="LocationTooltip"
+                                    style={{ visibility: this.state.showLocation ? 'visible' : 'hidden' }}
+                                >
+                                    <p>
+                                        Location &nbsp; <span
+                                            className={'characterCount ' +
+                                                (this.state.location.length >= 40 ? 'warn' : '')}
+                                        >
+                                            {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                        </span>
+                                    </p>
+                                    <textarea
+                                        className="TextInput question"
+                                        value={this.state.location}
+                                        onChange={(e) => this.handleUpdateLocation(e, updateLocation)}
+                                    />
+                                    {this.state.isEditingLocation ?
+                                        <Loader
+                                            className={'locationLoader'}
+                                            active={true}
+                                            inline={true}
+                                            size={'tiny'}
+                                        /> : <Icon name="check" />}
+                                </div>
+                            )}
+                        </Mutation>
                     </div>
                 }
-                <div className="Location">
-                    {this.props.isTA && question.location}
-                </div>
-                <div className="Question">
-                    {question.content}
-                    {this.props.isMyQuestion ?
-                        <div>
-                            <Icon
-                                onClick={this.toggleLocationTooltip}
-                                name="map marker alternate"
-                            />
-                            <Mutation mutation={UPDATE_LOCATION}>
-                                {(updateLocation) => (
-                                    <div
-                                        className="LocationTooltip"
-                                        style={{ visibility: this.state.showLocation ? 'visible' : 'hidden' }}
-                                    >
-                                        <p>
-                                            Location &nbsp; <span
-                                                className={'characterCount ' +
-                                                    (this.state.location.length >= 40 ? 'warn' : '')}
-                                            >
-                                                {this.state.location.length}/{LOCATION_CHAR_LIMIT}
-                                            </span>
-                                        </p>
-                                        <textarea
-                                            className="TextInput question"
-                                            value={this.state.location}
-                                            onChange={(e) => this.handleUpdateLocation(e, updateLocation)}
-                                        />
-                                        {this.state.isEditingLocation ?
-                                            <Loader
-                                                className={'locationLoader'}
-                                                active={true}
-                                                inline={true}
-                                                size={'tiny'}
-                                            /> : <Icon name="check" />}
-                                    </div>
-                                )}
-                            </Mutation>
+                <div className="QuestionInfo">
+                    {this.props.isTA &&
+                        <div className="studentInformation">
+                            <img src={question.userByAskerId.computedAvatar} />
+                            <span className="Name">
+                                {question.userByAskerId.computedName}
+                                {question.status === 'assigned' &&
+                                    <React.Fragment>
+                                        <span className="assigned"> is assigned
+                                        {question.userByAnswererId &&
+                                                (' to ' + (question.userByAnswererId.userId === this.props.myUserId
+                                                    ? 'you'
+                                                    : question.userByAnswererId.computedName))}
+                                        </span>
+                                    </React.Fragment>
+                                }
+                            </span>
                         </div>
-                        : ''
                     }
-                </div>
-                <div className="Tags">
-                    {question.questionTagsByQuestionId.nodes.map(
-                        (tag) => <SelectedTags
-                            key={tag.tagByTagId.tagId}
-                            isSelected={false}
-                            tag={tag.tagByTagId.name}
-                            level={tag.tagByTagId.level}
-                            onClick={null}
-                        />
-                    )}
+                    <div className="Location">
+                        {this.props.isTA && question.location}
+                    </div>
+                    {(this.props.isTA || this.props.includeBookmark || this.props.includeRemove) &&
+                        <p className={'Question' + studentCSS}>{question.content}</p>}
                 </div>
                 <div className="BottomBar">
-                    {/* <p className={'Order' + (this.props.index === 0 ? ' now' : '')}>
-                        {this.getDisplayText(this.props.index)}
-                    </p> */}
-                    <p className="Order">
-                        {this.getDisplayText(this.props.index)}
+                    {this.props.isTA && <span className="Spacer" />}
+                    <div className="Tags">
+                        {question.questionTagsByQuestionId.nodes.map(
+                            (tag) => <SelectedTags
+                                key={tag.tagByTagId.tagId}
+                                isSelected={false}
+                                tag={tag.tagByTagId.name}
+                                level={tag.tagByTagId.level}
+                                onClick={null}
+                            />
+                        )}
+                    </div>
+                    <p className="Time">
+                        posted at&nbsp;
+                        {<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}
                     </p>
-                    <p className="Time">{<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}</p>
                 </div>
                 {this.props.isTA &&
                     <div className="Buttons">
@@ -176,18 +191,30 @@ class SessionQuestion extends React.Component {
                         <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
                             {(updateQuestion) =>
                                 <div className="TAButtons">
-                                    <p
-                                        className="Delete"
-                                        onClick={(e) => this._onClick(e, updateQuestion, 'no-show')}
-                                    >
-                                        <Icon name="hourglass end" /> No-show
-                                    </p>
-                                    <p
-                                        className="Resolve"
-                                        onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
-                                    >
-                                        <Icon name="check" /> Resolve
-                                    </p>
+                                    {question.status === 'unresolved' &&
+                                        <p
+                                            className="Begin"
+                                            onClick={(e) => this._onClick(e, updateQuestion, 'assigned')}
+                                        >
+                                            Assign to Me
+                                        </p>
+                                    }
+                                    {question.status === 'assigned' &&
+                                        <React.Fragment>
+                                            <p
+                                                className="Delete"
+                                                onClick={(e) => this._onClick(e, updateQuestion, 'no-show')}
+                                            >
+                                                No show
+                                            </p>
+                                            <p
+                                                className="Done"
+                                                onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
+                                            >
+                                                Done
+                                            </p>
+                                        </React.Fragment>
+                                    }
                                 </div>
                             }
                         </Mutation>
@@ -195,7 +222,7 @@ class SessionQuestion extends React.Component {
                 }
                 <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
                     {(updateQuestion) =>
-                        this.props.isMyQuestion && !this.props.isPast &&
+                        this.props.includeRemove && !this.props.includeBookmark && !this.props.isPast &&
                         <div className="Buttons">
                             <hr />
                             <p
