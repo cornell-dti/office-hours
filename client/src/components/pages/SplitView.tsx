@@ -65,7 +65,7 @@ class SplitView extends React.Component {
                 activeView: location.pathname.indexOf('add') !== -1
                     ? 'addQuestion'
                     : this.props.match.params.sessionId ? 'session' : 'calendar',
-                sessionId: this.props.match.params.sessionId || -1
+                sessionId: parseInt(this.props.match.params.sessionId || '-1', 10)
             });
         });
     }
