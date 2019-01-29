@@ -23,6 +23,7 @@
         border-radius: 5px;
         text-align: center;
     }
+
     .Order.assigned {
         background-color: #ffcd83;
     }
@@ -78,6 +79,88 @@
             padding-top: 16px;
         }
     }
+
+    .LocationPin {
+        display: inline-block;
+        float: right;
+        padding: 14px;
+        i {
+            color: @number-blue;
+        }
+    }
+
+    .Location {
+        font-size: 12px;
+        text-align: left;
+        padding: 5px 12px 0 12px;
+        margin: 0em;
+        color: #595959;
+        font-weight: 300;
+    }
+
+    .LocationTooltip {
+        position: absolute;
+        top: 45px;
+        right: 8px;
+        width: 218px;
+        height: 64px;
+        box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+        background: #ffffff;
+        font-size: 12px;
+        padding: 8px 0 0 20px;
+        text-align: left;
+
+        p {
+            color: #494949;
+            margin-bottom: 6px;
+
+            .characterCount {
+              color: #717171;
+              font-size: 11px;
+
+              &.warn {
+                color: #ce2a2a;
+              }
+            }
+        }
+
+        .TextInput {
+            font-weight: normal;
+            border: 0px;
+            color: @text-grey;
+            padding: 5px 20px 5px 8px;
+            resize: none;
+            border-radius: 3px;
+            background-color: #edeff2;
+            height: 24px;
+            width: 176px;
+        }
+
+        .ui.inline.loader.active, .ui.inline.loader.visible, .check.icon {
+            position: absolute;
+            top: 35px;
+            left: 175px;
+            color: #afabab;
+        }
+    }
+
+    .LocationTooltip::after
+    {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        top: 0;
+        right: 15px;
+        box-sizing: border-box;
+        border: 4px solid black;
+        border-color: #ffffff #ffffff transparent transparent;
+        transform-origin: 0 0;
+        transform: rotate(-45deg);
+        box-shadow: 1px -1px 1px 0 rgba(0, 0, 0, 0.15);
+    }
+
 
     .BottomBar {
         width: 100%;

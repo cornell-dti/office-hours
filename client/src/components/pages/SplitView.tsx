@@ -14,7 +14,7 @@ class SplitView extends React.Component {
         match: {
             params: {
                 courseId: string,
-                sessionId: number | null,
+                sessionId: string | null,
                 page: string | null
             }
         }
@@ -51,7 +51,7 @@ class SplitView extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = {
-            sessionId: this.props.match.params.sessionId || -1,
+            sessionId: parseInt(this.props.match.params.sessionId || '-1', 10),
             width: window.innerWidth,
             height: window.innerHeight,
             activeView: this.props.match.params.page === 'add'
@@ -65,7 +65,7 @@ class SplitView extends React.Component {
                 activeView: location.pathname.indexOf('add') !== -1
                     ? 'addQuestion'
                     : this.props.match.params.sessionId ? 'session' : 'calendar',
-                sessionId: this.props.match.params.sessionId || -1
+                sessionId: parseInt(this.props.match.params.sessionId || '-1', 10)
             });
         });
     }
