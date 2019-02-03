@@ -14,8 +14,8 @@ class SplitView extends React.Component {
         history: H.History,
         match: {
             params: {
-                courseId: number,
-                sessionId: number | null,
+                courseId: string,
+                sessionId: string | null,
                 page: string | null
             }
         }
@@ -52,7 +52,7 @@ class SplitView extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = {
-            sessionId: this.props.match.params.sessionId || -1,
+            sessionId: parseInt(this.props.match.params.sessionId || '-1', 10),
             width: window.innerWidth,
             height: window.innerHeight,
             activeView: this.props.match.params.page === 'add'
@@ -66,7 +66,7 @@ class SplitView extends React.Component {
                 activeView: location.pathname.indexOf('add') !== -1
                     ? 'addQuestion'
                     : this.props.match.params.sessionId ? 'session' : 'calendar',
-                sessionId: this.props.match.params.sessionId || -1
+                sessionId: parseInt(this.props.match.params.sessionId || '-1', 10)
             });
         });
     }
@@ -90,13 +90,14 @@ class SplitView extends React.Component {
     }
 
     render() {
+        let courseId = parseInt(this.props.match.params.courseId, 10);
         return (
             <React.Fragment>
                 {(this.state.width > MOBILE_BREAKPOINT ||
                     (this.state.width <= MOBILE_BREAKPOINT &&
                         this.state.activeView === 'calendar')) &&
                     <CalendarView
-                        courseId={this.props.match.params.courseId}
+                        courseId={courseId}
                         sessionId={this.state.sessionId}
                         sessionCallback={this.handleSessionClick}
                     />
@@ -104,7 +105,7 @@ class SplitView extends React.Component {
                     (this.state.width <= MOBILE_BREAKPOINT &&
                         this.state.activeView !== 'calendar')) &&
                     <SessionView
-                        courseId={this.props.match.params.courseId}
+                        courseId={courseId}
                         id={this.state.sessionId}
                         isDesktop={this.state.width > MOBILE_BREAKPOINT}
                         backCallback={this.handleBackClick}
@@ -116,7 +117,7 @@ class SplitView extends React.Component {
                         <div className="modal">
                             <ConnectedQuestionView
                                 sessionId={this.state.sessionId || -1}
-                                courseId={this.props.match.params.courseId}
+                                courseId={courseId}
                                 data={{ loading: true }}
                                 callback={() => this.addedQuestion()}
                             />

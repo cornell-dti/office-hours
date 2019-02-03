@@ -9,6 +9,7 @@ class SessionInformationHeader extends React.Component {
         session: AppSession,
         course: AppCourse,
         callback: Function,
+        myUserId: number,
         isDesktop: boolean,
     };
 
@@ -18,8 +19,13 @@ class SessionInformationHeader extends React.Component {
 
     render() {
         const session = this.props.session;
-        const questions = session.questionsBySessionId.nodes;
         const tas = session.sessionTasBySessionId.nodes;
+
+        const unresolvedQuestions = session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved');
+        const userQuestions = unresolvedQuestions.filter((q) => q.userByAskerId.userId === this.props.myUserId);
+        const numAhead = userQuestions.length === 0 ? unresolvedQuestions.length :
+            unresolvedQuestions.filter((q) => q.timeEntered <= userQuestions[0].timeEntered).length - 1;
+
         if (this.props.isDesktop) {
             return (
                 <header className="DesktopSessionInformationHeader" >
@@ -31,7 +37,7 @@ class SessionInformationHeader extends React.Component {
                         <Moment date={session.startTime} interval={0} format={'h:mm A'} />
                         <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
                         <p className="Date">
-                            <Icon name="calendar" />
+                            <Icon name="calendar alternate outline" />
                             <Moment date={session.startTime} interval={0} format={'dddd, MMM D'} />
                         </p>
                         <p>{session.title || (<React.Fragment>
@@ -46,9 +52,9 @@ class SessionInformationHeader extends React.Component {
                             <img src={people} />
                             <p>
                                 <span className="red">
-                                    {questions.filter((q) => q.status === 'unresolved').length + ' '}
+                                    {numAhead + ' '}
                                 </span>
-                                in queue
+                                ahead
                             </p>
                         </div>
                     </div>
@@ -79,7 +85,7 @@ class SessionInformationHeader extends React.Component {
                         <img src={people} />
                         <p>
                             <span className="red">
-                                {questions.filter((q) => q.status === 'unresolved').length + ' '}
+                                {numAhead + ' '}
                             </span>
                             in queue
                         </p>
