@@ -4,6 +4,7 @@ import * as H from 'history';
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import ConnectedQuestionView from '../includes/ConnectedQuestionView';
+// import SessionAlertModal from '../includes/SessionAlertModal';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -123,6 +124,11 @@ class SplitView extends React.Component {
                         <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />
                     </React.Fragment>
                 }
+                {/* <SessionAlertModal
+                    color={'yellow'}
+                    description={'Warning: This session ends at 11:00 AM.' +
+                        'Consider adding yourself to a later queue. '}
+                /> */}
             </React.Fragment>
         );
     }
