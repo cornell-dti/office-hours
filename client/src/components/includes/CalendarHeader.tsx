@@ -10,7 +10,7 @@ class CalendarHeader extends React.Component {
         isTa: boolean;
         isProf: boolean;
         avatar: string | null;
-        allCoursesList: string[];
+        allCoursesList: AppCourse[];
     };
 
     state: {
@@ -54,18 +54,17 @@ class CalendarHeader extends React.Component {
                             src={this.props.avatar}
                         />
                     }
-                    {this.state.showCourses && (
+                    {this.state.showCourses &&
                         <React.Fragment>
                             <ul className="logoutMenu" tabIndex={1} onClick={() => this.setCourses(false)} >
-                                <li >
-                                    <a>Cheese</a>
-                                </li>
-                                <li>
-                                    <a>Chocolate</a>
-                                </li>
+                                {this.props.allCoursesList.map((course) =>
+                                    <li key={course.courseId}>
+                                        <a href={'/course/' + course.courseId}>{course.code}</a>
+                                    </li>
+                                )}
                             </ul>
                         </React.Fragment>
-                    )}
+                    }
                 </div>
                 {/*this.state.showMenu && (
                     <ul className="logoutMenu" onClick={() => this.setMenu(false)} >
