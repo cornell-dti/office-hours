@@ -1,0 +1,131 @@
+.ProfessorView{
+
+    .DateInput_input__focused {
+        border-bottom: 2px solid @brand-primary;
+    }
+    .CalendarDay__selected {
+        background: @tag-blue;
+        border-color: @tag-blue;
+    }
+
+    .CalendarDay__selected_span {
+        background: @brand-primary;
+        border-color: @tag-blue;
+    }
+
+    .CalendarDay__hovered_span, .CalendarDay__hovered_span:hover {
+        background: #e4efff;
+        border: 1px double #d0def5;
+        color: #355372;
+    }
+
+    .CalendarMonth_caption {
+        padding-bottom: 52px;
+    }
+
+    //Datepicker CSS
+  .Date-picker-container{
+    width: 286px;
+    margin-top: 15px;
+  }
+  .react-datepicker-popper {
+    left: 20px !important;
+  }
+  .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list {
+      padding-right: 0;
+      text-align: center;
+
+      li.react-datepicker__time-list-item {
+          padding: 5px 0;
+      }
+  }
+  //End Datepicker CSS
+  .first-row-container{
+    display:flex;
+    margin-top: 15px;
+    .questions-bar-container{
+      width: 80%;
+      background-color: white;
+      border-radius: 6px;
+      margin-left: 15px;
+      padding: 40px 20px 20px 20px;
+    }
+  }
+  .Total-Questions-Box{
+    height: 360px;
+    background-color: white;
+    border-radius: 6px;
+    width: 20%;
+    padding-bottom: 20px;
+    .percent-overlay{
+      margin-top: -165px;
+    }
+    .Question-Number{
+      font-size: 45px;
+      color: #a8c7eb;
+    }
+    .Question-Percent{
+      font-size: 45px;
+      color: #a8c7eb;
+    }
+    .q-total-container{
+      margin-top: 100px;
+    }
+  }
+  .Most-Crowded-Box{
+    display: flex;
+    margin-top: 15px;
+    background-color: white;
+    border-radius: 6px;
+    padding: 20px;
+    .most-crowded-text{
+      width: 20%;
+      text-align: left;
+      .crowd-title{
+        font-size: 15px;
+      }
+      .maroon-date{
+        color: #933131;
+        font-size: 20px;
+      }
+      .maroon-descript{
+        color: #933131;
+        margin-bottom: 1px;
+        font-size: 15xpx;
+      }
+      hr{
+        margin: 24px 0px;
+      }
+    }
+  .questions-line-container{
+    width: 80%;
+  }
+  }
+}
+.bar-tooltip{
+  color: white;
+  font-size: 12px;
+  padding: 3px 0px;
+  letter-spacing: 1px;
+  .tooltip-section{
+    padding-left: 10px;
+    text-align: left;
+  }
+  .tooltip-nums{
+    text-align: center;
+    display: flex;
+    .tool-flex{
+      margin-left: 10px;
+      .tool-stat{
+        font-size: 13px;
+      }
+    }
+  }
+}
+.no-question-warning{
+  margin-top: 50px;
+  margin-bottom: 200px;
+  background-color: white;
+  border-radius: 6px;
+  padding: 20px;
+}

@@ -47,6 +47,7 @@ interface AppQuestion {
     status: string;
     timeEntered: Date;
     userByAskerId: AppUser;
+    location: string;
     userByAnswererId: AppUser;
     questionTagsByQuestionId: {
         nodes: [{
@@ -76,6 +77,9 @@ interface AppTagRelations extends AppTag {
 }
 
 interface AppUser {
+    firstName: string;
+    lastName: string;
+    email: string;
     computedName: string;
     computedAvatar: string;
     userId: number;

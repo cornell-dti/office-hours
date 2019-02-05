@@ -26,33 +26,28 @@ _Screenshots showing major parts of app_
 ## Contributors
 
 ### 2018-19
-**Developers**
-- Vanessa Wang
-- Shefali Agarwal
-- Rachel Nash
-- Bobby Villaluz
-
-**Designers**
-- Joyelle Gilbert
-- Sophia Wang
-- Yeon Kim
-
-**Product Managers**
-- Tiffany Wang
-- Ryan Slama
+* **Vanessa Wang** - Software Developer
+* **Shefali Agarwal** - Software Developer
+* **Rachel Nash** - Software Developer
+* **Bobby Villaluz** - Software Developer
+* **Joyelle Gilbert** - Designer
+* **Sophia Wang** - Designer
+* **Yeon Kim** - Designer
+* **Tiffany Wang** - Product Manager
+* **Ryan Slama** - Product Manager
 
 ### 2017-18
-**Developers**
-- Vanessa Wang
-- Shefali Agarwal
-- Horace He
-- Ryan Slama
+* **Vanessa Wang** - Software Developer
+* **Shefali Agarwal** - Software Developer
+* **Horace He** - Software Developer
+* **Ryan Slama** - Software Developer
+* **Joyelle Gilbert** - Designer
+* **Sophia Wang** - Designer
+* **Sangwoo Kim** - Designer
+* **Tiffany Wang** - Product Manager
+* **Karun Singh** - Product Manager
 
-**Designers**
-- Joyelle Gilbert
-- Sophia Wang
-- Sangwoo Kim
 
-**Product Managers**
-- Tiffany Wang
-- Karun Singh
+We are a team within **Cornell Design & Tech Initiative**. For more information, see our website [here](https://cornelldti.org/).
+<img src="https://raw.githubusercontent.com/cornell-dti/design/master/Branding/Wordmark/Dark%20Text/Transparent/Wordmark-Dark%20Text-Transparent%403x.png">
+​

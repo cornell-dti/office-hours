@@ -58,6 +58,7 @@ const GET_CALENDAR_DATA = gql`
                 questionsBySessionId {
                     nodes {
                         status
+                        timeEntered
                         userByAskerId {
                             userId
                         }
