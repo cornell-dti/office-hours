@@ -21,7 +21,6 @@ class CalendarHeader extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = { showMenu: false, showCourses: false };
-        // this.state = { showCourses: false };
     }
 
     setMenu = (status: boolean) => {
@@ -66,7 +65,7 @@ class CalendarHeader extends React.Component {
                         </React.Fragment>
                     }
                 </div>
-                {/*this.state.showMenu && (
+                {this.state.showMenu && (
                     <ul className="logoutMenu" onClick={() => this.setMenu(false)} >
                         { {this.props.isTa &&
                             <React.Fragment>
@@ -79,7 +78,7 @@ class CalendarHeader extends React.Component {
                             <span><Icon name="edit" /></span>Send Feedback</a>
                         </li>
                     </ul>
-                )*/}
+                )}
             </div>
         );
     }
