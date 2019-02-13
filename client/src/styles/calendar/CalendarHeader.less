@@ -50,24 +50,29 @@
             rotate: (90deg);
             -webkit-transform: rotate(90deg); // Temporary fix for icon placeholder
             cursor: pointer;
+            filter: brightness(0) invert(1);
         }
 
         .logoutMenu {
+            span {
+                padding-right: 10px;
+            }
+        }
+
+        .courseMenu {
             margin-left: 90px;
-            margin-top: 4px;
-            border-radius: 8px;
             width: 300px;
             position: fixed;
             top: 45px;
             overflow: hidden;
             bottom: auto;
-            box-shadow: 1px 0 5px 0 rgba(0,0,0,0.25);
+            box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
             padding: 0;
 
             a {
-              font-size: 15px;
-              font-weight: 500;
-              padding-left: 40px;
+                font-size: 15px;
+                font-weight: 500;
+                padding-left: 40px;
             }
         }
 

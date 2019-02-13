@@ -1,8 +1,8 @@
 import * as React from 'react';
-// import { Icon } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 // const QMeLogo = require('../../media/QMeLogo.svg');
 const QMeLogo = require('../../media/QLogo.svg');
-// const chevron = require('../../media/chevron.svg'); // Replace with dropdown cheveron
+const chevron = require('../../media/chevron.svg'); // Replace with dropdown cheveron
 
 class CalendarHeader extends React.Component {
     props: {
@@ -40,11 +40,11 @@ class CalendarHeader extends React.Component {
                 <div className="CalendarHeader" onClick={() => this.setCourses(!this.state.showCourses)}>
                     <span>
                         <span>{this.props.currentCourseCode}</span>
-                         {this.props.isTa && <span className="TAMarker">TA</span>}
-                         {this.props.isProf && <span className="TAMarker Professor">PROF</span>}
-                        {/* <span className="CourseSelect">
+                        {this.props.isTa && <span className="TAMarker">TA</span>}
+                        {this.props.isProf && <span className="TAMarker Professor">PROF</span>}
+                        <span className="CourseSelect">
                             <img src={chevron} alt="Course Select" className="RotateDown" />
-                        </span> */}
+                        </span>
                     </span>
                     {this.props.avatar &&
                         <img
@@ -55,7 +55,7 @@ class CalendarHeader extends React.Component {
                     }
                     {this.state.showCourses &&
                         <React.Fragment>
-                            <ul className="logoutMenu" tabIndex={1} onClick={() => this.setCourses(false)} >
+                            <ul className="courseMenu" tabIndex={1} onClick={() => this.setCourses(false)} >
                                 {this.props.allCoursesList.map((course) =>
                                     <li key={course.courseId}>
                                         <a href={'/course/' + course.courseId}>{course.code}</a>
@@ -67,12 +67,12 @@ class CalendarHeader extends React.Component {
                 </div>
                 {this.state.showMenu && (
                     <ul className="logoutMenu" onClick={() => this.setMenu(false)} >
-                        { {this.props.isTa &&
+                        {/* {this.props.isTa &&
                             <React.Fragment>
                                 <li>Cancel Session</li>
                                 <li>Change Session</li>
                             </React.Fragment>
-                        } }
+                        } */}
                         <li><a href="/__auth/logout"><span><Icon name="sign out" /></span>Log Out</a></li>
                         <li><a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank">
                             <span><Icon name="edit" /></span>Send Feedback</a>
