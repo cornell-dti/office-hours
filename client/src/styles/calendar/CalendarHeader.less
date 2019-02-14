@@ -13,12 +13,13 @@
         .QMeLogo {
             display: block;
             margin: auto;
-            width: 28px;    
+            width: 28px;
         }
     }
 
     .CalendarHeader>span {
         line-height: 25px;
+        padding: 0 10px;
     }
 
     .CalendarHeader {
@@ -32,13 +33,13 @@
         flex-direction: row;
         justify-content: center;
         align-items: center;
-        
+
         .TAMarker {
             justify-content: center;
             border-radius: 3px;
             color: #7ab7fe;
             background-color: white;
-            margin: 0px 20px;
+            margin: 0px 10px;
             width: 44px;
 
             &.Professor {
@@ -50,12 +51,31 @@
             rotate: (90deg);
             -webkit-transform: rotate(90deg); // Temporary fix for icon placeholder
             cursor: pointer;
+            filter: brightness(0) invert(1);
+            padding: 0 10px;
         }
 
         .logoutMenu {
-        span {
-            padding-right: 10px;
+            span {
+                padding-right: 10px;
+            }
         }
+
+        .courseMenu {
+            margin-left: 90px;
+            width: 300px;
+            position: fixed;
+            top: 45px;
+            overflow: hidden;
+            bottom: auto;
+            box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
+            padding: 0;
+
+            a {
+                font-size: 15px;
+                font-weight: 500;
+                padding-left: 40px;
+            }
         }
 
         .mobileHeaderFace {

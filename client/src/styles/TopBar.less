@@ -1,4 +1,6 @@
-.topBar .triggerArea, .topBar:focus, .userProfile {
+.topBar .triggerArea,
+.topBar:focus,
+.userProfile {
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -19,15 +21,19 @@
     left: auto;
     overflow: hidden;
     bottom: auto;
-    box-shadow: 1px 0 5px 0 rgba(0,0,0,0.25);
+    box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
     padding: 0;
+
+    li {
+        padding-top: 16px;
+    }
 
     li:last-child {
         border: none;
     }
 
     span {
-      padding-right: 10px;
+        padding-right: 10px;
     }
 }
 
@@ -60,7 +66,7 @@
     }
 
     i.icons .corner.icon {
-        top:0;
+        top: 0;
         bottom: auto;
     }
 
