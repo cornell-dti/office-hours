@@ -4,9 +4,9 @@ import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
 
 const CREATE_ASSIGNMENT = gql`
-    mutation CreateAssignment($courseId: Int!, $name: String!, $activated: Boolean!, $childNames: [String]!, 
+    mutation CreateAssignment($courseId: Int!, $name: String!, $activated: Boolean!, $childNames: [String]!,
         $childActivateds:[Int]!) {
-        apiCreatePrimaryTag(input: {_courseId: $courseId, _iname: $name, _activated: $activated, 
+        apiCreatePrimaryTag(input: {_courseId: $courseId, _iname: $name, _activated: $activated,
             _childNames: $childNames, _childActivateds: $childActivateds}) {
             tags {
                 tagId
@@ -16,9 +16,9 @@ const CREATE_ASSIGNMENT = gql`
 `;
 
 const EDIT_ASSIGNMENT = gql`
-    mutation EditAssignment($id: Int!, $name: String!, $activated: Boolean!, $childNames: [String]!, 
+    mutation EditAssignment($id: Int!, $name: String!, $activated: Boolean!, $childNames: [String]!,
         $childActivateds:[Int]!, $childIds: [Int]!) {
-        apiEditPrimaryTag(input: {_parentId: $id, _iname: $name, _activated: $activated, 
+        apiEditPrimaryTag(input: {_parentId: $id, _iname: $name, _activated: $activated,
             _childNames: $childNames, _childActivateds: $childActivateds, _childIds: $childIds}) {
             tags {
                 tagId
@@ -150,7 +150,7 @@ class ProfessorTagInfo extends React.Component {
         var doneRemoving = false;
         // Loop through all the tags (activated and not activated) to find the tag that was
         // removed by the user. We want to match index to the index'th tag that is activated.
-        // For all other tags, we want to add their previous version; for the removed tag, we 
+        // For all other tags, we want to add their previous version; for the removed tag, we
         // add its previous version with activated = false (stored in newChildTag).
         for (var i = 0; i < allTags.length; i++) {
             if (allTags[i].tagByChildId.activated) {
@@ -210,12 +210,12 @@ class ProfessorTagInfo extends React.Component {
     handleEditAssignment = (EditAssignment: Function): void => {
         var childIds: number[] = [];
         var childNames: string[] = [];
-        var childActivateds: boolean[] = [];
+        var childActivateds: number[] = [];
         if (this.state.tag.tagRelationsByParentId) {
             var childTags = this.state.tag.tagRelationsByParentId.nodes;
             childIds = childTags.map((childTag) => childTag.tagByChildId.tagId);
             childNames = childTags.map((childTag) => childTag.tagByChildId.name);
-            childActivateds = childTags.map((childTag) => childTag.tagByChildId.activated);
+            childActivateds = childTags.map((childTag) => childTag.tagByChildId.activated ? 1 : 0);
         }
 
         EditAssignment({
