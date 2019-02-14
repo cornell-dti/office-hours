@@ -49,7 +49,10 @@ class CalendarHeader extends React.Component {
                     {this.props.avatar &&
                         <img
                             className="mobileHeaderFace"
-                            onClick={() => this.setMenu(!this.state.showMenu)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                this.setMenu(!this.state.showMenu);
+                            }}
                             src={this.props.avatar}
                         />
                     }
