@@ -1,6 +1,8 @@
 interface AppCourse {
     code: string;
     name: string;
+    courseId: number;
+    semester: string;
 }
 
 interface AppInterval {
