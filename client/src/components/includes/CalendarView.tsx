@@ -30,6 +30,7 @@ const GET_CALENDAR_DATA = gql`
           name
           code
           courseId
+          semester
         }
         courseByCourseId(courseId: $courseId) {
             name
