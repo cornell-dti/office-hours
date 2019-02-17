@@ -130,7 +130,6 @@ class SessionQuestion extends React.Component {
                                         value={this.state.location}
                                         onChange={(e) => this.handleUpdateLocation(e, updateLocation)}
                                     />
-
                                     {this.state.isEditingLocation ?
                                         <Loader
                                             className={'locationLoader'}
