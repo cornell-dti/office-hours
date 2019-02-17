@@ -1,3 +1,5 @@
+@main-blue: #77bbfa;
+
 .QueueQuestions {
     background-color: white;
     display: block;
@@ -87,6 +89,16 @@
         i {
             color: @number-blue;
         }
+
+        .modalShade {
+            display: none;
+        }
+
+        @media only screen and (max-width: @mobile-breakpoint) {
+            .modalShade {
+                display: block;
+            }
+        }
     }
 
     .Location {
@@ -96,7 +108,7 @@
         margin: 0em;
         color: #595959;
         font-weight: 300;
-    }
+    }   
 
     .LocationTooltip {
         position: absolute;
@@ -111,13 +123,34 @@
         padding: 8px 0 0 20px;
         text-align: left;
 
+        @media only screen and (max-width: @mobile-breakpoint) {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            width: 311px;
+            height: 162px;
+            border-radius: 8px;
+            padding: 26px 0 0 24px;
+            font-size: 14px;
+        }
+
         p {
-            color: #494949;
+            color: #8c8c8c;
             margin-bottom: 6px;
 
+            @media only screen and (max-width: @mobile-breakpoint) {
+                margin-bottom: 20px;
+            }
+
             .characterCount {
-              color: #717171;
+              opacity: 0.5;
               font-size: 11px;
+
+              @media only screen and (max-width: @mobile-breakpoint) {
+                font-size: 14px;
+              }
 
               &.warn {
                 color: #ce2a2a;
@@ -135,6 +168,12 @@
             background-color: #edeff2;
             height: 24px;
             width: 176px;
+            opacity: 0.6;
+
+            @media only screen and (max-width: @mobile-breakpoint) {
+                width: 264px;
+                height: 30px;
+            }
         }
 
         .ui.inline.loader.active, .ui.inline.loader.visible, .check.icon {
@@ -142,23 +181,48 @@
             top: 35px;
             left: 175px;
             color: #afabab;
+
+            @media only screen and (max-width: @mobile-breakpoint) {
+                top: 72px;
+                left: 260px;
+            }
+        }
+
+        .DoneButton {
+            display: none;
+
+            @media only screen and (max-width: @mobile-breakpoint) {
+                display: block;
+                margin: 26px 0 0 -24px;
+                background-color: @main-blue;
+                height: 44px;
+                border-bottom-left-radius: 8px;
+                border-bottom-right-radius: 8px;
+                text-align: center;
+                padding: 12px 0;
+                font-size: 20px;
+                font-weight: 300;
+                color: #ffffff;
+            }
         }
     }
 
     .LocationTooltip::after
     {
-        content: "";
-        position: absolute;
-        width: 0;
-        height: 0;
-        top: 0;
-        right: 15px;
-        box-sizing: border-box;
-        border: 4px solid black;
-        border-color: #ffffff #ffffff transparent transparent;
-        transform-origin: 0 0;
-        transform: rotate(-45deg);
-        box-shadow: 1px -1px 1px 0 rgba(0, 0, 0, 0.15);
+        @media only screen and (min-width: @mobile-breakpoint) {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            top: 0;
+            right: 15px;
+            box-sizing: border-box;
+            border: 4px solid black;
+            border-color: #ffffff #ffffff transparent transparent;
+            transform-origin: 0 0;
+            transform: rotate(-45deg);
+            box-shadow: 1px -1px 1px 0 rgba(0, 0, 0, 0.15);
+        }
     }
 
 

@@ -130,6 +130,7 @@ class SessionQuestion extends React.Component {
                                         value={this.state.location}
                                         onChange={(e) => this.handleUpdateLocation(e, updateLocation)}
                                     />
+
                                     {this.state.isEditingLocation ?
                                         <Loader
                                             className={'locationLoader'}
@@ -137,9 +138,16 @@ class SessionQuestion extends React.Component {
                                             inline={true}
                                             size={'tiny'}
                                         /> : <Icon name="check" />}
+                                    <div
+                                        className="DoneButton"
+                                        onClick={this.toggleLocationTooltip}
+                                    >
+                                        Done
+                                    </div>
                                 </div>
                             )}
                         </Mutation>
+                        {this.state.showLocation && <div className="modalShade" />}
                     </div>
                 }
                 <div className="QuestionInfo">
