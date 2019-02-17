@@ -64,6 +64,8 @@ class SessionQuestionsContainer extends React.Component {
             } else if (myQuestionIndex !== 0 && this.state.sentNotification) {
                 this.setState({ sentNotification: false });
             }
+        } else if (this.props.isTA && questions) {
+            document.title = '(' + questions.length + ') Queue Me In';
         } else {
             // Reset title and notif state
             document.title = 'Queue Me In';
