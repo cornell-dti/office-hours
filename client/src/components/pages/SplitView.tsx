@@ -4,7 +4,6 @@ import * as H from 'history';
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import ConnectedQuestionView from '../includes/ConnectedQuestionView';
-import SessionAlertModal from '../includes/SessionAlertModal';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -25,7 +24,7 @@ class SplitView extends React.Component {
         sessionId: number,
         width: number,
         height: number,
-        activeView: string,
+        activeView: string
     };
 
     sessionView: SessionView | null = null;
@@ -89,6 +88,8 @@ class SplitView extends React.Component {
         this.setState({ activeView: 'calendar', sessionId: -1 });
     }
 
+    // Toggle warning
+
     render() {
         let courseId = parseInt(this.props.match.params.courseId, 10);
         return (
@@ -131,13 +132,6 @@ class SplitView extends React.Component {
                         'and removed your question from the queue. '}
                     buttons={['Continue']}
                 /> */}
-                <SessionAlertModal
-                    color={'yellow'}
-                    description={'Warning: This session ends at 11:00 AM. ' +
-                        'Consider adding yourself to a later queue. '}
-                    buttons={['Cancel', 'Add Anyway']}
-                // action=this.addQuestion
-                />
             </React.Fragment>
         );
     }

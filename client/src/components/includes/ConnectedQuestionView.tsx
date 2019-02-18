@@ -26,6 +26,7 @@ const QUERY = gql`
                         }
                     }
                 }
+                endTime
             }
         }
     }
@@ -45,6 +46,7 @@ type InputProps = {
                         nodes: [AppTagRelations]
                     }
                 }
+                endTime: Date
             }],
         },
     },
@@ -74,6 +76,7 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
                     sessionId={this.props.sessionId}
                     courseId={this.props.courseId}
                     callback={this.props.callback}
+                    endTime={session.endTime}
                     charLimit={session.courseByCourseId.charLimit}
                 />
             );
