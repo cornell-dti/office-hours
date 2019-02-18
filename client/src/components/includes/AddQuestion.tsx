@@ -24,7 +24,7 @@ mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!, $locatio
 }
 `;
 const LOCATION_CHAR_LIMIT = 40;
-// const WARNING_THRESHOLD = 10; // minutes left in queue
+const WARNING_THRESHOLD = 10; // minutes left in queue
 
 class AddQuestion extends React.Component {
     /*
@@ -139,9 +139,24 @@ class AddQuestion extends React.Component {
     }
 
     public handleJoinClick = (event: React.MouseEvent<HTMLElement>, addQuestion: Function): void => {
-        this.setState({
-            stage: 60
-        });
+        // this.setState({
+        //     stage: 60
+        // });
+        if (this.state.stage !== 60 &&
+            (moment().add(WARNING_THRESHOLD, 'minutes')).isAfter(this.props.endTime)) {
+            this.setState({
+                stage: 60
+            });
+        } else {
+            addQuestion({
+                variables: {
+                    content: this.state.question,
+                    tags: this.state.selectedTags,
+                    sessionId: this.props.sessionId,
+                    location: this.state.location
+                }
+            });
+        }
         // addQuestion({
         //     variables: {
         //         content: this.state.question,
@@ -267,6 +282,7 @@ class AddQuestion extends React.Component {
                                 + '. Consider adding yourself to a later queue.'}
                             buttons={['Cancel Question', 'Add Anyway']}
                             cancelAction={this.handleXClick}
+                            mainAction={this.handleXClick}
                             displayModalShade={false}
                         />
                     )}
