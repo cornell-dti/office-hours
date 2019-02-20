@@ -37,7 +37,7 @@ class SessionAlertModal extends React.Component {
                 <button
                     key={i}
                     className={arr.length - 1 === i ? 'last' : ''}
-                    onClick={arr.length - 1 === i ? () => this.props.cancelAction() : () => this.props.mainAction()}
+                    onClick={arr.length - 1 === i ? () => this.props.mainAction() : () => this.props.cancelAction()}
                 >
                     {button}
                 </button>

@@ -24,7 +24,7 @@ mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!, $locatio
 }
 `;
 const LOCATION_CHAR_LIMIT = 40;
-const WARNING_THRESHOLD = 10; // minutes left in queue
+const WARNING_THRESHOLD = 1000; // minutes left in queue
 
 class AddQuestion extends React.Component {
     /*
@@ -255,7 +255,7 @@ class AddQuestion extends React.Component {
                                 </p>
                                 {this.state.stage >= 30 ?
                                     <textarea
-                                        className="QuestionInput"
+                                        className="TextInput question"
                                         value={this.state.question}
                                         onChange={this.handleUpdateQuestion}
                                         placeholder="What's your question about?"
@@ -276,15 +276,20 @@ class AddQuestion extends React.Component {
                         </div>
                     </div>
                 ) : (
-                        <SessionAlertModal
-                            color={'yellow'}
-                            description={'This session ends at ' + moment(this.props.endTime).format('h:mm A')
-                                + '. Consider adding yourself to a later queue.'}
-                            buttons={['Cancel Question', 'Add Anyway']}
-                            cancelAction={this.handleXClick}
-                            mainAction={this.handleXClick}
-                            displayModalShade={false}
-                        />
+                        <Mutation mutation={ADD_QUESTION} onCompleted={this.questionAdded}>
+                            {(addQuestion) =>
+                                <SessionAlertModal
+                                    color={'yellow'}
+                                    description={'This session ends at ' + moment(this.props.endTime).format('h:mm A')
+                                        + '. Consider adding yourself to a later queue.'}
+                                    buttons={['Cancel Question', 'Add Anyway']}
+                                    cancelAction={this.handleXClick}
+                                    mainAction={(e: React.MouseEvent<HTMLElement>) =>
+                                        this.handleJoinClick(e, addQuestion)}
+                                    displayModalShade={false}
+                                />
+                            }
+                        </Mutation>
                     )}
             </div>
         );
