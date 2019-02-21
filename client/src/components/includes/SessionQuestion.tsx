@@ -137,9 +137,16 @@ class SessionQuestion extends React.Component {
                                             inline={true}
                                             size={'tiny'}
                                         /> : <Icon name="check" />}
+                                    <div
+                                        className="DoneButton"
+                                        onClick={this.toggleLocationTooltip}
+                                    >
+                                        Done
+                                    </div>
                                 </div>
                             )}
                         </Mutation>
+                        {this.state.showLocation && <div className="modalShade" />}
                     </div>
                 }
                 <div className="QuestionInfo">
