@@ -139,9 +139,6 @@ class AddQuestion extends React.Component {
     }
 
     public handleJoinClick = (event: React.MouseEvent<HTMLElement>, addQuestion: Function): void => {
-        // this.setState({
-        //     stage: 60
-        // });
         if (this.state.stage !== 60 &&
             (moment().add(WARNING_THRESHOLD, 'minutes')).isAfter(this.props.endTime)) {
             this.setState({
@@ -157,14 +154,6 @@ class AddQuestion extends React.Component {
                 }
             });
         }
-        // addQuestion({
-        //     variables: {
-        //         content: this.state.question,
-        //         tags: this.state.selectedTags,
-        //         sessionId: this.props.sessionId,
-        //         location: this.state.location
-        //     }
-        // });
     }
 
     public handleKeyPressDown = (event: React.KeyboardEvent<HTMLElement>, addQuestion: Function): void => {
@@ -193,91 +182,115 @@ class AddQuestion extends React.Component {
             return <Redirect push={true} to={'/course/' + this.props.courseId + '/session/' + this.props.sessionId} />;
         }
 
-        var charsRemaining = this.props.charLimit - this.state.question.length;
+        var questionCharsLeft = this.props.charLimit - this.state.question.length;
 
         return (
-            <div className="QuestionView">
-                {this.state.stage < 60 ? (
-                    <div className="AddQuestion">
-                        <div className="queueHeader">
-                            <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
-                            <p className="title">Join The Queue</p>
-                        </div>
-                        <div className="tagsContainer">
-                            <hr />
-                            <div className="tagsMiniContainer">
-                                <p className="header">Categories</p>
-                                <div className="QuestionTags">
-                                    {this.props.tags
-                                        .filter((tag) => tag.activated && tag.level === 1)
-                                        .filter((tag) =>
-                                            this.state.stage <= 10 ||
-                                            this.state.selectedTags.indexOf(tag.tagId) !== -1
-                                        )
-                                        .map((tag) => (<SelectedTags
-                                            key={tag.tagId}
-                                            tag={tag.name}
-                                            level={1}
-                                            isSelected={this.state.stage > 10}
-                                            onClick={() => this.handlePrimarySelected(tag.tagId)}
-                                        />))
-                                    }
+            <Mutation mutation={ADD_QUESTION} onCompleted={this.questionAdded}>
+                {(addQuestion) => (
+                    <div className="QuestionView">
+                        {this.state.stage < 60 ? (
+                            <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e, addQuestion)}>
+                                <div className="AddQuestion">
+                                    <div className="queueHeader">
+                                        <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
+                                        <p className="title">Join The Queue</p>
+                                    </div>
+                                    <div className="tagsContainer">
+                                        <hr />
+                                        <div className="tagsMiniContainer">
+                                            <p className="header">Categories</p>
+                                            <div className="QuestionTags">
+                                                {this.props.tags
+                                                    .filter((tag) => tag.activated && tag.level === 1)
+                                                    .filter((tag) =>
+                                                        this.state.stage <= 10 ||
+                                                        this.state.selectedTags.indexOf(tag.tagId) !== -1
+                                                    )
+                                                    .map((tag) => (<SelectedTags
+                                                        key={tag.tagId}
+                                                        tag={tag.name}
+                                                        level={1}
+                                                        isSelected={this.state.stage > 10}
+                                                        onClick={() => this.handlePrimarySelected(tag.tagId)}
+                                                    />))
+                                                }
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div className="tagsMiniContainer">
+                                            <p className="header">Tags</p>
+                                            {this.state.stage >= 20 ?
+                                                this.props.tags
+                                                    .filter((tag) => tag.activated && tag.level === 2)
+                                                    .filter((tag) => this.state.selectedTags.indexOf(
+                                                        tag.tagRelationsByChildId.nodes[0].parentId)
+                                                        !== -1)
+                                                    .map((tag) => (<SelectedTags
+                                                        key={tag.tagId}
+                                                        tag={tag.name}
+                                                        level={2}
+                                                        isSelected={this.state.selectedTags.indexOf(tag.tagId) !== -1}
+                                                        onClick={() => this.handleSecondarySelected(
+                                                            this.state.selectedTags.indexOf(tag.tagId) !== -1,
+                                                            tag.tagId)
+                                                        }
+                                                    />))
+                                                : <p className="placeHolder">Select a category</p>}
+                                        </div>
+                                        <hr />
+                                        <div className="tagsMiniContainer">
+                                            <p className="header">
+                                                Location <span
+                                                    className={'characterCount ' +
+                                                        (this.state.location.length >= 40 ? 'warn' : '')}
+                                                >
+                                                    {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                                </span>
+                                            </p>
+                                            {this.state.stage >= 30 ?
+                                                <div className="locationInput">
+                                                    <Icon name="map marker alternate" />
+                                                    <textarea
+                                                        className="TextInput location"
+                                                        value={this.state.location}
+                                                        onChange={this.handleUpdateLocation}
+                                                        placeholder="Where will you be?"
+                                                    />
+                                                </div>
+                                                : <p className="placeHolder text">Finish selecting tags...</p>}
+                                        </div>
+                                        <hr />
+                                        <div className="tagsMiniContainer">
+                                            <p className="header">
+                                                Question <span
+                                                    className={'characterCount ' +
+                                                        (questionCharsLeft <= 0 ? 'warn' : '')}
+                                                >
+                                                    ({questionCharsLeft} character{questionCharsLeft !== 1 && 's'} left)
+                                                </span>
+                                            </p>
+                                            {this.state.stage >= 40 ?
+                                                <textarea
+                                                    className="TextInput question"
+                                                    value={this.state.question}
+                                                    onChange={this.handleUpdateQuestion}
+                                                    placeholder="What's your question about?"
+                                                />
+                                                : <p className="placeHolder text">Enter your location...</p>}
+                                        </div>
+                                        {this.state.stage > 40 ?
+                                            <p
+                                                className="AddButton active"
+                                                onClick={(e) => this.handleJoinClick(e, addQuestion)}
+                                            >
+                                                Add My Question
+                                            </p>
+                                            : <p className="AddButton"> Add My Question </p>
+                                        }
+                                    </div>
                                 </div>
                             </div>
-                            <hr />
-                            <div className="tagsMiniContainer">
-                                <p className="header">Tags</p>
-                                {this.state.stage >= 20 ?
-                                    this.props.tags
-                                        .filter((tag) => tag.activated && tag.level === 2)
-                                        .filter((tag) => this.state.selectedTags.indexOf(
-                                            tag.tagRelationsByChildId.nodes[0].parentId)
-                                            !== -1)
-                                        .map((tag) => (<SelectedTags
-                                            key={tag.tagId}
-                                            tag={tag.name}
-                                            level={2}
-                                            isSelected={this.state.selectedTags.indexOf(tag.tagId) !== -1}
-                                            onClick={() => this.handleSecondarySelected(
-                                                this.state.selectedTags.indexOf(tag.tagId) !== -1, tag.tagId)
-                                            }
-                                        />))
-                                    : <p className="placeHolder">Select a category</p>}
-                            </div>
-                            <hr />
-                            <div className="tagsMiniContainer">
-                                <p className="header">
-                                    Question <span
-                                        className={'characterCount ' + (charsRemaining <= 0 ? 'warn' : '')}
-                                    >
-                                        ({charsRemaining} character{charsRemaining !== 1 && 's'} left)
-                                    </span>
-                                </p>
-                                {this.state.stage >= 30 ?
-                                    <textarea
-                                        className="TextInput question"
-                                        value={this.state.question}
-                                        onChange={this.handleUpdateQuestion}
-                                        placeholder="What's your question about?"
-                                    />
-                                    : <p className="placeHolder text">Finish selecting tags...</p>}
-                            </div>
-                            <Mutation mutation={ADD_QUESTION} onCompleted={this.questionAdded}>
-                                {(addQuestion) => this.state.stage > 30 ?
-                                    <p
-                                        className="AddButton active"
-                                        onClick={(e) => this.handleJoinClick(e, addQuestion)}
-                                    >
-                                        Add My Question
-                                    </p>
-                                    : <p className="AddButton"> Add My Question </p>
-                                }
-                            </Mutation>
-                        </div>
-                    </div>
-                ) : (
-                        <Mutation mutation={ADD_QUESTION} onCompleted={this.questionAdded}>
-                            {(addQuestion) =>
+                        ) : (
                                 <SessionAlertModal
                                     color={'yellow'}
                                     description={'This session ends at ' + moment(this.props.endTime).format('h:mm A')
@@ -288,10 +301,10 @@ class AddQuestion extends React.Component {
                                         this.handleJoinClick(e, addQuestion)}
                                     displayModalShade={false}
                                 />
-                            }
-                        </Mutation>
-                    )}
-            </div>
+                            )}
+                    </div>
+                )}
+            </Mutation>
         );
     }
 }
