@@ -127,12 +127,6 @@ class SplitView extends React.Component {
                         <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />
                     </React.Fragment>
                 }
-                {/* <SessionAlertModal
-                    color={'red'}
-                    description={'A TA has marked you as absent from office hours ' +
-                        'and removed your question from the queue. '}
-                    buttons={['Continue']}
-                /> */}
             </React.Fragment>
         );
     }

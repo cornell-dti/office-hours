@@ -24,7 +24,7 @@ mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!, $locatio
 }
 `;
 const LOCATION_CHAR_LIMIT = 40;
-const WARNING_THRESHOLD = 10; // minutes left in queue
+const WARNING_THRESHOLD = 10000; // minutes left in queue
 
 class AddQuestion extends React.Component {
     /*
@@ -308,6 +308,8 @@ class AddQuestion extends React.Component {
                             </div>}
                         {this.state.stage === 60 &&
                             <SessionAlertModal
+                                header={'Warning'}
+                                icon={'exclamation'}
                                 color={'yellow'}
                                 description={'This session ends at ' + moment(this.props.endTime).format('h:mm A')
                                     + '. Consider adding yourself to a later queue.'}

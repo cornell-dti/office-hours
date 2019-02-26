@@ -1,9 +1,12 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
+import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
 
 class SessionAlertModal extends React.Component {
 
     props: {
+        header?: string,
+        icon?: SemanticICONS,
         color: string,
         description: string,
         buttons: string[],
@@ -29,9 +32,11 @@ class SessionAlertModal extends React.Component {
                 <div className="modalShadeAlert" onClick={() => this.props.cancelAction()} />
                 <div className="modalContent">
                     <div className={'text ' + this.props.color}>
-                        <div className="Icon">
-                            <Icon name="exclamation" />
-                        </div>
+                        {this.props.header && <div className="title">{this.props.header}</div>}
+                        {this.props.icon &&
+                            <div className="Icon">
+                                <Icon name={this.props.icon} />
+                            </div>}
                         {this.props.description}
                     </div>
                     <div className="buttons">
