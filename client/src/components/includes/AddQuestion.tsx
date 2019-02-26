@@ -205,105 +205,103 @@ class AddQuestion extends React.Component {
                 {(addQuestion) => (
                     <div className="QuestionView">
                         {(this.state.stage < 60 || this.state.width < this.props.mobileBreakpoint) &&
-                            <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e, addQuestion)}>
-                                <div className="AddQuestion">
-                                    <div className="queueHeader">
-                                        <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
-                                        <p className="title">Join The Queue</p>
+                            <div className="AddQuestion" onKeyDown={(e) => this.handleKeyPressDown(e, addQuestion)}>
+                                <div className="queueHeader">
+                                    <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
+                                    <p className="title">Join The Queue</p>
+                                </div>
+                                <div className="tagsContainer">
+                                    <hr />
+                                    <div className="tagsMiniContainer">
+                                        <p className="header">Categories</p>
+                                        <div className="QuestionTags">
+                                            {this.props.tags
+                                                .filter((tag) => tag.activated && tag.level === 1)
+                                                .filter((tag) =>
+                                                    this.state.stage <= 10 ||
+                                                    this.state.selectedTags.indexOf(tag.tagId) !== -1
+                                                )
+                                                .map((tag) => (<SelectedTags
+                                                    key={tag.tagId}
+                                                    tag={tag.name}
+                                                    level={1}
+                                                    isSelected={this.state.stage > 10}
+                                                    onClick={() => this.handlePrimarySelected(tag.tagId)}
+                                                />))
+                                            }
+                                        </div>
                                     </div>
-                                    <div className="tagsContainer">
-                                        <hr />
-                                        <div className="tagsMiniContainer">
-                                            <p className="header">Categories</p>
-                                            <div className="QuestionTags">
-                                                {this.props.tags
-                                                    .filter((tag) => tag.activated && tag.level === 1)
-                                                    .filter((tag) =>
-                                                        this.state.stage <= 10 ||
-                                                        this.state.selectedTags.indexOf(tag.tagId) !== -1
-                                                    )
-                                                    .map((tag) => (<SelectedTags
-                                                        key={tag.tagId}
-                                                        tag={tag.name}
-                                                        level={1}
-                                                        isSelected={this.state.stage > 10}
-                                                        onClick={() => this.handlePrimarySelected(tag.tagId)}
-                                                    />))
-                                                }
-                                            </div>
-                                        </div>
-                                        <hr />
-                                        <div className="tagsMiniContainer">
-                                            <p className="header">Tags</p>
-                                            {this.state.stage >= 20 ?
-                                                this.props.tags
-                                                    .filter((tag) => tag.activated && tag.level === 2)
-                                                    .filter((tag) => this.state.selectedTags.indexOf(
-                                                        tag.tagRelationsByChildId.nodes[0].parentId)
-                                                        !== -1)
-                                                    .map((tag) => (<SelectedTags
-                                                        key={tag.tagId}
-                                                        tag={tag.name}
-                                                        level={2}
-                                                        isSelected={this.state.selectedTags.indexOf(tag.tagId) !== -1}
-                                                        onClick={() => this.handleSecondarySelected(
-                                                            this.state.selectedTags.indexOf(tag.tagId) !== -1,
-                                                            tag.tagId)
-                                                        }
-                                                    />))
-                                                : <p className="placeHolder">Select a category</p>}
-                                        </div>
-                                        <hr />
-                                        <div className="tagsMiniContainer">
-                                            <p className="header">
-                                                Location <span
-                                                    className={'characterCount ' +
-                                                        (this.state.location.length >= 40 ? 'warn' : '')}
-                                                >
-                                                    {this.state.location.length}/{LOCATION_CHAR_LIMIT}
-                                                </span>
-                                            </p>
-                                            {this.state.stage >= 30 ?
-                                                <div className="locationInput">
-                                                    <Icon name="map marker alternate" />
-                                                    <textarea
-                                                        className="TextInput location"
-                                                        value={this.state.location}
-                                                        onChange={this.handleUpdateLocation}
-                                                        placeholder="Where will you be?"
-                                                    />
-                                                </div>
-                                                : <p className="placeHolder text">Finish selecting tags...</p>}
-                                        </div>
-                                        <hr />
-                                        <div className="tagsMiniContainer">
-                                            <p className="header">
-                                                Question <span
-                                                    className={'characterCount ' +
-                                                        (questionCharsLeft <= 0 ? 'warn' : '')}
-                                                >
-                                                    ({questionCharsLeft} character{questionCharsLeft !== 1 && 's'} left)
-                                                </span>
-                                            </p>
-                                            {this.state.stage >= 40 ?
-                                                <textarea
-                                                    className="TextInput question"
-                                                    value={this.state.question}
-                                                    onChange={this.handleUpdateQuestion}
-                                                    placeholder="What's your question about?"
-                                                />
-                                                : <p className="placeHolder text">Enter your location...</p>}
-                                        </div>
-                                        {this.state.stage > 40 ?
-                                            <p
-                                                className="AddButton active"
-                                                onClick={(e) => this.handleJoinClick(e, addQuestion)}
+                                    <hr />
+                                    <div className="tagsMiniContainer">
+                                        <p className="header">Tags</p>
+                                        {this.state.stage >= 20 ?
+                                            this.props.tags
+                                                .filter((tag) => tag.activated && tag.level === 2)
+                                                .filter((tag) => this.state.selectedTags.indexOf(
+                                                    tag.tagRelationsByChildId.nodes[0].parentId)
+                                                    !== -1)
+                                                .map((tag) => (<SelectedTags
+                                                    key={tag.tagId}
+                                                    tag={tag.name}
+                                                    level={2}
+                                                    isSelected={this.state.selectedTags.indexOf(tag.tagId) !== -1}
+                                                    onClick={() => this.handleSecondarySelected(
+                                                        this.state.selectedTags.indexOf(tag.tagId) !== -1,
+                                                        tag.tagId)
+                                                    }
+                                                />))
+                                            : <p className="placeHolder">Select a category</p>}
+                                    </div>
+                                    <hr />
+                                    <div className="tagsMiniContainer">
+                                        <p className="header">
+                                            Location <span
+                                                className={'characterCount ' +
+                                                    (this.state.location.length >= 40 ? 'warn' : '')}
                                             >
-                                                Add My Question
-                                            </p>
-                                            : <p className="AddButton"> Add My Question </p>
-                                        }
+                                                {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                            </span>
+                                        </p>
+                                        {this.state.stage >= 30 ?
+                                            <div className="locationInput">
+                                                <Icon name="map marker alternate" />
+                                                <textarea
+                                                    className="TextInput location"
+                                                    value={this.state.location}
+                                                    onChange={this.handleUpdateLocation}
+                                                    placeholder="Where will you be?"
+                                                />
+                                            </div>
+                                            : <p className="placeHolder text">Finish selecting tags...</p>}
                                     </div>
+                                    <hr />
+                                    <div className="tagsMiniContainer">
+                                        <p className="header">
+                                            Question <span
+                                                className={'characterCount ' +
+                                                    (questionCharsLeft <= 0 ? 'warn' : '')}
+                                            >
+                                                ({questionCharsLeft} character{questionCharsLeft !== 1 && 's'} left)
+                                            </span>
+                                        </p>
+                                        {this.state.stage >= 40 ?
+                                            <textarea
+                                                className="TextInput question"
+                                                value={this.state.question}
+                                                onChange={this.handleUpdateQuestion}
+                                                placeholder="What's your question about?"
+                                            />
+                                            : <p className="placeHolder text">Enter your location...</p>}
+                                    </div>
+                                    {this.state.stage > 40 ?
+                                        <p
+                                            className="AddButton active"
+                                            onClick={(e) => this.handleJoinClick(e, addQuestion)}
+                                        >
+                                            Add My Question
+                                        </p>
+                                        : <p className="AddButton"> Add My Question </p>
+                                    }
                                 </div>
                             </div>}
                         {this.state.stage === 60 &&
@@ -315,8 +313,7 @@ class AddQuestion extends React.Component {
                                     + '. Consider adding yourself to a later queue.'}
                                 buttons={['Cancel Question', 'Add Anyway']}
                                 cancelAction={this.handleXClick}
-                                mainAction={(e: React.MouseEvent<HTMLElement>) =>
-                                    this.handleJoinClick(e, addQuestion)}
+                                mainAction={(e: React.MouseEvent<HTMLElement>) => this.handleJoinClick(e, addQuestion)}
                             />
                         }
                     </div>
