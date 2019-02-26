@@ -5,10 +5,10 @@
     position: relative;
 
     .modalShadeAlert {
-        display: hidden;
+        display: none;
     }
 
-    @media only screen and (max-width: 960px) {
+    @media only screen and (max-width: @mobile-breakpoint) {
         .modalShadeAlert {
             display: block;
             position: fixed;
@@ -22,12 +22,12 @@
     }
     
     .modalContent {
-        @media only screen and (max-width: 960px) {
+        @media only screen and (max-width: @mobile-breakpoint) {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80%;
+            width: 75%;
             z-index: 5;
             border-radius: 10px;
             overflow: hidden;

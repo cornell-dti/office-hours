@@ -119,7 +119,7 @@ class SplitView extends React.Component {
                             <ConnectedQuestionView
                                 sessionId={this.state.sessionId || -1}
                                 courseId={courseId}
-                                mobileWidth={this.state.width}
+                                mobileBreakpoint={MOBILE_BREAKPOINT}
                                 data={{ loading: true }}
                                 callback={() => this.addedQuestion()}
                             />

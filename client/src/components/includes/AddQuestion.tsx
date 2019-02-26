@@ -24,7 +24,7 @@ mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!, $locatio
 }
 `;
 const LOCATION_CHAR_LIMIT = 40;
-const WARNING_THRESHOLD = 10000; // minutes left in queue
+const WARNING_THRESHOLD = 10; // minutes left in queue
 
 class AddQuestion extends React.Component {
     /*
@@ -43,7 +43,7 @@ class AddQuestion extends React.Component {
         callback: Function,
         charLimit: number,
         endTime: Date,
-        mobileWidth: number
+        mobileBreakpoint: number
     };
 
     state: {
@@ -51,6 +51,7 @@ class AddQuestion extends React.Component {
         question: string,
         selectedTags: number[],
         stage: number,
+        width: number,
         redirect: boolean
     };
 
@@ -60,9 +61,23 @@ class AddQuestion extends React.Component {
             location: '',
             question: '',
             stage: 10,
+            width: window.innerWidth,
             selectedTags: [],
             redirect: false
         };
+    }
+
+    // Keep window size in state for conditional rendering
+    componentDidMount() {
+        window.addEventListener('resize', this.updateWindowDimensions);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateWindowDimensions);
+    }
+
+    updateWindowDimensions = () => {
+        this.setState({ width: window.innerWidth });
     }
 
     public handleXClick = () => {
@@ -189,7 +204,7 @@ class AddQuestion extends React.Component {
             <Mutation mutation={ADD_QUESTION} onCompleted={this.questionAdded}>
                 {(addQuestion) => (
                     <div className="QuestionView">
-                        {(this.state.stage < 60 || this.props.mobileWidth < 960) &&
+                        {(this.state.stage < 60 || this.state.width < this.props.mobileBreakpoint) &&
                             <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e, addQuestion)}>
                                 <div className="AddQuestion">
                                     <div className="queueHeader">
