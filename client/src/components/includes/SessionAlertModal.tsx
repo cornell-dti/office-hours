@@ -9,27 +9,8 @@ class SessionAlertModal extends React.Component {
         buttons: string[],
         cancelAction: Function,
         mainAction: Function,
-        displayModalShade: boolean,
         action?: Function
     };
-
-    state: {
-        isVisible: boolean
-    };
-
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            isVisible: true
-        };
-        this.updateVisible = this.updateVisible.bind(this);
-    }
-
-    updateVisible(toggle: boolean) {
-        this.setState({
-            isVisible: toggle
-        });
-    }
 
     render() {
         var buttons = this.props.buttons.map((button, i: number, arr) =>
@@ -43,10 +24,9 @@ class SessionAlertModal extends React.Component {
                 </button>
             ));
 
-        return (this.state.isVisible && (
+        return (
             <div className="SessionAlertModal">
-                {/* {this.props.displayModalShade &&
-                <div className="modalShadeAlert" onClick={() => this.updateVisible(false)} />} */}
+                <div className="modalShadeAlert" onClick={() => this.props.cancelAction()} />
                 <div className="modalContent">
                     <div className={'text ' + this.props.color}>
                         <div className="Icon">
@@ -59,7 +39,7 @@ class SessionAlertModal extends React.Component {
                     </div>
                 </div>
             </div>
-        ));
+        );
     }
 }
 

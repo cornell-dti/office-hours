@@ -35,6 +35,7 @@ const QUERY = gql`
 type InputProps = {
     sessionId: number,
     courseId: number,
+    mobileWidth: number,
     callback: Function,
     data: {
         loading: boolean,
@@ -76,8 +77,9 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
                     sessionId={this.props.sessionId}
                     courseId={this.props.courseId}
                     callback={this.props.callback}
-                    endTime={session.endTime}
                     charLimit={session.courseByCourseId.charLimit}
+                    endTime={session.endTime}
+                    mobileWidth={this.props.mobileWidth}
                 />
             );
         }

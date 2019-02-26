@@ -24,7 +24,7 @@ mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!, $locatio
 }
 `;
 const LOCATION_CHAR_LIMIT = 40;
-const WARNING_THRESHOLD = 1000; // minutes left in queue
+const WARNING_THRESHOLD = 10000; // minutes left in queue
 
 class AddQuestion extends React.Component {
     /*
@@ -42,7 +42,8 @@ class AddQuestion extends React.Component {
         courseId: number,
         callback: Function,
         charLimit: number,
-        endTime: Date
+        endTime: Date,
+        mobileWidth: number
     };
 
     state: {
@@ -188,7 +189,7 @@ class AddQuestion extends React.Component {
             <Mutation mutation={ADD_QUESTION} onCompleted={this.questionAdded}>
                 {(addQuestion) => (
                     <div className="QuestionView">
-                        {this.state.stage < 60 ? (
+                        {(this.state.stage < 60 || this.props.mobileWidth < 960) &&
                             <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e, addQuestion)}>
                                 <div className="AddQuestion">
                                     <div className="queueHeader">
@@ -289,19 +290,18 @@ class AddQuestion extends React.Component {
                                         }
                                     </div>
                                 </div>
-                            </div>
-                        ) : (
-                                <SessionAlertModal
-                                    color={'yellow'}
-                                    description={'This session ends at ' + moment(this.props.endTime).format('h:mm A')
-                                        + '. Consider adding yourself to a later queue.'}
-                                    buttons={['Cancel Question', 'Add Anyway']}
-                                    cancelAction={this.handleXClick}
-                                    mainAction={(e: React.MouseEvent<HTMLElement>) =>
-                                        this.handleJoinClick(e, addQuestion)}
-                                    displayModalShade={false}
-                                />
-                            )}
+                            </div>}
+                        {this.state.stage === 60 &&
+                            <SessionAlertModal
+                                color={'yellow'}
+                                description={'This session ends at ' + moment(this.props.endTime).format('h:mm A')
+                                    + '. Consider adding yourself to a later queue.'}
+                                buttons={['Cancel Question', 'Add Anyway']}
+                                cancelAction={this.handleXClick}
+                                mainAction={(e: React.MouseEvent<HTMLElement>) =>
+                                    this.handleJoinClick(e, addQuestion)}
+                            />
+                        }
                     </div>
                 )}
             </Mutation>
