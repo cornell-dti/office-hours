@@ -24,7 +24,7 @@ mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!, $locatio
 }
 `;
 const LOCATION_CHAR_LIMIT = 40;
-const WARNING_THRESHOLD = 10000; // minutes left in queue
+const WARNING_THRESHOLD = 10; // minutes left in queue
 
 class AddQuestion extends React.Component {
     /*
@@ -154,7 +154,7 @@ class AddQuestion extends React.Component {
         });
     }
 
-    public handleJoinClick = (event: React.MouseEvent<HTMLElement>, addQuestion: Function): void => {
+    public handleJoinClick = (addQuestion: Function): void => {
         if (this.state.stage !== 60 &&
             (moment().add(WARNING_THRESHOLD, 'minutes')).isAfter(this.props.endTime)) {
             this.setState({
@@ -174,15 +174,8 @@ class AddQuestion extends React.Component {
 
     public handleKeyPressDown = (event: React.KeyboardEvent<HTMLElement>, addQuestion: Function): void => {
         // CTRL + ENTER or CMD + ENTER adds the question ONLY if cursor in Question textbox
-        if (!event.repeat && (event.ctrlKey || event.metaKey) && event.keyCode === 13 && this.state.stage > 40) {
-            addQuestion({
-                variables: {
-                    content: this.state.question,
-                    tags: this.state.selectedTags,
-                    sessionId: this.props.sessionId,
-                    location: this.state.location
-                }
-            });
+        if ((!event.repeat && (event.ctrlKey || event.metaKey) && event.keyCode === 13 && this.state.stage > 40)) {
+            this.handleJoinClick(addQuestion);
         } else if (!event.repeat && event.keyCode === 27) {
             this.handleXClick();
         }
@@ -203,9 +196,9 @@ class AddQuestion extends React.Component {
         return (
             <Mutation mutation={ADD_QUESTION} onCompleted={this.questionAdded}>
                 {(addQuestion) => (
-                    <div className="QuestionView">
+                    <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e, addQuestion)}>
                         {(this.state.stage < 60 || this.state.width < this.props.mobileBreakpoint) &&
-                            <div className="AddQuestion" onKeyDown={(e) => this.handleKeyPressDown(e, addQuestion)}>
+                            <div className="AddQuestion">
                                 <div className="queueHeader">
                                     <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
                                     <p className="title">Join The Queue</p>
@@ -296,7 +289,7 @@ class AddQuestion extends React.Component {
                                     {this.state.stage > 40 ?
                                         <p
                                             className="AddButton active"
-                                            onClick={(e) => this.handleJoinClick(e, addQuestion)}
+                                            onClick={() => this.handleJoinClick(addQuestion)}
                                         >
                                             Add My Question
                                         </p>
@@ -313,7 +306,7 @@ class AddQuestion extends React.Component {
                                     + '. Consider adding yourself to a later queue.'}
                                 buttons={['Cancel Question', 'Add Anyway']}
                                 cancelAction={this.handleXClick}
-                                mainAction={(e: React.MouseEvent<HTMLElement>) => this.handleJoinClick(e, addQuestion)}
+                                mainAction={() => this.handleJoinClick(addQuestion)}
                             />
                         }
                     </div>
