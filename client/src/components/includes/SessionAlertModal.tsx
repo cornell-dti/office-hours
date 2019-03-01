@@ -11,8 +11,7 @@ class SessionAlertModal extends React.Component {
         description: string,
         buttons: string[],
         cancelAction: Function,
-        mainAction: Function,
-        action?: Function
+        mainAction: Function
     };
 
     render() {
