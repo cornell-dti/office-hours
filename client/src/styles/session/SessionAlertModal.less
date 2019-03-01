@@ -1,0 +1,84 @@
+.SessionAlertModal {
+    background-color: white;
+    height: 100%;
+    color: @text-grey;
+    position: relative;
+
+    .modalShadeAlert {
+        display: none;
+    }
+
+    @media only screen and (max-width: @mobile-breakpoint) {
+        .modalShadeAlert {
+            display: block;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 4;
+            background-color: rgba(112, 112, 112, 0.8);
+        }
+    }
+    
+    .modalContent {
+        @media only screen and (max-width: @mobile-breakpoint) {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 75%;
+            z-index: 5;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: white;
+        }
+
+
+        .red {
+            color: #c55a5a;
+        }
+
+        .yellow {
+            color: #dc9c35;
+        }
+    }
+
+    .text {
+        margin: auto;
+        width: 80%;
+        padding: 30px 10px;
+        font-size: 17px;
+
+        .title {
+            font-size: 30px;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .Icon {
+            font-size: 30px;
+            padding: 35px 0 20px;
+        }
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: row;
+        align-content: stretch;
+        text-align: center;
+
+        button {
+            border: none;
+            width: 100%;
+            padding: 10px 0;
+            font-size: 20px;
+            background-color: #eaeaea;
+        }
+
+        .last {
+            background: #7ab7fe;
+            color: white;
+        }
+    }
+}

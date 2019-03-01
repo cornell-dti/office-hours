@@ -24,7 +24,7 @@ class SplitView extends React.Component {
         sessionId: number,
         width: number,
         height: number,
-        activeView: string,
+        activeView: string
     };
 
     sessionView: SessionView | null = null;
@@ -88,6 +88,8 @@ class SplitView extends React.Component {
         this.setState({ activeView: 'calendar', sessionId: -1 });
     }
 
+    // Toggle warning
+
     render() {
         let courseId = parseInt(this.props.match.params.courseId, 10);
         return (
@@ -117,6 +119,7 @@ class SplitView extends React.Component {
                             <ConnectedQuestionView
                                 sessionId={this.state.sessionId || -1}
                                 courseId={courseId}
+                                mobileBreakpoint={MOBILE_BREAKPOINT}
                                 data={{ loading: true }}
                                 callback={() => this.addedQuestion()}
                             />
