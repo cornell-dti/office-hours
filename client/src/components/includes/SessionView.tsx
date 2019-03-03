@@ -8,6 +8,7 @@ import { Interval } from '../../utilities/interval';
 import gql from 'graphql-tag';
 import { Query, Mutation } from 'react-apollo';
 import { Icon } from 'semantic-ui-react';
+import SessionAlertModal from './SessionAlertModal';
 
 const GET_SESSION_DATA = gql`
 query getDataForSession($sessionId: Int!, $courseId: Int!) {
@@ -126,6 +127,7 @@ class SessionView extends React.Component {
         undoAction?: string,
         undoName?: string,
         undoQuestionId?: number,
+        displayRemoved: boolean,
         timeoutId: number | null,
     };
 
@@ -137,8 +139,10 @@ class SessionView extends React.Component {
             undoAction: undefined,
             undoName: undefined,
             undoQuestionId: undefined,
+            displayRemoved: true,
             timeoutId: null,
         };
+        this.toggleRemoved = this.toggleRemoved.bind(this);
     }
 
     triggerUndo = (questionId: number, action: string, name: string) => {
@@ -176,6 +180,12 @@ class SessionView extends React.Component {
                 // Otherwise, default it to assigned
                 status: this.state.undoAction === 'assigned' ? 'unresolved' : 'assigned'
             }
+        });
+    }
+
+    toggleRemoved = (toggle: boolean) => {
+        this.setState({
+            displayRemoved: toggle
         });
     }
 
@@ -232,6 +242,13 @@ class SessionView extends React.Component {
                                         courseId={this.props.courseId}
                                     />
                                 }
+                                {this.state.displayRemoved && <SessionAlertModal
+                                    color={'red'}
+                                    description={'A TA has marked you as absent from this office hour ' +
+                                        'and removed you from the queue.'}
+                                    buttons={['Continue']}
+                                    cancelAction={() => this.toggleRemoved(false)}
+                                />}
                                 {this.props.id === -1 || !data.sessionBySessionId
                                     ? <React.Fragment>
                                         <p className="welcomeMessage">Welcome, <span className="welcomeName">

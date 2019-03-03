@@ -11,16 +11,19 @@ class SessionAlertModal extends React.Component {
         description: string,
         buttons: string[],
         cancelAction: Function,
-        mainAction: Function
+        mainAction?: Function
     };
 
     render() {
+        let main = () => (this.props.mainAction !== undefined ?
+            this.props.mainAction() : this.props.cancelAction());
+
         var buttons = this.props.buttons.map((button, i: number, arr) =>
             (
                 <button
                     key={i}
                     className={arr.length - 1 === i ? 'last' : ''}
-                    onClick={arr.length - 1 === i ? () => this.props.mainAction() : () => this.props.cancelAction()}
+                    onClick={arr.length - 1 === i ? main : () => this.props.cancelAction()}
                 >
                     {button}
                 </button>
