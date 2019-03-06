@@ -35,7 +35,6 @@ class ProfessorTagInfo extends React.Component {
         tag?: AppTag
         refreshCallback: Function
         courseId: number
-        suggestedTagNames: string[]
     };
 
     state: {
@@ -121,16 +120,6 @@ class ProfessorTagInfo extends React.Component {
         };
         this.helperAddNewChildTag(newTag);
         this.setState({ newTagText: '' });
-    }
-
-    handleAddSuggestedTag = (name: string): void => {
-        var newTag: AppTag = {
-            activated: true,
-            level: 2,
-            tagId: -1,
-            name: name
-        };
-        this.helperAddNewChildTag(newTag);
     }
 
     // Sorry, this function is a bit of a mess. Please refactor it when you get spare time.
@@ -237,12 +226,6 @@ class ProfessorTagInfo extends React.Component {
     }
 
     render() {
-        var validSuggestedTags: string[] = this.props.suggestedTagNames
-            .filter((name) => !this.state.tag.tagRelationsByParentId
-                || (this.state.tag.tagRelationsByParentId
-                    && this.state.tag.tagRelationsByParentId.nodes
-                        .filter((childTag) => childTag.tagByChildId.name === name && childTag.tagByChildId.activated)
-                        .length === 0));
         return (
             <React.Fragment>
                 <div className="ProfessorTagInfo">
@@ -308,26 +291,6 @@ class ProfessorTagInfo extends React.Component {
                             +
                         </div>
                     </div>
-                    {
-                        validSuggestedTags.length > 0 &&
-                        <div className="SuggestedTags InputSection">
-                            <div className="InputHeader">Suggested tags:</div>
-                            {
-                                validSuggestedTags
-                                    .map((name, i) => {
-                                        return (
-                                            <div
-                                                key={i}
-                                                className="SuggestedChildTag"
-                                                onClick={() => this.handleAddSuggestedTag(name)}
-                                            >
-                                                + {name}
-                                            </div>
-                                        );
-                                    })
-                            }
-                        </div>
-                    }
                 </div>
                 <div className="EditButtons">
                     <button className="Bottom Cancel" onClick={() => this.props.cancelCallback()}>
