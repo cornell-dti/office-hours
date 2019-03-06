@@ -11,7 +11,8 @@ class SessionAlertModal extends React.Component {
         description: string,
         buttons: string[],
         cancelAction: Function,
-        mainAction?: Function
+        mainAction?: Function,
+        displayModal: boolean
     };
 
     render() {
@@ -31,7 +32,10 @@ class SessionAlertModal extends React.Component {
 
         return (
             <div className="SessionAlertModal">
-                <div className="modalShadeAlert" onClick={() => this.props.cancelAction()} />
+                <div
+                    className={'modalShadeAlert ' + this.props.displayModal}
+                    onClick={() => this.props.cancelAction()}
+                />
                 <div className="modalContent">
                     <div className={'text ' + this.props.color}>
                         {this.props.header && <div className="title">{this.props.header}</div>}

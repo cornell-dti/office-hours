@@ -24,7 +24,7 @@ mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!, $locatio
 }
 `;
 const LOCATION_CHAR_LIMIT = 40;
-const WARNING_THRESHOLD = 10; // minutes left in queue
+const WARNING_THRESHOLD = 10000; // minutes left in queue
 
 class AddQuestion extends React.Component {
     /*
@@ -307,6 +307,7 @@ class AddQuestion extends React.Component {
                                 buttons={['Cancel Question', 'Add Anyway']}
                                 cancelAction={this.handleXClick}
                                 mainAction={() => this.handleJoinClick(addQuestion)}
+                                displayModal={this.state.width < this.props.mobileBreakpoint}
                             />
                         }
                     </div>

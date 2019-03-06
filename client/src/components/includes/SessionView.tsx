@@ -242,13 +242,16 @@ class SessionView extends React.Component {
                                         courseId={this.props.courseId}
                                     />
                                 }
-                                {this.state.displayRemoved && <SessionAlertModal
-                                    color={'red'}
-                                    description={'A TA has marked you as absent from this office hour ' +
-                                        'and removed you from the queue.'}
-                                    buttons={['Continue']}
-                                    cancelAction={() => this.toggleRemoved(false)}
-                                />}
+                                {this.state.displayRemoved &&
+                                    <SessionAlertModal
+                                        color={'red'}
+                                        description={'A TA has marked you as absent from this office hour ' +
+                                            'and removed you from the queue.'}
+                                        buttons={['Continue']}
+                                        cancelAction={() => this.toggleRemoved(false)}
+                                        displayModal={true}
+                                    />
+                                }
                                 {this.props.id === -1 || !data.sessionBySessionId
                                     ? <React.Fragment>
                                         <p className="welcomeMessage">Welcome, <span className="welcomeName">

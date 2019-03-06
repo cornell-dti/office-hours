@@ -1,24 +1,22 @@
 .SessionAlertModal {
-    background-color: white;
-    height: 100%;
-    color: @text-grey;
-    position: relative;
+    // background-color: white;
+    // height: 100%;
+    // color: @text-grey;
+    // position: relative;
 
-    .modalShadeAlert {
+    .modalShadeAlert.false {
         display: none;
     }
 
-    @media only screen and (max-width: @mobile-breakpoint) {
-        .modalShadeAlert {
-            display: block;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 4;
-            background-color: rgba(112, 112, 112, 0.8);
-        }
+    .modalShadeAlert.true {
+        display: block;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 4;
+        background-color: rgba(112, 112, 112, 0.8);
     }
     
     .modalContent {
