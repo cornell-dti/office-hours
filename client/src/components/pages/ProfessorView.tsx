@@ -116,7 +116,7 @@ class ProfessorView extends React.Component {
     props: {
         match: {
             params: {
-                courseId: number;
+                courseId: string;
             }
         }
     };
@@ -150,14 +150,10 @@ class ProfessorView extends React.Component {
     }
 
     render() {
+        let courseId = parseInt(this.props.match.params.courseId, 10);
         return (
             <div className="ProfessorView">
-                <ProfessorMetadataDataQuery
-                    query={METADATA_QUERY}
-                    variables={{
-                        courseId: this.props.match.params.courseId
-                    }}
-                >
+                <ProfessorMetadataDataQuery query={METADATA_QUERY} variables={{ courseId: courseId }} >
                     {({ loading, data }) => {
                         var courseCode: string = 'Loading...';
                         if (!loading && data) {
@@ -169,13 +165,13 @@ class ProfessorView extends React.Component {
                         return (
                             <React.Fragment>
                                 <ProfessorSidebar
-                                    courseId={this.props.match.params.courseId}
+                                    courseId={courseId}
                                     code={courseCode}
                                     selected={0}
                                 />
                                 {data && data.apiGetCurrentUser &&
                                     <TopBar
-                                        courseId={this.props.match.params.courseId}
+                                        courseId={courseId}
                                         user={data.apiGetCurrentUser.nodes[0]}
                                         context="professor"
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
@@ -189,7 +185,7 @@ class ProfessorView extends React.Component {
                 <ProfessorSessionsDataQuery
                     query={SESSIONS_QUERY}
                     variables={{
-                        courseId: this.props.match.params.courseId,
+                        courseId: courseId,
                         beginTime: new Date(this.state.selectedWeekEpoch),
                         endTime: new Date(this.state.selectedWeekEpoch +
                             7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */)
@@ -216,7 +212,7 @@ class ProfessorView extends React.Component {
                             <section className="rightOfSidebar">
                                 <div className="main">
                                     <ProfessorAddNew
-                                        courseId={this.props.match.params.courseId}
+                                        courseId={courseId}
                                         refreshCallback={refetch}
                                         taOptions={taOptions}
                                     />
@@ -228,7 +224,7 @@ class ProfessorView extends React.Component {
                                     <div className="Calendar">
                                         {data && data.apiGetSessions &&
                                             <ProfessorCalendarTable
-                                                courseId={this.props.match.params.courseId}
+                                                courseId={courseId}
                                                 data={data.apiGetSessions}
                                                 taOptions={taOptions}
                                                 refreshCallback={refetch}

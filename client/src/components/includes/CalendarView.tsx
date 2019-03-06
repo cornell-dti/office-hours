@@ -26,6 +26,12 @@ const GET_CALENDAR_DATA = gql`
                 }
             }
         }
+        allCoursesList {
+          name
+          code
+          courseId
+          semester
+        }
         courseByCourseId(courseId: $courseId) {
             name
             code
@@ -53,6 +59,7 @@ const GET_CALENDAR_DATA = gql`
                 questionsBySessionId {
                     nodes {
                         status
+                        timeEntered
                         userByAskerId {
                             userId
                         }
@@ -72,6 +79,7 @@ const GET_CALENDAR_DATA = gql`
 `;
 
 interface AppData {
+    allCoursesList: [AppCourse];
     courseByCourseId: AppCourseInterval;
     apiGetSessions: {
         nodes: [AppSession];
@@ -137,6 +145,7 @@ class CalendarView extends React.Component {
                                 isProf={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0]
                                     .courseUsersByUserId.nodes[0].role === 'professor'}
                                 avatar={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].computedAvatar}
+                                allCoursesList={data.allCoursesList}
                             />
                             <CalendarDaySelect callback={this.handleDateClick} />
                             <CalendarSessions

@@ -26,6 +26,7 @@ const QUERY = gql`
                         }
                     }
                 }
+                endTime
             }
         }
     }
@@ -34,6 +35,7 @@ const QUERY = gql`
 type InputProps = {
     sessionId: number,
     courseId: number,
+    mobileBreakpoint: number,
     callback: Function,
     data: {
         loading: boolean,
@@ -45,6 +47,7 @@ type InputProps = {
                         nodes: [AppTagRelations]
                     }
                 }
+                endTime: Date
             }],
         },
     },
@@ -75,6 +78,8 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
                     courseId={this.props.courseId}
                     callback={this.props.callback}
                     charLimit={session.courseByCourseId.charLimit}
+                    endTime={session.endTime}
+                    mobileBreakpoint={this.props.mobileBreakpoint}
                 />
             );
         }

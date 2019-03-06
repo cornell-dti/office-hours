@@ -199,12 +199,12 @@ class ProfessorTagInfo extends React.Component {
     handleEditAssignment = (EditAssignment: Function): void => {
         var childIds: number[] = [];
         var childNames: string[] = [];
-        var childActivateds: boolean[] = [];
+        var childActivateds: number[] = [];
         if (this.state.tag.tagRelationsByParentId) {
             var childTags = this.state.tag.tagRelationsByParentId.nodes;
             childIds = childTags.map((childTag) => childTag.tagByChildId.tagId);
             childNames = childTags.map((childTag) => childTag.tagByChildId.name);
-            childActivateds = childTags.map((childTag) => childTag.tagByChildId.activated);
+            childActivateds = childTags.map((childTag) => childTag.tagByChildId.activated ? 1 : 0);
         }
 
         EditAssignment({

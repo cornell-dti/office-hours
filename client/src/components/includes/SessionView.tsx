@@ -57,6 +57,7 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
                 content
                 status
                 timeEntered
+                location
                 userByAskerId {
                     computedName
                     computedAvatar
@@ -220,8 +221,7 @@ class SessionView extends React.Component {
                         }
                         var otherQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
                             .filter((question) => question.sessionBySessionId.sessionId !== this.props.id)
-                            .filter((question) => question.status !== 'resolved')
-                            .filter((question) => question.status !== 'no-show')
+                            .filter((question) => question.status === 'unresolved')
                             .filter((question) => new Date(question.sessionBySessionId.endTime) >= new Date());
 
                         return (
@@ -247,6 +247,7 @@ class SessionView extends React.Component {
                                         <SessionInformationHeader
                                             session={data.sessionBySessionId}
                                             course={data.courseByCourseId}
+                                            myUserId={data.apiGetCurrentUser.nodes[0].userId}
                                             callback={this.props.backCallback}
                                             isDesktop={this.props.isDesktop}
                                         />
