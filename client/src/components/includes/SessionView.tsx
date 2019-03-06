@@ -23,6 +23,7 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
             }
             questionsByAskerId {
                 nodes {
+                    status
                     sessionBySessionId {
                         sessionId
                         endTime
@@ -219,8 +220,9 @@ class SessionView extends React.Component {
                             return null;
                         }
                         var otherQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
-                            .filter((session) => session.sessionBySessionId.sessionId !== this.props.id)
-                            .filter((session) => new Date(session.sessionBySessionId.endTime) >= new Date());
+                            .filter((question) => question.sessionBySessionId.sessionId !== this.props.id)
+                            .filter((question) => question.status === 'unresolved')
+                            .filter((question) => new Date(question.sessionBySessionId.endTime) >= new Date());
 
                         return (
                             <React.Fragment>
