@@ -30,13 +30,12 @@ class SessionAlertModal extends React.Component {
                 </button>
             ));
 
+        let shadeDisplay = this.props.displayModal ? 'shade' : '';
+
         return (
             <div className="SessionAlertModal">
-                <div
-                    className={'modalShadeAlert ' + this.props.displayModal}
-                    onClick={() => this.props.cancelAction()}
-                />
-                <div className="modalContent">
+
+                <div className={'modalContent ' + shadeDisplay}>
                     <div className={'text ' + this.props.color}>
                         {this.props.header && <div className="title">{this.props.header}</div>}
                         {this.props.icon &&
@@ -49,6 +48,10 @@ class SessionAlertModal extends React.Component {
                         {buttons}
                     </div>
                 </div>
+                <div
+                    className={'modalShadeAlert ' + shadeDisplay}
+                    onClick={() => this.props.cancelAction()}
+                />
             </div>
         );
     }

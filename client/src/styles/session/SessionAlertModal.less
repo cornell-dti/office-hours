@@ -4,35 +4,22 @@
     // color: @text-grey;
     // position: relative;
 
-    .modalShadeAlert.false {
+    .modalShadeAlert {
         display: none;
     }
 
-    .modalShadeAlert.true {
+    .modalShadeAlert.shade {
         display: block;
         position: fixed;
         top: 0;
         bottom: 0;
         left: 0;
         right: 0;
-        z-index: 4;
+        z-index: 2;
         background-color: rgba(112, 112, 112, 0.8);
     }
     
     .modalContent {
-        @media only screen and (max-width: @mobile-breakpoint) {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 75%;
-            z-index: 5;
-            border-radius: 10px;
-            overflow: hidden;
-            background-color: white;
-        }
-
-
         .red {
             color: #c55a5a;
         }
@@ -40,6 +27,18 @@
         .yellow {
             color: #dc9c35;
         }
+    }
+
+    .modalContent.shade {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 75%;
+        z-index: 3;
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: white;
     }
 
     .text {
