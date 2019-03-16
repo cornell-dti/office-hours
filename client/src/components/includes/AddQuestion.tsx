@@ -65,6 +65,7 @@ class AddQuestion extends React.Component {
             selectedTags: [],
             redirect: false
         };
+        this.handleXClick = this.handleXClick.bind(this);
     }
 
     // Keep window size in state for conditional rendering
@@ -307,7 +308,8 @@ class AddQuestion extends React.Component {
                                 buttons={['Cancel Question', 'Add Anyway']}
                                 cancelAction={this.handleXClick}
                                 mainAction={() => this.handleJoinClick(addQuestion)}
-                                displayModal={this.state.width < this.props.mobileBreakpoint}
+                                displayModal={true}
+                                displayShade={this.state.width < this.props.mobileBreakpoint}
                             />
                         }
                     </div>

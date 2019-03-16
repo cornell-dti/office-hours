@@ -8,6 +8,7 @@ import { Interval } from '../../utilities/interval';
 import gql from 'graphql-tag';
 import { Query, Mutation } from 'react-apollo';
 import { Icon } from 'semantic-ui-react';
+import SessionAlertModal from './SessionAlertModal';
 const GET_SESSION_DATA = gql`
 query getDataForSession($sessionId: Int!, $courseId: Int!) {
     apiGetCurrentUser {
@@ -217,9 +218,11 @@ class SessionView extends React.Component {
                         if (!data || !data.apiGetCurrentUser) {
                             return null;
                         }
-                        var otherQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
+                        const otherQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
                             .filter((session) => session.sessionBySessionId.sessionId !== this.props.id)
                             .filter((session) => new Date(session.sessionBySessionId.endTime) >= new Date());
+
+                        // this.setState({ displayRemovedWarning: otherQuestions.length > 0 });
 
                         return (
                             <React.Fragment>
@@ -293,6 +296,14 @@ class SessionView extends React.Component {
                                         />
                                     </React.Fragment>
                                 }
+                                <SessionAlertModal
+                                    color={'red'}
+                                    description={'A TA has marked you as absent from this office hour ' +
+                                        'and removed you from the queue.'}
+                                    buttons={['Continue']}
+                                    displayModal={true}// {otherQuestions.length > 0}
+                                    displayShade={true}
+                                />
                             </React.Fragment>
                         );
                     }}

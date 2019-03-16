@@ -10,49 +10,71 @@ class SessionAlertModal extends React.Component {
         color: string,
         description: string,
         buttons: string[],
-        cancelAction: Function,
+        cancelAction?: Function,
         mainAction?: Function,
+        displayModal: boolean,
+        displayShade: boolean
+    };
+
+    state: {
         displayModal: boolean
     };
 
+    constructor(props: {}) {
+        super(props);
+        this.state = {
+            displayModal: this.props.displayModal
+        };
+    }
+
+    defaultCancel = () => {
+        this.setState({
+            displayModal: false
+        });
+    }
+
     render() {
-        let main = () => (this.props.mainAction !== undefined ?
-            this.props.mainAction() : this.props.cancelAction());
+
+        // Check if cancelAction is supplied
+        let cancel = this.props.cancelAction !== undefined ? this.props.cancelAction : this.defaultCancel;
+
+        // Check if cancelMain is supplied
+        let main = this.props.mainAction !== undefined ? this.props.mainAction : cancel;
 
         var buttons = this.props.buttons.map((button, i: number, arr) =>
             (
                 <button
                     key={i}
                     className={arr.length - 1 === i ? 'last' : ''}
-                    onClick={arr.length - 1 === i ? main : () => this.props.cancelAction()}
+                    onClick={() => arr.length - 1 === i ? main() : cancel()}
                 >
                     {button}
                 </button>
             ));
 
-        let shadeDisplay = this.props.displayModal ? 'shade' : '';
+        let shadeDisplay = this.props.displayShade ? 'shade' : '';
 
         return (
-            <div className="SessionAlertModal">
-
-                <div className={'modalContent ' + shadeDisplay}>
-                    <div className={'text ' + this.props.color}>
-                        {this.props.header && <div className="title">{this.props.header}</div>}
-                        {this.props.icon &&
-                            <div className="Icon">
-                                <Icon name={this.props.icon} />
-                            </div>}
-                        {this.props.description}
+            this.state.displayModal && (
+                <div className="SessionAlertModal">
+                    <div
+                        className={'modalShadeAlert ' + shadeDisplay}
+                        onClick={() => cancel()}
+                    />
+                    <div className={'modalContent ' + shadeDisplay}>
+                        <div className={'text ' + this.props.color}>
+                            {this.props.header && <div className="title">{this.props.header}</div>}
+                            {this.props.icon &&
+                                <div className="Icon">
+                                    <Icon name={this.props.icon} />
+                                </div>}
+                            {this.props.description}
+                        </div>
+                        <div className="buttons">
+                            {buttons}
+                        </div>
                     </div>
-                    <div className="buttons">
-                        {buttons}
-                    </div>
-                </div>
-                <div
-                    className={'modalShadeAlert ' + shadeDisplay}
-                    onClick={() => this.props.cancelAction()}
-                />
-            </div>
+                </div>)
         );
     }
 }

@@ -4,7 +4,6 @@ import * as H from 'history';
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import ConnectedQuestionView from '../includes/ConnectedQuestionView';
-import SessionAlertModal from '../includes/SessionAlertModal';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -25,7 +24,6 @@ class SplitView extends React.Component {
         sessionId: number,
         width: number,
         height: number,
-        displayRemovedWarning: boolean,
         activeView: string
     };
 
@@ -56,13 +54,10 @@ class SplitView extends React.Component {
             sessionId: parseInt(this.props.match.params.sessionId || '-1', 10),
             width: window.innerWidth,
             height: window.innerHeight,
-            displayRemovedWarning: true,
             activeView: this.props.match.params.page === 'add'
                 ? 'addQuestion'
                 : this.props.match.params.sessionId ? 'session' : 'calendar'
         };
-
-        this.toggleRemoved = this.toggleRemoved.bind(this);
 
         // Handle browser back button
         this.props.history.listen((location, action) => {
@@ -72,12 +67,6 @@ class SplitView extends React.Component {
                     : this.props.match.params.sessionId ? 'session' : 'calendar',
                 sessionId: parseInt(this.props.match.params.sessionId || '-1', 10)
             });
-        });
-    }
-
-    toggleRemoved = (toggle: boolean) => {
-        this.setState({
-            displayRemovedWarning: toggle
         });
     }
 
@@ -137,14 +126,7 @@ class SplitView extends React.Component {
                         </div>
                         <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />
                     </React.Fragment>
-                }{this.state.displayRemovedWarning && <SessionAlertModal
-                    color={'red'}
-                    description={'A TA has marked you as absent from this office hour ' +
-                        'and removed you from the queue.'}
-                    buttons={['Continue']}
-                    cancelAction={() => this.toggleRemoved(false)}
-                    displayModal={true}
-                />}
+                }
             </React.Fragment>
         );
     }
