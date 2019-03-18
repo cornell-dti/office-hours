@@ -61,7 +61,13 @@ class CalendarHeader extends React.Component {
                             <ul className="courseMenu" tabIndex={1} onClick={() => this.setCourses(false)} >
                                 {this.props.allCoursesList.filter((c) => c.semester === 'SP19').map((course) =>
                                     <li key={course.courseId}>
-                                        <a href={'/course/' + course.courseId}>{course.code}</a>
+                                        <a
+                                            href={'/course/' + course.courseId}
+                                            onClick={() =>
+                                                document.cookie = 'lastCourseId=' 
+                                                + course.courseId}
+                                        > {course.code}
+                                        </a>
                                     </li>
                                 )}
                             </ul>

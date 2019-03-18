@@ -16,6 +16,15 @@ import { Loader } from 'semantic-ui-react';
 
 ReactGA.initialize('UA-123790900-1');
 
+var cookie = document.cookie;
+var n = /lastCourseId=\d/g;
+var shift = n.exec(cookie);
+var result = /\d/g.exec(String(shift));
+var newCourseID = (result && result[0]) || 2;
+console.log(newCourseID);
+console.log(result);
+console.log(shift);
+
 const GET_USER = gql`
 query {
     apiGetCurrentUser {
@@ -87,7 +96,7 @@ class App extends React.Component {
                         <PrivateRoute path="/professor/course/:courseId" component={ProfessorView} exact={true} />
                         <PrivateRoute path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
                         <PrivateRoute path="/course/:courseId" component={SplitView} />
-                        <Redirect from="/" to="/course/2" />
+                        <Redirect from="/" to={'/course/' + newCourseID} />
                     </Switch>
                 </div>
             </Router>
