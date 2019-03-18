@@ -28,7 +28,7 @@ if (result != null) {
     newCourseID = String(window.localStorage.getItem('lastid'));
 } else {
     if (window.localStorage.getItem('lastid') != null) {
-        newCourseID = String(window.localStorage.getItem('lastid')); 
+        newCourseID = String(window.localStorage.getItem('lastid'));
     } else {
         window.localStorage.setItem('lastid', '2');
         newCourseID = String(window.localStorage.getItem('lastid'));

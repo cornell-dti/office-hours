@@ -64,7 +64,7 @@ class CalendarHeader extends React.Component {
                                         <a
                                             href={'/course/' + course.courseId}
                                             onClick={() =>
-                                                document.cookie = 'lastCourseId=' 
+                                                document.cookie = 'lastCourseId='
                                                 + course.courseId}
                                         > {course.code}
                                         </a>
