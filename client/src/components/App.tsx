@@ -22,11 +22,25 @@ var zero = ca[0];
 var semi = /lastCourseId=\d/g;
 var shift = semi.exec(zero);
 var result = /\d/g.exec(String(shift));
-var newCourseID = result && result[0] || 2;
-console.log(zero);
-console.log(shift);
-console.log(result);
+var newCourseID: string;
+if (result != null) {
+    window.localStorage.setItem('lastid', String(result));
+    newCourseID = String(window.localStorage.getItem('lastid'));
+} else {
+    if (window.localStorage.getItem('lastid') != null) {
+        newCourseID = String(window.localStorage.getItem('lastid')); 
+    } else {
+        window.localStorage.setItem('lastid', '2');
+        newCourseID = String(window.localStorage.getItem('lastid'));
+    }
+}
+newCourseID = String(window.localStorage.getItem('lastid'));
+
 console.log(newCourseID);
+// console.log(zero);
+// console.log(shift);
+// console.log(result);
+// console.log(newCourseID);
 
 const GET_USER = gql`
 query {
