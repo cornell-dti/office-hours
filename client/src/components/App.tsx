@@ -17,11 +17,13 @@ import { Loader } from 'semantic-ui-react';
 ReactGA.initialize('UA-123790900-1');
 
 var cookie = document.cookie;
-var n = /lastCourseId=\d/g;
-var shift = n.exec(cookie);
+var semi = /lastCourseId=\d; _ga=/m;
+var semicolon = semi.exec(cookie);
+var n = /lastCourseId=\d/m;
+var shift = n.exec(String(semicolon));
 var result = /\d/g.exec(String(shift));
-var newCourseID = (result && result[0]) || 2;
-console.log(newCourseID);
+var newCourseID = result && result[0] || 2;
+console.log(semicolon);
 console.log(result);
 console.log(shift);
 
