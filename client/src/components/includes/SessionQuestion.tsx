@@ -122,10 +122,6 @@ class SessionQuestion extends React.Component {
     // }
 
     handleUndoDontKnow = (questionId: number, UndoDontKnow: Function) => {
-        // this.setState({
-        //     undoQuestionIdDontKnow: questionId,
-        //     undoName: name,
-        // });
         UndoDontKnow({
             variables: {
                 questionId: questionId,
@@ -284,7 +280,10 @@ class SessionQuestion extends React.Component {
                                                 </React.Fragment>
                                             )} */}
                                             {this.state.showDotMenu &&
-                                                <Mutation mutation={UNDO_DONT_KNOW}>
+                                                <Mutation
+                                                    mutation={UNDO_DONT_KNOW}
+                                                    onCompleted={() => this.props.refetch()}
+                                                >
                                                     {(UndoDontKnow) =>
                                                         <React.Fragment>
                                                             <ul
