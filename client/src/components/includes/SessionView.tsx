@@ -23,6 +23,8 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
             }
             questionsByAskerId {
                 nodes {
+                    timeEntered
+                    status
                     sessionBySessionId {
                         sessionId
                         endTime
@@ -126,7 +128,8 @@ class SessionView extends React.Component {
         undoAction?: string,
         undoName?: string,
         undoQuestionId?: number,
-        timeoutId: number | null
+        timeoutId: number | null,
+        didShowAbsent: boolean
     };
 
     questionsContainer: SessionQuestionsContainer | null = null;
@@ -138,6 +141,7 @@ class SessionView extends React.Component {
             undoName: undefined,
             undoQuestionId: undefined,
             timeoutId: null,
+            didShowAbsent: false
         };
     }
 
@@ -222,7 +226,12 @@ class SessionView extends React.Component {
                             .filter((session) => session.sessionBySessionId.sessionId !== this.props.id)
                             .filter((session) => new Date(session.sessionBySessionId.endTime) >= new Date());
 
-                        // this.setState({ displayRemovedWarning: otherQuestions.length > 0 });
+                        const didAskQuestion = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes.length > 0;
+
+                        const lastAskedQuestion = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
+                            .reduce((prev, current) => new Date(prev.timeEntered) >
+                                new Date(current.timeEntered) ? prev : current
+                            );
 
                         return (
                             <React.Fragment>
@@ -296,14 +305,16 @@ class SessionView extends React.Component {
                                         />
                                     </React.Fragment>
                                 }
-                                <SessionAlertModal
-                                    color={'red'}
-                                    description={'A TA has marked you as absent from this office hour ' +
-                                        'and removed you from the queue.'}
-                                    buttons={['Continue']}
-                                    displayModal={true}// {otherQuestions.length > 0}
-                                    displayShade={true}
-                                />
+
+                                {didAskQuestion && lastAskedQuestion.status === 'no-show' &&
+                                    !this.state.didShowAbsent &&
+                                    <SessionAlertModal
+                                        color={'red'}
+                                        description={'A TA has marked you as absent from this office hour ' +
+                                            'and removed you from the queue.'}
+                                        buttons={['Continue']}
+                                        displayShade={true}
+                                    />}
                             </React.Fragment>
                         );
                     }}

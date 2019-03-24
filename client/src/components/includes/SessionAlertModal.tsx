@@ -12,7 +12,6 @@ class SessionAlertModal extends React.Component {
         buttons: string[],
         cancelAction?: Function,
         mainAction?: Function,
-        displayModal: boolean,
         displayShade: boolean
     };
 
@@ -23,7 +22,7 @@ class SessionAlertModal extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = {
-            displayModal: this.props.displayModal
+            displayModal: true
         };
     }
 
