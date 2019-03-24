@@ -261,24 +261,6 @@ class SessionQuestion extends React.Component {
                                             >
                                                 ...
                                             </p>
-                                            {/* {this.state.showDotMenu && (
-                                                <React.Fragment>
-                                                    <ul
-                                                        className="IReallyDontKnow"
-                                                        tabIndex={1}
-                                                        onClick={() => this.setDotMenu(false)}
-                                                    >
-                                                        <li
-                                                            onClick={() => this.triggerUndoDontKnow(
-                                                                question.questionId,
-                                                                question.userByAskerId.computedName
-                                                            )}
-                                                        >
-                                                            I Really Don't Know
-                                                        </li>
-                                                    </ul>
-                                                </React.Fragment>
-                                            )} */}
                                             {this.state.showDotMenu &&
                                                 <Mutation
                                                     mutation={UNDO_DONT_KNOW}
