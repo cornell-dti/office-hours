@@ -141,7 +141,7 @@ class SessionView extends React.Component {
             undoName: undefined,
             undoQuestionId: undefined,
             timeoutId: null,
-            didShowAbsent: false
+            didShowAbsent: true
         };
     }
 
@@ -228,10 +228,18 @@ class SessionView extends React.Component {
 
                         const didAskQuestion = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes.length > 0;
 
-                        const lastAskedQuestion = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
-                            .reduce((prev, current) => new Date(prev.timeEntered) >
-                                new Date(current.timeEntered) ? prev : current
-                            );
+                        const lastAskedQuestion = didAskQuestion ?
+                            data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
+                                .reduce((prev, current) => new Date(prev.timeEntered) >
+                                    new Date(current.timeEntered) ? prev : current
+                                ) : null;
+
+                        if (lastAskedQuestion !== null && lastAskedQuestion.status !== 'no-show' &&
+                            this.state.didShowAbsent) {
+                            this.setState({
+                                didShowAbsent: false
+                            });
+                        }
 
                         return (
                             <React.Fragment>
@@ -305,14 +313,15 @@ class SessionView extends React.Component {
                                         />
                                     </React.Fragment>
                                 }
-
-                                {didAskQuestion && lastAskedQuestion.status === 'no-show' &&
-                                    !this.state.didShowAbsent &&
+                                {didAskQuestion &&
+                                    lastAskedQuestion !== null && lastAskedQuestion.status === 'no-show' &&
+                                    this.state.didShowAbsent &&
                                     <SessionAlertModal
                                         color={'red'}
                                         description={'A TA has marked you as absent from this office hour ' +
                                             'and removed you from the queue.'}
                                         buttons={['Continue']}
+                                        cancelAction={() => this.setState({ didShowAbsent: false })}
                                         displayShade={true}
                                     />}
                             </React.Fragment>
