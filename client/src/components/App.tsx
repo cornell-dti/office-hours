@@ -87,7 +87,7 @@ class App extends React.Component {
                         <PrivateRoute path="/professor/course/:courseId" component={ProfessorView} exact={true} />
                         <PrivateRoute path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
                         <PrivateRoute path="/course/:courseId" component={SplitView} />
-                        <Redirect from="/" to={'/course/' + String(window.localStorage.getItem('lastid'))} />
+                        <Redirect from="/" to={'/course/' + (String(window.localStorage.getItem('lastid') || 2))} />
                     </Switch>
                 </div>
             </Router>
