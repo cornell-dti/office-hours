@@ -16,32 +16,6 @@ import { Loader } from 'semantic-ui-react';
 
 ReactGA.initialize('UA-123790900-1');
 
-var decodeCookie = decodeURIComponent(document.cookie);
-var ca = decodeCookie.split(';');
-var zero = ca[0];
-var semi = /lastCourseId=\d/g;
-var shift = semi.exec(zero);
-var result = /\d/g.exec(String(shift));
-var newCourseID: string;
-if (result != null) {
-    window.localStorage.setItem('lastid', String(result));
-    newCourseID = String(window.localStorage.getItem('lastid'));
-} else {
-    if (window.localStorage.getItem('lastid') != null) {
-        newCourseID = String(window.localStorage.getItem('lastid'));
-    } else {
-        window.localStorage.setItem('lastid', '2');
-        newCourseID = String(window.localStorage.getItem('lastid'));
-    }
-}
-newCourseID = String(window.localStorage.getItem('lastid'));
-
-console.log(newCourseID);
-// console.log(zero);
-// console.log(shift);
-// console.log(result);
-// console.log(newCourseID);
-
 const GET_USER = gql`
 query {
     apiGetCurrentUser {
@@ -113,7 +87,7 @@ class App extends React.Component {
                         <PrivateRoute path="/professor/course/:courseId" component={ProfessorView} exact={true} />
                         <PrivateRoute path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
                         <PrivateRoute path="/course/:courseId" component={SplitView} />
-                        <Redirect from="/" to={'/course/' + newCourseID} />
+                        <Redirect from="/" to={'/course/' + String(window.localStorage.getItem('lastid'))} />
                     </Switch>
                 </div>
             </Router>
