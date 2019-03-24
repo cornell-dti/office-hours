@@ -260,32 +260,33 @@ class SessionQuestion extends React.Component {
                                                 onClick={() => this.setDotMenu(!this.state.showDotMenu)}
                                             >
                                                 ...
-                                            </p>
+
                                             {this.state.showDotMenu &&
-                                                <Mutation
-                                                    mutation={UNDO_DONT_KNOW}
-                                                    onCompleted={() => this.props.refetch()}
-                                                >
-                                                    {(UndoDontKnow) =>
-                                                        <React.Fragment>
-                                                            <ul
-                                                                className="IReallyDontKnow"
-                                                                tabIndex={1}
-                                                                onClick={() => this.setDotMenu(false)}
-                                                            >
-                                                                <li
-                                                                    onClick={() => this.handleUndoDontKnow(
-                                                                        question.questionId,
-                                                                        UndoDontKnow
-                                                                    )}
+                                                    <Mutation
+                                                        mutation={UNDO_DONT_KNOW}
+                                                        onCompleted={() => this.props.refetch()}
+                                                    >
+                                                        {(UndoDontKnow) =>
+                                                            <React.Fragment>
+                                                                <ul
+                                                                    className="IReallyDontKnow"
+                                                                    tabIndex={1}
+                                                                    onClick={() => this.setDotMenu(false)}
                                                                 >
-                                                                    I Really Don't Know
-                                                                </li>
-                                                            </ul>
-                                                        </React.Fragment>
-                                                    }
-                                                </Mutation>
-                                            }
+                                                                    <li
+                                                                        onClick={() => this.handleUndoDontKnow(
+                                                                            question.questionId,
+                                                                            UndoDontKnow
+                                                                        )}
+                                                                    >
+                                                                        I Really Don't Know
+                                                                    </li>
+                                                                </ul>
+                                                            </React.Fragment>
+                                                        }
+                                                    </Mutation>
+                                                }
+                                            </p>
                                         </React.Fragment>
                                     }
                                 </div>
