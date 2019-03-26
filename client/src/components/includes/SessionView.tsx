@@ -239,7 +239,7 @@ class SessionView extends React.Component {
                             this.setState({
                                 didShowAbsent: false
                             });
-                        }
+                        }   
 
                         return (
                             <React.Fragment>
