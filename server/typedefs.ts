@@ -94,6 +94,7 @@ type Question_tag {
 
 type Query {
     hello: String
+    sessions: [Session]
 }
 `
 
