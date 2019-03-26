@@ -1,6 +1,5 @@
 import * as React from 'react';
-const QMeLogo = require('../../media/QMeLogo.svg');
-const QLogo = require('../../media/QLogo.svg');
+const QMeLogo = require('../../media/QLogo2.svg');
 const googleLogo = require('../../media/googleLogo.svg');
 
 class LoginView extends React.Component {
@@ -17,7 +16,6 @@ class LoginView extends React.Component {
                         <img src={googleLogo} className="googleLogo" />
                         <span className="loginButtonText">Sign in with Google</span>
                     </a>
-                    <img src={QLogo} className="QLogo" />
                 </section>
             </div >
         );
