@@ -5,7 +5,6 @@
     "main": "index.js",
     "scripts": {
         "start": "cd server && yarn start",
-        "build": "yarn start",
         "postinstall": "cd client && yarn install --production=false && yarn run deploy && cd ../server && yarn install --production=false"
     },
     "repository": {
