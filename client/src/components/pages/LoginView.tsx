@@ -8,7 +8,7 @@ class LoginView extends React.Component {
             <div className="LoginView">
                 <section className="topPanel">
                     <img src={QMeLogo} className="QMeLogo" />
-                    The answer to all your office hour Q's
+                    Office Hours Simplified
                 </section>
                 <section className="bottomPanel">
                     <p className="hintText" >Use your Cornell NetID to login</p>
