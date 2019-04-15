@@ -27,7 +27,17 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
                     status
                     sessionBySessionId {
                         sessionId
+                        startTime
                         endTime
+                        building
+                        room
+                        sessionTasBySessionId {
+                            nodes {
+                                userByUserId {
+                                    computedName
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -129,7 +139,8 @@ class SessionView extends React.Component {
         undoName?: string,
         undoQuestionId?: number,
         timeoutId: number | null,
-        didShowAbsent: boolean
+        showAbsent: boolean
+        dismissedAbsent: boolean
     };
 
     questionsContainer: SessionQuestionsContainer | null = null;
@@ -141,7 +152,8 @@ class SessionView extends React.Component {
             undoName: undefined,
             undoQuestionId: undefined,
             timeoutId: null,
-            didShowAbsent: true
+            showAbsent: true,
+            dismissedAbsent: true
         };
     }
 
@@ -234,12 +246,20 @@ class SessionView extends React.Component {
                                     new Date(current.timeEntered) ? prev : current
                                 ) : null;
 
-                        if (lastAskedQuestion !== null && lastAskedQuestion.status !== 'no-show' &&
-                            this.state.didShowAbsent) {
+                        // if (lastAskedQuestion !== null && lastAskedQuestion.status !== 'no-show' &&
+                        //     this.state.showAbsent) {
+                        //     this.setState({
+                        //         showAbsent: false
+                        //     });
+                        // }
+
+                        if (lastAskedQuestion !== null && lastAskedQuestion.status === 'no-show' &&
+                            !this.state.showAbsent && !this.state.dismissedAbsent) {
                             this.setState({
-                                didShowAbsent: false
+                                showAbsent: true
                             });
-                        }   
+                            console.log('No Show');
+                        }
 
                         return (
                             <React.Fragment>
@@ -313,15 +333,16 @@ class SessionView extends React.Component {
                                         />
                                     </React.Fragment>
                                 }
-                                {didAskQuestion &&
-                                    lastAskedQuestion !== null && lastAskedQuestion.status === 'no-show' &&
-                                    this.state.didShowAbsent &&
+                                {didAskQuestion && lastAskedQuestion !== null &&
+                                    lastAskedQuestion.status === 'no-show' &&
+                                    this.state.showAbsent && !this.state.dismissedAbsent &&
                                     <SessionAlertModal
                                         color={'red'}
                                         description={'A TA has marked you as absent from this office hour ' +
                                             'and removed you from the queue.'}
+                                        OHSession={lastAskedQuestion.sessionBySessionId}
                                         buttons={['Continue']}
-                                        cancelAction={() => this.setState({ didShowAbsent: false })}
+                                        cancelAction={() => this.setState({ showAbsent: false, dismissedAbsent: true })}
                                         displayShade={true}
                                     />}
                             </React.Fragment>

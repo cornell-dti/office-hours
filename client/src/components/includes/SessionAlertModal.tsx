@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as moment from 'moment';
 import { Icon } from 'semantic-ui-react';
 import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
 
@@ -9,6 +10,7 @@ class SessionAlertModal extends React.Component {
         icon?: SemanticICONS,
         color: string,
         description: string,
+        OHSession?: AppSession,
         buttons: string[],
         cancelAction?: Function,
         mainAction?: Function,
@@ -53,6 +55,10 @@ class SessionAlertModal extends React.Component {
 
         let shadeDisplay = this.props.displayShade ? 'shade' : '';
 
+        // Copied over from ProfessorOHInfoDelete
+        var taList = this.props.OHSession ?
+            this.props.OHSession.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.computedName) : [];
+
         return (
             this.state.displayModal && (
                 <div className="SessionAlertModal">
@@ -69,6 +75,23 @@ class SessionAlertModal extends React.Component {
                                 </div>}
                             {this.props.description}
                         </div>
+                        {/* Copied over from ProfessorOHInfoDelete */}
+                        {this.props.OHSession &&
+                            <div className="info">
+                                <div className="ta">
+                                    {taList.join(', ')}
+                                    {taList.length === 0 && '(No TA Assigned)'}
+                                </div>
+                                <div>
+                                    <span>
+                                        {moment(this.props.OHSession.startTime).format('h:mm A')}&nbsp;
+                                        to {moment(this.props.OHSession.endTime).format('h:mm A')}
+                                    </span>
+                                    <span>
+                                        {this.props.OHSession.building} {this.props.OHSession.room}
+                                    </span>
+                                </div>
+                            </div>}
                         <div className="buttons">
                             {buttons}
                         </div>
