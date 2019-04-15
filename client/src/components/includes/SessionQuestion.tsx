@@ -268,20 +268,21 @@ class SessionQuestion extends React.Component {
                                                     >
                                                         {(UndoDontKnow) =>
                                                             <React.Fragment>
-                                                                <ul
+                                                                <div
                                                                     className="IReallyDontKnow"
                                                                     tabIndex={1}
                                                                     onClick={() => this.setDotMenu(false)}
                                                                 >
-                                                                    <li
+                                                                    <p
+                                                                        className="DontKnowButton"
                                                                         onClick={() => this.handleUndoDontKnow(
                                                                             question.questionId,
                                                                             UndoDontKnow
                                                                         )}
                                                                     >
                                                                         I Really Don't Know
-                                                                    </li>
-                                                                </ul>
+                                                                    </p>
+                                                                </div>
                                                             </React.Fragment>
                                                         }
                                                     </Mutation>
