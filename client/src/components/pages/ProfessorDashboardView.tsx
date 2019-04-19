@@ -1,10 +1,12 @@
 import * as React from 'react';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
+// import QuestionsBarChart from '../includes/QuestionsBarChart';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Redirect } from 'react-router';
-import { Dropdown } from 'semantic-ui-react';
+import { Dropdown, DropdownProps } from 'semantic-ui-react';
+import { BarDatum } from '@nivo/bar';
 
 const METADATA_QUERY = gql`
 query GetMetadata($courseId: Int!, $level: Int!) {
@@ -57,6 +59,7 @@ interface MetadataVariables {
 
 interface CategoryTag {
     category: string;
+    totalQuestions: number;
     childTags: {
         name: string,
         questionCount: number
@@ -75,8 +78,24 @@ class ProfessorDashboardView extends React.Component {
         }
     };
 
+    state: {
+        currentCategory: CategoryTag | undefined;
+        categories: CategoryTag[];
+    };
+
     constructor(props: {}) {
         super(props);
+        this.state = {
+            currentCategory: undefined,
+            categories: []
+        };
+    }
+
+    public handleUpdateCategory = (event: React.SyntheticEvent<HTMLElement, Event>,
+                                   data: DropdownProps): void => {
+        console.log('worked!');
+        let newCategoryTag = this.state.categories.find((c) => c.category === data.value);
+        this.setState({ category: newCategoryTag });
     }
 
     render() {
@@ -92,7 +111,8 @@ class ProfessorDashboardView extends React.Component {
                 >
                     {({ loading, data }) => {
                         var courseCode: string = 'Loading...';
-                        let tagsByCategory: CategoryTag[] = [];
+                        // let barGraphData: {}[] = [];
+                        let barsQuestionsByTag: BarDatum[] = [];
                         if (!loading && data) {
                             courseCode = data.courseByCourseId.code;
                             if (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role !== 'professor') {
@@ -101,6 +121,7 @@ class ProfessorDashboardView extends React.Component {
                             data.allTags.nodes.forEach((t) => {
                                 let category = {
                                     category: t.name,
+                                    totalQuestions: 0,
                                     childTags: []
                                 } as CategoryTag;
                                 if (t.tagRelationsByParentId) {
@@ -117,11 +138,22 @@ class ProfessorDashboardView extends React.Component {
                                         } else {
                                             category.childTags[tagIndex].questionCount++;
                                         }
+                                        category.totalQuestions++;
                                     });
                                 }
-                                tagsByCategory.push(category);
+                                this.state.categories.push(category);
                             });
-                            console.log(JSON.stringify(tagsByCategory));
+                            console.log(JSON.stringify(this.state.categories));
+                            if (this.state.currentCategory) {
+                                this.state.currentCategory.childTags.forEach((t) => {
+                                    barsQuestionsByTag.push({
+                                        [t.name]: t.questionCount
+                                    });
+                                    let newBar = {
+                                        'tag': c.childTags
+                                    };
+                                });
+                            }
                         }
                         return (
                             <React.Fragment>
@@ -145,6 +177,7 @@ class ProfessorDashboardView extends React.Component {
                                                 placeholder="Select Category to View"
                                                 fluid={true}
                                                 selection={true}
+                                                onChange={this.handleUpdateCategory}
                                                 options={tagsByCategory.map(category => {
                                                     let name = category.category;
                                                     return (
