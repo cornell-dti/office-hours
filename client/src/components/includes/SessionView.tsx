@@ -227,7 +227,7 @@ class SessionView extends React.Component {
                 <SessionDataQuery
                     query={GET_SESSION_DATA}
                     variables={{ sessionId: this.props.id, courseId: this.props.courseId }}
-                    pollInterval={5000}
+                    pollInterval={30000}
                 >
                     {({ loading, data, error, refetch }) => {
                         if (error) { return null; }
@@ -246,18 +246,17 @@ class SessionView extends React.Component {
                                     new Date(current.timeEntered) ? prev : current
                                 ) : null;
 
-                        // if (lastAskedQuestion !== null && lastAskedQuestion.status !== 'no-show' &&
-                        //     this.state.showAbsent) {
-                        //     this.setState({
-                        //         showAbsent: false
-                        //     });
-                        // }
+                        if (lastAskedQuestion !== null &&
+                            lastAskedQuestion.status !== 'no-show' &&
+                            this.state.showAbsent) {
+                            this.setState({ showAbsent: false, dismissedAbsent: true });
+                        }
 
-                        if (lastAskedQuestion !== null && lastAskedQuestion.status === 'no-show' &&
-                            !this.state.showAbsent && !this.state.dismissedAbsent) {
-                            this.setState({
-                                showAbsent: true
-                            });
+                        if (lastAskedQuestion !== null &&
+                            lastAskedQuestion.status === 'no-show' &&
+                            !this.state.showAbsent &&
+                            this.state.dismissedAbsent) {
+                            this.setState({ showAbsent: true, dismissedAbsent: false });
                             console.log('No Show');
                         }
 
@@ -333,16 +332,14 @@ class SessionView extends React.Component {
                                         />
                                     </React.Fragment>
                                 }
-                                {didAskQuestion && lastAskedQuestion !== null &&
-                                    lastAskedQuestion.status === 'no-show' &&
-                                    this.state.showAbsent && !this.state.dismissedAbsent &&
+                                {lastAskedQuestion !== null && this.state.showAbsent && !this.state.dismissedAbsent &&
                                     <SessionAlertModal
                                         color={'red'}
                                         description={'A TA has marked you as absent from this office hour ' +
                                             'and removed you from the queue.'}
                                         OHSession={lastAskedQuestion.sessionBySessionId}
                                         buttons={['Continue']}
-                                        cancelAction={() => this.setState({ showAbsent: false, dismissedAbsent: true })}
+                                        cancelAction={() => this.setState({ dismissedAbsent: true })}
                                         displayShade={true}
                                     />}
                             </React.Fragment>
