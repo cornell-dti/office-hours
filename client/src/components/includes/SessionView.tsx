@@ -238,13 +238,11 @@ class SessionView extends React.Component {
                             .filter((session) => session.sessionBySessionId.sessionId !== this.props.id)
                             .filter((session) => new Date(session.sessionBySessionId.endTime) >= new Date());
 
-                        const didAskQuestion = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes.length > 0;
+                        const userQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes;
 
-                        const lastAskedQuestion = didAskQuestion ?
-                            data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
-                                .reduce((prev, current) => new Date(prev.timeEntered) >
-                                    new Date(current.timeEntered) ? prev : current
-                                ) : null;
+                        const lastAskedQuestion = userQuestions.length > 0 ?
+                            userQuestions.reduce((prev, current) => new Date(prev.timeEntered) >
+                                new Date(current.timeEntered) ? prev : current) : null;
 
                         if (lastAskedQuestion !== null &&
                             lastAskedQuestion.status !== 'no-show' &&
@@ -257,7 +255,6 @@ class SessionView extends React.Component {
                             !this.state.showAbsent &&
                             this.state.dismissedAbsent) {
                             this.setState({ showAbsent: true, dismissedAbsent: false });
-                            console.log('No Show');
                         }
 
                         return (
