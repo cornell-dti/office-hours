@@ -234,9 +234,11 @@ class SessionView extends React.Component {
                         if (!data || !data.apiGetCurrentUser) {
                             return null;
                         }
-                        const otherQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
-                            .filter((session) => session.sessionBySessionId.sessionId !== this.props.id)
-                            .filter((session) => new Date(session.sessionBySessionId.endTime) >= new Date());
+
+                        var otherQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
+                            .filter((question) => question.sessionBySessionId.sessionId !== this.props.id)
+                            .filter((question) => question.status === 'unresolved')
+                            .filter((question) => new Date(question.sessionBySessionId.endTime) >= new Date());
 
                         const userQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes;
 

@@ -51,7 +51,7 @@ class ProfessorTagsTable extends React.Component {
                             <tr>
                                 <th>Assignment</th>
                                 <th>Tags</th>
-                                <th>Status</th>
+                                <th id="statusColumn">Status</th>
                                 <th>Edit</th>
                             </tr>
                         </tbody>

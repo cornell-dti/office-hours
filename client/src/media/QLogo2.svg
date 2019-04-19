@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="320px" height="321px" version="1.1" viewBox="0 0 320 321">
+<!--Generator: Sketch 53.1 (72631) - https://sketchapp.com-->
+    <title>
+        Logo ver 3.0_final as of 03/24/2019
+    </title>
+    <desc>
+        Created with Sketch.
+    </desc>
+    <defs>
+        <linearGradient id="linearGradient-1" x1="69.0724982%" x2="5.43685761%" y1="12.2611759%" y2="67.2706911%">
+            <stop offset="0%" stop-color="#B2D9FF"/>
+            <stop offset="100%" stop-color="#78B6F4"/>
+        </linearGradient>
+        <linearGradient id="linearGradient-2" x1="14.7241608%" x2="92.2993416%" y1="-53.3202717%" y2="120.00788%">
+            <stop offset="0%" stop-color="#FF9399"/>
+            <stop offset="100%" stop-color="#FF5A60"/>
+        </linearGradient>
+        <linearGradient id="linearGradient-3" x1="69.0724982%" x2="5.43685761%" y1="12.1475904%" y2="67.3226721%">
+            <stop offset="0%" stop-color="#B2D9FF"/>
+            <stop offset="100%" stop-color="#78B6F4"/>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" fill="none" fill-rule="evenodd" stroke="none" stroke-width="1">
+        <g id="Logo-ver-3.0_final-as-of-03/24/2019">
+            <g id="Group-3">
+                <g id="Group-2" stroke-linecap="round">
+                    <g id="Group">
+                        <path id="Oval" stroke="url(#linearGradient-1)" stroke-dasharray="672.5900268554688,9999" stroke-width="30.5" d="M160,286.621622 C229.587878,286.621622 286,230.294203 286,160.810811 C286,91.3274186 229.587878,35 160,35 C90.4121215,35 34,91.3274186 34,160.810811 C34,230.294203 90.4121215,286.621622 160,286.621622 Z" transform="translate(160.000000, 160.810811) rotate(-71.000000) translate(-160.000000, -160.810811) "/>
+                        <path id="Oval-Copy" stroke="url(#linearGradient-2)" stroke-dasharray="331.8999938964844,9999" stroke-width="18.1" d="M160.5,236 C202.197499,236 236,202.197499 236,160.5 C236,118.802501 202.197499,85 160.5,85 C118.802501,85 85,118.802501 85,160.5 C85,202.197499 118.802501,236 160.5,236 Z"/>
+                    </g>
+                </g>
+                <path id="Combined-Shape" fill="url(#linearGradient-3)" d="M273.917808,261.082192 L292.082192,261.082192 C296.455077,261.082192 300,264.627115 300,269 C300,273.372885 296.455077,276.917808 292.082192,276.917808 L273.917808,276.917808 L273.917808,295.082192 C273.917808,299.455077 270.372885,303 266,303 C261.627115,303 258.082192,299.455077 258.082192,295.082192 L258.082192,276.917808 L239.917808,276.917808 C235.544923,276.917808 232,273.372885 232,269 C232,264.627115 235.544923,261.082192 239.917808,261.082192 L258.082192,261.082192 L258.082192,242.917808 C258.082192,238.544923 261.627115,235 266,235 C270.372885,235 273.917808,238.544923 273.917808,242.917808 L273.917808,261.082192 Z"/>
+            </g>
+        </g>
+    </g>
+</svg>

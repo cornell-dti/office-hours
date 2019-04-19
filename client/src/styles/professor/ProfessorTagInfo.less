@@ -1,5 +1,5 @@
 .ProfessorTagInfo {
-    margin-left: 40px;
+    margin: 0 40px;
     color: #898989;
 
     .InputSection {
@@ -11,6 +11,10 @@
             color: #898989;
             margin-bottom: 10px;
         }
+
+        .AssignmentInput input {
+            width: 100%;
+        }
     }
 
     input {
@@ -18,7 +22,6 @@
     }
 
     .Status {
-
         .ActiveButton {
             width: 70px;
             height: 25px;
@@ -85,28 +88,6 @@
             &.disabled {
                 cursor: default;
                 opacity: 0.4;
-            }
-        }
-    }
-
-    .SuggestedTags {
-        .SuggestedChildTag {
-            display: inline-block;
-            min-width: 85px;
-            height: 20px;
-            border-radius: 7px;
-            border: solid 1px #979797;
-            text-align: center;
-            color: #898989;
-            line-height: 20px;
-            font-size: 12px;
-            margin-right: 10px;
-            position: relative;
-            cursor: pointer;
-
-            .Add {
-                position: absolute;
-                left: 5px;
             }
         }
     }

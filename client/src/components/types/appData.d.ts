@@ -99,9 +99,9 @@ interface AppUserRole extends AppUser {
 interface AppUserRoleQuestions extends AppUserRole {
     questionsByAskerId: {
         nodes: [{
-            timeEntered: number,
-            status: string,
-            sessionBySessionId: AppSession
+            timeEntered: number;
+            status: string;
+            sessionBySessionId: AppSession;
         }]
     }
 }

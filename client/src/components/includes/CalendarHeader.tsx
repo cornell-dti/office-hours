@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 // const QMeLogo = require('../../media/QMeLogo.svg');
-const QMeLogo = require('../../media/QLogo.svg');
+const QMeLogo = require('../../media/QLogo2.svg');
 const chevron = require('../../media/chevron.svg'); // Replace with dropdown cheveron
 
 class CalendarHeader extends React.Component {
@@ -61,7 +61,12 @@ class CalendarHeader extends React.Component {
                             <ul className="courseMenu" tabIndex={1} onClick={() => this.setCourses(false)} >
                                 {this.props.allCoursesList.filter((c) => c.semester === 'SP19').map((course) =>
                                     <li key={course.courseId}>
-                                        <a href={'/course/' + course.courseId}>{course.code}</a>
+                                        <a
+                                            href={'/course/' + course.courseId}
+                                            onClick={() =>
+                                                window.localStorage.setItem('lastid', String(course.courseId))}
+                                        > {course.code}
+                                        </a>
                                     </li>
                                 )}
                             </ul>
