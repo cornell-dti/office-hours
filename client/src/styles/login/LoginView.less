@@ -1,3 +1,7 @@
+.LoginView.contact {
+    flex-direction: column;
+}
+
 .topPanel {
     color: white;
     height: 45vh;
@@ -9,6 +13,74 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    position: relative;
+
+    .contactText {
+        background-color: transparent;
+        color: #155693;
+        border: none;
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: bold;
+        position: absolute;
+        bottom: 20px;
+    }
+
+    &.contact {
+        color: @number-blue;
+        background-color: white;
+        background-image: none;
+        position: relative;
+        margin-bottom: 0;
+        padding: 0 40px;
+        font-size: 19px;
+
+        h2 {
+            font-size: 22px;
+            margin: 11% 0 30px;
+        }
+    
+        .x {
+            position: absolute;
+            background-color: transparent;
+            border: none;
+            color: black;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
+
+        img {
+            padding-bottom: 0;
+            float: left;
+        }
+    }
+}
+
+.bottomPanel {
+    height: 55vh;
+
+    &.contact {
+        background-color: @brand-primary;
+        padding-top: 80px;
+
+        .contactButton {
+            background-color: @button-blue;
+            box-shadow: 2px 4px 4px 0 rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            padding: 15px 50px;
+            width: 247px;
+            font-size: 20px;
+            height: 40px;
+            color: white;
+        }
+    
+        a:hover {
+            cursor: pointer;
+        }
+    }
+    
 }
 
 .hintText {
@@ -31,12 +103,12 @@
     width: 40px;
 }
 
-@media only screen and (min-width: @mobile-breakpoint) {
+@media only screen and (min-width: @mobile-breakpoint) { // Desktop View
     .LoginView {
         display: flex;
         align-content: center;
         justify-content: center;
-        align-items: stretch;
+        align-items: center;
         background-color: rgba(51, 73, 94, 0.725);
         min-height: 100%;
         top: 20vh;
@@ -68,6 +140,17 @@
         min-width: 400px;
         max-width: 475px;
         border-radius: 15px 0 0 15px;
+
+        &.contact {
+            height: 300px;
+            min-width: 800px;
+            border-radius: 15px 15px 0 0;
+            display: block;
+
+            img {
+                margin: 70px 30px;
+            }
+        }
     }
 
     .bottomPanel {
@@ -77,6 +160,12 @@
         border-radius: 0 15px 15px 0;
         background-color: white;
         position: relative;
+
+        &.contact {
+            height: 200px;
+            min-width: 800px;
+            border-radius: 0 0 15px 15px;
+        }
     }
 
     .QLogo {
@@ -94,3 +183,5 @@
     }
 
 }
+
+
