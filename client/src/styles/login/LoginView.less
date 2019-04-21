@@ -4,22 +4,22 @@
 
 .QMeLogo {
     display: block;
-    padding-bottom: 40px;
     width: 83px;
+    padding-bottom: 40px;
     margin-top: 70px;
 }
 
 .topPanel {
+    height: 45vh;
     background-image: linear-gradient(#155693 0%, #6db9ea 100%);
     color: white;
-    height: 45vh;
-    font-size: 18px;
-    line-height: 1.4;
-    margin-bottom: 40px;
     display: flex;
+    flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    flex-direction: column;
+    line-height: 1.4;
+    font-size: 18px;
+    margin-bottom: 40px;
     position: relative;
 
     .contactText {
@@ -38,15 +38,15 @@
         background-image: none;
         background-color: white;
         color: @number-blue;
+        justify-content: center;
         font-size: 19px;
-        position: relative;
         margin-bottom: 0;
         padding: 0 40px;
-        justify-content: center;
+        position: relative;
 
         h2 {
             font-size: 22px;
-            margin: 11% 0 30px;
+            margin: 12% 0 30px;
         }
     
         .x {
@@ -60,8 +60,8 @@
         }
 
         .QMeLogo {
-            padding-bottom: 0;
             float: left;
+            padding-bottom: 0;
             margin-top: 0;
         }
     }
@@ -122,12 +122,12 @@
         height: 500px;
         font-size: 20px;
         box-shadow: 10px 10px 111px 0px rgba(0, 0, 0, 0.65);
+        min-width: 400px;
+        max-width: 475px;
     }
 
     .topPanel {
         margin: 0;
-        min-width: 400px;
-        max-width: 475px;
         border-radius: 15px 0 0 15px;
 
         &.contact {
@@ -144,8 +144,6 @@
 
     .bottomPanel {
         color: #8d8d8d;
-        min-width: 400px;
-        max-width: 475px;
         border-radius: 0 15px 15px 0;
         background-color: white;
         position: relative;

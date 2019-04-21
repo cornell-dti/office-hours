@@ -36,9 +36,7 @@ class LoginView extends React.Component {
                             <span className="loginButtonText">Sign in with Google</span>
                         </a>
                     </section>
-                </React.Fragment>
-                }
-
+                </React.Fragment>}
                 {this.state.showContact && <React.Fragment>
                     <section className={'topPanel' + isContact}>
                         <button className="x" onClick={() => this.setState({ showContact: false })}>
@@ -56,8 +54,7 @@ class LoginView extends React.Component {
                             Contact Us
                         </a>
                     </section>
-                </React.Fragment>
-                }
+                </React.Fragment>}
             </div >
         );
     }
