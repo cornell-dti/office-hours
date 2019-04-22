@@ -1,8 +1,8 @@
 import * as React from 'react';
 import ProfessorTagsTable from '../includes/ProfessorTagsTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
-import TopBar from '../includes/TopBar';
-import ProfessorSidebar from '../includes/ProfessorSidebar';
+// import TopBar from '../includes/TopBar';
+// import ProfessorSidebar from '../includes/ProfessorSidebar';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Redirect } from 'react-router';
@@ -108,7 +108,7 @@ class ProfessorView extends React.Component {
                         }
                         return (
                             <React.Fragment>
-                                <ProfessorSidebar
+                                {/* <ProfessorSidebar
                                     courseId={courseId}
                                     code={courseCode}
                                     selected={1}
@@ -120,7 +120,7 @@ class ProfessorView extends React.Component {
                                         context="professor"
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
                                     />
-                                }
+                                } */}
                             </React.Fragment>
                         );
                     }}

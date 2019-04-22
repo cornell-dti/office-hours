@@ -19,11 +19,11 @@ import { firestore } from '../includes/firebase';
 class SessionView extends React.Component {
     props: {
         id: string,
-        course: FireCourse,
+        course?: FireCourse,
         isDesktop: boolean,
-        session: FireSession
         backCallback: Function,
         joinCallback: Function,
+        userId: string
     };
 
     state: {
@@ -31,6 +31,8 @@ class SessionView extends React.Component {
         undoName?: string,
         undoQuestionId?: number,
         timeoutId: number | null,
+        session?: FireSession;
+        user?: FireUser;
     };
 
     questionsContainer: SessionQuestionsContainer | null = null;
@@ -49,6 +51,13 @@ class SessionView extends React.Component {
             .doc(this.props.id)
             .onSnapshot((doc) => {
                 this.setState({ session: doc.data() });
+            });
+
+        firestore
+            .collection('users')
+            .doc(this.props.userId)
+            .onSnapshot((doc) => {
+                this.setState({ user: doc.data() });
             });
     }
 
@@ -122,7 +131,6 @@ class SessionView extends React.Component {
         // .filter((question) => question.status === 'unresolved')
         // .filter((question) => new Date(question.sessionBySessionId.endTime) >= new Date());
 
-
         return (
             <section className="StudentSessionView">
                 {/*
@@ -131,54 +139,55 @@ class SessionView extends React.Component {
                             return null;
                         } */}
 
-                {this.props.isDesktop &&
+                {this.props.isDesktop && this.state.user && // LTODO Skeleton
                     <TopBar
-                        user={data.apiGetCurrentUser.nodes[0]}
-                        role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
+                        user={this.state.user}
+                        role={'professor'} // TODO
                         context="session"
-                        courseId={this.props.courseId}
+                        courseId={this.props.course && this.props.course.id || ''}
                     />
                 }
-                {this.props.id === '-1' || !data.sessionBySessionId
+                {!this.state.session
                     ? <React.Fragment>
                         <p className="welcomeMessage">Welcome, <span className="welcomeName">
-                            {data.apiGetCurrentUser.nodes[0].computedName}
+                            {this.state.user && this.state.user.firstName}
                         </span></p>
                         <p className="noSessionSelected">
                             Please select an office hour from the calendar.
-                                        </p>
+                        </p>
                     </React.Fragment>
                     : <React.Fragment>
                         <SessionInformationHeader
-                            session={data.sessionBySessionId}
-                            course={data.courseByCourseId}
-                            myUserId={data.apiGetCurrentUser.nodes[0].userId}
+                            session={this.state.session}
+                            course={this.props.course}
+                            userId={this.props.userId}
                             callback={this.props.backCallback}
                             isDesktop={this.props.isDesktop}
                         />
                         {this.state.undoQuestionId &&
-                            <Mutation mutation={UNDO_QUESTION} onCompleted={this.dismissUndo}>
-                                {(undoQuestion) =>
-                                    <div className="undoContainer">
-                                        <p className="undoClose" onClick={this.dismissUndo}>
-                                            <Icon name="close" />
-                                        </p>
-                                        <p className="undoText">
-                                            {undoText}
-                                            <span
-                                                className="undoLink"
-                                                onClick={() =>
-                                                    this.handleUndoClick(undoQuestion, refetch)
-                                                }
-                                            >
-                                                Undo
-                                            </span>
-                                        </p>
-                                    </div>
-                                }
-                            </Mutation>
+                            // TODO Interactivity
+                            // <Mutation mutation={UNDO_QUESTION} onCompleted={this.dismissUndo}>
+                            //     {(undoQuestion) =>
+                            <div className="undoContainer">
+                                <p className="undoClose" onClick={this.dismissUndo}>
+                                    <Icon name="close" />
+                                </p>
+                                <p className="undoText">
+                                    {undoText}
+                                    <span
+                                        className="undoLink"
+                                        onClick={() => alert('undo')
+                                            // this.handleUndoClick(undoQuestion, refetch)
+                                        }
+                                    >
+                                        Undo
+                                    </span>
+                                </p>
+                            </div>
+                            //     }
+                            // </Mutation>
                         }
-                        <SessionQuestionsContainer
+                        {/* <SessionQuestionsContainer
                             isTA={data.apiGetCurrentUser.nodes[0].
                                 courseUsersByUserId.nodes[0].role !== 'student'}
                             questions={data.sessionBySessionId.questionsBySessionId
@@ -198,7 +207,7 @@ class SessionView extends React.Component {
                             openingTime={this.getOpeningTime(
                                 data.sessionBySessionId, data.courseByCourseId.queueOpenInterval)}
                             haveAnotherQuestion={otherQuestions.length > 0}
-                        />
+                        /> */}
                     </React.Fragment>
                 }
             </section>

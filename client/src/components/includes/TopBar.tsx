@@ -4,7 +4,7 @@ import { Icon } from 'semantic-ui-react';
 class TopBar extends React.PureComponent {
     props: {
         courseId: string,
-        user: AppUser,
+        user: FireUser,
         // A user's role: student, ta, or professor
         // We show TA's and Profs extra links
         role: string,
@@ -36,9 +36,9 @@ class TopBar extends React.PureComponent {
                 <header className="topBar">
                     <div className="triggerArea" onClick={() => this.setMenu(!this.state.showMenu)} >
                         <div className="userProfile">
-                            <img src={this.props.user.computedAvatar} />
+                            <img src={this.props.user.photoUrl} /> // TODO
                             <span className="name">
-                                {this.props.user.computedName}
+                                {this.props.user.firstName + ' ' + this.props.user.lastName}
                             </span>
                         </div>
                     </div>

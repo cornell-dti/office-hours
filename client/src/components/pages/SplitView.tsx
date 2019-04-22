@@ -123,7 +123,8 @@ class SplitView extends React.Component {
                     (this.state.width <= MOBILE_BREAKPOINT &&
                         this.state.activeView !== 'calendar')) &&
                     <SessionView
-                        courseId={courseId}
+                        userId={'YcfNs8Uri5RI47V8bxG4'}
+                        course={this.state.courses.find((c) => c.id === this.props.match.params.courseId)}
                         id={this.state.sessionId}
                         isDesktop={this.state.width > MOBILE_BREAKPOINT}
                         backCallback={this.handleBackClick}

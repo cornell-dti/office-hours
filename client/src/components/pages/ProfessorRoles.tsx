@@ -1,6 +1,6 @@
 import * as React from 'react';
-import TopBar from '../includes/TopBar';
-import ProfessorSidebar from '../includes/ProfessorSidebar';
+// import TopBar from '../includes/TopBar';
+// import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
@@ -82,7 +82,7 @@ class ProfessorDashboardView extends React.Component {
                         }
                         return (
                             <React.Fragment>
-                                <ProfessorSidebar
+                                {/* <ProfessorSidebar
                                     courseId={courseId}
                                     code={courseCode}
                                     selected={4}
@@ -94,7 +94,7 @@ class ProfessorDashboardView extends React.Component {
                                         context="professor"
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
                                     />
-                                }
+                                } */}
                                 <section className="rightOfSidebar">
                                     <div className="main">
                                         {data && data.courseByCourseId &&

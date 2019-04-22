@@ -3,21 +3,22 @@ import { Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 class ProfessorSidebar extends React.Component {
     props: {
-        courseId: string,
-        code: string,
+        course?: FireCourse,
         selected: number
     };
 
     render() {
         var selectedArray: string[] = ['', '', '', ''];
         selectedArray[this.props.selected] = 'selected';
+        let course = this.props.course;
+        let courseId = course && course.id || 'loading';
 
         return (
             <div className="ProfessorSidebar">
                 <div className="nav">
                     <div className="header">
                         <span>
-                            {this.props.code}
+                            {course && course.code || 'Loading'}
                             {/* <Icon name="dropdown" /> */}
                         </span>
                     </div>
@@ -33,31 +34,31 @@ class ProfessorSidebar extends React.Component {
                     </div>
                     <div className="divider" /> */}
                     <div className="actions">
-                        <Link to={'/professor/course/' + this.props.courseId}>
+                        <Link to={'/professor/course/' + courseId}>
                             <button className={selectedArray[0]}>
                                 <Icon name="setting" />
                                 Manage Hours
                             </button>
                         </Link>
-                        <Link to={'/professor-tags/course/' + this.props.courseId}>
+                        <Link to={'/professor-tags/course/' + courseId}>
                             <button className={selectedArray[1]}>
                                 <Icon name="settings" />
                                 Manage Tags
                             </button>
                         </Link>
-                        <Link to={'/professor-dashboard/course/' + this.props.courseId}>
+                        <Link to={'/professor-dashboard/course/' + courseId}>
                             <button className={selectedArray[2]}>
                                 <Icon name="line graph" />
                                 Dashboard
                             </button>
                         </Link>
-                        <Link to={'/professor-people/course/' + this.props.courseId}>
+                        <Link to={'/professor-people/course/' + courseId}>
                             <button className={selectedArray[3]}>
                                 <Icon name="users" />
                                 People
                                 </button>
                         </Link>
-                        <Link to={'/professor-roles/course/' + this.props.courseId}>
+                        <Link to={'/professor-roles/course/' + courseId}>
                             <button className={selectedArray[4]}>
                                 <Icon name="id card outline" />
                                 Manage Roles

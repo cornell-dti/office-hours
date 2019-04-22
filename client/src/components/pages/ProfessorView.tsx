@@ -1,8 +1,8 @@
 import * as React from 'react';
 import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
-import TopBar from '../includes/TopBar';
-import ProfessorSidebar from '../includes/ProfessorSidebar';
+// import TopBar from '../includes/TopBar';
+// import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
@@ -164,7 +164,7 @@ class ProfessorView extends React.Component {
                         }
                         return (
                             <React.Fragment>
-                                <ProfessorSidebar
+                                {/* <ProfessorSidebar
                                     courseId={courseId}
                                     code={courseCode}
                                     selected={0}
@@ -175,7 +175,7 @@ class ProfessorView extends React.Component {
                                         user={data.apiGetCurrentUser.nodes[0]}
                                         context="professor"
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
-                                    />
+                                    /> */}
                                 }
                             </React.Fragment>
                         );

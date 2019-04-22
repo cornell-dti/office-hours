@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ProfessorSidebar from '../includes/ProfessorSidebar';
+// import ProfessorSidebar from '../includes/ProfessorSidebar';
 import QuestionsPieChart from '../includes/QuestionsPieChart';
 import QuestionsLineChart from '../includes/QuestionsLineChart';
 import QuestionsBarChart from '../includes/QuestionsBarChart';
@@ -10,7 +10,7 @@ import 'react-dates/initialize';
 import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import * as moment from 'moment';
-import TopBar from '../includes/TopBar';
+// import TopBar from '../includes/TopBar';
 
 const METADATA_QUERY = gql`
 query GetMetadata($courseId: Int!, $startDate: Datetime!, $endDate: Datetime!) {
@@ -118,7 +118,7 @@ class ProfessorPeopleView extends React.Component {
     }
 
     render() {
-        let courseId = this.props.match.params.courseId;
+        // let courseId = this.props.match.params.courseId;
         return (
             <div className="ProfessorView">
                 <ProfessorMetadataDataQuery
@@ -130,7 +130,7 @@ class ProfessorPeopleView extends React.Component {
                     }}
                 >
                     {({ loading, data }) => {
-                        var courseCode: string = 'Loading...';
+                        // var courseCode: string = 'Loading...';
                         var resolvedQuestions: number = 0;
                         let percentResolved: number = 0;
                         let percentUnresolved: number = 0;
@@ -178,7 +178,7 @@ class ProfessorPeopleView extends React.Component {
                             room: ''
                         };
                         if (!loading && data) {
-                            courseCode = data.courseByCourseId.code;
+                            // courseCode = data.courseByCourseId.code;
                             if (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role !== 'professor') {
                                 return <Redirect to={'/course/' + this.props.match.params.courseId} />;
                             }
@@ -275,7 +275,7 @@ class ProfessorPeopleView extends React.Component {
                         }
                         return (
                             <React.Fragment>
-                                <ProfessorSidebar
+                                {/* <ProfessorSidebar
                                     courseId={courseId}
                                     code={courseCode}
                                     selected={3}
@@ -287,7 +287,7 @@ class ProfessorPeopleView extends React.Component {
                                         context="professor"
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
                                     />
-                                }
+                                } */}
                                 <section className="rightOfSidebar">
                                     <div className="main">
                                         <div className="Date-picker-container">
