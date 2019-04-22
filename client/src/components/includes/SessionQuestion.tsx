@@ -20,6 +20,15 @@ mutation UpdateLocation($questionId: Int!, $location: String) {
     }
 }
 `;
+
+const UNDO_DONT_KNOW = gql`
+mutation UndoDontKnow($questionId: Int!, $status: String!) {
+    updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeAddressed: null, answererId: null},
+        questionId: $questionId}) {
+        clientMutationId
+    }
+}
+`;
 const LOCATION_CHAR_LIMIT = 40;
 
 class SessionQuestion extends React.Component {
@@ -38,7 +47,10 @@ class SessionQuestion extends React.Component {
     state: {
         showLocation: boolean,
         location: string,
-        isEditingLocation: boolean
+        isEditingLocation: boolean,
+        showDotMenu: boolean,
+        undoQuestionIdDontKnow?: number,
+        undoName?: string,
     };
 
     constructor(props: {}) {
@@ -46,22 +58,25 @@ class SessionQuestion extends React.Component {
         this.state = {
             showLocation: false,
             location: this.props.question.location || '',
-            isEditingLocation: false
+            isEditingLocation: false,
+            showDotMenu: false,
+            undoQuestionIdDontKnow: undefined,
+            undoName: undefined,
         };
     }
 
-    // Given an index from [1..n], converts it to text that is displayed
-    // on the question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
+    // Given an index from [1..n], converts it to text that is displayed on the
+    // question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
         index++;
-        // Disclaimer: none of us wrote this one-line magic :)
-        // It is borrowed from https://stackoverflow.com/revisions/39466341/5
-        // return index + ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index + 'th';
+        // Disclaimer: none of us wrote this one-line magic :) It is borrowed
+        // from https://stackoverflow.com/revisions/39466341/5 return index +
+        // ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index +
+        // 'th';
         return String(index);
     }
 
-    public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>,
-                                   updateLocation: Function): void => {
+    public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>, updateLocation: Function): void => {
         this.state.isEditingLocation = true;
         const target = event.target as HTMLTextAreaElement;
         if (target.value.length <= LOCATION_CHAR_LIMIT) {
@@ -93,6 +108,26 @@ class SessionQuestion extends React.Component {
         });
         const question = this.props.question;
         this.props.triggerUndo(question.questionId, status, question.userByAskerId.computedName);
+    }
+
+    setDotMenu = (status: boolean) => {
+        this.setState({ showDotMenu: status });
+    }
+
+    // triggerUndoDontKnow = (questionId: number, name: string) => {
+    //     this.setState({
+    //         undoQuestionIdDontKnow: questionId,
+    //         undoName: name,
+    //     });
+    // }
+
+    handleUndoDontKnow = (questionId: number, UndoDontKnow: Function) => {
+        UndoDontKnow({
+            variables: {
+                questionId: questionId,
+                status: 'unresolved'
+            }
+        });
     }
 
     render() {
@@ -219,6 +254,39 @@ class SessionQuestion extends React.Component {
                                                 onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
                                             >
                                                 Done
+                                            </p>
+                                            <p
+                                                className="DotMenu"
+                                                onClick={() => this.setDotMenu(!this.state.showDotMenu)}
+                                            >
+                                                ...
+
+                                            {this.state.showDotMenu &&
+                                                    <Mutation
+                                                        mutation={UNDO_DONT_KNOW}
+                                                        onCompleted={() => this.props.refetch()}
+                                                    >
+                                                        {(UndoDontKnow) =>
+                                                            <React.Fragment>
+                                                                <div
+                                                                    className="IReallyDontKnow"
+                                                                    tabIndex={1}
+                                                                    onClick={() => this.setDotMenu(false)}
+                                                                >
+                                                                    <p
+                                                                        className="DontKnowButton"
+                                                                        onClick={() => this.handleUndoDontKnow(
+                                                                            question.questionId,
+                                                                            UndoDontKnow
+                                                                        )}
+                                                                    >
+                                                                        I Really Don't Know
+                                                                    </p>
+                                                                </div>
+                                                            </React.Fragment>
+                                                        }
+                                                    </Mutation>
+                                                }
                                             </p>
                                         </React.Fragment>
                                     }
