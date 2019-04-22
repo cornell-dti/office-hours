@@ -1,20 +1,19 @@
 {
     "name": "Queue Me In",
     "short_name": "Queue Me In",
-    "icons": [
-        {
+    "icons": [{
             "src": "/static/media/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/static/media/android-chrome-384x384.png",
-            "sizes": "384x384",
+            "src": "/static/media/android-chrome-512x512.png",
+            "sizes": "512x512",
             "type": "image/png"
         }
     ],
-    "theme_color": "#f7f7f7",
-    "background_color": "#f7f7f7",
-    "start_url": "https://queue-me-in.herokuapp.com",
+    "theme_color": "#5599db",
+    "background_color": "#5599db",
+    "start_url": "https://queueme.in/",
     "display": "standalone"
 }
