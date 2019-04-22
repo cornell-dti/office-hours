@@ -6,20 +6,20 @@ class CalendarSessionCard extends React.Component {
     props: {
         includeBookmark: boolean | null,
         numAhead: number,
-        session: AppSession
+        session: FireSession
         callback: Function,
         active: boolean,
         status: string
     };
 
     handleOnClick = () => {
-        this.props.callback(this.props.session.sessionId);
+        this.props.callback(this.props.session.id);
     }
 
     render() {
         const session = this.props.session;
-        const questions = session.questionsBySessionId.nodes;
-        const tas = session.sessionTasBySessionId.nodes;
+        // const questions: string[] = []; //session.questionsBySessionId.nodes;
+        // const tas: any[] = []; //session.sessionTasBySessionId.nodes;
 
         var timeDesc = '';
 
@@ -42,9 +42,9 @@ class CalendarSessionCard extends React.Component {
                         {session.building + ' ' + session.room}
                     </div>
                     <div className="Tas">
-                        {session.title || (tas.length > 2 ?
+                        {/* {session.title || (tas.length > 2 ?
                             tas.map(ta => ta.userByUserId.computedName).join(', ') :
-                            tas.map(ta => ta.userByUserId.computedName).join(' and '))}
+                            tas.map(ta => ta.userByUserId.computedName).join(' and '))} */}
                     </div>
                     <div className="Queue">
                         <span className="Ahead">
@@ -56,7 +56,7 @@ class CalendarSessionCard extends React.Component {
                         <span className="Finished">
                             Finished: &nbsp;
                             <span className="FinishedNum">
-                                {questions.filter(q => q.status === 'resolved').length}
+                                {/* {questions.filter(q => q.status === 'resolved').length} */}
                             </span>
                         </span>
                     </div>

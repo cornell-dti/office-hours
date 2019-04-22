@@ -10,7 +10,7 @@ class CalendarHeader extends React.Component {
         isTa: boolean;
         isProf: boolean;
         avatar: string | null;
-        allCoursesList: AppCourse[];
+        allCoursesList: FireCourse[];
     };
 
     state: {
@@ -60,11 +60,10 @@ class CalendarHeader extends React.Component {
                         <React.Fragment>
                             <ul className="courseMenu" tabIndex={1} onClick={() => this.setCourses(false)} >
                                 {this.props.allCoursesList.filter((c) => c.semester === 'SP19').map((course) =>
-                                    <li key={course.courseId}>
+                                    <li key={course.id}>
                                         <a
-                                            href={'/course/' + course.courseId}
-                                            onClick={() =>
-                                                window.localStorage.setItem('lastid', String(course.courseId))}
+                                            href={'/course/' + course.id}
+                                            onClick={() => window.localStorage.setItem('lastid', course.id)}
                                         > {course.code}
                                         </a>
                                     </li>

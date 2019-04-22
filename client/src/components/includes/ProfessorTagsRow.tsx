@@ -9,7 +9,7 @@ class ProfessorTagsRow extends React.Component {
         tags: AppTag[]
         isExpanded: boolean[]
         handleEditToggle: Function
-        courseId: number
+        courseId: string
         refreshCallback: Function
     };
 

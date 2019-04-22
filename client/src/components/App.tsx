@@ -14,6 +14,18 @@ import ProfessorPeopleView from './pages/ProfessorPeopleView';
 import { Analytics } from './includes/Analytics';
 import { Loader } from 'semantic-ui-react';
 
+// import { firestore } from './includes/firebase';
+// import * as firebase from 'firebase/app';
+
+// firestore
+//     .collection('users')
+//     .get()
+//     .then(function (querySnapshot: firebase.firestore.QuerySnapshot) {
+//         querySnapshot.forEach((doc: firebase.firestore.QueryDocumentSnapshot) => {
+//             console.log(doc.id, ' => ', doc.data());
+//         });
+//     });
+
 ReactGA.initialize('UA-123790900-1');
 
 const GET_USER = gql`

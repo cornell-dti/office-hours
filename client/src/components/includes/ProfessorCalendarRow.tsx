@@ -9,7 +9,7 @@ class ProfessorCalendarRow extends React.Component {
     props: {
         dayNumber: number,
         sessions: AppSession[],
-        courseId: number,
+        courseId: string,
         taOptions: DropdownItemProps[],
         isExpanded: boolean[],
         handleEditToggle: Function,

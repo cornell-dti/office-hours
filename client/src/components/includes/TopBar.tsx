@@ -3,7 +3,7 @@ import { Icon } from 'semantic-ui-react';
 
 class TopBar extends React.PureComponent {
     props: {
-        courseId: number,
+        courseId: string,
         user: AppUser,
         // A user's role: student, ta, or professor
         // We show TA's and Profs extra links

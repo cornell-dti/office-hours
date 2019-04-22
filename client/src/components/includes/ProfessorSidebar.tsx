@@ -3,7 +3,7 @@ import { Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 class ProfessorSidebar extends React.Component {
     props: {
-        courseId: number,
+        courseId: string,
         code: string,
         selected: number
     };

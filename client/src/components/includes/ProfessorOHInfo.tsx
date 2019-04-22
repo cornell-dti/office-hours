@@ -79,7 +79,7 @@ const CREATE_SERIES = gql`
 class ProfessorOHInfo extends React.Component {
     props: {
         session?: AppSession,
-        courseId: number,
+        courseId: string,
         isNewOH: boolean,
         taOptions: DropdownItemProps[],
         taUserIdsDefault?: number[],

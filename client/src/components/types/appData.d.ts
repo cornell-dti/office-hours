@@ -1,7 +1,7 @@
 interface AppCourse {
     code: string;
     name: string;
-    courseId: number;
+    courseId: string;
     semester: string;
 }
 

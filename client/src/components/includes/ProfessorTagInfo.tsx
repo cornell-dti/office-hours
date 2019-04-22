@@ -34,7 +34,7 @@ class ProfessorTagInfo extends React.Component {
         cancelCallback: Function
         tag?: AppTag
         refreshCallback: Function
-        courseId: number
+        courseId: string
     };
 
     state: {

@@ -47,7 +47,7 @@ interface ProfessorMetadataData {
 }
 
 interface MetadataVariables {
-    courseId: number;
+    courseId: string;
 }
 
 class ProfessorMetadataDataQuery extends Query<ProfessorMetadataData, MetadataVariables> { }
@@ -67,10 +67,10 @@ class ProfessorDashboardView extends React.Component {
     }
 
     render() {
-        let courseId = parseInt(this.props.match.params.courseId, 10);
+        let courseId = this.props.match.params.courseId;
         return (
             <div className="ProfessorView">
-                <ProfessorMetadataDataQuery query={METADATA_QUERY} variables={{ courseId: courseId }} >
+                <ProfessorMetadataDataQuery query={METADATA_QUERY} variables={{ courseId: '2' }} >
                     {({ loading, data }) => {
                         var courseCode: string = 'Loading...';
                         if (!loading && data) {

@@ -70,11 +70,11 @@ interface ProfessorTagsData {
 }
 
 interface MetadataVariables {
-    courseId: number;
+    courseId: string;
 }
 
 interface TagsVariables {
-    courseId: number;
+    courseId: string;
 }
 
 class ProfessorTagsDataQuery extends Query<ProfessorTagsData, TagsVariables> { }
@@ -94,7 +94,7 @@ class ProfessorView extends React.Component {
     }
 
     render() {
-        let courseId = parseInt(this.props.match.params.courseId, 10);
+        let courseId = this.props.match.params.courseId;
         return (
             <div className="ProfessorView">
                 <ProfessorMetadataDataQuery query={METADATA_QUERY} variables={{ courseId: courseId }} >

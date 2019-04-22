@@ -1,26 +1,25 @@
 import * as React from 'react';
 import { Loader } from 'semantic-ui-react';
 import { groupBy } from 'lodash';
-import { Interval } from '../../utilities/interval';
 
 import CalendarSessionCard from './CalendarSessionCard';
 
 class CalendarSessions extends React.PureComponent {
     props: {
-        activeSessionId: number;
+        activeSessionId: String;
         myUserId: number | null;
         loading: boolean;
-        sessions: AppSession[] | null;
+        sessions: FireSession[];
         callback: Function;
-        interval: AppInterval | null;
+        interval: number;
     };
 
-    labelSession = (session: AppSession, intervalMs: number) => {
+    labelSession = (session: FireSession) => {
         if (new Date(session.endTime) < new Date()) {
             return 'Past';
         } else if (new Date(session.startTime) < new Date()) {
             return 'Ongoing';
-        } else if (new Date(session.startTime) < new Date(new Date().getTime() + intervalMs)) {
+        } else if (new Date(session.startTime) < new Date(new Date().getTime() + this.props.interval)) {
             return 'Open';
         }
         return 'Upcoming';
@@ -31,20 +30,23 @@ class CalendarSessions extends React.PureComponent {
         const sessions = this.props.sessions;
 
         const sessionCards = sessions && sessions.map(session => {
-            const unresolvedQuestions = session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved');
-            const userQuestions = unresolvedQuestions.filter((q) => q.userByAskerId.userId === this.props.myUserId);
-            const numAhead = userQuestions.length === 0 ? unresolvedQuestions.length : unresolvedQuestions.filter((q) =>
-                q.timeEntered <= userQuestions[0].timeEntered).length - 1;
+            // const unresolvedQuestions = 0;
+            // session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved');
+            const userQuestions = [];
+            // unresolvedQuestions.filter((q) => q.userByAskerId.userId === this.props.myUserId);
+            const numAhead = 0;
+            // userQuestions.length === 0 ? unresolvedQuestions.length : unresolvedQuestions.filter((q) =>
+            // q.timeEntered <= userQuestions[0].timeEntered).length - 1;
 
             return (
                 <CalendarSessionCard
                     includeBookmark={userQuestions.length > 0}
                     numAhead={numAhead}
                     session={session}
-                    key={session.sessionId}
+                    key={session.id}
                     callback={this.props.callback}
-                    active={session.sessionId === this.props.activeSessionId}
-                    status={this.labelSession(session, Interval.toMillisecoonds(this.props.interval))}
+                    active={session.id === this.props.activeSessionId}
+                    status={this.labelSession(session)}
                 />
             );
         });

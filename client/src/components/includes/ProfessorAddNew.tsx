@@ -7,7 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 class ProfessorAddNew extends React.Component {
 
     props: {
-        courseId: number
+        courseId: string
         refreshCallback: Function
         taOptions?: DropdownItemProps[]
     };

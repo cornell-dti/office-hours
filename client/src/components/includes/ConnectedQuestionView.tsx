@@ -33,8 +33,8 @@ const QUERY = gql`
 `;
 
 type InputProps = {
-    sessionId: number,
-    courseId: number,
+    sessionId: string,
+    courseId: string,
     mobileBreakpoint: number,
     callback: Function,
     data: {

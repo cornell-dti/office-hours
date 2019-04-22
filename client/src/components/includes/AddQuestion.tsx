@@ -38,8 +38,8 @@ class AddQuestion extends React.Component {
      */
     props: {
         tags: AppTagRelations[]
-        sessionId: number,
-        courseId: number,
+        sessionId: string,
+        courseId: string,
         callback: Function,
         charLimit: number,
         endTime: Date,

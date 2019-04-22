@@ -4,7 +4,7 @@ class ProfessorTagsTable extends React.Component {
     props: {
         tags: AppTag[]
         refreshCallback: Function
-        courseId: number
+        courseId: string
     };
 
     state: {

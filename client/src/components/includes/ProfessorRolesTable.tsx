@@ -17,7 +17,7 @@ const UPDATE_ROLE = gql`
 class RoleDropdown extends React.Component<{
     default: string;
     userId: number;
-    courseId: number;
+    courseId: string;
 }> {
     state = {
         value: this.props.default
@@ -54,7 +54,7 @@ class RoleDropdown extends React.Component<{
 
 export default class ProfessorRolesTable extends React.Component {
     props: {
-        courseId: number,
+        courseId: string,
         data: [{
             role: string;
             userByUserId: AppUser;

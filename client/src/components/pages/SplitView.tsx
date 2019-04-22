@@ -5,6 +5,9 @@ import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import ConnectedQuestionView from '../includes/ConnectedQuestionView';
 
+import { firestore } from '../includes/firebase';
+import * as firebase from 'firebase/app';
+
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
 
@@ -21,10 +24,11 @@ class SplitView extends React.Component {
     };
 
     state: {
-        sessionId: number,
+        sessionId: string,
         width: number,
         height: number,
-        activeView: string
+        activeView: string,
+        courses: FireCourse[]
     };
 
     sessionView: SessionView | null = null;
@@ -51,9 +55,10 @@ class SplitView extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = {
-            sessionId: parseInt(this.props.match.params.sessionId || '-1', 10),
+            sessionId: this.props.match.params.sessionId || 'null',
             width: window.innerWidth,
             height: window.innerHeight,
+            courses: [],
             activeView: this.props.match.params.page === 'add'
                 ? 'addQuestion'
                 : this.props.match.params.sessionId ? 'session' : 'calendar'
@@ -65,9 +70,19 @@ class SplitView extends React.Component {
                 activeView: location.pathname.indexOf('add') !== -1
                     ? 'addQuestion'
                     : this.props.match.params.sessionId ? 'session' : 'calendar',
-                sessionId: parseInt(this.props.match.params.sessionId || '-1', 10)
+                sessionId: this.props.match.params.sessionId || '-1'
             });
         });
+
+        firestore
+            .collection('courses')
+            .onSnapshot((querySnapshot: firebase.firestore.QuerySnapshot) => {
+                this.setState({
+                    courses: querySnapshot.docs.map((doc) => {
+                        return { 'id': doc.id, ...doc.data() };
+                    })
+                });
+            });
     }
 
     // Keep track of active view for mobile
@@ -91,7 +106,7 @@ class SplitView extends React.Component {
     // Toggle warning
 
     render() {
-        let courseId = parseInt(this.props.match.params.courseId, 10);
+        let courseId = this.props.match.params.courseId;
         return (
             <React.Fragment>
                 {(this.state.width > MOBILE_BREAKPOINT ||
@@ -99,10 +114,12 @@ class SplitView extends React.Component {
                         this.state.activeView === 'calendar')) &&
                     <CalendarView
                         courseId={courseId}
+                        courses={this.state.courses}
                         sessionId={this.state.sessionId}
                         sessionCallback={this.handleSessionClick}
                     />
-                }{(this.state.width > MOBILE_BREAKPOINT ||
+                }
+                {(this.state.width > MOBILE_BREAKPOINT ||
                     (this.state.width <= MOBILE_BREAKPOINT &&
                         this.state.activeView !== 'calendar')) &&
                     <SessionView
@@ -117,7 +134,7 @@ class SplitView extends React.Component {
                     <React.Fragment>
                         <div className="modal">
                             <ConnectedQuestionView
-                                sessionId={this.state.sessionId || -1}
+                                sessionId={this.state.sessionId}
                                 courseId={courseId}
                                 mobileBreakpoint={MOBILE_BREAKPOINT}
                                 data={{ loading: true }}

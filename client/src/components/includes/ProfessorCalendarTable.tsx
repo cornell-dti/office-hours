@@ -7,7 +7,7 @@ import { DropdownItemProps } from 'semantic-ui-react';
 
 class ProfessorCalendarTable extends React.Component {
     props: {
-        courseId: number,
+        courseId: string,
         data: {
             nodes: [AppSession]
         },

@@ -71,7 +71,7 @@ interface ProfessorMetadataData {
 }
 
 interface MetadataVariables {
-    courseId: number;
+    courseId: string;
     startDate: string;
     endDate: string;
 }
@@ -118,13 +118,13 @@ class ProfessorPeopleView extends React.Component {
     }
 
     render() {
-        let courseId = parseInt(this.props.match.params.courseId, 10);
+        let courseId = this.props.match.params.courseId;
         return (
             <div className="ProfessorView">
                 <ProfessorMetadataDataQuery
                     query={METADATA_QUERY}
                     variables={{
-                        courseId: courseId,
+                        courseId: '2',
                         startDate: moment(this.state.startDate).format('YYYY-MM-DD'),
                         endDate: moment(this.state.endDate).format('YYYY-MM-DD')
                     }}
