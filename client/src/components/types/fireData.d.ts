@@ -1,28 +1,33 @@
+interface FireTimestamp {
+    seconds: number;
+    nanoseconds: number;
+}
+
 interface FireSession {
     building: String;
     courseId: String;
-    endTime: number;
+    endTime: FireTimestamp;
     room: String;
     sessionSeriesId: String;
-    startTime: number;
+    startTime: FireTimestamp;
     title?: String;
     id: string;
 }
 
 interface FireCourse {
     code: string;
-    endDate: Date;
+    endDate: FireTimestamp;
     name: string;
     queueOpenInterval: number;
     semester: string;
-    startDate: Date;
+    startDate: FireTimestamp;
     id: string;
 }
 
 interface FireUser {
-    createdAt: number;
+    createdAt: FireTimestamp;
     firstName: string;
     lastName: string;
     photoUrl: string;
-    lastActivityAt: number;
+    lastActivityAt: FireTimestamp;
 }

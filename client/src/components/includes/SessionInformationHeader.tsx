@@ -31,11 +31,11 @@ const SessionInformationHeader = (props: {
                 </div>
                 <div className="Details">
                     <p className="Location">{session.building + ' ' + session.room}</p>
-                    <Moment unix={true} date={session.startTime * 1000} interval={0} format={'h:mm A'} />
-                    <Moment unix={true} date={session.endTime} interval={0} format={' - h:mm A'} />
+                    <Moment unix={true} date={session.startTime.seconds} interval={0} format={'h:mm A'} />
+                    <Moment unix={true} date={session.endTime.seconds} interval={0} format={' - h:mm A'} />
                     <p className="Date">
                         <Icon name="calendar alternate outline" />
-                        <Moment unix={true} date={session.startTime} interval={0} format={'dddd, MMM D'} />
+                        <Moment unix={true} date={session.startTime.seconds} interval={0} format={'dddd, MMM D'} />
                     </p>
                     <p>{session.title || <React.Fragment>
                         Held by
@@ -69,8 +69,8 @@ const SessionInformationHeader = (props: {
                 <div className="CourseInfo">
                     <div className="CourseDetails">
                         <p className="Location">{session.building + ' ' + session.room}</p>
-                        <Moment unix={true} date={session.startTime} interval={0} format={'h:mm A'} />
-                        <Moment unix={true} date={session.endTime} interval={0} format={' - h:mm A'} />
+                        <Moment unix={true} date={session.startTime.seconds} interval={0} format={'h:mm A'} />
+                        <Moment unix={true} date={session.endTime.seconds} interval={0} format={' - h:mm A'} />
                     </div>
                     <div className="Picture">
                         <img src="/placeholder.png" />
@@ -93,7 +93,7 @@ const SessionInformationHeader = (props: {
                 <div className="OfficeHourInfo">
                     <div className="OfficeHourDate">
                         <p><Icon name="calendar" />
-                            <Moment unix={true} date={session.startTime} interval={0} format={'dddd, D MMM'} />
+                            <Moment unix={true} date={session.startTime.seconds} interval={0} format={'dddd, D MMM'} />
                         </p>
                     </div>
                     <p>{session.title || <React.Fragment>

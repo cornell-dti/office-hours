@@ -100,16 +100,16 @@ class SessionView extends React.Component {
     }
 
     isOpen = (session: FireSession, interval: number): boolean => {
-        return new Date(session.startTime).getTime() - interval * 1000 < new Date().getTime()
-            && new Date(session.endTime) > new Date();
+        return new Date(session.startTime.seconds).getTime() - interval * 1000 < new Date().getTime()
+            && new Date(session.endTime.seconds) > new Date();
     }
 
     isPast = (session: FireSession): boolean => {
-        return new Date() > new Date(session.endTime);
+        return new Date() > new Date(session.endTime.seconds);
     }
 
     getOpeningTime = (session: FireSession, interval: number): Date => {
-        return new Date(new Date(session.startTime).getTime() - interval * 1000);
+        return new Date(new Date(session.startTime.seconds).getTime() - interval * 1000);
     }
 
     render() {

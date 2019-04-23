@@ -28,10 +28,10 @@ class CalendarSessionCard extends React.Component {
                 {this.props.includeBookmark && <div className="Bookmark" />}
                 <div className="TimeInfo">
                     <div className="StartTime">
-                        <Moment date={session.startTime} interval={0} format={'hh:mm A'} />
+                        <Moment date={session.startTime.seconds} unix={true} interval={0} format={'hh:mm A'} />
                     </div>
                     <div className="EndTime">
-                        <Moment date={session.endTime} interval={0} format={'hh:mm A'} />
+                        <Moment date={session.endTime.seconds} unix={true} interval={0} format={'hh:mm A'} />
                     </div>
                 </div>
                 <div className={'Indicator ' + this.props.status}>

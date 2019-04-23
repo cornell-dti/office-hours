@@ -15,11 +15,11 @@ class CalendarSessions extends React.PureComponent {
     };
 
     labelSession = (session: FireSession) => {
-        if (new Date(session.endTime) < new Date()) {
+        if (new Date(session.endTime.seconds) < new Date()) {
             return 'Past';
-        } else if (new Date(session.startTime) < new Date()) {
+        } else if (new Date(session.startTime.seconds) < new Date()) {
             return 'Ongoing';
-        } else if (new Date(session.startTime) < new Date(new Date().getTime() + this.props.interval)) {
+        } else if (new Date(session.startTime.seconds) < new Date(new Date().getTime() + this.props.interval)) {
             return 'Open';
         }
         return 'Upcoming';
