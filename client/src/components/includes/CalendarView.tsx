@@ -58,7 +58,7 @@ class CalendarView extends React.Component {
                 <CalendarDaySelect callback={this.handleDateClick} />
                 <CalendarSessions
                     activeSessionId={this.props.sessionId}
-                    myUserId={null} // data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].userId}
+                    userId={'YcfNs8Uri5RI47V8bxG4'} // data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].userId}
                     loading={this.state.loading}
                     sessions={this.state.sessions}
                     callback={this.props.sessionCallback}

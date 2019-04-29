@@ -420,7 +420,7 @@ class ProfessorOHInfo extends React.Component {
                     {this.props.isNewOH ?
                         this.state.isSeriesMutation ?
                             <Mutation mutation={CREATE_SERIES} onCompleted={() => this.props.refreshCallback()}>
-                                {(CreateSeries) =>
+                                {(CreateSeries: Function) =>
                                     <button
                                         className="Bottom Edit"
                                         onClick={(e) => {
@@ -441,7 +441,7 @@ class ProfessorOHInfo extends React.Component {
                             </Mutation>
                             :
                             <Mutation mutation={CREATE_SESSION} onCompleted={() => this.props.refreshCallback()}>
-                                {(CreateSession) =>
+                                {(CreateSession: Function) =>
                                     <button
                                         className="Bottom Edit"
                                         onClick={(e) => {
@@ -464,7 +464,7 @@ class ProfessorOHInfo extends React.Component {
                         :
                         this.state.isSeriesMutation ?
                             <Mutation mutation={EDIT_SERIES} onCompleted={() => this.props.refreshCallback()}>
-                                {(EditSeries) =>
+                                {(EditSeries: Function) =>
                                     <button
                                         className="Bottom Edit"
                                         onClick={(e) => {
@@ -485,7 +485,7 @@ class ProfessorOHInfo extends React.Component {
                             </Mutation>
                             :
                             <Mutation mutation={EDIT_SESSION} onCompleted={() => this.props.refreshCallback()}>
-                                {(EditSession) =>
+                                {(EditSession: Function) =>
                                     <button
                                         className="Bottom Edit"
                                         onClick={(e) => {

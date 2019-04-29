@@ -51,7 +51,8 @@ const ProfessorDashboardView = (
                 </p>
                 </div>
             </section>
-        </div>);
+        </div>
+    );
 };
 
 export default ProfessorDashboardView;

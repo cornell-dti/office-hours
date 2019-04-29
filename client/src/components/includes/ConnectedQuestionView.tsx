@@ -36,7 +36,6 @@ type InputProps = {
     sessionId: string,
     courseId: string,
     mobileBreakpoint: number,
-    callback: Function,
     data: {
         loading: boolean,
         allSessions?: {
@@ -76,7 +75,6 @@ class ConnectedQuestionView extends React.Component<ChildProps<InputProps, Respo
                     tags={tags}
                     sessionId={this.props.sessionId}
                     courseId={this.props.courseId}
-                    callback={this.props.callback}
                     charLimit={session.courseByCourseId.charLimit}
                     endTime={session.endTime}
                     mobileBreakpoint={this.props.mobileBreakpoint}

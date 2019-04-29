@@ -63,7 +63,8 @@ class QuestionsBarChart extends React.Component {
                                 <span className="tool-stat"> {percent}% </span>
                                 <br /> answered</div>
                         </div>
-                    </div>);
+                    </div>
+                );
             });
         } else {
             return (function (e: BarExtendedDatum) {

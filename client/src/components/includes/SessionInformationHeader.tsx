@@ -56,7 +56,8 @@ const SessionInformationHeader = (props: {
                         </p>
                     </div>
                 </div>
-            </header>);
+            </header>
+        );
     }
 
     return (
@@ -105,6 +106,7 @@ const SessionInformationHeader = (props: {
                     </p>
                 </div>
             </div>
-        </header>);
+        </header>
+    );
 };
 export default SessionInformationHeader;

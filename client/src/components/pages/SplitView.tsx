@@ -1,12 +1,12 @@
 import * as React from 'react';
 import * as H from 'history';
 
-import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import ConnectedQuestionView from '../includes/ConnectedQuestionView';
 
 import { firestore } from '../includes/firebase';
 import * as firebase from 'firebase/app';
+import SessionView from '../includes/SessionView';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -31,8 +31,6 @@ class SplitView extends React.Component {
         courses: FireCourse[]
     };
 
-    sessionView: SessionView | null = null;
-
     // Keep window size in state for conditional rendering
     componentDidMount() {
         window.addEventListener('resize', this.updateWindowDimensions);
@@ -44,12 +42,6 @@ class SplitView extends React.Component {
 
     updateWindowDimensions = () => {
         this.setState({ width: window.innerWidth, height: window.innerHeight });
-    }
-
-    addedQuestion = () => {
-        if (this.sessionView && this.sessionView.questionsContainer) {
-            this.sessionView.questionsContainer.props.refetch();
-        }
     }
 
     constructor(props: {}) {
@@ -129,7 +121,6 @@ class SplitView extends React.Component {
                         isDesktop={this.state.width > MOBILE_BREAKPOINT}
                         backCallback={this.handleBackClick}
                         joinCallback={this.handleJoinClick}
-                        ref={(ref) => this.sessionView = ref}
                     />
                 }{this.state.activeView === 'addQuestion' &&
                     <React.Fragment>
@@ -139,7 +130,6 @@ class SplitView extends React.Component {
                                 courseId={courseId}
                                 mobileBreakpoint={MOBILE_BREAKPOINT}
                                 data={{ loading: true }}
-                                callback={() => this.addedQuestion()}
                             />
                         </div>
                         <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />

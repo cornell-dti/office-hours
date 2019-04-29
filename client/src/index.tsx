@@ -8,9 +8,7 @@ import 'semantic-ui-css/semantic.min.css';
 import { client } from './components/includes/ApolloClient';
 
 ReactDOM.render(
-    <ApolloProvider client={client}>
-        <App />
-    </ApolloProvider>,
+    <ApolloProvider client={client}> <App /> </ApolloProvider>,
     document.getElementById('root') as HTMLElement
 );
 

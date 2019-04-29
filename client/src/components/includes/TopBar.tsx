@@ -36,7 +36,8 @@ class TopBar extends React.PureComponent {
                 <header className="topBar">
                     <div className="triggerArea" onClick={() => this.setMenu(!this.state.showMenu)} >
                         <div className="userProfile">
-                            <img src={this.props.user.photoUrl} /> // TODO
+                            <img src={this.props.user.photoUrl} />
+                            {/* // TODO */}
                             <span className="name">
                                 {this.props.user.firstName + ' ' + this.props.user.lastName}
                             </span>
