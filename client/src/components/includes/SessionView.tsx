@@ -8,7 +8,7 @@ import { Interval } from '../../utilities/interval';
 import gql from 'graphql-tag';
 import { Query, Mutation } from 'react-apollo';
 import { Icon } from 'semantic-ui-react';
-
+import SessionAlertModal from './SessionAlertModal';
 const GET_SESSION_DATA = gql`
 query getDataForSession($sessionId: Int!, $courseId: Int!) {
     apiGetCurrentUser {
@@ -23,10 +23,21 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
             }
             questionsByAskerId {
                 nodes {
+                    timeEntered
                     status
                     sessionBySessionId {
                         sessionId
+                        startTime
                         endTime
+                        building
+                        room
+                        sessionTasBySessionId {
+                            nodes {
+                                userByUserId {
+                                    computedName
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -128,6 +139,8 @@ class SessionView extends React.Component {
         undoName?: string,
         undoQuestionId?: number,
         timeoutId: number | null,
+        showAbsent: boolean
+        dismissedAbsent: boolean
     };
 
     questionsContainer: SessionQuestionsContainer | null = null;
@@ -139,6 +152,8 @@ class SessionView extends React.Component {
             undoName: undefined,
             undoQuestionId: undefined,
             timeoutId: null,
+            showAbsent: true,
+            dismissedAbsent: true
         };
     }
 
@@ -219,10 +234,30 @@ class SessionView extends React.Component {
                         if (!data || !data.apiGetCurrentUser) {
                             return null;
                         }
+
                         var otherQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
                             .filter((question) => question.sessionBySessionId.sessionId !== this.props.id)
                             .filter((question) => question.status === 'unresolved')
                             .filter((question) => new Date(question.sessionBySessionId.endTime) >= new Date());
+
+                        const userQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes;
+
+                        const lastAskedQuestion = userQuestions.length > 0 ?
+                            userQuestions.reduce((prev, current) => new Date(prev.timeEntered) >
+                                new Date(current.timeEntered) ? prev : current) : null;
+
+                        if (lastAskedQuestion !== null &&
+                            lastAskedQuestion.status !== 'no-show' &&
+                            this.state.showAbsent) {
+                            this.setState({ showAbsent: false, dismissedAbsent: true });
+                        }
+
+                        if (lastAskedQuestion !== null &&
+                            lastAskedQuestion.status === 'no-show' &&
+                            !this.state.showAbsent &&
+                            this.state.dismissedAbsent) {
+                            this.setState({ showAbsent: true, dismissedAbsent: false });
+                        }
 
                         return (
                             <React.Fragment>
@@ -296,6 +331,16 @@ class SessionView extends React.Component {
                                         />
                                     </React.Fragment>
                                 }
+                                {lastAskedQuestion !== null && this.state.showAbsent && !this.state.dismissedAbsent &&
+                                    <SessionAlertModal
+                                        color={'red'}
+                                        description={'A TA has marked you as absent from this office hour ' +
+                                            'and removed you from the queue.'}
+                                        OHSession={lastAskedQuestion.sessionBySessionId}
+                                        buttons={['Continue']}
+                                        cancelAction={() => this.setState({ dismissedAbsent: true })}
+                                        displayShade={true}
+                                    />}
                             </React.Fragment>
                         );
                     }}

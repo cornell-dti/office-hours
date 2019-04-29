@@ -1,40 +1,25 @@
 .SessionAlertModal {
-    background-color: white;
-    height: 100%;
-    color: @text-grey;
-    position: relative;
+    // background-color: white;
+    // height: 100%;
+    // color: @text-grey;
+    // position: relative;
 
     .modalShadeAlert {
         display: none;
     }
 
-    @media only screen and (max-width: @mobile-breakpoint) {
-        .modalShadeAlert {
-            display: block;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 4;
-            background-color: rgba(112, 112, 112, 0.8);
-        }
+    .modalShadeAlert.shade {
+        display: block;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        background-color: rgba(112, 112, 112, 0.8);
     }
-    
+
     .modalContent {
-        @media only screen and (max-width: @mobile-breakpoint) {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 75%;
-            z-index: 5;
-            border-radius: 10px;
-            overflow: hidden;
-            background-color: white;
-        }
-
-
         .red {
             color: #c55a5a;
         }
@@ -42,6 +27,20 @@
         .yellow {
             color: #dc9c35;
         }
+    }
+
+    .modalContent.shade {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        // width: 50%;
+        z-index: 3;
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: white;
+        width: 80%;
+        max-width: 450px;
     }
 
     .text {
@@ -67,6 +66,7 @@
         flex-direction: row;
         align-content: stretch;
         text-align: center;
+        outline: none;
 
         button {
             border: none;
@@ -79,6 +79,28 @@
         .last {
             background: #7ab7fe;
             color: white;
+        }
+    }
+
+    // Copied over from ProfessorOHInfoDelete
+    .question {
+        padding-top: 28px;
+    }
+
+    .info {
+        background-color: #edeff2;
+        margin: 15px 30px;
+        margin-top: 0;
+        padding: 15px;
+
+        .ta {
+            font-weight: bold;
+            padding-bottom: 15px;
+        }
+
+        span {
+            padding: 2px 20px;
+            display: inline-block;
         }
     }
 }
