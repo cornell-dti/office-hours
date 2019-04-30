@@ -5,7 +5,6 @@ import CalendarDaySelect from './CalendarDaySelect';
 import CalendarSessions from './CalendarSessions';
 
 import { firestore } from './firebase';
-import * as firebase from 'firebase/app';
 
 // const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 
@@ -29,7 +28,7 @@ class CalendarView extends React.Component {
         firestore
             .collection('sessions')
             .where('courseId', '==', this.props.courseId)
-            .onSnapshot((querySnapshot: firebase.firestore.QuerySnapshot) => {
+            .onSnapshot((querySnapshot) => {
                 this.setState({
                     loading: false,
                     sessions: querySnapshot.docs.map((doc) => {

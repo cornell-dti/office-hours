@@ -2,43 +2,24 @@ import * as React from 'react';
 
 import TopBar from '../includes/TopBar';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
-// import SessionQuestionsContainer from '../includes/SessionQustionsContainer';
+import SessionQuestionsContainer from './SessionQuestionsContainer';
 import { Icon } from 'semantic-ui-react';
 
 import { useState } from 'react';
 import { useUser, useSession } from '../../firestoreHooks';
 
-// const isOpen = (session: FireSession, interval: number): boolean => {
-//     return new Date(session.startTime.seconds).getTime() - interval * 1000 < new Date().getTime()
-//         && new Date(session.endTime.seconds) > new Date();
-// }
+const isOpen = (session: FireSession, interval: number): boolean => {
+    return new Date(session.startTime.seconds).getTime() - interval * 1000 < new Date().getTime()
+        && new Date(session.endTime.seconds) > new Date();
+};
 
-// const isPast = (session: FireSession): boolean => {
-//     return new Date() > new Date(session.endTime.seconds);
-// }
+const isPast = (session: FireSession): boolean => {
+    return new Date() > new Date(session.endTime.seconds);
+};
 
-// const getOpeningTime = (session: FireSession, interval: number): Date => {
-//     return new Date(new Date(session.startTime.seconds).getTime() - interval * 1000);
-// }
-
-// const triggerUndo = (
-//     timeoutId: NodeJS.Timeout | undefined,
-//     questionId: number,
-//     action: string,
-//     name: string,
-//     setUndoAction: React.Dispatch<React.SetStateAction<String | undefined>>,
-//     setUndoName: React.Dispatch<React.SetStateAction<String | undefined>>,
-//     setUndoQuestionId: React.Dispatch<React.SetStateAction<number | undefined>>,
-//     setTimeoutId: React.Dispatch<React.SetStateAction<NodeJS.Timeout | undefined>>
-// ) => {
-//     if (timeoutId) {
-//         clearTimeout(timeoutId);
-//     }
-//     setUndoAction(action);
-//     setUndoName(name);
-//     setUndoQuestionId(questionId);
-//     setTimeoutId(setTimeout(dismissUndo, 10000));
-// }
+const getOpeningTime = (session: FireSession, interval: number): Date => {
+    return new Date(new Date(session.startTime.seconds).getTime() - interval * 1000);
+};
 
 const dismissUndo = (
     timeoutId: NodeJS.Timeout | undefined,
@@ -55,6 +36,25 @@ const dismissUndo = (
     setUndoName(undefined);
     setUndoQuestionId(undefined);
     setTimeoutId(undefined);
+};
+
+const triggerUndo = (
+    timeoutId: NodeJS.Timeout | undefined,
+    questionId: number,
+    action: string,
+    name: string,
+    setUndoAction: React.Dispatch<React.SetStateAction<String | undefined>>,
+    setUndoName: React.Dispatch<React.SetStateAction<String | undefined>>,
+    setUndoQuestionId: React.Dispatch<React.SetStateAction<number | undefined>>,
+    setTimeoutId: React.Dispatch<React.SetStateAction<NodeJS.Timeout | undefined>>
+) => {
+    if (timeoutId) {
+        clearTimeout(timeoutId);
+    }
+    setUndoAction(action);
+    setUndoName(name);
+    setUndoQuestionId(questionId);
+    setTimeoutId(setTimeout(dismissUndo, 10000));
 };
 
 const getUndoText = (action: String | undefined, undoName: String | undefined) => {
@@ -109,7 +109,7 @@ const SessionView = (props: {
                     courseId={props.course && props.course.id || ''}
                 />
             }
-            {session && session.title ?
+            {session && session.courseId ?
                 <React.Fragment>
                     <SessionInformationHeader
                         session={session}
@@ -140,27 +140,19 @@ const SessionView = (props: {
                             </p>
                         </div>
                     }
-                    { /*<SessionQuestionsContainer
-                        isTA={data.apiGetCurrentUser.nodes[0].
-                            courseUsersByUserId.nodes[0].role !== 'student'}
-                        questions={data.sessionBySessionId.questionsBySessionId
-                            .nodes.filter(
-                                q => q.status === 'unresolved' || q.status === 'assigned')}
+                    <SessionQuestionsContainer
+                        isTA={false}
+                        // 'todo' !== 'student'}
                         handleJoinClick={props.joinCallback}
-                        myUserId={data.apiGetCurrentUser.nodes[0].userId}
+                        myUserId={props.userId}
                         triggerUndo={triggerUndo}
-                        refetch={refetch}
-                        // this sets a ref, which allows a parent to call methods on a child.
-                        // Here, the parent can't access refetch, but the child can.
-                        ref={(ref) => questionsContainer = ref}
-                        isOpen={isOpen(
-                            data.sessionBySessionId,
-                            data.courseByCourseId.queueOpenInterval)}
-                        isPast={isPast(data.sessionBySessionId)}
-                        openingTime={getOpeningTime(
-                            data.sessionBySessionId, data.courseByCourseId.queueOpenInterval)}
-                        haveAnotherQuestion={otherQuestions.length > 0}
-                    /> */}
+                        isOpen={isOpen(session, 30 * 60 * 1000)}
+                        isPast={isPast(session)}
+                        openingTime={getOpeningTime(session, 30 * 60 * 1000)}
+                        haveAnotherQuestion={false}
+                        session={session}
+                    // otherQuestions.length > 0}
+                    />
                 </React.Fragment> : <React.Fragment>
                     <p className="welcomeMessage">Welcome, <span className="welcomeName">
                         {user && user.firstName}

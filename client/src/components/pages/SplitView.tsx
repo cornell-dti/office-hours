@@ -5,7 +5,6 @@ import CalendarView from '../includes/CalendarView';
 import ConnectedQuestionView from '../includes/ConnectedQuestionView';
 
 import { firestore } from '../includes/firebase';
-import * as firebase from 'firebase/app';
 import SessionView from '../includes/SessionView';
 
 // Also update in the main LESS file
@@ -68,7 +67,7 @@ class SplitView extends React.Component {
 
         firestore
             .collection('courses')
-            .onSnapshot((querySnapshot: firebase.firestore.QuerySnapshot) => {
+            .onSnapshot((querySnapshot) => {
                 this.setState({
                     courses: querySnapshot.docs.map((doc) => {
                         return { 'id': doc.id, ...doc.data() };

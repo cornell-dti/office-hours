@@ -24,7 +24,7 @@ let labelSession = (session: FireSession, interval: number) => {
 //         .collection("questions")
 //         .where("userId", "==", userId)
 //         .where("status", "==", "unresolved")
-//         .onSnapshot((snapshot: firebase.firestore.QuerySnapshot) => {
+//         .onSnapshot((snapshot) => {
 //             // @ts-ignore - TS Doesn't know what to expect from Firebase
 //             setMyQuestions(snapshot.docs.map((d) => {
 //                 return { 'id': d.id, ...d.data() }

@@ -155,9 +155,9 @@ class ProfessorView extends React.Component {
             <div className="ProfessorView">
                 <ProfessorMetadataDataQuery query={METADATA_QUERY} variables={{ courseId: courseId }} >
                     {({ loading, data }) => {
-                        var courseCode: string = 'Loading...';
+                        // var courseCode: string = 'Loading...';
                         if (!loading && data) {
-                            courseCode = data.courseByCourseId.code;
+                            // courseCode = data.courseByCourseId.code;
                             if (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role !== 'professor') {
                                 return <Redirect to={'/course/' + this.props.match.params.courseId} />;
                             }

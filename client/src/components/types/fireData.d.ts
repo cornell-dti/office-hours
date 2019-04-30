@@ -31,3 +31,15 @@ interface FireUser {
     photoUrl: string;
     lastActivityAt: FireTimestamp;
 }
+
+interface FireQuestion {
+    askerId: string,
+    answererId: string,
+    content: string,
+    location: string,
+    sessionId: string,
+    status: string,
+    timeAddressed: FireTimestamp,
+    timeEntered: FireTimestamp
+    id: string;
+}
