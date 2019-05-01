@@ -43,3 +43,17 @@ interface FireQuestion {
     timeEntered: FireTimestamp
     id: string;
 }
+
+interface FireQuestionTag {
+    questionId: string,
+    tagId: string,
+    id: string;
+}
+
+interface FireTag {
+    active: boolean,
+    courseId: string,
+    level: number,
+    id: string,
+    name: string
+}

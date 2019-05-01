@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
 
-// import SelectedTags from './SelectedTags';
+import SelectedTags from './SelectedTags';
 import { useState } from 'react';
-import { useUser } from 'src/firestoreHooks';
+import { useUser, useQuestionTags, useTagsFromIds } from 'src/firestoreHooks';
 
 const LOCATION_CHAR_LIMIT = 40;
 
@@ -78,7 +78,8 @@ const SessionQuestion = (props: {
     const asker = useUser(props.question.askerId);
     const answerer = useUser(props.question.answererId);
 
-    // const questionTags = useDocsWithKey('questionTags', 'questionId', question.id);
+    const questionTags = useQuestionTags(question.id);
+    const tags = useTagsFromIds(questionTags.map(qt => qt.tagId));
 
     // const [undoidDontKnow, setundoidDontKnow] = useState<number | undefined>(undefined);
     // const [undoName, setUndoName] = useState<string | undefined>(undefined);
@@ -99,10 +100,8 @@ const SessionQuestion = (props: {
                         style={{ visibility: showLocation ? 'visible' : 'hidden' }}
                     >
                         <p>
-                            Location &nbsp; <span
-                                className={'characterCount ' +
-                                    (location.length >= 40 ? 'warn' : '')}
-                            >
+                            Location &nbsp;
+                            <span className={'characterCount ' + (location.length >= 40 ? 'warn' : '')} >
                                 {location.length}/{LOCATION_CHAR_LIMIT}
                             </span>
                         </p>
@@ -111,13 +110,9 @@ const SessionQuestion = (props: {
                             value={location}
                             onChange={(e) => handleUpdateLocation(e, setLocation, setIsEditingLocation)}
                         />
-                        {isEditingLocation ?
-                            <Loader
-                                className={'locationLoader'}
-                                active={true}
-                                inline={true}
-                                size={'tiny'}
-                            /> : <Icon name="check" />}
+                        {isEditingLocation
+                            ? <Loader className={'locationLoader'} active={true} inline={true} size={'tiny'} />
+                            : <Icon name="check" />}
                         <div className="DoneButton" onClick={() => setShowLocation(!showLocation)} > Done </div>
                     </div>
                     {showLocation && <div className="modalShade" />}
@@ -130,13 +125,11 @@ const SessionQuestion = (props: {
                         <span className="Name">
                             {asker && (`${asker.firstName} ${asker.lastName}`)}
                             {question.status === 'assigned' &&
-                                <React.Fragment>
-                                    <span className="assigned"> is assigned
+                                <span className="assigned"> is assigned
                                         {' to ' + (question.answererId === props.myUserId
-                                            ? 'you'
-                                            : answerer && (`${answerer.firstName} ${answerer.lastName}`))}
-                                    </span>
-                                </React.Fragment>
+                                        ? 'you'
+                                        : answerer && (`${answerer.firstName} ${answerer.lastName}`))}
+                                </span>
                             }
                         </span>
                     </div>
@@ -148,19 +141,19 @@ const SessionQuestion = (props: {
             <div className="BottomBar">
                 {props.isTA && <span className="Spacer" />}
                 <div className="Tags">
-                    {/* {question.questionTagsByid.nodes.map(
-                        (tag) => <SelectedTags
-                            key={tag.tagByTagId.tagId}
+                    {tags.map((tag) =>
+                        <SelectedTags
+                            key={tag.id}
                             isSelected={false}
-                            tag={tag.tagByTagId.name}
-                            level={tag.tagByTagId.level}
+                            tag={tag.name}
+                            level={tag.level}
                             onClick={null}
                         />
-                    )} */}
+                    )}
                 </div>
                 <p className="Time">
                     posted at&nbsp;
-                        {<Moment date={question.timeEntered.seconds * 1000} interval={0} format={'hh:mm A'} />}
+                    {<Moment date={question.timeEntered.seconds * 1000} interval={0} format={'hh:mm A'} />}
                 </p>
             </div>
             {props.isTA &&
@@ -176,7 +169,7 @@ const SessionQuestion = (props: {
                                 <p className="Done" onClick={(e) => _onClick(e, 'resolved', question)} > Done </p>
                                 <p className="DotMenu" onClick={() => setShowDotMenu(!showDotMenu)} >
                                     ...
-                                        {showDotMenu &&
+                                    {showDotMenu &&
                                         <div
                                             className="IReallyDontKnow"
                                             tabIndex={1}
