@@ -10,16 +10,18 @@ by [Cornell Design & Tech Initiative](http://cornelldti.org)
 ## About
 Office hours are too crowded and unorganized. Queue Me In removes the frustration from office hours by helping students get support and professors better understand their class.
 
+We make it easier for students to get help because they don't have to wait in crowded room or hallway, while simultaneously giving professors insight into office hours. Our visiualizations show when office hours are most in demand to help with scheduling hours as well as which parts of assignments generate the most questions to show where clarification might be beneficial.
+
 ## Getting Started
 View the [setup documentation](./docs/setup.md) for instructions on setting up and getting started with development!
 
-_Last updated **09/22/2018**_.
+_Last updated **04/01/2019**_.
 
 ## Screenshots
 
 _Screenshots showing major parts of app_
 
-<img src="Screenshots/1.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;"> <img src="Screenshots/2.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;"> 
+<img src="Screenshots/1.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;"> <img src="Screenshots/2.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;">
 
 <img src="Screenshots/3.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;"> <img src="Screenshots/4.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;">
 
@@ -48,6 +50,6 @@ _Screenshots showing major parts of app_
 * **Karun Singh** - Product Manager
 
 
-We are a team within **Cornell Design & Tech Initiative**. For more information, see our website [here](https://cornelldti.org/).
+We are a team within **Cornell Design & Tech Initiative**. For more information, see our [website](https://cornelldti.org/).
 <img src="https://raw.githubusercontent.com/cornell-dti/design/master/Branding/Wordmark/Dark%20Text/Transparent/Wordmark-Dark%20Text-Transparent%403x.png">
 ​
