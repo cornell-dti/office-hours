@@ -1,12 +1,11 @@
 import * as React from 'react';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
-// import QuestionsBarChart from '../includes/QuestionsBarChart';
+import TagsBarChart from '../includes/TagsBarChart';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Redirect } from 'react-router';
 import { Dropdown, DropdownProps } from 'semantic-ui-react';
-import { BarDatum } from '@nivo/bar';
 
 const METADATA_QUERY = gql`
 query GetMetadata($courseId: Int!, $level: Int!) {
@@ -81,21 +80,37 @@ class ProfessorDashboardView extends React.Component {
     state: {
         currentCategory: CategoryTag | undefined;
         categories: CategoryTag[];
+        showTagsGraph: boolean
     };
 
     constructor(props: {}) {
         super(props);
         this.state = {
             currentCategory: undefined,
-            categories: []
+            categories: [],
+            showTagsGraph: false
         };
     }
 
     public handleUpdateCategory = (event: React.SyntheticEvent<HTMLElement, Event>,
                                    data: DropdownProps): void => {
-        console.log('worked!');
         let newCategoryTag = this.state.categories.find((c) => c.category === data.value);
-        this.setState({ category: newCategoryTag });
+        this.setState({ currentCategory: newCategoryTag, showTagsGraph: true });
+    }
+
+    calcTickVals(yMax: number) {
+        if (yMax === 0) {
+            return [0];
+        }
+        let end = yMax + (6 - (yMax % 6));
+        let start = 0;
+        let step = end / 6;
+        let tickVals = [];
+        while ((end + step) >= start) {
+            tickVals.push(start);
+            start += step;
+        }
+        return tickVals;
     }
 
     render() {
@@ -111,13 +126,15 @@ class ProfessorDashboardView extends React.Component {
                 >
                     {({ loading, data }) => {
                         var courseCode: string = 'Loading...';
-                        // let barGraphData: {}[] = [];
-                        let barsQuestionsByTag: BarDatum[] = [];
+                        let barsQuestionsByTag: {}[] = [];
+                        let questionsOfTopTag: number = 0;
+                        let tagNameList: string[] = [];
                         if (!loading && data) {
                             courseCode = data.courseByCourseId.code;
                             if (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role !== 'professor') {
                                 return <Redirect to={'/course/' + this.props.match.params.courseId} />;
                             }
+                            this.state.categories = []; // clear categories data
                             data.allTags.nodes.forEach((t) => {
                                 let category = {
                                     category: t.name,
@@ -134,6 +151,7 @@ class ProfessorDashboardView extends React.Component {
                                                 name: childTag.name,
                                                 questionCount: 1
                                             };
+                                            tagNameList.push(childTag.name);
                                             category.childTags.push(newChildObj);
                                         } else {
                                             category.childTags[tagIndex].questionCount++;
@@ -144,14 +162,18 @@ class ProfessorDashboardView extends React.Component {
                                 this.state.categories.push(category);
                             });
                             console.log(JSON.stringify(this.state.categories));
+                            console.log('current: ' + this.state.currentCategory);
                             if (this.state.currentCategory) {
                                 this.state.currentCategory.childTags.forEach((t) => {
-                                    barsQuestionsByTag.push({
-                                        [t.name]: t.questionCount
-                                    });
+                                    if (t.questionCount > questionsOfTopTag) {
+                                        questionsOfTopTag = t.questionCount;
+                                    }
                                     let newBar = {
-                                        'tag': c.childTags
+                                        'name': t.name,
+                                        'value': t.questionCount
                                     };
+                                    barsQuestionsByTag.push(newBar);
+                                    console.log('bar data:' + JSON.stringify(barsQuestionsByTag));
                                 });
                             }
                         }
@@ -178,7 +200,7 @@ class ProfessorDashboardView extends React.Component {
                                                 fluid={true}
                                                 selection={true}
                                                 onChange={this.handleUpdateCategory}
-                                                options={tagsByCategory.map(category => {
+                                                options={this.state.categories.map(category => {
                                                     let name = category.category;
                                                     return (
                                                         {
@@ -189,6 +211,14 @@ class ProfessorDashboardView extends React.Component {
                                                     );
                                                 })}
                                             />
+                                        </div>
+                                        <div className="tags-bar-container">
+                                            {this.state.showTagsGraph ? <TagsBarChart
+                                                barData={barsQuestionsByTag}
+                                                tagKeys={tagNameList}
+                                                yMax={questionsOfTopTag}
+                                                calcTickVals={this.calcTickVals}
+                                            /> : null}
                                         </div>
                                         <p className="ComingSoon">
                                             Coming soon!

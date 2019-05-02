@@ -1,13 +1,11 @@
 import * as React from 'react';
-import { ResponsiveBar, BarDatum, BarExtendedDatum } from '@nivo/bar';
-import { Icon } from 'semantic-ui-react';
+import { ResponsiveBar, BarDatum } from '@nivo/bar';
 
 class TagsBarChart extends React.Component {
     props: {
         barData: {}[],
         yMax: number,
         tagKeys: string[],
-        sessionDict: {},
         calcTickVals: (yMax: number) => number[]
     };
 
@@ -19,7 +17,6 @@ class TagsBarChart extends React.Component {
     constructor(props: {
         barData: {}[],
         yMax: number,
-        sessionDict: {},
         calcTickVals: (yMax: number) => number[]
     }) {
         super(props);
@@ -27,6 +24,7 @@ class TagsBarChart extends React.Component {
             data: this.props.barData as BarDatum[],
             tagKeys: this.props.tagKeys
         };
+        console.log('data:' + JSON.stringify(this.props.barData));
     }
 
     isEmpty(obj: {}) {
@@ -38,44 +36,9 @@ class TagsBarChart extends React.Component {
         return true;
     }
 
-    createTooltipFunc(sessionId: string) {
-
-        if (!(this.isEmpty(this.props.sessionDict))) {
-            var session = this.props.sessionDict[sessionId];
-            var percent = Math.round((session.answered / (session.questions)) * 100);
-            return (function (e: BarExtendedDatum) {
-                return (
-                    <div className="bar-tooltip">
-                        <div className="tooltip-section">
-                            <Icon name="user" />
-                            {session.ta} <br />
-                            <Icon name="clock" />
-                            {session.startHour} - {session.endHour} <br />
-                            <Icon name="map marker alternate" />
-                            {session.building} {session.room} <br />
-                        </div>
-                        < hr />
-                        <div className="tooltip-nums">
-                            <div className="tool-flex">
-                                <span className="tool-stat">{session.questions} </span>
-                                <br /> questions</div>
-                            <div className="tool-flex">
-                                <span className="tool-stat"> {percent}% </span>
-                                <br /> answered</div>
-                        </div>
-                    </div>);
-            });
-        } else {
-            return (function (e: BarExtendedDatum) {
-                return <div>N/A</div>;
-            });
-        }
-    }
-
     render() {
         return (
             <div className="TagsBarChart" style={{ height: 300 }}>
-
                 <ResponsiveBar
                     data={(this.state = {
                         data: this.props.barData as BarDatum[],
@@ -85,7 +48,7 @@ class TagsBarChart extends React.Component {
                         data: this.props.barData as BarDatum[],
                         tagKeys: this.props.tagKeys
                     }, this.state.tagKeys)}
-                    indexBy="date"
+                    indexBy="name"
                     margin={{
                         'top': 5,
                         'right': 20,
@@ -101,17 +64,6 @@ class TagsBarChart extends React.Component {
                             return '#d8d8d8';
                         }
                     }
-                    // @ts-ignore - TODO: Figure out how to avoid this and get a string from Reacttext
-                    tooltip={(node) => { return this.createTooltipFunc(node.id)(); }}
-
-                    theme={{
-                        tooltip: {
-                            container: {
-                                background: '#464646',
-                                width: '180px'
-                            }
-                        }
-                    }}
 
                     axisLeft={{
                         'legend': 'questions',
