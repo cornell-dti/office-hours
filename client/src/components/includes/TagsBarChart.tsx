@@ -5,13 +5,11 @@ class TagsBarChart extends React.Component {
     props: {
         barData: {}[],
         yMax: number,
-        tagKeys: string[],
         calcTickVals: (yMax: number) => number[]
     };
 
     state: {
         data: BarDatum[];
-        tagKeys: string[];
     };
 
     constructor(props: {
@@ -21,10 +19,9 @@ class TagsBarChart extends React.Component {
     }) {
         super(props);
         this.state = {
-            data: this.props.barData as BarDatum[],
-            tagKeys: this.props.tagKeys
+            data: this.props.barData as BarDatum[]
         };
-        console.log('data:' + JSON.stringify(this.props.barData));
+        console.log(JSON.stringify(this.props.barData));
     }
 
     isEmpty(obj: {}) {
@@ -42,12 +39,7 @@ class TagsBarChart extends React.Component {
                 <ResponsiveBar
                     data={(this.state = {
                         data: this.props.barData as BarDatum[],
-                        tagKeys: this.props.tagKeys
                     }, this.state.data)}
-                    keys={(this.state = {
-                        data: this.props.barData as BarDatum[],
-                        tagKeys: this.props.tagKeys
-                    }, this.state.tagKeys)}
                     indexBy="name"
                     margin={{
                         'top': 5,
@@ -64,9 +56,13 @@ class TagsBarChart extends React.Component {
                             return '#d8d8d8';
                         }
                     }
-
+                    tooltip={({ value }) => (
+                        <strong>
+                            Questions: {value}
+                        </strong>
+                    )}
                     axisLeft={{
-                        'legend': 'questions',
+                        'legend': '',
                         'tickSize': 1,
                         'tickPadding': 12,
                         'tickRotation': 0,
@@ -78,7 +74,7 @@ class TagsBarChart extends React.Component {
                         'legend': '',
                         'tickSize': 1,
                         'tickPadding': 12,
-                        'tickRotation': -60,
+                        'tickRotation': 0,
                         'legendOffset': 40,
                         'legendPosition': 'end'
                     }}
@@ -88,10 +84,7 @@ class TagsBarChart extends React.Component {
                     animate={true}
                     motionStiffness={90}
                     motionDamping={15}
-                    legends={[
-                    ]}
                 />
-
             </div>
 
         );

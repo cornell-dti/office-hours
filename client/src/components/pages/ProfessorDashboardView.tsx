@@ -26,15 +26,20 @@ query GetMetadata($courseId: Int!, $level: Int!) {
     allTags(condition:{courseId:$courseId, level:$level}) {
         nodes {
             name
+            tagId
+            activated
             tagRelationsByParentId {
                 nodes {
                     tagByChildId {
                         name
+                        questionTagsByTagIdList {
+                            questionByQuestionId {
+                                status
+                            }
+                        }
                     }
                 }
-            }
-            tagId
-            activated
+            }     
         }
     }
 }`;
@@ -47,7 +52,7 @@ interface ProfessorMetadataData {
         code: string
     };
     allTags: {
-        nodes: [AppTag]
+        nodes: [AppTagQuestionsInfo]
     };
 }
 
@@ -59,6 +64,8 @@ interface MetadataVariables {
 interface CategoryTag {
     category: string;
     totalQuestions: number;
+    resolvedQuestions: number;
+    percentResolved: number;
     childTags: {
         name: string,
         questionCount: number
@@ -80,31 +87,29 @@ class ProfessorDashboardView extends React.Component {
     state: {
         currentCategory: CategoryTag | undefined;
         categories: CategoryTag[];
-        showTagsGraph: boolean
     };
 
     constructor(props: {}) {
         super(props);
         this.state = {
             currentCategory: undefined,
-            categories: [],
-            showTagsGraph: false
+            categories: []
         };
     }
 
     public handleUpdateCategory = (event: React.SyntheticEvent<HTMLElement, Event>,
                                    data: DropdownProps): void => {
         let newCategoryTag = this.state.categories.find((c) => c.category === data.value);
-        this.setState({ currentCategory: newCategoryTag, showTagsGraph: true });
+        this.setState({ currentCategory: newCategoryTag });
     }
 
     calcTickVals(yMax: number) {
         if (yMax === 0) {
             return [0];
         }
-        let end = yMax + (6 - (yMax % 6));
+        let end = yMax + (5 - (yMax % 5));
         let start = 0;
-        let step = end / 6;
+        let step = end / 5;
         let tickVals = [];
         while ((end + step) >= start) {
             tickVals.push(start);
@@ -139,6 +144,8 @@ class ProfessorDashboardView extends React.Component {
                                 let category = {
                                     category: t.name,
                                     totalQuestions: 0,
+                                    resolvedQuestions: 0,
+                                    percentResolved: 0,
                                     childTags: []
                                 } as CategoryTag;
                                 if (t.tagRelationsByParentId) {
@@ -149,20 +156,29 @@ class ProfessorDashboardView extends React.Component {
                                         if (tagIndex === -1) {
                                             let newChildObj = {
                                                 name: childTag.name,
-                                                questionCount: 1
+                                                questionCount: 0
                                             };
                                             tagNameList.push(childTag.name);
                                             category.childTags.push(newChildObj);
-                                        } else {
-                                            category.childTags[tagIndex].questionCount++;
+                                            if (childTag.questionTagsByTagIdList &&
+                                                childTag.questionTagsByTagIdList.length > 0) {
+                                                childTag.questionTagsByTagIdList.forEach((q) => {
+                                                    category.totalQuestions++;
+                                                    newChildObj.questionCount++;
+                                                    if (q.questionByQuestionId.status === 'resolved' ||
+                                                        q.questionByQuestionId.status === 'retracted') {
+                                                        category.resolvedQuestions++;
+                                                    }
+                                                });
+                                            }
                                         }
-                                        category.totalQuestions++;
                                     });
                                 }
+                                category.percentResolved = Math.round((category.resolvedQuestions /
+                                    (category.totalQuestions)) * 100);
                                 this.state.categories.push(category);
                             });
                             console.log(JSON.stringify(this.state.categories));
-                            console.log('current: ' + this.state.currentCategory);
                             if (this.state.currentCategory) {
                                 this.state.currentCategory.childTags.forEach((t) => {
                                     if (t.questionCount > questionsOfTopTag) {
@@ -173,7 +189,6 @@ class ProfessorDashboardView extends React.Component {
                                         'value': t.questionCount
                                     };
                                     barsQuestionsByTag.push(newBar);
-                                    console.log('bar data:' + JSON.stringify(barsQuestionsByTag));
                                 });
                             }
                         }
@@ -212,20 +227,38 @@ class ProfessorDashboardView extends React.Component {
                                                 })}
                                             />
                                         </div>
-                                        <div className="tags-bar-container">
-                                            {this.state.showTagsGraph ? <TagsBarChart
-                                                barData={barsQuestionsByTag}
-                                                tagKeys={tagNameList}
-                                                yMax={questionsOfTopTag}
-                                                calcTickVals={this.calcTickVals}
-                                            /> : null}
-                                        </div>
-                                        <p className="ComingSoon">
-                                            Coming soon!
-                                        </p>
-                                        <p className="ComingSoon">
-                                            Coming soon!!!
-                                        </p>
+                                        {this.state.currentCategory ?
+                                            <div className="tags-bar-container">
+                                                <p className="categoryName">
+                                                    {this.state.currentCategory.category}
+                                                </p>
+                                                <hr />
+                                                <div className="category-stats-container">
+                                                    <p className="totalQuestions">
+                                                        {this.state.currentCategory.totalQuestions}
+                                                    </p>
+                                                    <p className="totalQuestionsLabel">
+                                                        questions total
+                                                    </p>
+                                                    <hr />
+                                                    <p className="percentResolved">
+                                                        {this.state.currentCategory.totalQuestions > 0 ?
+                                                            this.state.currentCategory.percentResolved + '%' :
+                                                            '0%'}
+                                                    </p>
+                                                    <p className="percentResolvedLabel">
+                                                        answered
+                                                </p>
+                                                </div>
+                                                <TagsBarChart
+                                                    barData={barsQuestionsByTag}
+                                                    yMax={questionsOfTopTag + 1}
+                                                    calcTickVals={this.calcTickVals}
+                                                />
+                                            </div> :
+                                            <p className="SelectCategory">
+                                                Select a category to view
+                                                </p>}
                                     </div>
                                 </section>
                             </React.Fragment>
