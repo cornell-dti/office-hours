@@ -21,7 +21,6 @@ class TagsBarChart extends React.Component {
         this.state = {
             data: this.props.barData as BarDatum[]
         };
-        console.log(JSON.stringify(this.props.barData));
     }
 
     isEmpty(obj: {}) {
