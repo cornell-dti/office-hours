@@ -178,7 +178,6 @@ class ProfessorDashboardView extends React.Component {
                                     (category.totalQuestions)) * 100);
                                 this.state.categories.push(category);
                             });
-                            console.log(JSON.stringify(this.state.categories));
                             if (this.state.currentCategory) {
                                 this.state.currentCategory.childTags.forEach((t) => {
                                     if (t.questionCount > questionsOfTopTag) {
