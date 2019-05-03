@@ -228,33 +228,35 @@ class ProfessorDashboardView extends React.Component {
                                             />
                                         </div>
                                         {this.state.currentCategory ?
-                                            <div className="tags-bar-container">
+                                            <div className="category-container">
                                                 <p className="categoryName">
                                                     {this.state.currentCategory.category}
                                                 </p>
                                                 <hr />
-                                                <div className="category-stats-container">
-                                                    <p className="totalQuestions">
-                                                        {this.state.currentCategory.totalQuestions}
-                                                    </p>
-                                                    <p className="totalQuestionsLabel">
-                                                        questions total
-                                                    </p>
-                                                    <hr />
-                                                    <p className="percentResolved">
-                                                        {this.state.currentCategory.totalQuestions > 0 ?
-                                                            this.state.currentCategory.percentResolved + '%' :
-                                                            '0%'}
-                                                    </p>
-                                                    <p className="percentResolvedLabel">
-                                                        answered
-                                                </p>
+                                                <div className="stats-graph-container">
+                                                    <div className="category-stats-container">
+                                                        <p className="totalQuestions">
+                                                            {this.state.currentCategory.totalQuestions}
+                                                        </p>
+                                                        <p className="totalQuestionsLabel">
+                                                            questions total
+                                                        </p>
+                                                        <hr />
+                                                        <p className="percentResolved">
+                                                            {this.state.currentCategory.totalQuestions > 0 ?
+                                                                this.state.currentCategory.percentResolved + '%' :
+                                                                '0%'}
+                                                        </p>
+                                                        <p className="percentResolvedLabel">
+                                                            answered
+                                                        </p>
+                                                    </div>
+                                                    <TagsBarChart
+                                                        barData={barsQuestionsByTag}
+                                                        yMax={questionsOfTopTag + 1}
+                                                        calcTickVals={this.calcTickVals}
+                                                    />
                                                 </div>
-                                                <TagsBarChart
-                                                    barData={barsQuestionsByTag}
-                                                    yMax={questionsOfTopTag + 1}
-                                                    calcTickVals={this.calcTickVals}
-                                                />
                                             </div> :
                                             <p className="SelectCategory">
                                                 Select a category to view

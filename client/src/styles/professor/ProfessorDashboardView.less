@@ -4,7 +4,7 @@
     margin-top: 15px;
   }
 
-  .tags-bar-container {
+  .category-container {
     margin-top: 30px;
     background-color: #ffffff;
     border-radius: 10px;
@@ -21,10 +21,39 @@
       margin-bottom: 0;
     }
 
+    .stats-graph-container {
+      display: flex;
+      align-items: center;
+    }
+
     .category-stats-container {
       display: inline-block;
       text-align: center;
       width: 12%;
+      margin-left: 20px;
+      color: #676767;
+
+      .totalQuestions {
+        margin-bottom: 0;
+        font-size: 32px;
+        line-height: 30px;
+      }
+
+      .totalQuestionsLabel {
+        margin-bottom: 28px;
+        font-size: 12px;
+      }
+
+      .percentResolved {
+        margin-top: 30px;
+        margin-bottom: 0;
+        font-size: 32px;
+        line-height: 30px;
+      }
+
+      .percentResolvedLabel {
+        font-size: 12px;
+      }
     }
 
     .TagsBarChart {
