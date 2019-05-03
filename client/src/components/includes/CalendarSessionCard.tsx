@@ -1,73 +1,71 @@
 import * as React from 'react';
 import Moment from 'react-moment';
-const chevron = require('../../media/chevron.svg');
 
-class CalendarSessionCard extends React.Component {
-    props: {
-        includeBookmark: boolean | null,
-        numAhead: number,
-        session: FireSession
-        callback: Function,
-        active: boolean,
-        status: string
+import chevron from '../../media/chevron.svg';
+
+// class CalendarSessionCard extends React.Component {
+const CalendarSessionCard = (props: {
+    includeBookmark: boolean | null;
+    numAhead: number;
+    session: FireSession;
+    callback: Function;
+    active: boolean;
+    status: string;
+}) => {
+    const handleOnClick = () => {
+        props.callback(props.session.id);
     };
 
-    handleOnClick = () => {
-        this.props.callback(this.props.session.id);
-    }
+    const { session } = props;
+    // const questions: string[] = []; //session.questionsBySessionId.nodes;
+    // const tas: any[] = []; //session.sessionTasBySessionId.nodes;
 
-    render() {
-        const session = this.props.session;
-        // const questions: string[] = []; //session.questionsBySessionId.nodes;
-        // const tas: any[] = []; //session.sessionTasBySessionId.nodes;
+    const timeDesc = '';
 
-        var timeDesc = '';
-
-        return (
-            <div className={(this.props.active && 'active') + ' CalendarSessionCard'} onClick={this.handleOnClick}>
-                {this.props.includeBookmark && <div className="Bookmark" />}
-                <div className="TimeInfo">
-                    <div className="StartTime">
-                        <Moment date={session.startTime.seconds} unix={true} interval={0} format={'hh:mm A'} />
-                    </div>
-                    <div className="EndTime">
-                        <Moment date={session.endTime.seconds} unix={true} interval={0} format={'hh:mm A'} />
-                    </div>
+    return (
+        <div className={`${props.active && 'active'} CalendarSessionCard`} onClick={handleOnClick}>
+            {props.includeBookmark && <div className="Bookmark" />}
+            <div className="TimeInfo">
+                <div className="StartTime">
+                    <Moment date={session.startTime.seconds} unix interval={0} format="hh:mm A" />
                 </div>
-                <div className={'Indicator ' + this.props.status}>
-                    <div className="Circle" />
-                </div>
-                <div className="CalendarCard">
-                    <div className="Location">
-                        {session.building + ' ' + session.room}
-                    </div>
-                    <div className="Tas">
-                        {/* {session.title || (tas.length > 2 ?
-                            tas.map(ta => ta.userByUserId.computedName).join(', ') :
-                            tas.map(ta => ta.userByUserId.computedName).join(' and '))} */}
-                    </div>
-                    <div className="Queue">
-                        <span className="Ahead">
-                            Ahead: &nbsp;
-                            <span className={'AheadNum ' + (this.props.numAhead === 0 && 'zero')}>
-                                {this.props.numAhead}
-                            </span>
-                        </span>
-                        <span className="Finished">
-                            Finished: &nbsp;
-                            <span className="FinishedNum">
-                                {/* {questions.filter(q => q.status === 'resolved').length} */}
-                            </span>
-                        </span>
-                    </div>
-                    <div className="TimeDesc">{timeDesc}</div>
-                </div>
-                <div className="OpenButton">
-                    <img src={chevron} />
+                <div className="EndTime">
+                    <Moment date={session.endTime.seconds} unix interval={0} format="hh:mm A" />
                 </div>
             </div>
-        );
-    }
-}
+            <div className={`Indicator ${props.status}`}>
+                <div className="Circle" />
+            </div>
+            <div className="CalendarCard">
+                <div className="Location">
+                    {`${session.building} ${session.room}`}
+                </div>
+                <div className="Tas">
+                    {/* {session.title || (tas.length > 2 ?
+                            tas.map(ta => ta.userByUserId.computedName).join(', ') :
+                            tas.map(ta => ta.userByUserId.computedName).join(' and '))} */}
+                </div>
+                <div className="Queue">
+                    <span className="Ahead">
+                        Ahead: &nbsp;
+                        <span className={`AheadNum ${props.numAhead === 0 && 'zero'}`}>
+                            {props.numAhead}
+                        </span>
+                    </span>
+                    <span className="Finished">
+                        Finished: &nbsp;
+                        <span className="FinishedNum">
+                            {/* {questions.filter(q => q.status === 'resolved').length} */}
+                        </span>
+                    </span>
+                </div>
+                <div className="TimeDesc">{timeDesc}</div>
+            </div>
+            <div className="OpenButton">
+                <img src={chevron} alt="right arrow" />
+            </div>
+        </div>
+    );
+};
 
 export default CalendarSessionCard;

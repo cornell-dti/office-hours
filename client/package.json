@@ -24,6 +24,7 @@
         "less": "^3.8.1",
         "less-plugin-clean-css": "^1.5.1",
         "less-watch-compiler": "^1.12.1",
+        "lodash": "^4.17.11",
         "moment": "^2.22.2",
         "moment-timezone": "^0.5.21",
         "prettier": "^1.17.0",

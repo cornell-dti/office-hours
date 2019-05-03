@@ -56,3 +56,5 @@ const CalendarDaySelect = (props: {
         </div>
     );
 };
+
+export default CalendarDaySelect;
