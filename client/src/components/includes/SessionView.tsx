@@ -1,32 +1,28 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 
-import TopBar from '../includes/TopBar';
-import SessionInformationHeader from '../includes/SessionInformationHeader';
-import SessionQuestionsContainer from './SessionQuestionsContainer';
 import { Icon } from 'semantic-ui-react';
+import TopBar from './TopBar';
+import SessionInformationHeader from './SessionInformationHeader';
+import SessionQuestionsContainer from './SessionQuestionsContainer';
 
-import { useState } from 'react';
 import { useUser, useSession } from '../../firestoreHooks';
 
-const isOpen = (session: FireSession, interval: number): boolean => {
-    return new Date(session.startTime.seconds).getTime() - interval * 1000 < new Date().getTime()
-        && new Date(session.endTime.seconds) > new Date();
-};
+const isOpen = (session: FireSession, interval: number): boolean => (
+    new Date(session.startTime.seconds).getTime() - interval * 1000 < new Date().getTime()
+    && new Date(session.endTime.seconds) > new Date());
 
-const isPast = (session: FireSession): boolean => {
-    return new Date() > new Date(session.endTime.seconds);
-};
+const isPast = (session: FireSession): boolean => new Date() > new Date(session.endTime.seconds);
 
-const getOpeningTime = (session: FireSession, interval: number): Date => {
-    return new Date(new Date(session.startTime.seconds).getTime() - interval * 1000);
-};
+const getOpeningTime = (session: FireSession, interval: number): Date => (
+    new Date(new Date(session.startTime.seconds).getTime() - interval * 1000)
+);
 
 const dismissUndo = (
     timeoutId: NodeJS.Timeout | undefined,
-    setUndoAction: React.Dispatch<React.SetStateAction<String | undefined>>,
-    setUndoName: React.Dispatch<React.SetStateAction<String | undefined>>,
+    setUndoAction: React.Dispatch<React.SetStateAction<string | undefined>>,
+    setUndoName: React.Dispatch<React.SetStateAction<string | undefined>>,
     setUndoQuestionId: React.Dispatch<React.SetStateAction<number | undefined>>,
-    setTimeoutId: React.Dispatch<React.SetStateAction<NodeJS.Timeout | undefined>>
+    setTimeoutId: React.Dispatch<React.SetStateAction<NodeJS.Timeout | undefined>>,
 
 ) => {
     if (timeoutId) {
@@ -43,10 +39,10 @@ const triggerUndo = (
     questionId: number,
     action: string,
     name: string,
-    setUndoAction: React.Dispatch<React.SetStateAction<String | undefined>>,
-    setUndoName: React.Dispatch<React.SetStateAction<String | undefined>>,
+    setUndoAction: React.Dispatch<React.SetStateAction<string | undefined>>,
+    setUndoName: React.Dispatch<React.SetStateAction<string | undefined>>,
     setUndoQuestionId: React.Dispatch<React.SetStateAction<number | undefined>>,
-    setTimeoutId: React.Dispatch<React.SetStateAction<NodeJS.Timeout | undefined>>
+    setTimeoutId: React.Dispatch<React.SetStateAction<NodeJS.Timeout | undefined>>,
 ) => {
     if (timeoutId) {
         clearTimeout(timeoutId);
@@ -57,21 +53,20 @@ const triggerUndo = (
     setTimeoutId(setTimeout(dismissUndo, 10000));
 };
 
-const getUndoText = (action: String | undefined, undoName: String | undefined) => {
+const getUndoText = (action: string | undefined, undoName: string | undefined) => {
     if (action === 'resolved') {
-        return undoName + ' has been resolved! ';
+        return `${undoName} has been resolved! `;
     } else if (action === 'no-show') {
-        return undoName + ' has been marked as a no-show. ';
+        return `${undoName} has been marked as a no-show. `;
     } else if (action === 'retracted') {
         return 'You have removed your question. ';
     } else if (action === 'assigned') {
-        return undoName + ' has been assigned to you! ';
-    } else {
-        return '';
+        return `${undoName} has been assigned to you! `;
     }
+    return '';
 };
 
-const handleUndoClick = (undoQuestionId: number, undoAction: String | undefined) => {
+const handleUndoClick = (undoQuestionId: number, undoAction: string | undefined) => {
     // undoQuestion({
     //     variables: {
     //         questionId: undoQuestionId,
@@ -84,14 +79,13 @@ const handleUndoClick = (undoQuestionId: number, undoAction: String | undefined)
 };
 
 const SessionView = (props: {
-    id: string,
-    course?: FireCourse,
-    isDesktop: boolean,
-    backCallback: Function,
-    joinCallback: Function,
-    userId: string
+    id: string;
+    course?: FireCourse;
+    isDesktop: boolean;
+    backCallback: Function;
+    joinCallback: Function;
+    userId: string;
 }) => {
-
     const [undoAction, setUndoAction] = useState<string | undefined>(undefined);
     const [undoName, setUndoName] = useState<string | undefined>(undefined);
     const [undoQuestionId, setUndoQuestionId] = useState<number | undefined>(undefined);
@@ -101,67 +95,70 @@ const SessionView = (props: {
 
     return (
         <section className="StudentSessionView">
-            {props.isDesktop && user && // LTODO Skeleton
-                <TopBar
+            {props.isDesktop && user // LTODO Skeleton
+                && <TopBar
                     user={user}
-                    role={'professor'} // TODO
+                    role="professor" // TODO
                     context="session"
-                    courseId={props.course && props.course.id || ''}
+                    courseId={(props.course && props.course.id) || ''}
                 />
             }
-            {session && session.courseId ?
-                <React.Fragment>
-                    <SessionInformationHeader
-                        session={session}
-                        course={props.course}
-                        userId={props.userId}
-                        callback={props.backCallback}
-                        isDesktop={props.isDesktop}
-                    />
-                    {undoQuestionId &&
-                        // TODO Interactivity
-                        <div className="undoContainer">
-                            <p
-                                className="undoClose"
-                                onClick={() =>
-                                    dismissUndo(timeoutId, setUndoAction, setUndoName, setUndoQuestionId, setTimeoutId)
-                                }
-                            >
-                                <Icon name="close" />
-                            </p>
-                            <p className="undoText">
-                                {getUndoText(undoAction, undoName)}
-                                <span
-                                    className="undoLink"
-                                    onClick={() => handleUndoClick(undoQuestionId, undoAction)}
-                                >
-                                    Undo
-                                </span>
-                            </p>
-                        </div>
-                    }
-                    <SessionQuestionsContainer
-                        isTA={false}
-                        // 'todo' !== 'student'}
-                        handleJoinClick={props.joinCallback}
-                        myUserId={props.userId}
-                        triggerUndo={triggerUndo}
-                        isOpen={isOpen(session, 30 * 60 * 1000)}
-                        isPast={isPast(session)}
-                        openingTime={getOpeningTime(session, 30 * 60 * 1000)}
-                        haveAnotherQuestion={false}
-                        session={session}
-                    // otherQuestions.length > 0}
-                    />
-                </React.Fragment> : <React.Fragment>
-                    <p className="welcomeMessage">Welcome, <span className="welcomeName">
-                        {user && user.firstName}
-                    </span></p>
-                    <p className="noSessionSelected">
-                        Please select an office hour from the calendar.
-                    </p>
-                </React.Fragment>
-
+            {session && session.courseId
+                ? (
+                    <React.Fragment>
+                        <SessionInformationHeader
+                            session={session}
+                            course={props.course}
+                            userId={props.userId}
+                            callback={props.backCallback}
+                            isDesktop={props.isDesktop}
+                        />
+                        {undoQuestionId
+                            // TODO Interactivity
+                            && (
+                                <div className="undoContainer">
+                                    <p
+                                        className="undoClose"
+                                        onClick={() => dismissUndo(timeoutId, setUndoAction, setUndoName, setUndoQuestionId, setTimeoutId)}
+                                    >
+                                        <Icon name="close" />
+                                    </p>
+                                    <p className="undoText">
+                                        {getUndoText(undoAction, undoName)}
+                                        <span
+                                            className="undoLink"
+                                            onClick={() => handleUndoClick(undoQuestionId, undoAction)}
+                                        >
+                                            Undo
+                                        </span>
+                                    </p>
+                                </div>)
+                        }
+                        <SessionQuestionsContainer
+                            isTA={false}
+                            // 'todo' !== 'student'}
+                            handleJoinClick={props.joinCallback}
+                            myUserId={props.userId}
+                            triggerUndo={triggerUndo}
+                            isOpen={isOpen(session, 30 * 60 * 1000)}
+                            isPast={isPast(session)}
+                            openingTime={getOpeningTime(session, 30 * 60 * 1000)}
+                            haveAnotherQuestion={false}
+                            session={session}
+                        // otherQuestions.length > 0}
+                        />
+                    </React.Fragment>) : (
+                    <React.Fragment>
+                        <p className="welcomeMessage">
+                            {'Welcome,  '}
+                            <span className="welcomeName">
+                                {user && user.firstName}
+                            </span>
+                        </p>
+                        <p className="noSessionSelected">
+                            Please select an office hour from the calendar.
+                        </p>
+                    </React.Fragment>)
             }
         </section>
     );

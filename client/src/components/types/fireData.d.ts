@@ -4,13 +4,13 @@ interface FireTimestamp {
 }
 
 interface FireSession {
-    building: String;
-    courseId: String;
+    building: string;
+    courseId: string;
     endTime: FireTimestamp;
-    room: String;
-    sessionSeriesId: String;
+    room: string;
+    sessionSeriesId: string;
     startTime: FireTimestamp;
-    title?: String;
+    title?: string;
     id: string;
 }
 
@@ -33,27 +33,23 @@ interface FireUser {
 }
 
 interface FireQuestion {
-    askerId: string,
-    answererId: string,
-    content: string,
-    location: string,
-    sessionId: string,
-    status: string,
-    timeAddressed: FireTimestamp,
-    timeEntered: FireTimestamp
-    id: string;
-}
-
-interface FireQuestionTag {
-    questionId: string,
-    tagId: string,
+    askerId: string;
+    answererId: string;
+    content: string;
+    location: string;
+    sessionId: string;
+    status: string;
+    timeAddressed: FireTimestamp;
+    timeEntered: FireTimestamp;
+    primaryTag: string;
+    secondaryTAg: string;
     id: string;
 }
 
 interface FireTag {
-    active: boolean,
-    courseId: string,
-    level: number,
-    id: string,
-    name: string
+    active: boolean;
+    courseId: string;
+    level: number;
+    id: string;
+    name: string;
 }

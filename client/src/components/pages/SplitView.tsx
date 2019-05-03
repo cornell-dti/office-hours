@@ -11,23 +11,52 @@ import SessionView from '../includes/SessionView';
 const MOBILE_BREAKPOINT = 920;
 
 class SplitView extends React.Component {
-    props: {
-        history: H.History,
+    constructor(props: {
+        history: H.History;
         match: {
             params: {
-                courseId: string,
-                sessionId: string | null,
-                page: string | null
-            }
-        }
-    };
+                courseId: string;
+                sessionId: string | null;
+                page: string | null;
+            };
+        };
+    }) {
+        super(props);
+        this.state = {
+            sessionId: this.props.match.params.sessionId || 'null',
+            width: window.innerWidth,
+            height: window.innerHeight,
+            courses: [],
+            activeView: this.props.match.params.page === 'add'
+                ? 'addQuestion'
+                : this.props.match.params.sessionId ? 'session' : 'calendar',
+        };
+
+        // Handle browser back button
+        this.props.history.listen((location, action) => {
+            this.setState({
+                activeView: location.pathname.indexOf('add') !== -1
+                    ? 'addQuestion'
+                    : this.props.match.params.sessionId ? 'session' : 'calendar',
+                sessionId: this.props.match.params.sessionId || '-1',
+            });
+        });
+
+        firestore
+            .collection('courses')
+            .onSnapshot((querySnapshot) => {
+                this.setState({
+                    courses: querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+                });
+            });
+    }
 
     state: {
-        sessionId: string,
-        width: number,
-        height: number,
-        activeView: string,
-        courses: FireCourse[]
+        sessionId: string;
+        width: number;
+        height: number;
+        activeView: string;
+        courses: FireCourse[];
     };
 
     // Keep window size in state for conditional rendering
@@ -40,99 +69,70 @@ class SplitView extends React.Component {
     }
 
     updateWindowDimensions = () => {
+        // eslint-disable-next-line react/no-unused-state
         this.setState({ width: window.innerWidth, height: window.innerHeight });
-    }
-
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            sessionId: this.props.match.params.sessionId || 'null',
-            width: window.innerWidth,
-            height: window.innerHeight,
-            courses: [],
-            activeView: this.props.match.params.page === 'add'
-                ? 'addQuestion'
-                : this.props.match.params.sessionId ? 'session' : 'calendar'
-        };
-
-        // Handle browser back button
-        this.props.history.listen((location, action) => {
-            this.setState({
-                activeView: location.pathname.indexOf('add') !== -1
-                    ? 'addQuestion'
-                    : this.props.match.params.sessionId ? 'session' : 'calendar',
-                sessionId: this.props.match.params.sessionId || '-1'
-            });
-        });
-
-        firestore
-            .collection('courses')
-            .onSnapshot((querySnapshot) => {
-                this.setState({
-                    courses: querySnapshot.docs.map((doc) => {
-                        return { 'id': doc.id, ...doc.data() };
-                    })
-                });
-            });
     }
 
     // Keep track of active view for mobile
     handleSessionClick = (sessionId: number) => {
-        this.props.history.push('/course/' + this.props.match.params.courseId + '/session/' + sessionId);
-        this.setState({ sessionId: sessionId, activeView: 'session' });
+        this.props.history.push(`/course/${this.props.match.params.courseId}/session/${sessionId}`);
+        this.setState({ sessionId, activeView: 'session' });
     }
 
     handleJoinClick = () => {
         this.props.history.push(
-            '/course/' + this.props.match.params.courseId + '/session/' + this.state.sessionId + '/add'
+            `/course/${this.props.match.params.courseId}/session/${this.state.sessionId}/add`,
         );
         this.setState({ activeView: 'addQuestion' });
     }
 
     handleBackClick = () => {
-        this.props.history.push('/course/' + this.props.match.params.courseId);
+        this.props.history.push(`/course/${this.props.match.params.courseId}`);
         this.setState({ activeView: 'calendar', sessionId: -1 });
     }
 
     // Toggle warning
 
     render() {
-        let courseId = this.props.match.params.courseId;
+        const { courseId } = this.props.match.params;
         return (
             <React.Fragment>
-                {(this.state.width > MOBILE_BREAKPOINT ||
-                    (this.state.width <= MOBILE_BREAKPOINT &&
-                        this.state.activeView === 'calendar')) &&
-                    <CalendarView
+                {(this.state.width > MOBILE_BREAKPOINT
+                    || (this.state.width <= MOBILE_BREAKPOINT
+                        && this.state.activeView === 'calendar'))
+                    && <CalendarView
                         courseId={courseId}
                         courses={this.state.courses}
                         sessionId={this.state.sessionId}
                         sessionCallback={this.handleSessionClick}
                     />
                 }
-                {(this.state.width > MOBILE_BREAKPOINT ||
-                    (this.state.width <= MOBILE_BREAKPOINT &&
-                        this.state.activeView !== 'calendar')) &&
-                    <SessionView
-                        userId={'YcfNs8Uri5RI47V8bxG4'}
-                        course={this.state.courses.find((c) => c.id === this.props.match.params.courseId)}
+                {(this.state.width > MOBILE_BREAKPOINT
+                    || (this.state.width <= MOBILE_BREAKPOINT
+                        && this.state.activeView !== 'calendar'))
+                    && <SessionView
+                        userId="YcfNs8Uri5RI47V8bxG4"
+                        course={this.state.courses.find(c => c.id === this.props.match.params.courseId)}
                         id={this.state.sessionId}
                         isDesktop={this.state.width > MOBILE_BREAKPOINT}
                         backCallback={this.handleBackClick}
                         joinCallback={this.handleJoinClick}
                     />
-                }{this.state.activeView === 'addQuestion' &&
-                    <React.Fragment>
-                        <div className="modal">
-                            <ConnectedQuestionView
-                                sessionId={this.state.sessionId}
-                                courseId={courseId}
-                                mobileBreakpoint={MOBILE_BREAKPOINT}
-                                data={{ loading: true }}
-                            />
-                        </div>
-                        <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />
-                    </React.Fragment>
+                }
+                {this.state.activeView === 'addQuestion'
+                    && (
+                        <React.Fragment>
+                            <div className="modal">
+                                <ConnectedQuestionView
+                                    sessionId={this.state.sessionId}
+                                    courseId={courseId}
+                                    mobileBreakpoint={MOBILE_BREAKPOINT}
+                                    data={{ loading: true }}
+                                />
+                            </div>
+                            <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />
+                        </React.Fragment>
+                    )
                 }
             </React.Fragment>
         );
