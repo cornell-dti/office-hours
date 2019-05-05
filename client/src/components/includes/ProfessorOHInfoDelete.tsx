@@ -1,152 +1,92 @@
-import * as React from 'react';
-import * as moment from 'moment';
+import React, { useState } from 'react';
+import moment from 'moment';
 import { Checkbox } from 'semantic-ui-react';
 
-import gql from 'graphql-tag';
-import { Mutation } from 'react-apollo';
+const ProfessorOHInfoDelete = (props: {
+    session: FireSession;
+    toggleDelete: Function;
+    toggleEdit: Function;
+    refreshCallback: Function;
+}) => {
+    const [isChecked, setIsChecked] = useState(false);
 
-const DELETE_SESSION = gql`
-    mutation DeleteSession($_sessionId: Int!) {
-        apiDeleteSession(input: {_sessionId: $_sessionId}) {
-            clientMutationId
-        }
-    }
-`;
+    // Convert UNIX timestamps to readable time string
+    const date = moment(props.session.startTime.seconds * 1000).format('dddd MM/DD/YY');
+    const timeStart = moment(props.session.startTime.seconds * 1000).format('h:mm A');
+    const timeEnd = moment(props.session.endTime.seconds * 1000).format('h:mm A');
 
-const DELETE_SERIES = gql`
-    mutation DeleteSeries($_seriesId: Int!) {
-        apiDeleteSeries(input: {_seriesId: $_seriesId}) {
-            clientMutationId
-        }
-    }
-`;
+    const disable = moment(props.session.startTime.seconds * 1000).isBefore();
+    // let taList = props.session.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.computedName);
 
-class ProfessorOHInfoDelete extends React.Component {
-
-    props: {
-        session: AppSession,
-        toggleDelete: Function,
-        toggleEdit: Function,
-        refreshCallback: Function
-    };
-
-    state: {
-        isChecked: boolean
-    };
-
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            isChecked: false
-        };
-        this.toggleCheckbox = this.toggleCheckbox.bind(this);
-        this._onClickDeleteSession = this._onClickDeleteSession.bind(this);
-        this._onClickDeleteSeries = this._onClickDeleteSeries.bind(this);
-    }
-
-    toggleCheckbox() {
-        this.setState({
-            isChecked: !this.state.isChecked
-        });
-    }
-
-    _onClickDeleteSession(event: React.MouseEvent<HTMLElement>, DeleteSession: Function) {
-        DeleteSession({
-            variables: {
-                _sessionId: this.props.session.sessionId
-            }
-        });
-    }
-
-    _onClickDeleteSeries(event: React.MouseEvent<HTMLElement>, DeleteSeries: Function) {
-        DeleteSeries({
-            variables: {
-                _seriesId: this.props.session.sessionSeriesId
-            }
-        });
-    }
-
-    render() {
-        // Convert UNIX timestamps to readable time string
-        var date = moment(this.props.session.startTime).format('dddd MM/DD/YY');
-        var timeStart = moment(this.props.session.startTime).format('h:mm A');
-        var timeEnd = moment(this.props.session.endTime).format('h:mm A');
-
-        var disable = moment(this.props.session.startTime).isBefore();
-        var taList = this.props.session.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.computedName);
-
-        return (
-            <React.Fragment>
-                <div className="ProfessorOHInfoDelete">
-                    <div className="question">
-                        Are you sure you want to delete this office hour?
+    return (
+        <React.Fragment>
+            <div className="ProfessorOHInfoDelete">
+                <div className="question">
+                    Are you sure you want to delete this office hour?
                 </div>
-                    <div className="info">
-                        <div className="ta">
-                            {taList.join(', ')}
-                            {taList.length === 0 && '(No TA Assigned)'}
-                        </div>
-                        <div>
-                            <span>
-                                {date}
-                            </span>
-                            <span>
-                                {timeStart} to {timeEnd}
-                            </span>
-                            <span>
-                                {this.props.session.building} {this.props.session.room}
-                            </span>
-                        </div>
+                <div className="info">
+                    <div className="ta">
+                        {/* TODO */}
+                        {/* {taList.join(', ')}
+                        {taList.length === 0 && '(No TA Assigned)'} */}
                     </div>
                     <div>
-                        <Checkbox
-                            label="Delete all office hours in this series"
-                            disabled={this.props.session.sessionSeriesId === null}
-                            checked={this.state.isChecked}
-                            onChange={this.toggleCheckbox}
-                        />
+                        <span>
+                            {date}
+                        </span>
+                        <span>
+                            {`${timeStart} to ${timeEnd}`}
+                        </span>
+                        <span>
+                            {`${props.session.building} ${props.session.room}`}
+                        </span>
                     </div>
-                    {disable &&
-                        <div className="EndedText">
-                            This session has already passed!
-                        </div>
-                    }
                 </div>
-                {this.state.isChecked ?
-                    <Mutation mutation={DELETE_SERIES} onCompleted={() => this.props.refreshCallback()}>
-                        {(DeleteSeries: Function) =>
-                            <button
-                                className="Delete"
-                                onClick={(e) => {
-                                    this._onClickDeleteSeries(e, DeleteSeries);
-                                    this.props.toggleDelete();
-                                    this.props.toggleEdit();
-                                }}
-                                disabled={disable}
-                            >
-                                Delete
-                            </button>
-                        }
-                    </Mutation> :
-                    <Mutation mutation={DELETE_SESSION} onCompleted={() => this.props.refreshCallback()}>
-                        {(DeleteSession: Function) =>
-                            <button
-                                className="Delete"
-                                onClick={(e) => {
-                                    this._onClickDeleteSession(e, DeleteSession);
-                                    this.props.toggleDelete();
-                                    this.props.toggleEdit();
-                                }}
-                                disabled={disable}
-                            >
-                                Delete
-                            </button>
-                        }
-                    </Mutation>
-                }
-            </React.Fragment>
-        );
-    }
-}
+                <div>
+                    <Checkbox
+                        label="Delete all office hours in this series"
+                        disabled={props.session.sessionSeriesId === null}
+                        checked={isChecked}
+                        onChange={() => setIsChecked(!isChecked)}
+                    />
+                </div>
+                {disable && (
+                    <div className="EndedText">
+                        This session has already passed!
+                    </div>
+                )}
+            </div>
+            {isChecked
+                ? (
+                    <button
+                        className="Delete"
+                        onClick={(e) => {
+                            // _onClickDeleteSeries(e, DeleteSeries);
+                            props.toggleDelete();
+                            props.toggleEdit();
+                        }}
+                        disabled={disable}
+                        type="button"
+                    >
+                        Delete
+                    </button>
+                ) : (
+                    <button
+                        className="Delete"
+                        onClick={(e) => {
+                            // _onClickDeleteSession(e, DeleteSession);
+                            props.toggleDelete();
+                            props.toggleEdit();
+                        }}
+                        disabled={disable}
+                        type="button"
+                    >
+                        Delete
+                    </button>
+                )
+            }
+        </React.Fragment>
+    );
+};
 
 export default ProfessorOHInfoDelete;

@@ -4,23 +4,16 @@
     "private": true,
     "proxy": "http://localhost:3001",
     "dependencies": {
-        "@firebase/app-types": "0.x",
+        "@firebase/app-types": "0.3.10",
         "@nivo/bar": "^0.51.5",
         "@nivo/line": "^0.51.0",
         "@nivo/pie": "^0.51.0",
         "@types/react": "^16.8.15",
         "add": "^2.0.6",
-        "apollo-cache-inmemory": "^1.3.7",
-        "apollo-client": "^2.4.4",
-        "apollo-link": "^1.2.3",
-        "apollo-link-error": "^1.1.1",
-        "apollo-link-http": "^1.5.5",
         "babel-core": "^6.26.3",
         "concurrently": "^4.0.1",
         "eslint-config-prettier": "^4.2.0",
-        "firebase": "^5.9.4",
-        "graphql": "^14.0.2",
-        "graphql-tag": "^2.10.0",
+        "firebase": "^5.11.1",
         "less": "^3.8.1",
         "less-plugin-clean-css": "^1.5.1",
         "less-watch-compiler": "^1.12.1",
@@ -29,7 +22,6 @@
         "moment-timezone": "^0.5.21",
         "prettier": "^1.17.0",
         "react": "^16.8.6",
-        "react-apollo": "^2.2.4",
         "react-datepicker": "1.3.0",
         "react-dates": "^18.2.2",
         "react-dom": "^16.8.6",
@@ -56,7 +48,6 @@
         "test": "react-scripts test --env=jsdom"
     },
     "devDependencies": {
-        "@types/graphql": "^14.2.0",
         "@types/jest": "^24.0.12",
         "@types/lodash.flowright": "^3.5.6",
         "@types/moment-timezone": "^0.5.12",
@@ -89,5 +80,8 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
+    },
+    "resolutions": {
+        "**/grpc": "1.20.3"
     }
 }
