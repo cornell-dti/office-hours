@@ -1,10 +1,9 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
 
+import { useUser, useQuestionTags, useTagsFromIds } from '../../firestoreHooks';
 import SelectedTags from './SelectedTags';
-import { useState } from 'react';
-import { useUser, useQuestionTags, useTagsFromIds } from 'src/firestoreHooks';
 
 const LOCATION_CHAR_LIMIT = 40;
 
@@ -22,7 +21,8 @@ const getDisplayText = (index: number): string => {
 const handleUpdateLocation = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
     setLocation: Function,
-    setIsEditingLocation: Function): void => {
+    setIsEditingLocation: Function,
+): void => {
     setIsEditingLocation(true);
     const target = event.target as HTMLTextAreaElement;
     if (target.value.length <= LOCATION_CHAR_LIMIT) {
@@ -49,7 +49,7 @@ const _onClick = (event: React.MouseEvent<HTMLElement>, status: string, question
 // }
 
 const handleUndoDontKnow = (id: string) => {
-    alert('handleUndoDontKnow: ' + id);
+    alert(`handleUndoDontKnow: ${id}`);
     // UndoDontKnow({
     //     variables: {
     //         id: id,
@@ -59,16 +59,16 @@ const handleUndoDontKnow = (id: string) => {
 };
 
 const SessionQuestion = (props: {
-    question: FireQuestion,
-    index: number,
-    isTA: boolean,
-    includeRemove: boolean,
-    includeBookmark: boolean,
-    myUserId: string,
-    triggerUndo: Function,
-    isPast: boolean,
+    question: FireQuestion;
+    index: number;
+    isTA: boolean;
+    includeRemove: boolean;
+    includeBookmark: boolean;
+    myUserId: string;
+    triggerUndo: Function;
+    isPast: boolean;
 }) => {
-    var question = props.question;
+    const { question } = props;
 
     const [showLocation, setShowLocation] = useState(false);
     const [location, setLocation] = useState(props.question.location);
@@ -89,11 +89,11 @@ const SessionQuestion = (props: {
     return (
         <div className="QueueQuestions">
             {props.includeBookmark && <div className="Bookmark" />}
-            <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
+            <p className={`Order ${question.status === 'assigned' ? 'assigned' : ''}`}>
                 {question.status === 'assigned' ? '•••' : getDisplayText(props.index)}
             </p>
-            {props.includeRemove &&
-                <div className="LocationPin">
+            {props.includeRemove
+                && <div className="LocationPin">
                     <Icon onClick={setShowLocation(!showLocation)} name="map marker alternate" />
                     <div
                         className="LocationTooltip"
@@ -101,8 +101,10 @@ const SessionQuestion = (props: {
                     >
                         <p>
                             Location &nbsp;
-                            <span className={'characterCount ' + (location.length >= 40 ? 'warn' : '')} >
-                                {location.length}/{LOCATION_CHAR_LIMIT}
+                            <span className={`characterCount ${location.length >= 40 ? 'warn' : ''}`}>
+                                {location.length}
+                                /
+                                {LOCATION_CHAR_LIMIT}
                             </span>
                         </p>
                         <textarea
@@ -111,91 +113,101 @@ const SessionQuestion = (props: {
                             onChange={(e) => handleUpdateLocation(e, setLocation, setIsEditingLocation)}
                         />
                         {isEditingLocation
-                            ? <Loader className={'locationLoader'} active={true} inline={true} size={'tiny'} />
+                            ? <Loader className="locationLoader" active inline size="tiny" />
                             : <Icon name="check" />}
-                        <div className="DoneButton" onClick={() => setShowLocation(!showLocation)} > Done </div>
+                        <div className="DoneButton" onClick={() => setShowLocation(!showLocation)}> Done </div>
                     </div>
                     {showLocation && <div className="modalShade" />}
-                </div>
+                   </div>
             }
             <div className="QuestionInfo">
-                {props.isTA &&
-                    <div className="studentInformation">
+                {props.isTA
+                    && <div className="studentInformation">
                         <img src={asker && asker.photoUrl} />
                         <span className="Name">
                             {asker && (`${asker.firstName} ${asker.lastName}`)}
-                            {question.status === 'assigned' &&
-                                <span className="assigned"> is assigned
-                                        {' to ' + (question.answererId === props.myUserId
+                            {question.status === 'assigned'
+                                && <span className="assigned">
+                                    {' '}
+                                    is assigned
+                                    {` to ${question.answererId === props.myUserId
                                         ? 'you'
-                                        : answerer && (`${answerer.firstName} ${answerer.lastName}`))}
-                                </span>
+                                        : answerer && (`${answerer.firstName} ${answerer.lastName}`)}`}
+                                   </span>
                             }
                         </span>
-                    </div>
+                       </div>
                 }
-                <div className="Location"> {props.isTA && question.location} </div>
-                {(props.isTA || props.includeBookmark || props.includeRemove) &&
-                    <p className={'Question' + studentCSS}>{question.content}</p>}
+                <div className="Location">
+                    {' '}
+                    {props.isTA && question.location}
+                    {' '}
+                </div>
+                {(props.isTA || props.includeBookmark || props.includeRemove)
+                    && <p className={`Question${studentCSS}`}>{question.content}</p>}
             </div>
             <div className="BottomBar">
                 {props.isTA && <span className="Spacer" />}
                 <div className="Tags">
-                    {tags.map((tag) =>
-                        <SelectedTags
-                            key={tag.id}
-                            isSelected={false}
-                            tag={tag.name}
-                            level={tag.level}
-                            onClick={null}
-                        />
-                    )}
+                    {tags.map((tag) => <SelectedTags
+                        key={tag.id}
+                        isSelected={false}
+                        tag={tag.name}
+                        level={tag.level}
+                        onClick={null}
+                    />)}
                 </div>
                 <p className="Time">
                     posted at&nbsp;
-                    {<Moment date={question.timeEntered.seconds * 1000} interval={0} format={'hh:mm A'} />}
+                    {<Moment date={question.timeEntered.seconds * 1000} interval={0} format="hh:mm A" />}
                 </p>
             </div>
-            {props.isTA &&
-                <div className="Buttons">
+            {props.isTA
+                && <div className="Buttons">
                     <hr />
                     <div className="TAButtons">
-                        {question.status === 'unresolved' &&
-                            <p className="Begin" onClick={(e) => _onClick(e, 'assigned', question)} > Assign to Me </p>
+                        {question.status === 'unresolved'
+                            && <p className="Begin" onClick={(e) => _onClick(e, 'assigned', question)}> Assign to Me </p>
                         }
-                        {question.status === 'assigned' &&
-                            <React.Fragment>
-                                <p className="Delete" onClick={(e) => _onClick(e, 'no-show', question)} > No show </p>
-                                <p className="Done" onClick={(e) => _onClick(e, 'resolved', question)} > Done </p>
-                                <p className="DotMenu" onClick={() => setShowDotMenu(!showDotMenu)} >
-                                    ...
-                                    {showDotMenu &&
-                                        <div
-                                            className="IReallyDontKnow"
-                                            tabIndex={1}
-                                            onClick={() => setShowDotMenu(false)}
-                                        >
-                                            <p
-                                                className="DontKnowButton"
-                                                onClick={() => handleUndoDontKnow(question.id)}
+                        {question.status === 'assigned'
+                            && (
+                                <React.Fragment>
+                                    <p className="Delete" onClick={(e) => _onClick(e, 'no-show', question)}>
+                                        No show
+                                    </p>
+                                    <p className="Done" onClick={(e) => _onClick(e, 'resolved', question)}> Done </p>
+                                    <p className="DotMenu" onClick={() => setShowDotMenu(!showDotMenu)}>
+                                        ...
+                                        {showDotMenu && (
+                                            <div
+                                                className="IReallyDontKnow"
+                                                tabIndex={1}
+                                                onClick={() => setShowDotMenu(false)}
                                             >
-                                                I Really Don't Know
-                                            </p>
-                                        </div>
-                                    }
-                                </p>
-                            </React.Fragment>
+                                                <p
+                                                    className="DontKnowButton"
+                                                    onClick={() => handleUndoDontKnow(question.id)}
+                                                >
+                                                    {"I Really Don't Know"}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </p>
+                                </React.Fragment>
+                            )
                         }
                     </div>
-                </div>
+                   </div>
             }
-            {props.includeRemove && !props.includeBookmark && !props.isPast &&
-                <div className="Buttons">
+            {props.includeRemove && !props.includeBookmark && !props.isPast
+                && <div className="Buttons">
                     <hr />
-                    <p className="Remove" onClick={(e) => _onClick(e, 'retracted', question)} >
-                        <Icon name="close" /> Remove
+                    <p className="Remove" onClick={(e) => _onClick(e, 'retracted', question)}>
+                        <Icon name="close" />
+                        {' '}
+                        Remove
                     </p>
-                </div>
+                   </div>
             }
         </div>
     );

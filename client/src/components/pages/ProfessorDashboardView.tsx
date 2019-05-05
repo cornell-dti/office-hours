@@ -8,15 +8,15 @@ const ProfessorDashboardView = (
     props: ({
         match: {
             params: {
-                courseId: string
-            }
-        }
-    })) => {
+                courseId: string;
+            };
+        };
+    }),
+) => {
+    const { courseId } = props.match.params;
 
-    let courseId = props.match.params.courseId;
-
-    let course = useCourse(courseId);
-    let user = useUser('YcfNs8Uri5RI47V8bxG4');
+    const course = useCourse(courseId);
+    const user = useUser('YcfNs8Uri5RI47V8bxG4');
 
     return (
         <div className="ProfessorView">
@@ -36,8 +36,8 @@ const ProfessorDashboardView = (
             }
 
             <ProfessorSidebar course={course} selected={2} />
-            {user &&
-                <TopBar
+            {user
+                && <TopBar
                     courseId={courseId}
                     user={user}
                     context="professor"
@@ -48,7 +48,7 @@ const ProfessorDashboardView = (
                 <div className="main">
                     <p className="ComingSoon">
                         Coming soon!
-                </p>
+                    </p>
                 </div>
             </section>
         </div>
