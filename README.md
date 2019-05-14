@@ -32,6 +32,7 @@ _Screenshots showing major parts of app_
 * **Shefali Agarwal** - Software Developer
 * **Rachel Nash** - Software Developer
 * **Bobby Villaluz** - Software Developer
+* **Robinson Burrell III** - Software Developer
 * **Joyelle Gilbert** - Designer
 * **Sophia Wang** - Designer
 * **Yeon Kim** - Designer
