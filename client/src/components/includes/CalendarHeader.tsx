@@ -59,7 +59,7 @@ class CalendarHeader extends React.Component {
                     {this.state.showCourses &&
                         <React.Fragment>
                             <ul className="courseMenu" tabIndex={1} onClick={() => this.setCourses(false)} >
-                                {this.props.allCoursesList.filter((c) => c.semester === 'SP19').map((course) =>
+                                {this.props.allCoursesList.filter((c) => c.semester === 'FA19').map((course) =>
                                     <li key={course.courseId}>
                                         <a
                                             href={'/course/' + course.courseId}
