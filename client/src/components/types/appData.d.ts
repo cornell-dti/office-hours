@@ -69,6 +69,25 @@ interface AppTag {
     };
 }
 
+interface AppTagQuestionsInfo {
+    name: string;
+    level: number;
+    tagId: number;
+    activated: boolean;
+    tagRelationsByParentId?: {
+        nodes: [{
+            tagByChildId: {
+                name: string;
+                questionTagsByTagIdList?: [{
+                    questionByQuestionId: {
+                        status: string;
+                    }
+                }]
+            }
+        }]
+    }
+}
+
 interface AppTagRelations extends AppTag {
     tagRelationsByChildId: {
         nodes: [{
