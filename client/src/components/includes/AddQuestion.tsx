@@ -2,12 +2,10 @@ import * as React from 'react';
 
 import { Redirect } from 'react-router';
 import { Icon } from 'semantic-ui-react';
-import gql from 'graphql-tag';
-import { Mutation } from 'react-apollo';
 
 import SelectedTags from '../includes/SelectedTags';
 import SessionAlertModal from './SessionAlertModal';
-import * as moment from 'moment';
+import moment from 'moment';
 
 const ADD_QUESTION = gql`
 mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!, $location: String!) {
@@ -26,7 +24,25 @@ mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!, $locatio
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
 
-class AddQuestion extends React.Component {
+type Props = {
+    tags: AppTagRelations[]
+    sessionId: string,
+    courseId: string,
+    charLimit: number,
+    endTime: Date,
+    mobileBreakpoint: number
+};
+
+type State = {
+    location: string,
+    question: string,
+    selectedTags: number[],
+    stage: number,
+    width: number,
+    redirect: boolean
+};
+
+class AddQuestion extends React.Component<Props> {
     /*
      * State machine states
      * 10 - initial state - nothing selected, secondary & text fields locked
@@ -36,35 +52,14 @@ class AddQuestion extends React.Component {
      * 50 - contents in question field - unlocks submit button
      * 60 - Warning modal (replaces question modal) - toggles after submit if n minutes are left in queue
      */
-    props: {
-        tags: AppTagRelations[]
-        sessionId: string,
-        courseId: string,
-        charLimit: number,
-        endTime: Date,
-        mobileBreakpoint: number
+    state: State = {
+        location: '',
+        question: '',
+        stage: 10,
+        width: window.innerWidth,
+        selectedTags: [],
+        redirect: false
     };
-
-    state: {
-        location: string,
-        question: string,
-        selectedTags: number[],
-        stage: number,
-        width: number,
-        redirect: boolean
-    };
-
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            location: '',
-            question: '',
-            stage: 10,
-            width: window.innerWidth,
-            selectedTags: [],
-            redirect: false
-        };
-    }
 
     // Keep window size in state for conditional rendering
     componentDidMount() {

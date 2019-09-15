@@ -1,7 +1,7 @@
 import * as React from 'react';
 import SessionQuestion from './SessionQuestion';
 import { Icon } from 'semantic-ui-react';
-import * as moment from 'moment';
+import moment from 'moment';
 import { useSessionQuestions } from '../../firestoreHooks';
 import { useState, useEffect } from 'react';
 
@@ -35,7 +35,7 @@ const SessionQuestionsContainer = (props: {
     const questions = useSessionQuestions(props.session.id);
 
     // If the user has questions, store them in myQuestion[]
-    var myQuestion: AppQuestion[] = [];
+    var myQuestion: FireQuestion[] = [];
     // questions && questions.filter(q => q.userByAskerId.userId === props.myUserId);
     // Make sure that the data has loaded and user has a question
     if (questions && myQuestion && myQuestion.length > 0) {

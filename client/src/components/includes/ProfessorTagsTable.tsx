@@ -1,19 +1,20 @@
 import * as React from 'react';
 import ProfessorTagsRow from './ProfessorTagsRow';
-class ProfessorTagsTable extends React.Component {
-    props: {
-        tags: AppTag[]
-        refreshCallback: Function
-        courseId: string
-    };
 
+type Props = {
+    tags: FireTag[]
+    refreshCallback: Function
+    courseId: string
+};
+
+class ProfessorTagsTable extends React.Component<Props> {
     state: {
         isExpanded: boolean[]
         currentRow: number
         rowIndex: number
     };
 
-    constructor(props: {}) {
+    constructor(props: Props) {
         super(props);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.state = {
@@ -23,7 +24,7 @@ class ProfessorTagsTable extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps: { tags: AppTag[] }) {
+    componentWillReceiveProps(nextProps: { tags: FireTag[] }) {
         this.setState({
             isExpanded: new Array<boolean>(nextProps.tags.length).fill(false)
         });

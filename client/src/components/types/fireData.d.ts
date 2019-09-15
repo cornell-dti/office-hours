@@ -1,6 +1,7 @@
 interface FireTimestamp {
     seconds: number;
     nanoseconds: number;
+    toDate(): Date;
 }
 
 interface FireSession {

@@ -3,8 +3,6 @@ import ProfessorTagsTable from '../includes/ProfessorTagsTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
 // import TopBar from '../includes/TopBar';
 // import ProfessorSidebar from '../includes/ProfessorSidebar';
-import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
 import { Redirect } from 'react-router';
 import { Loader } from 'semantic-ui-react';
 
@@ -64,7 +62,7 @@ interface ProfessorMetadataData {
 interface ProfessorTagsData {
     courseByCourseId: {
         tagsByCourseId: {
-            nodes: [AppTag]
+            nodes: FireTag[]
         }
     };
 }
@@ -80,18 +78,15 @@ interface TagsVariables {
 class ProfessorTagsDataQuery extends Query<ProfessorTagsData, TagsVariables> { }
 class ProfessorMetadataDataQuery extends Query<ProfessorMetadataData, MetadataVariables> { }
 
-class ProfessorView extends React.Component {
-    props: {
-        match: {
-            params: {
-                courseId: string;
-            }
+type Props = {
+    match: {
+        params: {
+            courseId: string;
         }
-    };
-
-    constructor(props: {}) {
-        super(props);
     }
+};
+
+class ProfessorView extends React.Component<Props> {
 
     render() {
         let courseId = this.props.match.params.courseId;

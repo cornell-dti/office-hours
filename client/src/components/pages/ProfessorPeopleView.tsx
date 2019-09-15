@@ -3,13 +3,11 @@ import * as React from 'react';
 import QuestionsPieChart from '../includes/QuestionsPieChart';
 import QuestionsLineChart from '../includes/QuestionsLineChart';
 import QuestionsBarChart from '../includes/QuestionsBarChart';
-import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
 import { Redirect } from 'react-router';
 import 'react-dates/initialize';
 import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
-import * as moment from 'moment';
+import moment from 'moment';
 // import TopBar from '../includes/TopBar';
 
 const METADATA_QUERY = gql`
@@ -66,7 +64,7 @@ interface ProfessorMetadataData {
         code: string
     };
     apiGetSessions: {
-        nodes: [AppSession]
+        nodes: FireSession[]
     };
 }
 
@@ -78,29 +76,27 @@ interface MetadataVariables {
 
 class ProfessorMetadataDataQuery extends Query<ProfessorMetadataData, MetadataVariables> { }
 
-class ProfessorPeopleView extends React.Component {
-    props: {
-        match: {
-            params: {
-                courseId: string;
-            }
+type Props = {
+    match: {
+        params: {
+            courseId: string;
         }
-    };
-
-    state: {
-        startDate: moment.Moment;
-        endDate: moment.Moment;
-        focusedInput: 'endDate' | 'startDate' | null;
-    };
-
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            startDate: moment(new Date()).add(-4, 'months'),
-            endDate: moment(new Date()),
-            focusedInput: null
-        };
     }
+};
+
+type State = {
+    startDate: moment.Moment;
+    endDate: moment.Moment;
+    focusedInput: 'endDate' | 'startDate' | null;
+};
+
+class ProfessorPeopleView extends React.Component<Props> {
+
+    state: State = {
+        startDate: moment(new Date()).add(-4, 'months'),
+        endDate: moment(new Date()),
+        focusedInput: null
+    };
 
     calcTickVals(yMax: number) {
         if (yMax === 0) {

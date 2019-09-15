@@ -10,17 +10,19 @@ import SessionView from '../includes/SessionView';
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
 
-class SplitView extends React.Component {
-    constructor(props: {
-        history: H.History;
-        match: {
-            params: {
-                courseId: string;
-                sessionId: string | null;
-                page: string | null;
-            };
+type Props = {
+    history: H.History;
+    match: {
+        params: {
+            courseId: string;
+            sessionId: string | null;
+            page: string | null;
         };
-    }) {
+    };
+};
+
+class SplitView extends React.Component<Props> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             sessionId: this.props.match.params.sessionId || 'null',
