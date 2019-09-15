@@ -4,8 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "cd server && yarn start",
-        "postinstall": "cd client && yarn install --production=false && yarn run deploy && cd ../server && yarn install --production=false"
+        "postinstall": "cd client && yarn install --production=false && yarn run deploy"
     },
     "repository": {
         "type": "git",
@@ -16,9 +15,5 @@
     "bugs": {
         "url": "https://github.com/cornell-dti/office-hours/issues"
     },
-    "homepage": "https://github.com/cornell-dti/office-hours#readme",
-    "dependencies": {
-        "concurrently": "^3.5.0",
-        "global": "^4.3.2"
-    }
+    "homepage": "https://github.com/cornell-dti/office-hours#readme"
 }
