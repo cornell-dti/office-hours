@@ -2,8 +2,6 @@ import * as React from 'react';
 // import TopBar from '../includes/TopBar';
 // import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
-import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
 import { Redirect } from 'react-router';
 
 const METADATA_QUERY = gql`
@@ -41,7 +39,7 @@ interface ProfessorMetadataData {
         code: string;
         courseUsersByCourseIdList: [{
             role: string;
-            userByUserId: AppUser;
+            userByUserId: FireUser;
         }]
     };
 }
@@ -52,19 +50,15 @@ interface MetadataVariables {
 
 class ProfessorMetadataDataQuery extends Query<ProfessorMetadataData, MetadataVariables> { }
 
-class ProfessorDashboardView extends React.Component {
-
-    props: {
-        match: {
-            params: {
-                courseId: string;
-            }
+type Props = {
+    match: {
+        params: {
+            courseId: string;
         }
-    };
-
-    constructor(props: {}) {
-        super(props);
     }
+};
+
+class ProfessorDashboardView extends React.Component<Props> {
 
     render() {
         let courseId = this.props.match.params.courseId;

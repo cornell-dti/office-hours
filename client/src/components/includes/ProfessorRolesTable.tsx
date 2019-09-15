@@ -29,7 +29,7 @@ const ProfessorRolesTable = (props: {
     courseId: string;
     data: [{
         role: string;
-        userByUserId: AppUser;
+        userByUserId: FireUser;
     }];
 }) => {
     const [column, setColumn] = useState('');

@@ -2,26 +2,21 @@ import * as React from 'react';
 import { ResponsiveBar, BarDatum, BarExtendedDatum } from '@nivo/bar';
 import { Icon } from 'semantic-ui-react';
 
-class QuestionsBarChart extends React.Component {
-    props: {
-        barData: {}[],
-        yMax: number,
-        sessionKeys: string[],
-        sessionDict: {},
-        calcTickVals: (yMax: number) => number[]
-    };
+type Props = {
+    barData: {}[],
+    yMax: number,
+    sessionKeys: string[],
+    sessionDict: {},
+    calcTickVals: (yMax: number) => number[]
+};
 
+class QuestionsBarChart extends React.Component<Props> {
     state: {
         data: BarDatum[];
         sessionKeys: string[];
     };
 
-    constructor(props: {
-        barData: {}[],
-        yMax: number,
-        sessionDict: {},
-        calcTickVals: (yMax: number) => number[]
-    }) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             data: this.props.barData as BarDatum[],

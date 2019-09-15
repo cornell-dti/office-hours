@@ -1,8 +1,5 @@
 import * as React from 'react';
 
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
-import { ChildProps } from 'react-apollo';
 import AddQuestion from '../includes/AddQuestion';
 import { Loader } from 'semantic-ui-react';
 

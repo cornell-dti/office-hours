@@ -3,29 +3,24 @@ import { Icon } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfessorTagInfo from './ProfessorTagInfo';
 
-class ProfessorTagsRow extends React.Component {
+type Props = {
+    tags: FireTag[]
+    isExpanded: boolean[]
+    handleEditToggle: Function
+    courseId: string
+    refreshCallback: Function
+};
 
-    props: {
-        tags: AppTag[]
-        isExpanded: boolean[]
-        handleEditToggle: Function
-        courseId: string
-        refreshCallback: Function
-    };
+class ProfessorTagsRow extends React.Component<Props> {
 
-    constructor(props: {}) {
-        super(props);
-        this.toggleEdit = this.toggleEdit.bind(this);
-    }
-
-    toggleEdit(row: number) {
+    toggleEdit = (row: number) => {
         this.props.handleEditToggle(row);
     }
 
     render() {
         var rowPair = this.props.tags.map(
             (row, i) => {
-                var childTags: { tagByChildId: AppTag }[] | undefined = [];
+                var childTags: { tagByChildId: FireTag }[] | undefined = [];
                 childTags = row.tagRelationsByParentId &&
                     row.tagRelationsByParentId.nodes.filter((childTag) => childTag.tagByChildId.activated);
                 return (

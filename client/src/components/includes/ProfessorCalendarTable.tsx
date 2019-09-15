@@ -5,15 +5,16 @@ import ProfessorOHInfoDelete from './ProfessorOHInfoDelete';
 
 import { DropdownItemProps } from 'semantic-ui-react';
 
-class ProfessorCalendarTable extends React.Component {
-    props: {
-        courseId: string,
-        data: {
-            nodes: [AppSession]
-        },
-        taOptions: DropdownItemProps[],
-        refreshCallback: Function
-    };
+type Props = {
+    courseId: string,
+    data: {
+        nodes: FireSession[]
+    },
+    taOptions: DropdownItemProps[],
+    refreshCallback: Function
+};
+
+class ProfessorCalendarTable extends React.Component<Props> {
 
     state: {
         isExpanded: boolean[][]
@@ -24,7 +25,7 @@ class ProfessorCalendarTable extends React.Component {
         rowIndex: number
     };
 
-    constructor(props: {}) {
+    constructor(props: Props) {
         super(props);
         var isExpandedInit: boolean[][] = [];
         for (var i = 0; i < 7; i++) {
@@ -43,7 +44,7 @@ class ProfessorCalendarTable extends React.Component {
         this.toggleEdit = this.toggleEdit.bind(this);
     }
 
-    componentWillReceiveProps(props: { data: { nodes: [AppSession] } }) {
+    componentWillReceiveProps(props: { data: { nodes: FireSession[] } }) {
         var isExpanded: boolean[][] = [];
         for (var i = 0; i < 7; i++) {
             isExpanded.push(new Array<boolean>(props.data.nodes.length).fill(false));
@@ -86,14 +87,14 @@ class ProfessorCalendarTable extends React.Component {
     }
 
     render() {
-        var sessions: AppSession[][] = [];
+        var sessions: FireSession[][] = [];
         for (var day = 0; day < 7; day++) {
-            sessions.push(new Array<AppSession>());
+            sessions.push(new Array<FireSession>());
         }
 
-        this.props.data.nodes.forEach((node: AppSession) => {
+        this.props.data.nodes.forEach((node: FireSession) => {
             // 0 = Monday..., 5 = Saturday, 6 = Sunday
-            var dayIndexQuery = (new Date(node.startTime).getDay() + 6) % 7;
+            var dayIndexQuery = (new Date(node.startTime.toDate()).getDay() + 6) % 7;
             sessions[dayIndexQuery].push(node);
         });
 

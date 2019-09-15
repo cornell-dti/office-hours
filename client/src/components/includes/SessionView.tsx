@@ -42,7 +42,7 @@ const triggerUndo = (
     setUndoAction: React.Dispatch<React.SetStateAction<string | undefined>>,
     setUndoName: React.Dispatch<React.SetStateAction<string | undefined>>,
     setUndoQuestionId: React.Dispatch<React.SetStateAction<number | undefined>>,
-    setTimeoutId: React.Dispatch<React.SetStateAction<NodeJS.Timeout | undefined>>,
+    setTimeoutId: React.Dispatch<React.SetStateAction<number | undefined>>,
 ) => {
     if (timeoutId) {
         clearTimeout(timeoutId);

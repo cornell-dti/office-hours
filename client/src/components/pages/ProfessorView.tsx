@@ -4,8 +4,6 @@ import ProfessorAddNew from '../includes/ProfessorAddNew';
 // import TopBar from '../includes/TopBar';
 // import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
-import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
 import { DropdownItemProps } from 'semantic-ui-react';
 import 'moment-timezone';
 import { Redirect } from 'react-router';
@@ -83,7 +81,7 @@ interface ProfessorMetadataData {
 
 interface ProfessorSessionsData {
     apiGetSessions: {
-        nodes: [AppSession]
+        nodes: FireSession[]
     };
     courseByCourseId: {
         tas: {
@@ -108,20 +106,20 @@ interface SessionsVariables {
 class ProfessorSessionsDataQuery extends Query<ProfessorSessionsData, SessionsVariables> { }
 class ProfessorMetadataDataQuery extends Query<ProfessorMetadataData, MetadataVariables> { }
 
-class ProfessorView extends React.Component {
+type Props = {
+    match: {
+        params: {
+            courseId: string;
+        }
+    }
+};
+
+class ProfessorView extends React.Component<Props> {
     state: {
         selectedWeekEpoch: number
     };
 
-    props: {
-        match: {
-            params: {
-                courseId: string;
-            }
-        }
-    };
-
-    constructor(props: {}) {
+    constructor(props: Props) {
         super(props);
         var week = new Date();
         week.setHours(0, 0, 0, 0);
