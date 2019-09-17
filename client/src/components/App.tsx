@@ -17,7 +17,7 @@ import { Loader } from 'semantic-ui-react';
 
 ReactGA.initialize('UA-123790900-1');
 
-const DEFAULT_COURSE_ID = 3;
+const DEFAULT_COURSE_ID = 5;
 
 const GET_USER_AND_COURSE = gql`
 query GetUserAndCourse($courseId: Int!) {
