@@ -10,6 +10,10 @@ If running locally, the host name will be localhost, and the port and username w
 
 `psql -h <HOST_NAME> -p <PORT> -U <USERNAME> <DATABASE_NAME> -f <PATH-TO-mock_database.sql>`
 
+If you get an error like 'psql: warning: extra command line argument "-f" ignored' or 'psql: warning: extra command line argument <filepath> ignored', it may be because the psql command-line tool expects parameters to be in a different order. If this happens, try the following format:
+  
+`psql -h <HOST_NAME> -p <PORT> -f <PATH-TO-mock_database.sql> -U <USERNAME> <DATABASE_NAME>`
+
 If you get foreign key constraint violations on doing this, it is because Postgres copies over the mock data in an order that doesn't respect the foreign key constraints. If this happens, enter the psql command-line tool and execute:
 
 `SET session_replication_role = replica;`
