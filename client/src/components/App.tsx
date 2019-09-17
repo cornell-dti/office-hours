@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-d
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import * as ReactGA from 'react-ga';
+import * as moment from 'moment';
 
 import LoginView from './pages/LoginView';
 import ProfessorView from './pages/ProfessorView';
@@ -16,12 +17,18 @@ import { Loader } from 'semantic-ui-react';
 
 ReactGA.initialize('UA-123790900-1');
 
-const GET_USER = gql`
-query {
+const DEFAULT_COURSE_ID = 3;
+
+const GET_USER_AND_COURSE = gql`
+query GetUserAndCourse($courseId: Int!) {
     apiGetCurrentUser {
         nodes {
             userId
         }
+    }
+    courseByCourseId(courseId: $courseId) {
+        startDate
+        endDate
     }
 }
 `;
@@ -29,6 +36,10 @@ query {
 interface Data {
     apiGetCurrentUser: {
         nodes: Array<{ userId: number }>;
+    };
+    courseByCourseId: {
+        startDate: string;
+        endDate: string;
     };
 }
 
@@ -39,7 +50,11 @@ class UserQuery extends Query<Data, {}> { }
 const PrivateRoute = ({ component, ...rest }: any) => {
     // tslint:disable-next-line: no-any
     const routeComponent = (props: any) => (
-        <UserQuery query={GET_USER} fetchPolicy="network-only">
+        <UserQuery
+            query={GET_USER_AND_COURSE}
+            variables={{ courseId: props.match.params.courseId }}
+            fetchPolicy="network-only"
+        >
             {({ loading, error, data }) => {
                 if (loading) {
                     return <Loader active={true} content={'Loading'} />;
@@ -50,6 +65,14 @@ const PrivateRoute = ({ component, ...rest }: any) => {
                 if (!data || data.apiGetCurrentUser.nodes.length === 0) {
                     return <Redirect to={{ pathname: '/login' }} />;
                 }
+
+                // Check if the course is active or not, if not redirect to default course
+                let startDate = moment(data.courseByCourseId.startDate, 'YYYY-MM-DD');
+                let endDate = moment(data.courseByCourseId.endDate, 'YYYY-MM-DD');
+                if (startDate && endDate && !moment().isBetween(startDate, endDate)) {
+                    return <Redirect to={{ pathname: '/course/' + DEFAULT_COURSE_ID }} />;
+                }
+
                 return React.createElement(component, props);
             }}
         </UserQuery>
@@ -86,12 +109,11 @@ class App extends React.Component {
                         />
                         <PrivateRoute path="/professor/course/:courseId" component={ProfessorView} exact={true} />
                         <PrivateRoute path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
-                        <Redirect from="/course/1" to="/course/5" />
-                        <Redirect from="/course/2" to="/course/7" />
-                        <Redirect from="/course/3" to="/course/5" />
-                        <Redirect from="/course/4" to="/course/6" />
                         <PrivateRoute path="/course/:courseId" component={SplitView} />
-                        <Redirect from="/" to={'/course/' + (String(window.localStorage.getItem('lastid') || 5))} />
+                        <Redirect
+                            from="/"
+                            to={'/course/' + (String(window.localStorage.getItem('lastid') || DEFAULT_COURSE_ID))}
+                        />
                     </Switch>
                 </div>
             </Router>
