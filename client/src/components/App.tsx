@@ -17,7 +17,7 @@ import { Loader } from 'semantic-ui-react';
 
 ReactGA.initialize('UA-123790900-1');
 
-const DEFAULT_COURSE_ID = 5;
+const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 5);
 
 const GET_USER_AND_COURSE = gql`
 query GetUserAndCourse($courseId: Int!) {
@@ -112,7 +112,7 @@ class App extends React.Component {
                         <PrivateRoute path="/course/:courseId" component={SplitView} />
                         <Redirect
                             from="/"
-                            to={'/course/' + (String(window.localStorage.getItem('lastid') || DEFAULT_COURSE_ID))}
+                            to={'/course/' + DEFAULT_COURSE_ID}
                         />
                     </Switch>
                 </div>
