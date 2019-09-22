@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 // const QMeLogo = require('../../media/QMeLogo.svg');
+
+import { collectionData, firestore } from '../../firebase';
+import { switchMap, concatAll } from 'rxjs/operators';
+import { docData } from 'rxfire/firestore';
+
 const QMeLogo = require('../../media/QLogo2.svg');
 const chevron = require('../../media/chevron.svg'); // Replace with dropdown cheveron
 
@@ -21,6 +26,24 @@ class CalendarHeader extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = { showMenu: false, showCourses: false };
+
+        const courses$ = collectionData(
+            firestore.collection('courseUsers'), // RYAN_TODO auth
+            'courseUserId'
+        ).pipe(
+            // tslint:disable-next-line: no-any
+            switchMap((courseUsers: any[]) => {
+                console.log(courseUsers);
+                console.log(courseUsers.map(courseUser => docData(firestore.doc(courseUser.courseId.path))));
+                return courseUsers.map(courseUser => docData(firestore.doc(courseUser.courseId.path)));
+            }),
+            concatAll()
+        );
+
+        courses$.subscribe((courseUsers$) => {
+            console.log('courses$', courseUsers$);
+            // courseUsers$.subscribe(courses => console.log('coursesUsers$', courses));
+        });
     }
 
     setMenu = (status: boolean) => {
