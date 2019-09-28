@@ -5,7 +5,7 @@
 <!-- Feel free to break this into sections, i.e. features, fixes, etc. -->
 *
 
-### Test Plan <!-- Optional -->
+### Test Plan <!-- Required -->
 
 ### Notes <!-- Optional -->
 <!--- List any important or subtle points, future considerations, or other items of note. -->
