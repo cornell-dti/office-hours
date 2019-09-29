@@ -21,23 +21,27 @@ class CalendarHeader extends React.Component {
     state: {
         showMenu: boolean;
         showCourses: boolean;
-        courses: FireCourse[]
+        courses: FireCourse[];
+        userId?: string;
     };
 
     constructor(props: {}) {
         super(props);
-        this.state = { showMenu: false, showCourses: false, courses: [] };
-
-        // RYAN_TODO get doc ref for user
-        loggedIn$.subscribe(user => console.log(user));
+        this.state = { showMenu: false, showCourses: false, courses: [], userId: undefined };
 
         // Look up courseIds for current user
-        const courseUsers$ = collectionData(
-            // RYAN_TODO auth
-            firestore.collection('courseUsers'), // .where('userId.path', '==', 'DocRef for logged in user')
-            'courseUserId'
+        const courseUsers$ = loggedIn$.pipe(
+            switchMap(user =>
+                collectionData(
+                    firestore
+                        .collection('courseUsers')
+                        .where('userId', '==', firestore.doc('users/' + user.uid)),
+                    'courseUserId'
+                )
+            )
         );
 
+        // Get courses that the user is enrolled in
         let courses$ = courseUsers$.pipe(
             switchMap(courseUsers =>
                 combineLatest(...courseUsers.map((courseUser: FireCourseUser) =>

@@ -15,12 +15,15 @@ const LoginView: React.FC = () => {
         authProvider.setCustomParameters({
             'hd': 'cornell.edu'
         });
+        authProvider.addScope('email');
+        authProvider.addScope('profile');
 
         return app
             .auth()
             .signInWithPopup(authProvider)
-            .then(() => {
-                console.log('push');
+            .then((response: {}) => {
+                // RYAN_TODO Create or update user
+                console.log(response);
                 history.push('/');
             });
     };
