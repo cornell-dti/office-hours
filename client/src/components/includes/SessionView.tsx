@@ -288,7 +288,7 @@ class SessionView extends React.Component {
                                         />
                                         {this.state.undoQuestionId &&
                                             <Mutation mutation={UNDO_QUESTION} onCompleted={this.dismissUndo}>
-                                                {(undoQuestion) =>
+                                                {(undoQuestion: Function) =>
                                                     <div className="undoContainer">
                                                         <p className="undoClose" onClick={this.dismissUndo}>
                                                             <Icon name="close" />

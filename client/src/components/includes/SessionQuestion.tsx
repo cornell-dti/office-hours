@@ -147,7 +147,7 @@ class SessionQuestion extends React.Component {
                             name="map marker alternate"
                         />
                         <Mutation mutation={UPDATE_LOCATION}>
-                            {(updateLocation) => (
+                            {(updateLocation: Function) => (
                                 <div
                                     className="LocationTooltip"
                                     style={{ visibility: this.state.showLocation ? 'visible' : 'hidden' }}
@@ -231,7 +231,7 @@ class SessionQuestion extends React.Component {
                     <div className="Buttons">
                         <hr />
                         <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
-                            {(updateQuestion) =>
+                            {(updateQuestion: Function) =>
                                 <div className="TAButtons">
                                     {question.status === 'unresolved' &&
                                         <p
@@ -266,7 +266,7 @@ class SessionQuestion extends React.Component {
                                                         mutation={UNDO_DONT_KNOW}
                                                         onCompleted={() => this.props.refetch()}
                                                     >
-                                                        {(UndoDontKnow) =>
+                                                        {(UndoDontKnow: Function) =>
                                                             <React.Fragment>
                                                                 <div
                                                                     className="IReallyDontKnow"
@@ -296,7 +296,7 @@ class SessionQuestion extends React.Component {
                     </div>
                 }
                 <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
-                    {(updateQuestion) =>
+                    {(updateQuestion: Function) =>
                         this.props.includeRemove && !this.props.includeBookmark && !this.props.isPast &&
                         <div className="Buttons">
                             <hr />

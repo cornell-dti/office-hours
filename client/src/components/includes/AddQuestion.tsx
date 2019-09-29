@@ -196,7 +196,7 @@ class AddQuestion extends React.Component {
 
         return (
             <Mutation mutation={ADD_QUESTION} onCompleted={this.questionAdded}>
-                {(addQuestion) => (
+                {(addQuestion: Function) => (
                     <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e, addQuestion)}>
                         {(this.state.stage < 60 || this.state.width < this.props.mobileBreakpoint) &&
                             <div className="AddQuestion">
