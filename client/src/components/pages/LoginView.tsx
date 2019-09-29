@@ -3,6 +3,17 @@ import { Icon } from 'semantic-ui-react';
 const QMeLogo = require('../../media/QLogo2.svg');
 const googleLogo = require('../../media/googleLogo.svg');
 
+import firebase, { app } from '../../firebase';
+
+const auth = () => {
+    const authProvider = new firebase.auth.GoogleAuthProvider();
+
+    app
+        .auth()
+        .signInWithPopup(authProvider);
+    //   .then(this.props.authHandler);
+};
+
 class LoginView extends React.Component {
 
     state: {
@@ -31,7 +42,7 @@ class LoginView extends React.Component {
                     </section>
                     <section className="bottomPanel">
                         <p className="hintText" >Use your Cornell NetID to login</p>
-                        <a className="loginButton" href="/__auth" >
+                        <a className="loginButton" onClick={auth}>
                             <img src={googleLogo} className="googleLogo" />
                             <span className="loginButtonText">Sign in with Google</span>
                         </a>

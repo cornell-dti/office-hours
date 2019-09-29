@@ -3,7 +3,6 @@ import { Icon } from 'semantic-ui-react';
 // const QMeLogo = require('../../media/QMeLogo.svg');
 
 import { collectionData, firestore, loggedIn$ } from '../../firebase';
-// import { mergeAll } from 'rxjs/operators';
 import { docData } from 'rxfire/firestore';
 import { combineLatest } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
