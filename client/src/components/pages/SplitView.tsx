@@ -5,6 +5,10 @@ import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import ConnectedQuestionView from '../includes/ConnectedQuestionView';
 
+import { firestore, loggedIn$ } from '../../firebase';
+import { docData, collectionData } from 'rxfire/firestore';
+import { switchMap } from 'rxjs/operators';
+
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
 
@@ -21,10 +25,12 @@ class SplitView extends React.Component {
     };
 
     state: {
-        sessionId: number,
+        session?: FireSession,
         width: number,
         height: number,
-        activeView: string
+        activeView: string,
+        course?: FireCourse,
+        courseUser?: FireCourseUser
     };
 
     sessionView: SessionView | null = null;
@@ -51,13 +57,32 @@ class SplitView extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = {
-            sessionId: parseInt(this.props.match.params.sessionId || '-1', 10),
             width: window.innerWidth,
             height: window.innerHeight,
             activeView: this.props.match.params.page === 'add'
                 ? 'addQuestion'
                 : this.props.match.params.sessionId ? 'session' : 'calendar'
         };
+
+        // Get Current Course in State
+        const course$ = docData(firestore.doc('courses/' + this.props.match.params.courseId), 'courseId');
+        course$.subscribe(course => this.setState({ course }));
+
+        // Get Current Session in State
+        const session$ = docData(firestore.doc('courses/' + this.props.match.params.sessionId), 'sessionId');
+        session$.subscribe(session => this.setState({ session }));
+
+        // Get current course user based on courseId and user
+        loggedIn$.pipe(
+            switchMap(user => collectionData(
+                firestore
+                    .collection('courseUsers')
+                    .where('userId', '==', firestore.doc('users/' + user.uid))
+                    .where('courseId', '==', firestore.doc('courses/' + this.props.match.params.courseId)),
+                'courseId'
+            ))
+            // RYAN_TODO better handle unexpected case w/ no courseUser
+        ).subscribe(courseUsers => this.setState({ courseUser: courseUsers[0] }));
 
         // Handle browser back button
         this.props.history.listen((location, action) => {
@@ -77,10 +102,12 @@ class SplitView extends React.Component {
     }
 
     handleJoinClick = () => {
-        this.props.history.push(
-            '/course/' + this.props.match.params.courseId + '/session/' + this.state.sessionId + '/add'
-        );
-        this.setState({ activeView: 'addQuestion' });
+        if (this.state.session) {
+            this.props.history.push(
+                '/course/' + this.props.match.params.courseId + '/session/' + this.state.session.sessionId + '/add'
+            );
+            this.setState({ activeView: 'addQuestion' });
+        }
     }
 
     handleBackClick = () => {
@@ -98,8 +125,9 @@ class SplitView extends React.Component {
                     (this.state.width <= MOBILE_BREAKPOINT &&
                         this.state.activeView === 'calendar')) &&
                     <CalendarView
-                        courseId={courseId}
-                        sessionId={this.state.sessionId}
+                        course={this.state.course}
+                        courseUser={this.state.courseUser}
+                        session={this.state.session}
                         sessionCallback={this.handleSessionClick}
                     />
                 }{(this.state.width > MOBILE_BREAKPOINT ||
@@ -107,7 +135,7 @@ class SplitView extends React.Component {
                         this.state.activeView !== 'calendar')) &&
                     <SessionView
                         courseId={courseId}
-                        id={this.state.sessionId}
+                        id={-1}
                         isDesktop={this.state.width > MOBILE_BREAKPOINT}
                         backCallback={this.handleBackClick}
                         joinCallback={this.handleJoinClick}
@@ -117,7 +145,7 @@ class SplitView extends React.Component {
                     <React.Fragment>
                         <div className="modal">
                             <ConnectedQuestionView
-                                sessionId={this.state.sessionId || -1}
+                                sessionId={-1}
                                 courseId={courseId}
                                 mobileBreakpoint={MOBILE_BREAKPOINT}
                                 data={{ loading: true }}

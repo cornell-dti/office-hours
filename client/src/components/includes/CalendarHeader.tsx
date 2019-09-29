@@ -13,9 +13,8 @@ const chevron = require('../../media/chevron.svg'); // Replace with dropdown che
 class CalendarHeader extends React.Component {
     props: {
         currentCourseCode: string;
-        isTa: boolean;
-        isProf: boolean;
-        avatar: string | null;
+        role?: string;
+        avatar?: string;
     };
 
     state: {
@@ -70,8 +69,9 @@ class CalendarHeader extends React.Component {
                 <div className="CalendarHeader" onClick={() => this.setCourses(!this.state.showCourses)}>
                     <span>
                         <span>{this.props.currentCourseCode}</span>
-                        {this.props.isTa && <span className="TAMarker">TA</span>}
-                        {this.props.isProf && <span className="TAMarker Professor">PROF</span>}
+                        {this.props.role && this.props.role === 'ta' && <span className="TAMarker">TA</span>}
+                        {this.props.role && this.props.role === 'professor' &&
+                            <span className="TAMarker Professor">PROF</span>}
                         <span className="CourseSelect">
                             <img src={chevron} alt="Course Select" className="RotateDown" />
                         </span>
@@ -88,6 +88,7 @@ class CalendarHeader extends React.Component {
                     }
                     {this.state.showCourses &&
                         <ul className="courseMenu" tabIndex={1} onClick={() => this.setCourses(false)} >
+                            {/* RYAN_TODO factor this out to a global settings/config thing on firebase */}
                             {this.state.courses.filter((c) => c.semester === 'FA19').map((course) =>
                                 <li key={course.courseId}>
                                     <a

@@ -12,7 +12,7 @@ interface FireSession {
     sessionSeriesId: string;
     startTime: FireTimestamp;
     title?: string;
-    id: string;
+    sessionId: string;
 }
 
 interface FireCourse {

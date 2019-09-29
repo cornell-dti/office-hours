@@ -6,7 +6,7 @@ class CalendarSessionCard extends React.Component {
     props: {
         includeBookmark: boolean | null,
         numAhead: number,
-        session: AppSession
+        session: FireSession,
         callback: Function,
         active: boolean,
         status: string
@@ -18,8 +18,9 @@ class CalendarSessionCard extends React.Component {
 
     render() {
         const session = this.props.session;
-        const questions = session.questionsBySessionId.nodes;
-        const tas = session.sessionTasBySessionId.nodes;
+        // RYAN_TODO
+        const questions: FireQuestion[] = []; // session.questionsBySessionId.nodes;
+        const tas: FireUser[] = []; // session.sessionTasBySessionId.nodes;
 
         var timeDesc = '';
 
@@ -43,8 +44,9 @@ class CalendarSessionCard extends React.Component {
                     </div>
                     <div className="Tas">
                         {session.title || (tas.length > 2 ?
-                            tas.map(ta => ta.userByUserId.computedName).join(', ') :
-                            tas.map(ta => ta.userByUserId.computedName).join(' and '))}
+                            // RYAN_TODO real name
+                            tas.map(ta => ta.firstName).join(', ') :
+                            tas.map(ta => ta.firstName).join(' and '))}
                     </div>
                     <div className="Queue">
                         <span className="Ahead">
