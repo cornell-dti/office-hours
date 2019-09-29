@@ -2,9 +2,11 @@ import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 // const QMeLogo = require('../../media/QMeLogo.svg');
 
-import { collectionData, firestore } from '../../firebase';
-import { switchMap, concatAll } from 'rxjs/operators';
+import { collectionData, firestore, loggedIn$ } from '../../firebase';
+// import { mergeAll } from 'rxjs/operators';
 import { docData } from 'rxfire/firestore';
+import { combineLatest } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 const QMeLogo = require('../../media/QLogo2.svg');
 const chevron = require('../../media/chevron.svg'); // Replace with dropdown cheveron
@@ -15,35 +17,37 @@ class CalendarHeader extends React.Component {
         isTa: boolean;
         isProf: boolean;
         avatar: string | null;
-        allCoursesList: AppCourse[];
     };
 
     state: {
         showMenu: boolean;
         showCourses: boolean;
+        courses: FireCourse[]
     };
 
     constructor(props: {}) {
         super(props);
-        this.state = { showMenu: false, showCourses: false };
+        this.state = { showMenu: false, showCourses: false, courses: [] };
 
-        const courses$ = collectionData(
-            firestore.collection('courseUsers'), // RYAN_TODO auth
+        // RYAN_TODO get doc ref for user
+        loggedIn$.subscribe(user => console.log(user));
+
+        // Look up courseIds for current user
+        const courseUsers$ = collectionData(
+            // RYAN_TODO auth
+            firestore.collection('courseUsers'), // .where('userId.path', '==', 'DocRef for logged in user')
             'courseUserId'
-        ).pipe(
-            // tslint:disable-next-line: no-any
-            switchMap((courseUsers: any[]) => {
-                console.log(courseUsers);
-                console.log(courseUsers.map(courseUser => docData(firestore.doc(courseUser.courseId.path))));
-                return courseUsers.map(courseUser => docData(firestore.doc(courseUser.courseId.path)));
-            }),
-            concatAll()
         );
 
-        courses$.subscribe((courseUsers$) => {
-            console.log('courses$', courseUsers$);
-            // courseUsers$.subscribe(courses => console.log('coursesUsers$', courses));
-        });
+        let courses$ = courseUsers$.pipe(
+            switchMap(courseUsers =>
+                combineLatest(...courseUsers.map((courseUser: FireCourseUser) =>
+                    docData(firestore.doc(courseUser.courseId.path), 'courseId'))
+                )
+            )
+        );
+
+        courses$.subscribe(courses => this.setState({ courses }));
     }
 
     setMenu = (status: boolean) => {
@@ -80,20 +84,18 @@ class CalendarHeader extends React.Component {
                         />
                     }
                     {this.state.showCourses &&
-                        <React.Fragment>
-                            <ul className="courseMenu" tabIndex={1} onClick={() => this.setCourses(false)} >
-                                {this.props.allCoursesList.filter((c) => c.semester === 'FA19').map((course) =>
-                                    <li key={course.courseId}>
-                                        <a
-                                            href={'/course/' + course.courseId}
-                                            onClick={() =>
-                                                window.localStorage.setItem('lastid', String(course.courseId))}
-                                        > {course.code}
-                                        </a>
-                                    </li>
-                                )}
-                            </ul>
-                        </React.Fragment>
+                        <ul className="courseMenu" tabIndex={1} onClick={() => this.setCourses(false)} >
+                            {this.state.courses.filter((c) => c.semester === 'FA19').map((course) =>
+                                <li key={course.courseId}>
+                                    <a
+                                        href={'/course/' + course.courseId}
+                                        onClick={() =>
+                                            window.localStorage.setItem('lastid', String(course.courseId))}
+                                    > {course.code}
+                                    </a>
+                                </li>
+                            )}
+                        </ul>
                     }
                 </div>
                 {this.state.showMenu && (
