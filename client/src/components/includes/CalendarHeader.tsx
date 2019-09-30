@@ -110,6 +110,7 @@ class CalendarHeader extends React.Component {
                                 <li>Change Session</li>
                             </React.Fragment>
                         } */}
+                        {/* RYAN_TODO fix logging out */}
                         <li><a href="/__auth/logout"><span><Icon name="sign out" /></span>Log Out</a></li>
                         <li><a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank">
                             <span><Icon name="edit" /></span>Send Feedback</a>
