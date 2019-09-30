@@ -8,7 +8,7 @@ import CalendarSessions from './CalendarSessions';
 class CalendarView extends React.Component {
     props: {
         session?: FireSession,
-        sessionCallback: Function,
+        sessionCallback: (sessionId: string) => void,
         course?: FireCourse,
         courseUser?: FireCourseUser
     };

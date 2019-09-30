@@ -96,7 +96,7 @@ class SplitView extends React.Component {
     }
 
     // Keep track of active view for mobile
-    handleSessionClick = (sessionId: number) => {
+    handleSessionClick = (sessionId: string) => {
         this.props.history.push('/course/' + this.props.match.params.courseId + '/session/' + sessionId);
         this.setState({ sessionId: sessionId, activeView: 'session' });
     }

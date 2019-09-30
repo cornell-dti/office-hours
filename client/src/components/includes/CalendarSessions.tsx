@@ -8,7 +8,7 @@ class CalendarSessions extends React.PureComponent {
     props: {
         activeSession?: FireSession;
         course: FireCourse;
-        callback: Function;
+        callback: (sessionId: string) => void;
     };
 
     state: {
@@ -70,7 +70,7 @@ class CalendarSessions extends React.PureComponent {
             );
         });
 
-        const groupedCards = sessionCards && groupBy(sessionCards, (card: CalendarSessionCard) => card.props.status);
+        const groupedCards = sessionCards && groupBy(sessionCards, (card: React.ReactElement) => card.props.status);
 
         return (
             <div className="CalendarSessions">
