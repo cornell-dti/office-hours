@@ -8,9 +8,6 @@ class CalendarSessions extends React.PureComponent {
     props: {
         activeSession?: FireSession;
         course: FireCourse;
-        // myUserId: number | null;
-        // loading: boolean;
-        // sessions: AppSession[] | null;
         callback: Function;
     };
 
