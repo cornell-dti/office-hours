@@ -3,8 +3,8 @@ import { Icon } from 'semantic-ui-react';
 
 class TopBar extends React.PureComponent {
     props: {
-        courseId: number,
-        user: AppUser,
+        courseId: string,
+        user: FireUser,
         // A user's role: student, ta, or professor
         // We show TA's and Profs extra links
         role: string,
@@ -36,9 +36,9 @@ class TopBar extends React.PureComponent {
                 <header className="topBar">
                     <div className="triggerArea" onClick={() => this.setMenu(!this.state.showMenu)} >
                         <div className="userProfile">
-                            <img src={this.props.user.computedAvatar} />
+                            <img src={this.props.user.photoUrl} />
                             <span className="name">
-                                {this.props.user.computedName}
+                                {this.props.user.firstName + ' ' + this.props.user.lastName}
                             </span>
                         </div>
                     </div>
@@ -49,6 +49,7 @@ class TopBar extends React.PureComponent {
                             <li onMouseDown={() => this.redirect('/__auth/logout')} >
                                 <span><Icon name="sign out" /></span> Log Out
                             </li>
+                            {/* RYAN_TODO logout */}
                             <li onMouseDown={() => window.open('https://goo.gl/forms/7ozmsHfXYWNs8Y2i1', '_blank')}>
                                 <span><Icon name="edit" /></span>
                                 Send Feedback

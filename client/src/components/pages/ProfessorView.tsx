@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
-import TopBar from '../includes/TopBar';
+// import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 import gql from 'graphql-tag';
@@ -169,14 +169,15 @@ class ProfessorView extends React.Component {
                                     code={courseCode}
                                     selected={0}
                                 />
-                                {data && data.apiGetCurrentUser &&
+                                {/* RYAN_TODO Fix professorView */}
+                                {/* {data && data.apiGetCurrentUser &&
                                     <TopBar
                                         courseId={courseId}
                                         user={data.apiGetCurrentUser.nodes[0]}
                                         context="professor"
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
                                     />
-                                }
+                                } */}
                             </React.Fragment>
                         );
                     }}

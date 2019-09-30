@@ -30,7 +30,8 @@ class SplitView extends React.Component {
         height: number,
         activeView: string,
         course?: FireCourse,
-        courseUser?: FireCourseUser
+        courseUser?: FireCourseUser,
+        user?: FireUser
     };
 
     sessionView: SessionView | null = null;
@@ -84,6 +85,11 @@ class SplitView extends React.Component {
             // RYAN_TODO better handle unexpected case w/ no courseUser
         ).subscribe(courseUsers => this.setState({ courseUser: courseUsers[0] }));
 
+        // Get current user object
+        loggedIn$.pipe(
+            switchMap(user => docData(firestore.doc('users/' + user.uid)))
+        ).subscribe((user: FireUser) => this.setState({ user }));
+
         // Handle browser back button
         this.props.history.listen((location, action) => {
             this.setState({
@@ -133,14 +139,25 @@ class SplitView extends React.Component {
                 }{(this.state.width > MOBILE_BREAKPOINT ||
                     (this.state.width <= MOBILE_BREAKPOINT &&
                         this.state.activeView !== 'calendar')) &&
+                    this.state.session && this.state.course && this.state.user && this.state.courseUser ?
                     <SessionView
-                        courseId={courseId}
-                        id={-1}
+                        course={this.state.course}
+                        session={this.state.session}
                         isDesktop={this.state.width > MOBILE_BREAKPOINT}
                         backCallback={this.handleBackClick}
                         joinCallback={this.handleJoinClick}
                         ref={(ref) => this.sessionView = ref}
+                        user={this.state.user}
+                        courseUser={this.state.courseUser}
                     />
+                    : <React.Fragment>
+                        <p className="welcomeMessage">Welcome, <span className="welcomeName">
+                            {'RYAN_TODO'}
+                        </span></p>
+                        <p className="noSessionSelected">
+                            Please select an office hour from the calendar.
+                                </p>
+                    </React.Fragment>
                 }{this.state.activeView === 'addQuestion' &&
                     <React.Fragment>
                         <div className="modal">

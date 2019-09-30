@@ -6,10 +6,10 @@ const people = require('../../media/people.svg');
 
 class SessionInformationHeader extends React.Component {
     props: {
-        session: AppSession,
-        course: AppCourse,
+        session: FireSession,
+        course: FireCourse,
         callback: Function,
-        myUserId: number,
+        myUserId?: string,
         isDesktop: boolean,
     };
 
@@ -19,10 +19,12 @@ class SessionInformationHeader extends React.Component {
 
     render() {
         const session = this.props.session;
-        const tas = session.sessionTasBySessionId.nodes;
+        const tas: FireUser[] = []; // session.sessionTasBySessionId.nodes;
 
-        const unresolvedQuestions = session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved');
-        const userQuestions = unresolvedQuestions.filter((q) => q.userByAskerId.userId === this.props.myUserId);
+        const unresolvedQuestions: FireQuestion[] = [];
+        // session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved');
+        const userQuestions: FireQuestion[] = [];
+        // unresolvedQuestions.filter((q) => q.userByAskerId.userId === this.props.myUserId);
         const numAhead = userQuestions.length === 0 ? unresolvedQuestions.length :
             unresolvedQuestions.filter((q) => q.timeEntered <= userQuestions[0].timeEntered).length - 1;
 
@@ -30,7 +32,7 @@ class SessionInformationHeader extends React.Component {
             return (
                 <header className="DesktopSessionInformationHeader" >
                     <div className="Picture">
-                        <img src={tas[0] ? tas[0].userByUserId.computedAvatar : '/placeholder.png'} />
+                        <img src={tas[0] ? tas[0].photoUrl : '/placeholder.png'} />
                     </div>
                     <div className="Details">
                         <p className="Location">{session.building + ' ' + session.room}</p>
@@ -43,7 +45,7 @@ class SessionInformationHeader extends React.Component {
                         <p>{session.title || (<React.Fragment>
                             Held by
                                 <span className="black">
-                                {' ' + tas.map(ta => ta.userByUserId.computedName).join(' and ')}
+                                {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(' and ')}
                             </span>
                         </React.Fragment>)}</p>
                     </div>
@@ -75,7 +77,7 @@ class SessionInformationHeader extends React.Component {
                             <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
                         </div>
                         <div className="Picture">
-                            <img src={tas[0] ? tas[0].userByUserId.computedAvatar : '/placeholder.png'} />
+                            <img src={tas[0] ? tas[0].photoUrl : '/placeholder.png'} />
                         </div>
                     </div>
                 </div>
@@ -99,7 +101,7 @@ class SessionInformationHeader extends React.Component {
                         <p>{session.title || (<React.Fragment>
                             Held by
                                 <span className="black">
-                                {' ' + tas.map(ta => ta.userByUserId.computedName).join(' and ')}
+                                {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(' and ')}
                             </span>
                         </React.Fragment>)}
                         </p>
