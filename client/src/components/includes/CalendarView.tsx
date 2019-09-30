@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Loader } from 'semantic-ui-react';
 
 import CalendarHeader from './CalendarHeader';
 import CalendarDaySelect from './CalendarDaySelect';
@@ -37,11 +38,16 @@ class CalendarView extends React.Component {
                 // avatar={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].computedAvatar}
                 />
                 <CalendarDaySelect callback={this.handleDateClick} />
-                <CalendarSessions
-                    activeSession={this.props.session}
-                    callback={this.props.sessionCallback}
-                    interval={this.props.course && this.props.course.queueOpenInterval || 0}
-                />
+                {this.props.course ?
+                    <CalendarSessions
+                        activeSession={this.props.session}
+                        callback={this.props.sessionCallback}
+                        course={this.props.course}
+                    />
+                    : <div className="CalendarSessions">
+                        <Loader active={true} content={'Loading'} />
+                    </div>
+                }
             </aside>
         );
     }

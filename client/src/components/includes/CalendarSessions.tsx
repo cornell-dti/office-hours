@@ -1,18 +1,17 @@
 import * as React from 'react';
-// import { Loader } from 'semantic-ui-react';
 import { groupBy } from 'lodash';
-import { loggedIn$ } from '../../firebase';
+import { firestore, loggedIn$, collectionData } from '../../firebase';
 
 import CalendarSessionCard from './CalendarSessionCard';
 
 class CalendarSessions extends React.PureComponent {
     props: {
         activeSession?: FireSession;
+        course: FireCourse;
         // myUserId: number | null;
         // loading: boolean;
         // sessions: AppSession[] | null;
         callback: Function;
-        interval: number;
     };
 
     state: {
@@ -23,9 +22,9 @@ class CalendarSessions extends React.PureComponent {
     labelSession = (session: FireSession, intervalMs: number) => {
         if (new Date(session.endTime.seconds) < new Date()) {
             return 'Past';
-        } else if (new Date(session.startTime.seconds) < new Date()) {
+        } else if (new Date(session.startTime.seconds * 1000) < new Date()) {
             return 'Ongoing';
-        } else if (new Date(session.startTime.seconds) < new Date(new Date().getTime() + intervalMs)) {
+        } else if (new Date(session.startTime.seconds * 1000) < new Date(new Date().getTime() + intervalMs)) {
             return 'Open';
         }
         return 'Upcoming';
@@ -35,6 +34,18 @@ class CalendarSessions extends React.PureComponent {
         super(props);
         this.state = { sessions: [] };
         loggedIn$.subscribe(user => this.setState({ userId: user.uid }));
+        // RYAN_TODO handle courseId update
+        // Shouldn't be necessary, but in principle the component could get out of sync
+        // The page should reload when the course changes for now, but that's ideal
+        const sessions$ = collectionData(
+            firestore
+                .collection('sessions')
+                .where('courseId', '==', firestore.doc('courses/' + this.props.course.courseId)),
+            // RYAN_TODO filter based on today's date.
+            'sessionId'
+        );
+
+        sessions$.subscribe((sessions: FireSession[]) => this.setState({ sessions }));
     }
 
     render() {
@@ -57,7 +68,7 @@ class CalendarSessions extends React.PureComponent {
                     key={session.sessionId}
                     callback={this.props.callback}
                     active={this.props.activeSession ? this.props.activeSession.sessionId === session.sessionId : false}
-                    status={this.labelSession(session, this.props.interval * 1000)}
+                    status={this.labelSession(session, this.props.course.queueOpenInterval * 1000)}
                 />
             );
         });
@@ -66,14 +77,12 @@ class CalendarSessions extends React.PureComponent {
 
         return (
             <div className="CalendarSessions">
-                {/* RYAN_TODO */}
-                {/* {loading && <Loader active={true} content={'Loading'} />}
-                {!loading && sessions && sessions.length === 0 &&
+                {sessions.length === 0 &&
                     <React.Fragment>
                         <p className="noHoursHeading">No Office Hours</p>
                         <p className="noHoursBody">No office hours are scheduled for today.</p>
                     </React.Fragment>
-                } */}
+                }
                 {groupedCards && <React.Fragment>
                     {'Past' in groupedCards &&
                         <React.Fragment>
