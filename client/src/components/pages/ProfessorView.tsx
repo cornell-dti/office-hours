@@ -55,6 +55,10 @@ query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Dat
         }
     }
     courseByCourseId(courseId: $courseId) {
+        queueOpenInterval {
+            minutes
+        }
+        charLimit
         tas: courseUsersByCourseId(condition: {role: "ta"}) {
             nodes {
                 userByUserId {
@@ -89,6 +93,10 @@ interface ProfessorSessionsData {
         nodes: [AppSession]
     };
     courseByCourseId: {
+        queueOpenInterval: {
+            minutes: number
+        }
+        charLimit: number
         tas: {
             nodes: [AppTa]
         }
@@ -231,16 +239,23 @@ class ProfessorView extends React.Component {
                                         <Icon name="setting" />
                                         Settings
                                     </button>
-                                    <ProfessorDelete
-                                        isDeleteVisible={this.state.isSettingsVisible}
-                                        updateDeleteVisible={() => this.setState({
-                                            isSettingsVisible: !this.state.isSettingsVisible
-                                        })}
-                                        content={
-                                            <ProfessorSettings />
-                                        }
-                                    />
-
+                                    {data && data.apiGetSessions &&
+                                        <ProfessorDelete
+                                            isDeleteVisible={this.state.isSettingsVisible}
+                                            updateDeleteVisible={() => this.setState({
+                                                isSettingsVisible: !this.state.isSettingsVisible
+                                            })}
+                                            content={
+                                                <ProfessorSettings
+                                                    courseId={courseId}
+                                                    charLimitDefault={data.courseByCourseId.charLimit}
+                                                    openIntervalDefault={
+                                                        data.courseByCourseId.queueOpenInterval.minutes
+                                                    }
+                                                />
+                                            }
+                                        />
+                                    }
                                     <CalendarWeekSelect
                                         handleClick={this.handleWeekClick}
                                         selectedWeekEpoch={this.state.selectedWeekEpoch}

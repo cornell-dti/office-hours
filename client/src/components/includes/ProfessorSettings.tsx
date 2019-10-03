@@ -1,10 +1,19 @@
 import * as React from 'react';
 import { Loader, Icon, Dropdown, DropdownItemProps } from 'semantic-ui-react';
-// import * as moment from 'moment';
-// import { Checkbox } from 'semantic-ui-react';
 
 // import gql from 'graphql-tag';
 // import { Mutation } from 'react-apollo';
+
+// const UPDATE_PROFESSOR_SETTINGS = gql`
+//     mutation UpdateProfessorSettings($_courseId: Int!, $_charLimit: Int!, $_queueOpenInterval: Int!) {
+//         updateCourseByCourseId(input:{_coursePatch:{_charLimit: $_charLimit, 
+//             queueOpenInterval:{minutes: $_queueOpenInterval},
+//             _courseId: $_courseId})
+//         {
+//             clientMutationId
+//         }
+//     }
+// `;
 
 const OPEN_OPTIONS: DropdownItemProps[] = [
     { text: 0, value: 0 },
@@ -16,21 +25,33 @@ const CHAR_INCREMENT: number = 5;
 class ProfessorSettings extends React.Component {
 
     props: {
-
+        courseId: number,
+        charLimitDefault: number,
+        openIntervalDefault: number
     };
 
     state: {
-        openBefore: DropdownItemProps,
+        openInterval: DropdownItemProps,
         charLimit: number
     };
 
     constructor(props: {}) {
         super(props);
+        let o = OPEN_OPTIONS.find(e => e.value === this.props.openIntervalDefault);
         this.state = {
-            openBefore: OPEN_OPTIONS[0],
-            charLimit: 40
+            openInterval: o ? o : OPEN_OPTIONS[0],
+            charLimit: this.props.charLimitDefault
         };
+    }
 
+    _onClickUpdateProfessorSetttings(event: React.MouseEvent<HTMLElement>, UpdateProfessorSettings: Function) {
+        UpdateProfessorSettings({
+            variables: {
+                _courseId: this.props.courseId,
+                _charLimit: this.state.charLimit,
+                _queueOpenInterval: this.state.openInterval
+            }
+        });
     }
 
     handleCharLimit(input: string) {
@@ -54,8 +75,8 @@ class ProfessorSettings extends React.Component {
                             compact={true}
                             selection={true}
                             options={OPEN_OPTIONS}
-                            value={this.state.openBefore.value}
-                            onChange={(e, d) => this.setState({ openBefore: d })}
+                            value={this.state.openInterval.value}
+                            onChange={(e, d) => this.setState({ openInterval: d })}
                         />
                         minutes before the office hour begins.
                         <Loader active={true} inline={true} size="mini" />
@@ -87,11 +108,15 @@ class ProfessorSettings extends React.Component {
                         <Icon name="check" />
                     </div>
                 </div>
+                {/* <Mutation mutation={UPDATE_PROFESSOR_SETTINGS}>
+                    {(UpdateProfessorSettings) => */}
                 <button
                     className="Delete"
                 >
                     Done
                 </button>
+                {/* }
+                </Mutation> */}
             </React.Fragment>
         );
     }
