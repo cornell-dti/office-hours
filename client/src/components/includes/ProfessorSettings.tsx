@@ -1,19 +1,19 @@
 import * as React from 'react';
-import { Loader, Icon, Dropdown, DropdownItemProps } from 'semantic-ui-react';
+import { Icon, Dropdown, DropdownItemProps } from 'semantic-ui-react';
 
-// import gql from 'graphql-tag';
-// import { Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
+import { Mutation } from 'react-apollo';
 
-// const UPDATE_PROFESSOR_SETTINGS = gql`
-//     mutation UpdateProfessorSettings($_courseId: Int!, $_charLimit: Int!, $_queueOpenInterval: Int!) {
-//         updateCourseByCourseId(input:{_coursePatch:{_charLimit: $_charLimit, 
-//             queueOpenInterval:{minutes: $_queueOpenInterval},
-//             _courseId: $_courseId})
-//         {
-//             clientMutationId
-//         }
-//     }
-// `;
+const UPDATE_PROFESSOR_SETTINGS = gql`
+    mutation UpdateProfessorSettings($_courseId: Int!, $_charLimit: Int!, $_queueOpenInterval: Int!) {
+        updateCourseByCourseId(input:{coursePatch:{charLimit: $_charLimit, 
+            queueOpenInterval:{minutes: $_queueOpenInterval}},
+            courseId: $_courseId})
+        {
+            clientMutationId
+        }
+    }
+`;
 
 const OPEN_OPTIONS: DropdownItemProps[] = [
     { text: 0, value: 0 },
@@ -27,7 +27,8 @@ class ProfessorSettings extends React.Component {
     props: {
         courseId: number,
         charLimitDefault: number,
-        openIntervalDefault: number
+        openIntervalDefault: number,
+        toggleDelete: Function
     };
 
     state: {
@@ -44,12 +45,12 @@ class ProfessorSettings extends React.Component {
         };
     }
 
-    _onClickUpdateProfessorSetttings(event: React.MouseEvent<HTMLElement>, UpdateProfessorSettings: Function) {
+    _onClickUpdateProfessorSetttings(UpdateProfessorSettings: Function) {
         UpdateProfessorSettings({
             variables: {
                 _courseId: this.props.courseId,
                 _charLimit: this.state.charLimit,
-                _queueOpenInterval: this.state.openInterval
+                _queueOpenInterval: this.state.openInterval.value
             }
         });
     }
@@ -67,7 +68,7 @@ class ProfessorSettings extends React.Component {
                 <div className="ProfessorSettings">
                     <div className="title">
                         Settings
-                    </div>
+                        </div>
                     <div className="settingDesc">
                         Queue opens
                         <Dropdown
@@ -79,15 +80,17 @@ class ProfessorSettings extends React.Component {
                             onChange={(e, d) => this.setState({ openInterval: d })}
                         />
                         minutes before the office hour begins.
-                        <Loader active={true} inline={true} size="mini" />
+                                {/* <Loader active={true} inline={true} size="mini" /> */}
                     </div>
                     <div className="settingDesc">
                         The character limit for the queue is &nbsp;
                         <button
                             className="decrement"
-                            onClick={(e) => this.setState({
-                                charLimit: Math.max(this.state.charLimit - CHAR_INCREMENT, 0)
-                            })}
+                            onClick={(e) =>
+                                this.setState({
+                                    charLimit: Math.max(this.state.charLimit - CHAR_INCREMENT, 0)
+                                })
+                            }
                             disabled={this.state.charLimit <= 0}
                         >
                             <Icon name="minus" />
@@ -99,24 +102,30 @@ class ProfessorSettings extends React.Component {
                         />
                         <button
                             className="increment"
-                            onClick={(e) => this.setState({
-                                charLimit: Math.min(this.state.charLimit + CHAR_INCREMENT, 999)
-                            })}
+                            onClick={(e) =>
+                                this.setState({
+                                    charLimit: Math.min(this.state.charLimit + CHAR_INCREMENT, 999)
+                                })
+                            }
                         >
                             <Icon name="plus" />
                         </button>
-                        <Icon name="check" />
+                        {/* <Icon name="check" /> */}
                     </div>
                 </div>
-                {/* <Mutation mutation={UPDATE_PROFESSOR_SETTINGS}>
-                    {(UpdateProfessorSettings) => */}
-                <button
-                    className="Delete"
-                >
-                    Done
-                </button>
-                {/* }
-                </Mutation> */}
+                <Mutation mutation={UPDATE_PROFESSOR_SETTINGS}>
+                    {(UpdateProfessorSettings) =>
+                        <button
+                            className="Delete"
+                            onClick={(e) => {
+                                this._onClickUpdateProfessorSetttings(UpdateProfessorSettings);
+                                this.props.toggleDelete();
+                            }}
+                        >
+                            Save
+                        </button>
+                    }
+                </Mutation>
             </React.Fragment>
         );
     }

@@ -252,6 +252,9 @@ class ProfessorView extends React.Component {
                                                     openIntervalDefault={
                                                         data.courseByCourseId.queueOpenInterval.minutes
                                                     }
+                                                    toggleDelete={() => this.setState({
+                                                        isSettingsVisible: !this.state.isSettingsVisible
+                                                    })}
                                                 />
                                             }
                                         />
