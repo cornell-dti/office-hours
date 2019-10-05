@@ -1,9 +1,10 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import * as H from 'history';
 
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
-import ConnectedQuestionView from '../includes/ConnectedQuestionView';
+// import ConnectedQuestionView from '../includes/ConnectedQuestionView';
 
 import { firestore, loggedIn$ } from '../../firebase';
 import { docData, collectionData } from 'rxfire/firestore';
@@ -12,169 +13,185 @@ import { switchMap } from 'rxjs/operators';
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
 
-class SplitView extends React.Component {
-    props: {
-        history: H.History,
-        match: {
-            params: {
-                courseId: string,
-                sessionId: string | null,
-                page: string | null
-            }
-        }
-    };
+const useWindowWidth = () => {
+    const [width, setWidth] = useState(window.innerWidth);
 
-    state: {
-        session?: FireSession,
-        width: number,
-        height: number,
-        activeView: string,
-        course?: FireCourse,
-        courseUser?: FireCourseUser,
-        user?: FireUser
-    };
-
-    sessionView: SessionView | null = null;
-
-    // Keep window size in state for conditional rendering
-    componentDidMount() {
-        window.addEventListener('resize', this.updateWindowDimensions);
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.updateWindowDimensions);
-    }
-
-    updateWindowDimensions = () => {
-        this.setState({ width: window.innerWidth, height: window.innerHeight });
-    }
-
-    addedQuestion = () => {
-        if (this.sessionView && this.sessionView.questionsContainer) {
-            this.sessionView.questionsContainer.props.refetch();
-        }
-    }
-
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            width: window.innerWidth,
-            height: window.innerHeight,
-            activeView: this.props.match.params.page === 'add'
-                ? 'addQuestion'
-                : this.props.match.params.sessionId ? 'session' : 'calendar'
+    useEffect(() => {
+        const handleResize = () => setWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
         };
+    });
 
-        // Get Current Course in State
-        const course$ = docData(firestore.doc('courses/' + this.props.match.params.courseId), 'courseId');
-        course$.subscribe(course => this.setState({ course }));
+    return width;
+};
 
-        // Get Current Session in State
-        const session$ = docData(firestore.doc('courses/' + this.props.match.params.sessionId), 'sessionId');
-        session$.subscribe(session => this.setState({ session }));
-
-        // Get current course user based on courseId and user
-        loggedIn$.pipe(
-            switchMap(user => collectionData(
-                firestore
-                    .collection('courseUsers')
-                    .where('userId', '==', firestore.doc('users/' + user.uid))
-                    .where('courseId', '==', firestore.doc('courses/' + this.props.match.params.courseId)),
-                'courseId'
-            ))
-            // RYAN_TODO better handle unexpected case w/ no courseUser
-        ).subscribe(courseUsers => this.setState({ courseUser: courseUsers[0] }));
-
-        // Get current user object
-        loggedIn$.pipe(
-            switchMap(user => docData(firestore.doc('users/' + user.uid)))
-        ).subscribe((user: FireUser) => this.setState({ user }));
-
-        // Handle browser back button
-        this.props.history.listen((location, action) => {
-            this.setState({
-                activeView: location.pathname.indexOf('add') !== -1
-                    ? 'addQuestion'
-                    : this.props.match.params.sessionId ? 'session' : 'calendar',
-                sessionId: parseInt(this.props.match.params.sessionId || '-1', 10)
-            });
-        });
+const SplitView = (props: {
+    history: H.History,
+    match: {
+        params: {
+            courseId: string,
+            sessionId: string | undefined,
+            page: string | null
+        }
     }
+}) => {
+    // @ts-ignore idk
+    let sessionView: SessionView | null = null;
+
+    // const addedQuestion = () => {
+    //     if (sessionView && sessionView.questionsContainer) {
+    //         sessionView.questionsContainer.props.refetch();
+    //     }
+    // };
+
+    const [activeView, setActiveView] = useState(
+        props.match.params.page === 'add'
+            ? 'addQuestion'
+            : props.match.params.sessionId ? 'session' : 'calendar'
+    );
+
+    const [courseUser, setCourseUser] = useState<FireCourseUser | undefined>(undefined);
+    const [session, setSession] = useState<FireSession | undefined>(undefined);
+    // const [sessionId, setSessionId] = useState<string | undefined>(undefined);
+    const [user, setUser] = useState<FireUser | undefined>(undefined);
+    const [course, setCourse] = useState<FireCourse | undefined>(undefined);
+
+    // // Get current course user based on courseId and user
+    useEffect(
+        () => {
+            loggedIn$.pipe(
+                switchMap(u => collectionData(
+                    firestore
+                        .collection('courseUsers')
+                        .where('userId', '==', firestore.doc('users/' + u.uid))
+                        .where('courseId', '==', firestore.doc('courses/' + props.match.params.courseId)),
+                    'courseId'
+                ))
+                // RYAN_TODO better handle unexpected case w/ no courseUser
+            ).subscribe((courseUsers: FireCourseUser[]) => setCourseUser(courseUsers[0]));
+
+            // Get current user object
+            loggedIn$.pipe(
+                switchMap(u => docData(firestore.doc('users/' + u.uid)))
+            ).subscribe((u: FireUser) => setUser(u));
+            return () => {
+                console.log('clear');
+            };
+        },
+        []
+    );
+
+    // Handle browser back button
+    props.history.listen((location, action) => {
+        setActiveView(
+            location.pathname.indexOf('add') !== -1
+                ? 'addQuestion'
+                : props.match.params.sessionId ? 'session' : 'calendar'
+        );
+        // setSessionId(props.match.params.sessionId);
+    });
 
     // Keep track of active view for mobile
-    handleSessionClick = (sessionId: string) => {
-        this.props.history.push('/course/' + this.props.match.params.courseId + '/session/' + sessionId);
-        this.setState({ sessionId: sessionId, activeView: 'session' });
-    }
+    const handleSessionClick = (newSessionId: string) => {
+        props.history.push('/course/' + props.match.params.courseId + '/session/' + newSessionId);
+        // setSessionId(newSessionId);
+        setActiveView('session');
+    };
 
-    handleJoinClick = () => {
-        if (this.state.session) {
-            this.props.history.push(
-                '/course/' + this.props.match.params.courseId + '/session/' + this.state.session.sessionId + '/add'
+    const handleJoinClick = () => {
+        if (session) {
+            props.history.push(
+                '/course/' + props.match.params.courseId + '/session/' + session.sessionId + '/add'
             );
-            this.setState({ activeView: 'addQuestion' });
+            setActiveView('addQuestion');
         }
-    }
+    };
 
-    handleBackClick = () => {
-        this.props.history.push('/course/' + this.props.match.params.courseId);
-        this.setState({ activeView: 'calendar', sessionId: -1 });
-    }
+    const handleBackClick = () => {
+        props.history.push('/course/' + props.match.params.courseId);
+        // setSessionId(undefined);
+        setActiveView('calendar');
+    };
 
     // Toggle warning
 
-    render() {
-        let courseId = parseInt(this.props.match.params.courseId, 10);
-        return (
-            <React.Fragment>
-                {(this.state.width > MOBILE_BREAKPOINT ||
-                    (this.state.width <= MOBILE_BREAKPOINT &&
-                        this.state.activeView === 'calendar')) &&
-                    <CalendarView
-                        course={this.state.course}
-                        courseUser={this.state.courseUser}
-                        session={this.state.session}
-                        sessionCallback={this.handleSessionClick}
-                    />
-                }{(this.state.width > MOBILE_BREAKPOINT ||
-                    (this.state.width <= MOBILE_BREAKPOINT &&
-                        this.state.activeView !== 'calendar')) &&
-                    this.state.session && this.state.course && this.state.user && this.state.courseUser ?
-                    <SessionView
-                        course={this.state.course}
-                        session={this.state.session}
-                        isDesktop={this.state.width > MOBILE_BREAKPOINT}
-                        backCallback={this.handleBackClick}
-                        joinCallback={this.handleJoinClick}
-                        ref={(ref) => this.sessionView = ref}
-                        user={this.state.user}
-                        courseUser={this.state.courseUser}
-                    />
-                    : <React.Fragment>
-                        <p className="welcomeMessage">Welcome, <span className="welcomeName">
-                            {'RYAN_TODO'}
-                        </span></p>
-                        <p className="noSessionSelected">
-                            Please select an office hour from the calendar.
-                                </p>
-                    </React.Fragment>
-                }{this.state.activeView === 'addQuestion' &&
-                    <React.Fragment>
-                        <div className="modal">
-                            <ConnectedQuestionView
-                                sessionId={-1}
-                                courseId={courseId}
-                                mobileBreakpoint={MOBILE_BREAKPOINT}
-                                data={{ loading: true }}
-                                callback={() => this.addedQuestion()}
-                            />
-                        </div>
-                        <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />
-                    </React.Fragment>
-                }
-            </React.Fragment>
-        );
-    }
-}
+    const width = useWindowWidth();
+
+    // Get Current Course in State
+    useEffect(
+        () => {
+            const course$ = docData(firestore.doc('courses/' + props.match.params.courseId), 'courseId');
+            const subscription = course$.subscribe((c: FireCourse) => setCourse(c));
+            return () => { subscription.unsubscribe(); };
+        },
+        [props.match.params.courseId]
+    );
+
+    // Get Current Session in State
+    useEffect(
+        () => {
+            const session$ = docData(firestore.doc('sessions/' + props.match.params.sessionId), 'sessionId');
+            const subscription = session$.subscribe((s: FireSession) => setSession(s));
+            return () => { subscription.unsubscribe(); };
+        },
+        [props.match.params.sessionId]
+    );
+
+    // const { courseId } = props.match.params;
+    console.log('render');
+
+    return (
+        <React.Fragment>
+            {(width > MOBILE_BREAKPOINT ||
+                (width <= MOBILE_BREAKPOINT &&
+                    activeView === 'calendar')) &&
+                <CalendarView
+                    course={course}
+                    courseUser={courseUser}
+                    session={session}
+                    sessionCallback={handleSessionClick}
+                />
+            }{(width > MOBILE_BREAKPOINT ||
+                (width <= MOBILE_BREAKPOINT &&
+                    activeView !== 'calendar')) &&
+                session && course && user && courseUser ?
+                <SessionView
+                    course={course}
+                    session={session}
+                    isDesktop={width > MOBILE_BREAKPOINT}
+                    backCallback={handleBackClick}
+                    joinCallback={handleJoinClick}
+                    ref={(ref) => sessionView = ref}
+                    user={user}
+                    courseUser={courseUser}
+                />
+                : <React.Fragment>
+                    <p className="welcomeMessage">Welcome, <span className="welcomeName">
+                        {'RYAN_TODO'}
+                    </span></p>
+                    <p className="noSessionSelected">
+                        Please select an office hour from the calendar.
+                    </p>
+                </React.Fragment>
+            }
+            {/* {activeView === 'addQuestion' &&
+                <React.Fragment>
+                    <div className="modal">
+                        <ConnectedQuestionView
+                            sessionId={-1}
+                            courseId={courseId}
+                            mobileBreakpoint={MOBILE_BREAKPOINT}
+                            data={{ loading: true }}
+                            callback={() => addedQuestion()}
+                        />
+                    </div>
+                    <div className="modalShade" onClick={() => setActiveView('session')} />
+                </React.Fragment>
+            } */}
+        </React.Fragment>
+    );
+};
 
 export default SplitView;
