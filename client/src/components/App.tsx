@@ -13,7 +13,9 @@ import ProfessorRoles from './pages/ProfessorRoles';
 import ProfessorDashboardView from './pages/ProfessorDashboardView';
 import ProfessorPeopleView from './pages/ProfessorPeopleView';
 import { Analytics } from './includes/Analytics';
-// import { Loader } from 'semantic-ui-react';
+import { Loader } from 'semantic-ui-react';
+
+import { auth } from '../firebase';
 
 ReactGA.initialize('UA-123790900-1');
 
@@ -47,41 +49,32 @@ const DEFAULT_COURSE_ID = '6'; // String(window.localStorage.getItem('lastid') |
 
 // Since the type is unknown, we have to use the any type in the next two lines.
 // tslint:disable-next-line: no-any
-// const PrivateRoute = ({ component, ...rest }: any) => {
-//     // tslint:disable-next-line: no-any
-//     const routeComponent = (props: any) => (
-//         return React.createElement(component, props);
+const PrivateRoute = ({ component, ...rest }: any) => {
+    // Check if the course is active or not, if not redirect to default course
+    // let startDate = moment(data.courseByCourseId.startDate, 'YYYY-MM-DD');
+    // let endDate = moment(data.courseByCourseId.endDate, 'YYYY-MM-DD');
+    // if (startDate && endDate && !moment().isBetween(startDate, endDate)) {
+    //     return <Redirect to={{ pathname: '/course/' + DEFAULT_COURSE_ID }} />;
+    // }
 
-//         // RYAN_TODO fix
-//         <UserQuery
-//             query={GET_USER_AND_COURSE}
-//             variables={{ courseId: props.match.params.courseId }}
-//             fetchPolicy="network-only"
-//         >
-//             {({ loading, error, data }) => {
-//                 if (loading) {
-//                     return <Loader active={true} content={'Loading'} />;
-//                 }
-//                 if (error) {
-//                     return <Redirect to={{ pathname: '/login' }} />;
-//                 }
-//                 if (!data || data.apiGetCurrentUser.nodes.length === 0) {
-//                     return <Redirect to={{ pathname: '/login' }} />;
-//                 }
+    // STATES:
+    // 0: Fetching currently logged in status
+    // 1: Not logged in
+    // 2: Logged in
+    const [isLoggedIn, setIsLoggedIn] = React.useState(0);
 
-//                 // Check if the course is active or not, if not redirect to default course
-//                 // let startDate = moment(data.courseByCourseId.startDate, 'YYYY-MM-DD');
-//                 // let endDate = moment(data.courseByCourseId.endDate, 'YYYY-MM-DD');
-//                 // if (startDate && endDate && !moment().isBetween(startDate, endDate)) {
-//                 //     return <Redirect to={{ pathname: '/course/' + DEFAULT_COURSE_ID }} />;
-//                 // }
+    auth.onAuthStateChanged((user) => {
+        user ? setIsLoggedIn(2) : setIsLoggedIn(1);
+    });
 
-//                 return React.createElement(component, props);
-//             }}
-//         </UserQuery>
-//     );
-//     return <Route {...rest} render={component} />;
-// };
+    if (isLoggedIn === 0) {
+        return <Loader active={true} content={'Loading'} />;
+    } else if (isLoggedIn === 2) {
+        return (<Route {...rest} component={component} />);
+    }
+
+    return <Redirect to={{ pathname: '/login' }} />;
+};
 
 class App extends React.Component {
     render() {
@@ -91,28 +84,28 @@ class App extends React.Component {
                     <Route path="/" component={Analytics} />
                     <Switch>
                         <Route path="/login" component={LoginView} />
-                        <Route
+                        <PrivateRoute
                             path="/professor-tags/course/:courseId"
                             component={ProfessorTagsView}
                             exact={true}
                         />
-                        <Route
+                        <PrivateRoute
                             path="/professor-people/course/:courseId"
                             component={ProfessorPeopleView}
                         />
-                        <Route
+                        <PrivateRoute
                             path="/professor-dashboard/course/:courseId"
                             component={ProfessorDashboardView}
                             exact={true}
                         />
-                        <Route
+                        <PrivateRoute
                             path="/professor-roles/course/:courseId"
                             component={ProfessorRoles}
                             exact={true}
                         />
-                        <Route path="/professor/course/:courseId" component={ProfessorView} exact={true} />
-                        <Route path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
-                        <Route path="/course/:courseId" component={SplitView} />
+                        <PrivateRoute path="/professor/course/:courseId" component={ProfessorView} exact={true} />
+                        <PrivateRoute path="/course/:courseId/session/:sessionId/:page?" component={SplitView} />
+                        <PrivateRoute path="/course/:courseId" component={SplitView} />
                         <Redirect
                             from="/"
                             to={'/course/' + DEFAULT_COURSE_ID}
