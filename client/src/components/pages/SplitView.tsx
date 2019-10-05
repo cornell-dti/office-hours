@@ -9,6 +9,7 @@ import CalendarView from '../includes/CalendarView';
 import { firestore, loggedIn$ } from '../../firebase';
 import { docData, collectionData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
+import TopBar from '../includes/TopBar';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -133,29 +134,26 @@ const SplitView = (props: {
     useEffect(
         () => {
             const session$ = docData(firestore.doc('sessions/' + props.match.params.sessionId), 'sessionId');
-            const subscription = session$.subscribe((s: FireSession) => setSession(s));
+            const subscription = session$.subscribe((s: FireSession) => setSession(
+                s.sessionId === 'undefined' ? undefined : s
+            ));
             return () => { subscription.unsubscribe(); };
         },
         [props.match.params.sessionId]
     );
 
     // const { courseId } = props.match.params;
-    console.log('render');
 
     return (
         <React.Fragment>
-            {(width > MOBILE_BREAKPOINT ||
-                (width <= MOBILE_BREAKPOINT &&
-                    activeView === 'calendar')) &&
+            {(width > MOBILE_BREAKPOINT || activeView === 'calendar') &&
                 <CalendarView
                     course={course}
                     courseUser={courseUser}
                     session={session}
                     sessionCallback={handleSessionClick}
                 />
-            }{(width > MOBILE_BREAKPOINT ||
-                (width <= MOBILE_BREAKPOINT &&
-                    activeView !== 'calendar')) &&
+            }{(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
                 session && course && user && courseUser ?
                 <SessionView
                     course={course}
@@ -167,14 +165,22 @@ const SplitView = (props: {
                     user={user}
                     courseUser={courseUser}
                 />
-                : <React.Fragment>
-                    <p className="welcomeMessage">Welcome, <span className="welcomeName">
-                        {'RYAN_TODO'}
-                    </span></p>
+                : <section className="StudentSessionView">
+                    {user && <TopBar
+                        user={user}
+                        role={courseUser ? courseUser.role : 'student'}
+                        context="student"
+                        courseId={props.match.params.courseId}
+                    />}
+                    <p className="welcomeMessage">
+                        Welcome<span className="welcomeName">
+                            {user && ', ' + user.firstName}
+                        </span>
+                    </p>
                     <p className="noSessionSelected">
                         Please select an office hour from the calendar.
                     </p>
-                </React.Fragment>
+                </section>
             }
             {/* {activeView === 'addQuestion' &&
                 <React.Fragment>
