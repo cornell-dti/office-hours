@@ -36,11 +36,11 @@ class SessionInformationHeader extends React.Component {
                     </div>
                     <div className="Details">
                         <p className="Location">{session.building + ' ' + session.room}</p>
-                        <Moment date={session.startTime} interval={0} format={'h:mm A'} />
-                        <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
+                        <Moment date={session.startTime.seconds * 1000} interval={0} format={'h:mm A'} />
+                        <Moment date={session.endTime.seconds * 1000} interval={0} format={' - h:mm A'} />
                         <p className="Date">
                             <Icon name="calendar alternate outline" />
-                            <Moment date={session.startTime} interval={0} format={'dddd, MMM D'} />
+                            <Moment date={session.startTime.seconds * 1000} interval={0} format={'dddd, MMM D'} />
                         </p>
                         <p>{session.title || (<React.Fragment>
                             Held by

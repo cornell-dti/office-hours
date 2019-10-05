@@ -154,34 +154,34 @@ const SplitView = (props: {
                     sessionCallback={handleSessionClick}
                 />
             }{(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
-                session && course && user && courseUser ?
-                <SessionView
-                    course={course}
-                    session={session}
-                    isDesktop={width > MOBILE_BREAKPOINT}
-                    backCallback={handleBackClick}
-                    joinCallback={handleJoinClick}
-                    ref={(ref) => sessionView = ref}
-                    user={user}
-                    courseUser={courseUser}
-                />
-                : <section className="StudentSessionView">
-                    {user && <TopBar
+                (session && course && user && courseUser ?
+                    <SessionView
+                        course={course}
+                        session={session}
+                        isDesktop={width > MOBILE_BREAKPOINT}
+                        backCallback={handleBackClick}
+                        joinCallback={handleJoinClick}
+                        ref={(ref) => sessionView = ref}
                         user={user}
-                        role={courseUser ? courseUser.role : 'student'}
-                        context="student"
-                        courseId={props.match.params.courseId}
-                    />}
-                    <p className="welcomeMessage">
-                        Welcome<span className="welcomeName">
-                            {user && ', ' + user.firstName}
-                        </span>
+                        courseUser={courseUser}
+                    />
+                    : <section className="StudentSessionView">
+                        {user && <TopBar
+                            user={user}
+                            role={courseUser ? courseUser.role : 'student'}
+                            context="student"
+                            courseId={props.match.params.courseId}
+                        />}
+                        <p className="welcomeMessage">
+                            Welcome<span className="welcomeName">
+                                {user && ', ' + user.firstName}
+                            </span>
+                        </p>
+                        <p className="noSessionSelected">
+                            Please select an office hour from the calendar.
                     </p>
-                    <p className="noSessionSelected">
-                        Please select an office hour from the calendar.
-                    </p>
-                </section>
-            }
+                    </section>
+                )}
             {/* {activeView === 'addQuestion' &&
                 <React.Fragment>
                     <div className="modal">
