@@ -64,7 +64,6 @@ class SessionView extends React.Component {
         );
 
         questions$.subscribe((questions: FireQuestion[]) => {
-            console.log(questions);
             this.setState({ questions });
         });
     }

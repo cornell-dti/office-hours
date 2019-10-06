@@ -4,12 +4,14 @@ import * as H from 'history';
 
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
-// import ConnectedQuestionView from '../includes/ConnectedQuestionView';
+import AddQuestion from '../includes/AddQuestion';
 
 import { firestore, loggedIn$ } from '../../firebase';
 import { docData, collectionData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
 import TopBar from '../includes/TopBar';
+
+import { Loader } from 'semantic-ui-react';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -40,12 +42,6 @@ const SplitView = (props: {
 }) => {
     // @ts-ignore idk
     let sessionView: SessionView | null = null;
-
-    // const addedQuestion = () => {
-    //     if (sessionView && sessionView.questionsContainer) {
-    //         sessionView.questionsContainer.props.refetch();
-    //     }
-    // };
 
     const [activeView, setActiveView] = useState(
         props.match.params.page === 'add'
@@ -157,13 +153,13 @@ const SplitView = (props: {
                 (session && course && user && courseUser ?
                     <SessionView
                         course={course}
+                        courseUser={courseUser}
                         session={session}
+                        user={user}
                         isDesktop={width > MOBILE_BREAKPOINT}
                         backCallback={handleBackClick}
                         joinCallback={handleJoinClick}
                         ref={(ref) => sessionView = ref}
-                        user={user}
-                        courseUser={courseUser}
                     />
                     : <section className="StudentSessionView">
                         {user && <TopBar
@@ -180,23 +176,26 @@ const SplitView = (props: {
                         </p>
                         <p className="noSessionSelected">
                             Please select an office hour from the calendar.
-                    </p>
+                        </p>
                     </section>
                 )}
-            {/* {activeView === 'addQuestion' &&
+            {activeView === 'addQuestion' &&
                 <React.Fragment>
                     <div className="modal">
-                        <ConnectedQuestionView
-                            sessionId={-1}
-                            courseId={courseId}
-                            mobileBreakpoint={MOBILE_BREAKPOINT}
-                            data={{ loading: true }}
-                            callback={() => addedQuestion()}
-                        />
+                        {course && session
+                            ? <AddQuestion
+                                // RYAN_TODO tags
+                                tags={[]}
+                                session={session}
+                                course={course}
+                                mobileBreakpoint={MOBILE_BREAKPOINT}
+                            />
+                            : <Loader active={true} content={'Loading'} />
+                        }
                     </div>
                     <div className="modalShade" onClick={() => setActiveView('session')} />
                 </React.Fragment>
-            } */}
+            }
         </React.Fragment>
     );
 };

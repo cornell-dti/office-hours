@@ -25,6 +25,7 @@ interface FireCourse {
     semester: string;
     startDate: FireTimestamp;
     courseId: string;
+    charLimit: number;
 }
 
 interface FireCourseUser {
