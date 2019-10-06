@@ -75,7 +75,7 @@ const SplitView = (props: {
 
             // Get current user object
             loggedIn$.pipe(
-                switchMap(u => docData(firestore.doc('users/' + u.uid)))
+                switchMap(u => docData(firestore.doc('users/' + u.uid), 'userId'))
             ).subscribe((u: FireUser) => setUser(u));
             return () => {
                 console.log('clear');
@@ -173,8 +173,9 @@ const SplitView = (props: {
                             courseId={props.match.params.courseId}
                         />}
                         <p className="welcomeMessage">
-                            Welcome<span className="welcomeName">
-                                {user && ', ' + user.firstName}
+                            Welcome{user && ', '}
+                            <span className="welcomeName">
+                                {user && user.firstName}
                             </span>
                         </p>
                         <p className="noSessionSelected">

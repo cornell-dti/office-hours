@@ -41,8 +41,6 @@ class SessionView extends React.Component {
         questions: FireQuestion[]
     };
 
-    questionsContainer: SessionQuestionsContainer | null = null;
-
     constructor(props: {}) {
         super(props);
         this.state = {
@@ -59,13 +57,16 @@ class SessionView extends React.Component {
 
         const questions$ = collectionData(
             firestore
-                .collection('questions')
-                .where('sessionId', '==', firestore.doc('sessions/' + this.props.session.sessionId)),
+                .collection('questions'),
+            // .where('sessionId', '==', firestore.doc('sessions/' + this.props.session.sessionId)),
             // RYAN_TODO filter
             'questionId'
         );
 
-        questions$.subscribe((questions: FireQuestion[]) => this.setState({ questions }));
+        questions$.subscribe((questions: FireQuestion[]) => {
+            console.log(questions);
+            this.setState({ questions });
+        });
     }
 
     triggerUndo = (questionId: number, action: string, name: string) => {
@@ -90,9 +91,6 @@ class SessionView extends React.Component {
             undoQuestionId: undefined,
             timeoutId: null,
         });
-        if (this.questionsContainer) {
-            this.questionsContainer.props.refetch();
-        }
     }
 
     handleUndoClick = (undoQuestion: Function, refetch: Function) => {
@@ -106,8 +104,8 @@ class SessionView extends React.Component {
         });
     }
 
-    isOpen = (session: FireSession, interval: FireTimestamp): boolean => {
-        return new Date(session.startTime.seconds).getTime() - interval.seconds * 1000 < new Date().getTime()
+    isOpen = (session: FireSession, interval: number): boolean => {
+        return new Date(session.startTime.seconds).getTime() - interval * 1000 < new Date().getTime()
             && new Date(session.endTime.seconds) > new Date();
     }
 
@@ -115,8 +113,8 @@ class SessionView extends React.Component {
         return new Date() > new Date(session.endTime.seconds);
     }
 
-    getOpeningTime = (session: FireSession, interval: FireTimestamp): Date => {
-        return new Date(new Date(session.startTime.seconds).getTime() - interval.seconds * 1000);
+    getOpeningTime = (session: FireSession, interval: number): Date => {
+        return new Date(new Date(session.startTime.seconds).getTime() - interval * 1000);
     }
 
     render() {
@@ -132,7 +130,7 @@ class SessionView extends React.Component {
                 undoText = this.state.undoName + ' has been assigned to you! ';
             }
         }
-        // const otherQuestions = [];
+        const otherQuestions = [];
         // data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
         //     .filter((question) => question.sessionBySessionId.sessionId !== this.props.id)
         //     .filter((question) => question.status === 'unresolved')
@@ -193,27 +191,18 @@ class SessionView extends React.Component {
                         </p>
                     </div>
                 }
-                {/* <SessionQuestionsContainer
-                    isTA={data.apiGetCurrentUser.nodes[0].
-                        courseUsersByUserId.nodes[0].role !== 'student'}
-                    questions={data.sessionBySessionId.questionsBySessionId
-                        .nodes.filter(
-                            q => q.status === 'unresolved' || q.status === 'assigned')}
+                {/* FUTURE_TODO - Just pass in the session and not a bunch of bools */}
+                <SessionQuestionsContainer
+                    isTA={this.props.courseUser.role !== 'student'}
+                    questions={this.state.questions}
                     handleJoinClick={this.props.joinCallback}
-                    myUserId={data.apiGetCurrentUser.nodes[0].userId}
+                    myUserId={this.props.user.userId}
                     triggerUndo={this.triggerUndo}
-                    refetch={refetch}
-                    // this sets a ref, which allows a parent to call methods on a child.
-                    // Here, the parent can't access refetch, but the child can.
-                    ref={(ref) => this.questionsContainer = ref}
-                    isOpen={this.isOpen(
-                        data.sessionBySessionId,
-                        data.courseByCourseId.queueOpenInterval)}
-                    isPast={this.isPast(data.sessionBySessionId)}
-                    openingTime={this.getOpeningTime(
-                        data.sessionBySessionId, data.courseByCourseId.queueOpenInterval)}
+                    isOpen={this.isOpen(this.props.session, this.props.course.queueOpenInterval)}
+                    isPast={this.isPast(this.props.session)}
+                    openingTime={this.getOpeningTime(this.props.session, this.props.course.queueOpenInterval)}
                     haveAnotherQuestion={otherQuestions.length > 0}
-                /> */}
+                />
 
                 {/* {lastAskedQuestion !== null && this.state.showAbsent && !this.state.dismissedAbsent &&
                     <SessionAlertModal

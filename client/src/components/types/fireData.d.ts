@@ -1,3 +1,5 @@
+// RYAN_TODO represent different ID's as opaque types
+
 interface FireTimestamp {
     seconds: number;
     nanoseconds: number;
@@ -30,7 +32,7 @@ interface FireCourseUser {
         path: string;
     };
     userId: string;
-    role: string;
+    role: "professor" | "ta" | "student";
     couresUserId: string;
 }
 
@@ -40,6 +42,7 @@ interface FireUser {
     lastName: string;
     photoUrl: string;
     lastActivityAt: FireTimestamp;
+    userId: string;
 }
 
 interface FireQuestion {
@@ -53,7 +56,7 @@ interface FireQuestion {
     timeEntered: FireTimestamp;
     primaryTag: string;
     secondaryTAg: string;
-    id: string;
+    questionId: string;
 }
 
 interface FireTag {

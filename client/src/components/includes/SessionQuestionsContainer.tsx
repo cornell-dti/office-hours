@@ -6,11 +6,10 @@ import * as moment from 'moment';
 class SessionQuestionsContainer extends React.Component {
     props: {
         isTA: boolean,
-        questions: AppQuestion[] | null,
-        myUserId: number,
+        questions: FireQuestion[],
+        myUserId: string,
         handleJoinClick: Function,
         triggerUndo: Function,
-        refetch: Function,
         isOpen: boolean,
         isPast: boolean,
         openingTime: Date,
@@ -44,7 +43,7 @@ class SessionQuestionsContainer extends React.Component {
     render() {
         var questions = this.props.questions;
         // If the user has questions, store them in myQuestion[]
-        var myQuestion = questions && questions.filter(q => q.userByAskerId.userId === this.props.myUserId);
+        var myQuestion = questions && questions.filter(q => q.askerId === this.props.myUserId);
         // Make sure that the data has loaded and user has a question
         if (questions && myQuestion && myQuestion.length > 0) {
             // Get user's position in queue (0 indexed)
@@ -108,9 +107,7 @@ class SessionQuestionsContainer extends React.Component {
                             index={questions.indexOf(myQuestion[0])}
                             isTA={this.props.isTA}
                             includeRemove={true}
-                            includeBookmark={false}
                             triggerUndo={this.props.triggerUndo}
-                            refetch={this.props.refetch}
                             isPast={this.props.isPast}
                             myUserId={this.props.myUserId}
                         />
@@ -125,9 +122,7 @@ class SessionQuestionsContainer extends React.Component {
                             index={i}
                             isTA={this.props.isTA}
                             includeRemove={false}
-                            includeBookmark={question.userByAskerId.userId === this.props.myUserId}
                             triggerUndo={this.props.triggerUndo}
-                            refetch={this.props.refetch}
                             isPast={this.props.isPast}
                             myUserId={this.props.myUserId}
                         />
