@@ -27,6 +27,17 @@ _Screenshots showing major parts of app_
 
 ## Contributors
 
+### 2019-20
+* **Vanessa Wang** - Software Developer
+* **Connie Lei** - Software Developer
+* **Ryan Slama** - Software Developer
+* **Robinson Burrell III** - Software Developer
+* **Jordan Epstein** - Software Developer
+* **Ashley Ticzon** - Designer
+* **Jalil Evans** - Designer
+* **Sophia Wang** - Product Manager
+* **Bobby Villaluz** - Technical Project Manager
+
 ### 2018-19
 * **Vanessa Wang** - Software Developer
 * **Shefali Agarwal** - Software Developer
