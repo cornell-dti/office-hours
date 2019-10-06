@@ -160,7 +160,7 @@ class SessionQuestion extends React.Component {
 
   render() {
     var question = this.props.question;
-    const studentCSS = this.props.isTA ? '' : ' Student';
+    const studentCSS = this.props.isTA ? '' : 'Student';
     // let isFeedback = this.state.showFeedback ? ' feedback' : '';
     // if (this.props.index >= 0) {
     //   return (
@@ -195,32 +195,35 @@ class SessionQuestion extends React.Component {
             <br>Your feedback is incredibly valuable. </br>
           </p>
         </section> */}
-        <div className="Feedback">
-          {!this.state.showFeedback && (
-            <React.Fragment>
-              <section className={'topPanel'}>
-                <img src={QMeLogo} className="QMeLogo" />
-                <h2>Have an opinion about Queue Me In?</h2>
-                {/* <p>
-                  Let us know how your experience on Queue Me In is going.{' '}
-                  <br>Your feedback is incredibly valuable. </br>
-                </p> */}
-              </section>
-              <section className="bottomPanel">
-                <a className="feedbackButton" href="https://google.com">
-                  Send Feedback
-                </a>
-              </section>
-              {/* <section classname={'bottomPanel'}>
-                <a
-                  className="feedbackButton"
-                  href="https://google.com"
-                >
-                  Send Feedback
-                </a>
-              </section> */}
-            </React.Fragment>
-          )}
+        <div className="feedbackModal">
+          <div className={'feedbackShade'} />
+          <div className="Feedback">
+            {!this.state.showFeedback && (
+              <React.Fragment>
+                <section className={'topPanel'}>
+                  <img src={QMeLogo} className="QMeLogo" />
+                  <h2>Have an opinion about Queue Me In?</h2>
+                  {/* <p>
+                    Let us know how your experience on Queue Me In is going.{' '}
+                    <br>Your feedback is incredibly valuable. </br>
+                  </p> */}
+                </section>
+                <section className="bottomPanel">
+                  <a className="feedbackButton" href="https://google.com">
+                    Send Feedback
+                  </a>
+                </section>
+                {/* <section classname={'bottomPanel'}>
+                  <a
+                    className="feedbackButton"
+                    href="https://google.com"
+                  >
+                    Send Feedback
+                  </a>
+                </section> */}
+              </React.Fragment>
+            )}
+          </div>
         </div>
         {this.props.includeRemove && (
           <div className="LocationPin">

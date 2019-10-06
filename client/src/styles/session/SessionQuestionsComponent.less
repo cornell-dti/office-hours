@@ -341,7 +341,14 @@
       }
     }
   }
+}
+.feedbackModal {
   .Feedback {
+    position: fixed;
+    z-index: 4;
+    top: 15%;
+    left: 30%;
+
     .topPanel {
       height: 500px;
       width: 500px;
@@ -350,8 +357,9 @@
       align-items: center;
       line-height: 1.4;
       font-size: 18px;
-      margin-bottom: 40px;
+      margin-bottom: 0px;
       position: relative;
+      z-index: 4;
 
       .feedbackText {
         background-color: transparent;
@@ -417,4 +425,14 @@
       }
     }
   }
+}
+
+.feedbackShade {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  background-color: hsla(0, 0%, 44%, 0.8);
 }
