@@ -179,23 +179,15 @@ const SplitView = (props: {
                         </p>
                     </section>
                 )}
-            {activeView === 'addQuestion' &&
-                <React.Fragment>
-                    <div className="modal">
-                        {course && session
-                            ? <AddQuestion
-                                // RYAN_TODO tags
-                                tags={[]}
-                                session={session}
-                                course={course}
-                                mobileBreakpoint={MOBILE_BREAKPOINT}
-                            />
-                            : <Loader active={true} content={'Loading'} />
-                        }
-                    </div>
-                    <div className="modalShade" onClick={() => setActiveView('session')} />
-                </React.Fragment>
-            }
+            {activeView === 'addQuestion' && <>
+                <div className="modal">
+                    {course && session
+                        ? <AddQuestion session={session} course={course} mobileBreakpoint={MOBILE_BREAKPOINT} />
+                        : <Loader active={true} content={'Loading'} />
+                    }
+                </div>
+                <div className="modalShade" onClick={() => setActiveView('session')} />
+            </>}
         </React.Fragment>
     );
 };

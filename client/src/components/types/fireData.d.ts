@@ -64,6 +64,7 @@ interface FireTag {
     active: boolean;
     courseId: string;
     level: number;
-    id: string;
+    tagId: string;
     name: string;
+    parentTag: string;
 }

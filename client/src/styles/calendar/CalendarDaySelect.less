@@ -20,12 +20,20 @@
         align-items: center;
         padding: 15px;
 
-        .LastWeek, .NextWeek {
+        .LastWeek,
+        .NextWeek {
             cursor: pointer;
         }
     }
- }
+}
 
+.menuDate .date:hover {
+    background-color: #fcd9d9;
+    border-radius: 50%;
+    margin: auto;
+    height: 30px;
+    width: 30px;
+}
 
 .menuDate {
     cursor: pointer;
@@ -34,7 +42,8 @@
 
     &.active {
         cursor: default;
-        & > .date {
+
+        &>.date {
             color: white;
             background-color: @red;
             border-radius: 50%;
@@ -44,18 +53,18 @@
         }
     }
 
-    & > .day {
+    &>.day {
         font-size: 11px;
         padding-bottom: 5px;
         color: #777;
     }
 
-    & > .date {
+    &>.date {
         font-size: 15px;
         padding: 6px 0px;
     }
 
-    & > .notification {
+    &>.notification {
         font-size: 32px;
         height: 20px;
         color: @red;

@@ -7,6 +7,8 @@ import SelectedTags from '../includes/SelectedTags';
 import SessionAlertModal from './SessionAlertModal';
 import * as moment from 'moment';
 
+import { collectionData, firestore } from '../../firebase';
+
 // const ADD_QUESTION = gql`
 // mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!, $location: String!) {
 //     apiAddQuestion(
@@ -36,7 +38,6 @@ class AddQuestion extends React.Component {
      * 60 - Warning modal (replaces question modal) - toggles after submit if n minutes are left in queue
      */
     props: {
-        tags: AppTagRelations[]
         session: FireSession,
         course: FireCourse,
         mobileBreakpoint: number
@@ -48,7 +49,10 @@ class AddQuestion extends React.Component {
         selectedTags: number[],
         stage: number,
         width: number,
-        redirect: boolean
+        redirect: boolean,
+        tags: FireTag[],
+        selectedPrimary?: FireTag,
+        selectedSecondary?: FireTag,
     };
 
     constructor(props: {}) {
@@ -59,9 +63,18 @@ class AddQuestion extends React.Component {
             stage: 10,
             width: window.innerWidth,
             selectedTags: [],
-            redirect: false
+            redirect: false,
+            tags: []
         };
-        this.handleXClick = this.handleXClick.bind(this);
+
+        const tags$ = collectionData(
+            firestore
+                .collection('tags')
+                .where('courseId', '==', firestore.doc('courses/' + this.props.course.courseId)),
+            'courseUserId'
+        );
+
+        tags$.subscribe((tags) => this.setState({ tags }));
     }
 
     // Keep window size in state for conditional rendering
@@ -77,56 +90,57 @@ class AddQuestion extends React.Component {
         this.setState({ width: window.innerWidth });
     }
 
-    public handleXClick = () => {
+    handleXClick = () => {
         this.setState({ redirect: true });
     }
 
-    public handlePrimarySelected = (id: number): void => {
-        if (this.state.stage <= 10) {
-            this.setState({
-                stage: 20,
-                selectedTags: [id]
-            });
-        } else {
-            this.setState({ stage: 10, selectedTags: [] });
-        }
+    public handlePrimarySelected = (tag: FireTag | undefined): void => {
+        this.setState(this.state.stage <= 10
+            ? { stage: 20, primaryTag: tag }
+            : { stage: 10, primaryTag: undefined }
+        );
     }
 
-    public handleSecondarySelected = (deselected: boolean, id: number): void => {
-        if (!deselected) {
-            // Temporary; needs to be factored out into a course setting
-            // Restrict to only one secondary tag (can be made shorter!):
-            var selectedTags = [];
-            for (var i = 0; i < this.state.selectedTags.length; i++) {
-                var keep = false;
-                for (var j = 0; j < this.props.tags.length; j++) {
-                    if (this.props.tags[j].tagId === this.state.selectedTags[i]) {
-                        keep = this.props.tags[j].level === 1;
-                        break;
-                    }
-                }
-                if (keep) {
-                    selectedTags.push(this.state.selectedTags[i]);
-                }
-            }
-            selectedTags.push(id);
-            let stage;
-            if (this.state.location.length > 0) {
-                if (this.state.question.length > 0) {
-                    stage = 50;
-                } else { stage = 40; }
-            } else { stage = 30; }
-            this.setState({
-                stage: stage,
-                // selectedTags: [...this.state.selectedTags, id]
-                selectedTags: selectedTags
-            });
-        } else {
-            this.setState({
-                stage: 20,
-                selectedTags: this.state.selectedTags.filter((t) => t !== id)
-            });
-        }
+    public handleSecondarySelected = (deselected: boolean, id: string): void => {
+        // if (!deselected) {
+        //     // Temporary; needs to be factored out into a course setting
+        //     // Restrict to only one secondary tag (can be made shorter!):
+        //     var selectedTags = [];
+        //     this.state.selectedTags.forEach((selectedTag) => {
+        //         var keep = false;
+        //         for (var j = 0; j < this.props.tags.length; j++) {
+        //             if (this.props.tags[j].tagId === this.state.selectedTags[i]) {
+        //                 keep = this.props.tags[j].level === 1;
+        //                 break;
+        //             }
+        //         }
+        //         this.props.tags.filter((tag) => tag.tagId === selectedTag.tagId)
+        //         if (keep) {
+        //             selectedTags.push(selectedTag);
+        //         }
+
+        //     })
+        //     for (var i = 0; i < this.state.selectedTags.length; i++) {
+
+        //     }
+        //     selectedTags.push(id);
+        //     let stage;
+        //     if (this.state.location.length > 0) {
+        //         if (this.state.question.length > 0) {
+        //             stage = 50;
+        //         } else { stage = 40; }
+        //     } else { stage = 30; }
+        //     this.setState({
+        //         stage: stage,
+        //         // selectedTags: [...this.state.selectedTags, id]
+        //         selectedTags: selectedTags
+        //     });
+        // } else {
+        //     this.setState({
+        //         stage: 20,
+        //         selectedTags: this.state.selectedTags.filter((t) => t !== id)
+        //     });
+        // }
     }
 
     public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
@@ -208,40 +222,37 @@ class AddQuestion extends React.Component {
                             <div className="tagsMiniContainer">
                                 <p className="header">Categories</p>
                                 <div className="QuestionTags">
-                                    {this.props.tags
-                                        .filter((tag) => tag.activated && tag.level === 1)
-                                        .filter((tag) =>
-                                            this.state.stage <= 10 ||
-                                            this.state.selectedTags.indexOf(tag.tagId) !== -1
-                                        )
-                                        .map((tag) => (<SelectedTags
-                                            key={tag.tagId}
-                                            tag={tag.name}
-                                            level={1}
-                                            isSelected={this.state.stage > 10}
-                                            onClick={() => this.handlePrimarySelected(tag.tagId)}
-                                        />))
+                                    {!this.state.selectedPrimary ?
+                                        this.state.tags
+                                            // Only show primary tags
+                                            .filter((tag) => tag.active && tag.level === 1)
+                                            // iff tag is selected, hide other primary tags
+                                            .map((tag) => (<SelectedTags
+                                                key={tag.tagId}
+                                                tag={tag}
+                                                isSelected={this.state.stage > 10}
+                                                onClick={() => this.handlePrimarySelected(tag)}
+                                            />))
+                                        : <SelectedTags
+                                            tag={this.state.selectedPrimary}
+                                            isSelected={true}
+                                            onClick={() => this.handlePrimarySelected(undefined)}
+                                        />
                                     }
                                 </div>
                             </div>
                             <hr />
                             <div className="tagsMiniContainer">
                                 <p className="header">Tags</p>
-                                {this.state.stage >= 20 ?
-                                    this.props.tags
-                                        .filter((tag) => tag.activated && tag.level === 2)
-                                        .filter((tag) => this.state.selectedTags.indexOf(
-                                            tag.tagRelationsByChildId.nodes[0].parentId)
-                                            !== -1)
+                                {this.state.selectedPrimary ?
+                                    this.state.tags
+                                        .filter((tag) => tag.active && tag.level === 2)
+                                        .filter((tag) => tag.parentTag === (
+                                            this.state.selectedPrimary && this.state.selectedPrimary.tagId))
                                         .map((tag) => (<SelectedTags
-                                            key={tag.tagId}
-                                            tag={tag.name}
-                                            level={2}
-                                            isSelected={this.state.selectedTags.indexOf(tag.tagId) !== -1}
-                                            onClick={() => this.handleSecondarySelected(
-                                                this.state.selectedTags.indexOf(tag.tagId) !== -1,
-                                                tag.tagId)
-                                            }
+                                            tag={tag}
+                                            isSelected={!!this.state.selectedSecondary}
+                                            onClick={() => this.handleSecondarySelected(false, tag.tagId)}
                                         />))
                                     : <p className="placeHolder">Select a category</p>}
                             </div>
@@ -303,7 +314,8 @@ class AddQuestion extends React.Component {
                         header={'Warning'}
                         icon={'exclamation'}
                         color={'yellow'}
-                        description={'This session ends at ' + moment(this.props.session.endTime.seconds * 1000).format('h:mm A')
+                        description={'This session ends at '
+                            + moment(this.props.session.endTime.seconds * 1000).format('h:mm A')
                             + '. Consider adding yourself to a later queue.'}
                         buttons={['Cancel Question', 'Add Anyway']}
                         cancelAction={this.handleXClick}
