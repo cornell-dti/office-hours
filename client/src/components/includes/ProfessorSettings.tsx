@@ -80,7 +80,6 @@ class ProfessorSettings extends React.Component {
                             onChange={(e, d) => this.setState({ openInterval: d })}
                         />
                         minutes before the office hour begins.
-                                {/* <Loader active={true} inline={true} size="mini" /> */}
                     </div>
                     <div className="settingDesc">
                         The character limit for the queue is &nbsp;
@@ -110,13 +109,12 @@ class ProfessorSettings extends React.Component {
                         >
                             <Icon name="plus" />
                         </button>
-                        {/* <Icon name="check" /> */}
                     </div>
                 </div>
                 <Mutation mutation={UPDATE_PROFESSOR_SETTINGS}>
                     {(UpdateProfessorSettings) =>
                         <button
-                            className="Delete"
+                            className="Action"
                             onClick={(e) => {
                                 this._onClickUpdateProfessorSetttings(UpdateProfessorSettings);
                                 this.props.toggleDelete();
