@@ -33,7 +33,7 @@ interface FireCourseUser {
         path: string;
     };
     userId: string;
-    role: "professor" | "ta" | "student";
+    role: 'professor' | 'ta' | 'student';
     couresUserId: string;
 }
 
