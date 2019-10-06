@@ -13,6 +13,10 @@
     },
     "author": "",
     "license": "ISC",
+    "engines": {
+        "node": "10.16.3",
+        "yarn": "1.18.0"
+    },
     "bugs": {
         "url": "https://github.com/cornell-dti/office-hours/issues"
     },
