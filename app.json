@@ -1,7 +1,9 @@
 {
   "name": "office-hours",
-  "scripts": {
+  "engines": {
+    "yarn": "1.18.0"
   },
+  "scripts": {},
   "env": {
     "OH_GOOGLE_SECRET": {
       "required": true
