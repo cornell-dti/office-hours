@@ -9,8 +9,9 @@ import AddQuestion from '../includes/AddQuestion';
 import { firestore, loggedIn$ } from '../../firebase';
 import { docData, collectionData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
-import TopBar from '../includes/TopBar';
+import { useCourse, useSession } from '../../firehooks';
 
+import TopBar from '../includes/TopBar';
 import { Loader } from 'semantic-ui-react';
 
 // Also update in the main LESS file
@@ -50,10 +51,10 @@ const SplitView = (props: {
     );
 
     const [courseUser, setCourseUser] = useState<FireCourseUser | undefined>(undefined);
-    const [session, setSession] = useState<FireSession | undefined>(undefined);
-    // const [sessionId, setSessionId] = useState<string | undefined>(undefined);
     const [user, setUser] = useState<FireUser | undefined>(undefined);
-    const [course, setCourse] = useState<FireCourse | undefined>(undefined);
+    const course = useCourse(props.match.params.courseId);
+    const session = useSession(props.match.params.sessionId);
+    const width = useWindowWidth();
 
     // // Get current course user based on courseId and user
     useEffect(
@@ -113,32 +114,6 @@ const SplitView = (props: {
     };
 
     // Toggle warning
-
-    const width = useWindowWidth();
-
-    // Get Current Course in State
-    useEffect(
-        () => {
-            const course$ = docData(firestore.doc('courses/' + props.match.params.courseId), 'courseId');
-            const subscription = course$.subscribe((c: FireCourse) => setCourse(c));
-            return () => { subscription.unsubscribe(); };
-        },
-        [props.match.params.courseId]
-    );
-
-    // Get Current Session in State
-    useEffect(
-        () => {
-            const session$ = docData(firestore.doc('sessions/' + props.match.params.sessionId), 'sessionId');
-            const subscription = session$.subscribe((s: FireSession) => setSession(
-                s.sessionId === 'undefined' ? undefined : s
-            ));
-            return () => { subscription.unsubscribe(); };
-        },
-        [props.match.params.sessionId]
-    );
-
-    // const { courseId } = props.match.params;
 
     return (
         <React.Fragment>
