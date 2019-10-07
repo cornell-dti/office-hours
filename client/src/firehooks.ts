@@ -42,10 +42,10 @@ export const useUser = (userId: string | undefined) =>
 // Storing the query in state is important because useEffect does shallow
 // comparisons on the objects in the array for memoization. Without storing
 // the query, we re-render and re-fetch infinitely.
-export const useQuery = <T>(query: firebase.firestore.Query, idField: string) => {
+export const useQuery = <T>(query: firebase.firestore.Query, idField: string):
+    [T[], React.Dispatch<React.SetStateAction<firebase.firestore.Query>>] => {
     const [storedQuery, setStoredQuery] = useState(query);
     const [result, setResult] = useState<T[]>([]);
-    console.log('running!');
     useEffect(
         () => {
             const results$ = collectionData(query, idField);
