@@ -38,6 +38,25 @@ export const useTag = (tagId: string | undefined) =>
 export const useUser = (userId: string | undefined) =>
     useDoc<FireUser>('users', userId, 'userId');
 
+// Pass in a firebase query and return the results plus a function to update the query
+// Storing the query in state is important because useEffect does shallow
+// comparisons on the objects in the array for memoization. Without storing
+// the query, we re-render and re-fetch infinitely.
+export const useQuery = <T>(query: firebase.firestore.Query, idField: string) => {
+    const [storedQuery, setStoredQuery] = useState(query);
+    const [result, setResult] = useState<T[]>([]);
+    console.log('running!');
+    useEffect(
+        () => {
+            const results$ = collectionData(query, idField);
+            const subscription = results$.subscribe((results: T[]) => setResult(results));
+            return () => { subscription.unsubscribe(); };
+        },
+        [storedQuery]
+    );
+    return [result, setStoredQuery];
+};
+
 // Here be dragons. The functions below this line may have unexpected
 // behaviors when the values they rely on change. I'm not sure.
 // Get current course user based on courseId and user
