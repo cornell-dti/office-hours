@@ -5,6 +5,7 @@ import Moment from 'react-moment';
 // import { Mutation } from 'react-apollo';
 import { firestore } from '../../firebase';
 import { docData } from 'rxfire/firestore';
+import SelectedTags from './SelectedTags';
 
 // import SelectedTags from './SelectedTags';
 
@@ -54,7 +55,9 @@ class SessionQuestion extends React.Component {
         undoQuestionIdDontKnow?: number,
         undoName?: string,
         asker?: FireUser,
-        answerer?: FireUser
+        answerer?: FireUser,
+        primaryTag?: FireTag,
+        secondaryTag?: FireTag
     };
 
     constructor(props: {}) {
@@ -74,6 +77,12 @@ class SessionQuestion extends React.Component {
             const answerer$ = docData(firestore.doc('users/' + this.props.question.answererId), 'userId');
             answerer$.subscribe((answerer: FireUser) => this.setState({ answerer }));
         }
+
+        const primaryTag$ = docData(firestore.doc('tags/' + this.props.question.primaryTag), 'tagId');
+        primaryTag$.subscribe((primaryTag: FireTag) => this.setState({ primaryTag }));
+
+        const secondaryTag$ = docData(firestore.doc('tags/' + this.props.question.secondaryTag), 'tagId');
+        secondaryTag$.subscribe((secondaryTag: FireTag) => this.setState({ secondaryTag }));
     }
 
     // Given an index from [1..n], converts it to text that is displayed on the
@@ -225,15 +234,14 @@ class SessionQuestion extends React.Component {
                 <div className="BottomBar">
                     {this.props.isTA && <span className="Spacer" />}
                     <div className="Tags">
-                        {/* {question.questionTagsByQuestionId.nodes.map(
-                            (tag) => <SelectedTags
-                                key={tag.tagByTagId.tagId}
-                                isSelected={false}
-                                tag={tag.tagByTagId.name}
-                                level={tag.tagByTagId.level}
-                                onClick={null}
-                            />
-                        )} */}
+                        {this.state.primaryTag && <SelectedTags
+                            tag={this.state.primaryTag}
+                            isSelected={false}
+                        />}
+                        {this.state.secondaryTag && <SelectedTags
+                            tag={this.state.secondaryTag}
+                            isSelected={false}
+                        />}
                     </div>
                     <p className="Time">
                         posted at&nbsp;

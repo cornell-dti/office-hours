@@ -56,7 +56,7 @@ interface FireQuestion {
     timeAddressed: FireTimestamp;
     timeEntered: FireTimestamp;
     primaryTag: string;
-    secondaryTAg: string;
+    secondaryTag: string;
     questionId: string;
 }
 

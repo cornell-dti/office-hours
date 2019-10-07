@@ -5,7 +5,7 @@ class SelectedTags extends React.PureComponent {
     props: {
         tag: FireTag,
         isSelected: boolean,
-        onClick: Function | null,
+        onClick?: Function,
     };
 
     _onClick = () => {
