@@ -6,10 +6,7 @@ import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import AddQuestion from '../includes/AddQuestion';
 
-import { firestore, loggedIn$ } from '../../firebase';
-import { docData, collectionData } from 'rxfire/firestore';
-import { switchMap } from 'rxjs/operators';
-import { useCourse, useSession } from '../../firehooks';
+import { useCourse, useSession, useMyCourseUser, useMyUser } from '../../firehooks';
 
 import TopBar from '../includes/TopBar';
 import { Loader } from 'semantic-ui-react';
@@ -41,45 +38,17 @@ const SplitView = (props: {
         }
     }
 }) => {
-    // @ts-ignore idk
-    let sessionView: SessionView | null = null;
-
     const [activeView, setActiveView] = useState(
         props.match.params.page === 'add'
             ? 'addQuestion'
             : props.match.params.sessionId ? 'session' : 'calendar'
     );
 
-    const [courseUser, setCourseUser] = useState<FireCourseUser | undefined>(undefined);
-    const [user, setUser] = useState<FireUser | undefined>(undefined);
+    const courseUser = useMyCourseUser(props.match.params.courseId);
+    const user = useMyUser();
     const course = useCourse(props.match.params.courseId);
     const session = useSession(props.match.params.sessionId);
     const width = useWindowWidth();
-
-    // // Get current course user based on courseId and user
-    useEffect(
-        () => {
-            loggedIn$.pipe(
-                switchMap(u => collectionData(
-                    firestore
-                        .collection('courseUsers')
-                        .where('userId', '==', firestore.doc('users/' + u.uid))
-                        .where('courseId', '==', firestore.doc('courses/' + props.match.params.courseId)),
-                    'courseId'
-                ))
-                // RYAN_TODO better handle unexpected case w/ no courseUser
-            ).subscribe((courseUsers: FireCourseUser[]) => setCourseUser(courseUsers[0]));
-
-            // Get current user object
-            loggedIn$.pipe(
-                switchMap(u => docData(firestore.doc('users/' + u.uid), 'userId'))
-            ).subscribe((u: FireUser) => setUser(u));
-            return () => {
-                console.log('clear');
-            };
-        },
-        []
-    );
 
     // Handle browser back button
     props.history.listen((location, action) => {
@@ -134,7 +103,6 @@ const SplitView = (props: {
                         isDesktop={width > MOBILE_BREAKPOINT}
                         backCallback={handleBackClick}
                         joinCallback={handleJoinClick}
-                        ref={(ref) => sessionView = ref}
                     />
                     : <section className="StudentSessionView">
                         {user && <TopBar
