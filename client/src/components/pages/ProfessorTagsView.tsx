@@ -8,54 +8,6 @@ import ProfessorSidebar from '../includes/ProfessorSidebar';
 import { useMyUser, useCourse, useQuery } from 'src/firehooks';
 import { firestore } from 'src/firebase';
 
-// const METADATA_QUERY = gql`
-// query GetMetadata($courseId: Int!) {
-//     apiGetCurrentUser {
-//         nodes {
-//             computedName
-//             computedAvatar
-//             courseUsersByUserId(condition:{courseId:$courseId}) {
-//                 nodes {
-//                     role
-//                 }
-//             }
-//         }
-//     }
-//     courseByCourseId(courseId: $courseId) {
-//         code
-//     }
-// }`;
-
-// const TAGS_QUERY = gql`
-// query FindTagsByCourse($courseId: Int!) {
-//     courseByCourseId(courseId: $courseId) {
-//         code
-//         tagsByCourseId(condition:{level:1}) {
-//             nodes {
-//               	tagId
-//                 name
-//                 level
-//                 activated
-//               	tagRelationsByParentId {
-//                   nodes {
-//                     tagByChildId {
-//                       tagId
-//                       name
-//                       level
-//                       activated
-//                     }
-//                   }
-//                 }
-//             }
-//         }
-//     }
-// }
-// `;
-
-// type WrapProps<T> = T & { view: React.ReactElement<T> };
-
-// const WrapProfessorTagsView = <WrapProps>(props) => console.log(props);
-
 function withData<T extends { match: { params: { courseId: string; } } }>
     (Component: React.ComponentType<T>) {
     return (props: T) => {
