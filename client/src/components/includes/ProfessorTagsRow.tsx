@@ -2,90 +2,68 @@ import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfessorTagInfo from './ProfessorTagInfo';
+import { firestore } from 'src/firebase';
+import { useQuery } from 'src/firehooks';
 
-class ProfessorTagsRow extends React.Component {
-
-    props: {
-        tags: FireTag[]
-        isExpanded: boolean[]
-        handleEditToggle: Function
-        courseId: string
+const ProfessorTagsRow = (props: {
+    isExpanded: boolean[],
+    handleEditToggle: Function,
+    courseId: string,
+}) => {
+    const toggleEdit = (row: number) => {
+        props.handleEditToggle(row);
     };
 
-    constructor(props: {}) {
-        super(props);
-        this.toggleEdit = this.toggleEdit.bind(this);
-    }
+    const getQuery = () => firestore
+        .collection('tags')
+        .where('courseId', '==', firestore.doc('courses/' + props.courseId));
 
-    toggleEdit(row: number) {
-        this.props.handleEditToggle(row);
-    }
+    const [tags, setQuery] = useQuery<FireTag>(getQuery(), 'tagId');
+    // Update query when course id prop changes
+    React.useEffect(() => setQuery(getQuery()), [props.courseId]);
 
-    render() {
-        var rowPair = this.props.tags.map(
-            (row, i) => {
-                let childTags: { tagByChildId: AppTag }[] | undefined = [];
-                // RYAN_TOOD
-                // childTags = row.tagRelationsByParentId &&
-                //     row.tagRelationsByParentId.nodes.filter((childTag) => childTag.tagByChildId.activated);
-                return (
-                    <tbody
-                        className={'Pair ' + this.props.isExpanded[i] + ' ' + (i % 2 === 0 ? 'odd' : 'even')}
-                        key={row.tagId}
-                    >
-                        <tr className="Preview">
-                            <td>
-                                <span
-                                    className={'AssignmentTag'}
-                                    key={row.tagId}
-                                >
-                                    {row.name}
-                                </span>
-                            </td>
-                            <td>
-                                {childTags && childTags.map((childTag, index) =>
-                                    <span key={childTag.tagByChildId.tagId}>
-                                        <span
-                                            className={'ChildTag'}
-                                        >
-                                            {childTag.tagByChildId.name}
-                                        </span>
-                                        {
-                                            index !== (childTags && childTags.length - 1) &&
-                                            <span className="ChildTagSeparator">&#9679;</span>
-                                        }
+    console.log(tags);
+    return (
+        <>{tags.filter(tag => tag.level === 1).map((row, i) => (
+            <tbody className={'Pair ' + props.isExpanded[i] + ' ' + (i % 2 === 0 ? 'odd' : 'even')} key={row.tagId}>
+                <tr className="Preview">
+                    <td>
+                        <span className={'AssignmentTag'} key={row.tagId}>
+                            {row.name}
+                        </span>
+                    </td>
+                    <td>
+                        {tags
+                            .filter(childTag => (childTag.parentTag && childTag.parentTag.id) === row.tagId)
+                            .map((childTag, index) =>
+                                <span key={childTag.tagId}>
+                                    {index !== 0 && <span className="ChildTagSeparator">&#9679;</span>}
+                                    <span className={'ChildTag'}>
+                                        {childTag.name}
                                     </span>
-                                )}
-                            </td>
-                            <td>{row.active ? 'Active' : 'Inactive'}</td>
-                            <td>
-                                <button className="Edit" onClick={() => this.toggleEdit(i)}>
-                                    <Icon name="pencil" />
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td
-                                className={'ExpandedEdit ' + this.props.isExpanded[i]}
-                                colSpan={4}
-                            >
-                                <ProfessorTagInfo
-                                    isNew={false}
-                                    cancelCallback={() => this.toggleEdit(i)}
-                                    tag={row}
-                                    courseId={this.props.courseId}
-                                />
-                            </td>
-                        </tr>
-                    </tbody >
-                );
-            }
-        );
-
-        return (
-            rowPair
-        );
-    }
-}
-
+                                </span>
+                            )
+                        }
+                    </td>
+                    <td>{row.active ? 'Active' : 'Inactive'}</td>
+                    <td>
+                        <button className="Edit" onClick={() => toggleEdit(i)}>
+                            <Icon name="pencil" />
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td className={'ExpandedEdit ' + props.isExpanded[i]} colSpan={4}>
+                        <ProfessorTagInfo
+                            isNew={false}
+                            cancelCallback={() => toggleEdit(i)}
+                            tag={row}
+                            courseId={props.courseId}
+                        />
+                    </td>
+                </tr>
+            </tbody>
+        ))} </>
+    );
+};
 export default ProfessorTagsRow;

@@ -29,13 +29,14 @@ class ProfessorTagsTable extends React.Component {
     }
 
     toggleEdit(row: number) {
-        var cRow = this.state.currentRow;
+        let cRow = this.state.currentRow;
+        const isExpanded = this.state.isExpanded;
         if (cRow !== row) {
-            this.state.isExpanded[cRow] = false;
+            isExpanded[cRow] = false;
         }
-        this.state.isExpanded[row] = !this.state.isExpanded[row];
+        isExpanded[row] = !this.state.isExpanded[row];
         this.setState({
-            isExpanded: this.state.isExpanded,
+            isExpanded,
             currentRow: row
         });
     }
@@ -55,7 +56,6 @@ class ProfessorTagsTable extends React.Component {
                             </tr>
                         </tbody>
                         <ProfessorTagsRow
-                            tags={this.props.tags}
                             isExpanded={this.state.isExpanded}
                             handleEditToggle={this.toggleEdit}
                             courseId={this.props.courseId}

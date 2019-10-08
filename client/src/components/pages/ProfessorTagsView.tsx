@@ -18,7 +18,8 @@ function withData<T extends { match: { params: { courseId: string; } } }>
         const getQuery = () => firestore
             .collection('tags')
             // RYAN_TODO filter based on today's date.
-            .where('courseId', '==', firestore.doc('courses/' + courseId));
+            .where('courseId', '==', firestore.doc('courses/' + courseId))
+            .where('level', '==', 1);
 
         const [tags, setQuery] = useQuery<FireSession>(getQuery(), 'tagId');
         // Update query when course id prop changes
