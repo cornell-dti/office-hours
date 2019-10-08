@@ -8,21 +8,7 @@ import SessionAlertModal from './SessionAlertModal';
 import * as moment from 'moment';
 
 import { collectionData, firestore } from '../../firebase';
-
-// const ADD_QUESTION = gql`
-// mutation AddQuestion($content: String!, $tags: [Int], $sessionId: Int!, $location: String!) {
-//     apiAddQuestion(
-//         input: {
-//             _content: $content,
-//             _tags: $tags,
-//             _status: "unresolved",
-//             _sessionId: $sessionId,
-//             _location: $location
-//         }) {
-//         clientMutationId
-//     }
-// }
-// `;
+import * as firebase from 'firebase';
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
@@ -71,7 +57,7 @@ class AddQuestion extends React.Component {
             firestore
                 .collection('tags')
                 .where('courseId', '==', firestore.doc('courses/' + this.props.course.courseId)),
-            'courseUserId'
+            'tagId'
         );
 
         tags$.subscribe((tags) => this.setState({ tags }));
@@ -96,51 +82,21 @@ class AddQuestion extends React.Component {
 
     public handlePrimarySelected = (tag: FireTag | undefined): void => {
         this.setState(this.state.stage <= 10
-            ? { stage: 20, primaryTag: tag }
-            : { stage: 10, primaryTag: undefined }
+            ? { stage: 20, selectedPrimary: tag }
+            : { stage: 10, selectedPrimary: undefined, selectedSecondary: undefined }
         );
     }
 
-    public handleSecondarySelected = (deselected: boolean, id: string): void => {
-        // if (!deselected) {
-        //     // Temporary; needs to be factored out into a course setting
-        //     // Restrict to only one secondary tag (can be made shorter!):
-        //     var selectedTags = [];
-        //     this.state.selectedTags.forEach((selectedTag) => {
-        //         var keep = false;
-        //         for (var j = 0; j < this.props.tags.length; j++) {
-        //             if (this.props.tags[j].tagId === this.state.selectedTags[i]) {
-        //                 keep = this.props.tags[j].level === 1;
-        //                 break;
-        //             }
-        //         }
-        //         this.props.tags.filter((tag) => tag.tagId === selectedTag.tagId)
-        //         if (keep) {
-        //             selectedTags.push(selectedTag);
-        //         }
-
-        //     })
-        //     for (var i = 0; i < this.state.selectedTags.length; i++) {
-
-        //     }
-        //     selectedTags.push(id);
-        //     let stage;
-        //     if (this.state.location.length > 0) {
-        //         if (this.state.question.length > 0) {
-        //             stage = 50;
-        //         } else { stage = 40; }
-        //     } else { stage = 30; }
-        //     this.setState({
-        //         stage: stage,
-        //         // selectedTags: [...this.state.selectedTags, id]
-        //         selectedTags: selectedTags
-        //     });
-        // } else {
-        //     this.setState({
-        //         stage: 20,
-        //         selectedTags: this.state.selectedTags.filter((t) => t !== id)
-        //     });
-        // }
+    public handleSecondarySelected = (tag: FireTag): void => {
+        if (this.state.selectedSecondary) {
+            this.setState(
+                this.state.selectedSecondary.tagId === tag.tagId
+                    ? { stage: 20, selectedSecondary: undefined }
+                    : { selectedSecondary: tag }
+            );
+        } else {
+            this.setState({ stage: 30, selectedSecondary: tag });
+        }
     }
 
     public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
@@ -165,28 +121,31 @@ class AddQuestion extends React.Component {
         });
     }
 
-    public handleJoinClick = (addQuestion: Function): void => {
+    public addQuestion = () => {
+        firestore.collection('questions').add({
+            askerId: firestore.doc('users/' + 'MYUSERID'),
+            content: this.state.question,
+            location: this.state.location,
+            sessionId: firestore.doc('sessions/' + this.props.session.sessionId),
+            status: 'unresolved',
+            timeEntered: firebase.database.ServerValue.TIMESTAMP
+        });
+        this.setState({ redirect: true });
+    }
+
+    public handleJoinClick = (): void => {
         if (this.state.stage !== 60 &&
             (moment().add(WARNING_THRESHOLD, 'minutes')).isAfter(this.props.session.endTime.seconds * 1000)) {
-            this.setState({
-                stage: 60
-            });
+            this.setState({ stage: 60 });
         } else {
-            addQuestion({
-                variables: {
-                    content: this.state.question,
-                    tags: this.state.selectedTags,
-                    sessionId: this.props.session.sessionId,
-                    location: this.state.location
-                }
-            });
+            this.addQuestion();
         }
     }
 
-    public handleKeyPressDown = (event: React.KeyboardEvent<HTMLElement>, addQuestion: Function): void => {
+    public handleKeyPressDown = (event: React.KeyboardEvent<HTMLElement>) => {
         // CTRL + ENTER or CMD + ENTER adds the question ONLY if cursor in Question textbox
         if ((!event.repeat && (event.ctrlKey || event.metaKey) && event.keyCode === 13 && this.state.stage > 40)) {
-            this.handleJoinClick(addQuestion);
+            this.addQuestion();
         } else if (!event.repeat && event.keyCode === 27) {
             this.handleXClick();
         }
@@ -207,10 +166,7 @@ class AddQuestion extends React.Component {
         var questionCharsLeft = this.props.course.charLimit - this.state.question.length;
 
         return (
-            <div
-                className="QuestionView"
-            // onKeyDown={(e) => this.handleKeyPressDown(e, addQuestion)}
-            >
+            <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e)} >
                 {(this.state.stage < 60 || this.state.width < this.props.mobileBreakpoint) &&
                     <div className="AddQuestion">
                         <div className="queueHeader">
@@ -247,12 +203,14 @@ class AddQuestion extends React.Component {
                                 {this.state.selectedPrimary ?
                                     this.state.tags
                                         .filter((tag) => tag.active && tag.level === 2)
-                                        .filter((tag) => tag.parentTag === (
-                                            this.state.selectedPrimary && this.state.selectedPrimary.tagId))
-                                        .map((tag) => (<SelectedTags
+                                        .filter((tag) => ((tag.parentTag && tag.parentTag.id) ===
+                                            // @ts-ignore I'm checking for presence in the ternary
+                                            this.state.selectedPrimary.tagId)
+                                        ).map((tag) => (<SelectedTags
+                                            key={tag.tagId}
                                             tag={tag}
                                             isSelected={!!this.state.selectedSecondary}
-                                            onClick={() => this.handleSecondarySelected(false, tag.tagId)}
+                                            onClick={() => this.handleSecondarySelected(tag)}
                                         />))
                                     : <p className="placeHolder">Select a category</p>}
                             </div>
@@ -260,8 +218,7 @@ class AddQuestion extends React.Component {
                             <div className="tagsMiniContainer">
                                 <p className="header">
                                     Location <span
-                                        className={'characterCount ' +
-                                            (this.state.location.length >= 40 ? 'warn' : '')}
+                                        className={'characterCount ' + (this.state.location.length >= 40 ? 'warn' : '')}
                                     >
                                         {this.state.location.length}/{LOCATION_CHAR_LIMIT}
                                     </span>
@@ -282,10 +239,7 @@ class AddQuestion extends React.Component {
                             <div className="tagsMiniContainer">
                                 <p className="header">
                                     Question
-                                    <span
-                                        className={'characterCount ' +
-                                            (questionCharsLeft <= 0 ? 'warn' : '')}
-                                    >
+                                    <span className={'characterCount ' + (questionCharsLeft <= 0 ? 'warn' : '')} >
                                         ({questionCharsLeft} character{questionCharsLeft !== 1 && 's'} left)
                                     </span>
                                 </p>
@@ -299,10 +253,7 @@ class AddQuestion extends React.Component {
                                     : <p className="placeHolder text">Enter your location...</p>}
                             </div>
                             {this.state.stage > 40 ?
-                                <p
-                                    className="AddButton active"
-                                // onClick={() => this.handleJoinClick(addQuestion)}
-                                >
+                                <p className="AddButton active" onClick={() => this.handleJoinClick()} >
                                     Add My Question
                                 </p>
                                 : <p className="AddButton"> Add My Question </p>
@@ -319,7 +270,7 @@ class AddQuestion extends React.Component {
                             + '. Consider adding yourself to a later queue.'}
                         buttons={['Cancel Question', 'Add Anyway']}
                         cancelAction={this.handleXClick}
-                        // mainAction={() => this.handleJoinClick(addQuestion)}
+                        mainAction={() => this.handleJoinClick()}
                         displayShade={this.state.width < this.props.mobileBreakpoint}
                     />
                 }

@@ -66,5 +66,5 @@ interface FireTag {
     level: number;
     tagId: string;
     name: string;
-    parentTag: string;
+    parentTag?: firebase.firestore.DocumentReference;
 }
