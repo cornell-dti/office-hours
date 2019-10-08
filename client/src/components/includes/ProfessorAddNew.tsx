@@ -7,8 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 class ProfessorAddNew extends React.Component {
 
     props: {
-        courseId: number
-        refreshCallback: Function
+        courseId: string
         taOptions?: DropdownItemProps[]
     };
 
@@ -48,20 +47,17 @@ class ProfessorAddNew extends React.Component {
                             {text}
                         </button>
                     </div>
-                    {this.props.taOptions ?
-                        <ProfessorOHInfo
+                    {this.props.taOptions
+                        ? <ProfessorOHInfo
                             courseId={this.props.courseId}
                             isNewOH={true}
                             taOptions={this.props.taOptions}
                             toggleEdit={() => this.toggleEdit(false)}
                             taUserIdsDefault={[]}
-                            refreshCallback={this.props.refreshCallback}
                         />
-                        :
-                        <ProfessorTagInfo
+                        : <ProfessorTagInfo
                             isNew={true}
                             cancelCallback={() => this.toggleEdit(false)}
-                            refreshCallback={this.props.refreshCallback}
                             courseId={this.props.courseId}
                         />
                     }

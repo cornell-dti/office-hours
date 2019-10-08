@@ -9,13 +9,12 @@ class ProfessorCalendarRow extends React.Component {
     props: {
         dayNumber: number,
         sessions: AppSession[],
-        courseId: number,
+        courseId: string,
         taOptions: DropdownItemProps[],
         isExpanded: boolean[],
         handleEditToggle: Function,
         updateDeleteInfo: Function,
         updateDeleteVisible: Function,
-        refreshCallback: Function
     };
 
     constructor(props: {}) {
@@ -82,10 +81,7 @@ class ProfessorCalendarRow extends React.Component {
                             </td>
                         </tr>
                         <tr>
-                            <td
-                                colSpan={5}
-                                className={'ExpandedEdit ' + this.props.isExpanded[i]}
-                            >
+                            <td colSpan={5} className={'ExpandedEdit ' + this.props.isExpanded[i]} >
                                 <ProfessorOHInfo
                                     key={this.props.sessions[i].sessionId}
                                     session={this.props.sessions[i]}
@@ -93,7 +89,6 @@ class ProfessorCalendarRow extends React.Component {
                                     isNewOH={false}
                                     taOptions={this.props.taOptions}
                                     toggleEdit={() => this.toggleEdit(i)}
-                                    refreshCallback={this.props.refreshCallback}
                                 />
                                 <button
                                     className="Bottom Delete"
