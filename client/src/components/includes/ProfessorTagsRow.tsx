@@ -6,11 +6,10 @@ import ProfessorTagInfo from './ProfessorTagInfo';
 class ProfessorTagsRow extends React.Component {
 
     props: {
-        tags: AppTag[]
+        tags: FireTag[]
         isExpanded: boolean[]
         handleEditToggle: Function
-        courseId: number
-        refreshCallback: Function
+        courseId: string
     };
 
     constructor(props: {}) {
@@ -25,9 +24,10 @@ class ProfessorTagsRow extends React.Component {
     render() {
         var rowPair = this.props.tags.map(
             (row, i) => {
-                var childTags: { tagByChildId: AppTag }[] | undefined = [];
-                childTags = row.tagRelationsByParentId &&
-                    row.tagRelationsByParentId.nodes.filter((childTag) => childTag.tagByChildId.activated);
+                let childTags: { tagByChildId: AppTag }[] | undefined = [];
+                // RYAN_TOOD
+                // childTags = row.tagRelationsByParentId &&
+                //     row.tagRelationsByParentId.nodes.filter((childTag) => childTag.tagByChildId.activated);
                 return (
                     <tbody
                         className={'Pair ' + this.props.isExpanded[i] + ' ' + (i % 2 === 0 ? 'odd' : 'even')}
@@ -57,7 +57,7 @@ class ProfessorTagsRow extends React.Component {
                                     </span>
                                 )}
                             </td>
-                            <td>{row.activated ? 'Active' : 'Inactive'}</td>
+                            <td>{row.active ? 'Active' : 'Inactive'}</td>
                             <td>
                                 <button className="Edit" onClick={() => this.toggleEdit(i)}>
                                     <Icon name="pencil" />
@@ -74,7 +74,6 @@ class ProfessorTagsRow extends React.Component {
                                     cancelCallback={() => this.toggleEdit(i)}
                                     tag={row}
                                     courseId={this.props.courseId}
-                                    refreshCallback={this.props.refreshCallback}
                                 />
                             </td>
                         </tr>

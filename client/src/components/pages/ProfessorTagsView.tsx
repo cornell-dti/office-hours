@@ -1,159 +1,131 @@
 import * as React from 'react';
 import ProfessorTagsTable from '../includes/ProfessorTagsTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
-// import TopBar from '../includes/TopBar';
+import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
-import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
-import { Redirect } from 'react-router';
-import { Loader } from 'semantic-ui-react';
+// import { Redirect } from 'react-router';
+// import { Loader } from 'semantic-ui-react';
+import { useMyUser, useCourse, useQuery } from 'src/firehooks';
+import { firestore } from 'src/firebase';
 
-const METADATA_QUERY = gql`
-query GetMetadata($courseId: Int!) {
-    apiGetCurrentUser {
-        nodes {
-            computedName
-            computedAvatar
-            courseUsersByUserId(condition:{courseId:$courseId}) {
-                nodes {
-                    role
-                }
-            }
-        }
-    }
-    courseByCourseId(courseId: $courseId) {
-        code
-    }
-}`;
+// const METADATA_QUERY = gql`
+// query GetMetadata($courseId: Int!) {
+//     apiGetCurrentUser {
+//         nodes {
+//             computedName
+//             computedAvatar
+//             courseUsersByUserId(condition:{courseId:$courseId}) {
+//                 nodes {
+//                     role
+//                 }
+//             }
+//         }
+//     }
+//     courseByCourseId(courseId: $courseId) {
+//         code
+//     }
+// }`;
 
-const TAGS_QUERY = gql`
-query FindTagsByCourse($courseId: Int!) {
-    courseByCourseId(courseId: $courseId) {
-        code
-        tagsByCourseId(condition:{level:1}) {
-            nodes {
-              	tagId
-                name
-                level
-                activated
-              	tagRelationsByParentId {
-                  nodes {
-                    tagByChildId {
-                      tagId
-                      name
-                      level
-                      activated
-                    }
-                  }
-                }
-            }
-        }
-    }
-}
-`;
+// const TAGS_QUERY = gql`
+// query FindTagsByCourse($courseId: Int!) {
+//     courseByCourseId(courseId: $courseId) {
+//         code
+//         tagsByCourseId(condition:{level:1}) {
+//             nodes {
+//               	tagId
+//                 name
+//                 level
+//                 activated
+//               	tagRelationsByParentId {
+//                   nodes {
+//                     tagByChildId {
+//                       tagId
+//                       name
+//                       level
+//                       activated
+//                     }
+//                   }
+//                 }
+//             }
+//         }
+//     }
+// }
+// `;
 
-interface ProfessorMetadataData {
-    apiGetCurrentUser: {
-        nodes: [AppUserRole]
+// type WrapProps<T> = T & { view: React.ReactElement<T> };
+
+// const WrapProfessorTagsView = <WrapProps>(props) => console.log(props);
+
+function withData<T extends { match: { params: { courseId: string; } } }>
+    (Component: React.ComponentType<T>) {
+    return (props: T) => {
+        const courseId = props.match.params.courseId;
+        const user = useMyUser();
+        const course = useCourse(courseId);
+
+        const getQuery = () => firestore
+            .collection('tags')
+            // RYAN_TODO filter based on today's date.
+            .where('courseId', '==', firestore.doc('courses/' + courseId));
+
+        const [tags, setQuery] = useQuery<FireSession>(getQuery(), 'tagId');
+        // Update query when course id prop changes
+        React.useEffect(() => setQuery(getQuery()), [courseId]);
+
+        return (<Component {...props} user={user} course={course} tags={tags} />);
     };
-    courseByCourseId: {
-        code: string
-    };
 }
 
-interface ProfessorTagsData {
-    courseByCourseId: {
-        tagsByCourseId: {
-            nodes: [AppTag]
-        }
-    };
-}
-
-interface MetadataVariables {
-    courseId: number;
-}
-
-interface TagsVariables {
-    courseId: number;
-}
-
-class ProfessorTagsDataQuery extends Query<ProfessorTagsData, TagsVariables> { }
-class ProfessorMetadataDataQuery extends Query<ProfessorMetadataData, MetadataVariables> { }
-
-class ProfessorView extends React.Component {
+class ProfessorTagsView extends React.Component {
     props: {
         match: {
             params: {
                 courseId: string;
             }
         }
+        user?: FireUser,
+        course?: FireCourse,
+        tags: FireTag[]
     };
 
     constructor(props: {}) {
         super(props);
     }
 
+    // if (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role !== 'professor') {
+    //     return <Redirect to={'/course/' + this.props.match.params.courseId} />;
+    // }
     render() {
-        let courseId = parseInt(this.props.match.params.courseId, 10);
+        let courseId = this.props.match.params.courseId;
         return (
             <div className="ProfessorView">
-                <ProfessorMetadataDataQuery query={METADATA_QUERY} variables={{ courseId: courseId }} >
-                    {({ loading, data }) => {
-                        var courseCode: string = 'Loading...';
-                        if (!loading && data) {
-                            courseCode = data.courseByCourseId.code;
-                            if (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role !== 'professor') {
-                                return <Redirect to={'/course/' + this.props.match.params.courseId} />;
-                            }
-                        }
-                        return (
-                            <React.Fragment>
-                                <ProfessorSidebar
-                                    courseId={courseId}
-                                    code={courseCode}
-                                    selected={1}
-                                />
-                                {/* RYAN_TODO */}
-                                {/* {data && data.apiGetCurrentUser &&
-                                    <TopBar
-                                        courseId={courseId}
-                                        user={data.apiGetCurrentUser.nodes[0]}
-                                        context="professor"
-                                        role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
-                                    />
-                                } */}
-                            </React.Fragment>
-                        );
-                    }}
-                </ProfessorMetadataDataQuery>
+                <ProfessorSidebar
+                    courseId={courseId}
+                    code={this.props.course ? this.props.course.code : 'Loading...'}
+                    selected={1}
+                />
+                {this.props.user && <TopBar
+                    courseId={this.props.match.params.courseId}
+                    user={this.props.user}
+                    context="professor"
+                    role="professor"
+                />}
 
-                <ProfessorTagsDataQuery query={TAGS_QUERY} variables={{ courseId: courseId }} >
-                    {({ loading, data, refetch }) => {
-                        return (
-                            <section className="rightOfSidebar">
-                                <div className="main">
-                                    <ProfessorAddNew
-                                        courseId={courseId}
-                                        refreshCallback={refetch}
-                                    />
-                                    {loading && <Loader active={true} content={'Loading...'} />}
-                                    {!loading && data && data.courseByCourseId.tagsByCourseId.nodes.length > 0 &&
-                                        <div className="Calendar">
-                                            <ProfessorTagsTable
-                                                tags={data.courseByCourseId.tagsByCourseId.nodes}
-                                                refreshCallback={refetch}
-                                                courseId={courseId}
-                                            />
-                                        </div>
-                                    }
-                                </div>
-                            </section>
-                        );
-                    }}
-                </ProfessorTagsDataQuery>
+                <section className="rightOfSidebar">
+                    <div className="main">
+                        <ProfessorAddNew courseId={courseId} />
+                        {/* {loading && <Loader active={true} content={'Loading...'} />} */}
+                        <div className="Calendar">
+                            <ProfessorTagsTable
+                                tags={this.props.tags}
+                                courseId={courseId}
+                            />
+                        </div>
+                    </div>
+                </section>
             </div>
         );
     }
 }
 
-export default ProfessorView;
+export default withData(ProfessorTagsView);

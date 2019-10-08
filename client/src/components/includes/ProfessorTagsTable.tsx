@@ -2,9 +2,8 @@ import * as React from 'react';
 import ProfessorTagsRow from './ProfessorTagsRow';
 class ProfessorTagsTable extends React.Component {
     props: {
-        tags: AppTag[]
-        refreshCallback: Function
-        courseId: number
+        tags: FireTag[]
+        courseId: string
     };
 
     state: {
@@ -59,7 +58,6 @@ class ProfessorTagsTable extends React.Component {
                             tags={this.props.tags}
                             isExpanded={this.state.isExpanded}
                             handleEditToggle={this.toggleEdit}
-                            refreshCallback={this.props.refreshCallback}
                             courseId={this.props.courseId}
                         />
                     </table>

@@ -7,7 +7,7 @@ import { DropdownItemProps } from 'semantic-ui-react';
 
 class ProfessorCalendarTable extends React.Component {
     props: {
-        courseId: number,
+        courseId: string,
         data: {
             nodes: [AppSession]
         },
@@ -127,7 +127,6 @@ class ProfessorCalendarTable extends React.Component {
                             handleEditToggle={this.toggleEdit}
                             updateDeleteInfo={this.updateDeleteInfo}
                             updateDeleteVisible={this.updateDeleteVisible}
-                            refreshCallback={this.props.refreshCallback}
                         />
                     </React.Fragment>
                 );
