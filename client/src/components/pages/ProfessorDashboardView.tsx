@@ -1,5 +1,5 @@
 import * as React from 'react';
-import TopBar from '../includes/TopBar';
+// import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import TagsBarChart from '../includes/TagsBarChart';
 import gql from 'graphql-tag';
@@ -39,7 +39,7 @@ query GetMetadata($courseId: Int!, $level: Int!) {
                         }
                     }
                 }
-            }     
+            }
         }
     }
 }`;
@@ -97,8 +97,9 @@ class ProfessorDashboardView extends React.Component {
         };
     }
 
-    public handleUpdateCategory = (event: React.SyntheticEvent<HTMLElement, Event>,
-                                   data: DropdownProps): void => {
+    public handleUpdateCategory = (
+        event: React.SyntheticEvent<HTMLElement, Event>,
+        data: DropdownProps): void => {
         let newCategoryTag = this.state.categories.find((c) => c.category === data.value);
         this.setState({ currentCategory: newCategoryTag });
     }
@@ -198,14 +199,15 @@ class ProfessorDashboardView extends React.Component {
                                     code={courseCode}
                                     selected={2}
                                 />
-                                {data && data.apiGetCurrentUser &&
+                                {/* RYAN_TODO */}
+                                {/* {data && data.apiGetCurrentUser &&
                                     <TopBar
                                         courseId={courseId}
                                         user={data.apiGetCurrentUser.nodes[0]}
                                         context="professor"
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
                                     />
-                                }
+                                } */}
                                 <section className="rightOfSidebar">
                                     <div className="main">
                                         <div className="Category-dropdown-container">

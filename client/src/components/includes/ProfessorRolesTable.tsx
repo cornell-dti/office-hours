@@ -1,18 +1,19 @@
 import * as React from 'react';
-import { Dropdown, Table } from 'semantic-ui-react';
+// import { Dropdown, Table } from 'semantic-ui-react';
+import { Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
 
-import gql from 'graphql-tag';
-import { Mutation } from 'react-apollo';
+// import gql from 'graphql-tag';
+// import { Mutation } from 'react-apollo';
 
-const UPDATE_ROLE = gql`
-    mutation UpdateRole($_courseId: Int!, $_userId: Int!, $_role: String!) {
-        apiUpdateCourseUserRole(input:{_courseId: $_courseId, _userId: $_userId, _role: $_role})
-        {
-            clientMutationId
-        }
-    }
-`;
+// const UPDATE_ROLE = gql`
+//     mutation UpdateRole($_courseId: Int!, $_userId: Int!, $_role: String!) {
+//         apiUpdateCourseUserRole(input:{_courseId: $_courseId, _userId: $_userId, _role: $_role})
+//         {
+//             clientMutationId
+//         }
+//     }
+// `;
 
 class RoleDropdown extends React.Component<{
     default: string;
@@ -25,29 +26,32 @@ class RoleDropdown extends React.Component<{
 
     render() {
         return (
-            <Mutation mutation={UPDATE_ROLE}>
-                {(updateRole, { loading, error }) =>
-                    <Dropdown
-                        loading={loading}
-                        error={error && true}
-                        text={this.state.value}
-                        options={[
-                            { key: 1, text: 'Student', value: 'student' },
-                            { key: 2, text: 'TA', value: 'ta' },
-                            { key: 3, text: 'Professor', value: 'professor' },
-                        ]}
-                        onChange={(e, value) => {
-                            this.setState({ value: value.value });
-                            updateRole({
-                                variables: {
-                                    _courseId: this.props.courseId,
-                                    _userId: this.props.userId,
-                                    _role: value.value
-                                }
-                            });
-                        }}
-                    />}
-            </Mutation>);
+            <span>RYAN_TODO fix this</span>
+        );
+        // <Mutation mutation={UPDATE_ROLE}>
+        //     {/* //@ts-ignore */}
+        //     {(updateRole: Function, { loading, error }) =>
+        //         <Dropdown
+        //             loading={loading}
+        //             error={error && true}
+        //             text={this.state.value}
+        //             options={[
+        //                 { key: 1, text: 'Student', value: 'student' },
+        //                 { key: 2, text: 'TA', value: 'ta' },
+        //                 { key: 3, text: 'Professor', value: 'professor' },
+        //             ]}
+        //             onChange={(e, value) => {
+        //                 this.setState({ value: value.value });
+        //                 updateRole({
+        //                     variables: {
+        //                         _courseId: this.props.courseId,
+        //                         _userId: this.props.userId,
+        //                         _role: value.value
+        //                     }
+        //                 });
+        //             }}
+        //         />}
+        // </Mutation>);
     }
 
 }

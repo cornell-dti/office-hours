@@ -10,7 +10,7 @@ import 'react-dates/initialize';
 import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import * as moment from 'moment';
-import TopBar from '../includes/TopBar';
+// import TopBar from '../includes/TopBar';
 
 const METADATA_QUERY = gql`
 query GetMetadata($courseId: Int!, $startDate: Datetime!, $endDate: Datetime!) {
@@ -280,14 +280,15 @@ class ProfessorPeopleView extends React.Component {
                                     code={courseCode}
                                     selected={3}
                                 />
-                                {data && data.apiGetCurrentUser &&
+                                {/* RYAN_TODO */}
+                                {/* {data && data.apiGetCurrentUser &&
                                     <TopBar
                                         courseId={courseId}
                                         user={data.apiGetCurrentUser.nodes[0]}
                                         context="professor"
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
                                     />
-                                }
+                                } */}
                                 <section className="rightOfSidebar">
                                     <div className="main">
                                         <div className="Date-picker-container">

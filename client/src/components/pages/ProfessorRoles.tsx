@@ -1,5 +1,5 @@
 import * as React from 'react';
-import TopBar from '../includes/TopBar';
+// import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
 import gql from 'graphql-tag';
@@ -87,14 +87,15 @@ class ProfessorDashboardView extends React.Component {
                                     code={courseCode}
                                     selected={4}
                                 />
-                                {data && data.apiGetCurrentUser &&
+                                {/* RYAN_TODO */}
+                                {/* {data && data.apiGetCurrentUser &&
                                     <TopBar
                                         courseId={courseId}
                                         user={data.apiGetCurrentUser.nodes[0]}
                                         context="professor"
                                         role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
                                     />
-                                }
+                                } */}
                                 <section className="rightOfSidebar">
                                     <div className="main">
                                         {data && data.courseByCourseId &&

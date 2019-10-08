@@ -298,7 +298,7 @@ class ProfessorTagInfo extends React.Component {
                     </button>
                     {this.props.isNew ?
                         <Mutation mutation={CREATE_ASSIGNMENT} onCompleted={() => this.props.refreshCallback()}>
-                            {(CreateAssignment) =>
+                            {(CreateAssignment: Function) =>
                                 <button
                                     className="Bottom Edit"
                                     onClick={() => {
@@ -312,7 +312,7 @@ class ProfessorTagInfo extends React.Component {
                         </Mutation>
                         :
                         <Mutation mutation={EDIT_ASSIGNMENT} onCompleted={() => this.props.refreshCallback()}>
-                            {(EditAssignment) =>
+                            {(EditAssignment: Function) =>
                                 <button
                                     className="Bottom Edit"
                                     onClick={() => {

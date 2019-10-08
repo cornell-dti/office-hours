@@ -3,10 +3,9 @@ import * as React from 'react';
 class SelectedTags extends React.PureComponent {
 
     props: {
-        tag: string,
+        tag: FireTag,
         isSelected: boolean,
-        onClick: Function | null,
-        level: number
+        onClick?: Function,
     };
 
     _onClick = () => {
@@ -19,11 +18,11 @@ class SelectedTags extends React.PureComponent {
         return (
             <p
                 className={['tag',
-                    this.props.level === 1 ? 'primaryTag' : 'secondaryTag',
+                    this.props.tag.level === 1 ? 'primaryTag' : 'secondaryTag',
                     this.props.isSelected && 'selectedTag'].join(' ')}
                 onClick={this._onClick}
             >
-                {this.props.tag}
+                {this.props.tag.name}
             </p>
         );
     }

@@ -114,7 +114,7 @@ class ProfessorOHInfoDelete extends React.Component {
                 </div>
                 {this.state.isChecked ?
                     <Mutation mutation={DELETE_SERIES} onCompleted={() => this.props.refreshCallback()}>
-                        {(DeleteSeries) =>
+                        {(DeleteSeries: Function) =>
                             <button
                                 className="Delete"
                                 onClick={(e) => {
@@ -129,7 +129,7 @@ class ProfessorOHInfoDelete extends React.Component {
                         }
                     </Mutation> :
                     <Mutation mutation={DELETE_SESSION} onCompleted={() => this.props.refreshCallback()}>
-                        {(DeleteSession) =>
+                        {(DeleteSession: Function) =>
                             <button
                                 className="Delete"
                                 onClick={(e) => {
