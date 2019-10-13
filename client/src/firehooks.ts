@@ -132,10 +132,10 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
             lastActivityAt
         })
             .then(function () {
-                console.log(lastActivityAt);
+                // Successful upload
             })
             .catch(function (error: string) {
-                console.error('Error writing document: ', error);
+                // Unsuccessful upload
             });
     }
 };
