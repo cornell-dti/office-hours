@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-d
 import * as ReactGA from 'react-ga';
 // import * as moment from 'moment';
 
-import { auth } from '../firebase';
+import { auth, firestore } from '../firebase';
 
 import LoginView from './pages/LoginView';
 import ProfessorView from './pages/ProfessorView';
@@ -14,6 +14,7 @@ import ProfessorDashboardView from './pages/ProfessorDashboardView';
 import ProfessorPeopleView from './pages/ProfessorPeopleView';
 import { Analytics } from './includes/Analytics';
 import { Loader } from 'semantic-ui-react';
+import { userUpload } from '../firehooks';
 
 ReactGA.initialize('UA-123790900-1');
 
@@ -40,6 +41,7 @@ const PrivateRoute = ({ component, ...rest }: any) => {
 
     auth.onAuthStateChanged((user) => {
         user ? setIsLoggedIn(2) : setIsLoggedIn(1);
+        userUpload(user, firestore);
     });
 
     if (isLoggedIn === 0) {
