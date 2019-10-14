@@ -5,7 +5,7 @@ const googleLogo = require('../../media/googleLogo.svg');
 
 import firebase, { app, firestore } from '../../firebase';
 import { useHistory } from 'react-router-dom';
-import { userUpload } from '../../firehooks';
+import { userUpload } from '../../firebasefunctions';
 
 const LoginView: React.FC = () => {
     const [showContact, setShowContact] = React.useState(false);

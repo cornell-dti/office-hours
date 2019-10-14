@@ -14,7 +14,7 @@ import ProfessorDashboardView from './pages/ProfessorDashboardView';
 import ProfessorPeopleView from './pages/ProfessorPeopleView';
 import { Analytics } from './includes/Analytics';
 import { Loader } from 'semantic-ui-react';
-import { userUpload } from '../firehooks';
+import { userUpload } from '../firebasefunctions';
 
 ReactGA.initialize('UA-123790900-1');
 
