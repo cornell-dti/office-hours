@@ -103,39 +103,3 @@ export const useMyUser = () => {
 
     return user;
 };
-
-export const userUpload = (user: firebase.User | null, db: firebase.firestore.Firestore) => {
-    if (user != null) {
-        var uid = user.uid;
-        var email = user.email;
-        var displayName = user.displayName;
-        var photoUrl = user.photoURL;
-        var metaData = user.metadata;
-        var createdAt = metaData.creationTime;
-        var lastActivityAt = metaData.lastSignInTime;
-        var stringSplit = 0;
-        var firstName = displayName;
-        var lastName = '';
-        if (displayName != null) {
-            stringSplit = displayName.indexOf(' ');
-            if (stringSplit !== -1) {
-                firstName = displayName.substring(0, stringSplit);
-                lastName = displayName.substring(stringSplit + 1);
-            }
-        }
-        db.collection('users').doc(uid).set({
-            email,
-            firstName,
-            lastName,
-            photoUrl,
-            createdAt,
-            lastActivityAt
-        })
-            .then(function () {
-                // Successful upload
-            })
-            .catch(function (error: string) {
-                // Unsuccessful upload
-            });
-    }
-};
