@@ -18,14 +18,13 @@ const LoginView: React.FC = () => {
         authProvider.addScope('email');
         authProvider.addScope('profile');
 
-        return app
-            .auth()
-            .signInWithPopup(authProvider)
-            .then((response: {}) => {
-                // RYAN_TODO Create or update user
-                console.log(response);
-                history.push('/');
-            });
+        app.auth().signInWithRedirect(authProvider);
+
+        return app.auth().getRedirectResult().then((response: {}) => {
+            // RYAN_TODO Create or update user
+            console.log(response);
+            history.push('/');
+        });
     };
 
     if (showContact) {
