@@ -138,7 +138,7 @@ app.get('/__auth',
     passport.authenticate('google', {
         scope: ['profile', 'email'],
         // @ts-ignore: Hosted domain is used by the Google strategy, but not allowed in passport's types
-        hostedDomain: "cornell.edu",
+        // TODO: ** !DO NOT DEPLOY TO PRODUCTION! temporarily disabled for Kevin Kidwell ** hostedDomain: "cornell.edu",
         failureRedirect: '/login'
     })
 )
