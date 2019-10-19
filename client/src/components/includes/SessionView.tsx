@@ -23,6 +23,7 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
             }
             questionsByAskerId {
                 nodes {
+                    questionId
                     timeEntered
                     status
                     sessionBySessionId {
@@ -240,6 +241,9 @@ class SessionView extends React.Component {
                             .filter((question) => question.status === 'unresolved')
                             .filter((question) => new Date(question.sessionBySessionId.endTime) >= new Date());
 
+                        // contains all the question ids from user's other in progess sessions
+                        var otherQuestionsId = otherQuestions.map((q) => q.questionId);
+
                         const userQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes;
 
                         const lastAskedQuestion = userQuestions.length > 0 ?
@@ -308,7 +312,6 @@ class SessionView extends React.Component {
                                                 }
                                             </Mutation>
                                         }
-                                        {/* {console.log('questions associated w/ other sessions', otherQuestions)} */}
                                         <SessionQuestionsContainer
                                             isTA={data.apiGetCurrentUser.nodes[0].
                                                 courseUsersByUserId.nodes[0].role !== 'student'}
@@ -329,7 +332,7 @@ class SessionView extends React.Component {
                                             openingTime={this.getOpeningTime(
                                                 data.sessionBySessionId, data.courseByCourseId.queueOpenInterval)}
                                             haveAnotherQuestion={otherQuestions.length > 0}
-                                        // need to pass in more info as props: otherQuestions
+                                            otherQuestionsId={otherQuestionsId}
                                         />
                                     </React.Fragment>
                                 }

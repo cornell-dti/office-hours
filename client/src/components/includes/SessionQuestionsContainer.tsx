@@ -3,17 +3,17 @@ import SessionQuestion from './SessionQuestion';
 import { Icon } from 'semantic-ui-react';
 import * as moment from 'moment';
 
-// import gql from 'graphql-tag';
-// import { Query } from 'react-apollo';
+import gql from 'graphql-tag';
+import { Mutation } from 'react-apollo';
 
-// const LEAVE_QUEUE = gql`
-// mutation UndoQuestion($questionId: Int!, $status: String!) {
-//     updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeAddressed: null, answererId: null},
-//         questionId: $questionId}) {
-//         clientMutationId
-//     }
-// }
-// `;
+const LEAVE_QUEUE = gql`
+mutation UndoQuestion($questionId: Int!, $status: String!) {
+    updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeAddressed: null, answererId: null},
+        questionId: $questionId}) {
+        clientMutationId
+    }
+}
+`;
 class SessionQuestionsContainer extends React.Component {
     props: {
         isTA: boolean,
@@ -26,7 +26,7 @@ class SessionQuestionsContainer extends React.Component {
         isPast: boolean,
         openingTime: Date,
         haveAnotherQuestion: boolean,
-        // add other info passed in as props
+        otherQuestionsId: number[],
     };
 
     state: {
@@ -46,14 +46,18 @@ class SessionQuestionsContainer extends React.Component {
         }
     }
 
-    // handleLeaveQueue = (leaveQueue: Function, refetch: Function) => {
-    //     leaveQueue({
-    //         variables: {
-    //             questionId: null,
-    //             status: 'retracted'
-    //         }
-    //     });
-    // }
+    dismissLeaveQueue = () => {
+        this.props.refetch();
+    }
+
+    handleLeaveQueue = (leaveQueue: Function, refetch: Function) => {
+        leaveQueue({
+            variables: {
+                questionId: this.props.otherQuestionsId[0],
+                status: 'retracted'
+            }
+        });
+    }
 
     constructor(props: {}) {
         super(props);
@@ -110,25 +114,24 @@ class SessionQuestionsContainer extends React.Component {
                     <React.Fragment>
                         <div className="SessionClosedMessage">
                             You are holding a spot in another active queue.
-                            To join this queue, please retract your question from the other queue!
+                            To join this queue, please
 
-                            {/* <Mutation mutation={LEAVE_QUEUE} onCompleted={this.dismissUndo}>
+                            <Mutation mutation={LEAVE_QUEUE} onCompleted={this.dismissLeaveQueue}>
                                 {(leaveQueue) =>
                                     <div className="leaveQueueContainer">
                                         <p className="leaveQueueText">
-                                            {leaveQueueText}
                                             <span
                                                 className="leaveQueue"
                                                 onClick={() =>
-                                                    this.handleLeaveQueue(leaveQueue, refetch)
+                                                    this.handleLeaveQueue(leaveQueue, this.props.refetch)
                                                 }
                                             >
-                                            Leave Other Queue
+                                                retract your question from the other queue!
                                             </span>
                                         </p>
                                     </div>
                                 }
-                            </Mutation> */}
+                            </Mutation>
                         </div>
                         <div className="SessionJoinButton disabled">
                             <p><Icon name="plus" /> Join the Queue</p>
