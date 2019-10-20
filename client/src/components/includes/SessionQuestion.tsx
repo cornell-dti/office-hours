@@ -3,7 +3,6 @@ import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
-const QMeLogo = require('../../media/QLogo2.svg');
 
 import SelectedTags from './SelectedTags';
 
@@ -64,7 +63,6 @@ class SessionQuestion extends React.Component {
     showDotMenu: boolean;
     undoQuestionIdDontKnow?: number;
     undoName?: string;
-    showFeedback: boolean;
   };
 
   constructor(props: {}) {
@@ -75,8 +73,7 @@ class SessionQuestion extends React.Component {
       isEditingLocation: false,
       showDotMenu: false,
       undoQuestionIdDontKnow: undefined,
-      undoName: undefined,
-      showFeedback: false
+      undoName: undefined
     };
   }
 
@@ -161,19 +158,6 @@ class SessionQuestion extends React.Component {
   render() {
     var question = this.props.question;
     const studentCSS = this.props.isTA ? '' : 'Student';
-    // let isFeedback = this.state.showFeedback ? ' feedback' : '';
-    // if (this.props.index >= 0) {
-    //   return (
-    //     <section className={'topPanel'}>
-    //       <img src={QMeLogo} className="QMeLogo" />
-    //       <h2>Have an opinion about Queue Me In?</h2>
-    //       <p>
-    //         Let us know how your experience on Queue Me In is going.{' '}
-    //         <br>Your feedback is incredibly valuable. </br>
-    //       </p>
-    //     </section>
-    //   );
-    // }
 
     return (
       <div className="QueueQuestions">
@@ -187,44 +171,7 @@ class SessionQuestion extends React.Component {
             ? '•••'
             : this.getDisplayText(this.props.index)}
         </p>
-        {/* <section className={'topPanel'}>
-          <img src={QMeLogo} className="QMeLogo" />
-          <h2>Have an opinion about Queue Me In?</h2>
-          <p>
-            Let us know how your experience on Queue Me In is going.{' '}
-            <br>Your feedback is incredibly valuable. </br>
-          </p>
-        </section> */}
-        <div className="feedbackModal">
-          <div className={'feedbackShade'} />
-          <div className="Feedback">
-            {!this.state.showFeedback && (
-              <React.Fragment>
-                <section className={'topPanel'}>
-                  <img src={QMeLogo} className="QMeLogo" />
-                  <h2>Have an opinion about Queue Me In?</h2>
-                  {/* <p>
-                    Let us know how your experience on Queue Me In is going.{' '}
-                    <br>Your feedback is incredibly valuable. </br>
-                  </p> */}
-                </section>
-                <section className="bottomPanel">
-                  <a className="feedbackButton" href="https://google.com">
-                    Send Feedback
-                  </a>
-                </section>
-                {/* <section classname={'bottomPanel'}>
-                  <a
-                    className="feedbackButton"
-                    href="https://google.com"
-                  >
-                    Send Feedback
-                  </a>
-                </section> */}
-              </React.Fragment>
-            )}
-          </div>
-        </div>
+
         {this.props.includeRemove && (
           <div className="LocationPin">
             <Icon
