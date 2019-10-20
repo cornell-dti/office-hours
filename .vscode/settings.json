@@ -1,5 +1,0 @@
-{
-    "git.ignoreLimitWarning": true,
-    "tslint.autoFixOnSave": true,
-    "python.linting.pylintEnabled": true
-}
