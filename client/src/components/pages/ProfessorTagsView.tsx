@@ -57,12 +57,12 @@ class ProfessorTagsView extends React.Component {
                     code={this.props.course ? this.props.course.code : 'Loading...'}
                     selected={1}
                 />
-                {this.props.user && <TopBar
+                <TopBar
                     courseId={this.props.match.params.courseId}
                     user={this.props.user}
                     context="professor"
                     role="professor"
-                />}
+                />
 
                 <section className="rightOfSidebar">
                     <div className="main">
