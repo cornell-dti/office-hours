@@ -102,105 +102,101 @@ class SessionQuestionsContainer extends React.Component {
         // console.log('questions associated w/ this session', questions);
 
         return (
-            <div className="SessionQuestionsContainer splitQuestions" >
-                {!this.props.isTA && myQuestion && myQuestion.length === 0 && this.props.isOpen
-                    && !this.props.haveAnotherQuestion &&
-                    <div className="SessionJoinButton" onClick={() => this.props.handleJoinClick()}>
-                        <p><Icon name="plus" /> Join the Queue</p>
-                    </div>
-                }
+            <React.Fragment>
                 {!this.props.isTA && myQuestion && myQuestion.length === 0 && this.props.isOpen
                     && this.props.haveAnotherQuestion &&
                     <React.Fragment>
-                        <div className="SessionClosedMessage">
-                            You are holding a spot in another active queue.
-
+                        <div className="SessionLeaveQueueMessage">
                             <Mutation mutation={LEAVE_QUEUE} onCompleted={this.dismissLeaveQueue}>
                                 {(leaveQueue) =>
-                                    <div className="leaveQueueContainer">
-                                        <p className="leaveQueueText">
-                                            <span
-                                                className="leaveQueue"
-                                                onClick={() =>
-                                                    this.handleLeaveQueue(leaveQueue, this.props.refetch)
-                                                }
-                                            >
-                                                To join this queue, retract your question <b>here.</b>
-                                            </span>
-                                        </p>
-                                    </div>
+                                    <span
+                                        className="leaveQueue"
+                                        onClick={() =>
+                                            this.handleLeaveQueue(leaveQueue, this.props.refetch)
+                                        }
+                                    >
+                                        You have already joined a queue! <span className="removeQuestionLeaveQueue">
+                                            Remove your question to join another queue.
+                                        </span>
+                                    </span>
                                 }
                             </Mutation>
                         </div>
-                        <div className="SessionJoinButton disabled">
+                    </React.Fragment>
+                }
+                <div className="SessionQuestionsContainer splitQuestions" >
+                    {!this.props.isTA && myQuestion && myQuestion.length === 0 && this.props.isOpen
+                        && !this.props.haveAnotherQuestion &&
+                        <div className="SessionJoinButton" onClick={() => this.props.handleJoinClick()}>
                             <p><Icon name="plus" /> Join the Queue</p>
                         </div>
-                    </React.Fragment>
-                }
-                {questions && questions.length > 0 && this.props.isPast &&
-                    <div className="SessionClosedMessage">
-                        This queue has closed and is no longer accepting new questions.
+                    }
+                    {questions && questions.length > 0 && this.props.isPast &&
+                        <div className="SessionClosedMessage">
+                            This queue has closed and is no longer accepting new questions.
                     </div>
-                }
-                {questions && myQuestion && myQuestion.length > 0 &&
-                    <div className="User">
-                        <p className="QuestionHeader">My Question</p>
-                        <SessionQuestion
-                            key={myQuestion[0].questionId}
-                            question={myQuestion[0]}
-                            index={questions.indexOf(myQuestion[0])}
-                            isTA={this.props.isTA}
-                            includeRemove={true}
-                            includeBookmark={false}
-                            triggerUndo={this.props.triggerUndo}
-                            refetch={this.props.refetch}
-                            isPast={this.props.isPast}
-                            myUserId={this.props.myUserId}
-                        />
-                        <p className="Queue">Queue</p>
-                    </div>
-                }
-                {questions && questions.length > 0 &&
-                    questions.map((question, i: number) => (
-                        <SessionQuestion
-                            key={question.questionId}
-                            question={question}
-                            index={i}
-                            isTA={this.props.isTA}
-                            includeRemove={false}
-                            includeBookmark={question.userByAskerId.userId === this.props.myUserId}
-                            triggerUndo={this.props.triggerUndo}
-                            refetch={this.props.refetch}
-                            isPast={this.props.isPast}
-                            myUserId={this.props.myUserId}
-                        />
-                    ))
-                }
-                {questions && questions.length === 0 &&
-                    <React.Fragment>
-                        <p className="noQuestionsHeading">
-                            {this.props.isOpen ? 'Queue Currently Empty' :
-                                this.props.isPast ? 'Queue Has Closed' : 'Queue Not Open Yet'}
-                        </p>
-                        {!this.props.isOpen ?
-                            (
-                                this.props.isPast ?
-                                    <p className="noQuestionsWarning">This office hour session has ended.</p> :
-                                    <p className="noQuestionsWarning">
-                                        Please check back at {moment(this.props.openingTime).format('h:mm A')}
-                                        {
-                                            moment().startOf('day') === moment(this.props.openingTime).startOf('day') ?
-                                                '' : (' on ' + moment(this.props.openingTime).format('MMM D'))
-                                        }!
+                    }
+                    {questions && myQuestion && myQuestion.length > 0 &&
+                        <div className="User">
+                            <p className="QuestionHeader">My Question</p>
+                            <SessionQuestion
+                                key={myQuestion[0].questionId}
+                                question={myQuestion[0]}
+                                index={questions.indexOf(myQuestion[0])}
+                                isTA={this.props.isTA}
+                                includeRemove={true}
+                                includeBookmark={false}
+                                triggerUndo={this.props.triggerUndo}
+                                refetch={this.props.refetch}
+                                isPast={this.props.isPast}
+                                myUserId={this.props.myUserId}
+                            />
+                            <p className="Queue">Queue</p>
+                        </div>
+                    }
+                    {questions && questions.length > 0 &&
+                        questions.map((question, i: number) => (
+                            <SessionQuestion
+                                key={question.questionId}
+                                question={question}
+                                index={i}
+                                isTA={this.props.isTA}
+                                includeRemove={false}
+                                includeBookmark={question.userByAskerId.userId === this.props.myUserId}
+                                triggerUndo={this.props.triggerUndo}
+                                refetch={this.props.refetch}
+                                isPast={this.props.isPast}
+                                myUserId={this.props.myUserId}
+                            />
+                        ))
+                    }
+                    {questions && questions.length === 0 &&
+                        <React.Fragment>
+                            <p className="noQuestionsHeading">
+                                {this.props.isOpen ? 'Queue Currently Empty' :
+                                    this.props.isPast ? 'Queue Has Closed' : 'Queue Not Open Yet'}
+                            </p>
+                            {!this.props.isOpen ?
+                                (
+                                    this.props.isPast ?
+                                        <p className="noQuestionsWarning">This office hour session has ended.</p> :
+                                        <p className="noQuestionsWarning">
+                                            Please check back at {moment(this.props.openingTime).format('h:mm A')}
+                                            {
+                                                moment().startOf('day') ===
+                                                    moment(this.props.openingTime).startOf('day')
+                                                    ? '' : (' on ' + moment(this.props.openingTime).format('MMM D'))
+                                            }!
                                     </p>
-                            ) :
-                            !this.props.isTA
-                                ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
-                                : <p className="noQuestionsWarning">No questions in the queue yet. </p>
-                        }
-                    </React.Fragment>
-                }
-            </div>
+                                ) :
+                                !this.props.isTA
+                                    ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
+                                    : <p className="noQuestionsWarning">No questions in the queue yet. </p>
+                            }
+                        </React.Fragment>
+                    }
+                </div>
+            </React.Fragment>
         );
     }
 }
