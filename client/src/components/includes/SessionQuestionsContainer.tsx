@@ -7,7 +7,7 @@ import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
 
 const LEAVE_QUEUE = gql`
-mutation UndoQuestion($questionId: Int!, $status: String!) {
+mutation LeaveQueue($questionId: Int!, $status: String!) {
     updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeAddressed: null, answererId: null},
         questionId: $questionId}) {
         clientMutationId
@@ -114,7 +114,6 @@ class SessionQuestionsContainer extends React.Component {
                     <React.Fragment>
                         <div className="SessionClosedMessage">
                             You are holding a spot in another active queue.
-                            To join this queue, please
 
                             <Mutation mutation={LEAVE_QUEUE} onCompleted={this.dismissLeaveQueue}>
                                 {(leaveQueue) =>
@@ -126,7 +125,7 @@ class SessionQuestionsContainer extends React.Component {
                                                     this.handleLeaveQueue(leaveQueue, this.props.refetch)
                                                 }
                                             >
-                                                retract your question from the other queue!
+                                                To join this queue, retract your question <b>here.</b>
                                             </span>
                                         </p>
                                     </div>
