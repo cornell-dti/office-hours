@@ -3,8 +3,9 @@ import { Icon } from 'semantic-ui-react';
 const QMeLogo = require('../../media/QLogo2.svg');
 const googleLogo = require('../../media/googleLogo.svg');
 
-import firebase, { app } from '../../firebase';
+import firebase, { app, firestore } from '../../firebase';
 import { useHistory } from 'react-router-dom';
+import { userUpload } from '../../firebasefunctions';
 
 const LoginView: React.FC = () => {
     const [showContact, setShowContact] = React.useState(false);
@@ -18,12 +19,14 @@ const LoginView: React.FC = () => {
         authProvider.addScope('email');
         authProvider.addScope('profile');
 
+
         app.auth().signInWithRedirect(authProvider);
 
         return app.auth().getRedirectResult().then((response: {}) => {
-            // RYAN_TODO Create or update user
-            console.log(response);
-            history.push('/');
+            var user = response.user;
+                userUpload(user, firestore);
+                console.log(response);
+                history.push('/');
         });
     };
 
