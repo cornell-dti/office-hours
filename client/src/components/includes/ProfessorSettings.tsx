@@ -6,9 +6,16 @@ import { Mutation } from 'react-apollo';
 
 const UPDATE_PROFESSOR_SETTINGS = gql`
     mutation UpdateProfessorSettings($_courseId: Int!, $_charLimit: Int!, $_queueOpenInterval: Int!) {
-        updateCourseByCourseId(input:{coursePatch:{charLimit: $_charLimit, 
-            queueOpenInterval:{minutes: $_queueOpenInterval}},
-            courseId: $_courseId})
+        apiUpdateCourseSettings(input:{_courseId: $_courseId, _charLimit: $_charLimit, 
+            _queueOpenInterval:{
+                seconds: 0,
+                minutes: $_queueOpenInterval,
+                hours: 0,
+                days: 0,
+                months: 0,
+                years: 0
+            }
+        })
         {
             clientMutationId
         }

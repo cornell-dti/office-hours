@@ -438,7 +438,7 @@ Updates the char_limit and queue_open_interval values for a given course (specif
 ##### Parameters
 - \_course\_id (int): The id of the course that you want to update the settings for
 - \_char\_limit (int): the new character limit for the course
-- \_queue\_open\_interval (interval): the new time interval of when a course's queue should be open prior to the start time of an office hour session
+- \_queue\_open\_interval (interval): the new time interval of when a course's queue should be open prior to the start time
 
 ##### Returns
 All the fields of the updated row from the [courses](#courses) table
