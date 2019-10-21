@@ -3,8 +3,9 @@ import { Icon } from 'semantic-ui-react';
 const QMeLogo = require('../../media/QLogo2.svg');
 const googleLogo = require('../../media/googleLogo.svg');
 
-import firebase, { app } from '../../firebase';
+import firebase, { app, firestore } from '../../firebase';
 import { useHistory } from 'react-router-dom';
+import { userUpload } from '../../firebasefunctions';
 
 const LoginView: React.FC = () => {
     const [showContact, setShowContact] = React.useState(false);
@@ -21,8 +22,9 @@ const LoginView: React.FC = () => {
         return app
             .auth()
             .signInWithPopup(authProvider)
-            .then((response: {}) => {
-                // RYAN_TODO Create or update user
+            .then((response) => {
+                var user = response.user;
+                userUpload(user, firestore);
                 console.log(response);
                 history.push('/');
             });
