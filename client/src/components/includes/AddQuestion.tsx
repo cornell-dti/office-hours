@@ -294,7 +294,7 @@ class AddQuestion extends React.Component {
                                                 onClick={() => this.handleJoinClick(addQuestion)}
                                             >
                                                 Add My Question
-                                        </p>
+                                            </p>
                                             : <p className="AddButton"> Add My Question </p>
                                         }
                                     </div>
