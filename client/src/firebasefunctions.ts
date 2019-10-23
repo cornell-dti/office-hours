@@ -1,3 +1,5 @@
+import { firestore } from 'firebase';
+
 export const userUpload = (user: firebase.User | null, db: firebase.firestore.Firestore) => {
   if (user != null) {
     const uid = user.uid;
@@ -6,7 +8,6 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
     const photoUrl = user.photoURL;
     const metaData = user.metadata;
     const createdAt = metaData.creationTime;
-    const lastActivityAt = metaData.lastSignInTime;
     let stringSplit = -1;
     let firstName = displayName;
     let lastName = '';
@@ -23,7 +24,7 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
       lastName,
       photoUrl,
       createdAt,
-      lastActivityAt
+      lastActivityAt: firestore.FieldValue.serverTimestamp()
     })
       .then(function () {
         // Successful upload
