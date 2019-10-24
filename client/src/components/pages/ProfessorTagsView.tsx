@@ -5,8 +5,7 @@ import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 // import { Redirect } from 'react-router';
 // import { Loader } from 'semantic-ui-react';
-import { useMyUser, useCourse, useQuery } from 'src/firehooks';
-import { firestore } from 'src/firebase';
+import { useMyUser, useCourse } from 'src/firehooks';
 
 function withData<T extends { match: { params: { courseId: string; } } }>
     (Component: React.ComponentType<T>) {
@@ -15,17 +14,7 @@ function withData<T extends { match: { params: { courseId: string; } } }>
         const user = useMyUser();
         const course = useCourse(courseId);
 
-        const getQuery = () => firestore
-            .collection('tags')
-            // RYAN_TODO filter based on today's date.
-            .where('courseId', '==', firestore.doc('courses/' + courseId))
-            .where('level', '==', 1);
-
-        const [tags, setQuery] = useQuery<FireSession>(getQuery(), 'tagId');
-        // Update query when course id prop changes
-        React.useEffect(() => setQuery(getQuery()), [courseId]);
-
-        return (<Component {...props} user={user} course={course} tags={tags} />);
+        return (<Component {...props} user={user} course={course} />);
     };
 }
 
@@ -38,7 +27,6 @@ class ProfessorTagsView extends React.Component {
         }
         user?: FireUser,
         course?: FireCourse,
-        tags: FireTag[]
     };
 
     constructor(props: {}) {
@@ -69,10 +57,7 @@ class ProfessorTagsView extends React.Component {
                         <ProfessorAddNew courseId={courseId} />
                         {/* {loading && <Loader active={true} content={'Loading...'} />} */}
                         <div className="Calendar">
-                            <ProfessorTagsTable
-                                tags={this.props.tags}
-                                courseId={courseId}
-                            />
+                            <ProfessorTagsTable courseId={courseId} />
                         </div>
                     </div>
                 </section>

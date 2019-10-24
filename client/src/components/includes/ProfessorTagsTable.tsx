@@ -1,70 +1,47 @@
 import * as React from 'react';
 import ProfessorTagsRow from './ProfessorTagsRow';
-class ProfessorTagsTable extends React.Component {
-    props: {
-        tags: FireTag[]
-        courseId: string
-    };
 
-    state: {
-        isExpanded: boolean[]
-        currentRow: number
-        rowIndex: number
-    };
+import { firestore } from 'src/firebase';
+import { useQuery } from 'src/firehooks';
 
-    constructor(props: {}) {
-        super(props);
-        this.toggleEdit = this.toggleEdit.bind(this);
-        this.state = {
-            isExpanded: new Array<boolean>(this.props.tags.length).fill(false),
-            currentRow: 0,
-            rowIndex: 0
-        };
-    }
+const ProfessorTagsTable = (props: { courseId: string }) => {
 
-    componentWillReceiveProps(nextProps: { tags: AppTag[] }) {
-        this.setState({
-            isExpanded: new Array<boolean>(nextProps.tags.length).fill(false)
-        });
-    }
+    const getQuery = () => firestore
+        .collection('tags')
+        .where('courseId', '==', firestore.doc('courses/' + props.courseId));
 
-    toggleEdit(row: number) {
-        let cRow = this.state.currentRow;
-        const isExpanded = this.state.isExpanded;
-        if (cRow !== row) {
-            isExpanded[cRow] = false;
-        }
-        isExpanded[row] = !this.state.isExpanded[row];
-        this.setState({
-            isExpanded,
-            currentRow: row
-        });
-    }
+    const [tags, setQuery] = useQuery<FireTag>(getQuery(), 'tagId');
+    // Update query when course id prop changes
+    React.useEffect(() => setQuery(getQuery()), [props.courseId]);
 
-    render() {
-        return (
-            <React.Fragment>
-                <div className="Spacing" />
-                <div className="ProfessorTagsTable">
-                    <table className="Tags">
-                        <tbody>
-                            <tr>
-                                <th>Assignment</th>
-                                <th>Tags</th>
-                                <th id="statusColumn">Status</th>
-                                <th>Edit</th>
-                            </tr>
-                        </tbody>
-                        <ProfessorTagsRow
-                            isExpanded={this.state.isExpanded}
-                            handleEditToggle={this.toggleEdit}
-                            courseId={this.props.courseId}
-                        />
-                    </table>
-                </div>
-            </React.Fragment>
-        );
-    }
-}
+    return (
+        <React.Fragment>
+            <div className="Spacing" />
+            <div className="ProfessorTagsTable">
+                <table className="Tags">
+                    <tbody>
+                        <tr>
+                            <th>Assignment</th>
+                            <th>Tags</th>
+                            <th id="statusColumn">Status</th>
+                            <th>Edit</th>
+                        </tr>
+                    </tbody>
+                    {tags
+                        .filter(tag => tag.level === 1)
+                        .map((tag, i) =>
+                            <ProfessorTagsRow
+                                tag={tag}
+                                key={tag.tagId}
+                                index={i}
+                                childTags={tags.filter(t => t.parentTag && t.parentTag.id === tag.tagId)}
+                                courseId={props.courseId}
+                            />
+                        )}
+                </table>
+            </div>
+        </React.Fragment>
+    );
+};
 
 export default ProfessorTagsTable;

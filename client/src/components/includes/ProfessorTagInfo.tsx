@@ -1,29 +1,5 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
-import { firestore } from 'src/firebase';
-import { useQuery } from 'src/firehooks';
-
-type ProfessorTagInfoProps = {
-    isNew: boolean;
-    cancelCallback: Function;
-    tag?: FireTag;
-    courseId: string;
-};
-
-function withData(Component: React.ComponentType<ProfessorTagInfoProps & { childTags: FireTag[] }>) {
-    return (props: ProfessorTagInfoProps) => {
-        const getQuery = () => firestore
-            .collection('tags')
-            .where('parentId', '==', firestore.doc('tags/' + (props.tag ? props.tag.tagId : 'null')))
-            .where('level', '==', 2);
-
-        const [tags, setQuery] = useQuery<FireTag>(getQuery(), 'tagId');
-        // Update query when course id prop changes
-        React.useEffect(() => setQuery(getQuery()), [props.tag ? props.tag.tagId : 'null']);
-
-        return (<Component {...props} childTags={tags} />);
-    };
-}
 
 class ProfessorTagInfo extends React.Component {
     props: {
@@ -218,4 +194,4 @@ class ProfessorTagInfo extends React.Component {
     }
 }
 
-export default withData(ProfessorTagInfo);
+export default ProfessorTagInfo;
