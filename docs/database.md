@@ -78,7 +78,7 @@ Each row in courses represents a specific course offering that is using Queue Me
 |:---:|---|
 |Read|All users|
 |Insert|-|
-|Update|-|
+|Update|Professors for the course|
 |Delete|-|
 
 ### users
