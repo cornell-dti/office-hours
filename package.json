@@ -14,7 +14,7 @@
     "author": "",
     "license": "ISC",
     "engines": {
-        "node": "10.16.3",
+        "node": "10",
         "yarn": "1.18.0"
     },
     "bugs": {
