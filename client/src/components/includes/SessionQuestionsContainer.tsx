@@ -43,12 +43,19 @@ class SessionQuestionsContainer extends React.Component {
 
     render() {
         var questions = this.props.questions;
+
         // If the user has questions, store them in myQuestion[]
         var myQuestion = questions && questions.filter(q => q.userByAskerId.userId === this.props.myUserId);
         // Make sure that the data has loaded and user has a question
         if (questions && myQuestion && myQuestion.length > 0) {
             // Get user's position in queue (0 indexed)
             let myQuestionIndex = questions.indexOf(myQuestion[0]);
+            // Check how many questions ahead of the user are in progress
+            let numProgressQuestions = questions.slice(0, myQuestionIndex).reduce(
+                (isProgress, question) => isProgress + (question.status === 'assigned' ? 1 : 0), 0
+            );
+            // Calculate question index by subtracting number of progress questions
+            myQuestionIndex -= numProgressQuestions;
             // Update tab with user position
             document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
             // if user is up and we haven't already sent a notification, send one.

@@ -28,10 +28,10 @@ interface AppSession {
     title: string;
     questionsBySessionId: {
         nodes: [AppQuestion]
-    }
+    };
     sessionTasBySessionId: {
         nodes: [AppTa]
-    }
+    };
 }
 
 interface AppTa {
@@ -39,7 +39,7 @@ interface AppTa {
         userId: number;
         computedName: string;
         computedAvatar: string;
-    }
+    };
 }
 
 interface AppQuestion {
@@ -54,7 +54,7 @@ interface AppQuestion {
         nodes: [{
             tagByTagId: AppTag
         }]
-    }
+    };
 }
 
 interface AppTag {
@@ -85,7 +85,7 @@ interface AppTagQuestionsInfo {
                 }]
             }
         }]
-    }
+    };
 }
 
 interface AppTagRelations extends AppTag {
@@ -93,7 +93,7 @@ interface AppTagRelations extends AppTag {
         nodes: [{
             parentId: number
         }]
-    }
+    };
 }
 
 interface AppUser {
@@ -112,7 +112,7 @@ interface AppUserRole extends AppUser {
             userId: number;
             computedAvatar: string;
         }]
-    }
+    };
 }
 
 interface AppUserRoleQuestions extends AppUserRole {
@@ -122,5 +122,5 @@ interface AppUserRoleQuestions extends AppUserRole {
             status: string;
             sessionBySessionId: AppSession;
         }]
-    }
+    };
 }
