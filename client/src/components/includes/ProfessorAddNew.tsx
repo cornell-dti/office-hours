@@ -11,7 +11,7 @@ const ProfessorAddNew = (props: {
 }) => {
     const [editVisible, setEditVisible] = useState(false);
 
-    var text = props.taOptions ? 'Add New Office Hour' : 'Add New Assignment';
+    const text = props.taOptions ? 'Add New Office Hour' : 'Add New Assignment';
     return (
         <div className="ProfessorAddNew">
             <div className={'Add ' + !editVisible}>
