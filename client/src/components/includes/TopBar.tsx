@@ -43,8 +43,7 @@ class TopBar extends React.PureComponent {
                                 src={this.state.image}
                                 onError={
                                     (() => this.setState({
-                                        image: require('../../media/peopleLogo.png'),
-
+                                        image: '/placeholder.png'
                                     }))
                                 }
                             />
