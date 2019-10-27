@@ -24,7 +24,7 @@ const LoginView: React.FC = () => {
         return app.auth().getRedirectResult().then((response) => {
             var user = response.user;
             userUpload(user, firestore);
-            console.log(response);
+            console.log(user);
             history.push('/');
         });
     };

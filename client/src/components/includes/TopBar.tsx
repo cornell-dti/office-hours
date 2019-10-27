@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
+import { logOut } from '../../firebasefunctions';
 
 class TopBar extends React.PureComponent {
     props: {
@@ -32,9 +33,9 @@ class TopBar extends React.PureComponent {
 
     render() {
         return (
-            <div className="MenuBox" tabIndex={1} onBlur={() => this.setMenu(false)}>
+            <div className="MenuBox" tabIndex={1} onBlur={() => this.setMenu(true)}>
                 <header className="topBar">
-                    <div className="triggerArea" onClick={() => this.setMenu(!this.state.showMenu)} >
+                    <div className="triggerArea" onClick={() => this.setMenu(true)} >
                         <div className="userProfile">
                             <img src={this.props.user.photoUrl} />
                             <span className="name">
@@ -45,9 +46,9 @@ class TopBar extends React.PureComponent {
                 </header>
                 {this.state.showMenu && (
                     <React.Fragment>
-                        <ul className="desktop logoutMenu" tabIndex={1} onClick={() => this.setMenu(false)} >
-                            <li onMouseDown={() => this.redirect('/__auth/logout')} >
-                                <span><Icon name="sign out" /></span> Log Out
+                        <ul className="desktop logoutMenu" tabIndex={1} >
+                            <li onClick={() => logOut()}>
+                                <span><Icon name="sign out" /></span>Log Out
                             </li>
                             {/* RYAN_TODO logout */}
                             <li onMouseDown={() => window.open('https://goo.gl/forms/7ozmsHfXYWNs8Y2i1', '_blank')}>

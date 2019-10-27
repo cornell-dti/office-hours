@@ -40,8 +40,12 @@ const PrivateRoute = ({ component, ...rest }: any) => {
     const [isLoggedIn, setIsLoggedIn] = React.useState(0);
 
     auth.onAuthStateChanged((user) => {
-        user ? setIsLoggedIn(2) : setIsLoggedIn(1);
-        userUpload(user, firestore);
+        if (user) {
+            setIsLoggedIn(2);
+            userUpload(user, firestore);
+        } else {
+            setIsLoggedIn(1);
+        }
     });
 
     if (isLoggedIn === 0) {
