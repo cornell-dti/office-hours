@@ -99,8 +99,6 @@ class SessionQuestionsContainer extends React.Component {
             }
         }
 
-        // console.log('questions associated w/ this session', questions);
-
         return (
             <React.Fragment>
                 {!this.props.isTA && myQuestion && myQuestion.length === 0 && this.props.isOpen
