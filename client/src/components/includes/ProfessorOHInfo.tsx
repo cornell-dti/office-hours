@@ -79,12 +79,11 @@ const CREATE_SERIES = gql`
 class ProfessorOHInfo extends React.Component {
     props: {
         session?: AppSession,
-        courseId: number,
+        courseId: string,
         isNewOH: boolean,
         taOptions: DropdownItemProps[],
         taUserIdsDefault?: number[],
         toggleEdit: Function,
-        refreshCallback: Function,
     };
 
     state: {
@@ -419,7 +418,7 @@ class ProfessorOHInfo extends React.Component {
                     </button>
                     {this.props.isNewOH ?
                         this.state.isSeriesMutation ?
-                            <Mutation mutation={CREATE_SERIES} onCompleted={() => this.props.refreshCallback()}>
+                            <Mutation mutation={CREATE_SERIES}>
                                 {(CreateSeries: Function) =>
                                     <button
                                         className="Bottom Edit"
@@ -440,7 +439,7 @@ class ProfessorOHInfo extends React.Component {
                                 }
                             </Mutation>
                             :
-                            <Mutation mutation={CREATE_SESSION} onCompleted={() => this.props.refreshCallback()}>
+                            <Mutation mutation={CREATE_SESSION}>
                                 {(CreateSession: Function) =>
                                     <button
                                         className="Bottom Edit"
@@ -463,7 +462,7 @@ class ProfessorOHInfo extends React.Component {
 
                         :
                         this.state.isSeriesMutation ?
-                            <Mutation mutation={EDIT_SERIES} onCompleted={() => this.props.refreshCallback()}>
+                            <Mutation mutation={EDIT_SERIES}>
                                 {(EditSeries: Function) =>
                                     <button
                                         className="Bottom Edit"
@@ -484,7 +483,7 @@ class ProfessorOHInfo extends React.Component {
                                 }
                             </Mutation>
                             :
-                            <Mutation mutation={EDIT_SESSION} onCompleted={() => this.props.refreshCallback()}>
+                            <Mutation mutation={EDIT_SESSION}>
                                 {(EditSession: Function) =>
                                     <button
                                         className="Bottom Edit"

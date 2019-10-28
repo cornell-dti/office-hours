@@ -105,12 +105,12 @@ const SplitView = (props: {
                         joinCallback={handleJoinClick}
                     />
                     : <section className="StudentSessionView">
-                        {user && <TopBar
+                        <TopBar
                             user={user}
                             role={courseUser ? courseUser.role : 'student'}
                             context="student"
                             courseId={props.match.params.courseId}
-                        />}
+                        />
                         <p className="welcomeMessage">
                             Welcome{user && ', '}
                             <span className="welcomeName">

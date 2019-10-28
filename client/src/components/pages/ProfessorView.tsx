@@ -96,11 +96,11 @@ interface ProfessorSessionsData {
 }
 
 interface MetadataVariables {
-    courseId: number;
+    courseId: string;
 }
 
 interface SessionsVariables {
-    courseId: number;
+    courseId: string;
     beginTime: Date;
     endTime: Date;
 }
@@ -150,7 +150,7 @@ class ProfessorView extends React.Component {
     }
 
     render() {
-        let courseId = parseInt(this.props.match.params.courseId, 10);
+        let courseId = this.props.match.params.courseId;
         return (
             <div className="ProfessorView">
                 <ProfessorMetadataDataQuery query={METADATA_QUERY} variables={{ courseId: courseId }} >
@@ -214,7 +214,6 @@ class ProfessorView extends React.Component {
                                 <div className="main">
                                     <ProfessorAddNew
                                         courseId={courseId}
-                                        refreshCallback={refetch}
                                         taOptions={taOptions}
                                     />
                                     <CalendarWeekSelect
