@@ -33,9 +33,9 @@ class TopBar extends React.PureComponent {
 
     render() {
         return (
-            <div className="MenuBox" tabIndex={1} onBlur={() => this.setMenu(true)}>
+            <div className="MenuBox" tabIndex={1}>
                 <header className="topBar">
-                    <div className="triggerArea" onClick={() => this.setMenu(true)} >
+                    <div className="triggerArea" onClick={() => this.setMenu(!this.state.showMenu)} >
                         <div className="userProfile">
                             <img src={this.props.user.photoUrl} />
                             <span className="name">
