@@ -14,10 +14,11 @@ import ProfessorDashboardView from './pages/ProfessorDashboardView';
 import ProfessorPeopleView from './pages/ProfessorPeopleView';
 import { Analytics } from './includes/Analytics';
 import { Loader } from 'semantic-ui-react';
+import CourseEditView from './pages/CourseEditView';
 
 ReactGA.initialize('UA-123790900-1');
 
-const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 5);
+const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 1);
 
 const GET_USER_AND_COURSE = gql`
 query GetUserAndCourse($courseId: Int!) {
@@ -88,6 +89,7 @@ class App extends React.Component {
                     <Route path="/" component={Analytics} />
                     <Switch>
                         <Route path="/login" component={LoginView} />
+                        <Route path="/edit" component={CourseEditView} />
                         <PrivateRoute
                             path="/professor-tags/course/:courseId"
                             component={ProfessorTagsView}
