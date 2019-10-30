@@ -1,4 +1,4 @@
-import { firestore } from 'firebase';
+import { firestore, auth } from 'firebase';
 
 export const userUpload = (user: firebase.User | null, db: firebase.firestore.Firestore) => {
   if (user != null) {
@@ -33,4 +33,12 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
         // Unsuccessful upload
       });
   }
+};
+
+export const logOut = () => {
+  auth().signOut().then(() => {
+    // Success
+  }).catch(error => {
+    // Fail
+  });
 };

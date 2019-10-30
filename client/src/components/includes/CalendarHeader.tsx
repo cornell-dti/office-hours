@@ -6,6 +6,7 @@ import { collectionData, firestore, loggedIn$ } from '../../firebase';
 import { docData } from 'rxfire/firestore';
 import { combineLatest } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { logOut } from '../../firebasefunctions';
 
 const QMeLogo = require('../../media/QLogo2.svg');
 const chevron = require('../../media/chevron.svg'); // Replace with dropdown cheveron
@@ -111,7 +112,7 @@ class CalendarHeader extends React.Component {
                             </React.Fragment>
                         } */}
                         {/* RYAN_TODO fix logging out */}
-                        <li><a href="/__auth/logout"><span><Icon name="sign out" /></span>Log Out</a></li>
+                        <li onClick={() => logOut()}> <span><Icon name="sign out" /></span>Log Out</li>
                         <li><a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank">
                             <span><Icon name="edit" /></span>Send Feedback</a>
                         </li>
