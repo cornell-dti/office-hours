@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Icon } from 'semantic-ui-react';
 
 class CourseCard extends React.Component {
     props: {
@@ -17,7 +18,9 @@ class CourseCard extends React.Component {
                         {this.props.course.name}
                     </div>
                 </div>
-                <div className="courseColor" />
+                <div className="courseColor">
+                    <Icon className="icon" name="plus" />
+                </div>
             </div>
         );
     }
