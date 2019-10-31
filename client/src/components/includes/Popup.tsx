@@ -18,7 +18,7 @@ class Popup extends React.Component {
       <React.Fragment>
         <section className={'topPanel' + isShown}>
           <button className="closeIcon" onClick={() => this.props.hideFunction()}>
-            <Icon name="close icon" />
+            <Icon name="x" />
           </button>
           <img src={QMeLogo} className="QMeLogo" />
           <h2>{this.props.topTitle}</h2>
