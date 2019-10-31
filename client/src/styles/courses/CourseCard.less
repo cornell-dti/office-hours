@@ -1,15 +1,18 @@
 .CourseCard {
     border-radius: 4px;
-    border: solid 1px black;
+    box-shadow: 5px 10px 20px gainsboro;
     max-width: 400px;
-
+    background-color: white;
+    text-align: left;
 
     .courseText {
         padding: 30px;
+        height: 150px;
 
         .courseCode {
             font-size: 25px;
             font-weight: bold;
+            margin-bottom: 30px;
         }
     
         .courseName {
@@ -20,7 +23,20 @@
     .courseColor {
         position: relative;
         bottom: 0;
-        height: 100px;
+        height: 60px;
         background-color: #ffc5a1;
+
+        .icon {
+            font-size: 20px;
+            text-align: center;
+            display: block;
+            margin: auto;
+            padding-top: 17px;
+        }
     }
+}
+
+.CourseCard:hover {
+    cursor: pointer;
+    box-shadow: 5px 10px 20px gray;
 }
