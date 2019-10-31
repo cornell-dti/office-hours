@@ -80,11 +80,11 @@ class SessionQuestionsContainer extends React.Component {
             <div className="SessionQuestionsContainer splitQuestions" >
                 {!this.props.isTA && myQuestion && myQuestion.length === 0 && this.props.isOpen
                     && !this.props.haveAnotherQuestion &&
-                    <div 
-                      className="SessionJoinButton" 
-                      onClick={() =>
-                        this.props.handleJoinClick(questions && myQuestion 
-                            && questions.indexOf(myQuestion[0]) > SHOW_FEEDBACK_QUEUE)}
+                    <div
+                        className="SessionJoinButton"
+                        onClick={() =>
+                            this.props.handleJoinClick(questions && myQuestion
+                                && questions.indexOf(myQuestion[0]) > SHOW_FEEDBACK_QUEUE)}
                     >
                         <p><Icon name="plus" /> Join the Queue</p>
                     </div>
