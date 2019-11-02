@@ -4,12 +4,17 @@ import { Icon } from 'semantic-ui-react';
 class CourseCard extends React.Component {
     props: {
         course: AppCourse,
-        onClick?: Function
+        selectCourse?: Function,
+        selected?: boolean
     };
 
     render() {
         return (
-            <div className="CourseCard">
+            <div
+                className={'CourseCard' + (this.props.selected ? ' selected' : '')}
+                onClick={() => this.props.selectCourse &&
+                    this.props.selectCourse(this.props.course, !this.props.selected)}
+            >
                 <div className="courseText">
                     <div className="courseCode">
                         {this.props.course.code}
@@ -19,7 +24,11 @@ class CourseCard extends React.Component {
                     </div>
                 </div>
                 <div className="courseColor">
-                    <Icon className="icon" name="plus" />
+                    {this.props.selected !== undefined &&
+                        (this.props.selected ?
+                            <Icon className="icon" name="check" /> :
+                            <Icon className="icon" name="plus" />)
+                    }
                 </div>
             </div>
         );
