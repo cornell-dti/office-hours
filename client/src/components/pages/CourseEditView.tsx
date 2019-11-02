@@ -115,6 +115,22 @@ class CourseEditView extends React.Component {
                         );
                     }}
                 </CoursesDataQuery>
+                <div className="EnrollBar">
+                    <div className="EnrolledCourses">
+                        {this.state.selectedCourses.length === 0 ?
+                            'No Classes Chosen' :
+                            this.state.selectedCourses.map(c => c.code).join(', ')
+                        }
+                    </div>
+                    <div className="buttons">
+                        <button className={'save' + (this.state.selectedCourses.length === 0 ? ' disabled' : '')}>
+                            Save
+                        </button>
+                        <button className="cancel">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     }
