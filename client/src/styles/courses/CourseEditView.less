@@ -23,3 +23,49 @@
         justify-content: center;
     }
 }
+
+.EnrollBar {
+    position: absolute;
+    padding: 0px 30px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    color: #484848;
+    background-color: #fbfbfb;
+    height: 100px;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    button:hover {
+        cursor: pointer;
+    }
+
+    .buttons button {
+        text-decoration: none;
+        display: inline-block;
+        border-radius: 4px;
+        border: none;
+        padding: 0;
+        width: 150px;
+        height: 40px;
+    }
+
+    .buttons {
+        .save {
+            color: white;
+            background-color: #484848;
+        }
+
+        .cancel {
+            background-color: white;
+            border: solid 1px #484848;
+            margin-left: 10px;
+        }
+
+        .disabled {
+            opacity: 0.7;
+        }
+    }
+}

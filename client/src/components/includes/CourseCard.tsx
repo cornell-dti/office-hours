@@ -4,7 +4,7 @@ import { Icon } from 'semantic-ui-react';
 class CourseCard extends React.Component {
     props: {
         course: AppCourse,
-        selectCourse?: Function,
+        selectCourse?: Function, // If not provided, default to redirection to the course's page
         selected?: boolean
     };
 
