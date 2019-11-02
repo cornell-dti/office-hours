@@ -43,7 +43,7 @@ class CourseEditView extends React.Component {
     };
 
     state: {
-        selectedCourses: number[];
+        selectedCourses: AppCourse[];
     };
 
     constructor(props: {}) {
@@ -51,6 +51,20 @@ class CourseEditView extends React.Component {
         this.state = {
             selectedCourses: []
         };
+
+        this.selectCourse = this.selectCourse.bind(this);
+    }
+
+    selectCourse(course: AppCourse, addCourse: boolean) {
+        var updatedCourses = this.state.selectedCourses;
+        if (addCourse) {
+            updatedCourses.push(course);
+        } else {
+            updatedCourses = updatedCourses.filter(c => c !== course);
+        }
+        this.setState({
+            selectedCourses: updatedCourses
+        });
     }
 
     render() {
@@ -68,6 +82,8 @@ class CourseEditView extends React.Component {
                                     <CourseCard
                                         key={i}
                                         course={course}
+                                        selectCourse={this.selectCourse}
+                                        selected={this.state.selectedCourses.indexOf(course) !== -1}
                                     />
                                 );
                             }

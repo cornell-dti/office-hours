@@ -1,11 +1,13 @@
 .CourseEditView {
     margin-top: 46px;
-    padding-top: 20px;
+    padding: 20px 50px 0px;
+    box-sizing: border-box; 
 
     .description {
         .title {
             font-size: 50px;
-            margin-bottom: 50px;
+            line-height: 50px;
+            padding-bottom: 40px;
         }
 
         .directions {
@@ -14,8 +16,10 @@
     }
 
     .CourseCards {
-        display: grid;
-        grid-gap: 100px;
-        grid-template-columns: auto auto;
+        display: flex;
+        padding: 10px;
+        flex-shrink: 1;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 }
