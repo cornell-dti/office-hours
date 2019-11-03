@@ -44,7 +44,7 @@ class SessionQuestionsContainer extends React.Component {
         var questions = this.props.questions;
 
         // If the user has questions, store them in myQuestion[]
-        var myQuestion = questions && questions.filter(q => q.askerId === this.props.myUserId);
+        var myQuestion = questions && questions.filter(q => q.askerId.id === this.props.myUserId);
         // Make sure that the data has loaded and user has a question
         if (questions && myQuestion && myQuestion.length > 0) {
             // Get user's position in queue (0 indexed)
