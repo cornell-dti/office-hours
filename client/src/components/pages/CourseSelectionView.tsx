@@ -1,17 +1,17 @@
 import * as React from 'react';
 import CourseSelection from '../includes/CourseSelection';
 
-class CourseEditView extends React.Component {
+class CourseSelectionView extends React.Component {
 
     render() {
         return (
             <div className="CourseEditView">
                 <CourseSelection
-                    isEdit={true}
+                    isEdit={false}
                 />
             </div>
         );
     }
 }
 
-export default CourseEditView;
+export default CourseSelectionView;
