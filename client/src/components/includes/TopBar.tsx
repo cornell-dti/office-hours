@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Icon } from 'semantic-ui-react';
+import { logOut } from '../../firebasefunctions';
 
 const TopBar = (props: {
     courseId: string,
@@ -22,7 +23,7 @@ const TopBar = (props: {
 
     const redirect = (href: string) => document.location.href = href;
     return (
-        <div className="MenuBox" tabIndex={1} onBlur={() => setShowMenu(false)}>
+        <div className="MenuBox" tabIndex={1}>
             <header className="topBar">
                 <div className="triggerArea" onClick={() => setShowMenu(!showMenu)}>
                     <div className="userProfile">
@@ -34,8 +35,8 @@ const TopBar = (props: {
                 </div>
             </header>
             {showMenu && <React.Fragment>
-                <ul className="desktop logoutMenu" tabIndex={1} onClick={() => setShowMenu(false)}>
-                    <li onMouseDown={() => redirect('/__auth/logout')}>
+                <ul className="desktop logoutMenu" tabIndex={1}>
+                    <li onClick={() => logOut()}>
                         <span><Icon name="sign out" /></span> Log Out
                             </li>
                     {/* RYAN_TODO logout */}
