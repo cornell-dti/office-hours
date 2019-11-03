@@ -37,6 +37,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 
     button:hover {
         cursor: pointer;
@@ -52,6 +53,10 @@
         height: 40px;
     }
 
+    .buttons form {
+        display: inline-block;
+    }
+
     .buttons {
         .save {
             color: white;
@@ -59,6 +64,7 @@
         }
 
         .cancel {
+            display: inline-block;
             background-color: white;
             border: solid 1px #484848;
             margin-left: 10px;
@@ -66,6 +72,7 @@
 
         .disabled {
             opacity: 0.7;
+            cursor: not-allowed;
         }
     }
 }

@@ -4,6 +4,8 @@ import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import CourseCard from '../includes/CourseCard';
 
+const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 1);
+
 const METADATA_QUERY = gql`
 query GetMetadata {
     apiGetCurrentUser {
@@ -126,9 +128,11 @@ class CourseEditView extends React.Component {
                         <button className={'save' + (this.state.selectedCourses.length === 0 ? ' disabled' : '')}>
                             Save
                         </button>
-                        <button className="cancel">
-                            Cancel
-                        </button>
+                        <form action={'/course/' + DEFAULT_COURSE_ID} method="get">
+                            <button className="cancel">
+                                Cancel
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
