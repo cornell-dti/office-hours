@@ -19,12 +19,9 @@ const LoginView: React.FC = () => {
         authProvider.addScope('email');
         authProvider.addScope('profile');
 
-        app.auth().signInWithRedirect(authProvider);
-
-        return app.auth().getRedirectResult().then((response) => {
+        return app.auth().signInWithPopup(authProvider).then((response) => {
             var user = response.user;
             userUpload(user, firestore);
-            console.log(response);
             history.push('/');
         });
     };
