@@ -35,7 +35,7 @@ const TopBar = (props: {
                 </div>
             </header>
             {showMenu && <React.Fragment>
-                <ul className="desktop logoutMenu" tabIndex={1} >
+                <ul className="desktop logoutMenu" tabIndex={1}>
                     <li onClick={() => logOut()}>
                         <span><Icon name="sign out" /></span> Log Out
                             </li>

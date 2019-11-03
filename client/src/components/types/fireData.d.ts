@@ -1,5 +1,3 @@
-// RYAN_TODO represent different ID's as opaque types
-
 interface FireTimestamp {
     seconds: number;
     nanoseconds: number;
@@ -47,16 +45,16 @@ interface FireUser {
 }
 
 interface FireQuestion {
-    askerId: string;
-    answererId: string;
+    askerId: firebase.firestore.DocumentReference;
+    answererId: firebase.firestore.DocumentReference;
     content: string;
     location: string;
-    sessionId: string;
-    status: string;
+    sessionId: firebase.firestore.DocumentReference;
+    status: 'assigned' | 'resolved' | 'retracted' | 'unresolved';
     timeAddressed: FireTimestamp;
     timeEntered: FireTimestamp;
-    primaryTag: string;
-    secondaryTag: string;
+    primaryTag: firebase.firestore.DocumentReference;
+    secondaryTag: firebase.firestore.DocumentReference;
     questionId: string;
 }
 
