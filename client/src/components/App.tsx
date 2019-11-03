@@ -12,9 +12,10 @@ import ProfessorTagsView from './pages/ProfessorTagsView';
 import ProfessorRoles from './pages/ProfessorRoles';
 import ProfessorDashboardView from './pages/ProfessorDashboardView';
 import ProfessorPeopleView from './pages/ProfessorPeopleView';
+import CourseEditView from './pages/CourseEditView';
+import CourseSelectionView from './pages/CourseSelectionView';
 import { Analytics } from './includes/Analytics';
 import { Loader } from 'semantic-ui-react';
-import CourseEditView from './pages/CourseEditView';
 
 ReactGA.initialize('UA-123790900-1');
 
@@ -90,6 +91,7 @@ class App extends React.Component {
                     <Switch>
                         <Route path="/login" component={LoginView} />
                         <Route path="/edit" component={CourseEditView} />
+                        <Route path="/home" component={CourseSelectionView} />
                         <PrivateRoute
                             path="/professor-tags/course/:courseId"
                             component={ProfessorTagsView}

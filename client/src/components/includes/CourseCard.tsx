@@ -8,12 +8,18 @@ class CourseCard extends React.Component {
         selected?: boolean
     };
 
+    redirect = (href: string) => {
+        document.location.href = href;
+    }
+
     render() {
         return (
             <div
                 className={'CourseCard' + (this.props.selected ? ' selected' : '')}
-                onClick={() => this.props.selectCourse &&
-                    this.props.selectCourse(this.props.course, !this.props.selected)}
+                onClick={() => this.props.selectCourse ?
+                    this.props.selectCourse(this.props.course, !this.props.selected) :
+                    this.redirect('/course/' + this.props.course.courseId)
+                }
             >
                 <div className="courseText">
                     <div className="courseCode">

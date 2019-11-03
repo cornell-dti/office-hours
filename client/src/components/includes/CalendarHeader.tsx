@@ -35,7 +35,9 @@ class CalendarHeader extends React.Component {
         return (
             <div className="Header">
                 <div className="LogoContainer">
-                    <img src={QMeLogo} className="QMeLogo" />
+                    <a href="/home">
+                        <img src={QMeLogo} className="QMeLogo" />
+                    </a>
                 </div>
                 <div className="CalendarHeader" onClick={() => this.setCourses(!this.state.showCourses)}>
                     <span>
@@ -69,11 +71,11 @@ class CalendarHeader extends React.Component {
                                         </a>
                                     </li>
                                 )}
-                                <li>
+                                {!this.props.isProf && <li>
                                     <a className="editClasses" href={'/edit'}>
                                         Edit Classes
                                     </a>
-                                </li>
+                                </li>}
 
                             </ul>
                         </React.Fragment>
