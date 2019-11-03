@@ -69,6 +69,12 @@ class CalendarHeader extends React.Component {
                                         </a>
                                     </li>
                                 )}
+                                <li>
+                                    <a className="editClasses" href={'/edit'}>
+                                        Edit Classes
+                                    </a>
+                                </li>
+
                             </ul>
                         </React.Fragment>
                     }
