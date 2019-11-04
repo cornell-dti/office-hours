@@ -188,9 +188,7 @@ class SessionView extends React.Component {
         undoQuestion({
             variables: {
                 questionId: this.state.undoQuestionId,
-                // Set question status to unresolved if it's in the assigned state
-                // Otherwise, default it to assigned
-                status: this.state.undoAction === 'assigned' ? 'unresolved' : 'assigned'
+                status: 'unresolved'
             }
         });
     }
