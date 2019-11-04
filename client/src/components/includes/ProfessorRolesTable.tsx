@@ -1,152 +1,134 @@
 import * as React from 'react';
-// import { Dropdown, Table } from 'semantic-ui-react';
-import { Table } from 'semantic-ui-react';
+import { useState, useEffect } from 'react';
+import { Dropdown, Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
 
-// import gql from 'graphql-tag';
-// import { Mutation } from 'react-apollo';
+import { firestore, collectionData } from 'src/firebase';
+import { switchMap, map } from 'rxjs/operators';
+import { docData } from 'rxfire/firestore';
+import { Observable } from 'rxjs/internal/Observable';
+// Importing combineLatest from rxjs/operators broke everything...
+import { combineLatest } from 'rxjs';
 
-// const UPDATE_ROLE = gql`
-//     mutation UpdateRole($_courseId: Int!, $_userId: Int!, $_role: String!) {
-//         apiUpdateCourseUserRole(input:{_courseId: $_courseId, _userId: $_userId, _role: $_role})
-//         {
-//             clientMutationId
-//         }
-//     }
-// `;
-
-class RoleDropdown extends React.Component<{
+const RoleDropdown = (props: {
     default: string;
-    userId: number;
-    courseId: number;
-}> {
-    state = {
-        value: this.props.default
-    };
+    userId: string;
+    courseId: string;
+}) => {
+    const [value, setValue] = useState(props.default);
+    return (
+        <Dropdown
+            // RYAN_TODO loading and error state
+            // loading={loading}
+            // error={error && true}
+            text={value}
+            options={[
+                { key: 1, text: 'Student', value: 'student' },
+                { key: 2, text: 'TA', value: 'ta' },
+                { key: 3, text: 'Professor', value: 'professor' },
+            ]}
+            onChange={(e, newValue) => {
+                // @ts-ignore All values are strings
+                setValue(newValue.value);
+                // RYAN_TODO Mutate the data
+            }}
+        />
+    );
+};
 
-    render() {
-        return (
-            <span>RYAN_TODO fix this</span>
-        );
-        // <Mutation mutation={UPDATE_ROLE}>
-        //     {/* //@ts-ignore */}
-        //     {(updateRole: Function, { loading, error }) =>
-        //         <Dropdown
-        //             loading={loading}
-        //             error={error && true}
-        //             text={this.state.value}
-        //             options={[
-        //                 { key: 1, text: 'Student', value: 'student' },
-        //                 { key: 2, text: 'TA', value: 'ta' },
-        //                 { key: 3, text: 'Professor', value: 'professor' },
-        //             ]}
-        //             onChange={(e, value) => {
-        //                 this.setState({ value: value.value });
-        //                 updateRole({
-        //                     variables: {
-        //                         _courseId: this.props.courseId,
-        //                         _userId: this.props.userId,
-        //                         _role: value.value
-        //                     }
-        //                 });
-        //             }}
-        //         />}
-        // </Mutation>);
-    }
+type columnT = 'firstName' | 'lastName' | 'email' | 'role';
 
-}
+type enrichedFireUser = FireUser & { role: FireCouseRole };
 
-export default class ProfessorRolesTable extends React.Component {
-    props: {
-        courseId: number,
-        data: [{
-            role: string;
-            userByUserId: AppUser;
-        }]
-    };
-    state = {
-        column: '',
-        data: this.props.data.map(u => {
-            return {
-                firstname: u.userByUserId.firstName,
-                lastname: u.userByUserId.lastName,
-                email: u.userByUserId.email,
-                userId: u.userByUserId.userId,
-                role: u.role,
-            };
-        }),
-        direction: undefined,
-    };
+export default (props: { courseId: string }) => {
+    const [direction, setDirection] = useState<'descending' | 'ascending'>('ascending');
+    const [column, setColumn] = useState<columnT>('email');
+    const [data, setData] = useState<enrichedFireUser[]>([]);
 
-    handleSort = (clickedColumn: string) => () => {
-        const { column, direction } = this.state;
+    // Fetch data for the table
+    // First, get user id's for all enrolled by querying CourseUsers
+    // Next, map each course user to that user object
+    // Add the role from the courseUser to the User so we can display data
+    useEffect(
+        () => {
+            const courseUsers$: Observable<FireCourseUser[]> = collectionData(
+                firestore
+                    .collection('courseUsers')
+                    .where('courseId', '==', firestore.doc('courses/' + props.courseId)),
+                'courseUserId'
+            );
 
+            const users$ = courseUsers$.pipe(switchMap(courseUsers =>
+                combineLatest(...courseUsers.map(courseUser =>
+                    docData<FireUser>(firestore.doc(courseUser.userId.path), 'userId').pipe(
+                        map(u => ({ ...u, role: courseUser.role }))
+                    )
+                ))
+            ));
+
+            const subscription = users$.subscribe(u => setData(u));
+            return () => subscription.unsubscribe();
+        },
+        [props.courseId]
+    );
+
+    const handleSort = (clickedColumn: columnT) => () => {
         if (column !== clickedColumn) {
-            this.setState({
-                column: clickedColumn,
-                data: _.sortBy(this.state.data, [clickedColumn]),
-                direction: 'ascending',
-            });
-
-            return;
+            setDirection('ascending');
+            setColumn(clickedColumn);
+            setData(_.sortBy(data, [clickedColumn]));
+        } else {
+            setDirection(direction === 'ascending' ? 'descending' : 'ascending');
+            setData(data.reverse());
         }
+    };
 
-        this.setState({
-            direction: direction === 'ascending' ? 'descending' : 'ascending',
-            data: this.state.data.reverse()
-        });
-    }
-
-    render() {
-        const { column, direction } = this.state;
-
-        return (
-            <Table sortable={true} celled={true} fixed={true} className="rolesTable">
-                <Table.Header>
-                    <Table.Row>
-                        <Table.HeaderCell
-                            sorted={column === 'firstname' ? direction : undefined}
-                            onClick={this.handleSort('firstname')}
-                        >
-                            First Name
-                        </Table.HeaderCell>
-                        <Table.HeaderCell
-                            sorted={column === 'lastname' ? direction : undefined}
-                            onClick={this.handleSort('lastname')}
-                        >
-                            Last Name
-                        </Table.HeaderCell>
-                        <Table.HeaderCell
-                            sorted={column === 'email' ? direction : undefined}
-                            onClick={this.handleSort('email')}
-                        >
-                            Email
-                        </Table.HeaderCell>
-                        <Table.HeaderCell
-                            sorted={column === 'role' ? direction : undefined}
-                            onClick={this.handleSort('role')}
-                        >
-                            Role
-                        </Table.HeaderCell>
+    return (
+        <Table sortable={true} celled={true} fixed={true} className="rolesTable">
+            <Table.Header>
+                <Table.Row>
+                    <Table.HeaderCell
+                        sorted={column === 'firstName' ? direction : undefined}
+                        onClick={handleSort('firstName')}
+                    >
+                        First Name
+                    </Table.HeaderCell>
+                    <Table.HeaderCell
+                        sorted={column === 'lastName' ? direction : undefined}
+                        onClick={handleSort('lastName')}
+                    >
+                        Last Name
+                    </Table.HeaderCell>
+                    <Table.HeaderCell
+                        sorted={column === 'email' ? direction : undefined}
+                        onClick={handleSort('email')}
+                    >
+                        Email
+                    </Table.HeaderCell>
+                    <Table.HeaderCell
+                        sorted={column === 'role' ? direction : undefined}
+                        onClick={handleSort('role')}
+                    >
+                        Role
+                    </Table.HeaderCell>
+                </Table.Row>
+            </Table.Header>
+            <Table.Body>
+                {data.map(u => (
+                    <Table.Row key={u.userId}>
+                        <Table.Cell>{u.firstName}</Table.Cell>
+                        <Table.Cell>{u.lastName}</Table.Cell>
+                        <Table.Cell>{u.email}</Table.Cell>
+                        <Table.Cell textAlign="right" className="dropdownCell">
+                            <RoleDropdown
+                                default={u.role}
+                                userId={u.userId}
+                                courseId={props.courseId}
+                            />
+                        </Table.Cell>
                     </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                    {this.state.data.map(i => (
-                        <Table.Row key={i.userId}>
-                            <Table.Cell>{i.firstname}</Table.Cell>
-                            <Table.Cell>{i.lastname}</Table.Cell>
-                            <Table.Cell>{i.email}</Table.Cell>
-                            <Table.Cell textAlign="right" className="dropdownCell">
-                                <RoleDropdown
-                                    default={i.role}
-                                    userId={i.userId}
-                                    courseId={this.props.courseId}
-                                />
-                            </Table.Cell>
-                        </Table.Row>
-                    ))}
-                </Table.Body>
-            </Table>
-        );
-    }
-}
+                ))}
+            </Table.Body>
+        </Table>
+    );
+};
