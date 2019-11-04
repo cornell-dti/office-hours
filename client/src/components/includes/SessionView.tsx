@@ -184,11 +184,11 @@ class SessionView extends React.Component {
         }
     }
 
-    handleUndoClick = (undoQuestion: Function, refetch: Function) => {
+    handleUndoClick = (undoQuestion: Function, status: string, refetch: Function) => {
         undoQuestion({
             variables: {
                 questionId: this.state.undoQuestionId,
-                status: 'unresolved'
+                status: status
             }
         });
     }
@@ -208,15 +208,20 @@ class SessionView extends React.Component {
 
     render() {
         var undoText = '';
+        var undoStatus = 'unresolved';
         if (this.state.undoAction) {
             if (this.state.undoAction === 'resolved') {
                 undoText = this.state.undoName + ' has been resolved! ';
+                undoStatus = 'assigned';
             } else if (this.state.undoAction === 'no-show') {
                 undoText = this.state.undoName + ' has been marked as a no-show. ';
+                undoStatus = 'assigned';
             } else if (this.state.undoAction === 'retracted') {
                 undoText = 'You have removed your question. ';
+                undoStatus = 'unresolved';
             } else if (this.state.undoAction === 'assigned') {
                 undoText = this.state.undoName + ' has been assigned to you! ';
+                undoStatus = 'unresolved';
             }
         }
 
@@ -296,7 +301,10 @@ class SessionView extends React.Component {
                                                             <span
                                                                 className="undoLink"
                                                                 onClick={() =>
-                                                                    this.handleUndoClick(undoQuestion, refetch)
+                                                                    this.handleUndoClick(
+                                                                        undoQuestion,
+                                                                        undoStatus,
+                                                                        refetch)
                                                                 }
                                                             >
                                                                 Undo
