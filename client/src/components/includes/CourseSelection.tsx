@@ -13,6 +13,12 @@ query GetMetadata {
         nodes {
             computedName
             computedAvatar
+            courseUsersByUserId {
+                nodes {
+                    role
+                    courseId
+                }
+            }
         }
     }
     allCourses {
@@ -81,6 +87,8 @@ class CourseSelection extends React.Component {
                                     <CourseCard
                                         key={i}
                                         course={course}
+                                        role={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0]
+                                            .courseUsersByUserId.nodes[i].role}
                                         selectCourse={this.props.isEdit ? this.selectCourse : undefined}
                                         selected={this.props.isEdit ?
                                             (this.state.selectedCourses.indexOf(course) !== -1) : undefined}
