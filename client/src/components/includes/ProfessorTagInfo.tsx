@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
+import { firestore } from 'src/firebase';
 
 class ProfessorTagInfo extends React.Component {
     props: {
@@ -19,7 +20,7 @@ class ProfessorTagInfo extends React.Component {
         super(props);
         this.state = {
             tag: {
-                courseId: this.props.courseId,
+                courseId: firestore.collection('courses').doc(this.props.courseId),
                 level: 1,
                 active: true,
                 tagId: '', // new tag
@@ -79,7 +80,7 @@ class ProfessorTagInfo extends React.Component {
             level: 2,
             tagId: '',
             name: this.state.newTagText,
-            courseId: this.props.courseId
+            courseId: firestore.collection('courses').doc(this.props.courseId)
         };
         this.helperAddNewChildTag(newTag);
         this.setState({ newTagText: '' });
