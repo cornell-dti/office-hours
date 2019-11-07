@@ -243,10 +243,11 @@ class SessionQuestion extends React.Component {
                             isSelected={false}
                         />}
                     </div>
-                    <p className="Time">
-                        posted at&nbsp;
-                        {<Moment date={question.timeEntered.seconds * 1000} interval={0} format={'hh:mm A'} />}
-                    </p>
+                    {question.timeEntered != null &&
+                        <p className="Time">
+                            posted at&nbsp;
+                        {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
+                        </p>}
                 </div>
                 {this.props.isTA &&
                     <div className="Buttons">
