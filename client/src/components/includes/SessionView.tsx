@@ -23,6 +23,7 @@ query getDataForSession($sessionId: Int!, $courseId: Int!) {
             }
             questionsByAskerId {
                 nodes {
+                    questionId
                     timeEntered
                     status
                     sessionBySessionId {
@@ -240,6 +241,9 @@ class SessionView extends React.Component {
                             .filter((question) => question.status === 'unresolved')
                             .filter((question) => new Date(question.sessionBySessionId.endTime) >= new Date());
 
+                        // contains all the question ids from user's other in progess sessions
+                        var otherQuestionsId = otherQuestions.map((q) => q.questionId);
+
                         const userQuestions = data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes;
 
                         const lastAskedQuestion = userQuestions.length > 0 ?
@@ -318,7 +322,7 @@ class SessionView extends React.Component {
                                             myUserId={data.apiGetCurrentUser.nodes[0].userId}
                                             triggerUndo={this.triggerUndo}
                                             refetch={refetch}
-                                            // this sets a ref, which allows a parent to call methods on a child.
+                                            // this sets a ref, which allows a parent to call methods on a child.   
                                             // Here, the parent can't access refetch, but the child can.
                                             ref={(ref) => this.questionsContainer = ref}
                                             isOpen={this.isOpen(
@@ -328,6 +332,7 @@ class SessionView extends React.Component {
                                             openingTime={this.getOpeningTime(
                                                 data.sessionBySessionId, data.courseByCourseId.queueOpenInterval)}
                                             haveAnotherQuestion={otherQuestions.length > 0}
+                                            otherQuestionsId={otherQuestionsId}
                                         />
                                     </React.Fragment>
                                 }
