@@ -1,7 +1,6 @@
 {
   "name": "office-hours",
-  "scripts": {
-  },
+  "scripts": {},
   "env": {
     "OH_GOOGLE_SECRET": {
       "required": true
