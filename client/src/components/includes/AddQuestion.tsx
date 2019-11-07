@@ -287,17 +287,15 @@ class AddQuestion extends React.Component {
                                             />
                                             : <p className="placeHolder text">Enter your location...</p>}
                                     </div>
-                                    <div className="addButtonWrapper">
-                                        {this.state.stage > 40 ?
-                                            <p
-                                                className="AddButton active"
-                                                onClick={() => this.handleJoinClick(addQuestion)}
-                                            >
-                                                Add My Question
-                                            </p>
-                                            : <p className="AddButton"> Add My Question </p>
-                                        }
-                                    </div>
+                                    {this.state.stage > 40 ?
+                                        <p
+                                            className="AddButton active"
+                                            onClick={() => this.handleJoinClick(addQuestion)}
+                                        >
+                                            Add My Question
+                                        </p>
+                                        : <p className="AddButton"> Add My Question </p>
+                                    }
                                 </div>
                             </div>}
                         {this.state.stage === 60 &&

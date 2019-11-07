@@ -3,10 +3,6 @@
     "version": "0.1.0",
     "private": true,
     "proxy": "http://localhost:3001",
-    "engines": {
-        "node": "10",
-        "yarn": "1.18.0"
-    },
     "dependencies": {
         "@nivo/bar": "^0.51.5",
         "@nivo/line": "^0.51.0",
