@@ -298,6 +298,7 @@ class SessionQuestion extends React.Component {
                 <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
                     {(updateQuestion) =>
                         this.props.includeRemove && !this.props.includeBookmark && !this.props.isPast &&
+                        this.props.question.status !== 'assigned' &&
                         <div className="Buttons">
                             <hr />
                             <p
