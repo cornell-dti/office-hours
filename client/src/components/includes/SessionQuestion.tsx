@@ -114,13 +114,6 @@ class SessionQuestion extends React.Component {
         this.setState({ showDotMenu: status });
     }
 
-    // triggerUndoDontKnow = (questionId: number, name: string) => {
-    //     this.setState({
-    //         undoQuestionIdDontKnow: questionId,
-    //         undoName: name,
-    //     });
-    // }
-
     handleUndoDontKnow = (questionId: number, UndoDontKnow: Function) => {
         UndoDontKnow({
             variables: {
