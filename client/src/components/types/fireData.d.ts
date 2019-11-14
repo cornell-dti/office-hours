@@ -6,13 +6,23 @@ interface FireTimestamp {
 
 interface FireSession {
     building: string;
-    courseId: string;
+    courseId: firebase.firestore.DocumentReference;
     endTime: FireTimestamp;
     room: string;
-    sessionSeriesId: string;
+    sessionSeriesId?: firebase.firestore.DocumentReference;
     startTime: FireTimestamp;
     title?: string;
     sessionId: string;
+}
+
+interface FireSessionSeries {
+    building: string;
+    courseId: firebase.firestore.DocumentReference;
+    endTime: FireTimestamp;
+    room: string;
+    startTime: FireTimestamp;
+    title?: string;
+    sessionSeriesId: string;
 }
 
 interface FireCourse {
@@ -61,7 +71,7 @@ interface FireQuestion {
 
 interface FireTag {
     active: boolean;
-    courseId: string;
+    courseId: firebase.firestore.DocumentReference;
     level: number;
     tagId: string;
     name: string;
