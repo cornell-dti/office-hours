@@ -36,11 +36,13 @@ interface FireCourse {
     charLimit: number;
 }
 
+type FireCouseRole = 'professor' | 'ta' | 'student';
+
 interface FireCourseUser {
     courseId: firebase.firestore.DocumentReference;
     userId: firebase.firestore.DocumentReference;
-    role: 'professor' | 'ta' | 'student';
-    couresUserId: string;
+    role: FireCouseRole;
+    courseUserId: string;
 }
 
 interface FireUser {
@@ -50,6 +52,7 @@ interface FireUser {
     photoUrl: string;
     lastActivityAt: FireTimestamp;
     userId: string;
+    email: string;
 }
 
 interface FireQuestion {
