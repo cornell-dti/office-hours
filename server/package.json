@@ -4,6 +4,10 @@
     "description": "",
     "main": "lib/index",
     "types": "lib/index",
+    "engines": {
+        "node": "10",
+        "yarn": ">=1.19.1"
+    },
     "scripts": {
         "start": "ts-node index.ts",
         "s": "yarn start",
