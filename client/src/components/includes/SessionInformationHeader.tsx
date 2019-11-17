@@ -93,7 +93,14 @@ class SessionInformationHeader extends React.Component {
                             <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
                         </div>
                         <div className="Picture">
-                            <img src={tas[0] ? tas[0].userByUserId.computedAvatar : '/placeholder.png'} />
+                            <img
+                                src={this.state.avatar}
+                                onError={
+                                    (() => this.setState({
+                                        avatar: '/placeholder.png'
+                                    }))
+                                }
+                            />
                         </div>
                     </div>
                 </div>
