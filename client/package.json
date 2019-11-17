@@ -5,7 +5,7 @@
     "proxy": "http://localhost:3001",
     "engines": {
         "node": "10",
-        "yarn": "1.18.0"
+        "yarn": ">=1.19.1"
     },
     "dependencies": {
         "@nivo/bar": "^0.51.5",
