@@ -41,8 +41,8 @@ class SessionQuestionsContainer extends React.Component {
     }
 
     render() {
-        const questions = this.props.questions;
 
+        const questions = this.props.questions;
         // If the user has questions, store them in myQuestion[]
         const myQuestion = questions && questions.filter(q => q.askerId.id === this.props.myUserId);
         // Make sure that the data has loaded and user has a question

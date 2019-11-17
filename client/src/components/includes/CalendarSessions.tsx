@@ -11,11 +11,11 @@ const CalendarSessions = (props: {
     callback: (sessionId: string) => void;
 }) => {
     const labelSession = (session: FireSession, intervalMs: number) => {
-        if (new Date(session.endTime.seconds) < new Date()) {
+        if (new Date(session.endTime.toDate()) < new Date()) {
             return 'Past';
-        } else if (new Date(session.startTime.seconds * 1000) < new Date()) {
+        } else if (new Date(session.startTime.toDate()) < new Date()) {
             return 'Ongoing';
-        } else if (new Date(session.startTime.seconds * 1000) < new Date(new Date().getTime() + intervalMs)) {
+        } else if (new Date(session.startTime.toDate()) < new Date(new Date().getTime() + intervalMs)) {
             return 'Open';
         }
 

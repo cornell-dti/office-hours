@@ -66,13 +66,14 @@ export const useMyCourseUser = (courseId: string) => {
     useEffect(
         () => {
             const courseUsers$ = loggedIn$.pipe(
-                switchMap(u => collectionData(
-                    firestore
-                        .collection('courseUsers')
-                        .where('userId', '==', firestore.doc('users/' + u.uid))
-                        .where('courseId', '==', firestore.doc('courses/' + courseId)),
-                    'courseUserId'
-                ))
+                switchMap(u =>
+                    collectionData(
+                        firestore
+                            .collection('courseUsers')
+                            .where('userId', '==', firestore.doc('/users/' + u.uid))
+                            .where('courseId', '==', firestore.doc('/courses/' + courseId)),
+                        'courseUserId'
+                    ))
                 // RYAN_TODO better handle unexpected case w/ no courseUser
             );
 

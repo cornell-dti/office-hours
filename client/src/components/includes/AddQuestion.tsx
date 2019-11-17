@@ -7,7 +7,7 @@ import SelectedTags from '../includes/SelectedTags';
 import SessionAlertModal from './SessionAlertModal';
 import * as moment from 'moment';
 
-import { collectionData, firestore } from '../../firebase';
+import { collectionData, firestore, auth } from '../../firebase';
 import * as firebase from 'firebase';
 
 const LOCATION_CHAR_LIMIT = 40;
@@ -122,15 +122,20 @@ class AddQuestion extends React.Component {
     }
 
     public addQuestion = () => {
-        firestore.collection('questions').add({
-            askerId: firestore.doc('users/' + 'MYUSERID'),
-            content: this.state.question,
-            location: this.state.location,
-            sessionId: firestore.doc('sessions/' + this.props.session.sessionId),
-            status: 'unresolved',
-            timeEntered: firebase.database.ServerValue.TIMESTAMP
-        });
-        this.setState({ redirect: true });
+        if (auth.currentUser != null && this.state.selectedPrimary != null &&
+            this.state.selectedSecondary != null) {
+            firestore.collection('questions').add({
+                askerId: auth.currentUser.uid,
+                content: this.state.question,
+                location: this.state.location,
+                sessionId: firestore.doc('sessions/' + this.props.session.sessionId),
+                status: 'unresolved',
+                timeEntered: firebase.firestore.FieldValue.serverTimestamp(),
+                primaryTag: this.state.selectedPrimary.tagId,
+                secondaryTag: this.state.selectedSecondary.tagId
+            });
+            this.setState({ redirect: true });
+        }
     }
 
     public handleJoinClick = (): void => {
