@@ -12,10 +12,6 @@ class QuestionsLineChart extends React.Component {
         calcTickVals: (yMax: number) => number[]
     };
 
-    state: {
-        data: LineSerieData[];
-    };
-
     constructor(props: {
         lineData: {
             'x': string,
@@ -25,15 +21,6 @@ class QuestionsLineChart extends React.Component {
         calcTickVals: (yMax: number) => number[]
     }) {
         super(props);
-        this.state = {
-            data: [
-                {
-                    'id': 'questions',
-                    'color': 'hsl(100, 20%, 34%)',
-                    'data': this.props.lineData
-                }
-            ] as LineSerieData[]
-        };
     }
 
     render() {
@@ -46,15 +33,13 @@ class QuestionsLineChart extends React.Component {
                             return '#979797';
                         }
                     }
-                    data={(this.state = {
-                        data: [
-                            {
-                                'id': 'questions',
-                                'color': 'hsl(100, 20%, 34%)',
-                                'data': this.props.lineData
-                            }
-                        ] as LineSerieData[]
-                    }, this.state.data)}
+                    data={[
+                        {
+                            'id': 'questions',
+                            'color': 'hsl(100, 20%, 34%)',
+                            'data': this.props.lineData
+                        }
+                    ]}
                     margin={{
                         'top': 20,
                         'right': 20,
@@ -78,16 +63,12 @@ class QuestionsLineChart extends React.Component {
                         'tickPadding': 12,
                         'tickRotation': 0,
                         'legendOffset': -40,
-                        'legendPosition': 'end',
-                        'tickValues': this.props.calcTickVals(this.props.yMax)
+                        'legendPosition': 'middle'
                     }}
                     axisBottom={{
-                        'legend': '',
                         'tickSize': 1,
                         'tickPadding': 12,
-                        'tickRotation': -60,
-                        'legendOffset': 40,
-                        'legendPosition': 'end'
+                        'tickRotation': -60
                     }}
                     enableGridX={false}
                     dotSize={8}
@@ -95,15 +76,9 @@ class QuestionsLineChart extends React.Component {
                     dotBorderWidth={2}
                     dotBorderColor="#999"
                     enableDotLabel={false}
-                    // dotLabel="y"
-                    // dotLabelYOffset={-12}
                     animate={true}
                     motionStiffness={90}
                     motionDamping={15}
-                    legends={[
-
-                    ]}
-
                 />
 
             </div>

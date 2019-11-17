@@ -8,19 +8,12 @@ class TagsBarChart extends React.Component {
         calcTickVals: (yMax: number) => number[]
     };
 
-    state: {
-        data: BarDatum[];
-    };
-
     constructor(props: {
         barData: {}[],
         yMax: number,
         calcTickVals: (yMax: number) => number[]
     }) {
         super(props);
-        this.state = {
-            data: this.props.barData as BarDatum[]
-        };
     }
 
     isEmpty(obj: {}) {
@@ -36,9 +29,7 @@ class TagsBarChart extends React.Component {
         return (
             <div className="TagsBarChart" style={{ height: 300 }}>
                 <ResponsiveBar
-                    data={(this.state = {
-                        data: this.props.barData as BarDatum[],
-                    }, this.state.data)}
+                    data={this.props.barData}
                     indexBy="name"
                     margin={{
                         'top': 5,

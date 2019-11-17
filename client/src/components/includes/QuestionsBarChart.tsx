@@ -77,14 +77,8 @@ class QuestionsBarChart extends React.Component {
             <div className="QuestionsBarChart" style={{ height: 300 }}>
 
                 <ResponsiveBar
-                    data={(this.state = {
-                        data: this.props.barData as BarDatum[],
-                        sessionKeys: this.props.sessionKeys
-                    }, this.state.data)}
-                    keys={(this.state = {
-                        data: this.props.barData as BarDatum[],
-                        sessionKeys: this.props.sessionKeys
-                    }, this.state.sessionKeys)}
+                    data={this.props.barData}
+                    keys={this.props.sessionKeys}
                     indexBy="date"
                     margin={{
                         'top': 5,
@@ -119,16 +113,13 @@ class QuestionsBarChart extends React.Component {
                         'tickPadding': 12,
                         'tickRotation': 0,
                         'legendOffset': -40,
-                        'legendPosition': 'end',
+                        'legendPosition': 'center', // should be middle, outdated package
                         'tickValues': this.props.calcTickVals(this.props.yMax)
                     }}
                     axisBottom={{
-                        'legend': '',
                         'tickSize': 1,
                         'tickPadding': 12,
-                        'tickRotation': -60,
-                        'legendOffset': 40,
-                        'legendPosition': 'end'
+                        'tickRotation': -60
                     }}
                     labelSkipWidth={12}
                     labelSkipHeight={12}

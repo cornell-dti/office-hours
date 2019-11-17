@@ -7,31 +7,11 @@ class QuestionsPieChart extends React.Component {
     percentUnresolved: number
   };
 
-  state: {
-    data: PieDatum[];
-  };
-
   constructor(props: {
     percentResolved: number,
     percentUnresolved: number
   }) {
     super(props);
-    this.state = {
-      data: [
-        {
-          'id': '% Unanswered',
-          'value': this.props.percentUnresolved,
-          'key': 'no-answer',
-          'color': 'rgba(65, 129, 227, 0.5)'
-        },
-        {
-          'id': '% Answered',
-          'value': this.props.percentResolved,
-          'key': 'answer',
-          'color': 'rgba(65, 100, 227, 0.5)'
-        }
-      ] as PieDatum[]
-    };
   }
 
   render() {
@@ -39,22 +19,20 @@ class QuestionsPieChart extends React.Component {
       <div className="QuestionsPieChart" style={{ height: 300 }}>
 
         <ResponsivePie
-          data={(this.state = {
-            data: [
-              {
-                'id': '% Unanswered',
-                'value': this.props.percentUnresolved,
-                'key': 'no-answer',
-                'color': 'rgba(65, 129, 227, 0.5)'
-              },
-              {
-                'id': '% Answered',
-                'value': this.props.percentResolved,
-                'key': 'answer',
-                'color': 'rgba(65, 100, 227, 0.5)'
-              }
-            ] as PieDatum[]
-          }, this.state.data)}
+          data={[
+            {
+              'id': '% Unanswered',
+              'value': this.props.percentUnresolved,
+              'key': 'no-answer',
+              'color': 'rgba(65, 129, 227, 0.5)'
+            },
+            {
+              'id': '% Answered',
+              'value': this.props.percentResolved,
+              'key': 'answer',
+              'color': 'rgba(65, 100, 227, 0.5)'
+            }
+          ]}
           margin={{
             'top': 1,
             'right': 30,
