@@ -7,8 +7,7 @@ class QuestionsBarChart extends React.Component {
         barData: {}[],
         yMax: number,
         sessionKeys: string[],
-        sessionDict: {},
-        calcTickVals: (yMax: number) => number[]
+        sessionDict: {}
     };
 
     state: {
@@ -19,8 +18,7 @@ class QuestionsBarChart extends React.Component {
     constructor(props: {
         barData: {}[],
         yMax: number,
-        sessionDict: {},
-        calcTickVals: (yMax: number) => number[]
+        sessionDict: {}
     }) {
         super(props);
         this.state = {
@@ -113,8 +111,7 @@ class QuestionsBarChart extends React.Component {
                         'tickPadding': 12,
                         'tickRotation': 0,
                         'legendOffset': -40,
-                        'legendPosition': 'center', // should be middle, outdated package
-                        'tickValues': this.props.calcTickVals(this.props.yMax)
+                        'legendPosition': 'center' // should be middle, outdated package
                     }}
                     axisBottom={{
                         'tickSize': 1,

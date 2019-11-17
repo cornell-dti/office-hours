@@ -329,7 +329,6 @@ class ProfessorPeopleView extends React.Component {
                                                                 sessionKeys={sessionIdList}
                                                                 sessionDict={sessionDict}
                                                                 yMax={questionsOfBusiestDay}
-                                                                calcTickVals={this.calcTickVals}
                                                             />
                                                         </div>
                                                     </div>
@@ -361,7 +360,6 @@ class ProfessorPeopleView extends React.Component {
                                                         <QuestionsLineChart
                                                             lineData={lineQuestionsPerDay}
                                                             yMax={questionsOfBusiestDay}
-                                                            calcTickVals={this.calcTickVals}
                                                         />
                                                     </div>
 

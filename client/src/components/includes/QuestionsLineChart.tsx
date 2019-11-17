@@ -8,8 +8,7 @@ class QuestionsLineChart extends React.Component {
             'x': string,
             'y': number
         }[],
-        yMax: number,
-        calcTickVals: (yMax: number) => number[]
+        yMax: number
     };
 
     constructor(props: {
@@ -17,8 +16,7 @@ class QuestionsLineChart extends React.Component {
             'x': string,
             'y': number
         }[],
-        yMax: number,
-        calcTickVals: (yMax: number) => number[]
+        yMax: number
     }) {
         super(props);
     }
