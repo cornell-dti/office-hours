@@ -14,6 +14,7 @@ mutation LeaveQueue($questionId: Int!, $status: String!) {
     }
 }
 `;
+
 class SessionQuestionsContainer extends React.Component {
     props: {
         isTA: boolean,
@@ -62,7 +63,7 @@ class SessionQuestionsContainer extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = {
-            sentNotification: false,
+            sentNotification: window.sessionStorage.getItem('questionUpNotif') === 'sent' || false,
         };
     }
 
@@ -85,6 +86,7 @@ class SessionQuestionsContainer extends React.Component {
             document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
             // if user is up and we haven't already sent a notification, send one.
             if (myQuestionIndex === 0 && !this.state.sentNotification) {
+                window.sessionStorage.setItem('questionUpNotif', 'sent');
                 this.setState({ sentNotification: true });
                 try {
                     var n = new Notification('Your question is up!');
@@ -94,6 +96,7 @@ class SessionQuestionsContainer extends React.Component {
                 }
                 // If next render, the user isn't at 0 anymore, reset state
             } else if (myQuestionIndex !== 0 && this.state.sentNotification) {
+                window.sessionStorage.setItem('questionUpNotif', '');
                 this.setState({ sentNotification: false });
             }
         } else if (this.props.isTA && questions) {
