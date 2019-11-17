@@ -33,8 +33,6 @@ const ProfessorPeopleView = (props: {
     const [sessions, setSessions] = useState<FireSession[]>([]);
     const [questions, setQuestions] = useState<FireQuestion[][]>([]);
 
-    // { [key: string]: FireQuestion[] }
-
     // Fetch sessions for course between dates
     useEffect(
         () => {
@@ -45,7 +43,7 @@ const ProfessorPeopleView = (props: {
                     .where('courseId', '==', firestore.doc('courses/' + courseId)),
                 'sessionId'
             );
-            sessions$.subscribe((newSessions: FireSession[]) => setSessions(newSessions));
+            const s1 = sessions$.subscribe((newSessions: FireSession[]) => setSessions(newSessions));
 
             // Fetch all questions for given sessions
             let questions$ = sessions$.pipe(
@@ -61,21 +59,24 @@ const ProfessorPeopleView = (props: {
                 )
             );
 
-            questions$.subscribe((newQuestions: FireQuestion[][]) => setQuestions(newQuestions));
-            // return () => {
-            //     cleanup
-            // };
+            const s2 = questions$.subscribe((newQuestions: FireQuestion[][]) => setQuestions(newQuestions));
+            return () => {
+                s1.unsubscribe();
+                s2.unsubscribe();
+            };
         },
         [courseId]
     );
 
     // Compute necessary data
+    // Aggregate Stats
     const allQuestions = questions.flat();
     const totalQuestions = allQuestions.length;
     const unresolvedQuestions = allQuestions.filter(q => q.status === 'unresolved');
     const percentUnresolved = unresolvedQuestions.length / totalQuestions;
     const percentResolved = 1 - percentUnresolved;
 
+    // Busiest Session Data
     const busiestSessionIndex = questions.reduce(
         (busiestIndex, currentQs, i, arr) =>
             currentQs.length > arr[busiestIndex].length ? i : busiestIndex,
@@ -93,6 +94,7 @@ const ProfessorPeopleView = (props: {
         date: moment(busiestSession.startTime.seconds * 1000).format('MMMM Do YYYY')
     };
 
+    // Line Chart
     const lineChartQuestions = questions.length > 0
         ? sessions.map((s, i) => ({
             'x': moment(s.startTime.seconds * 1000).format('MMM D'),
@@ -115,6 +117,7 @@ const ProfessorPeopleView = (props: {
         return tickVals;
     };
 
+    // Bar Chart
     let sessionDict = {};
 
     sessions.forEach((t, i) => {
@@ -141,10 +144,10 @@ const ProfessorPeopleView = (props: {
                     <div className="Date-picker-container">
                         <DateRangePicker
                             isOutsideRange={() => false}
-                            startDate={startDate} // momentPropTypes.momentObj or null,
-                            startDateId="start1" // PropTypes.string.isRequired,
-                            endDate={endDate} // momentPropTypes.momentObj or null,
-                            endDateId="end1" // PropTypes.string.isRequired,
+                            startDate={startDate}
+                            startDateId="start1"
+                            endDate={endDate}
+                            endDateId="end1"
                             onDatesChange={({ startDate: newStartDate, endDate: newEndDate }) => {
                                 if (newStartDate) { setStartDate(newStartDate); }
                                 if (newEndDate) { setEndDate(newEndDate); }
@@ -153,8 +156,8 @@ const ProfessorPeopleView = (props: {
                             onFocusChange={newFocusedInput => setFocusedInput(newFocusedInput)}
                         />
                     </div>
-                    {totalQuestions > 0 ? (
-                        <div>
+                    {totalQuestions > 0
+                        ? (<div>
                             <div className="first-row-container">
                                 <div className="Total-Questions-Box">
                                     <QuestionsPieChart
@@ -163,18 +166,13 @@ const ProfessorPeopleView = (props: {
                                     />
                                     <div className="percent-overlay">
                                         <p>
-                                            <span className="Question-Percent">
-                                                {percentResolved}%
-                                            </span>
-                                            <br />
-                                            answered
+                                            <span className="Question-Percent"> {percentResolved}% </span>
+                                            <br /> answered
                                         </p>
                                     </div>
                                     <div className="q-total-container">
                                         <p>
-                                            <span className="Question-Number">
-                                                {totalQuestions}
-                                            </span>
+                                            <span className="Question-Number"> {totalQuestions} </span>
                                             <br /> questions total
                                         </p>
                                     </div>
@@ -225,15 +223,13 @@ const ProfessorPeopleView = (props: {
                                     />
                                 </div>
                             </div>
-                        </div>
-                    ) : (
-                            <div className="no-question-warning">
-                                <p>
-                                    No questions were asked during the selected time range.
-                                    <br /> Please select a new time range.
-                                </p>
-                            </div>
-                        )
+                        </div>)
+                        : (<div className="no-question-warning">
+                            <p>
+                                No questions were asked during the selected time range.
+                                <br /> Please select a new time range.
+                            </p>
+                        </div>)
                     }
                 </div>
             </section>
