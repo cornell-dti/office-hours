@@ -16,19 +16,6 @@ class QuestionsBarChart extends React.Component {
         sessionKeys: string[];
     };
 
-    constructor(props: {
-        barData: {}[],
-        yMax: number,
-        sessionDict: {},
-        calcTickVals: (yMax: number) => number[]
-    }) {
-        super(props);
-        this.state = {
-            data: this.props.barData as BarDatum[],
-            sessionKeys: this.props.sessionKeys
-        };
-    }
-
     isEmpty(obj: {}) {
         for (var k in obj) {
             if (obj.hasOwnProperty(k)) {
@@ -77,14 +64,8 @@ class QuestionsBarChart extends React.Component {
             <div className="QuestionsBarChart" style={{ height: 300 }}>
 
                 <ResponsiveBar
-                    data={(this.state = {
-                        data: this.props.barData as BarDatum[],
-                        sessionKeys: this.props.sessionKeys
-                    }, this.state.data)}
-                    keys={(this.state = {
-                        data: this.props.barData as BarDatum[],
-                        sessionKeys: this.props.sessionKeys
-                    }, this.state.sessionKeys)}
+                    data={this.props.barData as BarDatum[]}
+                    keys={this.props.sessionKeys}
                     indexBy="date"
                     margin={{
                         'top': 5,
