@@ -15,13 +15,14 @@ class TopBar extends React.PureComponent {
 
     state: {
         showMenu: boolean;
-        image: string;
+        avatar: string;
     };
 
     constructor(props: {}) {
         super(props);
         this.state = {
-            showMenu: false, image: this.props.user.computedAvatar
+            showMenu: false,
+            avatar: this.props.user.computedAvatar
         };
     }
 
@@ -40,10 +41,10 @@ class TopBar extends React.PureComponent {
                     <div className="triggerArea" onClick={() => this.setMenu(!this.state.showMenu)} >
                         <div className="userProfile">
                             <img
-                                src={this.state.image}
+                                src={this.state.avatar}
                                 onError={
                                     (() => this.setState({
-                                        image: '/placeholder.png'
+                                        avatar: '/placeholder.png'
                                     }))
                                 }
                             />

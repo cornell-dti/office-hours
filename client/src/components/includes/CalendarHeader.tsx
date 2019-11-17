@@ -9,18 +9,23 @@ class CalendarHeader extends React.Component {
         currentCourseCode: string;
         isTa: boolean;
         isProf: boolean;
-        avatar: string | null;
+        avatar: string | undefined;
         allCoursesList: AppCourse[];
     };
 
     state: {
         showMenu: boolean;
         showCourses: boolean;
+        avatar: string | undefined;
     };
 
     constructor(props: {}) {
         super(props);
-        this.state = { showMenu: false, showCourses: false };
+        this.state = {
+            showMenu: false,
+            showCourses: false,
+            avatar: this.props.avatar
+        };
     }
 
     setMenu = (status: boolean) => {
@@ -53,7 +58,12 @@ class CalendarHeader extends React.Component {
                                 e.stopPropagation();
                                 this.setMenu(!this.state.showMenu);
                             }}
-                            src={this.props.avatar}
+                            src={this.state.avatar}
+                            onError={
+                                (() => this.setState({
+                                    avatar: '/placeholder.png'
+                                }))
+                            }
                         />
                     }
                     {this.state.showCourses &&
