@@ -15,6 +15,7 @@ import ProfessorPeopleView from './pages/ProfessorPeopleView';
 import { Analytics } from './includes/Analytics';
 import { Loader } from 'semantic-ui-react';
 import { userUpload } from '../firebasefunctions';
+import { useMyCourseUser } from 'src/firehooks';
 
 ReactGA.initialize('UA-123790900-1');
 
@@ -23,7 +24,7 @@ const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 5);
 
 // Since the type is unknown, we have to use the any type in the next two lines.
 // tslint:disable-next-line: no-any
-const PrivateRoute = ({ component, ...rest }: any) => {
+const PrivateRoute = ({ component, requireProfessor, ...rest }: any) => {
     // RYAN_TODO fix this
     // Check if the course is active or not, if not redirect to default course
     // let startDate = moment(data.courseByCourseId.startDate, 'YYYY-MM-DD');
@@ -37,7 +38,11 @@ const PrivateRoute = ({ component, ...rest }: any) => {
     // 0: Fetching currently logged in status
     // 1: Not logged in
     // 2: Logged in
+
+    const courseId = requireProfessor ? rest.computedMatch.params.courseId : undefined;
+
     const [isLoggedIn, setIsLoggedIn] = React.useState(0);
+    const courseUser = courseId && useMyCourseUser(courseId);
 
     auth.onAuthStateChanged((user) => {
         if (user) {
@@ -48,9 +53,11 @@ const PrivateRoute = ({ component, ...rest }: any) => {
         }
     });
 
-    if (isLoggedIn === 0) {
+    if (isLoggedIn === 0 || (requireProfessor && !courseUser)) {
         return <Loader active={true} content={'Loading'} />;
-    } else if (isLoggedIn === 2) {
+    } else if (isLoggedIn === 2 && !requireProfessor) {
+        return (<Route {...rest} component={component} />);
+    } else if (requireProfessor && courseUser && courseUser.role === 'professor') {
         return (<Route {...rest} component={component} />);
     }
 
@@ -67,25 +74,31 @@ const App = ({ }) => (
                     path="/professor-tags/course/:courseId"
                     component={ProfessorTagsView}
                     exact={true}
+                    requireProfessor={true}
                 />
                 <PrivateRoute
                     path="/professor-people/course/:courseId"
                     component={ProfessorPeopleView}
+                    exact={true}
+                    requireProfessor={true}
                 />
                 <PrivateRoute
                     path="/professor-dashboard/course/:courseId"
                     component={ProfessorDashboardView}
                     exact={true}
+                    requireProfessor={true}
                 />
                 <PrivateRoute
                     path="/professor-roles/course/:courseId"
                     component={ProfessorRoles}
                     exact={true}
+                    requireProfessor={true}
                 />
                 <PrivateRoute
                     path="/professor/course/:courseId"
                     component={ProfessorView}
                     exact={true}
+                    requireProfessor={true}
                 />
                 <PrivateRoute
                     path="/course/:courseId/session/:sessionId/:page?"
