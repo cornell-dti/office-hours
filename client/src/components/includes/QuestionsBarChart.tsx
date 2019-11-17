@@ -62,7 +62,6 @@ class QuestionsBarChart extends React.Component {
     render() {
         return (
             <div className="QuestionsBarChart" style={{ height: 300 }}>
-
                 <ResponsiveBar
                     data={this.props.barData as BarDatum[]}
                     keys={this.props.sessionKeys}
@@ -77,11 +76,7 @@ class QuestionsBarChart extends React.Component {
                     maxValue={this.props.yMax}
                     innerPadding={3}
                     padding={0.3}
-                    colorBy={
-                        function (e: BarDatum) {
-                            return '#d8d8d8';
-                        }
-                    }
+                    colors="#d8d8d8"
                     // @ts-ignore - TODO: Figure out how to avoid this and get a string from Reacttext
                     tooltip={(node) => { return this.createTooltipFunc(node.id)(); }}
 
@@ -120,9 +115,7 @@ class QuestionsBarChart extends React.Component {
                     legends={[
                     ]}
                 />
-
             </div>
-
         );
     }
 }

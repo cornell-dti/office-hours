@@ -50,11 +50,7 @@ class TagsBarChart extends React.Component {
                     maxValue={this.props.yMax}
                     innerPadding={3}
                     padding={0.3}
-                    colorBy={
-                        function (e: BarDatum) {
-                            return '#d8d8d8';
-                        }
-                    }
+                    colors="#d8d8d8"
                     tooltip={({ value }) => (
                         <strong>
                             Questions: {value}
