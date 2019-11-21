@@ -51,6 +51,7 @@ class SessionQuestion extends React.Component {
         showDotMenu: boolean,
         undoQuestionIdDontKnow?: number,
         undoName?: string,
+        avatar: string
     };
 
     constructor(props: {}) {
@@ -62,6 +63,7 @@ class SessionQuestion extends React.Component {
             showDotMenu: false,
             undoQuestionIdDontKnow: undefined,
             undoName: undefined,
+            avatar: this.props.question.userByAskerId.computedAvatar
         };
     }
 
@@ -180,7 +182,14 @@ class SessionQuestion extends React.Component {
                 <div className="QuestionInfo">
                     {this.props.isTA &&
                         <div className="studentInformation">
-                            <img src={question.userByAskerId.computedAvatar} />
+                            <img
+                                src={this.state.avatar}
+                                onError={
+                                    (() => this.setState({
+                                        avatar: '/placeholder.png'
+                                    }))
+                                }
+                            />
                             <span className="Name">
                                 {question.userByAskerId.computedName}
                                 {question.status === 'assigned' &&
