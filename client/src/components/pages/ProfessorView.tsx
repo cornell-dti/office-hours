@@ -9,9 +9,6 @@ import { Query } from 'react-apollo';
 import { DropdownItemProps } from 'semantic-ui-react';
 import 'moment-timezone';
 import { Redirect } from 'react-router';
-import { Icon } from 'semantic-ui-react';
-import ProfessorDelete from '../includes/ProfessorDelete';
-import ProfessorSettings from '../includes/ProfessorSettings';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 
@@ -55,10 +52,6 @@ query FindSessionsByCourse($courseId: Int!, $beginTime: Datetime!, $endTime: Dat
         }
     }
     courseByCourseId(courseId: $courseId) {
-        queueOpenInterval {
-            minutes
-        }
-        charLimit
         tas: courseUsersByCourseId(condition: {role: "ta"}) {
             nodes {
                 userByUserId {
@@ -93,10 +86,6 @@ interface ProfessorSessionsData {
         nodes: [AppSession]
     };
     courseByCourseId: {
-        queueOpenInterval: {
-            minutes: number
-        }
-        charLimit: number
         tas: {
             nodes: [AppTa]
         }
@@ -121,8 +110,7 @@ class ProfessorMetadataDataQuery extends Query<ProfessorMetadataData, MetadataVa
 
 class ProfessorView extends React.Component {
     state: {
-        selectedWeekEpoch: number,
-        isSettingsVisible: boolean
+        selectedWeekEpoch: number
     };
 
     props: {
@@ -142,8 +130,7 @@ class ProfessorView extends React.Component {
         var today = new Date();
         today.setHours(0, 0, 0, 0);
         this.state = {
-            selectedWeekEpoch: week.getTime(),
-            isSettingsVisible: false
+            selectedWeekEpoch: week.getTime()
         };
         this.handleWeekClick = this.handleWeekClick.bind(this);
     }
@@ -229,36 +216,6 @@ class ProfessorView extends React.Component {
                                         refreshCallback={refetch}
                                         taOptions={taOptions}
                                     />
-
-                                    <button
-                                        id="profSettings"
-                                        onClick={() => this.setState({
-                                            isSettingsVisible: !this.state.isSettingsVisible
-                                        })}
-                                    >
-                                        <Icon name="setting" />
-                                        Settings
-                                    </button>
-                                    {data && data.apiGetSessions &&
-                                        <ProfessorDelete
-                                            isDeleteVisible={this.state.isSettingsVisible}
-                                            updateDeleteVisible={() => this.setState({
-                                                isSettingsVisible: !this.state.isSettingsVisible
-                                            })}
-                                            content={
-                                                <ProfessorSettings
-                                                    courseId={courseId}
-                                                    charLimitDefault={data.courseByCourseId.charLimit}
-                                                    openIntervalDefault={
-                                                        data.courseByCourseId.queueOpenInterval.minutes
-                                                    }
-                                                    toggleDelete={() => this.setState({
-                                                        isSettingsVisible: !this.state.isSettingsVisible
-                                                    })}
-                                                />
-                                            }
-                                        />
-                                    }
                                     <CalendarWeekSelect
                                         handleClick={this.handleWeekClick}
                                         selectedWeekEpoch={this.state.selectedWeekEpoch}

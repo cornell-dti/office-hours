@@ -23,21 +23,6 @@ section.StudentSessionView {
     -webkit-overflow-scrolling: touch;
 }
 
-.SessionLeaveQueueMessage{
-    color: #ffffff;
-    background-color:#8d8d8d;
-    font-size: 16px;
-    padding: 12px 0px 12px 0px;
-    font-weight: 100;
-    cursor: pointer;
-    margin-top: -13px; //this is - 13px, not -12px because it is fuzzy
-}
-
-.removeQuestionLeaveQueue{
-    font-weight: 400;
-    text-decoration: underline;
-}
-
 section.StudentSessionView::-webkit-scrollbar , aside.CalendarView::-webkit-scrollbar {
     display: none;
 }
@@ -167,3 +152,26 @@ section .SessionJoinButton {
         background-color: #79b8b8;
     }
 }
+
+  .feedbackModal {
+    .Feedback {
+      position: fixed;
+      z-index: 4;
+      top: 0;
+      left: 0;
+      @media only screen and (min-width: @mobile-breakpoint) {
+        top: 15%;
+        left: 15%;
+      }
+    }
+  }
+  
+  .feedbackShade {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    background-color: hsla(0, 0%, 44%, 0.8);
+  }  
