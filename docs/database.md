@@ -82,7 +82,7 @@ Each row in courses represents a specific course offering that is using Queue Me
 |:---:|---|
 |Read|All users|
 |Insert|-|
-|Update|Professors for the course|
+|Update|-|
 |Delete|-|
 
 ### users
@@ -433,19 +433,6 @@ Update's the course_user value for a given course and user (specified by ID). Wi
 
 ##### Returns
 All the fields of the updated row from the [course users](#course_users) table
-
-#### api\_update\_course\_settings
-
-##### Description
-Updates the char_limit and queue_open_interval values for a given course (specified by the course ID), provided that the current user for the specified course has a 'professor' role.
-
-##### Parameters
-- \_course\_id (int): The id of the course that you want to update the settings for
-- \_char\_limit (int): the new character limit for the course
-- \_queue\_open\_interval (interval): the new time interval of when a course's queue should be open prior to the start time
-
-##### Returns
-All the fields of the updated row from the [courses](#courses) table
 
 #### api\_get\_current\_user
 

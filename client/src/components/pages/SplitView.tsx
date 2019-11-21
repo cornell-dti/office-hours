@@ -4,6 +4,7 @@ import * as H from 'history';
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import ConnectedQuestionView from '../includes/ConnectedQuestionView';
+import Popup from '../includes/Popup';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -24,7 +25,9 @@ class SplitView extends React.Component {
         sessionId: number,
         width: number,
         height: number,
-        activeView: string
+        activeView: string,
+        showFeedbackAfterJoining: boolean,
+        showFeedback: boolean,
     };
 
     sessionView: SessionView | null = null;
@@ -46,6 +49,9 @@ class SplitView extends React.Component {
         if (this.sessionView && this.sessionView.questionsContainer) {
             this.sessionView.questionsContainer.props.refetch();
         }
+        if (this.state.showFeedbackAfterJoining) {
+            this.setState({ showFeedback: true, showFeedbackAfterJoining: false});
+        }
     }
 
     constructor(props: {}) {
@@ -56,7 +62,9 @@ class SplitView extends React.Component {
             height: window.innerHeight,
             activeView: this.props.match.params.page === 'add'
                 ? 'addQuestion'
-                : this.props.match.params.sessionId ? 'session' : 'calendar'
+                : this.props.match.params.sessionId ? 'session' : 'calendar',
+            showFeedbackAfterJoining: false,
+            showFeedback: false,
         };
 
         // Handle browser back button
@@ -76,11 +84,11 @@ class SplitView extends React.Component {
         this.setState({ sessionId: sessionId, activeView: 'session' });
     }
 
-    handleJoinClick = () => {
+    handleJoinClick = (showFeedback: boolean) => {
         this.props.history.push(
             '/course/' + this.props.match.params.courseId + '/session/' + this.state.sessionId + '/add'
         );
-        this.setState({ activeView: 'addQuestion' });
+        this.setState({ activeView: 'addQuestion', showFeedbackAfterJoining: showFeedback });
     }
 
     handleBackClick = () => {
@@ -127,6 +135,22 @@ class SplitView extends React.Component {
                         <div className="modalShade" onClick={() => this.setState({ activeView: 'session' })} />
                     </React.Fragment>
                 }
+                {this.state.showFeedback && (
+                    <div className="feedbackModal">
+                    <div className={'feedbackShade'} />
+                    <div className="Feedback">
+                        <Popup 
+                            show={this.state.showFeedback} 
+                            topTitle="Have an opinion about Queue Me In?" 
+                            description="Let us know how your experience on Queue Me In is going.
+                            Your feedback is incredibly valuable."
+                            buttonLabel="Send Feedback"
+                            link="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1"
+                            hideFunction={() => this.setState({ showFeedback: false })}
+                        />
+                    </div>
+                    </div>
+                )}
             </React.Fragment>
         );
     }
