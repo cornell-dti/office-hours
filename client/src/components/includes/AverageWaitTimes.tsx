@@ -90,11 +90,7 @@ class AverageWaitTimes extends React.Component {
           maxValue={this.props.yMax}
           innerPadding={3}
           padding={0.3}
-          colorBy={
-            function (e: BarDatum) {
-              return '#d8d8d8';
-            }
-          }
+          colorBy={'#d8d8d8'}
           // @ts-ignore - TODO: Figure out how to avoid this and get a string from Reacttext
           tooltip={(node) => { return this.createTooltipFunc(node.id)(); }}
 
@@ -127,8 +123,6 @@ class AverageWaitTimes extends React.Component {
           animate={true}
           motionStiffness={90}
           motionDamping={15}
-          legends={[
-          ]}
         />
 
       </div>

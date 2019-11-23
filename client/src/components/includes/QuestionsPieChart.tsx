@@ -44,12 +44,7 @@ class QuestionsPieChart extends React.Component {
           cornerRadius={1}
           colorBy={
             function (e: PieDatum) {
-              var t = e.key;
-              if (t === 'answer') {
-                return '#4181e3';
-              } else {
-                return '#a8c7eb';
-              }
+              return e.key === 'answer' ? '#4181e3' : '#a8c7eb';
             }
           }
 
@@ -71,12 +66,6 @@ class QuestionsPieChart extends React.Component {
           motionStiffness={90}
           motionDamping={15}
           isInteractive={false}
-          defs={[
-          ]}
-          fill={[
-
-          ]}
-
         />
 
       </div>

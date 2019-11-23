@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ResponsiveLine, LineSerieData } from '@nivo/line';
+import { ResponsiveLine } from '@nivo/line';
 
 class QuestionsLineChart extends React.Component {
 
@@ -26,11 +26,7 @@ class QuestionsLineChart extends React.Component {
             <div className="QuestionsLineChart" style={{ height: 300 }}>
 
                 <ResponsiveLine
-                    colorBy={
-                        function (e: LineSerieData) {
-                            return '#979797';
-                        }
-                    }
+                    colors={'#979797'}
                     data={[
                         {
                             'id': 'questions',
