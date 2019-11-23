@@ -39,13 +39,8 @@ class QuestionsLineChart extends React.Component {
     render() {
         return (
             <div className="QuestionsLineChart" style={{ height: 300 }}>
-
                 <ResponsiveLine
-                    colorBy={
-                        function (e: LineSerieData) {
-                            return '#979797';
-                        }
-                    }
+                    colors="#979797"
                     data={(this.state = {
                         data: [
                             {
@@ -90,24 +85,19 @@ class QuestionsLineChart extends React.Component {
                         'legendPosition': 'end'
                     }}
                     enableGridX={false}
-                    dotSize={8}
-                    dotColor="#ffffff"
-                    dotBorderWidth={2}
-                    dotBorderColor="#999"
-                    enableDotLabel={false}
+                    pointSize={8}
+                    pointColor="#ffffff"
+                    pointBorderWidth={2}
+                    pointBorderColor="#999"
+                    enablePointLabel={false}
                     // dotLabel="y"
                     // dotLabelYOffset={-12}
                     animate={true}
                     motionStiffness={90}
                     motionDamping={15}
-                    legends={[
-
-                    ]}
-
+                    legends={[]}
                 />
-
             </div>
-
         );
     }
 }
