@@ -3,6 +3,7 @@ import ProfessorSidebar from '../includes/ProfessorSidebar';
 import QuestionsPieChart from '../includes/QuestionsPieChart';
 import QuestionsLineChart from '../includes/QuestionsLineChart';
 import QuestionsBarChart from '../includes/QuestionsBarChart';
+import AverageWaitTimes from '../includes/AverageWaitTimes';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Redirect } from 'react-router';
@@ -328,7 +329,6 @@ class ProfessorPeopleView extends React.Component {
                                                                 barData={barGraphData}
                                                                 sessionKeys={sessionIdList}
                                                                 sessionDict={sessionDict}
-                                                                yMax={questionsOfBusiestDay}
                                                             />
                                                         </div>
                                                     </div>
@@ -346,8 +346,8 @@ class ProfessorPeopleView extends React.Component {
                                                             <p className="maroon-descript">
                                                                 {busiestSessionInfo.ohDate}</p>
                                                             <p className="maroon-descript">
-                                                                {busiestSessionInfo.startHour} -
-                                                            {busiestSessionInfo.endHour}
+                                                                {busiestSessionInfo.startHour} - {' '}
+                                                                {busiestSessionInfo.endHour}
                                                             </p>
                                                             <p className="maroon-descript">
                                                                 {busiestSessionInfo.building} {busiestSessionInfo.room}
@@ -362,7 +362,36 @@ class ProfessorPeopleView extends React.Component {
                                                             yMax={questionsOfBusiestDay}
                                                         />
                                                     </div>
+                                                </div>
 
+                                                <div className="Average-Wait-Box">
+                                                    <div className="average-wait-text">
+                                                        <div>
+                                                            <p className="average-wait-title">
+                                                                Average Wait Times
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="average-time-bar-container">
+                                                        <AverageWaitTimes
+                                                            barData={[
+                                                                { date: 'Sep 29', time: 10, questions: 60 },
+                                                                { date: 'Oct 6', time: 5, questions: 100 },
+                                                                { date: 'Oct 13', time: 1, questions: 10 },
+                                                                { date: 'Oct 19', time: 14, questions: 28 },
+                                                                { date: 'Oct 20', time: 18, questions: 50 },
+                                                                { date: 'Oct 27', time: 20, questions: 15 },
+                                                                { date: 'Nov 2', time: 11, questions: 22 },
+                                                                { date: 'Nov 3', time: 13, questions: 43 },
+                                                                { date: 'Nov 9', time: 14, questions: 11 },
+                                                                { date: 'Nov 10', time: 11, questions: 51 },
+                                                                { date: 'Nov 16', time: 10, questions: 19 },
+                                                                { date: 'Nov 17', time: 3, questions: 21 },
+                                                                { date: 'Nov 23', time: 9, questions: 24 },
+                                                                { date: 'Nov 24', time: 19, questions: 66 }
+                                                            ]}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
                                             :

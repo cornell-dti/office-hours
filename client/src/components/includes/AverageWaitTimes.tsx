@@ -1,75 +1,31 @@
 import * as React from 'react';
-import { ResponsiveBar, BarDatum, BarExtendedDatum } from '@nivo/bar';
-import { Icon } from 'semantic-ui-react';
+import { ResponsiveBar, BarExtendedDatum } from '@nivo/bar';
 
 class AverageWaitTimes extends React.Component {
-  props: {
-    barData: {}[],
-    yMax: number,
-    sessionKeys: string[],
-    sessionDict: {},
-    calcTickVals: (yMax: number) => number[]
-  };
+  props: { barData: {}[] };
 
-  state: {
-    data: BarDatum[];
-    sessionKeys: string[];
-  };
-
-  constructor(props: {
-    barData: {}[],
-    yMax: number,
-    sessionDict: {},
-    calcTickVals: (yMax: number) => number[]
-  }) {
+  constructor(props: { barData: {}[] }) {
     super(props);
-    this.state = {
-      data: this.props.barData as BarDatum[],
-      sessionKeys: this.props.sessionKeys
-    };
   }
 
-  isEmpty(obj: {}) {
-    for (var k in obj) {
-      if (obj.hasOwnProperty(k)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  createTooltipFunc(sessionId: string) {
-
-    if (!(this.isEmpty(this.props.sessionDict))) {
-      var session = this.props.sessionDict[sessionId];
-      var percent = Math.round((session.answered / (session.questions)) * 100);
-      return (function (e: BarExtendedDatum) {
-        return (
-          <div className="bar-tooltip">
-            <div className="tooltip-section">
-              <Icon name="user" />
-              {session.ta} <br />
-              <Icon name="clock" />
-              {session.startHour} - {session.endHour} <br />
-              <Icon name="map marker alternate" />
-              {session.building} {session.room} <br />
-            </div>
-            < hr />
-            <div className="tooltip-nums">
-              <div className="tool-flex">
-                <span className="tool-stat">{session.questions} </span>
-                <br /> questions</div>
-              <div className="tool-flex">
-                <span className="tool-stat"> {percent}% </span>
-                <br /> answered</div>
-            </div>
-          </div>);
-      });
-    } else {
-      return (function (e: BarExtendedDatum) {
-        return <div>N/A</div>;
-      });
-    }
+  createTooltipFunc(bar: { time: number, questions: number }) {
+    return (function (e: BarExtendedDatum) {
+      return (
+        <div className="bar-tooltip">
+          <div className="tooltip-section">
+            Wait Times
+          </div>
+          < hr />
+          <div className="tooltip-nums">
+            <div className="tool-flex">
+              <span className="tool-stat"> {bar.time} </span>
+              <br /> minutes</div>
+            <div className="tool-flex">
+              <span className="tool-stat">{bar.questions} </span>
+              <br /> questions</div>
+          </div>
+        </div>);
+    });
   }
 
   render() {
@@ -78,7 +34,7 @@ class AverageWaitTimes extends React.Component {
 
         <ResponsiveBar
           data={this.props.barData}
-          keys={this.props.sessionKeys}
+          keys={['time']}
           indexBy="date"
           margin={{
             'top': 5,
@@ -86,36 +42,37 @@ class AverageWaitTimes extends React.Component {
             'bottom': 50,
             'left': 50
           }}
+          layout="horizontal"
           enableLabel={false}
-          maxValue={this.props.yMax}
           innerPadding={3}
           padding={0.3}
-          colorBy={'#d8d8d8'}
-          // @ts-ignore - TODO: Figure out how to avoid this and get a string from Reacttext
-          tooltip={(node) => { return this.createTooltipFunc(node.id)(); }}
+          colors={'#d8d8d8'}
 
-          theme={{
-            tooltip: {
-              container: {
-                background: '#464646',
-                width: '180px'
-              }
-            }
-          }}
+          // @ts-ignore - TODO: Figure out how to avoid this and get a string from Reacttext
+          // tooltip={(node) => { return this.createTooltipFunc(this.props.barData[node.indexValue])(); }}
+
+          // theme={{
+          //   tooltip: {
+          //     container: {
+          //       background: '#464646',
+          //       width: '180px'
+          //     }
+          //   }
+          // }}
 
           axisLeft={{
-            'legend': 'questions',
             'tickSize': 1,
             'tickPadding': 12,
             'tickRotation': 0,
-            'legendOffset': -40,
-            'legendPosition': 'center', // should be middle, outdated package
-            'tickValues': this.props.calcTickVals(this.props.yMax)
+            'legendOffset': -40
+            // 'legendPosition': 'center' // should be middle, outdated package
           }}
           axisBottom={{
             'tickSize': 1,
             'tickPadding': 12,
-            'tickRotation': -60
+            'tickRotation': -60,
+            'legend': 'minutes'
+            // 'legendPosition': 'center'
           }}
           labelSkipWidth={12}
           labelSkipHeight={12}

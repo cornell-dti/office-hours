@@ -5,7 +5,6 @@ import { Icon } from 'semantic-ui-react';
 class QuestionsBarChart extends React.Component {
     props: {
         barData: {}[],
-        yMax: number,
         sessionKeys: string[],
         sessionDict: {}
     };
@@ -17,7 +16,6 @@ class QuestionsBarChart extends React.Component {
 
     constructor(props: {
         barData: {}[],
-        yMax: number,
         sessionDict: {}
     }) {
         super(props);
@@ -73,7 +71,9 @@ class QuestionsBarChart extends React.Component {
     render() {
         return (
             <div className="QuestionsBarChart" style={{ height: 300 }}>
-
+                {console.log(this.props.sessionKeys)}
+                {console.log(this.props.barData)}
+                {console.log(this.props.sessionDict)}
                 <ResponsiveBar
                     data={this.props.barData}
                     keys={this.props.sessionKeys}
@@ -85,12 +85,11 @@ class QuestionsBarChart extends React.Component {
                         'left': 50
                     }}
                     enableLabel={false}
-                    maxValue={this.props.yMax}
                     innerPadding={3}
                     padding={0.3}
                     colors={'#d8d8d8'}
                     // @ts-ignore - TODO: Figure out how to avoid this and get a string from Reacttext
-                    tooltip={(node) => { return this.createTooltipFunc(node.id)(); }}
+                    tooltip={(node) => { console.log(node); return this.createTooltipFunc(node.id)(); }}
 
                     theme={{
                         tooltip: {
@@ -106,8 +105,8 @@ class QuestionsBarChart extends React.Component {
                         'tickSize': 1,
                         'tickPadding': 12,
                         'tickRotation': 0,
-                        'legendOffset': -40,
-                        'legendPosition': 'center' // should be middle, outdated package
+                        'legendOffset': -40
+                        // 'legendPosition': 'middle' // should be middle, outdated package
                     }}
                     axisBottom={{
                         'tickSize': 1,
