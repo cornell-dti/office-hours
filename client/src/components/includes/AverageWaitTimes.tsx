@@ -25,8 +25,8 @@ class AverageWaitTimes extends React.Component {
               <span className="tool-stat"> {bar.questions} </span>
               <br /> questions</div>
           </div>
-        </div>)
-        ;
+        </div>
+      );
     };
   }
 
@@ -45,7 +45,7 @@ class AverageWaitTimes extends React.Component {
             'top': 5,
             'right': 20,
             'bottom': 50,
-            'left': 60
+            'left': 50
           }}
 
           layout="horizontal"
@@ -78,9 +78,8 @@ class AverageWaitTimes extends React.Component {
             'tickPadding': 12,
             'legend': 'minutes',
             'legendOffset': 35
-            // 'legendPosition': 'center' 
+            // 'legendPosition': 'center' // should be middle, outdated package
           }}
-          animate={true}
         />
       </div>
     );

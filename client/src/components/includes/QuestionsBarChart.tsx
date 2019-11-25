@@ -88,7 +88,7 @@ class QuestionsBarChart extends React.Component {
                         'tickPadding': 12,
                         'tickRotation': 0,
                         'legendOffset': -40
-                        // 'legendPosition': 'middle' // should be middle, outdated package
+                        // 'legendPosition': 'center' // should be middle, outdated package
                     }}
                     axisBottom={{
                         'tickSize': 1,
@@ -97,7 +97,6 @@ class QuestionsBarChart extends React.Component {
                     }}
                 />
             </div>
-
         );
     }
 }

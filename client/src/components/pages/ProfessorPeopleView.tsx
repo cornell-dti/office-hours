@@ -359,19 +359,11 @@ class ProfessorPeopleView extends React.Component {
                                                     <div className="questions-line-container">
                                                         <QuestionsLineChart
                                                             lineData={lineQuestionsPerDay}
-                                                            yMax={questionsOfBusiestDay}
                                                         />
                                                     </div>
                                                 </div>
 
                                                 <div className="Average-Wait-Box">
-                                                    <div className="average-wait-text">
-                                                        <div>
-                                                            <p className="average-wait-title">
-                                                                Average Wait Times
-                                                            </p>
-                                                        </div>
-                                                    </div>
                                                     <div className="average-time-bar-container">
                                                         <AverageWaitTimes
                                                             barData={[
@@ -392,6 +384,13 @@ class ProfessorPeopleView extends React.Component {
                                                             ]}
                                                         />
                                                     </div>
+                                                    <div className="average-wait-text">
+                                                        <div>
+                                                            <p className="average-wait-title">
+                                                                Average Wait Times
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             :
@@ -406,7 +405,6 @@ class ProfessorPeopleView extends React.Component {
                         );
                     }}
                 </ProfessorMetadataDataQuery>
-
             </div>
         );
     }

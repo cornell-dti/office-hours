@@ -7,17 +7,13 @@ class QuestionsPieChart extends React.Component {
     percentUnresolved: number
   };
 
-  constructor(props: {
-    percentResolved: number,
-    percentUnresolved: number
-  }) {
+  constructor(props: QuestionsPieChart['props']) {
     super(props);
   }
 
   render() {
     return (
       <div className="QuestionsPieChart" style={{ height: 300 }}>
-
         <ResponsivePie
           data={[
             {
@@ -47,29 +43,13 @@ class QuestionsPieChart extends React.Component {
               return e.key === 'answer' ? '#4181e3' : '#a8c7eb';
             }
           }
-
           borderWidth={1}
           borderColor="inherit:darker(0.2)"
           enableRadialLabels={false}
           enableSlicesLabels={false}
-          radialLabelsSkipAngle={10}
-          radialLabelsTextXOffset={6}
-          radialLabelsTextColor="#333333"
-          radialLabelsLinkOffset={0}
-          radialLabelsLinkDiagonalLength={16}
-          radialLabelsLinkHorizontalLength={24}
-          radialLabelsLinkStrokeWidth={1}
-          radialLabelsLinkColor="inherit"
-          slicesLabelsSkipAngle={10}
-          slicesLabelsTextColor="#333333"
-          animate={true}
-          motionStiffness={90}
-          motionDamping={15}
           isInteractive={false}
         />
-
       </div>
-
     );
   }
 }

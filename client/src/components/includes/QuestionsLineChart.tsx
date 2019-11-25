@@ -2,29 +2,15 @@ import * as React from 'react';
 import { ResponsiveLine } from '@nivo/line';
 
 class QuestionsLineChart extends React.Component {
+    props: { lineData: { x: string, y: number }[] };
 
-    props: {
-        lineData: {
-            'x': string,
-            'y': number
-        }[],
-        yMax: number
-    };
-
-    constructor(props: {
-        lineData: {
-            'x': string,
-            'y': number
-        }[],
-        yMax: number
-    }) {
+    constructor(props: QuestionsLineChart['props']) {
         super(props);
     }
 
     render() {
         return (
             <div className="QuestionsLineChart" style={{ height: 300 }}>
-
                 <ResponsiveLine
                     colors={'#979797'}
                     data={[
@@ -38,17 +24,9 @@ class QuestionsLineChart extends React.Component {
                         'top': 20,
                         'right': 20,
                         'bottom': 50,
-                        'left': 80
+                        'left': 70
                     }}
-                    xScale={{
-                        'type': 'point'
-                    }}
-                    yScale={{
-                        'type': 'linear',
-                        'stacked': false,
-                        'min': 0,
-                        'max': this.props.yMax
-                    }}
+
                     // no custom tooltip for line yet
                     isInteractive={false}
                     axisLeft={{
@@ -69,14 +47,8 @@ class QuestionsLineChart extends React.Component {
                     dotColor="#ffffff"
                     dotBorderWidth={2}
                     dotBorderColor="#999"
-                    enableDotLabel={false}
-                    animate={true}
-                    motionStiffness={90}
-                    motionDamping={15}
                 />
-
             </div>
-
         );
     }
 }
