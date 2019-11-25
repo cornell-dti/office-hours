@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ResponsiveBar, BarDatum, BarExtendedDatum } from '@nivo/bar';
+import { ResponsiveBar, BarExtendedDatum } from '@nivo/bar';
 import { Icon } from 'semantic-ui-react';
 
 class QuestionsBarChart extends React.Component {
@@ -9,20 +9,8 @@ class QuestionsBarChart extends React.Component {
         sessionDict: {}
     };
 
-    state: {
-        data: BarDatum[];
-        sessionKeys: string[];
-    };
-
-    constructor(props: {
-        barData: {}[],
-        sessionDict: {}
-    }) {
+    constructor(props: QuestionsBarChart['props']) {
         super(props);
-        this.state = {
-            data: this.props.barData as BarDatum[],
-            sessionKeys: this.props.sessionKeys
-        };
     }
 
     isEmpty(obj: {}) {
@@ -35,7 +23,6 @@ class QuestionsBarChart extends React.Component {
     }
 
     createTooltipFunc(sessionId: string) {
-
         if (!(this.isEmpty(this.props.sessionDict))) {
             var session = this.props.sessionDict[sessionId];
             var percent = Math.round((session.answered / (session.questions)) * 100);
@@ -59,21 +46,18 @@ class QuestionsBarChart extends React.Component {
                                 <span className="tool-stat"> {percent}% </span>
                                 <br /> answered</div>
                         </div>
-                    </div>);
-            });
-        } else {
-            return (function (e: BarExtendedDatum) {
-                return <div>N/A</div>;
+                    </div>
+                );
             });
         }
+        return (function (e: BarExtendedDatum) {
+            return <div>N/A</div>;
+        });
     }
 
     render() {
         return (
             <div className="QuestionsBarChart" style={{ height: 300 }}>
-                {console.log(this.props.sessionKeys)}
-                {console.log(this.props.barData)}
-                {console.log(this.props.sessionDict)}
                 <ResponsiveBar
                     data={this.props.barData}
                     keys={this.props.sessionKeys}
@@ -90,7 +74,6 @@ class QuestionsBarChart extends React.Component {
                     colors={'#d8d8d8'}
                     // @ts-ignore - TODO: Figure out how to avoid this and get a string from Reacttext
                     tooltip={(node) => { console.log(node); return this.createTooltipFunc(node.id)(); }}
-
                     theme={{
                         tooltip: {
                             container: {
@@ -99,7 +82,6 @@ class QuestionsBarChart extends React.Component {
                             }
                         }
                     }}
-
                     axisLeft={{
                         'legend': 'questions',
                         'tickSize': 1,
@@ -113,14 +95,7 @@ class QuestionsBarChart extends React.Component {
                         'tickPadding': 12,
                         'tickRotation': -60
                     }}
-                    labelSkipWidth={12}
-                    labelSkipHeight={12}
-                    labelTextColor="inherit:darker(1.6)"
-                    animate={true}
-                    motionStiffness={90}
-                    motionDamping={15}
                 />
-
             </div>
 
         );

@@ -42,7 +42,11 @@ class AverageWaitTimes extends React.Component {
             'bottom': 50,
             'left': 50
           }}
-          layout="horizontal"
+
+          layout="horizontal" // requires data to be sorted by reverse date
+          enableGridY={false}
+          enableGridX={true}
+
           enableLabel={false}
           innerPadding={3}
           padding={0.3}
@@ -63,20 +67,15 @@ class AverageWaitTimes extends React.Component {
           axisLeft={{
             'tickSize': 1,
             'tickPadding': 12,
-            'tickRotation': 0,
-            'legendOffset': -40
-            // 'legendPosition': 'center' // should be middle, outdated package
+            'tickRotation': 0
           }}
           axisBottom={{
             'tickSize': 1,
             'tickPadding': 12,
-            'tickRotation': -60,
-            'legend': 'minutes'
-            // 'legendPosition': 'center'
+            'legend': 'minutes',
+            'legendOffset': 35,
+            'legendPosition': 'center'
           }}
-          labelSkipWidth={12}
-          labelSkipHeight={12}
-          labelTextColor="inherit:darker(1.6)"
           animate={true}
           motionStiffness={90}
           motionDamping={15}
