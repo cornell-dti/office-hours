@@ -36,8 +36,7 @@ class AverageWaitTimes extends React.Component {
     data.reverse();
 
     return (
-      <div className="QuestionsBarChart" style={{ height: 300 }}>
-
+      <div className="QuestionsBarChart" style={{ height: 500 }}>
         <ResponsiveBar
           data={data}
           keys={['time']}
@@ -84,7 +83,6 @@ class AverageWaitTimes extends React.Component {
           animate={true}
         />
       </div>
-
     );
   }
 }
