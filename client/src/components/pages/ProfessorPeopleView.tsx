@@ -3,7 +3,7 @@ import ProfessorSidebar from '../includes/ProfessorSidebar';
 import QuestionsPieChart from '../includes/QuestionsPieChart';
 import QuestionsLineChart from '../includes/QuestionsLineChart';
 import QuestionsBarChart from '../includes/QuestionsBarChart';
-import AverageWaitTimes from '../includes/AverageWaitTimes';
+// import AverageWaitTimes from '../includes/AverageWaitTimes';
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
 import { Redirect } from 'react-router';
@@ -363,7 +363,7 @@ class ProfessorPeopleView extends React.Component {
                                                     </div>
                                                 </div>
 
-                                                <div className="Average-Wait-Box">
+                                                {/* <div className="Average-Wait-Box">
                                                     <div className="average-time-bar-container">
                                                         <AverageWaitTimes
                                                             barData={[
@@ -391,7 +391,7 @@ class ProfessorPeopleView extends React.Component {
                                                             </p>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> */}
                                             </div>
                                             :
                                             <div className="no-question-warning">
