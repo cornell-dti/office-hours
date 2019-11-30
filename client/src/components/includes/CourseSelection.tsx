@@ -73,6 +73,9 @@ class CourseSelection extends React.Component {
     }
 
     render() {
+        let selectedCourses = this.state.selectedCourses.length === 0 ?
+            'No Classes Chosen' : this.state.selectedCourses.map(c => c.code).join(', ');
+
         return (
             <div>
                 <CoursesDataQuery
@@ -97,7 +100,7 @@ class CourseSelection extends React.Component {
                             }
                         );
                         return (
-                            <React.Fragment>
+                            <div className="CourseSelection">
                                 <img src={QMeLogo} className="QMeLogo course" />
                                 {data && data.apiGetCurrentUser && data.apiGetCurrentUser.nodes &&
                                     <TopBar
@@ -107,7 +110,7 @@ class CourseSelection extends React.Component {
                                         courseId={courseId}
                                     />
                                 }
-                                <div className="CourseSelection">
+                                <div className="selectionContent">
                                     <div className="description">
                                         <div className="title">
                                             {this.props.isEdit ?
@@ -116,22 +119,22 @@ class CourseSelection extends React.Component {
                                         <div className="subtitle">
                                             {this.props.isEdit ?
                                                 'Add or remove classes.' : 'Select the office hours you want to view.'}
+                                            <div className="EnrolledCourses mobile">
+                                                {selectedCourses}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="CourseCards">
                                         {cards}
                                     </div>
                                 </div>
-                            </React.Fragment>
+                            </div>
                         );
                     }}
                 </CoursesDataQuery>
                 {this.props.isEdit && <div className="EnrollBar">
-                    <div className="EnrolledCourses">
-                        {this.state.selectedCourses.length === 0 ?
-                            'No Classes Chosen' :
-                            this.state.selectedCourses.map(c => c.code).join(', ')
-                        }
+                    <div className="EnrolledCourses web">
+                        {selectedCourses}
                     </div>
                     <div className="buttons">
                         <button className={'save' + (this.state.selectedCourses.length === 0 ? ' disabled' : '')}>
