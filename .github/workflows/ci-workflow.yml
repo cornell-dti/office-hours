@@ -14,5 +14,3 @@ jobs:
         run: yarn install
       - name: Lint client
         run: cd client && yarn tslint --project tsconfig.json -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'
-      - name: Lint server
-        run: cd server && yarn tslint --project tsconfig.json -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'

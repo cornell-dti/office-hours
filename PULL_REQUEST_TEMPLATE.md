@@ -12,7 +12,7 @@
 
 ### Breaking Changes <!-- Optional -->
 <!-- Put an `x` in all the boxes that apply. Delete this section if it does not apply -->
-- [ ] Firebase schema change
+- [ ] Firebase schema change (requires migration plan)
 - [ ] Firebase security policy change
 - [ ] I updated existing types in `/src/components/types/`
 - [ ] Other change that could cause problems (Detailed in notes)
