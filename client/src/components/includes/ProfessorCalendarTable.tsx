@@ -12,7 +12,6 @@ class ProfessorCalendarTable extends React.Component {
             nodes: [AppSession]
         },
         taOptions: DropdownItemProps[],
-        refreshCallback: Function
     };
 
     state: {
@@ -144,7 +143,6 @@ class ProfessorCalendarTable extends React.Component {
                                 session={sessions[this.state.dayIndex][this.state.rowIndex]}
                                 toggleDelete={() => this.updateDeleteVisible(false)}
                                 toggleEdit={() => this.toggleEdit(this.state.currentDay, this.state.currentRow, true)}
-                                refreshCallback={this.props.refreshCallback}
                             />
                         }
                     />}
