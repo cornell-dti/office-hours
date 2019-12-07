@@ -11,6 +11,7 @@ interface FireSession {
     room: string;
     sessionSeriesId?: firebase.firestore.DocumentReference;
     startTime: FireTimestamp;
+    tas: firebase.firestore.DocumentReference[];
     title?: string;
     sessionId: string;
 }
@@ -21,6 +22,7 @@ interface FireSessionSeries {
     endTime: FireTimestamp;
     room: string;
     startTime: FireTimestamp;
+    tas: firebase.firestore.DocumentReference[];
     title?: string;
     sessionSeriesId: string;
 }
