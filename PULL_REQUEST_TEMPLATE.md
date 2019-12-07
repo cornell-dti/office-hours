@@ -12,7 +12,8 @@
 
 ### Breaking Changes <!-- Optional -->
 <!-- Put an `x` in all the boxes that apply. Delete this section if it does not apply -->
-- [ ] Database schema change (anything that changes Postgres)
+- [ ] Firebase schema change
+- [ ] Firebase security policy change
 - [ ] I updated existing types in `/src/components/types/`
 - [ ] Other change that could cause problems (Detailed in notes)
 
