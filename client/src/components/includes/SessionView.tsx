@@ -39,7 +39,7 @@ class SessionView extends React.Component {
         dismissedAbsent: boolean,
         userId?: string,
         questions: FireQuestion[],
-        otherQuestions: number
+        otherActiveQuestions: boolean
     };
 
     constructor(props: {}) {
@@ -52,7 +52,7 @@ class SessionView extends React.Component {
             showAbsent: true,
             dismissedAbsent: true,
             questions: [],
-            otherQuestions: 0
+            otherActiveQuestions: false
         };
 
         loggedIn$.subscribe(user => this.setState({ userId: user.uid }));
@@ -119,19 +119,19 @@ class SessionView extends React.Component {
     }
 
     componentDidMount() {
-        let otherQuestions = 0;
+        let otherQuestions = false;
         firestore.collection('questions')
             .where('askerId', '==', this.props.user.userId)
             .where('status', '==', 'unresolved')
             // .where('endTime', '>=', new Date().getTime() / 1000)
             .onSnapshot(querySnapshot => {
-                otherQuestions = 0;
+                otherQuestions = false;
                 querySnapshot.forEach(doc => {
                     if (doc.data().endTime >= new Date().getTime() / 1000) {
-                        otherQuestions += 1;
+                        otherQuestions = true;
                     }
                 });
-                this.setState({ otherQuestions: otherQuestions });
+                this.setState({ otherActiveQuestions: otherQuestions });
             });
     }
 
@@ -221,7 +221,7 @@ class SessionView extends React.Component {
                     isOpen={this.isOpen(this.props.session, this.props.course.queueOpenInterval)}
                     isPast={this.isPast(this.props.session)}
                     openingTime={this.getOpeningTime(this.props.session, this.props.course.queueOpenInterval)}
-                    haveAnotherQuestion={this.state.otherQuestions > 0}
+                    haveAnotherQuestion={this.state.otherActiveQuestions}
                 />
 
                 {/* {lastAskedQuestion !== null && this.state.showAbsent && !this.state.dismissedAbsent &&
