@@ -127,8 +127,6 @@ class SessionView extends React.Component {
             .onSnapshot(querySnapshot => {
                 otherQuestions = 0;
                 querySnapshot.forEach(doc => {
-                    console.log(doc.data().endTime);
-                    console.log(new Date().getTime() / 1000);
                     if (doc.data().endTime >= new Date().getTime() / 1000) {
                         otherQuestions += 1;
                     }
