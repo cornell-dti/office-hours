@@ -38,7 +38,8 @@ class SessionView extends React.Component {
         showAbsent: boolean
         dismissedAbsent: boolean,
         userId?: string,
-        questions: FireQuestion[]
+        questions: FireQuestion[],
+        otherQuestions: number
     };
 
     constructor(props: {}) {
@@ -50,7 +51,8 @@ class SessionView extends React.Component {
             timeoutId: null,
             showAbsent: true,
             dismissedAbsent: true,
-            questions: []
+            questions: [],
+            otherQuestions: 0
         };
 
         loggedIn$.subscribe(user => this.setState({ userId: user.uid }));
@@ -116,6 +118,25 @@ class SessionView extends React.Component {
         return new Date(new Date(session.startTime.toDate()).getTime() - interval * 1000);
     }
 
+    componentDidMount() {
+        let otherQuestions = 0;
+        firestore.collection('questions')
+            .where('askerId', '==', this.props.user.userId)
+            .where('status', '==', 'unresolved')
+            // .where('endTime', '>=', new Date().getTime() / 1000)
+            .onSnapshot(querySnapshot => {
+                otherQuestions = 0;
+                querySnapshot.forEach(doc => {
+                    console.log(doc.data().endTime);
+                    console.log(new Date().getTime() / 1000);
+                    if (doc.data().endTime >= new Date().getTime() / 1000) {
+                        otherQuestions += 1;
+                    }
+                });
+                this.setState({ otherQuestions: otherQuestions });
+            });
+    }
+
     render() {
         let undoText = '';
         if (this.state.undoAction) {
@@ -129,7 +150,9 @@ class SessionView extends React.Component {
                 undoText = this.state.undoName + ' has been assigned to you! ';
             }
         }
-        const otherQuestions = [];
+
+        // const questionsRef = firestore.collection('questions');
+
         // data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
         //     .filter((question) => question.sessionBySessionId.sessionId !== this.props.id)
         //     .filter((question) => question.status === 'unresolved')
@@ -200,7 +223,7 @@ class SessionView extends React.Component {
                     isOpen={this.isOpen(this.props.session, this.props.course.queueOpenInterval)}
                     isPast={this.isPast(this.props.session)}
                     openingTime={this.getOpeningTime(this.props.session, this.props.course.queueOpenInterval)}
-                    haveAnotherQuestion={otherQuestions.length > 0}
+                    haveAnotherQuestion={this.state.otherQuestions > 0}
                 />
 
                 {/* {lastAskedQuestion !== null && this.state.showAbsent && !this.state.dismissedAbsent &&
