@@ -123,7 +123,6 @@ class SessionView extends React.Component {
         firestore.collection('questions')
             .where('askerId', '==', this.props.user.userId)
             .where('status', '==', 'unresolved')
-            // .where('endTime', '>=', new Date().getTime() / 1000)
             .onSnapshot(querySnapshot => {
                 otherQuestions = false;
                 querySnapshot.forEach(doc => {
