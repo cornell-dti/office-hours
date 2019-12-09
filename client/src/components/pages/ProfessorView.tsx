@@ -84,19 +84,17 @@ const ProfessorView = (props: {
                 firestore
                     .collection('sessions')
                     .where('courseId', '==', firestore.doc('courses/' + courseId))
-                    .where('startTime', '<=', new Date(selectedWeekEpoch)),
-                // .where('startTime', '>=', new Date(selectedWeekEpoch + 7 * ONE_DAY)),
+                    .where('startTime', '>=', new Date(selectedWeekEpoch))
+                    .where('startTime', '<=', new Date(selectedWeekEpoch + 7 * ONE_DAY)),
                 'sessionId'
             );
 
             const subscription = sessions$.subscribe((s: FireSession[]) => setSessions(s));
-            sessions$.subscribe((s: FireSession[]) => console.log(s));
             return () => subscription.unsubscribe();
         },
         [courseId, selectedWeekEpoch]
     );
 
-    console.log(new Date(selectedWeekEpoch));
     return (
         <div className="ProfessorView">
             <ProfessorSidebar
