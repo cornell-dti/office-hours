@@ -19,7 +19,7 @@
         "apollo-link-http": "^1.5.5",
         "babel-core": "^6.26.3",
         "concurrently": "^4.0.1",
-        "firebase": "^6.6.2",
+        "firebase": "^7.5.2",
         "graphql": "^14.0.2",
         "graphql-tag": "^2.10.0",
         "less": "^3.8.1",
@@ -38,7 +38,7 @@
         "react-router-dom": "^5.1.1",
         "react-scripts": "1.1.5",
         "react-scripts-ts": "2.17.0",
-        "rxfire": "^3.8.2",
+        "rxfire": "^3.9.4",
         "rxjs": "^6.5.3",
         "semantic-ui-css": "^2.4.1",
         "semantic-ui-react": "^0.88.1",
@@ -72,6 +72,6 @@
         "@types/react-numeric-input": "^2.2.3",
         "@types/react-router": "^5.1.1",
         "@types/react-router-dom": "^5.1.0",
-        "typescript": "^3.6.3"
+        "typescript": "^3.7.3"
     }
 }

@@ -2,29 +2,26 @@ import * as React from 'react';
 import * as moment from 'moment';
 import { Checkbox } from 'semantic-ui-react';
 
-import gql from 'graphql-tag';
-import { Mutation } from 'react-apollo';
+// const DELETE_SESSION = gql`
+//     mutation DeleteSession($_sessionId: Int!) {
+//         apiDeleteSession(input: {_sessionId: $_sessionId}) {
+//             clientMutationId
+//         }
+//     }
+// `;
 
-const DELETE_SESSION = gql`
-    mutation DeleteSession($_sessionId: Int!) {
-        apiDeleteSession(input: {_sessionId: $_sessionId}) {
-            clientMutationId
-        }
-    }
-`;
-
-const DELETE_SERIES = gql`
-    mutation DeleteSeries($_seriesId: Int!) {
-        apiDeleteSeries(input: {_seriesId: $_seriesId}) {
-            clientMutationId
-        }
-    }
-`;
+// const DELETE_SERIES = gql`
+//     mutation DeleteSeries($_seriesId: Int!) {
+//         apiDeleteSeries(input: {_seriesId: $_seriesId}) {
+//             clientMutationId
+//         }
+//     }
+// `;
 
 class ProfessorOHInfoDelete extends React.Component {
 
     props: {
-        session: AppSession,
+        session: FireSession,
         toggleDelete: Function,
         toggleEdit: Function,
     };
@@ -67,12 +64,14 @@ class ProfessorOHInfoDelete extends React.Component {
 
     render() {
         // Convert UNIX timestamps to readable time string
-        var date = moment(this.props.session.startTime).format('dddd MM/DD/YY');
-        var timeStart = moment(this.props.session.startTime).format('h:mm A');
-        var timeEnd = moment(this.props.session.endTime).format('h:mm A');
+        let date = moment(this.props.session.startTime).format('dddd MM/DD/YY');
+        let timeStart = moment(this.props.session.startTime).format('h:mm A');
+        let timeEnd = moment(this.props.session.endTime).format('h:mm A');
 
-        var disable = moment(this.props.session.startTime).isBefore();
-        var taList = this.props.session.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.computedName);
+        let disable = moment(this.props.session.startTime).isBefore();
+        // RYAN_TODO
+        let taList: string[] = [];
+        // this.props.session.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.computedName);
 
         return (
             <React.Fragment>
@@ -111,38 +110,18 @@ class ProfessorOHInfoDelete extends React.Component {
                         </div>
                     }
                 </div>
-                {this.state.isChecked ?
-                    <Mutation mutation={DELETE_SERIES}>
-                        {(DeleteSeries: Function) =>
-                            <button
-                                className="Delete"
-                                onClick={(e) => {
-                                    this._onClickDeleteSeries(e, DeleteSeries);
-                                    this.props.toggleDelete();
-                                    this.props.toggleEdit();
-                                }}
-                                disabled={disable}
-                            >
-                                Delete
-                            </button>
-                        }
-                    </Mutation> :
-                    <Mutation mutation={DELETE_SESSION}>
-                        {(DeleteSession: Function) =>
-                            <button
-                                className="Delete"
-                                onClick={(e) => {
-                                    this._onClickDeleteSession(e, DeleteSession);
-                                    this.props.toggleDelete();
-                                    this.props.toggleEdit();
-                                }}
-                                disabled={disable}
-                            >
-                                Delete
-                            </button>
-                        }
-                    </Mutation>
-                }
+                <button
+                    className="Delete"
+                    onClick={(e) => {
+                        // RYAN_TODO
+                        // this._onClickDeleteSession(e, DeleteSession);
+                        this.props.toggleDelete();
+                        this.props.toggleEdit();
+                    }}
+                    disabled={disable}
+                >
+                    Delete
+                </button>
             </React.Fragment>
         );
     }

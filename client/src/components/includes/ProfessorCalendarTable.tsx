@@ -8,9 +8,7 @@ import { DropdownItemProps } from 'semantic-ui-react';
 class ProfessorCalendarTable extends React.Component {
     props: {
         courseId: string,
-        data: {
-            nodes: [AppSession]
-        },
+        sessions: FireSession[]
         taOptions: DropdownItemProps[],
     };
 
@@ -25,9 +23,9 @@ class ProfessorCalendarTable extends React.Component {
 
     constructor(props: {}) {
         super(props);
-        var isExpandedInit: boolean[][] = [];
-        for (var i = 0; i < 7; i++) {
-            isExpandedInit.push(new Array<boolean>(this.props.data.nodes.length).fill(false));
+        let isExpandedInit: boolean[][] = [];
+        for (let i = 0; i < 7; i++) {
+            isExpandedInit.push(new Array<boolean>(this.props.sessions.length).fill(false));
         }
         this.state = {
             isExpanded: isExpandedInit,
@@ -42,17 +40,17 @@ class ProfessorCalendarTable extends React.Component {
         this.toggleEdit = this.toggleEdit.bind(this);
     }
 
-    componentWillReceiveProps(props: { data: { nodes: [AppSession] } }) {
-        var isExpanded: boolean[][] = [];
-        for (var i = 0; i < 7; i++) {
-            isExpanded.push(new Array<boolean>(props.data.nodes.length).fill(false));
+    componentWillReceiveProps(props: { sessions: FireSession[] }) {
+        let isExpanded: boolean[][] = [];
+        for (let i = 0; i < 7; i++) {
+            isExpanded.push(new Array<boolean>(props.sessions.length).fill(false));
         }
         this.setState({ isExpanded: isExpanded });
     }
 
     toggleEdit(day: number, row: number, forceClose?: boolean) {
-        var cDay = this.state.currentDay;
-        var cRow = this.state.currentRow;
+        let cDay = this.state.currentDay;
+        let cRow = this.state.currentRow;
 
         if (!(cDay === day && cRow === row)) {
             this.state.isExpanded[cDay][cRow] = false;
@@ -85,21 +83,21 @@ class ProfessorCalendarTable extends React.Component {
     }
 
     render() {
-        var sessions: AppSession[][] = [];
-        for (var day = 0; day < 7; day++) {
-            sessions.push(new Array<AppSession>());
+        let sessions: FireSession[][] = [];
+        for (let day = 0; day < 7; day++) {
+            sessions.push(new Array<FireSession>());
         }
 
-        this.props.data.nodes.forEach((node: AppSession) => {
+        this.props.sessions.forEach((node: FireSession) => {
             // 0 = Monday..., 5 = Saturday, 6 = Sunday
-            var dayIndexQuery = (new Date(node.startTime).getDay() + 6) % 7;
+            let dayIndexQuery = (new Date(node.startTime.seconds).getDay() + 6) % 7;
             sessions[dayIndexQuery].push(node);
         });
 
-        var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        var headers = new Array(7);
+        let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        let headers = new Array(7);
 
-        for (var index = 0; index < headers.length; index++) {
+        for (let index = 0; index < headers.length; index++) {
             headers[index] = (
                 <tr>
                     <th colSpan={5}>{days[index]}</th>
@@ -107,7 +105,7 @@ class ProfessorCalendarTable extends React.Component {
             );
         }
 
-        var rows = days.map(
+        let rows = days.map(
             (dayName, i) => {
                 return (
                     <React.Fragment key={i}>
