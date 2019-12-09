@@ -65,7 +65,7 @@ const ProfessorCalendarRow = (props: {
         const taUser = users.find(ta => ta.userId === taId);
         return taUser
             ? taUser.firstName + ' ' + taUser.lastName
-            : 'Unknown';
+            : 'No TA Assigned';
     };
 
     const rows = props.sessions.map(

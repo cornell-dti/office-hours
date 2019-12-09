@@ -74,7 +74,8 @@ const ProfessorView = (props: {
         { key: 'title', text: 'TA Name' },
         ...(staff.map(user => ({
             key: user.userId,
-            text: user.firstName + ' ' + user.lastName
+            text: user.firstName + ' ' + user.lastName,
+            value: user.userId
         })))
     ];
 
