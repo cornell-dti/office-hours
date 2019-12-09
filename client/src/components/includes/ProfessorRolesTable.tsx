@@ -32,10 +32,12 @@ const RoleDropdown = (props: {
             onChange={(e, newValue) => {
                 // @ts-ignore All values are strings
                 setValue(newValue.value);
-                const courseUserId = firestore.collection('courseUsers').doc(courseUser!.courseUserId);
-                courseUserId.update({
-                    role: newValue.value
-                });
+                if (courseUser !== undefined) {
+                    const courseUserDoc = firestore.collection('courseUsers').doc(courseUser!.courseUserId);
+                    courseUserDoc.update({
+                        role: newValue.value
+                    });
+                }
             }}
         />
     );
