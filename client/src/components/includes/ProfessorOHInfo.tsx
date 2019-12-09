@@ -16,9 +16,9 @@ const ProfessorOHInfo = (props: {
     const session = props.session || undefined;
 
     const [startTime, setStartTime] = useState<moment.Moment | undefined>
-        (session && moment(session.startTime));
+        (session && moment(session.startTime.seconds * 1000));
     const [endTime, setEndTime] = useState<moment.Moment | undefined>
-        (session && moment(session.endTime));
+        (session && moment(session.endTime.seconds * 1000));
     const [taSelected, setTaSelected] = useState<(string | undefined)[]>
         (session && session.tas
             ? session.tas.map(dRef => dRef.id)

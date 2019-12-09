@@ -77,9 +77,9 @@ const ProfessorCalendarRow = (props: {
                 >
                     <tr className="Preview">
                         <td>
-                            {moment(props.sessions[i].startTime).format('h:mm A')}
+                            {moment(props.sessions[i].startTime.seconds * 1000).format('h:mm A')}
                             {' to '}
-                            {moment(props.sessions[i].endTime).format('h:mm A')}
+                            {moment(props.sessions[i].endTime.seconds * 1000).format('h:mm A')}
                         </td>
                         <td>
                             {props.sessions[i].tas.map(taId => nameOfTaId(taId.id))}
