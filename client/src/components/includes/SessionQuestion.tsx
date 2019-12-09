@@ -158,7 +158,7 @@ class SessionQuestion extends React.Component {
     }
 
     render() {
-        var question = this.props.question;
+        let question = this.props.question;
         const studentCSS = this.props.isTA ? '' : ' Student';
         const includeBookmark = this.props.question.askerId.id === this.props.myUserId;
 

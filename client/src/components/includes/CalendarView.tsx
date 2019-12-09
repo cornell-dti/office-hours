@@ -28,7 +28,7 @@ class CalendarView extends React.Component {
     }
 
     render() {
-        // var selectedDate = new Date(this.state.selectedDateEpoch);
+        // let selectedDate = new Date(this.state.selectedDateEpoch);
 
         return (
             <aside className="CalendarView">

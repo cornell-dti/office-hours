@@ -168,7 +168,7 @@ class AddQuestion extends React.Component {
             );
         }
 
-        var questionCharsLeft = this.props.course.charLimit - this.state.question.length;
+        let questionCharsLeft = this.props.course.charLimit - this.state.question.length;
 
         return (
             <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e)} >

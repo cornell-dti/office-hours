@@ -22,9 +22,9 @@ class CalendarDaySelect extends React.Component {
 
     constructor(props: {}) {
         super(props);
-        var week = new Date(); // now
+        let week = new Date(); // now
         week.setHours(0, 0, 0, 0); // beginning of today (00:00:00.000)
-        var daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
+        let daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
         week.setTime(week.getTime() - daysSinceMonday * ONE_DAY); // beginning of this week's Monday
         this.state = {
             selectedWeekEpoch: week.getTime(),

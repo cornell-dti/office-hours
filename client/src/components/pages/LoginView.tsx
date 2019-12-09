@@ -21,7 +21,7 @@ const LoginView: React.FC = () => {
         authProvider.addScope('profile');
 
         return app.auth().signInWithPopup(authProvider).then((response) => {
-            var user = response.user;
+            let user = response.user;
             userUpload(user, firestore);
             history.push('/');
         });

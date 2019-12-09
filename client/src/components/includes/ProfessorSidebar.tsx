@@ -9,7 +9,7 @@ class ProfessorSidebar extends React.Component {
     };
 
     render() {
-        var selectedArray: string[] = ['', '', '', ''];
+        let selectedArray: string[] = ['', '', '', ''];
         selectedArray[this.props.selected] = 'selected';
 
         return (

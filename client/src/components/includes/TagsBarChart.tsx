@@ -24,7 +24,7 @@ class TagsBarChart extends React.Component {
     }
 
     isEmpty(obj: {}) {
-        for (var k in obj) {
+        for (let k in obj) {
             if (obj.hasOwnProperty(k)) {
                 return false;
             }

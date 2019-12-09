@@ -56,7 +56,7 @@ class ProfessorTagInfo extends React.Component {
     }
 
     handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        var newState = Object.assign({}, this.state.tag);
+        let newState = Object.assign({}, this.state.tag);
         const target = event.target;
         newState.name = target.value;
         this.setState({ tag: newState });
@@ -68,7 +68,7 @@ class ProfessorTagInfo extends React.Component {
     }
 
     handleActiveChange = (active: boolean): void => {
-        var newState = Object.assign({}, this.state.tag);
+        let newState = Object.assign({}, this.state.tag);
         newState.active = active;
         this.setState({ tag: newState });
     }
@@ -81,7 +81,7 @@ class ProfessorTagInfo extends React.Component {
         if (this.state.newTagText.length === 0) {
             return;
         }
-        var newTag: FireTag = {
+        let newTag: FireTag = {
             active: true,
             level: 2,
             tagId: '',
