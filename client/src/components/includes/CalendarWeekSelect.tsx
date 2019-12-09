@@ -17,11 +17,15 @@ class CalendarWeekSelect extends React.Component {
         selectedWeekEpoch: number
     };
 
-    constructor(props: {}) {
+    constructor(props: {
+        handleClick?: Function,
+        selectedWeekEpoch?: number,
+    }) {
         super(props);
-        if (this.props.selectedWeekEpoch) {
+        console.log(props);
+        if (props.selectedWeekEpoch) {
             this.state = {
-                selectedWeekEpoch: this.props.selectedWeekEpoch,
+                selectedWeekEpoch: props.selectedWeekEpoch,
             };
         } else {
             var week = new Date();

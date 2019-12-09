@@ -19,7 +19,7 @@ class TagsBarChart extends React.Component {
     }) {
         super(props);
         this.state = {
-            data: this.props.barData as BarDatum[]
+            data: props.barData as BarDatum[]
         };
     }
 

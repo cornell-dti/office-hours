@@ -21,11 +21,15 @@ class ProfessorCalendarTable extends React.Component {
         rowIndex: number
     };
 
-    constructor(props: {}) {
+    constructor(props: {
+        courseId: string,
+        sessions: FireSession[]
+        taOptions: DropdownItemProps[],
+    }) {
         super(props);
         let isExpandedInit: boolean[][] = [];
         for (let i = 0; i < 7; i++) {
-            isExpandedInit.push(new Array<boolean>(this.props.sessions.length).fill(false));
+            isExpandedInit.push(new Array<boolean>(props.sessions.length).fill(false));
         }
         this.state = {
             isExpanded: isExpandedInit,

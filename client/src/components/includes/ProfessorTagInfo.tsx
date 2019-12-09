@@ -16,11 +16,17 @@ class ProfessorTagInfo extends React.Component {
         newTagText: string
     };
 
-    constructor(props: {}) {
+    constructor(props: {
+        isNew: boolean
+        cancelCallback: Function
+        tag?: FireTag
+        courseId: string
+        childTags: FireTag[]
+    }) {
         super(props);
         this.state = {
             tag: {
-                courseId: firestore.collection('courses').doc(this.props.courseId),
+                courseId: firestore.collection('courses').doc(props.courseId),
                 level: 1,
                 active: true,
                 tagId: '', // new tag
