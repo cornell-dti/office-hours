@@ -7,7 +7,6 @@ import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 import { DropdownItemProps } from 'semantic-ui-react';
-import 'moment-timezone';
 
 import { useCourse, useMyUser } from 'src/firehooks';
 import { firestore, collectionData } from 'src/firebase';

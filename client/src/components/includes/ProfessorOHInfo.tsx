@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
 import * as moment from 'moment';
-import 'moment-timezone';
 import { Dropdown, Checkbox, Icon, DropdownItemProps, DropdownProps } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';

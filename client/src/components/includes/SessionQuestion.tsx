@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
-// import gql from 'graphql-tag';
-// import { Mutation } from 'react-apollo';
 import { firestore } from '../../firebase';
 import { docData } from 'rxfire/firestore';
 import SelectedTags from './SelectedTags';
