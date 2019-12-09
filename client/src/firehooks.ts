@@ -88,6 +88,34 @@ export const useMyCourseUser = (courseId: string) => {
     return courseUser;
 };
 
+// Get course user based on courseId and userId
+export const useMyCourseUserWithId = (courseId: string, userId: string) => {
+    const [courseUser, setCourseUser] = useState<FireCourseUser | undefined>();
+
+    useEffect(
+        () => {
+            const courseUsers$ = loggedIn$.pipe(
+                switchMap(() =>
+                    collectionData(
+                        firestore
+                            .collection('courseUsers')
+                            .where('userId', '==', firestore.doc('/users/' + userId))
+                            .where('courseId', '==', firestore.doc('/courses/' + courseId)),
+                        'courseUserId'
+                    ))
+            );
+
+            const subscription = courseUsers$.subscribe((courseUsers: FireCourseUser[]) =>
+                setCourseUser(courseUsers[0]));
+
+            return () => { subscription.unsubscribe(); };
+        },
+        [courseId, userId]
+    );
+
+    return courseUser;
+};
+
 export const useMyUser = () => {
     const [user, setUser] = useState<FireUser | undefined>();
 
