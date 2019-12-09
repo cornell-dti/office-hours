@@ -1,11 +1,10 @@
 import * as React from 'react';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Icon } from 'semantic-ui-react';
 import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
 
 class SessionAlertModal extends React.Component {
-
-    props: {
+    props!: {
         header?: string,
         icon?: SemanticICONS,
         color: string,
@@ -17,7 +16,7 @@ class SessionAlertModal extends React.Component {
         displayShade: boolean
     };
 
-    state: {
+    state!: {
         displayModal: boolean
     };
 

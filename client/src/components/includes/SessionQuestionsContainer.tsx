@@ -1,10 +1,10 @@
 import * as React from 'react';
 import SessionQuestion from './SessionQuestion';
 import { Icon } from 'semantic-ui-react';
-import * as moment from 'moment';
+import moment from 'moment';
 
 class SessionQuestionsContainer extends React.Component {
-    props: {
+    props!: {
         isTA: boolean,
         questions: FireQuestion[],
         myUserId: string,
@@ -16,7 +16,7 @@ class SessionQuestionsContainer extends React.Component {
         haveAnotherQuestion: boolean,
     };
 
-    state: {
+    state!: {
         sentNotification: boolean
     };
 

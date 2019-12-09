@@ -4,7 +4,7 @@ import { Icon } from 'semantic-ui-react';
 
 import { collectionData, firestore, loggedIn$ } from '../../firebase';
 import { docData } from 'rxfire/firestore';
-import { combineLatest } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { logOut } from '../../firebasefunctions';
 
@@ -12,13 +12,13 @@ const QMeLogo = require('../../media/QLogo2.svg');
 const chevron = require('../../media/chevron.svg'); // Replace with dropdown cheveron
 
 class CalendarHeader extends React.Component {
-    props: {
+    props!: {
         currentCourseCode: string;
         role?: string;
         avatar?: string;
     };
 
-    state: {
+    state!: {
         showMenu: boolean;
         showCourses: boolean;
         courses: FireCourse[];
@@ -37,14 +37,14 @@ class CalendarHeader extends React.Component {
                         .collection('courseUsers')
                         .where('userId', '==', firestore.doc('users/' + user.uid)),
                     'courseUserId'
-                )
+                ) as Observable<FireCourseUser[]>
             )
         );
 
         // Get courses that the user is enrolled in
-        let courses$ = courseUsers$.pipe(
-            switchMap(courseUsers =>
-                combineLatest(...courseUsers.map((courseUser: FireCourseUser) =>
+        let courses$: Observable<FireCourse[]> = courseUsers$.pipe(
+            switchMap((courseUsers: FireCourseUser[]) =>
+                combineLatest(...courseUsers.map(courseUser =>
                     docData(firestore.doc(courseUser.courseId.path), 'courseId'))
                 )
             )

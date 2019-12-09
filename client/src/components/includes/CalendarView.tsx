@@ -6,14 +6,14 @@ import CalendarDaySelect from './CalendarDaySelect';
 import CalendarSessions from './CalendarSessions';
 
 class CalendarView extends React.Component {
-    props: {
+    props!: {
         session?: FireSession,
         sessionCallback: (sessionId: string) => void,
         course?: FireCourse,
         courseUser?: FireCourseUser
     };
 
-    state: {
+    state!: {
         selectedDateEpoch: number,
         userId?: string,
     };

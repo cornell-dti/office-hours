@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Dropdown, Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
 
-import { firestore, collectionData } from 'src/firebase';
+import { firestore, collectionData } from '../../firebase';
 import { switchMap, map } from 'rxjs/operators';
 import { docData } from 'rxfire/firestore';
 import { Observable } from 'rxjs/internal/Observable';

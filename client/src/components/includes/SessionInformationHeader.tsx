@@ -5,7 +5,7 @@ import { Icon } from 'semantic-ui-react';
 const people = require('../../media/people.svg');
 
 class SessionInformationHeader extends React.Component {
-    props: {
+    props!: {
         session: FireSession,
         course: FireCourse,
         callback: Function,

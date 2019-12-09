@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Checkbox } from 'semantic-ui-react';
 
 // const DELETE_SESSION = gql`
@@ -20,13 +20,13 @@ import { Checkbox } from 'semantic-ui-react';
 
 class ProfessorOHInfoDelete extends React.Component {
 
-    props: {
+    props!: {
         session: FireSession,
         toggleDelete: Function,
         toggleEdit: Function,
     };
 
-    state: {
+    state!: {
         isChecked: boolean
     };
 

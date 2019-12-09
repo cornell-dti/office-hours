@@ -1,10 +1,10 @@
 import * as React from 'react';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Icon, DropdownItemProps } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfessorOHInfo from './ProfessorOHInfo';
 import { Observable } from 'rxjs';
-import { firestore, collectionData } from 'src/firebase';
+import { firestore, collectionData } from '../../firebase';
 
 const ProfessorCalendarRow = (props: {
     dayNumber: number,

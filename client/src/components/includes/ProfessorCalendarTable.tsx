@@ -6,13 +6,13 @@ import ProfessorOHInfoDelete from './ProfessorOHInfoDelete';
 import { DropdownItemProps } from 'semantic-ui-react';
 
 class ProfessorCalendarTable extends React.Component {
-    props: {
+    props!: {
         courseId: string,
         sessions: FireSession[]
         taOptions: DropdownItemProps[],
     };
 
-    state: {
+    state!: {
         isExpanded: boolean[][]
         isDeleteVisible: boolean
         currentDay: number

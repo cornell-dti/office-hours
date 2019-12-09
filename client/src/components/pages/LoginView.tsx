@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
-const QMeLogo = require('../../media/QLogo2.svg');
-const googleLogo = require('../../media/googleLogo.svg');
 
 import firebase, { app, firestore } from '../../firebase';
 import { useHistory } from 'react-router-dom';
 import { userUpload } from '../../firebasefunctions';
+
+const QMeLogo = require('../../media/QLogo2.svg');
+const googleLogo = require('../../media/googleLogo.svg');
 
 const LoginView: React.FC = () => {
     const [showContact, setShowContact] = React.useState(false);

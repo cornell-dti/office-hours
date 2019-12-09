@@ -8,9 +8,9 @@ import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 import { DropdownItemProps } from 'semantic-ui-react';
 
-import { useCourse, useMyUser } from 'src/firehooks';
-import { firestore, collectionData } from 'src/firebase';
-import { combineLatest } from 'rxjs';
+import { useCourse, useMyUser } from '../../firehooks';
+import { firestore, collectionData } from '../../firebase';
+import { combineLatest, Observable } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { docData } from 'rxfire/firestore';
 
@@ -48,7 +48,7 @@ const ProfessorView = (props: {
     // Keep a list of TAs & Professors to assign to sessions
     useEffect(
         () => {
-            const courseUsers$ = collectionData(
+            const courseUsers$: Observable<FireCourseUser[]> = collectionData(
                 firestore
                     .collection('courseUsers')
                     .where('courseId', '==', firestore.doc('courses/' + courseId))
@@ -57,7 +57,7 @@ const ProfessorView = (props: {
             );
 
             const users$ = courseUsers$.pipe(switchMap(courseUsers =>
-                combineLatest(...courseUsers.map((courseUser: FireCourseUser) =>
+                combineLatest(...courseUsers.map(courseUser =>
                     docData<FireUser>(firestore.doc(courseUser.userId.path), 'userId').pipe(
                         map(u => ({ ...u, role: courseUser.role }))
                     )
@@ -81,7 +81,7 @@ const ProfessorView = (props: {
 
     useEffect(
         () => {
-            const sessions$ = collectionData(
+            const sessions$: Observable<FireSession[]> = collectionData(
                 firestore
                     .collection('sessions')
                     .where('courseId', '==', firestore.doc('courses/' + courseId))
@@ -90,7 +90,7 @@ const ProfessorView = (props: {
                 'sessionId'
             );
 
-            const subscription = sessions$.subscribe((s: FireSession[]) => setSessions(s));
+            const subscription = sessions$.subscribe(s => setSessions(s));
             return () => subscription.unsubscribe();
         },
         [courseId, selectedWeekEpoch]

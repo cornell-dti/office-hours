@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
-import { firestore } from 'src/firebase';
+import { firestore } from '../../firebase';
 
 class ProfessorTagInfo extends React.Component {
-    props: {
+    props!: {
         isNew: boolean
         cancelCallback: Function
         tag?: FireTag
@@ -11,7 +11,7 @@ class ProfessorTagInfo extends React.Component {
         childTags: FireTag[]
     };
 
-    state: {
+    state!: {
         tag: FireTag
         newTagText: string
     };

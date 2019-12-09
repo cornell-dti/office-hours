@@ -11,11 +11,11 @@ const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
 
 class CalendarDaySelect extends React.Component {
 
-    props: {
+    props!: {
         callback: Function,
     };
 
-    state: {
+    state!: {
         selectedWeekEpoch: number,
         active: number
     };

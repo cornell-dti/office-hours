@@ -1,8 +1,8 @@
 import * as React from 'react';
 import ProfessorTagsRow from './ProfessorTagsRow';
 
-import { firestore } from 'src/firebase';
-import { useQuery } from 'src/firehooks';
+import { firestore } from '../../firebase';
+import { useQuery } from '../../firehooks';
 
 const ProfessorTagsTable = (props: { courseId: string }) => {
 

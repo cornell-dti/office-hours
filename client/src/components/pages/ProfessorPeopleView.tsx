@@ -7,11 +7,11 @@ import QuestionsBarChart from '../includes/QuestionsBarChart';
 import 'react-dates/initialize';
 import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
-import * as moment from 'moment';
-import { useMyUser, useCourse } from 'src/firehooks';
+import moment from 'moment';
+import { useMyUser, useCourse } from '../../firehooks';
 import TopBar from '../includes/TopBar';
-import { firestore, collectionData } from 'src/firebase';
-import { combineLatest } from 'rxjs';
+import { firestore, collectionData } from '../../firebase';
+import { combineLatest, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 const ProfessorPeopleView = (props: {
@@ -36,18 +36,18 @@ const ProfessorPeopleView = (props: {
     // Fetch sessions for course between dates
     useEffect(
         () => {
-            const sessions$ = collectionData(
+            const sessions$: Observable<FireSession[]> = collectionData(
                 firestore
                     .collection('sessions')
                     // RYAN_TODO filter based on today's date.
                     .where('courseId', '==', firestore.doc('courses/' + courseId)),
                 'sessionId'
             );
-            const s1 = sessions$.subscribe((newSessions: FireSession[]) => setSessions(newSessions));
+            const s1 = sessions$.subscribe(newSessions => setSessions(newSessions));
 
             // Fetch all questions for given sessions
             let questions$ = sessions$.pipe(
-                switchMap((s: FireSession[]) =>
+                switchMap(s =>
                     combineLatest(...s.map(session =>
                         collectionData(
                             firestore
@@ -118,11 +118,22 @@ const ProfessorPeopleView = (props: {
     };
 
     // Bar Chart
-    let sessionDict = {};
+    let sessionDict: {
+        [key: string]: {
+            ta: string,
+            questions: number,
+            answered: number,
+            startHour: string,
+            endHour: string,
+            building: string,
+            room: string
+        }
+    } = {};
 
     sessions.forEach((t, i) => {
         sessionDict[t.sessionId] = {
-            ta: 'RYAN_TODO',
+            // Ryan Todo
+            ta: '',
             questions: questions[i] ? questions[i].length : 0,
             answered: questions[i] && questions[i].filter(q => q.status !== 'unresolved').length,
             startHour: moment(t.startTime.seconds * 1000).format('h:mm a'),

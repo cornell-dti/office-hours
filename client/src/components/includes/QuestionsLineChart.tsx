@@ -2,8 +2,7 @@ import * as React from 'react';
 import { ResponsiveLine, LineSerieData } from '@nivo/line';
 
 class QuestionsLineChart extends React.Component {
-
-    props: {
+    props!: {
         lineData: {
             'x': string,
             'y': number
@@ -12,7 +11,7 @@ class QuestionsLineChart extends React.Component {
         calcTickVals: (yMax: number) => number[]
     };
 
-    state: {
+    state!: {
         data: LineSerieData[];
     };
 
