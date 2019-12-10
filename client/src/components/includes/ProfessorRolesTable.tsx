@@ -36,7 +36,12 @@ const RoleDropdown = (props: {
                     const courseUserDoc = firestore.collection('courseUsers').doc(courseUser!.courseUserId);
                     courseUserDoc.update({
                         role: newValue.value
-                    });
+                    })
+                        .catch(function (error: string) {
+                            console.error('Error updating the document: ', error);
+                        });
+                } else {
+                    console.error(); // User is not in database
                 }
             }}
         />
