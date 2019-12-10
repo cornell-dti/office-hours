@@ -9,7 +9,7 @@ import { docData } from 'rxfire/firestore';
 import { Observable } from 'rxjs/internal/Observable';
 // Importing combineLatest from rxjs/operators broke everything...
 import { combineLatest } from 'rxjs';
-import { useMyCourseUserWithId } from 'src/firehooks';
+import { useCourseUserWithId } from 'src/firehooks';
 
 const RoleDropdown = (props: {
     default: string;
@@ -17,7 +17,7 @@ const RoleDropdown = (props: {
     courseId: string;
 }) => {
     const [value, setValue] = useState(props.default);
-    const courseUser = useMyCourseUserWithId(props.courseId, props.userId);
+    const courseUser = useCourseUserWithId(props.courseId, props.userId);
     return (
         <Dropdown
             // RYAN_TODO loading and error state
@@ -41,7 +41,7 @@ const RoleDropdown = (props: {
                             console.error('Error updating the document: ', error);
                         });
                 } else {
-                    console.error(); // User is not in database
+                    console.error('User not found');
                 }
             }}
         />

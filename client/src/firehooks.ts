@@ -89,7 +89,7 @@ export const useMyCourseUser = (courseId: string) => {
 };
 
 // Get course user based on courseId and userId
-export const useMyCourseUserWithId = (courseId: string, userId: string) => {
+export const useCourseUserWithId = (courseId: string, userId: string) => {
     const [courseUser, setCourseUser] = useState<FireCourseUser | undefined>();
 
     useEffect(
