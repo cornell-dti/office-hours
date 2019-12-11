@@ -1,516 +1,260 @@
 import * as React from 'react';
+import { useState } from 'react';
 import * as moment from 'moment';
-import 'moment-timezone';
 import { Dropdown, Checkbox, Icon, DropdownItemProps, DropdownProps } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-import gql from 'graphql-tag';
-import { Mutation } from 'react-apollo';
+const ProfessorOHInfo = (props: {
+    session?: FireSession,
+    courseId: string,
+    isNewOH: boolean,
+    taOptions: DropdownItemProps[],
+    taUserIdsDefault?: number[],
+    toggleEdit: Function,
+}) => {
+    const session = props.session || undefined;
 
-const EDIT_SESSION = gql`
-    mutation EditSession($_sessionId: Int!, $_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
-        $_room: String!, $_tas: [Int], $_title: String!) {
-        apiEditSession( input: {
-            _sessionId: $_sessionId,
-            _startTime: $_startTime,
-            _endTime: $_endTime,
-            _building: $_building,
-            _room: $_room,
-            _tas: $_tas,
-            _title: $_title
-        }) {
-            clientMutationId
+    const [startTime, setStartTime] = useState<moment.Moment | undefined>
+        (session && moment(session.startTime.seconds * 1000));
+    const [endTime, setEndTime] = useState<moment.Moment | undefined>
+        (session && moment(session.endTime.seconds * 1000));
+    const [taSelected, setTaSelected] = useState<(string | undefined)[]>
+        (session && session.tas
+            ? session.tas.map(dRef => dRef.id)
+            : []);
+    const [locationBuildingSelected, setLocationBuildingSelected] = useState(session && session.building);
+    const [locationRoomNumSelected, setLocationRoomNumSelected] = useState(session && session.room);
+    const [isSeriesMutation, setIsSeriesMutation] = useState(!!(session && session.sessionSeriesId));
+    const [notification, setNotification] = useState(
+        session && moment(session.endTime).isBefore()
+            ? 'This session has already passed!'
+            : '');
+    const [title, setTitle] = useState(session && session.title);
+
+    const updateNotification = (n: string) => {
+        if (notification !== 'This session has already passed!') {
+            setNotification(n);
         }
-    }
-`;
-
-const EDIT_SERIES = gql`
-    mutation EditSeries($_seriesId: Int!, $_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
-        $_room: String!, $_tas: [Int], $_title: String!) {
-        apiEditSeries( input: {
-            _seriesId: $_seriesId,
-            _startTime: $_startTime,
-            _endTime: $_endTime,
-            _building: $_building,
-            _room: $_room,
-            _tas: $_tas,
-            _title: $_title
-        }) {
-            clientMutationId
-        }
-    }
-`;
-
-const CREATE_SESSION = gql`
-    mutation CreateSession($_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
-        $_room: String!, $_courseId: Int!, $_tas: [Int], $_title: String!) {
-        apiCreateSession(input: {
-            _startTime: $_startTime,
-            _endTime: $_endTime,
-            _building: $_building,
-            _room: $_room,
-            _courseId: $_courseId,
-            _tas: $_tas,
-            _title: $_title
-        }) {
-            clientMutationId
-        }
-    }
-`;
-
-const CREATE_SERIES = gql`
-    mutation CreateSeries($_startTime: Datetime!, $_endTime : Datetime!, $_building: String!,
-        $_room: String!, $_courseId: Int!, $_tas: [Int], $_title: String!) {
-        apiCreateSeries(input: {
-            _startTime: $_startTime,
-            _endTime: $_endTime,
-            _building: $_building,
-            _room: $_room,
-            _courseId: $_courseId,
-            _tas: $_tas,
-            _title: $_title
-        }) {
-                clientMutationId
-        }
-    }
-`;
-
-class ProfessorOHInfo extends React.Component {
-    props: {
-        session?: AppSession,
-        courseId: string,
-        isNewOH: boolean,
-        taOptions: DropdownItemProps[],
-        taUserIdsDefault?: number[],
-        toggleEdit: Function,
     };
 
-    state: {
-        startTime?: (moment.Moment | null),
-        endTime?: (moment.Moment | null),
-        taSelected: (number | undefined)[],
-        locationBuildingSelected?: string,
-        locationRoomNumSelected?: string,
-        isSeriesMutation: boolean,
-        notification: string,
-        title: string
-    };
-
-    constructor(props: {}) {
-        super(props);
-
-        if (this.props.session) { // Existing Session
-            this.state = {
-                startTime: moment(this.props.session.startTime),
-                endTime: moment(this.props.session.endTime),
-                taSelected: this.props.session.sessionTasBySessionId.nodes.length > 0 ?
-                    this.props.session.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.userId) : [undefined],
-                locationBuildingSelected: this.props.session.building,
-                locationRoomNumSelected: this.props.session.room,
-                isSeriesMutation: this.props.session.sessionSeriesId !== null,
-                notification: !(this.props.session == null) && moment(this.props.session.endTime).isBefore() ?
-                    'This session has already passed!' : '',
-                title: this.props.session.title
-            };
-        } else { // New Session
-            this.state = {
-                startTime: null,
-                endTime: null,
-                taSelected: [undefined],
-                locationBuildingSelected: '',
-                locationRoomNumSelected: '',
-                isSeriesMutation: false,
-                notification: '',
-                title: ''
-            };
-        }
-
-        this.handleStartTime = this.handleStartTime.bind(this);
-        this.handleEndTime = this.handleEndTime.bind(this);
-        this.handleTaList = this.handleTaList.bind(this);
-        this.clearFields = this.clearFields.bind(this);
-        this.updateNotification = this.updateNotification.bind(this);
-        this.incAddTA = this.incAddTA.bind(this);
-        this.decAddTA = this.decAddTA.bind(this);
-        this.toggleCheckbox = this.toggleCheckbox.bind(this);
-        this.filterUniqueTAs = this.filterUniqueTAs.bind(this);
-    }
-
-    // convertToUTC(time: moment.Moment | null | undefined) {
-    //     if (time == null) {
-    //         return undefined;
-    //     } else {
-    //         // Needs testing; depends on whether time zone info is sent or not
-    //         // return time.tz('UTC', true);
-    //         return time;
-    //     }
-    // }
-    _onClickCreateSession(event: React.MouseEvent<HTMLElement>, CreateSession: Function) {
-        CreateSession({
-            variables: {
-                _startTime: this.state.startTime,
-                _endTime: this.state.endTime,
-                _building: this.state.locationBuildingSelected,
-                _room: this.state.locationRoomNumSelected,
-                _courseId: this.props.courseId,
-                _tas: this.state.taSelected.filter(this.filterUniqueTAs),
-                _title: this.state.title
-            }
-        });
-    }
-
-    _onClickCreateSeries(event: React.MouseEvent<HTMLElement>, CreateSeries: Function) {
-        CreateSeries({
-            variables: {
-                _startTime: this.state.startTime,
-                _endTime: this.state.endTime,
-                _building: this.state.locationBuildingSelected,
-                _room: this.state.locationRoomNumSelected,
-                _courseId: this.props.courseId,
-                _tas: this.state.taSelected.filter(this.filterUniqueTAs),
-                _title: this.state.title
-            }
-        });
-    }
-
-    _onClickEditSession(event: React.MouseEvent<HTMLElement>, EditSession: Function) {
-        EditSession({
-            variables: {
-                _sessionId: this.props.session && this.props.session.sessionId,
-                _startTime: this.state.startTime,
-                _endTime: this.state.endTime,
-                _building: this.state.locationBuildingSelected,
-                _room: this.state.locationRoomNumSelected,
-                _tas: this.state.taSelected.filter(this.filterUniqueTAs),
-                _title: this.state.title
-            }
-        });
-    }
-
-    _onClickEditSeries(event: React.MouseEvent<HTMLElement>, EditSeries: Function) {
-        EditSeries({
-            variables: {
-                _seriesId: this.props.session && this.props.session.sessionSeriesId,
-                _startTime: this.state.startTime,
-                _endTime: this.state.endTime,
-                _building: this.state.locationBuildingSelected,
-                _room: this.state.locationRoomNumSelected,
-                _tas: this.state.taSelected.filter(this.filterUniqueTAs),
-                _title: this.state.title
-            }
-        });
-    }
-
-    handleStartTime(startTime: moment.Moment) {
+    const handleStartTime = (currStartTime: moment.Moment) => {
         // Prevents end time from occuring before start time
-        var newEndTime = moment(startTime).add(1, 'hours');
-        this.setState({
-            startTime: startTime,
-            endTime: newEndTime
-        });
-        this.updateNotification('');
-    }
+        const newEndTime = moment(currStartTime).add(1, 'hours');
+        setEndTime(newEndTime);
+        updateNotification('');
+    };
 
-    handleEndTime(endTime: moment.Moment) {
-        this.setState({
-            endTime: endTime
-        });
-        this.updateNotification('');
-    }
+    const handleEndTime = (newEndTime: moment.Moment) => {
+        setEndTime(newEndTime);
+        updateNotification('');
+    };
 
-    handleTextField = (event: React.ChangeEvent<HTMLElement>, key: string) => {
+    const handleTextField = (
+        event: React.ChangeEvent<HTMLElement>,
+        setStateFunction: React.Dispatch<React.SetStateAction<string | undefined>>
+    ) => {
         const target = event.target as HTMLTextAreaElement;
-        this.setState({ [key]: target.value });
-        this.updateNotification('');
+        setStateFunction(target.value);
+        updateNotification('');
+    };
+
+    const handleTaList = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps, index: number) => {
+        // Immutably update the value at index
+        // tslint:disable-next-line: max-line-length
+        // https://medium.com/@giltayar/immutably-setting-a-value-in-a-js-array-or-how-an-array-is-also-an-object-55337f4d6702
+        setTaSelected(old => Object.assign([...old], { index: String(data.value) }));
+        updateNotification('');
+    };
+
+    const clearFields = () => {
+        setStartTime(undefined);
+        setEndTime(undefined);
+        setTaSelected([undefined]);
+        setLocationBuildingSelected('');
+        setLocationRoomNumSelected('');
+        setTitle('');
+    };
+
+    const incAddTA = () => {
+        setTaSelected((old) => [...old, undefined]);
+    };
+
+    const decAddTA = (index: number) => {
+        setTaSelected((old) => [
+            ...old.slice(0, index),
+            ...old.slice(index + 1)
+        ]);
+    };
+
+    let isMaxTA = false;
+    // -1 to account for the "TA Name" placeholder
+    if (taSelected.length >= props.taOptions.length - 1) {
+        isMaxTA = true;
     }
 
-    handleTaList(event: React.SyntheticEvent<HTMLElement>, data: DropdownProps, index: number) {
-        this.state.taSelected[index] = Number(data.value) || undefined;
-        this.setState({ taSelected: this.state.taSelected });
-        this.updateNotification('');
-    }
+    // Warning if fields are empty
+    // Warning if end time (state) is in the past
+    // Disable save button if default start time (prop) is in the past
+    let disableEmpty = startTime == null || endTime == null;
+    let disableState = endTime !== null && moment(endTime).isBefore();
+    let disableProps = !(props.session == null) && moment(props.session.endTime).isBefore();
 
-    clearFields() {
-        this.setState({
-            startTime: null,
-            endTime: null,
-            taSelected: [undefined],
-            locationBuildingSelected: '',
-            locationRoomNumSelected: '',
-            title: ''
-        });
-    }
+    const emptyNotification = 'Please fill in valid times';
+    const stateNotification = 'End time has already passed!';
 
-    updateNotification(n: string) {
-        if (this.state.notification !== 'This session has already passed!') {
-            this.setState({
-                notification: n
-            });
-        }
-    }
-
-    filterUniqueTAs(value: (number | undefined), index: number, self: (number | undefined)[]) {
-        return value !== undefined && self.indexOf(value) === index;
-    }
-
-    incAddTA() {
-        this.state.taSelected.push(undefined);
-        this.setState({
-            taSelected: this.state.taSelected
-        });
-    }
-
-    decAddTA(index: number) {
-        this.state.taSelected.splice(index, 1);
-        this.setState({
-            taSelected: this.state.taSelected
-        });
-    }
-
-    toggleCheckbox() {
-        this.setState({
-            isSeriesMutation: !this.state.isSeriesMutation
-        });
-    }
-
-    render() {
-        var isMaxTA = false;
-        // -1 to account for the "TA Name" placeholder
-        if (this.state.taSelected.length >= this.props.taOptions.length - 1) {
-            isMaxTA = true;
-        }
-
-        // Warning if fields are empty
-        // Warning if end time (state) is in the past
-        // Disable save button if default start time (prop) is in the past
-        var disableEmpty = this.state.startTime == null || this.state.endTime == null;
-        var disableState = this.state.endTime !== null && moment(this.state.endTime).isBefore();
-        var disableProps = !(this.props.session == null) && moment(this.props.session.endTime).isBefore();
-
-        const emptyNotification = 'Please fill in valid times';
-        const stateNotification = 'End time has already passed!';
-
-        var AddTA = this.state.taSelected.map(
-            (ta, i) => {
-                return (
-                    <div className={'AddTA ' + (i === 0 ? 'First' : 'Additional')} key={i}>
-                        <Icon name="user" />
-                        <Dropdown
-                            className="dropdown"
-                            placeholder="TA Name"
-                            selection={true}
-                            options={this.props.taOptions}
-                            value={this.state.taSelected[i]}
-                            onChange={(event, data) => this.handleTaList(event, data, i)}
-                        />
-                        {i === 0 ?
-                            <button
-                                className={'AddTAButton ' + isMaxTA}
-                                disabled={isMaxTA}
-                                onClick={() => this.incAddTA()}
-                            >
-                                <Icon name="plus" />
-                                Add TA
-                            </button> :
-                            <button
-                                className="AddTAButton"
-                                onClick={() => this.decAddTA(i)}
-                            >
-                                <Icon name="x" />
-                            </button>
-                        }
-                    </div>
-                );
-            }
-        );
-
-        return (
-            <React.Fragment>
-                <div className="ProfessorOHInfo">
-                    <div className="row">
-                        <Icon name="marker" />
-                        <input
-                            className="long"
-                            placeholder="Name"
-                            value={this.state.title || ''}
-                            onChange={(e) => this.handleTextField(e, 'title')}
-                        />
-                    </div>
-                    <div className="row TA">
-                        {AddTA}
-                    </div>
-                    <div className="row">
-                        <Icon name="marker" />
-                        <input
-                            className="long"
-                            placeholder="Building/Location"
-                            value={this.state.locationBuildingSelected || ''}
-                            onChange={(e) => this.handleTextField(e, 'locationBuildingSelected')}
-                        />
-                        <input
-                            className="shift"
-                            placeholder="Room Number"
-                            value={this.state.locationRoomNumSelected || ''}
-                            onChange={(e) => this.handleTextField(e, 'locationRoomNumSelected')}
-                        />
-                    </div>
-                    <div className="Time">
-                        <Icon name="time" />
-                        <div className="datePicker">
-                            <DatePicker
-                                selected={this.state.startTime}
-                                onChange={this.handleStartTime}
-                                dateFormat="dddd MM/DD/YY"
-                                minDate={moment()}
-                                placeholderText={moment().format('dddd MM/DD/YY')}
-                                readOnly={true}
-                            />
-                        </div >
-                        <div className="datePicker timePicker shift">
-                            <DatePicker
-                                selected={this.state.startTime}
-                                onChange={this.handleStartTime}
-                                showTimeSelect={true}
-                                // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
-                                // Will not compile if removed
-                                showTimeSelectOnly={true}
-                                timeIntervals={30}
-                                dateFormat="LT"
-                                placeholderText="12:00 PM"
-                                readOnly={true}
-                            />
-                        </div >
-                        <span className="shift">
-                            To
-                    </span>
-                        <div className="datePicker timePicker shift">
-                            <DatePicker
-                                selected={this.state.endTime}
-                                onChange={this.handleEndTime}
-                                showTimeSelect={true}
-                                // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
-                                // Will not compile if removed
-                                showTimeSelectOnly={true}
-                                timeIntervals={30}
-                                dateFormat="LT"
-                                minTime={this.state.startTime || moment().startOf('day')}
-                                maxTime={moment().endOf('day')}
-                                placeholderText="2:00 PM"
-                                readOnly={true}
-                            />
-                        </div >
-                        <Checkbox
-                            className="datePicker shift"
-                            label={this.props.isNewOH ? 'Repeat weekly' : 'Edit all office hours in this series'}
-                            checked={this.state.isSeriesMutation}
-                            disabled={this.props.session ? this.props.session.sessionSeriesId === null : false}
-                            onChange={this.toggleCheckbox}
-                        />
-                    </div>
-                </div>
-                <div className="EditButtons">
-                    <button
-                        className="Bottom Cancel"
-                        onClick={() => this.props.toggleEdit()}
-                    >
-                        Cancel
-                    </button>
-                    {this.props.isNewOH ?
-                        this.state.isSeriesMutation ?
-                            <Mutation mutation={CREATE_SERIES}>
-                                {(CreateSeries: Function) =>
-                                    <button
-                                        className="Bottom Edit"
-                                        onClick={(e) => {
-                                            if (disableEmpty) {
-                                                this.updateNotification(emptyNotification);
-                                            } else if (disableState) {
-                                                this.updateNotification(stateNotification);
-                                            } else {
-                                                this._onClickCreateSeries(e, CreateSeries);
-                                                this.props.toggleEdit();
-                                                this.clearFields();
-                                            }
-                                        }}
-                                    >
-                                        Create
-                                    </button>
-                                }
-                            </Mutation>
-                            :
-                            <Mutation mutation={CREATE_SESSION}>
-                                {(CreateSession: Function) =>
-                                    <button
-                                        className="Bottom Edit"
-                                        onClick={(e) => {
-                                            if (disableEmpty) {
-                                                this.updateNotification(emptyNotification);
-                                            } else if (disableState) {
-                                                this.updateNotification(stateNotification);
-                                            } else {
-                                                this._onClickCreateSession(e, CreateSession);
-                                                this.props.toggleEdit();
-                                                this.clearFields();
-                                            }
-                                        }}
-                                    >
-                                        Create
-                                    </button>
-                                }
-                            </Mutation>
-
-                        :
-                        this.state.isSeriesMutation ?
-                            <Mutation mutation={EDIT_SERIES}>
-                                {(EditSeries: Function) =>
-                                    <button
-                                        className="Bottom Edit"
-                                        onClick={(e) => {
-                                            if (disableEmpty) {
-                                                this.updateNotification(emptyNotification);
-                                            } else if (disableState) {
-                                                this.updateNotification(stateNotification);
-                                            } else {
-                                                this._onClickEditSeries(e, EditSeries);
-                                                this.props.toggleEdit();
-                                            }
-                                        }}
-                                        disabled={disableProps}
-                                    >
-                                        Save Changes
-                                    </button>
-                                }
-                            </Mutation>
-                            :
-                            <Mutation mutation={EDIT_SESSION}>
-                                {(EditSession: Function) =>
-                                    <button
-                                        className="Bottom Edit"
-                                        onClick={(e) => {
-                                            if (disableEmpty) {
-                                                this.updateNotification(emptyNotification);
-                                            } else if (disableState) {
-                                                this.updateNotification(stateNotification);
-                                            } else {
-                                                this._onClickEditSession(e, EditSession);
-                                                this.props.toggleEdit();
-                                            }
-                                        }}
-                                        disabled={disableProps}
-                                    >
-                                        Save Changes
-                                    </button>
-                                }
-                            </Mutation>
+    let AddTA = taSelected.map(
+        (ta, i) => {
+            return (
+                <div className={'AddTA ' + (i === 0 ? 'First' : 'Additional')} key={i}>
+                    <Icon name="user" />
+                    <Dropdown
+                        className="dropdown"
+                        placeholder="TA Name"
+                        selection={true}
+                        options={props.taOptions}
+                        value={taSelected[i]}
+                        onChange={(event, data) => handleTaList(event, data, i)}
+                    />
+                    {i === 0 ?
+                        <button
+                            className={'AddTAButton ' + isMaxTA}
+                            disabled={isMaxTA}
+                            onClick={() => incAddTA()}
+                        >
+                            <Icon name="plus" />
+                            Add TA
+                        </button> :
+                        <button
+                            className="AddTAButton"
+                            onClick={() => decAddTA(i)}
+                        >
+                            <Icon name="x" />
+                        </button>
                     }
-                    <span className="EditNotification">
-                        {this.state.notification}
-                    </span>
                 </div>
-            </React.Fragment>
-        );
-    }
-}
+            );
+        }
+    );
+
+    return (
+        <React.Fragment>
+            <div className="ProfessorOHInfo">
+                <div className="row">
+                    <Icon name="marker" />
+                    <input
+                        className="long"
+                        placeholder="Name"
+                        value={title || ''}
+                        onChange={(e) => handleTextField(e, setTitle)}
+                    />
+                </div>
+                <div className="row TA">
+                    {AddTA}
+                </div>
+                <div className="row">
+                    <Icon name="marker" />
+                    <input
+                        className="long"
+                        placeholder="Building/Location"
+                        value={locationBuildingSelected || ''}
+                        onChange={(e) => handleTextField(e, setLocationBuildingSelected)}
+                    />
+                    <input
+                        className="shift"
+                        placeholder="Room Number"
+                        value={locationRoomNumSelected || ''}
+                        onChange={(e) => handleTextField(e, setLocationRoomNumSelected)}
+                    />
+                </div>
+                <div className="Time">
+                    <Icon name="time" />
+                    <div className="datePicker">
+                        <DatePicker
+                            selected={startTime}
+                            onChange={handleStartTime}
+                            dateFormat="dddd MM/DD/YY"
+                            minDate={moment()}
+                            placeholderText={moment().format('dddd MM/DD/YY')}
+                            readOnly={true}
+                        />
+                    </div >
+                    <div className="datePicker timePicker shift">
+                        <DatePicker
+                            selected={startTime}
+                            onChange={handleStartTime}
+                            showTimeSelect={true}
+                            // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
+                            // Will not compile if removed
+                            showTimeSelectOnly={true}
+                            timeIntervals={30}
+                            dateFormat="LT"
+                            placeholderText="12:00 PM"
+                            readOnly={true}
+                        />
+                    </div >
+                    <span className="shift">
+                        To
+                    </span>
+                    <div className="datePicker timePicker shift">
+                        <DatePicker
+                            selected={endTime}
+                            onChange={handleEndTime}
+                            showTimeSelect={true}
+                            // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
+                            // Will not compile if removed
+                            showTimeSelectOnly={true}
+                            timeIntervals={30}
+                            dateFormat="LT"
+                            minTime={startTime || moment().startOf('day')}
+                            maxTime={moment().endOf('day')}
+                            placeholderText="2:00 PM"
+                            readOnly={true}
+                        />
+                    </div >
+                    <Checkbox
+                        className="datePicker shift"
+                        label={props.isNewOH ? 'Repeat weekly' : 'Edit all office hours in this series'}
+                        checked={isSeriesMutation}
+                        disabled={props.session ? props.session.sessionSeriesId === null : false}
+                        onChange={() => setIsSeriesMutation((old) => !old)}
+                    />
+                </div>
+            </div>
+            <div className="EditButtons">
+                <button
+                    className="Bottom Cancel"
+                    onClick={() => props.toggleEdit()}
+                >
+                    Cancel
+                </button>
+                <button
+                    className="Bottom Edit"
+                    onClick={(e) => {
+                        if (disableEmpty) {
+                            updateNotification(emptyNotification);
+                        } else if (disableState) {
+                            updateNotification(stateNotification);
+                        } else {
+                            // If is new OH
+                            // _onClickCreateSession(e, CreateSession);
+                            clearFields();
+                            // Else
+                            // _onClickEditSession(e, () => 1);
+                            props.toggleEdit();
+                        }
+                    }}
+                    disabled={disableProps}
+                >
+                    Save Changes
+                    {/* OR Create */}
+                </button>
+                <span className="EditNotification">
+                    {notification}
+                </span>
+            </div>
+        </React.Fragment>
+    );
+};
 
 export default ProfessorOHInfo;
