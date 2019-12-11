@@ -5,7 +5,7 @@ import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 // import { Redirect } from 'react-router';
 // import { Loader } from 'semantic-ui-react';
-import { useMyUser, useCourse } from 'src/firehooks';
+import { useMyUser, useCourse } from '../../firehooks';
 
 function withData<T extends { match: { params: { courseId: string; } } }>
     (Component: React.ComponentType<T>) {
@@ -19,7 +19,7 @@ function withData<T extends { match: { params: { courseId: string; } } }>
 }
 
 class ProfessorTagsView extends React.Component {
-    props: {
+    props!: {
         match: {
             params: {
                 courseId: string;

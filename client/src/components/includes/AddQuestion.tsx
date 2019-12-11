@@ -5,7 +5,7 @@ import { Icon } from 'semantic-ui-react';
 
 import SelectedTags from '../includes/SelectedTags';
 import SessionAlertModal from './SessionAlertModal';
-import * as moment from 'moment';
+import moment from 'moment';
 
 import { collectionData, firestore, auth } from '../../firebase';
 import * as firebase from 'firebase';
@@ -23,13 +23,13 @@ class AddQuestion extends React.Component {
      * 50 - contents in question field - unlocks submit button
      * 60 - Warning modal (replaces question modal) - toggles after submit if n minutes are left in queue
      */
-    props: {
+    props!: {
         session: FireSession,
         course: FireCourse,
         mobileBreakpoint: number
     };
 
-    state: {
+    state!: {
         location: string,
         question: string,
         selectedTags: number[],
@@ -168,7 +168,7 @@ class AddQuestion extends React.Component {
             );
         }
 
-        var questionCharsLeft = this.props.course.charLimit - this.state.question.length;
+        let questionCharsLeft = this.props.course.charLimit - this.state.question.length;
 
         return (
             <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e)} >

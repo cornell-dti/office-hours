@@ -3,10 +3,10 @@ import postgraphile from 'postgraphile';
 import * as passport from 'passport';
 import * as sslRedirect from 'heroku-ssl-redirect';
 
-var session = require('cookie-session');
-var request = require('request');
-var jwt = require('jsonwebtoken');
-var url = require('url');
+let session = require('cookie-session');
+let request = require('request');
+let jwt = require('jsonwebtoken');
+let url = require('url');
 
 const app = express();
 app.use(sslRedirect());
@@ -19,7 +19,7 @@ const commandLineArgs = require('command-line-args');
 const options = commandLineArgs(optionDefinitions);
 
 // Initialize session middleware
-var sessionOptions = {
+let sessionOptions = {
     name: 'queue-me-in-cookie',
     maxAge: 7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* milliseconds */,
     secure: false,
@@ -37,8 +37,8 @@ app.use(session(sessionOptions))
 app.use(passport.initialize());
 app.use(passport.session());
 
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
-var ownBaseUrl = 'http://localhost:3001';
+let GoogleStrategy = require('passport-google-oauth20').Strategy;
+let ownBaseUrl = 'http://localhost:3001';
 
 passport.use(new GoogleStrategy(
     {
@@ -48,7 +48,7 @@ passport.use(new GoogleStrategy(
         userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
     },
     function (accessToken, refreshToken, profile, done) {
-        var variables = {
+        let variables = {
             googleId: profile._json.sub, email: profile._json.email,
             firstName: profile._json.given_name, lastName: profile._json.family_name,
             photoUrl: profile._json.picture, displayName: profile._json.name
@@ -67,9 +67,9 @@ passport.use(new GoogleStrategy(
             delete variables.displayName;
         }
 
-        var variablesString = JSON.stringify(variables).replace(/"/g, '\\"');
+        let variablesString = JSON.stringify(variables).replace(/"/g, '\\"');
 
-        var bodyContent = `{
+        let bodyContent = `{
             "query": "mutation loginUser(
                 $email: String!,
                 $googleId: String!,
@@ -112,7 +112,7 @@ passport.use(new GoogleStrategy(
 ))
 
 passport.serializeUser(function (user: any, done) {
-    var token = jwt.sign(user, (process.env.OH_JWT_SECRET || "insecure"), {
+    let token = jwt.sign(user, (process.env.OH_JWT_SECRET || "insecure"), {
         expiresIn: '1w',
         audience: 'postgraphile',
     });

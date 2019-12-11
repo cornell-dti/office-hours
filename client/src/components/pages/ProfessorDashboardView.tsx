@@ -5,7 +5,7 @@ import ProfessorSidebar from '../includes/ProfessorSidebar';
 import TagsBarChart from '../includes/TagsBarChart';
 
 import { Dropdown, DropdownProps } from 'semantic-ui-react';
-import { useMyUser, useQuery, useCourse } from 'src/firehooks';
+import { useMyUser, useQuery, useCourse } from '../../firehooks';
 import { firestore } from '../../firebase';
 
 interface CategoryTag {

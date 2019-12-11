@@ -1,10 +1,10 @@
 import * as React from 'react';
 import SessionQuestion from './SessionQuestion';
 import { Icon } from 'semantic-ui-react';
-import * as moment from 'moment';
+import moment from 'moment';
 
 class SessionQuestionsContainer extends React.Component {
-    props: {
+    props!: {
         isTA: boolean,
         questions: FireQuestion[],
         myUserId: string,
@@ -16,7 +16,7 @@ class SessionQuestionsContainer extends React.Component {
         haveAnotherQuestion: boolean,
     };
 
-    state: {
+    state!: {
         sentNotification: boolean
     };
 
@@ -61,7 +61,7 @@ class SessionQuestionsContainer extends React.Component {
             if (myQuestionIndex === 0 && !this.state.sentNotification) {
                 this.setState({ sentNotification: true });
                 try {
-                    var n = new Notification('Your question is up!');
+                    let n = new Notification('Your question is up!');
                     setTimeout(n.close.bind(n), 4000);
                 } catch (error) {
                     // Do nothing. iOS crashes because Notification isn't defined

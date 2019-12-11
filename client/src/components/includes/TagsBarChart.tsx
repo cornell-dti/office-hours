@@ -2,13 +2,13 @@ import * as React from 'react';
 import { ResponsiveBar, BarDatum } from '@nivo/bar';
 
 class TagsBarChart extends React.Component {
-    props: {
+    props!: {
         barData: {}[],
         yMax: number,
         calcTickVals: (yMax: number) => number[]
     };
 
-    state: {
+    state!: {
         data: BarDatum[];
     };
 
@@ -19,12 +19,12 @@ class TagsBarChart extends React.Component {
     }) {
         super(props);
         this.state = {
-            data: this.props.barData as BarDatum[]
+            data: props.barData as BarDatum[]
         };
     }
 
     isEmpty(obj: {}) {
-        for (var k in obj) {
+        for (let k in obj) {
             if (obj.hasOwnProperty(k)) {
                 return false;
             }

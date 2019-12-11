@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
-import { firestore } from 'src/firebase';
+import { firestore } from '../../firebase';
 
 class ProfessorTagInfo extends React.Component {
-    props: {
+    props!: {
         isNew: boolean
         cancelCallback: Function
         tag?: FireTag
@@ -11,16 +11,22 @@ class ProfessorTagInfo extends React.Component {
         childTags: FireTag[]
     };
 
-    state: {
+    state!: {
         tag: FireTag
         newTagText: string
     };
 
-    constructor(props: {}) {
+    constructor(props: {
+        isNew: boolean
+        cancelCallback: Function
+        tag?: FireTag
+        courseId: string
+        childTags: FireTag[]
+    }) {
         super(props);
         this.state = {
             tag: {
-                courseId: firestore.collection('courses').doc(this.props.courseId),
+                courseId: firestore.collection('courses').doc(props.courseId),
                 level: 1,
                 active: true,
                 tagId: '', // new tag
@@ -50,7 +56,7 @@ class ProfessorTagInfo extends React.Component {
     }
 
     handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        var newState = Object.assign({}, this.state.tag);
+        let newState = Object.assign({}, this.state.tag);
         const target = event.target;
         newState.name = target.value;
         this.setState({ tag: newState });
@@ -62,7 +68,7 @@ class ProfessorTagInfo extends React.Component {
     }
 
     handleActiveChange = (active: boolean): void => {
-        var newState = Object.assign({}, this.state.tag);
+        let newState = Object.assign({}, this.state.tag);
         newState.active = active;
         this.setState({ tag: newState });
     }
@@ -75,7 +81,7 @@ class ProfessorTagInfo extends React.Component {
         if (this.state.newTagText.length === 0) {
             return;
         }
-        var newTag: FireTag = {
+        let newTag: FireTag = {
             active: true,
             level: 2,
             tagId: '',

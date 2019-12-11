@@ -1,8 +1,7 @@
 import * as React from 'react';
 
 class SelectedTags extends React.PureComponent {
-
-    props: {
+    props!: {
         tag: FireTag,
         isSelected: boolean,
         onClick?: Function,

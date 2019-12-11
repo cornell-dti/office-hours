@@ -20,7 +20,7 @@ const CalendarSessionCard = (props: {
 
     const tas: FireUser[] = []; // session.sessionTasBySessionId.nodes;
 
-    var timeDesc = '';
+    let timeDesc = '';
     return (
         <div className={(props.active && 'active') + ' CalendarSessionCard'} onClick={handleOnClick}>
             {props.includeBookmark && <div className="Bookmark" />}

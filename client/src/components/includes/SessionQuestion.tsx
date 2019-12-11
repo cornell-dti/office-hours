@@ -4,6 +4,7 @@ import Moment from 'react-moment';
 import { firestore } from '../../firebase';
 import { docData } from 'rxfire/firestore';
 import SelectedTags from './SelectedTags';
+import { Observable } from 'rxjs';
 
 // import SelectedTags from './SelectedTags';
 
@@ -35,7 +36,7 @@ import SelectedTags from './SelectedTags';
 const LOCATION_CHAR_LIMIT = 40;
 
 class SessionQuestion extends React.Component {
-    props: {
+    props!: {
         question: FireQuestion,
         index: number,
         isTA: boolean,
@@ -45,7 +46,7 @@ class SessionQuestion extends React.Component {
         isPast: boolean,
     };
 
-    state: {
+    state!: {
         showLocation: boolean,
         location: string,
         isEditingLocation: boolean,
@@ -67,20 +68,24 @@ class SessionQuestion extends React.Component {
             showDotMenu: false,
         };
 
-        const asker$ = docData(firestore.doc('users/' + this.props.question.askerId), 'userId');
-        asker$.subscribe((asker: FireUser) => this.setState({ asker }));
+        const asker$: Observable<FireUser> =
+            docData(firestore.doc('users/' + this.props.question.askerId), 'userId');
+        asker$.subscribe(asker => this.setState({ asker }));
 
         if (this.props.question.answererId) {
             // RYAN_TODO make this work when we get an answerer id
-            const answerer$ = docData(firestore.doc('users/' + this.props.question.answererId), 'userId');
-            answerer$.subscribe((answerer: FireUser) => this.setState({ answerer }));
+            const answerer$: Observable<FireUser> =
+                docData(firestore.doc('users/' + this.props.question.answererId), 'userId');
+            answerer$.subscribe(answerer => this.setState({ answerer }));
         }
 
-        const primaryTag$ = docData(firestore.doc('tags/' + this.props.question.primaryTag), 'tagId');
-        primaryTag$.subscribe((primaryTag: FireTag) => this.setState({ primaryTag }));
+        const primaryTag$: Observable<FireTag>
+            = docData(firestore.doc('tags/' + this.props.question.primaryTag), 'tagId');
+        primaryTag$.subscribe(primaryTag => this.setState({ primaryTag }));
 
-        const secondaryTag$ = docData(firestore.doc('tags/' + this.props.question.secondaryTag), 'tagId');
-        secondaryTag$.subscribe((secondaryTag: FireTag) => this.setState({ secondaryTag }));
+        const secondaryTag$: Observable<FireTag>
+            = docData(firestore.doc('tags/' + this.props.question.secondaryTag), 'tagId');
+        secondaryTag$.subscribe(secondaryTag => this.setState({ secondaryTag }));
     }
 
     // Given an index from [1..n], converts it to text that is displayed on the
@@ -153,7 +158,7 @@ class SessionQuestion extends React.Component {
     }
 
     render() {
-        var question = this.props.question;
+        let question = this.props.question;
         const studentCSS = this.props.isTA ? '' : ' Student';
         const includeBookmark = this.props.question.askerId.id === this.props.myUserId;
 
