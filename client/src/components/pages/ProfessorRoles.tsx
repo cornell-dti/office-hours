@@ -2,7 +2,7 @@ import * as React from 'react';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
-import { useMyUser, useCourse } from 'src/firehooks';
+import { useMyUser, useCourse } from '../../firehooks';
 
 const ProfessorDashboardView = (props: {
     match: {

@@ -3,21 +3,31 @@ import { ResponsiveBar, BarDatum, BarExtendedDatum } from '@nivo/bar';
 import { Icon } from 'semantic-ui-react';
 
 class QuestionsBarChart extends React.Component {
-    props: {
+    props!: {
         barData: {}[],
         yMax: number,
         sessionKeys: string[],
-        sessionDict: {},
+        sessionDict: {
+            [key: string]: {
+                ta: string,
+                questions: number,
+                answered: number,
+                startHour: string,
+                endHour: string,
+                building: string,
+                room: string
+            }
+        },
         calcTickVals: (yMax: number) => number[]
     };
 
-    state: {
+    state!: {
         data: BarDatum[];
         sessionKeys: string[];
     };
 
     isEmpty(obj: {}) {
-        for (var k in obj) {
+        for (let k in obj) {
             if (obj.hasOwnProperty(k)) {
                 return false;
             }
@@ -28,8 +38,8 @@ class QuestionsBarChart extends React.Component {
     createTooltipFunc(sessionId: string) {
 
         if (!(this.isEmpty(this.props.sessionDict))) {
-            var session = this.props.sessionDict[sessionId];
-            var percent = Math.round((session.answered / (session.questions)) * 100);
+            let session = this.props.sessionDict[sessionId];
+            let percent = Math.round((session.answered / (session.questions)) * 100);
             return (function (e: BarExtendedDatum) {
                 return (
                     <div className="bar-tooltip">

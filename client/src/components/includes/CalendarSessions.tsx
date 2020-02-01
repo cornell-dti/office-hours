@@ -2,8 +2,8 @@ import * as React from 'react';
 import { groupBy } from 'lodash';
 
 import CalendarSessionCard from './CalendarSessionCard';
-import { useQuery } from 'src/firehooks';
-import { firestore } from 'src/firebase';
+import { useQuery } from '../../firehooks';
+import { firestore } from '../../firebase';
 
 const CalendarSessions = (props: {
     activeSession?: FireSession;

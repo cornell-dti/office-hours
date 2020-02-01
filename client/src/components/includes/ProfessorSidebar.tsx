@@ -2,14 +2,14 @@ import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 class ProfessorSidebar extends React.Component {
-    props: {
+    props!: {
         courseId: number | string,
         code: string,
         selected: number
     };
 
     render() {
-        var selectedArray: string[] = ['', '', '', ''];
+        let selectedArray: string[] = ['', '', '', ''];
         selectedArray[this.props.selected] = 'selected';
 
         return (

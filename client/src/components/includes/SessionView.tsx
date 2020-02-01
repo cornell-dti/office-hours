@@ -8,6 +8,7 @@ import { Icon } from 'semantic-ui-react';
 // import SessionAlertModal from './SessionAlertModal';
 
 import { firestore, loggedIn$, collectionData } from '../../firebase';
+import { Observable } from 'rxjs';
 
 // RYAN_TODO
 // const UNDO_QUESTION = gql`
@@ -20,7 +21,7 @@ import { firestore, loggedIn$, collectionData } from '../../firebase';
 // `;
 
 class SessionView extends React.Component {
-    props: {
+    props!: {
         session: FireSession,
         course: FireCourse,
         isDesktop: boolean,
@@ -30,7 +31,7 @@ class SessionView extends React.Component {
         courseUser: FireCourseUser,
     };
 
-    state: {
+    state!: {
         undoAction?: string,
         undoName?: string,
         undoQuestionId?: number,
@@ -57,7 +58,7 @@ class SessionView extends React.Component {
 
         loggedIn$.subscribe(user => this.setState({ userId: user.uid }));
 
-        const questions$ = collectionData(
+        const questions$: Observable<FireQuestion[]> = collectionData(
             firestore
                 .collection('questions'),
             // .where('sessionId', '==', firestore.doc('sessions/' + this.props.session.sessionId)),
@@ -65,9 +66,7 @@ class SessionView extends React.Component {
             'questionId'
         );
 
-        questions$.subscribe((questions: FireQuestion[]) => {
-            this.setState({ questions });
-        });
+        questions$.subscribe(questions => { this.setState({ questions }); });
     }
 
     triggerUndo = (questionId: number, action: string, name: string) => {

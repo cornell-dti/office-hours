@@ -11,7 +11,7 @@ interface AnalyticsProps {
 }
 
 export class Analytics extends React.Component {
-    props: AnalyticsProps;
+    props!: AnalyticsProps;
 
     constructor(props: AnalyticsProps) {
         super(props);

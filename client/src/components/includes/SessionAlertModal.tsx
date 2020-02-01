@@ -1,11 +1,10 @@
 import * as React from 'react';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Icon } from 'semantic-ui-react';
 import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
 
 class SessionAlertModal extends React.Component {
-
-    props: {
+    props!: {
         header?: string,
         icon?: SemanticICONS,
         color: string,
@@ -17,7 +16,7 @@ class SessionAlertModal extends React.Component {
         displayShade: boolean
     };
 
-    state: {
+    state!: {
         displayModal: boolean
     };
 
@@ -42,7 +41,7 @@ class SessionAlertModal extends React.Component {
         // Check if cancelMain is supplied
         let main = this.props.mainAction !== undefined ? this.props.mainAction : cancel;
 
-        var buttons = this.props.buttons.map((button, i: number, arr) =>
+        let buttons = this.props.buttons.map((button, i: number, arr) =>
             (
                 <button
                     key={i}
@@ -56,7 +55,7 @@ class SessionAlertModal extends React.Component {
         let shadeDisplay = this.props.displayShade ? 'shade' : '';
 
         // Copied over from ProfessorOHInfoDelete
-        var taList = this.props.OHSession ?
+        let taList = this.props.OHSession ?
             this.props.OHSession.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.computedName) : [];
 
         return (

@@ -7,7 +7,7 @@ import { collectionData } from 'rxfire/firestore';
 import { filter } from 'rxjs/operators';
 
 const app = firebase.initializeApp({
-    apiKey: process.env.REACT_APP_FIREBASE_SECRET,
+    apiKey: 'AIzaSyDD2hsUMX3qvOEotKBXzc1ehtMyunix_I4',
     authDomain: 'qmi-test.firebaseapp.com',
     databaseURL: 'https://qmi-test.firebaseio.com',
     projectId: 'qmi-test',

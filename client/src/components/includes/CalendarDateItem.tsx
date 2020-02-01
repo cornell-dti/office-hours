@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 class CalendarDateItem extends React.PureComponent {
-    props: {
+    props!: {
         index: number,
         active: boolean,
         day: string,

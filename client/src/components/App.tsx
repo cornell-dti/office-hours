@@ -15,7 +15,7 @@ import ProfessorPeopleView from './pages/ProfessorPeopleView';
 import { Analytics } from './includes/Analytics';
 import { Loader } from 'semantic-ui-react';
 import { userUpload } from '../firebasefunctions';
-import { useMyCourseUser } from 'src/firehooks';
+import { useMyCourseUser } from '../firehooks';
 
 ReactGA.initialize('UA-123790900-1');
 
@@ -42,7 +42,8 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: any) => {
     const courseId = requireProfessor ? rest.computedMatch.params.courseId : undefined;
 
     const [isLoggedIn, setIsLoggedIn] = React.useState(0);
-    const courseUser = courseId && useMyCourseUser(courseId);
+    const cu = useMyCourseUser(courseId);
+    const courseUser = courseId && cu;
 
     auth.onAuthStateChanged((user) => {
         if (user) {

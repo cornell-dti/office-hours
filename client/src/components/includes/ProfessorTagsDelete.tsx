@@ -3,7 +3,7 @@ import { Checkbox } from 'semantic-ui-react';
 
 class ProfessorTagsDelete extends React.Component {
 
-    props: {
+    props!: {
         assignmentName: string
         isActivated: boolean
         numQuestions: number
