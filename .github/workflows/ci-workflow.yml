@@ -8,11 +8,7 @@ jobs:
       - uses: actions/checkout@master
       - name: Set up Node
         uses: actions/setup-node@v1
-      - name: Pin to Yarn 1.18
-        run: yarn policies set-version 1.18
       - name: Install and Build
         run: yarn install
       - name: Lint client
-        run: cd client && yarn tslint --project tsconfig.json -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'
-      - name: Lint server
-        run: cd server && yarn tslint --project tsconfig.json -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'
+        run: cd client && yarn install && yarn tslint --project tsconfig.json -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'

@@ -132,7 +132,8 @@ class AddQuestion extends React.Component {
                 status: 'unresolved',
                 timeEntered: firebase.firestore.FieldValue.serverTimestamp(),
                 primaryTag: this.state.selectedPrimary.tagId,
-                secondaryTag: this.state.selectedSecondary.tagId
+                secondaryTag: this.state.selectedSecondary.tagId,
+                endTime: this.props.session.endTime.seconds
             });
             this.setState({ redirect: true });
         }
