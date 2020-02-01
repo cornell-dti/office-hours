@@ -13,15 +13,8 @@ class SessionInformationHeader extends React.Component {
         isDesktop: boolean,
     };
 
-    state: {
-        avatar: string
-    };
-
     constructor(props: {}) {
         super(props);
-        this.state = {
-            avatar: this.props.session.sessionTasBySessionId.nodes[0].userByUserId.computedAvatar
-        };
     }
 
     handleBackClick = () => {
@@ -31,6 +24,9 @@ class SessionInformationHeader extends React.Component {
     render() {
         const session = this.props.session;
         const tas = session.sessionTasBySessionId.nodes;
+        const avatar = tas[0] ?
+            tas[0].userByUserId.computedAvatar :
+            '/placeholder.png';
 
         const unresolvedQuestions = session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved');
         const userQuestions = unresolvedQuestions.filter((q) => q.userByAskerId.userId === this.props.myUserId);
@@ -42,12 +38,7 @@ class SessionInformationHeader extends React.Component {
                 <header className="DesktopSessionInformationHeader" >
                     <div className="Picture">
                         <img
-                            src={this.state.avatar}
-                            onError={
-                                (() => this.setState({
-                                    avatar: '/placeholder.png'
-                                }))
-                            }
+                            src={avatar}
                         />
                     </div>
                     <div className="Details">
@@ -94,12 +85,7 @@ class SessionInformationHeader extends React.Component {
                         </div>
                         <div className="Picture">
                             <img
-                                src={this.state.avatar}
-                                onError={
-                                    (() => this.setState({
-                                        avatar: '/placeholder.png'
-                                    }))
-                                }
+                                src={avatar}
                             />
                         </div>
                     </div>
