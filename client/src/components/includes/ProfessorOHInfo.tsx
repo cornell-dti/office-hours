@@ -376,9 +376,10 @@ class ProfessorOHInfo extends React.Component {
                                 // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
                                 // Will not compile if removed
                                 showTimeSelectOnly={true}
-                                timeIntervals={30}
-                                dateFormat="LT"
+                                timeIntervals={10}
+                                dateFormat="h:mm a"
                                 placeholderText="12:00 PM"
+                                readOnly={true}
                             />
                         </div >
                         <span className="shift">
@@ -392,11 +393,12 @@ class ProfessorOHInfo extends React.Component {
                                 // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
                                 // Will not compile if removed
                                 showTimeSelectOnly={true}
-                                timeIntervals={30}
+                                timeIntervals={10}
                                 dateFormat="LT"
                                 minTime={this.state.startTime || moment().startOf('day')}
                                 maxTime={moment().endOf('day')}
                                 placeholderText="2:00 PM"
+                                readOnly={true}
                             />
                         </div >
                         <Checkbox
