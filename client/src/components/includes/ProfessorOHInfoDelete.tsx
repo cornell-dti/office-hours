@@ -116,7 +116,7 @@ class ProfessorOHInfoDelete extends React.Component {
                     <Mutation mutation={DELETE_SERIES} onCompleted={() => this.props.refreshCallback()}>
                         {(DeleteSeries) =>
                             <button
-                                className="Delete"
+                                className="Action"
                                 onClick={(e) => {
                                     this._onClickDeleteSeries(e, DeleteSeries);
                                     this.props.toggleDelete();
@@ -131,7 +131,7 @@ class ProfessorOHInfoDelete extends React.Component {
                     <Mutation mutation={DELETE_SESSION} onCompleted={() => this.props.refreshCallback()}>
                         {(DeleteSession) =>
                             <button
-                                className="Delete"
+                                className="Action"
                                 onClick={(e) => {
                                     this._onClickDeleteSession(e, DeleteSession);
                                     this.props.toggleDelete();
