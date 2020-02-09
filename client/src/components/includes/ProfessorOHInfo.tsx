@@ -379,7 +379,6 @@ class ProfessorOHInfo extends React.Component {
                                 timeIntervals={30}
                                 dateFormat="LT"
                                 placeholderText="12:00 PM"
-                                readOnly={true}
                             />
                         </div >
                         <span className="shift">
@@ -398,7 +397,6 @@ class ProfessorOHInfo extends React.Component {
                                 minTime={this.state.startTime || moment().startOf('day')}
                                 maxTime={moment().endOf('day')}
                                 placeholderText="2:00 PM"
-                                readOnly={true}
                             />
                         </div >
                         <Checkbox

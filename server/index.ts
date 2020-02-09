@@ -2,11 +2,13 @@ import * as express from 'express';
 import postgraphile from 'postgraphile';
 import * as passport from 'passport';
 import * as sslRedirect from 'heroku-ssl-redirect';
+import * as dotenv from 'dotenv';
 
 var session = require('cookie-session');
 var request = require('request');
 var jwt = require('jsonwebtoken');
 var url = require('url');
+dotenv.config();
 
 const app = express();
 app.use(sslRedirect());
@@ -185,7 +187,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use(postgraphile(process.env.DATABASE_URL || 'postgres://localhost:5432', {
+app.use(postgraphile(process.env.DATABASE_URL || `postgres://${process.env.POSTGRES_USERNAME}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOSTNAME}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DBNAME}`, {
     graphiql: true,
     graphqlRoute: '/__gql/graphql',
     graphiqlRoute: '/__gql/graphiql',
