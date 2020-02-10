@@ -377,7 +377,7 @@ class ProfessorOHInfo extends React.Component {
                                 // Will not compile if removed
                                 showTimeSelectOnly={true}
                                 timeIntervals={10}
-                                dateFormat="h:mm a"
+                                dateFormat="LT"
                                 placeholderText="12:00 PM"
                                 readOnly={true}
                             />
