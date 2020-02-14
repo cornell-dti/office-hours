@@ -41,7 +41,7 @@
         "semantic-ui-react": "^0.83.0",
         "tslint": "^5.11.0",
         "tslint-react": "^3.2.0",
-        "yarn": "^1.10.1"
+        "yarn": "^1.22.0"
     },
     "scripts": {
         "build": "react-scripts-ts build",
