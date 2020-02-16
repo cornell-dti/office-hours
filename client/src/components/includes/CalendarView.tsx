@@ -33,7 +33,7 @@ class CalendarView extends React.Component {
         return (
             <aside className="CalendarView">
                 <CalendarHeader
-                    currentCourseCode={this.props.course && this.props.course.code || 'Loading'}
+                    currentCourseCode={(this.props.course && this.props.course.code) || 'Loading'}
                     role={(this.props.courseUser && this.props.courseUser.role)}
                 // avatar={data.apiGetCurrentUser && data.apiGetCurrentUser.nodes[0].computedAvatar}
                 />

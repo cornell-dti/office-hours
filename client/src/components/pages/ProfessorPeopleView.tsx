@@ -145,10 +145,10 @@ const ProfessorPeopleView = (props: {
 
     let barGraphData = sessions.map((s, i) => ({ [s.sessionId]: questions[i] ? questions[i].length : 0 }));
 
-    const chartYMax = questions[busiestSessionIndex] && questions[busiestSessionIndex].length || 0;
+    const chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
     return (
         <div className="ProfessorView">
-            <ProfessorSidebar courseId={courseId} code={course && course.code || 'Loading'} selected={3} />
+            <ProfessorSidebar courseId={courseId} code={(course && course.code) || 'Loading'} selected={3} />
             <TopBar courseId={courseId} user={user} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 <div className="main">

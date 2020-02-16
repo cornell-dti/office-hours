@@ -65,7 +65,7 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: any) => {
     return <Redirect to={{ pathname: '/login' }} />;
 };
 
-const App = ({ }) => (
+const App = () => (
     <Router>
         <div className="App">
             <Route path="/" component={Analytics} />
