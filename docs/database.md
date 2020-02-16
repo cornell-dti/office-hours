@@ -39,6 +39,9 @@ And then load in the schema using the dump as described above (using `psql`).
 ### A note on timestamps
 Wherever timestamps appear in the schema, we default to using the `timestamp with time zone` type, since it gives us consistency across clients in different time zones. Whenever providing timestamps to the database, please include the client's timezone! The most common way to do this is to format the timestamp string as an ISO 8601 string that includes the timezone offset.
 
+### A note on making changes locally
+In order to add a course to your local postgres databse, the server must first be shut off before you make changes to the "courses" table.
+
 ## Symbols
 |Symbol|Description|
 |---|---|
