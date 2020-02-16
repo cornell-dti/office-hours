@@ -75,6 +75,22 @@ class ProfessorTagInfo extends React.Component {
 
     helperAddNewChildTag(newTag: FireTag) {
         console.log('RYAN_TODO add child tag: ', newTag);
+        firestore.collection('tags').add({
+            active: newTag.active,
+            level: newTag.level,
+            courseId: newTag.courseId.id,
+            name: newTag.name,
+            parentTag: newTag.parentTag ? newTag.parentTag.id : null
+        })
+            .then(function () {
+                // Successful upload
+                console.log("upload successful");
+            })
+            .catch(function (error: string) {
+                // Unsuccessful upload
+                console.log(error);
+                console.log("did not work");
+            });
     }
 
     handleNewTagEnter = (): void => {
