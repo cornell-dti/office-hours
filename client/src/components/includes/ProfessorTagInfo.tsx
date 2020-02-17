@@ -74,22 +74,21 @@ class ProfessorTagInfo extends React.Component {
     }
 
     helperAddNewChildTag(newTag: FireTag) {
-        console.log('RYAN_TODO add child tag: ', newTag);
         firestore.collection('tags').add({
             active: newTag.active,
+            courseId: newTag.courseId,
             level: newTag.level,
-            courseId: newTag.courseId.id,
             name: newTag.name,
-            parentTag: newTag.parentTag ? newTag.parentTag.id : null
+            parentTag: typeof newTag.parentTag === 'undefined' ? null : newTag.parentTag
         })
             .then(function () {
                 // Successful upload
-                console.log("upload successful");
+                // console.log("upload successful");
             })
             .catch(function (error: string) {
                 // Unsuccessful upload
-                console.log(error);
-                console.log("did not work");
+                // console.log(error);
+                // console.log("did not work");
             });
     }
 
@@ -109,15 +108,27 @@ class ProfessorTagInfo extends React.Component {
     }
 
     handleRemoveChildTag = (id: string): void => {
-        console.log('RYAN_TODO delete tag ', id);
+        firestore.collection('tags').doc(id).delete()
+            .then(function () {
+                // Successful delete 
+                // console.log("delete successful");
+            })
+            .catch(function (error: string) {
+                // Unsuccessful delete
+                // console.log(error);
+                // console.log("delete did not work");
+            });
     }
 
     handleCreateAssignment = (): void => {
         console.log('RYAN_TODO create tag and children');
+
+
     }
 
     handleEditAssignment = (): void => {
         console.log('RYAN_TODO update tag and children');
+
     }
 
     handleEnterPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
