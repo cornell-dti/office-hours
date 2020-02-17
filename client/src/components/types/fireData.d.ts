@@ -58,7 +58,7 @@ interface FireUser {
 }
 
 interface FireQuestion {
-    askerId: firebase.firestore.DocumentReference;
+    askerId: string;
     answererId: firebase.firestore.DocumentReference;
     content: string;
     location: string;

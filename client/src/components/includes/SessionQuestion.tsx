@@ -35,17 +35,17 @@ import { Observable } from 'rxjs';
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
 
-class SessionQuestion extends React.Component {
-    props!: {
-        question: FireQuestion,
-        index: number,
-        isTA: boolean,
-        includeRemove: boolean,
-        myUserId: string,
-        triggerUndo: Function,
-        isPast: boolean,
-    };
+type Props = {
+    question: FireQuestion,
+    index: number,
+    isTA: boolean,
+    includeRemove: boolean,
+    myUserId: string,
+    triggerUndo: Function,
+    isPast: boolean,
+};
 
+class SessionQuestion extends React.Component<Props> {
     state!: {
         showLocation: boolean,
         location: string,
@@ -59,32 +59,32 @@ class SessionQuestion extends React.Component {
         secondaryTag?: FireTag
     };
 
-    constructor(props: {}) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             showLocation: false,
-            location: this.props.question.location || '',
+            location: props.question.location || '',
             isEditingLocation: false,
             showDotMenu: false,
         };
 
         const asker$: Observable<FireUser> =
-            docData(firestore.doc('users/' + this.props.question.askerId), 'userId');
+            docData(firestore.doc('users/' + props.question.askerId), 'userId');
         asker$.subscribe(asker => this.setState({ asker }));
 
         if (this.props.question.answererId) {
             // RYAN_TODO make this work when we get an answerer id
             const answerer$: Observable<FireUser> =
-                docData(firestore.doc('users/' + this.props.question.answererId), 'userId');
+                docData(firestore.doc('users/' + props.question.answererId), 'userId');
             answerer$.subscribe(answerer => this.setState({ answerer }));
         }
 
         const primaryTag$: Observable<FireTag>
-            = docData(firestore.doc('tags/' + this.props.question.primaryTag), 'tagId');
+            = docData(firestore.doc('tags/' + props.question.primaryTag), 'tagId');
         primaryTag$.subscribe(primaryTag => this.setState({ primaryTag }));
 
         const secondaryTag$: Observable<FireTag>
-            = docData(firestore.doc('tags/' + this.props.question.secondaryTag), 'tagId');
+            = docData(firestore.doc('tags/' + props.question.secondaryTag), 'tagId');
         secondaryTag$.subscribe(secondaryTag => this.setState({ secondaryTag }));
     }
 
