@@ -62,6 +62,9 @@
     "@types/react-router-dom": "^5.1.0",
     "typescript": "^3.7.3"
   },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
   "browserslist": {
     "production": [
       ">0.2%",

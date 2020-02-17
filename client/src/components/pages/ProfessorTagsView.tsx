@@ -29,10 +29,6 @@ class ProfessorTagsView extends React.Component {
         course?: FireCourse,
     };
 
-    constructor(props: {}) {
-        super(props);
-    }
-
     // if (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role !== 'professor') {
     //     return <Redirect to={'/course/' + this.props.match.params.courseId} />;
     // }

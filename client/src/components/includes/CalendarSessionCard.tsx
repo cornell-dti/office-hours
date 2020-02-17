@@ -64,7 +64,7 @@ const CalendarSessionCard = (props: {
                 <div className="TimeDesc">{timeDesc}</div>
             </div>
             <div className="OpenButton">
-                <img src={chevron} />
+                <img src={chevron} alt="Open session dropdown" />
             </div>
         </div>
     );

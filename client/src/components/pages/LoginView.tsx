@@ -34,7 +34,7 @@ const LoginView: React.FC = () => {
                     <button className="x" onClick={() => setShowContact(false)}>
                         <Icon name="x" />
                     </button>
-                    <img src={QMeLogo} className="QMeLogo" />
+                    <img src={QMeLogo} className="QMeLogo" alt="Queue Me In Logo" />
                     <h2>So, you want to use Queue Me In for your students?</h2>
                     <p>Let us know what class you are part of and we can set your class up!</p>
                 </section>
@@ -53,7 +53,7 @@ const LoginView: React.FC = () => {
     return (
         <div className="LoginView">
             <section className="topPanel">
-                <img src={QMeLogo} className="QMeLogo" />
+                <img src={QMeLogo} className="QMeLogo" alt="Queue Me In Logo" />
                 Office Hours Simplified
                         <button className="contactText" onClick={() => setShowContact(true)}>
                     Interested in using Queue Me In for<br />your students?
@@ -62,7 +62,7 @@ const LoginView: React.FC = () => {
             <section className="bottomPanel">
                 <p className="hintText" >Use your Cornell NetID to login</p>
                 <a className="loginButton" onClick={auth}>
-                    <img src={googleLogo} className="googleLogo" />
+                    <img src={googleLogo} className="googleLogo" alt="Google Login Logo" />
                     <span className="loginButtonText">Sign in with Google</span>
                 </a>
             </section>
