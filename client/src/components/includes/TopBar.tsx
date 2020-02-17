@@ -16,10 +16,8 @@ const TopBar = (props: {
     const [showMenu, setShowMenu] = useState(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : '/placeholder.png');
 
-    useEffect(
-        () => setImage(props.user ? props.user.photoUrl : '/placeholder.png'),
-        [props.user ? props.user.photoUrl : '/placeholder.png']
-    );
+    const userPhotoUrl = props.user ? props.user.photoUrl : '/placeholder.png';
+    useEffect(() => setImage(userPhotoUrl), [userPhotoUrl]);
 
     const redirect = (href: string) => document.location.href = href;
     return (
@@ -27,7 +25,7 @@ const TopBar = (props: {
             <header className="topBar">
                 <div className="triggerArea" onClick={() => setShowMenu(!showMenu)}>
                     <div className="userProfile">
-                        <img src={image} onError={() => setImage('/placeholder.png')} />
+                        <img src={image} onError={() => setImage('/placeholder.png')} alt="User Profile" />
                         <span className="name">
                             {props.user ? props.user.firstName + ' ' + props.user.lastName : 'Loading...'}
                         </span>

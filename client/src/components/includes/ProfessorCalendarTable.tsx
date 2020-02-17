@@ -56,18 +56,19 @@ class ProfessorCalendarTable extends React.Component {
         let cDay = this.state.currentDay;
         let cRow = this.state.currentRow;
 
+        const { isExpanded } = this.state;
         if (!(cDay === day && cRow === row)) {
-            this.state.isExpanded[cDay][cRow] = false;
+            isExpanded[cDay][cRow] = false;
         }
 
         if (forceClose) {
-            this.state.isExpanded[day][row] = false;
+            isExpanded[day][row] = false;
         } else {
-            this.state.isExpanded[day][row] = !this.state.isExpanded[day][row];
+            isExpanded[day][row] = !isExpanded[day][row];
         }
 
         this.setState({
-            isExpanded: this.state.isExpanded,
+            isExpanded,
             currentDay: day,
             currentRow: row
         });

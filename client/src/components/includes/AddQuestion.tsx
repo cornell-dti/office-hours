@@ -8,7 +8,7 @@ import SessionAlertModal from './SessionAlertModal';
 import moment from 'moment';
 
 import { collectionData, firestore, auth } from '../../firebase';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue

@@ -1,4 +1,4 @@
-import { firestore, auth } from 'firebase';
+import { firestore, auth } from 'firebase/app';
 
 export const userUpload = (user: firebase.User | null, db: firebase.firestore.Firestore) => {
   if (user != null) {

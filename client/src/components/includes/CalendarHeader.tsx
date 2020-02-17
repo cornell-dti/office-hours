@@ -65,7 +65,7 @@ class CalendarHeader extends React.Component {
         return (
             <div className="Header">
                 <div className="LogoContainer">
-                    <img src={QMeLogo} className="QMeLogo" />
+                    <img src={QMeLogo} className="QMeLogo" alt="Queue Me In Logo" />
                 </div>
                 <div className="CalendarHeader" onClick={() => this.setCourses(!this.state.showCourses)}>
                     <span>
@@ -85,6 +85,7 @@ class CalendarHeader extends React.Component {
                                 this.setMenu(!this.state.showMenu);
                             }}
                             src={this.props.avatar}
+                            alt="User avatar"
                         />
                     }
                     {this.state.showCourses &&
@@ -113,7 +114,8 @@ class CalendarHeader extends React.Component {
                         } */}
                         {/* RYAN_TODO fix logging out */}
                         <li onClick={() => logOut()}> <span><Icon name="sign out" /></span>Log Out</li>
-                        <li><a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank">
+                        <li>
+                            <a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank" rel="noopener noreferrer">
                             <span><Icon name="edit" /></span>Send Feedback</a>
                         </li>
                     </ul>
