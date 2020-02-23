@@ -34,7 +34,7 @@ const TopBar = (props: {
             </header>
             {showMenu && <React.Fragment>
                 <ul className="desktop logoutMenu" tabIndex={1}>
-                    <li onClick={() => logOut()}>
+                    <li onMouseDown={() => logOut()}>
                         <span><Icon name="sign out" /></span> Log Out
                     </li>
                     <li onMouseDown={() => window.open('https://goo.gl/forms/7ozmsHfXYWNs8Y2i1', '_blank')}>

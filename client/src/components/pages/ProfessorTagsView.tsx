@@ -3,8 +3,6 @@ import ProfessorTagsTable from '../includes/ProfessorTagsTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
-// import { Redirect } from 'react-router';
-// import { Loader } from 'semantic-ui-react';
 import { useMyUser, useCourse } from '../../firehooks';
 
 function withData<T extends { match: { params: { courseId: string; } } }>
@@ -18,20 +16,17 @@ function withData<T extends { match: { params: { courseId: string; } } }>
     };
 }
 
-class ProfessorTagsView extends React.Component {
-    props!: {
-        match: {
-            params: {
-                courseId: string;
-            }
+type Props = {
+    match: {
+        params: {
+            courseId: string;
         }
-        user?: FireUser,
-        course?: FireCourse,
     };
+    user?: FireUser;
+    course?: FireCourse;
+};
 
-    // if (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role !== 'professor') {
-    //     return <Redirect to={'/course/' + this.props.match.params.courseId} />;
-    // }
+class ProfessorTagsView extends React.Component<Props> {
     render() {
         let courseId = this.props.match.params.courseId;
         return (
@@ -51,7 +46,6 @@ class ProfessorTagsView extends React.Component {
                 <section className="rightOfSidebar">
                     <div className="main">
                         <ProfessorAddNew courseId={courseId} />
-                        {/* {loading && <Loader active={true} content={'Loading...'} />} */}
                         <div className="Calendar">
                             <ProfessorTagsTable courseId={courseId} />
                         </div>
