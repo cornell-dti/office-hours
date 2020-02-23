@@ -19,12 +19,10 @@ node_modules
 
 # all folders and files beginning with a period
 .*
-
-# Unignore github folder
+## Exceptions
 !.github/
-
-# Unignore eslint config
 !.eslintrc.json
+!.firebaserc
 
 npm-debug.log*
 yarn-debug.log*
