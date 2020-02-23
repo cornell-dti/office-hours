@@ -21,7 +21,7 @@ const TopBar = (props: {
 
     const redirect = (href: string) => document.location.href = href;
     return (
-        <div className="MenuBox" tabIndex={1}>
+        <div className="MenuBox" tabIndex={1} onBlur={() => setShowMenu(false)}>
             <header className="topBar">
                 <div className="triggerArea" onClick={() => setShowMenu(!showMenu)}>
                     <div className="userProfile">

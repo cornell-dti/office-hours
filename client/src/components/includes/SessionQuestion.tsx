@@ -141,13 +141,6 @@ class SessionQuestion extends React.Component {
         this.setState({ showDotMenu: status });
     }
 
-    // triggerUndoDontKnow = (questionId: number, name: string) => {
-    //     this.setState({
-    //         undoQuestionIdDontKnow: questionId,
-    //         undoName: name,
-    //     });
-    // }
-
     handleUndoDontKnow = (questionId: number, UndoDontKnow: Function) => {
         UndoDontKnow({
             variables: {
@@ -211,7 +204,11 @@ class SessionQuestion extends React.Component {
                 <div className="QuestionInfo">
                     {this.props.isTA && this.state.asker &&
                         <div className="studentInformation">
-                            <img src={this.state.asker.photoUrl} />
+                            <img
+                                src={this.state.asker === undefined
+                                    ? '/placeholder.png'
+                                    : this.state.asker.photoUrl}
+                            />
                             <span className="Name">
                                 {this.state.asker.firstName + ' ' + this.state.asker.lastName}
                                 {question.status === 'assigned' &&
@@ -312,13 +309,14 @@ class SessionQuestion extends React.Component {
                         <hr />
                         <p
                             className="Remove"
-                        // onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
+                            // RYAN_TODO: support remove question
+                            // onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
                         >
                             <Icon name="close" /> Remove
                         </p>
                     </div>
                 }
-            </div >
+            </div>
         );
     }
 }

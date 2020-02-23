@@ -3,6 +3,8 @@ import SessionQuestion from './SessionQuestion';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
 
+const SHOW_FEEDBACK_QUEUE = 4;
+
 class SessionQuestionsContainer extends React.Component {
     props!: {
         isTA: boolean,
@@ -36,7 +38,7 @@ class SessionQuestionsContainer extends React.Component {
     constructor(props: {}) {
         super(props);
         this.state = {
-            sentNotification: false,
+            sentNotification: window.localStorage.getItem('questionUpNotif') === 'sent' || false,
         };
     }
 
@@ -48,16 +50,11 @@ class SessionQuestionsContainer extends React.Component {
         if (questions && myQuestion && myQuestion.length > 0) {
             // Get user's position in queue (0 indexed)
             let myQuestionIndex = questions.indexOf(myQuestion[0]);
-            // Check how many questions ahead of the user are in progress
-            let numProgressQuestions = questions.slice(0, myQuestionIndex).reduce(
-                (isProgress, question) => isProgress + (question.status === 'assigned' ? 1 : 0), 0
-            );
-            // Calculate question index by subtracting number of progress questions
-            myQuestionIndex -= numProgressQuestions;
             // Update tab with user position
             document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
             // if user is up and we haven't already sent a notification, send one.
             if (myQuestionIndex === 0 && !this.state.sentNotification) {
+                window.localStorage.setItem('questionUpNotif', 'sent');
                 this.setState({ sentNotification: true });
                 try {
                     let n = new Notification('Your question is up!');
@@ -67,6 +64,7 @@ class SessionQuestionsContainer extends React.Component {
                 }
                 // If next render, the user isn't at 0 anymore, reset state
             } else if (myQuestionIndex !== 0 && this.state.sentNotification) {
+                window.localStorage.setItem('questionUpNotif', '');
                 this.setState({ sentNotification: false });
             }
         } else if (this.props.isTA && questions) {
@@ -83,7 +81,12 @@ class SessionQuestionsContainer extends React.Component {
             <div className="SessionQuestionsContainer splitQuestions" >
                 {!this.props.isTA && myQuestion && myQuestion.length === 0 && this.props.isOpen
                     && !this.props.haveAnotherQuestion &&
-                    <div className="SessionJoinButton" onClick={() => this.props.handleJoinClick()}>
+                    <div
+                        className="SessionJoinButton"
+                        onClick={() =>
+                            this.props.handleJoinClick(questions && myQuestion
+                                && questions.indexOf(myQuestion[0]) > SHOW_FEEDBACK_QUEUE)}
+                    >
                         <p><Icon name="plus" /> Join the Queue</p>
                     </div>
                 }

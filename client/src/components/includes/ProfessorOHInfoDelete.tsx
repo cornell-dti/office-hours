@@ -113,7 +113,7 @@ class ProfessorOHInfoDelete extends React.Component {
                 <button
                     className="Delete"
                     onClick={(e) => {
-                        // RYAN_TODO
+                        // RYAN_TODO: check master code for migration
                         // this._onClickDeleteSession(e, DeleteSession);
                         this.props.toggleDelete();
                         this.props.toggleEdit();
