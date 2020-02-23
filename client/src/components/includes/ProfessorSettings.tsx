@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { Icon, Dropdown, DropdownItemProps } from 'semantic-ui-react';
 
-import gql from 'graphql-tag';
-import { Mutation } from 'react-apollo';
-
+/*
 const UPDATE_PROFESSOR_SETTINGS = gql`
     mutation UpdateProfessorSettings($_courseId: Int!, $_charLimit: Int!, $_queueOpenInterval: Int!) {
-        apiUpdateCourseSettings(input:{_courseId: $_courseId, _charLimit: $_charLimit, 
+        apiUpdateCourseSettings(input:{_courseId: $_courseId, _charLimit: $_charLimit,
             _queueOpenInterval:{
                 seconds: 0,
                 minutes: $_queueOpenInterval,
@@ -21,6 +19,7 @@ const UPDATE_PROFESSOR_SETTINGS = gql`
         }
     }
 `;
+*/
 
 const OPEN_OPTIONS: DropdownItemProps[] = [
     { text: 0, value: 0 },
@@ -29,26 +28,22 @@ const OPEN_OPTIONS: DropdownItemProps[] = [
 ];
 const CHAR_INCREMENT: number = 5;
 
-class ProfessorSettings extends React.Component {
+type Props = {
+    courseId: number;
+    charLimitDefault: number;
+    openIntervalDefault: number;
+    toggleDelete: Function;
+};
 
-    props: {
-        courseId: number,
-        charLimitDefault: number,
-        openIntervalDefault: number,
-        toggleDelete: Function
-    };
+type State = { openInterval: DropdownItemProps; charLimit: number };
 
-    state: {
-        openInterval: DropdownItemProps,
-        charLimit: number
-    };
-
-    constructor(props: {}) {
+class ProfessorSettings extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
-        let o = OPEN_OPTIONS.find(e => e.value === this.props.openIntervalDefault);
+        const o = OPEN_OPTIONS.find(e => e.value === this.props.openIntervalDefault);
         this.state = {
             openInterval: o ? o : OPEN_OPTIONS[0],
-            charLimit: this.props.charLimitDefault
+            charLimit: props.charLimitDefault
         };
     }
 
@@ -84,7 +79,11 @@ class ProfessorSettings extends React.Component {
                             selection={true}
                             options={OPEN_OPTIONS}
                             value={this.state.openInterval.value}
-                            onChange={(e, d) => this.setState({ openInterval: d })}
+                            onChange={(e, d) => {
+                                // RYAN_TODO: figure out what's happening here
+                                // @ts-ignore
+                                this.setState({ openInterval: d })
+                            }}
                         />
                         minutes before the office hour begins.
                     </div>
@@ -118,7 +117,8 @@ class ProfessorSettings extends React.Component {
                         </button>
                     </div>
                 </div>
-                <Mutation mutation={UPDATE_PROFESSOR_SETTINGS}>
+                {/* RYAN_TODO: migrate this new code from master */}
+                {/*<Mutation mutation={UPDATE_PROFESSOR_SETTINGS}>
                     {(UpdateProfessorSettings) =>
                         <button
                             className="Action"
@@ -130,7 +130,7 @@ class ProfessorSettings extends React.Component {
                             Save
                         </button>
                     }
-                </Mutation>
+                </Mutation> */}
             </React.Fragment>
         );
     }
