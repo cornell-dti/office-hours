@@ -4,6 +4,7 @@ import moment from 'moment';
 import { Dropdown, Checkbox, Icon, DropdownItemProps, DropdownProps } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { firestore, Timestamp } from '../../firebase';
 
 const ProfessorOHInfo = (props: {
     session?: FireSession,
@@ -41,6 +42,7 @@ const ProfessorOHInfo = (props: {
     const handleStartTime = (currStartTime: moment.Moment) => {
         // Prevents end time from occuring before start time
         const newEndTime = moment(currStartTime).add(1, 'hours');
+        setStartTime(currStartTime);
         setEndTime(newEndTime);
         updateNotification('');
     };
@@ -85,6 +87,71 @@ const ProfessorOHInfo = (props: {
             ...old.slice(0, index),
             ...old.slice(index + 1)
         ]);
+    };
+
+    /** A do-it-all function that can create/edit sessions/series. */
+    const mutateSessionOrSeries = (): void => {
+        const startMomentTime = startTime;
+        if (startMomentTime === undefined) {
+            return;
+        }
+        const startTimestamp = Timestamp.fromDate(startMomentTime.toDate());
+        const endMomentTime = endTime;
+        if (endMomentTime === undefined) {
+            return;
+        }
+        const endTimestamp = Timestamp.fromDate(endMomentTime.toDate());
+        if (locationBuildingSelected === undefined || locationRoomNumSelected === undefined) {
+            return;
+        }
+        const propsSession = props.session;
+        const taDocuments: firebase.firestore.DocumentReference[] = [];
+        taSelected.forEach(ta => {
+            if (ta !== undefined) {
+                taDocuments.push(firestore.doc(`users/${ta}`));
+            }
+        });
+        const courseId = firestore.doc(`courses/${props.courseId}`);
+        if (isSeriesMutation) {
+            const series: Omit<FireSessionSeries, 'sessionSeriesId'> = {
+                building: locationBuildingSelected,
+                courseId,
+                endTime: endTimestamp,
+                room: locationRoomNumSelected,
+                startTime: startTimestamp,
+                tas: taDocuments,
+                title
+            };
+            if (propsSession) {
+                const seriesDoc = propsSession.sessionSeriesId;
+                if (seriesDoc === undefined) {
+                    return;
+                }
+                seriesDoc.update(series);
+            } else {
+                firestore.collection('sessionSeries').add(series);
+            }
+            // RYAN_TODO: generate sessions from this series until the end date of the course.
+        } else {
+            const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
+            const sessionWithoutSessionSeriesId = {
+                building: locationBuildingSelected,
+                courseId,
+                endTime: endTimestamp,
+                room: locationRoomNumSelected,
+                startTime: startTimestamp,
+                tas: taDocuments,
+                title
+            };
+            const newSession: Omit<FireSession, 'sessionId'> = sessionSeriesId === undefined
+                ? sessionWithoutSessionSeriesId
+                : { ...sessionWithoutSessionSeriesId, sessionSeriesId };
+            if (propsSession) {
+                firestore.collection('sessions').doc(propsSession.sessionId).update(newSession);
+            } else {
+                firestore.collection('sessions').add(newSession);
+            }
+        }
     };
 
     let isMaxTA = false;
@@ -236,18 +303,14 @@ const ProfessorOHInfo = (props: {
                         } else if (disableState) {
                             updateNotification(stateNotification);
                         } else {
-                            // If is new OH
-                            // _onClickCreateSession(e, CreateSession);
+                            mutateSessionOrSeries();
                             clearFields();
-                            // Else
-                            // _onClickEditSession(e, () => 1);
                             props.toggleEdit();
                         }
                     }}
                     disabled={disableProps}
                 >
-                    Save Changes
-                    {/* OR Create */}
+                    {props.isNewOH ? 'Create' : 'Save Changes'}
                 </button>
                 <span className="EditNotification">
                     {notification}
