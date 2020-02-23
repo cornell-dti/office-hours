@@ -106,13 +106,13 @@ class CalendarHeader extends React.Component {
                 </div>
                 {this.state.showMenu && (
                     <ul className="logoutMenu" onClick={() => this.setMenu(false)} >
+                        {/* RYAN_TODO: figure out what's the purpose of this code. */}
                         {/* {this.props.isTa &&
                             <React.Fragment>
                                 <li>Cancel Session</li>
                                 <li>Change Session</li>
                             </React.Fragment>
                         } */}
-                        {/* RYAN_TODO fix logging out */}
                         <li onClick={() => logOut()}> <span><Icon name="sign out" /></span>Log Out</li>
                         <li>
                             <a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank" rel="noopener noreferrer">
