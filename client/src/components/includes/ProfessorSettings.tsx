@@ -82,7 +82,7 @@ class ProfessorSettings extends React.Component<Props, State> {
                             onChange={(e, d) => {
                                 // RYAN_TODO: figure out what's happening here
                                 // @ts-ignore
-                                this.setState({ openInterval: d })
+                                this.setState({ openInterval: d });
                             }}
                         />
                         minutes before the office hour begins.
