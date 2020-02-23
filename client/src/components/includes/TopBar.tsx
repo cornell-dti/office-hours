@@ -36,12 +36,11 @@ const TopBar = (props: {
                 <ul className="desktop logoutMenu" tabIndex={1}>
                     <li onClick={() => logOut()}>
                         <span><Icon name="sign out" /></span> Log Out
-                            </li>
-                    {/* RYAN_TODO logout */}
+                    </li>
                     <li onMouseDown={() => window.open('https://goo.gl/forms/7ozmsHfXYWNs8Y2i1', '_blank')}>
                         <span><Icon name="edit" /></span>
                         Send Feedback
-                            </li>
+                    </li>
                     {props.role === 'professor' &&
                         <React.Fragment>
                             {props.context === 'professor' ?

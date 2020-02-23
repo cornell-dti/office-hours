@@ -41,7 +41,7 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: any) => {
 
     const courseId = requireProfessor ? rest.computedMatch.params.courseId : undefined;
 
-    const [isLoggedIn, setIsLoggedIn] = React.useState(0);
+    const [isLoggedIn, setIsLoggedIn] = React.useState<0 | 1 | 2>(0);
     const cu = useMyCourseUser(courseId);
     const courseUser = courseId && cu;
 
@@ -54,11 +54,24 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: any) => {
         }
     });
 
-    if (isLoggedIn === 0 || (requireProfessor && !courseUser)) {
+    if (isLoggedIn === 0) {
         return <Loader active={true} content={'Loading'} />;
-    } else if (isLoggedIn === 2 && !requireProfessor) {
-        return (<Route {...rest} component={component} />);
-    } else if (requireProfessor && courseUser && courseUser.role === 'professor') {
+    }
+    if (isLoggedIn === 1) {
+        return <Redirect to={{ pathname: '/login' }} />;
+    }
+
+    if (requireProfessor) {
+        if (!courseUser) {
+            // Course user might load after loging status load.
+            // We still display the loading screen while waiting for a final verdict
+            // whether the user can enter professor view.
+            return <Loader active={true} content={'Loading'} />;
+        }
+        if (courseUser.role === 'professor') {
+            return <Route {...rest} component={component} />;
+        }
+    } else {
         return (<Route {...rest} component={component} />);
     }
 
