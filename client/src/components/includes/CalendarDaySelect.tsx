@@ -12,19 +12,19 @@ const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
 class CalendarDaySelect extends React.Component {
 
     props!: {
-        callback: Function,
+        callback: Function;
     };
 
     state!: {
-        selectedWeekEpoch: number,
-        active: number
+        selectedWeekEpoch: number;
+        active: number;
     };
 
     constructor(props: {}) {
         super(props);
-        let week = new Date(); // now
+        const week = new Date(); // now
         week.setHours(0, 0, 0, 0); // beginning of today (00:00:00.000)
-        let daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
+        const daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
         week.setTime(week.getTime() - daysSinceMonday * ONE_DAY); // beginning of this week's Monday
         this.state = {
             selectedWeekEpoch: week.getTime(),
@@ -40,15 +40,15 @@ class CalendarDaySelect extends React.Component {
     }
 
     incrementWeek = (forward: boolean) => {
-        let newDate = this.state.selectedWeekEpoch + (forward ? ONE_WEEK : -ONE_WEEK);
+        const newDate = this.state.selectedWeekEpoch + (forward ? ONE_WEEK : -ONE_WEEK);
         this.setState({ selectedWeekEpoch: newDate });
         this.props.callback(newDate + this.state.active * ONE_DAY);
-    }
+    };
 
     handleDateClick = (item: number) => {
         this.setState({ active: item });
         this.props.callback(this.state.selectedWeekEpoch + item * ONE_DAY);
-    }
+    };
 
     render() {
         const now = new Date(this.state.selectedWeekEpoch);

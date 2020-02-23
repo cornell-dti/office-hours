@@ -4,14 +4,14 @@ import { Icon } from 'semantic-ui-react';
 import { logOut } from '../../firebasefunctions';
 
 const TopBar = (props: {
-    courseId: string,
-    user?: FireUser,
+    courseId: string;
+    user?: FireUser;
     // A user's role: student, ta, or professor
     // We show TA's and Profs extra links
-    role: string,
+    role: string;
     // Whether we're in a "professor" view or "student" view
     // controls where "switch view" goes
-    context: string
+    context: string;
 }) => {
     const [showMenu, setShowMenu] = useState(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : '/placeholder.png');
@@ -47,7 +47,7 @@ const TopBar = (props: {
                                 <li onMouseDown={() => redirect('/course/' + props.courseId)}>
                                     <span><Icon name="sync alternate" /></span>
                                     Switch View
-                                    </li> : <li onMouseDown={() => redirect('/professor/course/' + props.courseId)}>
+                                </li> : <li onMouseDown={() => redirect('/professor/course/' + props.courseId)}>
                                     <span><Icon name="sync alternate" /></span>
                                     Switch View
                                 </li>

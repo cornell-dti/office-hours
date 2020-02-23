@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/indent */
+
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 const QMeLogo = require('../../media/QLogo2.svg');
@@ -13,7 +15,7 @@ type Props = {
 
 class Popup extends React.Component<Props> {
   render() {
-    let isShown = this.props.show ? ' feedback' : '';
+    const isShown = this.props.show ? ' feedback' : '';
 
     return (
       <React.Fragment>

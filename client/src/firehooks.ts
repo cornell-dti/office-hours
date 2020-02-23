@@ -8,15 +8,16 @@ import { Observable } from 'rxjs';
 export const useDoc = <T>(collection: string, id: string | undefined, idField: string) => {
     const [doc, setDoc] = useState<T | undefined>();
     useEffect(
-        // @ts-ignore Don't want to return a value
         () => {
             if (id) {
                 const primaryTag$: Observable<T> = docData(firestore.doc(collection + '/' + id), idField);
                 const subscription = primaryTag$.subscribe((d: T) => setDoc(d));
                 return () => { subscription.unsubscribe(); };
             }
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            return () => { };
         },
-        [id]
+        [collection, id, idField]
     );
     return doc;
 };
@@ -42,8 +43,9 @@ export const useUser = (userId: string | undefined) =>
 // Storing the query in state is important because useEffect does shallow
 // comparisons on the objects in the array for memoization. Without storing
 // the query, we re-render and re-fetch infinitely.
-export const useQuery = <T>(query: firebase.firestore.Query, idField: string):
-    [T[], React.Dispatch<React.SetStateAction<firebase.firestore.Query>>] => {
+export const useQuery = <T>(
+    query: firebase.firestore.Query, idField: string
+): [T[], React.Dispatch<React.SetStateAction<firebase.firestore.Query>>] => {
     const [storedQuery, setStoredQuery] = useState(query);
     const [result, setResult] = useState<T[]>([]);
     useEffect(
@@ -52,7 +54,7 @@ export const useQuery = <T>(query: firebase.firestore.Query, idField: string):
             const subscription = results$.subscribe(results => setResult(results));
             return () => { subscription.unsubscribe(); };
         },
-        [storedQuery]
+        [storedQuery, idField]
     );
     return [result, setStoredQuery];
 };

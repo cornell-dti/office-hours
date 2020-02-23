@@ -5,10 +5,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 import ProfessorTagInfo from './ProfessorTagInfo';
 
 const ProfessorTagsRow = (props: {
-    tag: FireTag,
-    index: number,
-    childTags: FireTag[],
-    courseId: string
+    tag: FireTag;
+    index: number;
+    childTags: FireTag[];
+    courseId: string;
 }) => {
     const [showEdit, setShowEdit] = useState(false);
     return (

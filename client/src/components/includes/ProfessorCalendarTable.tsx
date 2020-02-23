@@ -5,29 +5,25 @@ import ProfessorOHInfoDelete from './ProfessorOHInfoDelete';
 
 import { DropdownItemProps } from 'semantic-ui-react';
 
-class ProfessorCalendarTable extends React.Component {
-    props!: {
-        courseId: string,
-        sessions: FireSession[]
-        taOptions: DropdownItemProps[],
-    };
+type Props = {
+    courseId: string;
+    sessions: FireSession[];
+    taOptions: DropdownItemProps[];
+};
 
-    state!: {
-        isExpanded: boolean[][]
-        isDeleteVisible: boolean
-        currentDay: number
-        currentRow: number
-        dayIndex: number
-        rowIndex: number
-    };
+type State = {
+    isExpanded: boolean[][];
+    isDeleteVisible: boolean;
+    currentDay: number;
+    currentRow: number;
+    dayIndex: number;
+    rowIndex: number;
+};
 
-    constructor(props: {
-        courseId: string,
-        sessions: FireSession[]
-        taOptions: DropdownItemProps[],
-    }) {
+class ProfessorCalendarTable extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
-        let isExpandedInit: boolean[][] = [];
+        const isExpandedInit: boolean[][] = [];
         for (let i = 0; i < 7; i++) {
             isExpandedInit.push(new Array<boolean>(props.sessions.length).fill(false));
         }
@@ -45,7 +41,7 @@ class ProfessorCalendarTable extends React.Component {
     }
 
     componentWillReceiveProps(props: { sessions: FireSession[] }) {
-        let isExpanded: boolean[][] = [];
+        const isExpanded: boolean[][] = [];
         for (let i = 0; i < 7; i++) {
             isExpanded.push(new Array<boolean>(props.sessions.length).fill(false));
         }
@@ -53,8 +49,8 @@ class ProfessorCalendarTable extends React.Component {
     }
 
     toggleEdit(day: number, row: number, forceClose?: boolean) {
-        let cDay = this.state.currentDay;
-        let cRow = this.state.currentRow;
+        const cDay = this.state.currentDay;
+        const cRow = this.state.currentRow;
 
         const { isExpanded } = this.state;
         if (!(cDay === day && cRow === row)) {
@@ -88,19 +84,19 @@ class ProfessorCalendarTable extends React.Component {
     }
 
     render() {
-        let sessions: FireSession[][] = [];
+        const sessions: FireSession[][] = [];
         for (let day = 0; day < 7; day++) {
-            sessions.push(new Array<FireSession>());
+            sessions.push([]);
         }
 
         this.props.sessions.forEach((node: FireSession) => {
             // 0 = Monday..., 5 = Saturday, 6 = Sunday
-            let dayIndexQuery = (new Date(node.startTime.seconds).getDay() + 6) % 7;
+            const dayIndexQuery = (new Date(node.startTime.seconds).getDay() + 6) % 7;
             sessions[dayIndexQuery].push(node);
         });
 
-        let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        let headers = new Array(7);
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const headers = new Array(7);
 
         for (let index = 0; index < headers.length; index++) {
             headers[index] = (
@@ -110,7 +106,7 @@ class ProfessorCalendarTable extends React.Component {
             );
         }
 
-        let rows = days.map(
+        const rows = days.map(
             (dayName, i) => {
                 return (
                     <React.Fragment key={i}>

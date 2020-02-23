@@ -27,7 +27,7 @@ export class Analytics extends React.Component {
         }
     }
 
-    sendPageChange(pathname: string, search: string = '') {
+    sendPageChange(pathname: string, search = '') {
         const page = pathname + search;
         ReactGA.set({ page });
         ReactGA.pageview(page);

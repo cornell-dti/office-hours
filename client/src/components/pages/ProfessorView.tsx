@@ -20,15 +20,15 @@ const ProfessorView = (props: {
     match: {
         params: {
             courseId: string;
-        }
-    }
+        };
+    };
 }) => {
     // RYAN_TODO Simplify.
-    let week = new Date();
+    const week = new Date();
     week.setHours(0, 0, 0, 0);
-    let daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
+    const daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
     week.setTime(week.getTime() - daysSinceMonday * ONE_DAY); // beginning of this week's Monday
-    let today = new Date();
+    const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     const [selectedWeekEpoch, setSelectedWeekEpoch] = useState(week.getTime());

@@ -7,15 +7,15 @@ import CalendarSessions from './CalendarSessions';
 
 class CalendarView extends React.Component {
     props!: {
-        session?: FireSession,
-        sessionCallback: (sessionId: string) => void,
-        course?: FireCourse,
-        courseUser?: FireCourseUser
+        session?: FireSession;
+        sessionCallback: (sessionId: string) => void;
+        course?: FireCourse;
+        courseUser?: FireCourseUser;
     };
 
     state!: {
-        selectedDateEpoch: number,
-        userId?: string,
+        selectedDateEpoch: number;
+        userId?: string;
     };
 
     constructor(props: {}) {
@@ -25,7 +25,7 @@ class CalendarView extends React.Component {
 
     handleDateClick = (newDateEpoch: number) => {
         this.setState({ selectedDateEpoch: newDateEpoch });
-    }
+    };
 
     render() {
         // let selectedDate = new Date(this.state.selectedDateEpoch);

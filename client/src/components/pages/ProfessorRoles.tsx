@@ -4,15 +4,9 @@ import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
 import { useMyUser, useCourse } from '../../firehooks';
 
-const ProfessorDashboardView = (props: {
-    match: {
-        params: {
-            courseId: string;
-        }
-    }
-}) => {
-    let courseId = props.match.params.courseId;
+type Props = { match: { params: { courseId: string } } };
 
+const ProfessorDashboardView = ({ match: { params: { courseId } } }: Props) => {
     const user = useMyUser();
     const course = useCourse(courseId);
 

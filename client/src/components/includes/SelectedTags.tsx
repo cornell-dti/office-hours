@@ -2,16 +2,16 @@ import * as React from 'react';
 
 class SelectedTags extends React.PureComponent {
     props!: {
-        tag: FireTag,
-        isSelected: boolean,
-        onClick?: Function,
+        tag: FireTag;
+        isSelected: boolean;
+        onClick?: Function;
     };
 
     _onClick = () => {
         if (this.props.onClick) {
             this.props.onClick();
         }
-    }
+    };
 
     render() {
         return (

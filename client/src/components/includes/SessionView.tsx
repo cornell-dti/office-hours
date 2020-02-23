@@ -22,25 +22,25 @@ import { Observable } from 'rxjs';
 
 class SessionView extends React.Component {
     props!: {
-        session: FireSession,
-        course: FireCourse,
-        isDesktop: boolean,
-        backCallback: Function,
-        joinCallback: Function,
-        user: FireUser,
-        courseUser: FireCourseUser,
+        session: FireSession;
+        course: FireCourse;
+        isDesktop: boolean;
+        backCallback: Function;
+        joinCallback: Function;
+        user: FireUser;
+        courseUser: FireCourseUser;
     };
 
     state!: {
-        undoAction?: string,
-        undoName?: string,
-        undoQuestionId?: number,
-        timeoutId: number | null,
-        showAbsent: boolean
-        dismissedAbsent: boolean,
-        userId?: string,
-        questions: FireQuestion[],
-        otherActiveQuestions: boolean
+        undoAction?: string;
+        undoName?: string;
+        undoQuestionId?: number;
+        timeoutId: number | null;
+        showAbsent: boolean;
+        dismissedAbsent: boolean;
+        userId?: string;
+        questions: FireQuestion[];
+        otherActiveQuestions: boolean;
     };
 
     constructor(props: {}) {
@@ -79,7 +79,7 @@ class SessionView extends React.Component {
             undoName: name,
             timeoutId: setTimeout(this.dismissUndo, 10000),
         });
-    }
+    };
 
     dismissUndo = () => {
         if (this.state.timeoutId) {
@@ -91,7 +91,7 @@ class SessionView extends React.Component {
             undoQuestionId: undefined,
             timeoutId: null,
         });
-    }
+    };
 
     handleUndoClick = (undoQuestion: Function, status: string, refetch: Function) => {
         undoQuestion({
@@ -100,20 +100,20 @@ class SessionView extends React.Component {
                 status: status
             }
         });
-    }
+    };
 
     isOpen = (session: FireSession, interval: number): boolean => {
         return new Date(session.startTime.toDate()) < new Date()
             && new Date(session.endTime.toDate()) > new Date();
-    }
+    };
 
     isPast = (session: FireSession): boolean => {
         return new Date() > new Date(session.endTime.toDate());
-    }
+    };
 
     getOpeningTime = (session: FireSession, interval: number): Date => {
         return new Date(new Date(session.startTime.toDate()).getTime() - interval * 1000);
-    }
+    };
 
     componentDidMount() {
         let otherQuestions = false;

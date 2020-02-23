@@ -3,9 +3,9 @@ import { Icon } from 'semantic-ui-react';
 
 class ProfessorDelete extends React.Component {
     props!: {
-        isDeleteVisible: boolean,
-        updateDeleteVisible: Function,
-        content: JSX.Element
+        isDeleteVisible: boolean;
+        updateDeleteVisible: Function;
+        content: JSX.Element;
     };
 
     constructor(props: {}) {

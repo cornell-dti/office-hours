@@ -27,10 +27,10 @@ interface AppSession {
     sessionSeriesId: number;
     title: string;
     questionsBySessionId: {
-        nodes: [AppQuestion]
+        nodes: [AppQuestion];
     };
     sessionTasBySessionId: {
-        nodes: [AppTa]
+        nodes: [AppTa];
     };
 }
 
@@ -52,8 +52,8 @@ interface AppQuestion {
     userByAnswererId: AppUser;
     questionTagsByQuestionId: {
         nodes: [{
-            tagByTagId: AppTag
-        }]
+            tagByTagId: AppTag;
+        }];
     };
 }
 
@@ -64,8 +64,8 @@ interface AppTag {
     activated: boolean;
     tagRelationsByParentId?: {
         nodes: [{
-            tagByChildId: AppTag
-        }]
+            tagByChildId: AppTag;
+        }];
     };
 }
 
@@ -81,18 +81,18 @@ interface AppTagQuestionsInfo {
                 questionTagsByTagIdList?: [{
                     questionByQuestionId: {
                         status: string;
-                    }
-                }]
-            }
-        }]
+                    };
+                }];
+            };
+        }];
     };
 }
 
 interface AppTagRelations extends AppTag {
     tagRelationsByChildId: {
         nodes: [{
-            parentId: number
-        }]
+            parentId: number;
+        }];
     };
 }
 
@@ -111,7 +111,7 @@ interface AppUserRole extends AppUser {
             role: string;
             userId: number;
             computedAvatar: string;
-        }]
+        }];
     };
 }
 
@@ -121,6 +121,6 @@ interface AppUserRoleQuestions extends AppUserRole {
             timeEntered: number;
             status: string;
             sessionBySessionId: AppSession;
-        }]
+        }];
     };
 }

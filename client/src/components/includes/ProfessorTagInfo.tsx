@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-delimiter-style */
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
@@ -56,22 +57,22 @@ class ProfessorTagInfo extends React.Component {
     }
 
     handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        let newState = Object.assign({}, this.state.tag);
+        const newState = Object.assign({}, this.state.tag);
         const target = event.target;
         newState.name = target.value;
         this.setState({ tag: newState });
-    }
+    };
 
     handleNewTagTextChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const target = event.target;
         this.setState({ newTagText: target.value });
-    }
+    };
 
     handleActiveChange = (active: boolean): void => {
-        let newState = Object.assign({}, this.state.tag);
+        const newState = Object.assign({}, this.state.tag);
         newState.active = active;
         this.setState({ tag: newState });
-    }
+    };
 
     helperAddNewChildTag(newTag: FireTag) {
         console.log('RYAN_TODO add child tag: ', newTag);
@@ -81,7 +82,7 @@ class ProfessorTagInfo extends React.Component {
         if (this.state.newTagText.length === 0) {
             return;
         }
-        let newTag: FireTag = {
+        const newTag: FireTag = {
             active: true,
             level: 2,
             tagId: '',
@@ -90,25 +91,25 @@ class ProfessorTagInfo extends React.Component {
         };
         this.helperAddNewChildTag(newTag);
         this.setState({ newTagText: '' });
-    }
+    };
 
     handleRemoveChildTag = (id: string): void => {
         console.log('RYAN_TODO delete tag ', id);
-    }
+    };
 
     handleCreateAssignment = (): void => {
         console.log('RYAN_TODO create tag and children');
-    }
+    };
 
     handleEditAssignment = (): void => {
         console.log('RYAN_TODO update tag and children');
-    }
+    };
 
     handleEnterPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (e.key === 'Enter') {
             this.handleNewTagEnter();
         }
-    }
+    };
 
     render() {
         return (

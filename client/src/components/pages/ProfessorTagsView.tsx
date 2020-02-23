@@ -5,8 +5,9 @@ import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import { useMyUser, useCourse } from '../../firehooks';
 
-function withData<T extends { match: { params: { courseId: string; } } }>
-    (Component: React.ComponentType<T>) {
+function withData<
+    T extends { match: { params: { courseId: string } } }
+>(Component: React.ComponentType<T>) {
     return (props: T) => {
         const courseId = props.match.params.courseId;
         const user = useMyUser();
@@ -20,7 +21,7 @@ type Props = {
     match: {
         params: {
             courseId: string;
-        }
+        };
     };
     user?: FireUser;
     course?: FireCourse;
@@ -28,7 +29,7 @@ type Props = {
 
 class ProfessorTagsView extends React.Component<Props> {
     render() {
-        let courseId = this.props.match.params.courseId;
+        const courseId = this.props.match.params.courseId;
         return (
             <div className="ProfessorView">
                 <ProfessorSidebar
