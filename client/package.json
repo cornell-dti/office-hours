@@ -42,6 +42,9 @@
     "start": "concurrently \"yarn run build-less\" \"react-scripts start\"",
     "s": "yarn start",
     "test": "react-scripts test --env=jsdom",
+    "lint:eslint": "eslint . --ext tsx --ext ts",
+    "lint:tslint": "yarn tslint --project tsconfig.json -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
+    "lint": "yarn lint:eslint && yarn lint:tslint",
     "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
   "resolutions": {
