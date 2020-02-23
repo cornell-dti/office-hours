@@ -23,5 +23,3 @@ jobs:
         run: cd client && yarn install
       - name: Lint client
         run: cd client && yarn lint
-      - name: Build client
-        run: cd client && yarn build
