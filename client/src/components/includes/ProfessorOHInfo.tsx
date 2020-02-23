@@ -254,7 +254,7 @@ const ProfessorOHInfo = (props: {
                             // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
                             // Will not compile if removed
                             showTimeSelectOnly={true}
-                            timeIntervals={30}
+                            timeIntervals={10}
                             dateFormat="LT"
                             placeholderText="12:00 PM"
                             readOnly={true}
@@ -271,7 +271,7 @@ const ProfessorOHInfo = (props: {
                             // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
                             // Will not compile if removed
                             showTimeSelectOnly={true}
-                            timeIntervals={30}
+                            timeIntervals={10}
                             dateFormat="LT"
                             minTime={startTime || moment().startOf('day')}
                             maxTime={moment().endOf('day')}

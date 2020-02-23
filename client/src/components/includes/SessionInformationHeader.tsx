@@ -4,15 +4,15 @@ import { Icon } from 'semantic-ui-react';
 
 const people = require('../../media/people.svg');
 
-class SessionInformationHeader extends React.Component {
-    props!: {
-        session: FireSession,
-        course: FireCourse,
-        callback: Function,
-        myUserId?: string,
-        isDesktop: boolean,
-    };
+type Props = {
+    session: FireSession;
+    course: FireCourse;
+    callback: Function;
+    myUserId?: string;
+    isDesktop: boolean;
+};
 
+class SessionInformationHeader extends React.Component<Props> {
     handleBackClick = () => {
         this.props.callback();
     }
@@ -32,7 +32,12 @@ class SessionInformationHeader extends React.Component {
             return (
                 <header className="DesktopSessionInformationHeader" >
                     <div className="Picture">
-                        <img src={tas[0] ? tas[0].photoUrl : '/placeholder.png'} />
+                        <img
+                            src={tas[0] ? tas[0].photoUrl : '/placeholder.png'}
+                            alt={tas[0]
+                                ? `${tas[0].firstName} ${tas[0].lastName}'s Photo URL`
+                                : 'Placeholder photo url'}
+                        />
                     </div>
                     <div className="Details">
                         <p className="Location">{session.building + ' ' + session.room}</p>
@@ -51,7 +56,7 @@ class SessionInformationHeader extends React.Component {
                     </div>
                     <div className="QueueWrap">
                         <div className="QueueInfo">
-                            <img src={people} />
+                            <img src={people} alt="number of people" />
                             <p>
                                 <span className="red">
                                     {numAhead + ' '}
@@ -77,14 +82,19 @@ class SessionInformationHeader extends React.Component {
                             <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
                         </div>
                         <div className="Picture">
-                            <img src={tas[0] ? tas[0].photoUrl : '/placeholder.png'} />
+                            <img
+                                src={tas[0] ? tas[0].photoUrl : '/placeholder.png'}
+                                alt={tas[0]
+                                    ? `${tas[0].firstName} ${tas[0].lastName}'s Photo URL`
+                                    : 'Placeholder photo url'}
+                            />
                         </div>
                     </div>
                 </div>
                 <div className="MoreInformation">
                     <hr />
                     <div className="QueueInfo">
-                        <img src={people} />
+                        <img src={people} alt="number of people" />
                         <p>
                             <span className="red">
                                 {numAhead + ' '}

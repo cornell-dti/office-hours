@@ -19,8 +19,7 @@ import { useMyCourseUser } from '../firehooks';
 
 ReactGA.initialize('UA-123790900-1');
 
-// RYAN_TOOD get sensible default instead of 5
-const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 5);
+const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 8);
 
 // Since the type is unknown, we have to use the any type in the next two lines.
 // tslint:disable-next-line: no-any

@@ -93,13 +93,11 @@ class SessionView extends React.Component {
         });
     }
 
-    handleUndoClick = (undoQuestion: Function, refetch: Function) => {
+    handleUndoClick = (undoQuestion: Function, status: string, refetch: Function) => {
         undoQuestion({
             variables: {
                 questionId: this.state.undoQuestionId,
-                // Set question status to unresolved if it's in the assigned state
-                // Otherwise, default it to assigned
-                status: this.state.undoAction === 'assigned' ? 'unresolved' : 'assigned'
+                status: status
             }
         });
     }
@@ -135,17 +133,24 @@ class SessionView extends React.Component {
 
     render() {
         let undoText = '';
+        let undoStatus = 'unresolved';
         if (this.state.undoAction) {
             if (this.state.undoAction === 'resolved') {
                 undoText = this.state.undoName + ' has been resolved! ';
+                undoStatus = 'assigned';
             } else if (this.state.undoAction === 'no-show') {
                 undoText = this.state.undoName + ' has been marked as a no-show. ';
+                undoStatus = 'assigned';
             } else if (this.state.undoAction === 'retracted') {
                 undoText = 'You have removed your question. ';
+                undoStatus = 'unresolved';
             } else if (this.state.undoAction === 'assigned') {
                 undoText = this.state.undoName + ' has been assigned to you! ';
+                undoStatus = 'unresolved';
             }
         }
+
+        // RYAN_TODO: check master for production behavior.
 
         // const questionsRef = firestore.collection('questions');
 
