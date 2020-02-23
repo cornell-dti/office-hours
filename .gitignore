@@ -20,6 +20,9 @@ node_modules
 # all folders and files beginning with a period
 .*
 
+# Unignore github folder
+!.github/
+
 # Unignore eslint config
 !.eslintrc.json
 
