@@ -17,7 +17,11 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 10.x
-      - name: Install and Build
+      - name: Install
         run: yarn install
+      - name: Install for client
+        run: cd client && yarn install
       - name: Lint client
-        run: cd client && yarn install && yarn lint
+        run: cd client && yarn lint
+      - name: Build client
+        run: cd client && yarn built
