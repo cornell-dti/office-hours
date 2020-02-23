@@ -8,9 +8,8 @@
     "@nivo/line": "^0.59.3",
     "@nivo/pie": "^0.59.1",
     "@types/node": "^12.12.15",
-    "babel-core": "^6.26.3",
-    "concurrently": "^4.0.1",
-    "firebase": "^7.5.2",
+    "concurrently": "^5.1.0",
+    "firebase": "^7.9.1",
     "less": "^3.8.1",
     "less-plugin-clean-css": "^1.5.1",
     "less-watch-compiler": "^1.12.1",
@@ -24,15 +23,12 @@
     "react-moment": "^0.8.2",
     "react-numeric-input": "^2.2.3",
     "react-router-dom": "^5.1.1",
-    "react-scripts": "^3.3.0",
+    "react-scripts": "^3.4.0",
     "rxfire": "^3.9.4",
     "rxjs": "^6.5.3",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.1",
-    "source-map-explorer": "^2.1.2",
-    "tslint": "^5.11.0",
-    "tslint-react": "^3.2.0",
-    "yarn": "^1.10.1"
+    "source-map-explorer": "^2.1.2"
   },
   "scripts": {
     "build": "react-scripts build",
@@ -42,9 +38,7 @@
     "start": "concurrently \"yarn run build-less\" \"react-scripts start\"",
     "s": "yarn start",
     "test": "react-scripts test --env=jsdom",
-    "lint:eslint": "eslint . --ext tsx --ext ts",
-    "lint:tslint": "yarn tslint --project tsconfig.json -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
-    "lint": "yarn lint:eslint && yarn lint:tslint",
+    "lint": "eslint . --ext tsx --ext ts",
     "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
   "resolutions": {
@@ -64,9 +58,6 @@
     "@types/react-router": "^5.1.1",
     "@types/react-router-dom": "^5.1.0",
     "typescript": "^3.7.3"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   },
   "browserslist": {
     "production": [

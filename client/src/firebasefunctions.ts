@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/indent */
+
 import { firestore, auth } from 'firebase/app';
 
 export const userUpload = (user: firebase.User | null, db: firebase.firestore.Firestore) => {

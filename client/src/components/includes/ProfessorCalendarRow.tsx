@@ -7,14 +7,14 @@ import { Observable } from 'rxjs';
 import { firestore, collectionData } from '../../firebase';
 
 const ProfessorCalendarRow = (props: {
-    dayNumber: number,
-    sessions: FireSession[],
-    courseId: string,
-    taOptions: DropdownItemProps[],
-    isExpanded: boolean[],
-    handleEditToggle: Function,
-    updateDeleteInfo: Function,
-    updateDeleteVisible: Function,
+    dayNumber: number;
+    sessions: FireSession[];
+    courseId: string;
+    taOptions: DropdownItemProps[];
+    isExpanded: boolean[];
+    handleEditToggle: Function;
+    updateDeleteInfo: Function;
+    updateDeleteVisible: Function;
 }) => {
 
     const toggleEdit = (row: number) => {
@@ -26,7 +26,7 @@ const ProfessorCalendarRow = (props: {
         props.updateDeleteVisible(true);
     };
 
-    let tas = new Set();
+    const tas = new Set();
     props.sessions.forEach(s => tas.add(s.tas));
     // Include a default value so firebase doesn't throw an exception
     // for the case where we are looking for 0 TAs

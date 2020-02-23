@@ -1,20 +1,11 @@
 import * as React from 'react';
 import { ResponsivePie, PieDatum } from '@nivo/pie';
 
-class QuestionsPieChart extends React.Component {
-    props!: {
-        percentResolved: number,
-        percentUnresolved: number
-    };
+type Props = { percentResolved: number; percentUnresolved: number };
+type State = { data: PieDatum[] };
 
-    state!: {
-        data: PieDatum[];
-    };
-
-    constructor(props: {
-        percentResolved: number,
-        percentUnresolved: number
-    }) {
+class QuestionsPieChart extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             data: [

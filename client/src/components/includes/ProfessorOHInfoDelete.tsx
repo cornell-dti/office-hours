@@ -21,13 +21,13 @@ import { Checkbox } from 'semantic-ui-react';
 class ProfessorOHInfoDelete extends React.Component {
 
     props!: {
-        session: FireSession,
-        toggleDelete: Function,
-        toggleEdit: Function,
+        session: FireSession;
+        toggleDelete: Function;
+        toggleEdit: Function;
     };
 
     state!: {
-        isChecked: boolean
+        isChecked: boolean;
     };
 
     constructor(props: {}) {
@@ -64,13 +64,13 @@ class ProfessorOHInfoDelete extends React.Component {
 
     render() {
         // Convert UNIX timestamps to readable time string
-        let date = moment(this.props.session.startTime).format('dddd MM/DD/YY');
-        let timeStart = moment(this.props.session.startTime).format('h:mm A');
-        let timeEnd = moment(this.props.session.endTime).format('h:mm A');
+        const date = moment(this.props.session.startTime).format('dddd MM/DD/YY');
+        const timeStart = moment(this.props.session.startTime).format('h:mm A');
+        const timeEnd = moment(this.props.session.endTime).format('h:mm A');
 
-        let disable = moment(this.props.session.startTime).isBefore();
+        const disable = moment(this.props.session.startTime).isBefore();
         // RYAN_TODO
-        let taList: string[] = [];
+        const taList: string[] = [];
         // this.props.session.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.computedName);
 
         return (
@@ -78,7 +78,7 @@ class ProfessorOHInfoDelete extends React.Component {
                 <div className="ProfessorOHInfoDelete">
                     <div className="question">
                         Are you sure you want to delete this office hour?
-                </div>
+                    </div>
                     <div className="info">
                         <div className="ta">
                             {taList.join(', ')}

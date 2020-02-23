@@ -7,19 +7,19 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { firestore, Timestamp } from '../../firebase';
 
 const ProfessorOHInfo = (props: {
-    session?: FireSession,
-    courseId: string,
-    isNewOH: boolean,
-    taOptions: DropdownItemProps[],
-    taUserIdsDefault?: number[],
-    toggleEdit: Function,
+    session?: FireSession;
+    courseId: string;
+    isNewOH: boolean;
+    taOptions: DropdownItemProps[];
+    taUserIdsDefault?: number[];
+    toggleEdit: Function;
 }) => {
     const session = props.session || undefined;
 
     const [startTime, setStartTime] = useState<moment.Moment | undefined>
-        (session && moment(session.startTime.seconds * 1000));
+    (session && moment(session.startTime.seconds * 1000));
     const [endTime, setEndTime] = useState<moment.Moment | undefined>
-        (session && moment(session.endTime.seconds * 1000));
+    (session && moment(session.endTime.seconds * 1000));
     const [taSelected, setTaSelected] = useState<(string | undefined)[]>
         (session && session.tas
             ? session.tas.map(dRef => dRef.id)
@@ -62,10 +62,11 @@ const ProfessorOHInfo = (props: {
     };
 
     const handleTaList = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps, index: number) => {
-        // Immutably update the value at index
-        // tslint:disable-next-line: max-line-length
-        // https://medium.com/@giltayar/immutably-setting-a-value-in-a-js-array-or-how-an-array-is-also-an-object-55337f4d6702
-        setTaSelected(old => Object.assign([...old], { index: String(data.value) }));
+        setTaSelected(old => {
+            const newArray = [...old];
+            newArray[index] = String(data.value);
+            return newArray;
+        });
         updateNotification('');
     };
 
@@ -163,14 +164,14 @@ const ProfessorOHInfo = (props: {
     // Warning if fields are empty
     // Warning if end time (state) is in the past
     // Disable save button if default start time (prop) is in the past
-    let disableEmpty = startTime == null || endTime == null;
-    let disableState = endTime !== null && moment(endTime).isBefore();
-    let disableProps = !(props.session == null) && moment(props.session.endTime).isBefore();
+    const disableEmpty = startTime == null || endTime == null;
+    const disableState = endTime !== null && moment(endTime).isBefore();
+    const disableProps = !(props.session == null) && moment(props.session.endTime).isBefore();
 
     const emptyNotification = 'Please fill in valid times';
     const stateNotification = 'End time has already passed!';
 
-    let AddTA = taSelected.map(
+    const AddTA = taSelected.map(
         (ta, i) => {
             return (
                 <div className={'AddTA ' + (i === 0 ? 'First' : 'Additional')} key={i}>

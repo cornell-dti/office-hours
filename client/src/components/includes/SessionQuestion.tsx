@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-delimiter-style */
 import * as React from 'react';
 import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
@@ -114,13 +115,13 @@ class SessionQuestion extends React.Component {
             });
             setTimeout(() => { this.state.isEditingLocation = false; }, 100);
         }
-    }
+    };
 
     toggleLocationTooltip = () => {
         this.setState({
             showLocation: !this.state.showLocation
         });
-    }
+    };
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
@@ -135,11 +136,11 @@ class SessionQuestion extends React.Component {
             status,
             this.state.asker ? this.state.asker.firstName + ' ' + this.state.asker.lastName : 'unknown'
         );
-    }
+    };
 
     setDotMenu = (status: boolean) => {
         this.setState({ showDotMenu: status });
-    }
+    };
 
     handleUndoDontKnow = (questionId: number, UndoDontKnow: Function) => {
         UndoDontKnow({
@@ -148,10 +149,10 @@ class SessionQuestion extends React.Component {
                 status: 'unresolved'
             }
         });
-    }
+    };
 
     render() {
-        let question = this.props.question;
+        const question = this.props.question;
         const studentCSS = this.props.isTA ? '' : ' Student';
         const includeBookmark = this.props.question.askerId.id === this.props.myUserId;
 
@@ -214,7 +215,7 @@ class SessionQuestion extends React.Component {
                                 {question.status === 'assigned' &&
                                     <React.Fragment>
                                         <span className="assigned"> is assigned
-                                        {this.state.answerer &&
+                                            {this.state.answerer &&
                                                 (' to ' + (this.state.answerer.userId === this.props.myUserId
                                                     ? 'you'
                                                     : this.state.answerer.firstName + ' '
@@ -246,7 +247,7 @@ class SessionQuestion extends React.Component {
                     {question.timeEntered != null &&
                         <p className="Time">
                             posted at&nbsp;
-                        {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
+                            {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
                         </p>}
                 </div>
                 {this.props.isTA &&
@@ -281,7 +282,7 @@ class SessionQuestion extends React.Component {
                                     >
                                         ...
 
-                                            {this.state.showDotMenu &&
+                                        {this.state.showDotMenu &&
                                             <div
                                                 className="IReallyDontKnow"
                                                 tabIndex={1}

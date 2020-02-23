@@ -42,7 +42,7 @@ class CalendarHeader extends React.Component {
         );
 
         // Get courses that the user is enrolled in
-        let courses$: Observable<FireCourse[]> = courseUsers$.pipe(
+        const courses$: Observable<FireCourse[]> = courseUsers$.pipe(
             switchMap((courseUsers: FireCourseUser[]) =>
                 combineLatest(...courseUsers.map(courseUser =>
                     docData(firestore.doc(courseUser.courseId.path), 'courseId'))
@@ -55,11 +55,11 @@ class CalendarHeader extends React.Component {
 
     setMenu = (status: boolean) => {
         this.setState({ showMenu: status });
-    }
+    };
 
     setCourses = (status: boolean) => {
         this.setState({ showCourses: status });
-    }
+    };
 
     render() {
         return (
@@ -116,7 +116,8 @@ class CalendarHeader extends React.Component {
                         <li onClick={() => logOut()}> <span><Icon name="sign out" /></span>Log Out</li>
                         <li>
                             <a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank" rel="noopener noreferrer">
-                            <span><Icon name="edit" /></span>Send Feedback</a>
+                                <span><Icon name="edit" /></span>Send Feedback
+                            </a>
                         </li>
                     </ul>
                 )}

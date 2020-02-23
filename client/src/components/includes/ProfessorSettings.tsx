@@ -26,7 +26,7 @@ const OPEN_OPTIONS: DropdownItemProps[] = [
     { text: 15, value: 15 },
     { text: 30, value: 30 }
 ];
-const CHAR_INCREMENT: number = 5;
+const CHAR_INCREMENT = 5;
 
 type Props = {
     courseId: number;
@@ -58,7 +58,7 @@ class ProfessorSettings extends React.Component<Props, State> {
     }
 
     handleCharLimit(input: string) {
-        let parsed = parseInt(input, 10);
+        const parsed = parseInt(input, 10);
         if (!isNaN(parsed) && input.length <= 3 && input.length > 0) {
             this.setState({ charLimit: parsed });
         }
@@ -70,7 +70,7 @@ class ProfessorSettings extends React.Component<Props, State> {
                 <div className="ProfessorSettings">
                     <div className="title">
                         Settings
-                        </div>
+                    </div>
                     <div className="settingDesc">
                         Queue opens
                         <Dropdown
@@ -118,7 +118,7 @@ class ProfessorSettings extends React.Component<Props, State> {
                     </div>
                 </div>
                 {/* RYAN_TODO: migrate this new code from master */}
-                {/*<Mutation mutation={UPDATE_PROFESSOR_SETTINGS}>
+                {/* <Mutation mutation={UPDATE_PROFESSOR_SETTINGS}>
                     {(UpdateProfessorSettings) =>
                         <button
                             className="Action"

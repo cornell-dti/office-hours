@@ -10,7 +10,7 @@ const googleLogo = require('../../media/googleLogo.svg');
 
 const LoginView: React.FC = () => {
     const [showContact, setShowContact] = React.useState(false);
-    let history = useHistory();
+    const history = useHistory();
 
     const auth = () => {
         const authProvider = new firebase.auth.GoogleAuthProvider();
@@ -21,7 +21,7 @@ const LoginView: React.FC = () => {
         authProvider.addScope('profile');
 
         return app.auth().signInWithPopup(authProvider).then((response) => {
-            let user = response.user;
+            const user = response.user;
             userUpload(user, firestore);
             history.push('/');
         });
@@ -55,9 +55,9 @@ const LoginView: React.FC = () => {
             <section className="topPanel">
                 <img src={QMeLogo} className="QMeLogo" alt="Queue Me In Logo" />
                 Office Hours Simplified
-                        <button className="contactText" onClick={() => setShowContact(true)}>
+                <button className="contactText" onClick={() => setShowContact(true)}>
                     Interested in using Queue Me In for<br />your students?
-                        </button>
+                </button>
             </section>
             <section className="bottomPanel">
                 <p className="hintText" >Use your Cornell NetID to login</p>

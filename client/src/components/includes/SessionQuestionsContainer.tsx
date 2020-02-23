@@ -7,39 +7,37 @@ const SHOW_FEEDBACK_QUEUE = 4;
 
 class SessionQuestionsContainer extends React.Component {
     props!: {
-        isTA: boolean,
-        questions: FireQuestion[],
-        myUserId: string,
-        handleJoinClick: Function,
-        triggerUndo: Function,
-        isOpen: boolean,
-        isPast: boolean,
-        openingTime: Date,
-        haveAnotherQuestion: boolean,
+        isTA: boolean;
+        questions: FireQuestion[];
+        myUserId: string;
+        handleJoinClick: Function;
+        triggerUndo: Function;
+        isOpen: boolean;
+        isPast: boolean;
+        openingTime: Date;
+        haveAnotherQuestion: boolean;
     };
 
     state!: {
-        sentNotification: boolean
+        sentNotification: boolean;
     };
-
-    componentDidMount() {
-        try {
-            // Request permission to send desktop notifications
-            // @ts-ignore Permission is added in TS 3.0, remove then
-            // https://github.com/Microsoft/TypeScript/issues/14701
-            if (Notification.permission === 'default') {
-                Notification.requestPermission();
-            }
-        } catch (error) {
-            // Do nothing. iOS crashes because Notification isn't defined
-        }
-    }
 
     constructor(props: {}) {
         super(props);
         this.state = {
             sentNotification: window.localStorage.getItem('questionUpNotif') === 'sent' || false,
         };
+    }
+
+    componentDidMount() {
+        try {
+            // Request permission to send desktop notifications
+            if (Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        } catch (error) {
+            // Do nothing. iOS crashes because Notification isn't defined
+        }
     }
 
     render() {
@@ -49,7 +47,7 @@ class SessionQuestionsContainer extends React.Component {
         // Make sure that the data has loaded and user has a question
         if (questions && myQuestion && myQuestion.length > 0) {
             // Get user's position in queue (0 indexed)
-            let myQuestionIndex = questions.indexOf(myQuestion[0]);
+            const myQuestionIndex = questions.indexOf(myQuestion[0]);
             // Update tab with user position
             document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
             // if user is up and we haven't already sent a notification, send one.
@@ -57,7 +55,7 @@ class SessionQuestionsContainer extends React.Component {
                 window.localStorage.setItem('questionUpNotif', 'sent');
                 this.setState({ sentNotification: true });
                 try {
-                    let n = new Notification('Your question is up!');
+                    const n = new Notification('Your question is up!');
                     setTimeout(n.close.bind(n), 4000);
                 } catch (error) {
                     // Do nothing. iOS crashes because Notification isn't defined

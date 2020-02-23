@@ -15,7 +15,7 @@ type Props = {
 class SessionInformationHeader extends React.Component<Props> {
     handleBackClick = () => {
         this.props.callback();
-    }
+    };
 
     render() {
         const session = this.props.session;
@@ -49,7 +49,7 @@ class SessionInformationHeader extends React.Component<Props> {
                         </p>
                         <p>{session.title || (<React.Fragment>
                             Held by
-                                <span className="black">
+                            <span className="black">
                                 {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(' and ')}
                             </span>
                         </React.Fragment>)}</p>
@@ -110,7 +110,7 @@ class SessionInformationHeader extends React.Component<Props> {
                         </div>
                         <p>{session.title || (<React.Fragment>
                             Held by
-                                <span className="black">
+                            <span className="black">
                                 {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(' and ')}
                             </span>
                         </React.Fragment>)}

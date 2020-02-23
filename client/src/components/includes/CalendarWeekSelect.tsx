@@ -9,17 +9,17 @@ class CalendarWeekSelect extends React.Component {
         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     props!: {
-        handleClick?: Function,
-        selectedWeekEpoch?: number,
+        handleClick?: Function;
+        selectedWeekEpoch?: number;
     };
 
     state!: {
-        selectedWeekEpoch: number
+        selectedWeekEpoch: number;
     };
 
     constructor(props: {
-        handleClick?: Function,
-        selectedWeekEpoch?: number,
+        handleClick?: Function;
+        selectedWeekEpoch?: number;
     }) {
         super(props);
         console.log(props);
@@ -28,9 +28,9 @@ class CalendarWeekSelect extends React.Component {
                 selectedWeekEpoch: props.selectedWeekEpoch,
             };
         } else {
-            let week = new Date();
+            const week = new Date();
             week.setHours(0, 0, 0, 0);
-            let daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
+            const daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
             week.setTime(week.getTime() - daysSinceMonday * ONE_DAY); // beginning of this week's Monday
             this.state = {
                 selectedWeekEpoch: week.getTime()
@@ -51,12 +51,12 @@ class CalendarWeekSelect extends React.Component {
     // }
 
     getMonth(epoch: number): string {
-        let now = new Date(epoch);
+        const now = new Date(epoch);
         return this.monthNames[now.getMonth()];
     }
 
     getDay(epoch: number): number {
-        let now = new Date(epoch);
+        const now = new Date(epoch);
         return now.getDate();
     }
 

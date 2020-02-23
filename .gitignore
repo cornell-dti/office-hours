@@ -20,6 +20,9 @@ node_modules
 # all folders and files beginning with a period
 .*
 
+# Unignore eslint config
+!.eslintrc.json
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

@@ -14,8 +14,8 @@ interface CategoryTag {
     resolvedQuestions: number;
     percentResolved: number;
     childTags: {
-        name: string,
-        questionCount: number
+        name: string;
+        questionCount: number;
     }[];
     yMax: number;
 }
@@ -24,8 +24,8 @@ const ProfessorDashboardView = (props: {
     match: {
         params: {
             courseId: string;
-        }
-    }
+        };
+    };
 }) => {
     const [currentCategory, setCurrentCategory] = useState<CategoryTag | undefined>();
 
@@ -51,7 +51,7 @@ const ProfessorDashboardView = (props: {
     const categories: CategoryTag[] = tags
         .filter((tag) => tag.level === 1)
         .map((tag) => {
-            const enrichedChildTags: (FireTag & { questionCount: number, resolvedQuestionCount: number })[] = tags
+            const enrichedChildTags: (FireTag & { questionCount: number; resolvedQuestionCount: number })[] = tags
                 .filter(t => t.parentTag && t.parentTag.id === tag.tagId)
                 .map(t => {
                     const tagQuestions = questions.filter(q => q.secondaryTag.id === t.tagId);
@@ -88,10 +88,10 @@ const ProfessorDashboardView = (props: {
     };
 
     const calcTickVals = (yMax: number) => {
-        let end = yMax + (5 - yMax % 5);
+        const end = yMax + (5 - yMax % 5);
         let start = 0;
-        let step = end / 5;
-        let tickVals = [];
+        const step = end / 5;
+        const tickVals = [];
 
         while (end + step >= start) {
             tickVals.push(start);

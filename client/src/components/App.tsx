@@ -22,7 +22,7 @@ ReactGA.initialize('UA-123790900-1');
 const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 8);
 
 // Since the type is unknown, we have to use the any type in the next two lines.
-// tslint:disable-next-line: no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ component, requireProfessor, ...rest }: any) => {
     // RYAN_TODO fix this
     // Check if the course is active or not, if not redirect to default course

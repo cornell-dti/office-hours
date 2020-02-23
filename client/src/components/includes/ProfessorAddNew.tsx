@@ -6,8 +6,8 @@ import ProfessorTagInfo from './ProfessorTagInfo';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const ProfessorAddNew = (props: {
-    courseId: string
-    taOptions?: DropdownItemProps[]
+    courseId: string;
+    taOptions?: DropdownItemProps[];
 }) => {
     const [editVisible, setEditVisible] = useState(false);
 
