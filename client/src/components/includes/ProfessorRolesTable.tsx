@@ -5,32 +5,32 @@ import * as _ from 'lodash';
 
 import { firestore, collectionData } from '../../firebase';
 import { switchMap, map } from 'rxjs/operators';
-import { docData } from 'rxfire/firestore';
+import { docData, collection } from 'rxfire/firestore';
 import { Observable } from 'rxjs/internal/Observable';
 // Importing combineLatest from rxjs/operators broke everything...
 import { combineLatest } from 'rxjs';
 
-const RoleDropdown = (props: {
+const RoleDropdown = ({ default: role, courseUserId, userId, courseId }: {
     default: string;
+    courseUserId: string;
     userId: string;
     courseId: string;
 }) => {
-    const [value, setValue] = useState(props.default);
     return (
         <Dropdown
-            // RYAN_TODO loading and error state
-            // loading={loading}
-            // error={error && true}
-            text={value}
+            text={role}
             options={[
                 { key: 1, text: 'Student', value: 'student' },
                 { key: 2, text: 'TA', value: 'ta' },
                 { key: 3, text: 'Professor', value: 'professor' },
             ]}
             onChange={(e, newValue) => {
-                // @ts-ignore All values are strings
-                setValue(newValue.value);
-                // RYAN_TODO Mutate the data
+                const update = {
+                    role: newValue.value,
+                    courseId: firestore.doc(`courses/${courseId}`),
+                    userId: firestore.doc(`users/${userId}`)
+                };
+                firestore.collection('courseUsers').doc(courseUserId).update(update);
             }}
         />
     );
@@ -38,12 +38,12 @@ const RoleDropdown = (props: {
 
 type columnT = 'firstName' | 'lastName' | 'email' | 'role';
 
-type enrichedFireUser = FireUser & { role: FireCouseRole };
+type enrichedFireCourseUser = FireUser & { role: FireCouseRole; courseUserId: string };
 
 export default (props: { courseId: string }) => {
     const [direction, setDirection] = useState<'descending' | 'ascending'>('ascending');
     const [column, setColumn] = useState<columnT>('email');
-    const [data, setData] = useState<enrichedFireUser[]>([]);
+    const [data, setData] = useState<enrichedFireCourseUser[]>([]);
 
     // Fetch data for the table
     // First, get user id's for all enrolled by querying CourseUsers
@@ -51,19 +51,20 @@ export default (props: { courseId: string }) => {
     // Add the role from the courseUser to the User so we can display data
     useEffect(
         () => {
-            const courseUsers$: Observable<FireCourseUser[]> = collectionData(
+            const courseUsers$ = collection(
                 firestore
                     .collection('courseUsers')
-                    .where('courseId', '==', firestore.doc('courses/' + props.courseId)),
-                'courseUserId'
+                    .where('courseId', '==', firestore.doc('courses/' + props.courseId))
             );
 
             const users$ = courseUsers$.pipe(switchMap(courseUsers =>
-                combineLatest(...courseUsers.map(courseUser =>
-                    docData<FireUser>(firestore.doc(courseUser.userId.path), 'userId').pipe(
-                        map(u => ({ ...u, role: courseUser.role }))
-                    )
-                ))
+                combineLatest(...courseUsers.map(courseUserDocument => {
+                    const courseUserId = courseUserDocument.id;
+                    const { userId, role } = courseUserDocument.data() as FireCourseUser;
+                    return docData<FireUser>(firestore.doc(userId.path), 'userId').pipe(
+                        map(u => ({ ...u, role, courseUserId }))
+                    );
+                }))
             ));
 
             const subscription = users$.subscribe(u => setData(u));
@@ -122,6 +123,7 @@ export default (props: { courseId: string }) => {
                         <Table.Cell textAlign="right" className="dropdownCell">
                             <RoleDropdown
                                 default={u.role}
+                                courseUserId={u.courseUserId}
                                 userId={u.userId}
                                 courseId={props.courseId}
                             />
