@@ -34,6 +34,8 @@ interface FireCourse {
     queueOpenInterval: number;
     semester: string;
     startDate: FireTimestamp;
+    professors: readonly string[];
+    tas: readonly string[];
     courseId: string;
     charLimit: number;
 }

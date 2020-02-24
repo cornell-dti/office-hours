@@ -13,8 +13,8 @@ import { DropdownItemProps } from 'semantic-ui-react';
 
 import { useCourse, useMyUser } from '../../firehooks';
 import { firestore, collectionData } from '../../firebase';
-import { combineLatest, Observable } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { of, combineLatest, Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { docData } from 'rxfire/firestore';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
@@ -52,26 +52,18 @@ const ProfessorView = (props: {
     // Keep a list of TAs & Professors to assign to sessions
     useEffect(
         () => {
-            const courseUsers$: Observable<FireCourseUser[]> = collectionData(
-                firestore
-                    .collection('courseUsers')
-                    .where('courseId', '==', courseId)
-                    .where('role', 'in', ['professor', 'ta']),
-                'courseUserId'
-            );
+            const courseStaffIds$: Observable<string[]> = of(course ? [...course.professors, ...course.tas] : []);
 
-            const users$ = courseUsers$.pipe(switchMap(courseUsers =>
-                combineLatest(...courseUsers.map(courseUser =>
-                    docData<FireUser>(firestore.doc(`users/${courseUser.userId}`), 'userId').pipe(
-                        map(u => ({ ...u, role: courseUser.role }))
-                    )
+            const users$ = courseStaffIds$.pipe<FireUser[]>(switchMap(courseStaffIds =>
+                combineLatest(...courseStaffIds.map(courseStaffId =>
+                    docData<FireUser>(firestore.doc(`users/${courseStaffId}`), 'userId')
                 ))
             ));
 
             const subscription = users$.subscribe(u => setStaff(u));
             return () => subscription.unsubscribe();
         },
-        [courseId]
+        [course]
     );
 
     const taOptions: DropdownItemProps[] = [
