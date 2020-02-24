@@ -5,8 +5,8 @@ import firebase, { app, firestore } from '../../firebase';
 import { useHistory } from 'react-router-dom';
 import { userUpload } from '../../firebasefunctions';
 
-const QMeLogo = require('../../media/QLogo2.svg');
-const googleLogo = require('../../media/googleLogo.svg');
+import QMeLogo from '../../media/QLogo2.svg';
+import googleLogo from '../../media/googleLogo.svg';
 
 const LoginView: React.FC = () => {
     const [showContact, setShowContact] = React.useState(false);

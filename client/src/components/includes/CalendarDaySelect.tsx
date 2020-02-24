@@ -1,7 +1,7 @@
 import * as React from 'react';
 import CalendarDateItem from './CalendarDateItem';
 
-const chevron = require('../../media/chevron.svg');
+import chevron from '../../media/chevron.svg';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 const ONE_WEEK = 7 /* days */ * ONE_DAY;

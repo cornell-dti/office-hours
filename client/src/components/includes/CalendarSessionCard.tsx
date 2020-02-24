@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Moment from 'react-moment';
-const chevron = require('../../media/chevron.svg');
+import chevron from '../../media/chevron.svg';
 
 const CalendarSessionCard = (props: {
     includeBookmark: boolean | null;
