@@ -21,9 +21,16 @@ ReactGA.initialize('UA-123790900-1');
 
 const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 8);
 
-// Since the type is unknown, we have to use the any type in the next two lines.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const PrivateRoute = ({ component, requireProfessor, ...rest }: any) => {
+// Since the type is too polymorphic, we have to use the any type in the next few lines.
+type PrivateRouteProps = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    component: React.ComponentType<any>;
+    requireProfessor?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [restKey: string]: any;
+};
+
+const PrivateRoute = ({ component, requireProfessor, ...rest }: PrivateRouteProps) => {
     // RYAN_TODO fix this
     // Check if the course is active or not, if not redirect to default course
     // let startDate = moment(data.courseByCourseId.startDate, 'YYYY-MM-DD');
