@@ -82,7 +82,7 @@ const ProfessorCalendarRow = (props: {
                             {moment(props.sessions[i].endTime.seconds * 1000).format('h:mm A')}
                         </td>
                         <td>
-                            {props.sessions[i].tas.map(taId => nameOfTaId(taId.id))}
+                            {props.sessions[i].tas.map(taId => nameOfTaId(taId))}
                         </td>
                         <td>{props.sessions[i].building} {props.sessions[i].room}</td>
                         <td>

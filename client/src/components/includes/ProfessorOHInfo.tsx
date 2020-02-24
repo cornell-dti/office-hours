@@ -21,9 +21,7 @@ const ProfessorOHInfo = (props: {
     const [endTime, setEndTime] = useState<moment.Moment | undefined>
     (session && moment(session.endTime.seconds * 1000));
     const [taSelected, setTaSelected] = useState<(string | undefined)[]>
-        (session && session.tas
-            ? session.tas.map(dRef => dRef.id)
-            : []);
+        (session && session.tas ? session.tas : []);
     const [locationBuildingSelected, setLocationBuildingSelected] = useState(session && session.building);
     const [locationRoomNumSelected, setLocationRoomNumSelected] = useState(session && session.room);
     const [isSeriesMutation, setIsSeriesMutation] = useState(!!(session && session.sessionSeriesId));
@@ -106,17 +104,16 @@ const ProfessorOHInfo = (props: {
             return;
         }
         const propsSession = props.session;
-        const taDocuments: firebase.firestore.DocumentReference[] = [];
+        const taDocuments: string[] = [];
         taSelected.forEach(ta => {
             if (ta !== undefined) {
-                taDocuments.push(firestore.doc(`users/${ta}`));
+                taDocuments.push(ta);
             }
         });
-        const courseId = firestore.doc(`courses/${props.courseId}`);
         if (isSeriesMutation) {
             const series: Omit<FireSessionSeries, 'sessionSeriesId'> = {
                 building: locationBuildingSelected,
-                courseId,
+                courseId: props.courseId,
                 endTime: endTimestamp,
                 room: locationRoomNumSelected,
                 startTime: startTimestamp,
@@ -124,11 +121,11 @@ const ProfessorOHInfo = (props: {
                 title
             };
             if (propsSession) {
-                const seriesDoc = propsSession.sessionSeriesId;
-                if (seriesDoc === undefined) {
+                const seriesId = propsSession.sessionSeriesId;
+                if (seriesId === undefined) {
                     return;
                 }
-                seriesDoc.update(series);
+                firestore.collection('sessionSeries').doc(seriesId).update(series);
             } else {
                 firestore.collection('sessionSeries').add(series);
             }
@@ -137,7 +134,7 @@ const ProfessorOHInfo = (props: {
             const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
             const sessionWithoutSessionSeriesId = {
                 building: locationBuildingSelected,
-                courseId,
+                courseId: props.courseId,
                 endTime: endTimestamp,
                 room: locationRoomNumSelected,
                 startTime: startTimestamp,

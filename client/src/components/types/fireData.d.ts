@@ -6,23 +6,23 @@ interface FireTimestamp {
 
 interface FireSession {
     building: string;
-    courseId: firebase.firestore.DocumentReference;
+    courseId: string;
     endTime: FireTimestamp;
     room: string;
-    sessionSeriesId?: firebase.firestore.DocumentReference;
+    sessionSeriesId?: string;
     startTime: FireTimestamp;
-    tas: firebase.firestore.DocumentReference[];
+    tas: string[];
     title?: string;
     sessionId: string;
 }
 
 interface FireSessionSeries {
     building: string;
-    courseId: firebase.firestore.DocumentReference;
+    courseId: string;
     endTime: FireTimestamp;
     room: string;
     startTime: FireTimestamp;
-    tas: firebase.firestore.DocumentReference[];
+    tas: string[];
     title?: string;
     sessionSeriesId: string;
 }
