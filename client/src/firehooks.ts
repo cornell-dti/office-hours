@@ -68,21 +68,20 @@ export const useMyCourseUser = (courseId: string) => {
     useEffect(
         () => {
             const courseUsers$ = loggedIn$.pipe(
-                switchMap(u =>
-                    collectionData(
-                        firestore
-                            .collection('courseUsers')
-                            .where('userId', '==', firestore.doc('/users/' + u.uid))
-                            .where('courseId', '==', firestore.doc('/courses/' + courseId)),
-                        'courseUserId'
-                    ) as Observable<FireCourseUser[]>)
+                switchMap(u => {
+                    const query = firestore
+                        .collection('courseUsers')
+                        .where('userId', '==', u.uid)
+                        .where('courseId', '==', courseId);
+                    return collectionData<FireCourseUser>(query, 'courseUserId');
+                })
                 // RYAN_TODO better handle unexpected case w/ no courseUser
             );
 
             const subscription = courseUsers$.subscribe(courseUsers =>
                 setCourseUser(courseUsers[0]));
 
-            return () => { subscription.unsubscribe(); };
+            return () => subscription.unsubscribe();
         },
         [courseId]
     );
@@ -113,9 +112,7 @@ const fireCoursesObservable: Observable<FireCourse[]> = (() => {
     const courseUsers$ = loggedIn$.pipe(
         switchMap(user =>
             collectionData(
-                firestore
-                    .collection('courseUsers')
-                    .where('userId', '==', firestore.doc('users/' + user.uid)),
+                firestore.collection('courseUsers').where('userId', '==', user.uid),
                 'courseUserId'
             ) as Observable<FireCourseUser[]>
         )
@@ -123,7 +120,7 @@ const fireCoursesObservable: Observable<FireCourse[]> = (() => {
     return courseUsers$.pipe(
         switchMap((courseUsers: FireCourseUser[]) =>
             combineLatest(...courseUsers.map(courseUser =>
-                docData(firestore.doc(courseUser.courseId.path), 'courseId'))
+                docData(firestore.doc(`courses/${courseUser.courseId}`), 'courseId'))
             )
         )
     );

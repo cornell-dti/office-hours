@@ -38,7 +38,7 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: any) => {
     // 1: Not logged in
     // 2: Logged in
 
-    const courseId = requireProfessor ? rest.computedMatch.params.courseId : undefined;
+    const courseId: string = requireProfessor ? rest.computedMatch.params.courseId : DEFAULT_COURSE_ID;
 
     const [isLoggedIn, setIsLoggedIn] = React.useState<0 | 1 | 2>(0);
     const cu = useMyCourseUser(courseId);
