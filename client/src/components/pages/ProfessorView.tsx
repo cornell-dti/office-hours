@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import { Icon } from 'semantic-ui-react';
 
 import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
+import ProfessorDelete from '../includes/ProfessorDelete';
+import ProfessorSettings from '../includes/ProfessorSettings';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
@@ -32,6 +35,7 @@ const ProfessorView = (props: {
     today.setHours(0, 0, 0, 0);
 
     const [selectedWeekEpoch, setSelectedWeekEpoch] = useState(week.getTime());
+    const [isSettingsVisible, setSettingsVisible] = useState(false);
 
     // Add or subtract one week from selectedWeekEpoch
     const handleWeekClick = (previousWeek: boolean) => {
@@ -115,6 +119,27 @@ const ProfessorView = (props: {
                         courseId={courseId}
                         taOptions={taOptions}
                     />
+                    <button
+                        id="profSettings"
+                        onClick={() => setSettingsVisible(visible => !visible)}
+                    >
+                        <Icon name="setting" />
+                        Settings
+                    </button>
+                    {course && (
+                        <ProfessorDelete
+                            isDeleteVisible={isSettingsVisible}
+                            updateDeleteVisible={() => setSettingsVisible(visible => !visible)}
+                            content={
+                                <ProfessorSettings
+                                    courseId={courseId}
+                                    charLimitDefault={course.charLimit}
+                                    openIntervalDefault={course.queueOpenInterval}
+                                    toggleDelete={() => setSettingsVisible(visible => !visible)}
+                                />
+                            }
+                        />
+                    )}
                     <CalendarWeekSelect
                         handleClick={handleWeekClick}
                         selectedWeekEpoch={selectedWeekEpoch}
