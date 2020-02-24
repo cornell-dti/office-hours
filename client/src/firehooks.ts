@@ -44,10 +44,10 @@ export const useUser = (userId: string | undefined) =>
 // The indirection through query parameter is important because useEffect does shallow
 // comparisons on the objects in the array for memoization. Without storing
 // the query, we re-render and re-fetch infinitely.
-export const useQuery = <T, P=string>(
+export const useQueryWithLoading = <T, P=string>(
     queryParameter: P, getQuery: (parameter: P) => firebase.firestore.Query, idField: string
-): T[] => {
-    const [result, setResult] = useState<T[]>([]);
+): T[] | null => {
+    const [result, setResult] = useState<T[] | null>(null);
     useEffect(
         () => {
             const results$: Observable<T[]> = collectionData(getQuery(queryParameter), idField);
@@ -58,6 +58,9 @@ export const useQuery = <T, P=string>(
     );
     return result;
 };
+export const useQuery = <T, P=string>(
+    queryParameter: P, getQuery: (parameter: P) => firebase.firestore.Query, idField: string
+): T[] => useQuery(queryParameter, getQuery, idField) || [];
 
 // Here be dragons. The functions below this line may have unexpected
 // behaviors when the values they rely on change. I'm not sure.
@@ -89,42 +92,34 @@ export const useMyCourseUser = (courseId: string) => {
     return courseUser;
 };
 
-export const useMyUser = () => {
-    const [user, setUser] = useState<FireUser | undefined>();
 
-    useEffect(
-        () => {
-            const myUser$ = loggedIn$.pipe(
-                switchMap(u =>
-                    docData(firestore.doc('users/' + u.uid), 'userId') as Observable<FireUser>
-                )
-            );
-            const subscription = myUser$.subscribe(myUser => setUser(myUser));
-            return () => { subscription.unsubscribe(); };
-        },
-        []
-    );
+const myUserObservable = loggedIn$.pipe(
+    switchMap(u =>
+        docData(firestore.doc('users/' + u.uid), 'userId') as Observable<FireUser>
+    )
+);
+export const myUserSingletonObservable = new SingletonObservable(undefined, myUserObservable);
+export const useMyUser: () => FireUser | undefined = createUseSingletonObservableHook(myUserSingletonObservable);
 
-    return user;
-};
-
-const fireCoursesObservable: Observable<FireCourse[]> = (() => {
-    const courseUsers$ = loggedIn$.pipe(
-        switchMap(user =>
-            collectionData(
-                firestore.collection('courseUsers').where('userId', '==', user.uid),
-                'courseUserId'
-            ) as Observable<FireCourseUser[]>
+const myCourseUsersObservable: Observable<FireCourseUser[]> = loggedIn$.pipe(
+    switchMap(user =>
+        collectionData<FireCourseUser>(
+            firestore.collection('courseUsers').where('userId', '==', user.uid),
+            'courseUserId'
         )
-    );
-    return courseUsers$.pipe(
-        switchMap((courseUsers: FireCourseUser[]) =>
-            combineLatest(...courseUsers.map(courseUser =>
-                docData(firestore.doc(`courses/${courseUser.courseId}`), 'courseId'))
-            )
+    )
+);
+const myCourseUsersSingletonObservable = new SingletonObservable([], myCourseUsersObservable);
+export const useMyCourseUsers: () => readonly FireCourseUser[] =
+    createUseSingletonObservableHook(myCourseUsersSingletonObservable);
+
+const fireCoursesObservable: Observable<FireCourse[]> = myCourseUsersObservable.pipe(
+    switchMap((courseUsers: FireCourseUser[]) =>
+        combineLatest<FireCourse[]>(...courseUsers.map(courseUser =>
+            docData(firestore.doc(`courses/${courseUser.courseId}`), 'courseId'))
         )
-    );
-})();
+    )
+);
 export const fireCoursesSingletonObservable = new SingletonObservable([], fireCoursesObservable);
 export const useMyCourses: () => readonly FireCourse[] =
     createUseSingletonObservableHook(fireCoursesSingletonObservable);

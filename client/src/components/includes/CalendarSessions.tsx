@@ -1,8 +1,9 @@
 import * as React from 'react';
+import { Loader } from 'semantic-ui-react';
 import { groupBy } from 'lodash';
 
 import CalendarSessionCard from './CalendarSessionCard';
-import { useQuery } from '../../firehooks';
+import { useQueryWithLoading } from '../../firehooks';
 import { firestore } from '../../firebase';
 
 const getQuery = (courseId: string) => firestore
@@ -27,9 +28,9 @@ const CalendarSessions = (props: {
         return 'Upcoming';
     };
 
-    const sessions = useQuery<FireSession>(props.course.courseId, getQuery, 'sessionId');
+    const sessions = useQueryWithLoading<FireSession>(props.course.courseId, getQuery, 'sessionId');
 
-    const sessionCards = sessions.map(session => {
+    const sessionCards = sessions && sessions.map(session => {
         // RYAN_TODO
         // const unresolvedQuestions = 0;
         // session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved');
@@ -54,7 +55,8 @@ const CalendarSessions = (props: {
     const groupedCards = sessionCards && groupBy(sessionCards, (card: React.ReactElement) => card.props.status);
     return (
         <div className="CalendarSessions">
-            {sessions.length === 0 && <React.Fragment>
+            {sessions === null && <Loader active={true} content={'Loading'} />}
+            {sessions !== null && sessions.length === 0 && <React.Fragment>
                 <p className="noHoursHeading">No Office Hours</p>
                 <p className="noHoursBody">No office hours are scheduled for today.</p>
             </React.Fragment>}
