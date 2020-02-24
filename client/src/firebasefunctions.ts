@@ -28,13 +28,7 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
       photoUrl,
       createdAt,
       lastActivityAt: firestore.FieldValue.serverTimestamp()
-    })
-      .then(function () {
-        // Successful upload
-      })
-      .catch(function (error: string) {
-        // Unsuccessful upload
-      });
+    }).catch(() => console.error('Unable to upload user.'));
   }
 };
 

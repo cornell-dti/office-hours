@@ -8,6 +8,7 @@ import { switchMap, map } from 'rxjs/operators';
 import { docData, collection } from 'rxfire/firestore';
 // Importing combineLatest from rxjs/operators broke everything...
 import { combineLatest } from 'rxjs';
+import { useCourse } from '../../firehooks';
 
 const addTa = async (
     courseId: string,
@@ -44,11 +45,23 @@ const addTa = async (
     alert(message);
 };
 
-const RoleDropdown = ({ default: role, courseUserId, userId, courseId }: {
+const addOrRemoveFromRoleIdList = (
+    isAdd: boolean,
+    roleIdList: readonly string[],
+    userId: string
+): readonly string[] => {
+    if (isAdd) {
+        return roleIdList.includes(userId) ? roleIdList : [...roleIdList, userId];
+    } else {
+        return roleIdList.filter(id => id !== userId);
+    }
+};
+
+const RoleDropdown = ({ default: role, courseUserId, userId, course }: {
     default: string;
     courseUserId: string;
     userId: string;
-    courseId: string;
+    course: FireCourse;
 }) => {
     return (
         <Dropdown
@@ -59,12 +72,28 @@ const RoleDropdown = ({ default: role, courseUserId, userId, courseId }: {
                 { key: 3, text: 'Professor', value: 'professor' },
             ]}
             onChange={(e, newValue) => {
-                const update = {
-                    role: newValue.value,
-                    courseId,
+                const newRole = newValue.value as FireCourseRole;
+                const courseUserUpdate: Omit<FireCourseUser, 'courseUserId'> = {
+                    role: newRole,
+                    courseId: course.courseId,
                     userId,
                 };
-                firestore.collection('courseUsers').doc(courseUserId).update(update);
+                const batch = firestore.batch();
+                batch.update(firestore.collection('courseUsers').doc(courseUserId), courseUserUpdate);
+                const courseUpdate: Partial<FireCourse> = {
+                    professors: addOrRemoveFromRoleIdList(
+                        newRole === 'professor',
+                        course.professors,
+                        userId
+                    ),
+                    tas: addOrRemoveFromRoleIdList(
+                        newRole === 'ta',
+                        course.tas,
+                        userId
+                    )
+                };
+                batch.update(firestore.collection('courses').doc(course.courseId), courseUpdate);
+                batch.commit();
             }}
         />
     );
@@ -74,10 +103,11 @@ type columnT = 'firstName' | 'lastName' | 'email' | 'role';
 
 type enrichedFireCourseUser = FireUser & { role: FireCourseRole; courseUserId: string };
 
-export default (props: { courseId: string }) => {
+export default ({ courseId }: { courseId: string }) => {
     const [direction, setDirection] = useState<'descending' | 'ascending'>('ascending');
     const [column, setColumn] = useState<columnT>('email');
     const [data, setData] = useState<enrichedFireCourseUser[]>([]);
+    const course = useCourse(courseId);
 
     // Fetch data for the table
     // First, get user id's for all enrolled by querying CourseUsers
@@ -88,7 +118,7 @@ export default (props: { courseId: string }) => {
             const courseUsers$ = collection(
                 firestore
                     .collection('courseUsers')
-                    .where('courseId', '==', props.courseId)
+                    .where('courseId', '==', courseId)
             );
 
             const users$ = courseUsers$.pipe(switchMap(courseUsers =>
@@ -104,7 +134,7 @@ export default (props: { courseId: string }) => {
             const subscription = users$.subscribe(u => setData(u));
             return () => subscription.unsubscribe();
         },
-        [props.courseId]
+        [courseId]
     );
 
     const importTAButtonOnClick = (): void => {
@@ -112,7 +142,7 @@ export default (props: { courseId: string }) => {
         if (response == null) {
             return;
         }
-        addTa(props.courseId, data, response.split(',').map(email => email.trim()));
+        addTa(courseId, data, response.split(',').map(email => email.trim()));
     };
 
     const handleSort = (clickedColumn: columnT) => () => {
@@ -162,7 +192,7 @@ export default (props: { courseId: string }) => {
                         <button onClick={importTAButtonOnClick}>Import TAs</button>
                     </Table.Cell>
                 </Table.Row>
-                {data.map(u => (
+                {course && data.map(u => (
                     <Table.Row key={u.userId}>
                         <Table.Cell>{u.firstName}</Table.Cell>
                         <Table.Cell>{u.lastName}</Table.Cell>
@@ -172,7 +202,7 @@ export default (props: { courseId: string }) => {
                                 default={u.role}
                                 courseUserId={u.courseUserId}
                                 userId={u.userId}
-                                courseId={props.courseId}
+                                course={course}
                             />
                         </Table.Cell>
                     </Table.Row>
