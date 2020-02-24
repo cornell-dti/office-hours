@@ -25,7 +25,7 @@ const CalendarSessions = (props: {
     const getQuery = () => firestore
         .collection('sessions')
         // RYAN_TODO filter based on today's date.
-        .where('courseId', '==', firestore.doc('courses/' + props.course.courseId));
+        .where('courseId', '==', props.course.courseId);
 
     const [sessions, setQuery] = useQuery<FireSession>(getQuery(), 'sessionId');
     // Update query when course id prop changes
