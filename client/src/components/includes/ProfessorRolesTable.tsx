@@ -9,6 +9,41 @@ import { docData, collection } from 'rxfire/firestore';
 // Importing combineLatest from rxjs/operators broke everything...
 import { combineLatest } from 'rxjs';
 
+const addTa = async (
+    courseId: string,
+    existingCourseUsers: enrichedFireCourseUser[],
+    taEmailList: readonly string[]
+): Promise<void> => {
+    const taUserDocuments = await firestore.collection('users').where('email', 'in', taEmailList).get();
+    const missingSet = new Set(taEmailList);
+    const exsitingCourseUserEmailToCourseUserId = new Map<string, string>();
+    existingCourseUsers.forEach(
+        ({ email, courseUserId }) => exsitingCourseUserEmailToCourseUserId.set(email, courseUserId)
+    );
+    const batch = firestore.batch();
+    const addedEmails: string[] = [];
+    const updatedEmails: string[] = [];
+    taUserDocuments.forEach(document => {
+        const userId = document.id;
+        const { email } = document.data() as FireUser;
+        const existingCourseUserId = exsitingCourseUserEmailToCourseUserId.get(email);
+        if (existingCourseUserId != null) {
+            batch.set(firestore.collection('courseUsers').doc(existingCourseUserId), { role: 'ta', courseId, userId });
+            updatedEmails.push(email);
+        } else {
+            batch.set(firestore.collection('courseUsers').doc(), { role: 'ta', courseId, userId });
+            addedEmails.push(email);
+        }
+        missingSet.delete(email);
+    });
+    await batch.commit();
+    const message = 'Successfully\n'
+        + `added: [${addedEmails.join(', ')}];\n`
+        + `updated: [${updatedEmails.join(', ')}];\n`
+        + `[${Array.from(missingSet).join(', ')}] do not exist in our system yet.`;
+    alert(message);
+};
+
 const RoleDropdown = ({ default: role, courseUserId, userId, courseId }: {
     default: string;
     courseUserId: string;
@@ -72,6 +107,14 @@ export default (props: { courseId: string }) => {
         [props.courseId]
     );
 
+    const importTAButtonOnClick = (): void => {
+        const response = prompt('Please enter a common-separated list of TA emails:');
+        if (response == null) {
+            return;
+        }
+        addTa(props.courseId, data, response.split(',').map(email => email.trim()));
+    };
+
     const handleSort = (clickedColumn: columnT) => () => {
         if (column !== clickedColumn) {
             setDirection('ascending');
@@ -114,6 +157,11 @@ export default (props: { courseId: string }) => {
                 </Table.Row>
             </Table.Header>
             <Table.Body>
+                <Table.Row>
+                    <Table.Cell>
+                        <button onClick={importTAButtonOnClick}>Import TAs</button>
+                    </Table.Cell>
+                </Table.Row>
                 {data.map(u => (
                     <Table.Row key={u.userId}>
                         <Table.Cell>{u.firstName}</Table.Cell>
