@@ -40,24 +40,23 @@ export const useTag = (tagId: string | undefined) =>
 export const useUser = (userId: string | undefined) =>
     useDoc<FireUser>('users', userId, 'userId');
 
-// Pass in a firebase query and return the results plus a function to update the query
-// Storing the query in state is important because useEffect does shallow
+// Pass in a query parameter and a firebase query generator and return the results.
+// The indirection through query parameter is important because useEffect does shallow
 // comparisons on the objects in the array for memoization. Without storing
 // the query, we re-render and re-fetch infinitely.
-export const useQuery = <T>(
-    query: firebase.firestore.Query, idField: string
-): [T[], React.Dispatch<React.SetStateAction<firebase.firestore.Query>>] => {
-    const [storedQuery, setStoredQuery] = useState(query);
+export const useQuery = <T, P=string>(
+    queryParameter: P, getQuery: (parameter: P) => firebase.firestore.Query, idField: string
+): T[] => {
     const [result, setResult] = useState<T[]>([]);
     useEffect(
         () => {
-            const results$: Observable<T[]> = collectionData(query, idField);
+            const results$: Observable<T[]> = collectionData(getQuery(queryParameter), idField);
             const subscription = results$.subscribe(results => setResult(results));
             return () => { subscription.unsubscribe(); };
         },
-        [storedQuery, idField]
+        [queryParameter, getQuery, idField]
     );
-    return [result, setStoredQuery];
+    return result;
 };
 
 // Here be dragons. The functions below this line may have unexpected

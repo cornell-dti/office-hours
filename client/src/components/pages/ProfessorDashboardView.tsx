@@ -20,33 +20,25 @@ interface CategoryTag {
     yMax: number;
 }
 
-const ProfessorDashboardView = (props: {
-    match: {
-        params: {
-            courseId: string;
-        };
-    };
-}) => {
+const getQuery = (courseId: string) => firestore
+    .collection('tags')
+    // RYAN_TODO filter based on today's date.
+    .where('courseId', '==', firestore.doc('courses/' + courseId));
+
+// Fetching all questions for a course might be expensive/have performance implications
+// This should be rarely done, though.
+const getQuestionsQuery = (courseId: string) => firestore
+    .collection('questions')
+    // RYAN_TODO filter based on today's date.
+    .where('courseId', '==', firestore.doc('courses/' + courseId));
+
+type Props = { match: { params: { courseId: string } } };
+
+const ProfessorDashboardView = ({ match: { params: { courseId } } }: Props) => {
     const [currentCategory, setCurrentCategory] = useState<CategoryTag | undefined>();
 
-    const getQuery = () => firestore
-        .collection('tags')
-        // RYAN_TODO filter based on today's date.
-        .where('courseId', '==', firestore.doc('courses/' + props.match.params.courseId));
-
-    const [tags, setQuery] = useQuery<FireTag>(getQuery(), 'tagId');
-
-    // Fetching all questions for a course might be expensive/have performance implications
-    // This should be rarely done, though.
-    const getQuestionsQuery = () => firestore
-        .collection('questions')
-        // RYAN_TODO filter based on today's date.
-        .where('courseId', '==', firestore.doc('courses/' + props.match.params.courseId));
-
-    const [questions] = useQuery<FireQuestion>(getQuestionsQuery(), 'questionId');
-
-    // Update query when course id prop changes
-    React.useEffect(() => setQuery(getQuery()), [props.match.params.courseId]);
+    const tags = useQuery<FireTag>(courseId, getQuery, 'tagId');
+    const questions = useQuery<FireQuestion>(courseId, getQuestionsQuery, 'questionId');
 
     const categories: CategoryTag[] = tags
         .filter((tag) => tag.level === 1)
@@ -101,7 +93,6 @@ const ProfessorDashboardView = (props: {
         return tickVals;
     };
 
-    const courseId = props.match.params.courseId;
     const course = useCourse(courseId);
 
     return (
