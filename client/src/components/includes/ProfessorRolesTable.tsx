@@ -26,8 +26,8 @@ const RoleDropdown = ({ default: role, courseUserId, userId, courseId }: {
             onChange={(e, newValue) => {
                 const update = {
                     role: newValue.value,
-                    courseId: firestore.doc(`courses/${courseId}`),
-                    userId: firestore.doc(`users/${userId}`)
+                    courseId,
+                    userId,
                 };
                 firestore.collection('courseUsers').doc(courseUserId).update(update);
             }}
@@ -37,7 +37,7 @@ const RoleDropdown = ({ default: role, courseUserId, userId, courseId }: {
 
 type columnT = 'firstName' | 'lastName' | 'email' | 'role';
 
-type enrichedFireCourseUser = FireUser & { role: FireCouseRole; courseUserId: string };
+type enrichedFireCourseUser = FireUser & { role: FireCourseRole; courseUserId: string };
 
 export default (props: { courseId: string }) => {
     const [direction, setDirection] = useState<'descending' | 'ascending'>('ascending');
@@ -53,14 +53,14 @@ export default (props: { courseId: string }) => {
             const courseUsers$ = collection(
                 firestore
                     .collection('courseUsers')
-                    .where('courseId', '==', firestore.doc('courses/' + props.courseId))
+                    .where('courseId', '==', props.courseId)
             );
 
             const users$ = courseUsers$.pipe(switchMap(courseUsers =>
                 combineLatest(...courseUsers.map(courseUserDocument => {
                     const courseUserId = courseUserDocument.id;
                     const { userId, role } = courseUserDocument.data() as FireCourseUser;
-                    return docData<FireUser>(firestore.doc(userId.path), 'userId').pipe(
+                    return docData<FireUser>(firestore.doc(`users/${userId}`), 'userId').pipe(
                         map(u => ({ ...u, role, courseUserId }))
                     );
                 }))

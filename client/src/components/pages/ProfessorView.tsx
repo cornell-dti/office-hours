@@ -51,14 +51,14 @@ const ProfessorView = (props: {
             const courseUsers$: Observable<FireCourseUser[]> = collectionData(
                 firestore
                     .collection('courseUsers')
-                    .where('courseId', '==', firestore.doc('courses/' + courseId))
+                    .where('courseId', '==', courseId)
                     .where('role', 'in', ['professor', 'ta']),
                 'courseUserId'
             );
 
             const users$ = courseUsers$.pipe(switchMap(courseUsers =>
                 combineLatest(...courseUsers.map(courseUser =>
-                    docData<FireUser>(firestore.doc(courseUser.userId.path), 'userId').pipe(
+                    docData<FireUser>(firestore.doc(`users/${courseUser.userId}`), 'userId').pipe(
                         map(u => ({ ...u, role: courseUser.role }))
                     )
                 ))

@@ -38,12 +38,12 @@ interface FireCourse {
     charLimit: number;
 }
 
-type FireCouseRole = 'professor' | 'ta' | 'student';
+type FireCourseRole = 'professor' | 'ta' | 'student';
 
 interface FireCourseUser {
-    courseId: firebase.firestore.DocumentReference;
-    userId: firebase.firestore.DocumentReference;
-    role: FireCouseRole;
+    courseId: string;
+    userId: string;
+    role: FireCourseRole;
     courseUserId: string;
 }
 
