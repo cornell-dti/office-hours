@@ -12,7 +12,7 @@ const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
 class CalendarDaySelect extends React.Component {
 
     props!: {
-        callback: Function;
+        callback: (time: number) => void;
     };
 
     state!: {
