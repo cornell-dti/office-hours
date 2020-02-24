@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { firestore, loggedIn$ } from './firebase';
 import { collectionData, docData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
+import { SingletonObservable, createUseSingletonObservableHook } from './utilities/singleton-observable-hook';
 
 export const useDoc = <T>(collection: string, id: string | undefined, idField: string) => {
     const [doc, setDoc] = useState<T | undefined>();
@@ -108,3 +109,26 @@ export const useMyUser = () => {
 
     return user;
 };
+
+const fireCoursesObservable: Observable<FireCourse[]> = (() => {
+    const courseUsers$ = loggedIn$.pipe(
+        switchMap(user =>
+            collectionData(
+                firestore
+                    .collection('courseUsers')
+                    .where('userId', '==', firestore.doc('users/' + user.uid)),
+                'courseUserId'
+            ) as Observable<FireCourseUser[]>
+        )
+    );
+    return courseUsers$.pipe(
+        switchMap((courseUsers: FireCourseUser[]) =>
+            combineLatest(...courseUsers.map(courseUser =>
+                docData(firestore.doc(courseUser.courseId.path), 'courseId'))
+            )
+        )
+    );
+})();
+export const fireCoursesSingletonObservable = new SingletonObservable([], fireCoursesObservable);
+export const useMyCourses: () => readonly FireCourse[] =
+    createUseSingletonObservableHook(fireCoursesSingletonObservable);
