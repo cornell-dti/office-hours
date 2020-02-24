@@ -4,17 +4,15 @@ import { Icon, DropdownItemProps } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfessorOHInfo from './ProfessorOHInfo';
 import { firestore } from '../../firebase';
-import { useQuery } from '../../firehooks';
 
-const getUsersQuery = (sessions: FireSession[]) => {
+const getUsers = async (sessions: FireSession[]): Promise<FireUser[]> => {
     const taSet = new Set<string>();
     sessions.forEach(session => session.tas.forEach(ta => taSet.add(ta)));
-    // Include a default value so firebase doesn't throw an exception
-    // for the case where we are looking for 0 TAs
-    const tasList = [...Array.from(taSet), 'DEFAULT VALUE'];
-    return firestore
-        .collection('users')
-        .where('userId', 'in', tasList);
+    const userDocuments = await Promise.all(Array.from(taSet).map(id => firestore.collection('users').doc(id).get()));
+    return userDocuments.map(document => ({
+        userId: document.id,
+        ...(document.data() as Omit<FireUser, 'userId'>)
+    }));
 };
 
 const ProfessorCalendarRow = (props: {
@@ -37,7 +35,10 @@ const ProfessorCalendarRow = (props: {
         props.updateDeleteVisible(true);
     };
 
-    const users = useQuery<FireUser, FireSession[]>(props.sessions, getUsersQuery, 'userId');
+    const [users, setUsers] = React.useState<FireUser[]>([]);
+    React.useEffect(() => {
+        getUsers(props.sessions).then(latestUsers => setUsers(latestUsers));
+    }, [props.sessions]);
 
     if (props.sessions.length === 0) {
         return (
@@ -72,7 +73,7 @@ const ProfessorCalendarRow = (props: {
                             {moment(props.sessions[i].endTime.seconds * 1000).format('h:mm A')}
                         </td>
                         <td>
-                            {props.sessions[i].tas.map(taId => nameOfTaId(taId))}
+                            {props.sessions[i].tas.map(taId => nameOfTaId(taId)).join(', ')}
                         </td>
                         <td>{props.sessions[i].building} {props.sessions[i].room}</td>
                         <td>
