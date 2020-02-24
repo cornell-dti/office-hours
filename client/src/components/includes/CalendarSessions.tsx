@@ -1,19 +1,12 @@
 import * as React from 'react';
-import { Loader } from 'semantic-ui-react';
 import { groupBy } from 'lodash';
 
 import CalendarSessionCard from './CalendarSessionCard';
-import { useQueryWithLoading } from '../../firehooks';
-import { firestore } from '../../firebase';
 
-const getQuery = (courseId: string) => firestore
-    .collection('sessions')
-    // RYAN_TODO filter based on today's date.
-    .where('courseId', '==', courseId);
-
-const CalendarSessions = (props: {
+const CalendarSessions = ({ activeSession, course, sessions, callback }: {
     activeSession?: FireSession;
     course: FireCourse;
+    sessions: FireSession[];
     callback: (sessionId: string) => void;
 }) => {
     const labelSession = (session: FireSession, intervalMs: number) => {
@@ -28,9 +21,7 @@ const CalendarSessions = (props: {
         return 'Upcoming';
     };
 
-    const sessions = useQueryWithLoading<FireSession>(props.course.courseId, getQuery, 'sessionId');
-
-    const sessionCards = sessions && sessions.map(session => {
+    const sessionCards = sessions.map(session => {
         // RYAN_TODO
         // const unresolvedQuestions = 0;
         // session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved');
@@ -46,17 +37,16 @@ const CalendarSessions = (props: {
                 numAhead={numAhead}
                 session={session}
                 key={session.sessionId}
-                callback={props.callback}
-                active={props.activeSession ? props.activeSession.sessionId === session.sessionId : false}
-                status={labelSession(session, props.course.queueOpenInterval * 1000)}
+                callback={callback}
+                active={activeSession ? activeSession.sessionId === session.sessionId : false}
+                status={labelSession(session, course.queueOpenInterval * 1000)}
             />
         );
     });
     const groupedCards = sessionCards && groupBy(sessionCards, (card: React.ReactElement) => card.props.status);
     return (
         <div className="CalendarSessions">
-            {sessions === null && <Loader active={true} content={'Loading'} />}
-            {sessions !== null && sessions.length === 0 && <React.Fragment>
+            {sessions.length === 0 && <React.Fragment>
                 <p className="noHoursHeading">No Office Hours</p>
                 <p className="noHoursBody">No office hours are scheduled for today.</p>
             </React.Fragment>}
