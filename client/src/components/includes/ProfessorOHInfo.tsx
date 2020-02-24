@@ -5,6 +5,7 @@ import { Dropdown, Checkbox, Icon, DropdownItemProps, DropdownProps } from 'sema
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { firestore, Timestamp } from '../../firebase';
+import { createSeries, updateSeries } from '../../firebasefunctions';
 
 const ProfessorOHInfo = (props: {
     session?: FireSession;
@@ -125,11 +126,10 @@ const ProfessorOHInfo = (props: {
                 if (seriesId === undefined) {
                     return;
                 }
-                firestore.collection('sessionSeries').doc(seriesId).update(series);
+                updateSeries(firestore, seriesId, series);
             } else {
-                firestore.collection('sessionSeries').add(series);
+                createSeries(firestore, series);
             }
-            // RYAN_TODO: generate sessions from this series until the end date of the course.
         } else {
             const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
             const sessionWithoutSessionSeriesId = {

@@ -84,7 +84,7 @@ const ProfessorView = (props: {
             const sessions$: Observable<FireSession[]> = collectionData(
                 firestore
                     .collection('sessions')
-                    .where('courseId', '==', firestore.doc('courses/' + courseId))
+                    .where('courseId', '==', courseId)
                     .where('startTime', '>=', new Date(selectedWeekEpoch))
                     .where('startTime', '<=', new Date(selectedWeekEpoch + 7 * ONE_DAY)),
                 'sessionId'
