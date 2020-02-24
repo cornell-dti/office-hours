@@ -60,7 +60,7 @@ export const useQueryWithLoading = <T, P=string>(
 };
 export const useQuery = <T, P=string>(
     queryParameter: P, getQuery: (parameter: P) => firebase.firestore.Query, idField: string
-): T[] => useQuery(queryParameter, getQuery, idField) || [];
+): T[] => useQueryWithLoading(queryParameter, getQuery, idField) || [];
 
 // Here be dragons. The functions below this line may have unexpected
 // behaviors when the values they rely on change. I'm not sure.
