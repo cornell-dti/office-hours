@@ -1,12 +1,9 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
-// const QMeLogo = require('../../media/QMeLogo.svg');
 
-import { collectionData, firestore, loggedIn$ } from '../../firebase';
-import { docData } from 'rxfire/firestore';
-import { combineLatest, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { logOut } from '../../firebasefunctions';
+import { fireCoursesSingletonObservable } from '../../firehooks';
 
 const QMeLogo = require('../../media/QLogo2.svg');
 const chevron = require('../../media/chevron.svg'); // Replace with dropdown cheveron
@@ -25,32 +22,16 @@ class CalendarHeader extends React.Component {
         userId?: string;
     };
 
+    private readonly coursesSubscription: Subscription;
+
     constructor(props: {}) {
         super(props);
-        this.state = { showMenu: false, showCourses: false, courses: [], userId: undefined };
+        this.state = { showMenu: false, showCourses: false, courses: fireCoursesSingletonObservable.get() };
+        this.coursesSubscription = fireCoursesSingletonObservable.subscribe(courses => this.setState({ courses }));
+    }
 
-        // Look up courseIds for current user
-        const courseUsers$ = loggedIn$.pipe(
-            switchMap(user =>
-                collectionData(
-                    firestore
-                        .collection('courseUsers')
-                        .where('userId', '==', firestore.doc('users/' + user.uid)),
-                    'courseUserId'
-                ) as Observable<FireCourseUser[]>
-            )
-        );
-
-        // Get courses that the user is enrolled in
-        const courses$: Observable<FireCourse[]> = courseUsers$.pipe(
-            switchMap((courseUsers: FireCourseUser[]) =>
-                combineLatest(...courseUsers.map(courseUser =>
-                    docData(firestore.doc(courseUser.courseId.path), 'courseId'))
-                )
-            )
-        );
-
-        courses$.subscribe(courses => this.setState({ courses }));
+    componentWillUnmount() {
+        this.coursesSubscription.unsubscribe();
     }
 
     setMenu = (status: boolean) => {
