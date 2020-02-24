@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
-const QMeLogo = require('../../media/QLogo2.svg');
+import QMeLogo from '../../media/QLogo2.svg';
 
 type Props = {
   show: boolean;

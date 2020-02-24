@@ -1,5 +1,5 @@
 import * as React from 'react';
-const chevron = require('../../media/chevron.svg');
+import chevron from '../../media/chevron.svg';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 

@@ -5,8 +5,8 @@ import { Subscription } from 'rxjs';
 import { logOut } from '../../firebasefunctions';
 import { fireCoursesSingletonObservable } from '../../firehooks';
 
-const QMeLogo = require('../../media/QLogo2.svg');
-const chevron = require('../../media/chevron.svg'); // Replace with dropdown cheveron
+import QMeLogo from '../../media/QLogo2.svg';
+import chevron from '../../media/chevron.svg'; // Replace with dropdown cheveron
 
 class CalendarHeader extends React.Component {
     props!: {

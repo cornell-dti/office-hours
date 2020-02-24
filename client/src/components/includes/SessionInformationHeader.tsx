@@ -2,7 +2,7 @@ import * as React from 'react';
 import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
 
-const people = require('../../media/people.svg');
+import people from '../../media/people.svg';
 
 type Props = {
     session: FireSession;
