@@ -61,10 +61,10 @@ const LoginView: React.FC = () => {
             </section>
             <section className="bottomPanel">
                 <p className="hintText" >Use your Cornell NetID to login</p>
-                <a className="loginButton" onClick={auth}>
+                <button className="loginButton" onClick={auth}>
                     <img src={googleLogo} className="googleLogo" alt="Google Login Logo" />
                     <span className="loginButtonText">Sign in with Google</span>
-                </a>
+                </button>
             </section>
         </div >
     );

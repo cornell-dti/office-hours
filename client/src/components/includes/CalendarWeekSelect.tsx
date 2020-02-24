@@ -3,26 +3,20 @@ import chevron from '../../media/chevron.svg';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 
-class CalendarWeekSelect extends React.Component {
+const monthNames = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+];
 
-    monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+type Props = {
+    handleClick?: Function;
+    selectedWeekEpoch?: number;
+};
+type State = { selectedWeekEpoch: number };
 
-    props!: {
-        handleClick?: Function;
-        selectedWeekEpoch?: number;
-    };
-
-    state!: {
-        selectedWeekEpoch: number;
-    };
-
-    constructor(props: {
-        handleClick?: Function;
-        selectedWeekEpoch?: number;
-    }) {
+class CalendarWeekSelect extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
-        console.log(props);
         if (props.selectedWeekEpoch) {
             this.state = {
                 selectedWeekEpoch: props.selectedWeekEpoch,
@@ -52,7 +46,7 @@ class CalendarWeekSelect extends React.Component {
 
     getMonth(epoch: number): string {
         const now = new Date(epoch);
-        return this.monthNames[now.getMonth()];
+        return monthNames[now.getMonth()];
     }
 
     getDay(epoch: number): number {

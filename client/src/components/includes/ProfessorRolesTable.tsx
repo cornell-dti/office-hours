@@ -108,7 +108,7 @@ export default (props: { courseId: string }) => {
     );
 
     const importTAButtonOnClick = (): void => {
-        const response = prompt('Please enter a common-separated list of TA emails:');
+        const response = prompt('Please enter a comma-separated list of TA emails:');
         if (response == null) {
             return;
         }
