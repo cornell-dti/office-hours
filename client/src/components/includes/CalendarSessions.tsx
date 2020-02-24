@@ -5,6 +5,11 @@ import CalendarSessionCard from './CalendarSessionCard';
 import { useQuery } from '../../firehooks';
 import { firestore } from '../../firebase';
 
+const getQuery = (courseId: string) => firestore
+    .collection('sessions')
+    // RYAN_TODO filter based on today's date.
+    .where('courseId', '==', courseId);
+
 const CalendarSessions = (props: {
     activeSession?: FireSession;
     course: FireCourse;
@@ -22,14 +27,7 @@ const CalendarSessions = (props: {
         return 'Upcoming';
     };
 
-    const getQuery = () => firestore
-        .collection('sessions')
-        // RYAN_TODO filter based on today's date.
-        .where('courseId', '==', props.course.courseId);
-
-    const [sessions, setQuery] = useQuery<FireSession>(getQuery(), 'sessionId');
-    // Update query when course id prop changes
-    React.useEffect(() => setQuery(getQuery()), [props.course.courseId]);
+    const sessions = useQuery<FireSession>(props.course.courseId, getQuery, 'sessionId');
 
     const sessionCards = sessions.map(session => {
         // RYAN_TODO

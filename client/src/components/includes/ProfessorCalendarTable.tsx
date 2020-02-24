@@ -35,20 +35,21 @@ class ProfessorCalendarTable extends React.Component<Props, State> {
             dayIndex: 0,
             rowIndex: 0,
         };
-        this.updateDeleteInfo = this.updateDeleteInfo.bind(this);
-        this.updateDeleteVisible = this.updateDeleteVisible.bind(this);
-        this.toggleEdit = this.toggleEdit.bind(this);
     }
 
-    componentWillReceiveProps(props: { sessions: FireSession[] }) {
+    componentDidUpdate(prevProps: Props) {
+        if (this.props === prevProps) {
+            return;
+        }
+        const sessionsLength = this.props.sessions.length;
         const isExpanded: boolean[][] = [];
         for (let i = 0; i < 7; i++) {
-            isExpanded.push(new Array<boolean>(props.sessions.length).fill(false));
+            isExpanded.push(new Array<boolean>(sessionsLength).fill(false));
         }
         this.setState({ isExpanded: isExpanded });
     }
 
-    toggleEdit(day: number, row: number, forceClose?: boolean) {
+    toggleEdit = (day: number, row: number, forceClose?: boolean) => {
         const cDay = this.state.currentDay;
         const cRow = this.state.currentRow;
 
@@ -68,20 +69,20 @@ class ProfessorCalendarTable extends React.Component<Props, State> {
             currentDay: day,
             currentRow: row
         });
-    }
+    };
 
-    updateDeleteInfo(dayIndex: number, rowIndex: number) {
+    updateDeleteInfo = (dayIndex: number, rowIndex: number) => {
         this.setState({
             dayIndex: dayIndex,
             rowIndex: rowIndex
         });
-    }
+    };
 
-    updateDeleteVisible(toggle: boolean) {
+    updateDeleteVisible = (toggle: boolean) => {
         this.setState({
             isDeleteVisible: toggle
         });
-    }
+    };
 
     render() {
         const sessions: FireSession[][] = [];
