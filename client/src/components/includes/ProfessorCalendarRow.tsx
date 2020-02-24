@@ -3,8 +3,19 @@ import moment from 'moment';
 import { Icon, DropdownItemProps } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfessorOHInfo from './ProfessorOHInfo';
-import { Observable } from 'rxjs';
-import { firestore, collectionData } from '../../firebase';
+import { firestore } from '../../firebase';
+import { useQuery } from '../../firehooks';
+
+const getUsersQuery = (sessions: FireSession[]) => {
+    const taSet = new Set<string>();
+    sessions.forEach(session => session.tas.forEach(ta => taSet.add(ta)));
+    // Include a default value so firebase doesn't throw an exception
+    // for the case where we are looking for 0 TAs
+    const tasList = [...Array.from(taSet), 'DEFAULT VALUE'];
+    return firestore
+        .collection('users')
+        .where('userId', 'in', tasList);
+};
 
 const ProfessorCalendarRow = (props: {
     dayNumber: number;
@@ -26,28 +37,7 @@ const ProfessorCalendarRow = (props: {
         props.updateDeleteVisible(true);
     };
 
-    const tas = new Set();
-    props.sessions.forEach(s => tas.add(s.tas));
-    // Include a default value so firebase doesn't throw an exception
-    // for the case where we are looking for 0 TAs
-    const tasList = [...Array.from(tas), 'DEFAULT VALUE'];
-
-    const [users, setUsers] = React.useState<FireUser[]>([]);
-
-    React.useEffect(
-        () => {
-            const tas$: Observable<FireUser[]> = collectionData(
-                firestore
-                    .collection('users')
-                    .where('userId', 'in', tasList),
-                'userId'
-            );
-
-            const subscription = tas$.subscribe(u => setUsers(u));
-            return () => subscription.unsubscribe();
-        },
-        [tasList.join('')]
-    );
+    const users = useQuery<FireUser, FireSession[]>(props.sessions, getUsersQuery, 'userId');
 
     if (props.sessions.length === 0) {
         return (
@@ -124,11 +114,7 @@ const ProfessorCalendarRow = (props: {
             );
         }
     );
-    return (
-        <>
-            {rows}
-        </>
-    );
+    return <>{rows}</>;
 };
 
 export default ProfessorCalendarRow;
