@@ -22,7 +22,7 @@ const ProfessorOHInfo = (props: {
     const [endTime, setEndTime] = useState<moment.Moment | undefined>
     (session && moment(session.endTime.seconds * 1000));
     const [taSelected, setTaSelected] = useState<(string | undefined)[]>
-        (session && session.tas ? session.tas : []);
+        (session && session.tas ? session.tas : [undefined]);
     const [locationBuildingSelected, setLocationBuildingSelected] = useState(session && session.building);
     const [locationRoomNumSelected, setLocationRoomNumSelected] = useState(session && session.room);
     const [isSeriesMutation, setIsSeriesMutation] = useState(!!(session && session.sessionSeriesId));
