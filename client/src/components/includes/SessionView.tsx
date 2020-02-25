@@ -5,10 +5,10 @@ import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 
 import { Icon } from 'semantic-ui-react';
-// import SessionAlertModal from './SessionAlertModal';
+import SessionAlertModal from './SessionAlertModal';
 
 import { firestore, loggedIn$, collectionData } from '../../firebase';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 // RYAN_TODO
 // const UNDO_QUESTION = gql`
@@ -20,30 +20,33 @@ import { Observable } from 'rxjs';
 // }
 // `;
 
-class SessionView extends React.Component {
-    props!: {
-        session: FireSession;
-        course: FireCourse;
-        isDesktop: boolean;
-        backCallback: Function;
-        joinCallback: Function;
-        user: FireUser;
-        courseUser: FireCourseUser;
-    };
+type Props = {
+    session: FireSession;
+    course: FireCourse;
+    isDesktop: boolean;
+    backCallback: Function;
+    joinCallback: Function;
+    user: FireUser;
+    courseUser: FireCourseUser;
+};
+type State = {
+    undoAction?: string;
+    undoName?: string;
+    undoQuestionId?: number;
+    timeoutId: NodeJS.Timeout | null;
+    showAbsent: boolean;
+    dismissedAbsent: boolean;
+    userId?: string;
+    questions: FireQuestion[];
+    lastAskedQuestion: FireQuestion | null;
+    otherActiveQuestions: boolean;
+};
 
-    state!: {
-        undoAction?: string;
-        undoName?: string;
-        undoQuestionId?: number;
-        timeoutId: number | null;
-        showAbsent: boolean;
-        dismissedAbsent: boolean;
-        userId?: string;
-        questions: FireQuestion[];
-        otherActiveQuestions: boolean;
-    };
+class SessionView extends React.Component<Props, State> {
+    loggedInSubscription?: Subscription;
+    questionsSubscription?: Subscription;
 
-    constructor(props: {}) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             undoAction: undefined,
@@ -53,20 +56,9 @@ class SessionView extends React.Component {
             showAbsent: true,
             dismissedAbsent: true,
             questions: [],
+            lastAskedQuestion: null,
             otherActiveQuestions: false
         };
-
-        loggedIn$.subscribe(user => this.setState({ userId: user.uid }));
-
-        const questions$: Observable<FireQuestion[]> = collectionData(
-            firestore
-                .collection('questions'),
-            // .where('sessionId', '==', firestore.doc('sessions/' + this.props.session.sessionId)),
-            // RYAN_TODO filter
-            'questionId'
-        );
-
-        questions$.subscribe(questions => { this.setState({ questions }); });
     }
 
     triggerUndo = (questionId: number, action: string, name: string) => {
@@ -103,8 +95,9 @@ class SessionView extends React.Component {
     };
 
     isOpen = (session: FireSession, interval: number): boolean => {
-        return new Date(session.startTime.toDate()) < new Date()
-            && new Date(session.endTime.toDate()) > new Date();
+        const intervalInMilliseconds = interval * 1000 * 60;
+        return session.startTime.toDate().getTime() - intervalInMilliseconds < new Date().getTime()
+            && session.endTime.toDate().getTime() > new Date().getTime();
     };
 
     isPast = (session: FireSession): boolean => {
@@ -112,23 +105,51 @@ class SessionView extends React.Component {
     };
 
     getOpeningTime = (session: FireSession, interval: number): Date => {
-        return new Date(new Date(session.startTime.toDate()).getTime() - interval * 1000);
+        return new Date(new Date(session.startTime.toDate()).getTime() - interval * 1000 * 60);
     };
 
     componentDidMount() {
-        let otherQuestions = false;
-        firestore.collection('questions')
-            .where('askerId', '==', this.props.user.userId)
-            .where('status', '==', 'unresolved')
-            .onSnapshot(querySnapshot => {
-                otherQuestions = false;
-                querySnapshot.forEach(doc => {
-                    if (doc.data().endTime >= new Date().getTime() / 1000) {
-                        otherQuestions = true;
+        this.loggedInSubscription = loggedIn$.subscribe(user => this.setState({ userId: user.uid }));
+
+        const questions$: Observable<FireQuestion[]> = collectionData(
+            firestore.collection('questions').where('sessionId', '==', this.props.session.sessionId),
+            'questionId'
+        );
+
+        this.questionsSubscription = questions$.subscribe(questions => {
+            // First check that the session is not ended yet.
+            const sessionStillOngoing = new Date(this.props.session.endTime.toDate()) >= new Date();
+            const otherActiveQuestions = sessionStillOngoing
+                && questions.some(
+                    ({ askerId, status }) => askerId === this.props.user.userId && status === 'unresolved'
+                );
+
+            const lastAskedQuestion = questions.length > 0 ?
+                questions.reduce(
+                    (prev, current) => prev.timeEntered.toDate() > current.timeEntered.toDate() ? prev : current
+                )
+                : null;
+
+            this.setState(currentState => {
+                let showAbsent = currentState.showAbsent;
+                let dismissedAbsent = currentState.dismissedAbsent;
+                if (lastAskedQuestion !== null && lastAskedQuestion.status !== 'no-show') {
+                    if (currentState.showAbsent) {
+                        showAbsent = false;
+                        dismissedAbsent = true;
+                    } else if (currentState.dismissedAbsent) {
+                        showAbsent = true;
+                        dismissedAbsent = false;
                     }
-                });
-                this.setState({ otherActiveQuestions: otherQuestions });
+                }
+                return { otherActiveQuestions, questions, lastAskedQuestion, showAbsent, dismissedAbsent };
             });
+        });
+    }
+
+    componentWillUnmount() {
+        this.loggedInSubscription && this.loggedInSubscription.unsubscribe();
+        this.questionsSubscription && this.questionsSubscription.unsubscribe();
     }
 
     render() {
@@ -149,34 +170,6 @@ class SessionView extends React.Component {
                 undoStatus = 'unresolved';
             }
         }
-
-        // RYAN_TODO: check master for production behavior.
-
-        // const questionsRef = firestore.collection('questions');
-
-        // data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes
-        //     .filter((question) => question.sessionBySessionId.sessionId !== this.props.id)
-        //     .filter((question) => question.status === 'unresolved')
-        //     .filter((question) => new Date(question.sessionBySessionId.endTime) >= new Date());
-
-        // const userQuestions: FireQuestion[] = []; // data.apiGetCurrentUser.nodes[0].questionsByAskerId.nodes;
-
-        // const lastAskedQuestion = userQuestions.length > 0 ?
-        //     userQuestions.reduce((prev, current) => new Date(prev.timeEntered) >
-        //         new Date(current.timeEntered) ? prev : current) : null;
-
-        // if (lastAskedQuestion !== null &&
-        //     lastAskedQuestion.status !== 'no-show' &&
-        //     this.state.showAbsent) {
-        //     this.setState({ showAbsent: false, dismissedAbsent: true });
-        // }
-
-        // if (lastAskedQuestion !== null &&
-        //     lastAskedQuestion.status === 'no-show' &&
-        //     !this.state.showAbsent &&
-        //     this.state.dismissedAbsent) {
-        //     this.setState({ showAbsent: true, dismissedAbsent: false });
-        // }
 
         return (
             <section className="StudentSessionView">
@@ -226,17 +219,17 @@ class SessionView extends React.Component {
                     openingTime={this.getOpeningTime(this.props.session, this.props.course.queueOpenInterval)}
                     haveAnotherQuestion={this.state.otherActiveQuestions}
                 />
-
-                {/* {lastAskedQuestion !== null && this.state.showAbsent && !this.state.dismissedAbsent &&
+                {this.state.lastAskedQuestion !== null && this.state.showAbsent && !this.state.dismissedAbsent && (
                     <SessionAlertModal
                         color={'red'}
                         description={'A TA has marked you as absent from this office hour ' +
                             'and removed you from the queue.'}
-                        OHSession={lastAskedQuestion.sessionBySessionId}
+                        OHSession={this.props.session}
                         buttons={['Continue']}
                         cancelAction={() => this.setState({ dismissedAbsent: true })}
                         displayShade={true}
-                    />} */}
+                    />
+                )}
             </section>
         );
     }

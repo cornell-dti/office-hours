@@ -9,7 +9,7 @@ class SessionAlertModal extends React.Component {
         icon?: SemanticICONS;
         color: string;
         description: string;
-        OHSession?: AppSession;
+        OHSession?: FireSession;
         buttons: string[];
         cancelAction?: Function;
         mainAction?: Function;
@@ -55,8 +55,10 @@ class SessionAlertModal extends React.Component {
         const shadeDisplay = this.props.displayShade ? 'shade' : '';
 
         // Copied over from ProfessorOHInfoDelete
-        const taList = this.props.OHSession ?
-            this.props.OHSession.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.computedName) : [];
+        const taList = this.props.OHSession
+            ? ['COMPUTE TA NAMES'] // RYAN_TODO: actually compute TA names
+            // ? this.props.OHSession.tas.nodes.map(ta => ta.userByUserId.computedName)
+            : [];
 
         return (
             this.state.displayModal && (
