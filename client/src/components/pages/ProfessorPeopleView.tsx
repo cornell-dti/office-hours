@@ -39,8 +39,9 @@ const ProfessorPeopleView = (props: {
             const sessions$: Observable<FireSession[]> = collectionData(
                 firestore
                     .collection('sessions')
-                    // RYAN_TODO filter based on today's date.
-                    .where('courseId', '==', firestore.doc('courses/' + courseId)),
+                    .where('startTime', '>=', startDate.toDate())
+                    .where('startTime', '<=', endDate.add(1, 'day').toDate())
+                    .where('courseId', '==', courseId),
                 'sessionId'
             );
             const s1 = sessions$.subscribe(newSessions => setSessions(newSessions));
@@ -52,7 +53,7 @@ const ProfessorPeopleView = (props: {
                         collectionData(
                             firestore
                                 .collection('questions')
-                                .where('sessionId', '==', firestore.doc('/sessions/' + session.sessionId)),
+                                .where('sessionId', '==', session.sessionId),
                             'questionId'
                         )
                     ))
@@ -65,7 +66,7 @@ const ProfessorPeopleView = (props: {
                 s2.unsubscribe();
             };
         },
-        [courseId]
+        [courseId, startDate, endDate]
     );
 
     // Compute necessary data
@@ -201,31 +202,33 @@ const ProfessorPeopleView = (props: {
                                 </div>
                             </div>
                             <div className="Most-Crowded-Box">
-                                <div className="most-crowded-text">
-                                    <div>
-                                        <p className="crowd-title"> Most Crowded Day </p>
-                                        <p className="maroon-date">
-                                            {busiestSessionInfo.dayOfWeek}, <br /> {busiestSessionInfo.date}
-                                        </p>
+                                {busiestSessionInfo && (
+                                    <div className="most-crowded-text">
+                                        <div>
+                                            <p className="crowd-title"> Most Crowded Day </p>
+                                            <p className="maroon-date">
+                                                {busiestSessionInfo.dayOfWeek}, <br /> {busiestSessionInfo.date}
+                                            </p>
+                                        </div>
+                                        <hr />
+                                        <div>
+                                            <p className="crowd-title"> Most Crowded Office Hour </p>
+                                            <p className="maroon-descript">
+                                                {busiestSessionInfo.ohDate}
+                                            </p>
+                                            <p className="maroon-descript">
+                                                {busiestSessionInfo.startHour} - {busiestSessionInfo.endHour}
+                                            </p>
+                                            <p className="maroon-descript">
+                                                {busiestSessionInfo.building} {busiestSessionInfo.room}
+                                            </p>
+                                            <p className="maroon-descript">
+                                                {/* RYAN_TODO Get TA Data */}
+                                                {/* {busiestSessionInfo.taName} */}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <hr />
-                                    <div>
-                                        <p className="crowd-title"> Most Crowded Office Hour </p>
-                                        <p className="maroon-descript">
-                                            {busiestSessionInfo.ohDate}
-                                        </p>
-                                        <p className="maroon-descript">
-                                            {busiestSessionInfo.startHour} - {busiestSessionInfo.endHour}
-                                        </p>
-                                        <p className="maroon-descript">
-                                            {busiestSessionInfo.building} {busiestSessionInfo.room}
-                                        </p>
-                                        <p className="maroon-descript">
-                                            {/* RYAN_TODO Get TA Data */}
-                                            {/* {busiestSessionInfo.taName} */}
-                                        </p>
-                                    </div>
-                                </div>
+                                )}
                                 <div className="questions-line-container">
                                     <QuestionsLineChart
                                         lineData={lineChartQuestions}
