@@ -26,18 +26,8 @@ class QuestionsBarChart extends React.Component {
         sessionKeys: string[];
     };
 
-    isEmpty(obj: {}) {
-        for (const k in obj) {
-            // eslint-disable-next-line no-prototype-builtins
-            if (obj.hasOwnProperty(k)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     createTooltipFunc(sessionId: string) {
-        if (!(this.isEmpty(this.props.sessionDict))) {
+        if (Object.keys(this.props.sessionDict).length > 0) {
             const session = this.props.sessionDict[sessionId];
             const percent = Math.round((session.answered / (session.questions)) * 100);
             return (function (e: BarExtendedDatum) {

@@ -33,7 +33,7 @@
       }
     ],
     "@typescript-eslint/no-explicit-any": "error",
-    "@typescript-eslint/no-var-requires": "warn",
+    "@typescript-eslint/no-var-requires": "error",
     "@typescript-eslint/ban-ts-ignore": "warn",
     "@typescript-eslint/quotes": ["error", "single"],
     "@typescript-eslint/semi": ["error", "always"],
