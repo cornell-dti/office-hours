@@ -65,7 +65,7 @@ interface FireQuestion {
     content: string;
     location: string;
     sessionId: string;
-    status: 'assigned' | 'resolved' | 'retracted' | 'unresolved';
+    status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
     timeAddressed: FireTimestamp;
     timeEntered: FireTimestamp;
     primaryTag: string;
