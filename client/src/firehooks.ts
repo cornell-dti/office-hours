@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { firestore, loggedIn$ } from './firebase';
 import { collectionData, docData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
-import { Observable, combineLatest } from 'rxjs';
+import { Observable } from 'rxjs';
 import { SingletonObservable, createUseSingletonObservableHook } from './utilities/singleton-observable-hook';
 
 export const useDoc = <T>(collection: string, id: string | undefined, idField: string) => {
@@ -22,23 +22,6 @@ export const useDoc = <T>(collection: string, id: string | undefined, idField: s
     );
     return doc;
 };
-
-// Primatives
-// Look up a doc in Firebase by ID
-export const useCourseUser = (courseUserId: string | undefined) =>
-    useDoc<FireCourse>('courseUsers', courseUserId, 'courseUserId');
-export const useCourse = (courseId: string | undefined) =>
-    useDoc<FireCourse>('courses', courseId, 'courseId');
-export const useQuestion = (questionId: string | undefined) =>
-    useDoc<FireQuestion>('questions', questionId, 'questionId');
-export const useSessionSeries = (sessionSeriesId: string | undefined) =>
-    useDoc<FireSessionSeries>('sessionSeries', sessionSeriesId, 'sessionSeriesId');
-export const useSession = (sessionId: string | undefined) =>
-    useDoc<FireSession>('sessions', sessionId, 'sessionId');
-export const useTag = (tagId: string | undefined) =>
-    useDoc<FireTag>('tags', tagId, 'tagId');
-export const useUser = (userId: string | undefined) =>
-    useDoc<FireUser>('users', userId, 'userId');
 
 // Pass in a query parameter and a firebase query generator and return the results.
 // The indirection through query parameter is important because useEffect does shallow
@@ -62,37 +45,6 @@ export const useQuery = <T, P=string>(
     queryParameter: P, getQuery: (parameter: P) => firebase.firestore.Query, idField: string
 ): T[] => useQueryWithLoading(queryParameter, getQuery, idField) || [];
 
-// Here be dragons. The functions below this line may have unexpected
-// behaviors when the values they rely on change. I'm not sure.
-// Get current course user based on courseId and user
-export const useMyCourseUser = (courseId: string) => {
-    const [courseUser, setCourseUser] = useState<FireCourseUser | undefined>();
-
-    useEffect(
-        () => {
-            const courseUsers$ = loggedIn$.pipe(
-                switchMap(u => {
-                    const query = firestore
-                        .collection('courseUsers')
-                        .where('userId', '==', u.uid)
-                        .where('courseId', '==', courseId);
-                    return collectionData<FireCourseUser>(query, 'courseUserId');
-                })
-                // RYAN_TODO better handle unexpected case w/ no courseUser
-            );
-
-            const subscription = courseUsers$.subscribe(courseUsers =>
-                setCourseUser(courseUsers[0]));
-
-            return () => subscription.unsubscribe();
-        },
-        [courseId]
-    );
-
-    return courseUser;
-};
-
-
 const myUserObservable = loggedIn$.pipe(
     switchMap(u =>
         docData(firestore.doc('users/' + u.uid), 'userId') as Observable<FireUser>
@@ -100,6 +52,13 @@ const myUserObservable = loggedIn$.pipe(
 );
 export const myUserSingletonObservable = new SingletonObservable(undefined, myUserObservable);
 export const useMyUser: () => FireUser | undefined = createUseSingletonObservableHook(myUserSingletonObservable);
+
+const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
+    switchMap(() => collectionData<FireCourse>(firestore.collection('courses'), 'courseId'))
+);
+const allCoursesSingletonObservable = new SingletonObservable([], allCoursesObservable);
+export const useAllCourses: () => readonly FireCourse[] =
+    createUseSingletonObservableHook(allCoursesSingletonObservable);
 
 const myCourseUsersObservable: Observable<FireCourseUser[]> = loggedIn$.pipe(
     switchMap(user =>
@@ -113,13 +72,28 @@ const myCourseUsersSingletonObservable = new SingletonObservable([], myCourseUse
 export const useMyCourseUsers: () => readonly FireCourseUser[] =
     createUseSingletonObservableHook(myCourseUsersSingletonObservable);
 
-const fireCoursesObservable: Observable<FireCourse[]> = myCourseUsersObservable.pipe(
-    switchMap((courseUsers: FireCourseUser[]) =>
-        combineLatest<FireCourse[]>(...courseUsers.map(courseUser =>
-            docData(firestore.doc(`courses/${courseUser.courseId}`), 'courseId'))
-        )
-    )
-);
-export const fireCoursesSingletonObservable = new SingletonObservable([], fireCoursesObservable);
-export const useMyCourses: () => readonly FireCourse[] =
-    createUseSingletonObservableHook(fireCoursesSingletonObservable);
+export const useMyCourseUser = (courseId: string): FireCourseUser | undefined =>
+    useMyCourseUsers().find(courseUser => courseUser.courseId === courseId);
+
+export const useMyCourses = (): readonly FireCourse[] => {
+    const allCourses = useAllCourses();
+    const myCourseUsers = useMyCourseUsers();
+    return allCourses.filter(course => myCourseUsers.some(courseUser => courseUser.courseId === course.courseId));
+};
+
+// Primatives
+// Look up a doc in Firebase by ID
+export const useCourseUser = (courseUserId: string | undefined) =>
+    useDoc<FireCourse>('courseUsers', courseUserId, 'courseUserId');
+export const useCourse = (courseId: string | undefined): FireCourse | undefined =>
+    useAllCourses().find(course => course.courseId === courseId);
+export const useQuestion = (questionId: string | undefined) =>
+    useDoc<FireQuestion>('questions', questionId, 'questionId');
+export const useSessionSeries = (sessionSeriesId: string | undefined) =>
+    useDoc<FireSessionSeries>('sessionSeries', sessionSeriesId, 'sessionSeriesId');
+export const useSession = (sessionId: string | undefined) =>
+    useDoc<FireSession>('sessions', sessionId, 'sessionId');
+export const useTag = (tagId: string | undefined) =>
+    useDoc<FireTag>('tags', tagId, 'tagId');
+export const useUser = (userId: string | undefined) =>
+    useDoc<FireUser>('users', userId, 'userId');
