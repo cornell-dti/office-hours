@@ -8,16 +8,6 @@ type Props = {
 };
 
 class TagsBarChart extends React.Component<Props> {
-    isEmpty(obj: {}) {
-        for (const k in obj) {
-            // eslint-disable-next-line no-prototype-builtins
-            if (obj.hasOwnProperty(k)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     render() {
         return (
             <div className="TagsBarChart" style={{ height: 300 }}>
