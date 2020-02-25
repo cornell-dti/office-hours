@@ -7,9 +7,6 @@ import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 import { Icon } from 'semantic-ui-react';
 import SessionAlertModal from './SessionAlertModal';
 
-import { firestore, loggedIn$, collectionData } from '../../firebase';
-import { Observable, Subscription } from 'rxjs';
-
 // RYAN_TODO
 // const UNDO_QUESTION = gql`
 // mutation UndoQuestion($questionId: Int!, $status: String!) {
@@ -21,8 +18,9 @@ import { Observable, Subscription } from 'rxjs';
 // `;
 
 type Props = {
-    session: FireSession;
     course: FireCourse;
+    session: FireSession;
+    questions: FireQuestion[];
     isDesktop: boolean;
     backCallback: Function;
     joinCallback: Function;
@@ -36,30 +34,19 @@ type State = {
     timeoutId: NodeJS.Timeout | null;
     showAbsent: boolean;
     dismissedAbsent: boolean;
-    userId?: string;
-    questions: FireQuestion[];
     lastAskedQuestion: FireQuestion | null;
-    otherActiveQuestions: boolean;
 };
 
 class SessionView extends React.Component<Props, State> {
-    loggedInSubscription?: Subscription;
-    questionsSubscription?: Subscription;
-
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            undoAction: undefined,
-            undoName: undefined,
-            undoQuestionId: undefined,
-            timeoutId: null,
-            showAbsent: true,
-            dismissedAbsent: true,
-            questions: [],
-            lastAskedQuestion: null,
-            otherActiveQuestions: false
-        };
-    }
+    state: State = {
+        undoAction: undefined,
+        undoName: undefined,
+        undoQuestionId: undefined,
+        timeoutId: null,
+        showAbsent: true,
+        dismissedAbsent: true,
+        lastAskedQuestion: null
+    };
 
     triggerUndo = (questionId: number, action: string, name: string) => {
         if (this.state.timeoutId) {
@@ -108,48 +95,32 @@ class SessionView extends React.Component<Props, State> {
         return new Date(new Date(session.startTime.toDate()).getTime() - interval * 1000 * 60);
     };
 
-    componentDidMount() {
-        this.loggedInSubscription = loggedIn$.subscribe(user => this.setState({ userId: user.uid }));
+    componentDidUpdate(prevProps: Props) {
+        const { user, questions } = this.props;
+        if (prevProps.questions === questions) {
+            return;
+        }
+        const myQuestions = questions.filter(q => q.askerId === user.userId);
+        const lastAskedQuestion = myQuestions.length > 0
+            ? myQuestions.reduce(
+                (prev, current) => prev.timeEntered.toDate() > current.timeEntered.toDate() ? prev : current
+            )
+            : null;
 
-        const questions$: Observable<FireQuestion[]> = collectionData(
-            firestore.collection('questions').where('sessionId', '==', this.props.session.sessionId),
-            'questionId'
-        );
-
-        this.questionsSubscription = questions$.subscribe(questions => {
-            // First check that the session is not ended yet.
-            const sessionStillOngoing = new Date(this.props.session.endTime.toDate()) >= new Date();
-            const otherActiveQuestions = sessionStillOngoing
-                && questions.some(
-                    ({ askerId, status }) => askerId === this.props.user.userId && status === 'unresolved'
-                );
-
-            const lastAskedQuestion = questions.length > 0 ?
-                questions.reduce(
-                    (prev, current) => prev.timeEntered.toDate() > current.timeEntered.toDate() ? prev : current
-                )
-                : null;
-
-            this.setState(currentState => {
-                let showAbsent = currentState.showAbsent;
-                let dismissedAbsent = currentState.dismissedAbsent;
-                if (lastAskedQuestion !== null && lastAskedQuestion.status !== 'no-show') {
-                    if (currentState.showAbsent) {
-                        showAbsent = false;
-                        dismissedAbsent = true;
-                    } else if (currentState.dismissedAbsent) {
-                        showAbsent = true;
-                        dismissedAbsent = false;
-                    }
+        this.setState(currentState => {
+            let showAbsent = currentState.showAbsent;
+            let dismissedAbsent = currentState.dismissedAbsent;
+            if (lastAskedQuestion !== null && lastAskedQuestion.status !== 'no-show') {
+                if (currentState.showAbsent) {
+                    showAbsent = false;
+                    dismissedAbsent = true;
+                } else if (currentState.dismissedAbsent) {
+                    showAbsent = true;
+                    dismissedAbsent = false;
                 }
-                return { otherActiveQuestions, questions, lastAskedQuestion, showAbsent, dismissedAbsent };
-            });
+            }
+            return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
-    }
-
-    componentWillUnmount() {
-        this.loggedInSubscription && this.loggedInSubscription.unsubscribe();
-        this.questionsSubscription && this.questionsSubscription.unsubscribe();
     }
 
     render() {
@@ -171,20 +142,35 @@ class SessionView extends React.Component<Props, State> {
             }
         }
 
+        const { user, courseUser, course, session, questions } = this.props;
+
+        // First check that the session is not ended yet.
+        const haveAnotherQuestion = new Date(session.endTime.toDate()) >= new Date()
+            && questions.some(
+                ({ askerId, status }) => askerId === user.userId && status === 'unresolved'
+            );
+
+        const userQuestions = questions.filter(question => question.askerId === user.userId);
+        const lastAskedQuestion = userQuestions.length > 0 ?
+            userQuestions.reduce(
+                (prev, current) => prev.timeEntered.toDate() > current.timeEntered.toDate() ? prev : current
+            )
+            : null;
+
         return (
             <section className="StudentSessionView">
                 {this.props.isDesktop &&
                     <TopBar
-                        user={this.props.user}
-                        role={this.props.courseUser.role}
+                        user={user}
+                        role={courseUser.role}
                         context="session"
-                        courseId={this.props.course.courseId}
+                        courseId={course.courseId}
                     />
                 }
                 <SessionInformationHeader
-                    session={this.props.session}
-                    course={this.props.course}
-                    myUserId={this.state.userId}
+                    session={session}
+                    course={course}
+                    myUserId={user.userId}
                     callback={this.props.backCallback}
                     isDesktop={this.props.isDesktop}
                 />
@@ -210,16 +196,16 @@ class SessionView extends React.Component<Props, State> {
                 {/* FUTURE_TODO - Just pass in the session and not a bunch of bools */}
                 <SessionQuestionsContainer
                     isTA={this.props.courseUser.role !== 'student'}
-                    questions={this.state.questions}
+                    questions={this.props.questions}
                     handleJoinClick={this.props.joinCallback}
                     myUserId={this.props.user.userId}
                     triggerUndo={this.triggerUndo}
                     isOpen={this.isOpen(this.props.session, this.props.course.queueOpenInterval)}
                     isPast={this.isPast(this.props.session)}
                     openingTime={this.getOpeningTime(this.props.session, this.props.course.queueOpenInterval)}
-                    haveAnotherQuestion={this.state.otherActiveQuestions}
+                    haveAnotherQuestion={haveAnotherQuestion}
                 />
-                {this.state.lastAskedQuestion !== null && this.state.showAbsent && !this.state.dismissedAbsent && (
+                {lastAskedQuestion !== null && this.state.showAbsent && !this.state.dismissedAbsent && (
                     <SessionAlertModal
                         color={'red'}
                         description={'A TA has marked you as absent from this office hour ' +
