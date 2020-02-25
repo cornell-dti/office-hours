@@ -209,6 +209,9 @@ class SessionQuestion extends React.Component<Props> {
                                 src={this.state.asker === undefined
                                     ? '/placeholder.png'
                                     : this.state.asker.photoUrl}
+                                alt={this.state.asker === undefined
+                                    ? 'Asker profile picture'
+                                    : `${this.state.asker.firstName} ${this.state.asker.lastName} profile picture`}
                             />
                             <span className="Name">
                                 {this.state.asker.firstName + ' ' + this.state.asker.lastName}
