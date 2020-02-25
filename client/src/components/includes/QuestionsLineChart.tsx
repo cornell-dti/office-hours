@@ -1,28 +1,19 @@
 import * as React from 'react';
 import { ResponsiveLine, LineSerieData } from '@nivo/line';
 
-class QuestionsLineChart extends React.Component {
-    props!: {
-        lineData: {
-            'x': string,
-            'y': number
-        }[],
-        yMax: number,
-        calcTickVals: (yMax: number) => number[]
-    };
+type Props = {
+    lineData: {
+        'x': string;
+        'y': number;
+    }[];
+    yMax: number;
+    calcTickVals: (yMax: number) => number[];
+};
 
-    state!: {
-        data: LineSerieData[];
-    };
+type State = { data: LineSerieData[] };
 
-    constructor(props: {
-        lineData: {
-            'x': string,
-            'y': number
-        }[],
-        yMax: number,
-        calcTickVals: (yMax: number) => number[]
-    }) {
+class QuestionsLineChart extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             data: [

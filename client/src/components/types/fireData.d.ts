@@ -6,23 +6,23 @@ interface FireTimestamp {
 
 interface FireSession {
     building: string;
-    courseId: firebase.firestore.DocumentReference;
+    courseId: string;
     endTime: FireTimestamp;
     room: string;
-    sessionSeriesId?: firebase.firestore.DocumentReference;
+    sessionSeriesId?: string;
     startTime: FireTimestamp;
-    tas: firebase.firestore.DocumentReference[];
+    tas: string[];
     title?: string;
     sessionId: string;
 }
 
 interface FireSessionSeries {
     building: string;
-    courseId: firebase.firestore.DocumentReference;
+    courseId: string;
     endTime: FireTimestamp;
     room: string;
     startTime: FireTimestamp;
-    tas: firebase.firestore.DocumentReference[];
+    tas: string[];
     title?: string;
     sessionSeriesId: string;
 }
@@ -34,16 +34,18 @@ interface FireCourse {
     queueOpenInterval: number;
     semester: string;
     startDate: FireTimestamp;
+    professors: readonly string[];
+    tas: readonly string[];
     courseId: string;
     charLimit: number;
 }
 
-type FireCouseRole = 'professor' | 'ta' | 'student';
+type FireCourseRole = 'professor' | 'ta' | 'student';
 
 interface FireCourseUser {
-    courseId: firebase.firestore.DocumentReference;
-    userId: firebase.firestore.DocumentReference;
-    role: FireCouseRole;
+    courseId: string;
+    userId: string;
+    role: FireCourseRole;
     courseUserId: string;
 }
 

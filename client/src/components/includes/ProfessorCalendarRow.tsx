@@ -3,18 +3,27 @@ import moment from 'moment';
 import { Icon, DropdownItemProps } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfessorOHInfo from './ProfessorOHInfo';
-import { Observable } from 'rxjs';
-import { firestore, collectionData } from '../../firebase';
+import { firestore } from '../../firebase';
+
+const getUsers = async (sessions: FireSession[]): Promise<FireUser[]> => {
+    const taSet = new Set<string>();
+    sessions.forEach(session => session.tas.forEach(ta => taSet.add(ta)));
+    const userDocuments = await Promise.all(Array.from(taSet).map(id => firestore.collection('users').doc(id).get()));
+    return userDocuments.map(document => ({
+        userId: document.id,
+        ...(document.data() as Omit<FireUser, 'userId'>)
+    }));
+};
 
 const ProfessorCalendarRow = (props: {
-    dayNumber: number,
-    sessions: FireSession[],
-    courseId: string,
-    taOptions: DropdownItemProps[],
-    isExpanded: boolean[],
-    handleEditToggle: Function,
-    updateDeleteInfo: Function,
-    updateDeleteVisible: Function,
+    dayNumber: number;
+    sessions: FireSession[];
+    courseId: string;
+    taOptions: DropdownItemProps[];
+    isExpanded: boolean[];
+    handleEditToggle: Function;
+    updateDeleteInfo: Function;
+    updateDeleteVisible: Function;
 }) => {
 
     const toggleEdit = (row: number) => {
@@ -26,28 +35,10 @@ const ProfessorCalendarRow = (props: {
         props.updateDeleteVisible(true);
     };
 
-    let tas = new Set();
-    props.sessions.forEach(s => tas.add(s.tas));
-    // Include a default value so firebase doesn't throw an exception
-    // for the case where we are looking for 0 TAs
-    const tasList = [...Array.from(tas), 'DEFAULT VALUE'];
-
     const [users, setUsers] = React.useState<FireUser[]>([]);
-
-    React.useEffect(
-        () => {
-            const tas$: Observable<FireUser[]> = collectionData(
-                firestore
-                    .collection('users')
-                    .where('userId', 'in', tasList),
-                'userId'
-            );
-
-            const subscription = tas$.subscribe(u => setUsers(u));
-            return () => subscription.unsubscribe();
-        },
-        [tasList.join('')]
-    );
+    React.useEffect(() => {
+        getUsers(props.sessions).then(latestUsers => setUsers(latestUsers));
+    }, [props.sessions]);
 
     if (props.sessions.length === 0) {
         return (
@@ -82,7 +73,7 @@ const ProfessorCalendarRow = (props: {
                             {moment(props.sessions[i].endTime.seconds * 1000).format('h:mm A')}
                         </td>
                         <td>
-                            {props.sessions[i].tas.map(taId => nameOfTaId(taId.id))}
+                            {props.sessions[i].tas.map(taId => nameOfTaId(taId)).join(', ')}
                         </td>
                         <td>{props.sessions[i].building} {props.sessions[i].room}</td>
                         <td>
@@ -124,11 +115,7 @@ const ProfessorCalendarRow = (props: {
             );
         }
     );
-    return (
-        <>
-            {rows}
-        </>
-    );
+    return <>{rows}</>;
 };
 
 export default ProfessorCalendarRow;

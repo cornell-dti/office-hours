@@ -1,6 +1,8 @@
 import * as React from 'react';
 import moment from 'moment';
 import { Checkbox } from 'semantic-ui-react';
+import { firestore } from '../../firebase';
+import { deleteSeries } from '../../firebasefunctions';
 
 // const DELETE_SESSION = gql`
 //     mutation DeleteSession($_sessionId: Int!) {
@@ -21,13 +23,13 @@ import { Checkbox } from 'semantic-ui-react';
 class ProfessorOHInfoDelete extends React.Component {
 
     props!: {
-        session: FireSession,
-        toggleDelete: Function,
-        toggleEdit: Function,
+        session: FireSession;
+        toggleDelete: Function;
+        toggleEdit: Function;
     };
 
     state!: {
-        isChecked: boolean
+        isChecked: boolean;
     };
 
     constructor(props: {}) {
@@ -36,8 +38,6 @@ class ProfessorOHInfoDelete extends React.Component {
             isChecked: false
         };
         this.toggleCheckbox = this.toggleCheckbox.bind(this);
-        this._onClickDeleteSession = this._onClickDeleteSession.bind(this);
-        this._onClickDeleteSeries = this._onClickDeleteSeries.bind(this);
     }
 
     toggleCheckbox() {
@@ -46,31 +46,26 @@ class ProfessorOHInfoDelete extends React.Component {
         });
     }
 
-    _onClickDeleteSession(event: React.MouseEvent<HTMLElement>, DeleteSession: Function) {
-        DeleteSession({
-            variables: {
-                _sessionId: this.props.session.sessionId
+    _deleteSessionOrSeries = () => {
+        if (this.state.isChecked) {
+            const { sessionSeriesId } = this.props.session;
+            if (sessionSeriesId !== undefined) {
+                deleteSeries(firestore, sessionSeriesId);
             }
-        });
-    }
-
-    _onClickDeleteSeries(event: React.MouseEvent<HTMLElement>, DeleteSeries: Function) {
-        DeleteSeries({
-            variables: {
-                _seriesId: this.props.session.sessionSeriesId
-            }
-        });
-    }
+        } else {
+            firestore.collection('sessions').doc(this.props.session.sessionId).delete();
+        }
+    };
 
     render() {
         // Convert UNIX timestamps to readable time string
-        let date = moment(this.props.session.startTime).format('dddd MM/DD/YY');
-        let timeStart = moment(this.props.session.startTime).format('h:mm A');
-        let timeEnd = moment(this.props.session.endTime).format('h:mm A');
+        const date = moment(this.props.session.startTime.toDate()).format('dddd MM/DD/YY');
+        const timeStart = moment(this.props.session.startTime.toDate()).format('h:mm A');
+        const timeEnd = moment(this.props.session.endTime.toDate()).format('h:mm A');
 
-        let disable = moment(this.props.session.startTime).isBefore();
+        const disable = moment(this.props.session.startTime.toDate()).isBefore();
         // RYAN_TODO
-        let taList: string[] = [];
+        const taList: string[] = [];
         // this.props.session.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.computedName);
 
         return (
@@ -78,7 +73,7 @@ class ProfessorOHInfoDelete extends React.Component {
                 <div className="ProfessorOHInfoDelete">
                     <div className="question">
                         Are you sure you want to delete this office hour?
-                </div>
+                    </div>
                     <div className="info">
                         <div className="ta">
                             {taList.join(', ')}
@@ -112,9 +107,8 @@ class ProfessorOHInfoDelete extends React.Component {
                 </div>
                 <button
                     className="Delete"
-                    onClick={(e) => {
-                        // RYAN_TODO
-                        // this._onClickDeleteSession(e, DeleteSession);
+                    onClick={() => {
+                        this._deleteSessionOrSeries();
                         this.props.toggleDelete();
                         this.props.toggleEdit();
                     }}

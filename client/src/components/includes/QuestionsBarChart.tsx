@@ -4,21 +4,21 @@ import { Icon } from 'semantic-ui-react';
 
 class QuestionsBarChart extends React.Component {
     props!: {
-        barData: {}[],
-        yMax: number,
-        sessionKeys: string[],
+        barData: {}[];
+        yMax: number;
+        sessionKeys: string[];
         sessionDict: {
             [key: string]: {
-                ta: string,
-                questions: number,
-                answered: number,
-                startHour: string,
-                endHour: string,
-                building: string,
-                room: string
-            }
-        },
-        calcTickVals: (yMax: number) => number[]
+                ta: string;
+                questions: number;
+                answered: number;
+                startHour: string;
+                endHour: string;
+                building: string;
+                room: string;
+            };
+        };
+        calcTickVals: (yMax: number) => number[];
     };
 
     state!: {
@@ -27,7 +27,8 @@ class QuestionsBarChart extends React.Component {
     };
 
     isEmpty(obj: {}) {
-        for (let k in obj) {
+        for (const k in obj) {
+            // eslint-disable-next-line no-prototype-builtins
             if (obj.hasOwnProperty(k)) {
                 return false;
             }
@@ -36,10 +37,9 @@ class QuestionsBarChart extends React.Component {
     }
 
     createTooltipFunc(sessionId: string) {
-
         if (!(this.isEmpty(this.props.sessionDict))) {
-            let session = this.props.sessionDict[sessionId];
-            let percent = Math.round((session.answered / (session.questions)) * 100);
+            const session = this.props.sessionDict[sessionId];
+            const percent = Math.round((session.answered / (session.questions)) * 100);
             return (function (e: BarExtendedDatum) {
                 return (
                     <div className="bar-tooltip">

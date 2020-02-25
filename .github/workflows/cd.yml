@@ -1,0 +1,28 @@
+name: CD
+on:
+  push:
+    branches:
+      - develop-firebase
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+      - name: Install
+        run: yarn install
+      - name: Install for client
+        run: cd client && yarn install
+      - name: Build Client
+        run: cd client && yarn deploy
+      - name: Deploy Client
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          cd client
+          yarn firebase use default
+          yarn firebase deploy --token "$FIREBASE_TOKEN" --non-interactive --only hosting

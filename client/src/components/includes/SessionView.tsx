@@ -22,25 +22,25 @@ import { Observable } from 'rxjs';
 
 class SessionView extends React.Component {
     props!: {
-        session: FireSession,
-        course: FireCourse,
-        isDesktop: boolean,
-        backCallback: Function,
-        joinCallback: Function,
-        user: FireUser,
-        courseUser: FireCourseUser,
+        session: FireSession;
+        course: FireCourse;
+        isDesktop: boolean;
+        backCallback: Function;
+        joinCallback: Function;
+        user: FireUser;
+        courseUser: FireCourseUser;
     };
 
     state!: {
-        undoAction?: string,
-        undoName?: string,
-        undoQuestionId?: number,
-        timeoutId: number | null,
-        showAbsent: boolean
-        dismissedAbsent: boolean,
-        userId?: string,
-        questions: FireQuestion[],
-        otherActiveQuestions: boolean
+        undoAction?: string;
+        undoName?: string;
+        undoQuestionId?: number;
+        timeoutId: number | null;
+        showAbsent: boolean;
+        dismissedAbsent: boolean;
+        userId?: string;
+        questions: FireQuestion[];
+        otherActiveQuestions: boolean;
     };
 
     constructor(props: {}) {
@@ -79,7 +79,7 @@ class SessionView extends React.Component {
             undoName: name,
             timeoutId: setTimeout(this.dismissUndo, 10000),
         });
-    }
+    };
 
     dismissUndo = () => {
         if (this.state.timeoutId) {
@@ -91,31 +91,29 @@ class SessionView extends React.Component {
             undoQuestionId: undefined,
             timeoutId: null,
         });
-    }
+    };
 
-    handleUndoClick = (undoQuestion: Function, refetch: Function) => {
+    handleUndoClick = (undoQuestion: Function, status: string, refetch: Function) => {
         undoQuestion({
             variables: {
                 questionId: this.state.undoQuestionId,
-                // Set question status to unresolved if it's in the assigned state
-                // Otherwise, default it to assigned
-                status: this.state.undoAction === 'assigned' ? 'unresolved' : 'assigned'
+                status: status
             }
         });
-    }
+    };
 
     isOpen = (session: FireSession, interval: number): boolean => {
         return new Date(session.startTime.toDate()) < new Date()
             && new Date(session.endTime.toDate()) > new Date();
-    }
+    };
 
     isPast = (session: FireSession): boolean => {
         return new Date() > new Date(session.endTime.toDate());
-    }
+    };
 
     getOpeningTime = (session: FireSession, interval: number): Date => {
         return new Date(new Date(session.startTime.toDate()).getTime() - interval * 1000);
-    }
+    };
 
     componentDidMount() {
         let otherQuestions = false;
@@ -135,17 +133,24 @@ class SessionView extends React.Component {
 
     render() {
         let undoText = '';
+        let undoStatus = 'unresolved';
         if (this.state.undoAction) {
             if (this.state.undoAction === 'resolved') {
                 undoText = this.state.undoName + ' has been resolved! ';
+                undoStatus = 'assigned';
             } else if (this.state.undoAction === 'no-show') {
                 undoText = this.state.undoName + ' has been marked as a no-show. ';
+                undoStatus = 'assigned';
             } else if (this.state.undoAction === 'retracted') {
                 undoText = 'You have removed your question. ';
+                undoStatus = 'unresolved';
             } else if (this.state.undoAction === 'assigned') {
                 undoText = this.state.undoName + ' has been assigned to you! ';
+                undoStatus = 'unresolved';
             }
         }
+
+        // RYAN_TODO: check master for production behavior.
 
         // const questionsRef = firestore.collection('questions');
 

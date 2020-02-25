@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-delimiter-style */
 import * as React from 'react';
 import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
@@ -114,13 +115,13 @@ class SessionQuestion extends React.Component<Props> {
             });
             setTimeout(() => { this.state.isEditingLocation = false; }, 100);
         }
-    }
+    };
 
     toggleLocationTooltip = () => {
         this.setState({
             showLocation: !this.state.showLocation
         });
-    }
+    };
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
@@ -135,18 +136,11 @@ class SessionQuestion extends React.Component<Props> {
             status,
             this.state.asker ? this.state.asker.firstName + ' ' + this.state.asker.lastName : 'unknown'
         );
-    }
+    };
 
     setDotMenu = (status: boolean) => {
         this.setState({ showDotMenu: status });
-    }
-
-    // triggerUndoDontKnow = (questionId: number, name: string) => {
-    //     this.setState({
-    //         undoQuestionIdDontKnow: questionId,
-    //         undoName: name,
-    //     });
-    // }
+    };
 
     handleUndoDontKnow = (questionId: number, UndoDontKnow: Function) => {
         UndoDontKnow({
@@ -155,10 +149,10 @@ class SessionQuestion extends React.Component<Props> {
                 status: 'unresolved'
             }
         });
-    }
+    };
 
     render() {
-        let question = this.props.question;
+        const question = this.props.question;
         const studentCSS = this.props.isTA ? '' : ' Student';
         const includeBookmark = this.props.question.askerId.id === this.props.myUserId;
 
@@ -211,13 +205,17 @@ class SessionQuestion extends React.Component<Props> {
                 <div className="QuestionInfo">
                     {this.props.isTA && this.state.asker &&
                         <div className="studentInformation">
-                            <img src={this.state.asker.photoUrl} />
+                            <img
+                                src={this.state.asker === undefined
+                                    ? '/placeholder.png'
+                                    : this.state.asker.photoUrl}
+                            />
                             <span className="Name">
                                 {this.state.asker.firstName + ' ' + this.state.asker.lastName}
                                 {question.status === 'assigned' &&
                                     <React.Fragment>
                                         <span className="assigned"> is assigned
-                                        {this.state.answerer &&
+                                            {this.state.answerer &&
                                                 (' to ' + (this.state.answerer.userId === this.props.myUserId
                                                     ? 'you'
                                                     : this.state.answerer.firstName + ' '
@@ -249,7 +247,7 @@ class SessionQuestion extends React.Component<Props> {
                     {question.timeEntered != null &&
                         <p className="Time">
                             posted at&nbsp;
-                        {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
+                            {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
                         </p>}
                 </div>
                 {this.props.isTA &&
@@ -284,7 +282,7 @@ class SessionQuestion extends React.Component<Props> {
                                     >
                                         ...
 
-                                            {this.state.showDotMenu &&
+                                        {this.state.showDotMenu &&
                                             <div
                                                 className="IReallyDontKnow"
                                                 tabIndex={1}
@@ -312,13 +310,14 @@ class SessionQuestion extends React.Component<Props> {
                         <hr />
                         <p
                             className="Remove"
-                        // onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
+                            // RYAN_TODO: support remove question
+                            // onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
                         >
                             <Icon name="close" /> Remove
                         </p>
                     </div>
                 }
-            </div >
+            </div>
         );
     }
 }

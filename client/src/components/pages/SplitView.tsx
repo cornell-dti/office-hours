@@ -29,14 +29,14 @@ const useWindowWidth = () => {
 };
 
 const SplitView = (props: {
-    history: H.History,
+    history: H.History;
     match: {
         params: {
-            courseId: string,
-            sessionId: string | undefined,
-            page: string | null
-        }
-    }
+            courseId: string;
+            sessionId: string | undefined;
+            page: string | null;
+        };
+    };
 }) => {
     const [activeView, setActiveView] = useState(
         props.match.params.page === 'add'

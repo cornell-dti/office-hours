@@ -21,7 +21,7 @@ const ProfessorPeopleView = (props: {
         };
     };
 }) => {
-    let courseId = props.match.params.courseId;
+    const courseId = props.match.params.courseId;
 
     const [startDate, setStartDate] = useState(moment(new Date()).add(-4, 'months'));
     const [endDate, setEndDate] = useState(moment(new Date()));
@@ -46,7 +46,7 @@ const ProfessorPeopleView = (props: {
             const s1 = sessions$.subscribe(newSessions => setSessions(newSessions));
 
             // Fetch all questions for given sessions
-            let questions$ = sessions$.pipe(
+            const questions$ = sessions$.pipe(
                 switchMap(s =>
                     combineLatest(...s.map(session =>
                         collectionData(
@@ -106,10 +106,10 @@ const ProfessorPeopleView = (props: {
         if (yMax === 0) {
             return [0];
         }
-        let end = yMax + (6 - (yMax % 6));
+        const end = yMax + (6 - (yMax % 6));
         let start = 0;
-        let step = end / 6;
-        let tickVals = [];
+        const step = end / 6;
+        const tickVals = [];
         while (end + step >= start) {
             tickVals.push(start);
             start += step;
@@ -118,16 +118,16 @@ const ProfessorPeopleView = (props: {
     };
 
     // Bar Chart
-    let sessionDict: {
+    const sessionDict: {
         [key: string]: {
-            ta: string,
-            questions: number,
-            answered: number,
-            startHour: string,
-            endHour: string,
-            building: string,
-            room: string
-        }
+            ta: string;
+            questions: number;
+            answered: number;
+            startHour: string;
+            endHour: string;
+            building: string;
+            room: string;
+        };
     } = {};
 
     sessions.forEach((t, i) => {
@@ -143,12 +143,12 @@ const ProfessorPeopleView = (props: {
         };
     });
 
-    let barGraphData = sessions.map((s, i) => ({ [s.sessionId]: questions[i] ? questions[i].length : 0 }));
+    const barGraphData = sessions.map((s, i) => ({ [s.sessionId]: questions[i] ? questions[i].length : 0 }));
 
-    const chartYMax = questions[busiestSessionIndex] && questions[busiestSessionIndex].length || 0;
+    const chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
     return (
         <div className="ProfessorView">
-            <ProfessorSidebar courseId={courseId} code={course && course.code || 'Loading'} selected={3} />
+            <ProfessorSidebar courseId={courseId} code={(course && course.code) || 'Loading'} selected={3} />
             <TopBar courseId={courseId} user={user} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 <div className="main">

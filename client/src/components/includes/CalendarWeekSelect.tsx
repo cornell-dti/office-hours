@@ -1,36 +1,30 @@
 import * as React from 'react';
-const chevron = require('../../media/chevron.svg');
+import chevron from '../../media/chevron.svg';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 
-class CalendarWeekSelect extends React.Component {
+const monthNames = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+];
 
-    monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+type Props = {
+    handleClick?: Function;
+    selectedWeekEpoch?: number;
+};
+type State = { selectedWeekEpoch: number };
 
-    props!: {
-        handleClick?: Function,
-        selectedWeekEpoch?: number,
-    };
-
-    state!: {
-        selectedWeekEpoch: number
-    };
-
-    constructor(props: {
-        handleClick?: Function,
-        selectedWeekEpoch?: number,
-    }) {
+class CalendarWeekSelect extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
-        console.log(props);
         if (props.selectedWeekEpoch) {
             this.state = {
                 selectedWeekEpoch: props.selectedWeekEpoch,
             };
         } else {
-            let week = new Date();
+            const week = new Date();
             week.setHours(0, 0, 0, 0);
-            let daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
+            const daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
             week.setTime(week.getTime() - daysSinceMonday * ONE_DAY); // beginning of this week's Monday
             this.state = {
                 selectedWeekEpoch: week.getTime()
@@ -51,12 +45,12 @@ class CalendarWeekSelect extends React.Component {
     // }
 
     getMonth(epoch: number): string {
-        let now = new Date(epoch);
-        return this.monthNames[now.getMonth()];
+        const now = new Date(epoch);
+        return monthNames[now.getMonth()];
     }
 
     getDay(epoch: number): number {
-        let now = new Date(epoch);
+        const now = new Date(epoch);
         return now.getDate();
     }
 
