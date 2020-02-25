@@ -46,7 +46,7 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: Props) => {
             const enrichedChildTags: (FireTag & { questionCount: number; resolvedQuestionCount: number })[] = tags
                 .filter(t => t.parentTag && t.parentTag.id === tag.tagId)
                 .map(t => {
-                    const tagQuestions = questions.filter(q => q.secondaryTag.id === t.tagId);
+                    const tagQuestions = questions.filter(q => q.secondaryTag === t.tagId);
                     return {
                         ...t,
                         questionCount: tagQuestions.length,

@@ -53,6 +53,11 @@ class AddQuestion extends React.Component {
             redirect: false,
             tags: []
         };
+    }
+
+    // Keep window size in state for conditional rendering
+    componentDidMount() {
+        window.addEventListener('resize', this.updateWindowDimensions);
 
         const tags$ = collectionData(
             firestore
@@ -62,11 +67,6 @@ class AddQuestion extends React.Component {
         );
 
         tags$.subscribe((tags) => this.setState({ tags }));
-    }
-
-    // Keep window size in state for conditional rendering
-    componentDidMount() {
-        window.addEventListener('resize', this.updateWindowDimensions);
     }
 
     componentWillUnmount() {

@@ -60,16 +60,16 @@ interface FireUser {
 }
 
 interface FireQuestion {
-    askerId: firebase.firestore.DocumentReference;
-    answererId: firebase.firestore.DocumentReference;
+    askerId: string;
+    answererId: string;
     content: string;
     location: string;
-    sessionId: firebase.firestore.DocumentReference;
+    sessionId: string;
     status: 'assigned' | 'resolved' | 'retracted' | 'unresolved';
     timeAddressed: FireTimestamp;
     timeEntered: FireTimestamp;
-    primaryTag: firebase.firestore.DocumentReference;
-    secondaryTag: firebase.firestore.DocumentReference;
+    primaryTag: string;
+    secondaryTag: string;
     questionId: string;
 }
 
