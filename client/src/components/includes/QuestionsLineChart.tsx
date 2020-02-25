@@ -10,36 +10,20 @@ type Props = {
     calcTickVals: (yMax: number) => number[];
 };
 
-type State = { data: LineSerieData[] };
-
-class QuestionsLineChart extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            data: [
-                {
-                    'id': 'questions',
-                    'color': 'hsl(100, 20%, 34%)',
-                    'data': this.props.lineData
-                }
-            ] as LineSerieData[]
-        };
-    }
-
+class QuestionsLineChart extends React.Component<Props> {
     render() {
+        const data: LineSerieData[] = [
+            {
+                'id': 'questions',
+                'color': 'hsl(100, 20%, 34%)',
+                'data': this.props.lineData
+            }
+        ];
         return (
             <div className="QuestionsLineChart" style={{ height: 300 }}>
                 <ResponsiveLine
                     colors="#979797"
-                    data={(this.state = {
-                        data: [
-                            {
-                                'id': 'questions',
-                                'color': 'hsl(100, 20%, 34%)',
-                                'data': this.props.lineData
-                            }
-                        ] as LineSerieData[]
-                    }, this.state.data)}
+                    data={data}
                     margin={{
                         'top': 20,
                         'right': 20,
