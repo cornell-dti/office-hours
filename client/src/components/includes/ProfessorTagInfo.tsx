@@ -87,13 +87,15 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             level: 1,
             name: this.state.tag.name
         });
+
+        // converts reference parentTag to the string format stored in state
         this.setState(function (prevState) {
             prevState.tag.tagId = parentTag.id;
             return { tag: prevState.tag };
         });
 
         // below is essentially add new child a bunch of times
-        this.state.newTags.forEach((tagText) => {
+        this.state.newTags.forEach(tagText => {
             var childTag = firestore.collection("tags").doc();
             batch.set(childTag, {
                 active: this.state.tag.active,
@@ -107,19 +109,60 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         batch.commit()
             .then(function () {
                 // Successful upload
-                console.log("batch successful");
+                console.log("batch create successful");
             })
             .catch(function (error: string) {
                 // Unsuccessful upload
                 console.log(error);
-                console.log("batch did not work");
+                console.log("batch create did not work");
             });
     }
 
     handleEditAssignment = (): void => {
-        console.log('RYAN_TODO update tag and children');
-        // firestore.collection('tags').doc(id).delete()
-        //not sure about this yet!
+        // console.log('RYAN_TODO update tag and children');
+        var batch = firestore.batch();
+
+        const parentTag = firestore.collection("tags").doc(this.state.tag.tagId);
+
+        // deals w/ case where parent tag name is changed
+        // no checking yet, like if A1 is changed to A0 but A0 already exists
+        if (this.props.tag && this.state.tag.name !== this.props.tag.name) {
+            batch.update(parentTag, { name: this.state.tag.name })
+        }
+
+        // deleted tags
+        this.props.childTags
+            .filter(firetag => !this.state.newTags.includes(firetag.name))
+            .forEach(tag =>
+                batch.delete(firestore.collection('tags').doc(tag.tagId)));
+
+        // new tags
+        const preexistingTags = this.props.childTags
+            .filter(firetag => this.state.newTags.includes(firetag.name))
+            .map(firetag => firetag.name);
+        this.state.newTags
+            .filter(tag => preexistingTags.includes(tag))
+            .forEach(tagText => {
+                var childTag = firestore.collection("tags").doc();
+                batch.set(childTag, {
+                    active: this.state.tag.active,
+                    courseId: this.state.tag.courseId,
+                    level: 2,
+                    name: tagText,
+                    parentTag: parentTag
+                });
+            });
+
+        batch.commit()
+            .then(function () {
+                // Successful upload
+                console.log("batch edit successful");
+            })
+            .catch(function (error: string) {
+                // Unsuccessful upload
+                console.log(error);
+                console.log("batch edit did not work");
+            });
     }
 
     handleEnterPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -130,7 +173,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
 
     render() {
         return (
-            <React.Fragment>
+            <React.Fragment >
                 <div className="ProfessorTagInfo">
                     <div className="Assignment InputSection">
                         <div className="InputHeader">Assignment Name</div>
@@ -214,7 +257,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                         </button>
                     }
                 </div>
-            </React.Fragment>
+            </React.Fragment >
         );
     }
 }
