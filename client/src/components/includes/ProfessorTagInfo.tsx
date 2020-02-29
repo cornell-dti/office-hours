@@ -34,11 +34,10 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     }
 
     componentWillReceiveProps(props: PropTypes) {
-        //check if need to deal with childTags: FireTag[]
-        //I think we might not be able to use batch() if there are existing children
         if (props.tag) {
             this.setState({
-                tag: props.tag
+                tag: props.tag,
+                newTags: props.childTags.map(firetag => firetag.name)
             });
         }
     }
@@ -61,13 +60,26 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         this.setState({ tag: newState });
     }
 
-    helperAddMultipleNewChildTags(newTags: string[]) {
-        // possibly changing the input to be ()
-        // take newTags from this.state.newTags
-        // will need to update this.state.new
+    handleNewTagEnter = (): void => {
+        if (this.state.newTagText.length === 0) {
+            return;
+        }
+        this.setState(prevState => ({
+            newTags: [...prevState.newTags, prevState.newTagText],
+            newTagText: ''
+        }));
+    }
+
+    handleRemoveChildTag = (name: string): void => {
+        this.setState(prevState => ({
+            newTags: prevState.newTags.filter(tag => tag !== name)
+        }));
+    }
+
+    handleCreateAssignment = (): void => {
         var batch = firestore.batch();
 
-        // need to create this first so the children tags have the doc reference
+        // need to create this first so the child tags have the doc reference
         var parentTag = firestore.collection("tags").doc();
         batch.set(parentTag, {
             active: this.state.tag.active,
@@ -75,14 +87,13 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             level: 1,
             name: this.state.tag.name
         });
-        // this.setState({ (this.state.tag.tagId): parentTag.id })
-        // not sure how I want to update this
-        // because we create the ref to the parent/level 1 tag,
-        // we should be able to update the state to include it but it might
-        // not even be necessary
+        this.setState(function (prevState) {
+            prevState.tag.tagId = parentTag.id;
+            return { tag: prevState.tag };
+        });
 
-        // below is essentially helperAddNewChildTag
-        newTags.forEach((tagText) => {
+        // below is essentially add new child a bunch of times
+        this.state.newTags.forEach((tagText) => {
             var childTag = firestore.collection("tags").doc();
             batch.set(childTag, {
                 active: this.state.tag.active,
@@ -105,74 +116,9 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             });
     }
 
-    // this will be unused once batch writes are in place with confirm/submit
-    // buttons functioning, same with handleRemoveChildTag
-    helperAddNewChildTag(newTag: FireTag) {
-        firestore.collection('tags').add({
-            active: newTag.active,
-            courseId: newTag.courseId,
-            level: newTag.level,
-            name: newTag.name,
-            parentTag: typeof newTag.parentTag === 'undefined' ? null : newTag.parentTag
-        })
-            .then(function () {
-                // Successful upload
-                // console.log("upload successful");
-            })
-            .catch(function (error: string) {
-                // Unsuccessful upload
-                // console.log(error);
-                // console.log("did not work");
-            });
-    }
-
-    handleNewTagEnter = (): void => {
-        if (this.state.newTagText.length === 0) {
-            return;
-        }
-        // let newTag: FireTag = {
-        //     active: true,
-        //     level: 2,
-        //     tagId: '',
-        //     name: this.state.newTagText,
-        //     courseId: firestore.collection('courses').doc(this.props.courseId)
-        // };
-        // this.helperAddNewChildTag(newTag);
-
-        // update state.newTags: string[] to include the newTagText below and then
-        // also update state.newTagText to be ''
-        // this.setState({ newTagText: '' });
-        this.setState(s => ({
-            newTags: [...s.newTags, s.newTagText],
-            newTagText: ''
-        }));
-    }
-
-    // this will be unused once batch writes are in place with confirm/submit
-    // buttons functioning, somehow need a way to store which tags we want deleted
-    // and figure out the details specifically of keeping the others intact
-    // probably also just using a batch delete
-    handleRemoveChildTag = (id: string): void => {
-        firestore.collection('tags').doc(id).delete()
-            .then(function () {
-                // Successful delete 
-                // console.log("delete successful");
-            })
-            .catch(function (error: string) {
-                // Unsuccessful delete
-                // console.log(error);
-                // console.log("delete did not work");
-            });
-    }
-
-    handleCreateAssignment = (): void => {
-        console.log('RYAN_TODO create tag and children');
-        this.helperAddMultipleNewChildTags(this.state.newTags);
-        //might just rename the function above to deal with this
-    }
-
     handleEditAssignment = (): void => {
         console.log('RYAN_TODO update tag and children');
+        // firestore.collection('tags').doc(id).delete()
         //not sure about this yet!
     }
 
@@ -222,7 +168,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                                     <Icon
                                         className="Remove"
                                         name="close"
-                                        onClick={() => this.handleRemoveChildTag(childTag.tagId)}
+                                        onClick={() => this.handleRemoveChildTag(childTag.name)}
                                     />
                                 </div>
                             ))
