@@ -203,15 +203,14 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                     </div>
                     <div className="ChildTags InputSection" onKeyDown={(e) => this.handleEnterPress(e)}>
                         <div className="InputHeader">Tags</div>
-                        {this.props.childTags
-                            .filter((childTag) => childTag.active)
+                        {this.state.newTags
                             .map((childTag, i) => (
                                 <div key={i} className="SelectedChildTag" >
-                                    {childTag.name}
+                                    {childTag}
                                     <Icon
                                         className="Remove"
                                         name="close"
-                                        onClick={() => this.handleRemoveChildTag(childTag.name)}
+                                        onClick={() => this.handleRemoveChildTag(name)}
                                     />
                                 </div>
                             ))
@@ -248,10 +247,10 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                         :
                         <button
                             className="Bottom Edit"
-                        // onClick={() => {
-                        //     this.handleEditAssignment();
-                        //     this.props.cancelCallback();
-                        // }}
+                            onClick={() => {
+                                this.handleEditAssignment();
+                                this.props.cancelCallback();
+                            }}
                         >
                             Save Changes
                         </button>
