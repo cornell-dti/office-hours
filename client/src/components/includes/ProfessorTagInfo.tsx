@@ -2,61 +2,43 @@ import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
 
-class ProfessorTagInfo extends React.Component {
-    props!: {
-        isNew: boolean
-        cancelCallback: Function
-        tag?: FireTag
-        courseId: string
-        childTags: FireTag[]
-    };
+type PropTypes = {
+    isNew: boolean
+    cancelCallback: Function
+    tag?: FireTag
+    courseId: string
+    childTags: FireTag[]
+}
 
-    state!: {
-        tag: FireTag
-        newTagText: string
-        newTags: string[]
-    };
+type State = {
+    tag: FireTag
+    newTagText: string
+    newTags: string[]
+}
 
-    constructor(props: {
-        isNew: boolean
-        cancelCallback: Function
-        tag?: FireTag
-        courseId: string
-        childTags: FireTag[]
-    }) {
+class ProfessorTagInfo extends React.Component<PropTypes, State> {
+
+    constructor(props: PropTypes) {
         super(props);
         this.state = {
             tag: {
-                courseId: firestore.collection('courses').doc(props.courseId),
-                level: 1,
                 active: true,
-                tagId: '', // new tag
-                name: ''
+                level: 1,
+                tagId: '',
+                name: '',
+                courseId: firestore.collection("courses").doc(props.courseId)
             },
-            newTagText: '',
+            newTagText: "",
             newTags: []
         };
     }
 
-    componentWillReceiveProps(props: { tag?: FireTag }) {
+    componentWillReceiveProps(props: PropTypes) {
         //check if need to deal with childTags: FireTag[]
         //I think we might not be able to use batch() if there are existing children
         if (props.tag) {
             this.setState({
-                tag: props.tag,
-                newTagText: '',
-                newTags: [] // TO DO: check if this should be [] or childTags or soemthing like that
-            });
-        } else {
-            this.setState({
-                tag: {
-                    level: 1,
-                    active: true,
-                    tagId: '', // new tag
-                    name: ''
-                },
-                newTagText: '',
-                newTags: []
+                tag: props.tag
             });
         }
     }
@@ -159,7 +141,11 @@ class ProfessorTagInfo extends React.Component {
 
         // update state.newTags: string[] to include the newTagText below and then
         // also update state.newTagText to be ''
-        this.setState({ newTagText: '' });
+        // this.setState({ newTagText: '' });
+        this.setState(s => ({
+            newTags: [...s.newTags, s.newTagText],
+            newTagText: ''
+        }));
     }
 
     // this will be unused once batch writes are in place with confirm/submit
