@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 
-class CourseCard extends React.Component {
-    props: {
-        course: AppCourse,
-        role: string,
-        selectCourse?: Function, // If not provided, default to redirection to the course's page
-        selected?: boolean
-    };
+type Props = {
+    course: FireCourse;
+    role: string;
+    selectCourse?: Function; // If not provided, default to redirection to the course's page
+    selected?: boolean;
+};
 
+class CourseCard extends React.Component<Props> {
     componentDidMount() {
         if (this.props.selectCourse && this.props.role !== 'student') {
             this.props.selectCourse(this.props.course, true);
@@ -17,7 +17,7 @@ class CourseCard extends React.Component {
 
     redirect = (href: string) => {
         document.location.href = href;
-    }
+    };
 
     render() {
         let role = '';

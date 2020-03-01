@@ -1,12 +1,13 @@
 import * as React from 'react';
 import TopBar from '../includes/TopBar';
-import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
-const QMeLogo = require('../../media/QLogo2.svg');
+// import gql from 'graphql-tag';
+// import { Query } from 'react-apollo';
+import QMeLogo from '../../media/QLogo2.svg';
 import CourseCard from '../includes/CourseCard';
 
 const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 1);
 
+/*
 const METADATA_QUERY = gql`
 query GetMetadata {
     apiGetCurrentUser {
@@ -41,44 +42,29 @@ interface CoursesData {
 }
 
 class CoursesDataQuery extends Query<CoursesData> { }
+*/
 
-class CourseSelection extends React.Component {
-    props: {
-        isEdit: boolean;
+type Props = { isEdit: boolean };
+type State = { selectedCourses: readonly FireCourse[] };
+
+class CourseSelection extends React.Component<Props, State> {
+    state: State = { selectedCourses: [] };
+
+    selectCourse = (course: FireCourse, addCourse: boolean) => {
+        this.setState(({ selectedCourses }) => ({
+            selectedCourses: addCourse
+                ? [...selectedCourses, course]
+                : selectedCourses.filter(c => c !== course)
+        }));
     };
-
-    state: {
-        selectedCourses: AppCourse[];
-    };
-
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            selectedCourses: []
-        };
-
-        this.selectCourse = this.selectCourse.bind(this);
-    }
-
-    selectCourse(course: AppCourse, addCourse: boolean) {
-        var updatedCourses = this.state.selectedCourses;
-        if (addCourse) {
-            updatedCourses.push(course);
-        } else {
-            updatedCourses = updatedCourses.filter(c => c !== course);
-        }
-        this.setState({
-            selectedCourses: updatedCourses
-        });
-    }
 
     render() {
-        let selectedCourses = this.state.selectedCourses.length === 0 ?
+        const selectedCourses = this.state.selectedCourses.length === 0 ?
             'No Classes Chosen' : this.state.selectedCourses.map(c => c.code).join(', ');
 
         return (
             <div>
-                <CoursesDataQuery
+                {/*<CoursesDataQuery
                     query={METADATA_QUERY}
                 >
                     {({ loading, data }) => {
@@ -131,7 +117,7 @@ class CourseSelection extends React.Component {
                             </div>
                         );
                     }}
-                </CoursesDataQuery>
+                </CoursesDataQuery> */}
                 {this.props.isEdit && <div className="EnrollBar">
                     <div className="EnrolledCourses web">
                         {selectedCourses}
