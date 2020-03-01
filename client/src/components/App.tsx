@@ -12,6 +12,8 @@ import ProfessorTagsView from './pages/ProfessorTagsView';
 import ProfessorRoles from './pages/ProfessorRoles';
 import ProfessorDashboardView from './pages/ProfessorDashboardView';
 import ProfessorPeopleView from './pages/ProfessorPeopleView';
+import CourseEditView from './pages/CourseEditView';
+import CourseSelectionView from './pages/CourseSelectionView';
 import { Analytics } from './includes/Analytics';
 import { Loader } from 'semantic-ui-react';
 import { userUpload } from '../firebasefunctions';
@@ -84,12 +86,16 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: PrivateRouteProp
     return <Redirect to={{ pathname: '/login' }} />;
 };
 
+// RYAN_TODO: make edit and home private route.
+
 const App = () => (
     <Router>
         <div className="App">
             <Route path="/" component={Analytics} />
             <Switch>
                 <Route path="/login" component={LoginView} />
+                <Route path="/edit" component={CourseEditView} />
+                <Route path="/home" component={CourseSelectionView} />
                 <PrivateRoute
                     path="/professor-tags/course/:courseId"
                     component={ProfessorTagsView}

@@ -57,6 +57,13 @@ export default ({ currentCourseCode, role, avatar }: Props): React.ReactElement 
                                 </a>
                             </li>
                         )}
+                        {role && role !== 'professor' && (
+                            <li>
+                                <a className="editClasses" href={'/edit'}>
+                                    Edit Classes
+                                </a>
+                            </li>
+                        )}
                     </ul>
                 }
             </div>
