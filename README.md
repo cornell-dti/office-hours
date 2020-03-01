@@ -27,6 +27,15 @@ _Screenshots showing major parts of app_
 
 ## Contributors
 
+### 2020-21
+* **Vanessa Wang** - Software Developer
+* **Connie Lei** - Software Developer
+* **Guanqun Wu** - Software Developer
+* **Ashley Ticzon** - Designer
+* **Jalil Evans** - Designer
+* **Sophia Wang** - Product Manager
+* **Scott Wang** - Technical Project Manager
+
 ### 2019-20
 * **Vanessa Wang** - Software Developer
 * **Connie Lei** - Software Developer
@@ -37,7 +46,7 @@ _Screenshots showing major parts of app_
 * **Jalil Evans** - Designer
 * **Sophia Wang** - Product Manager
 * **Bobby Villaluz** - Technical Project Manager
-
+`
 ### 2018-19
 * **Vanessa Wang** - Software Developer
 * **Shefali Agarwal** - Software Developer

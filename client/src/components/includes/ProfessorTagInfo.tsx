@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-delimiter-style */
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
@@ -43,22 +44,22 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     }
 
     handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        let newState = Object.assign({}, this.state.tag);
+        const newState = Object.assign({}, this.state.tag);
         const target = event.target;
         newState.name = target.value;
         this.setState({ tag: newState });
-    }
+    };
 
     handleNewTagTextChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const target = event.target;
         this.setState({ newTagText: target.value });
-    }
+    };
 
     handleActiveChange = (active: boolean): void => {
-        let newState = Object.assign({}, this.state.tag);
+        const newState = Object.assign({}, this.state.tag);
         newState.active = active;
         this.setState({ tag: newState });
-    }
+    };
 
     handleNewTagEnter = (): void => {
         if (this.state.newTagText.length === 0) {
@@ -169,7 +170,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         if (e.key === 'Enter') {
             this.handleNewTagEnter();
         }
-    }
+    };
 
     render() {
         return (

@@ -1,44 +1,18 @@
 import * as React from 'react';
 import { ResponsiveBar, BarDatum } from '@nivo/bar';
 
-class TagsBarChart extends React.Component {
-    props!: {
-        barData: {}[],
-        yMax: number,
-        calcTickVals: (yMax: number) => number[]
-    };
+type Props = {
+    barData: BarDatum[];
+    yMax: number;
+    calcTickVals: (yMax: number) => number[];
+};
 
-    state!: {
-        data: BarDatum[];
-    };
-
-    constructor(props: {
-        barData: {}[],
-        yMax: number,
-        calcTickVals: (yMax: number) => number[]
-    }) {
-        super(props);
-        this.state = {
-            data: props.barData as BarDatum[]
-        };
-    }
-
-    isEmpty(obj: {}) {
-        for (let k in obj) {
-            if (obj.hasOwnProperty(k)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
+class TagsBarChart extends React.Component<Props> {
     render() {
         return (
             <div className="TagsBarChart" style={{ height: 300 }}>
                 <ResponsiveBar
-                    data={(this.state = {
-                        data: this.props.barData as BarDatum[],
-                    }, this.state.data)}
+                    data={this.props.barData}
                     indexBy="name"
                     margin={{
                         'top': 5,

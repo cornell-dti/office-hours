@@ -6,10 +6,11 @@ import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import AddQuestion from '../includes/AddQuestion';
 
-import { useCourse, useSession, useMyCourseUser, useMyUser } from '../../firehooks';
+import { useCourse, useSession, useMyCourseUser, useMyUser, useQuery } from '../../firehooks';
 
 import TopBar from '../includes/TopBar';
 import { Loader } from 'semantic-ui-react';
+import { firestore } from '../../firebase';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -28,15 +29,17 @@ const useWindowWidth = () => {
     return width;
 };
 
+const getQuestionsQuery = (sessionId: string) => firestore.collection('questions').where('sessionId', '==', sessionId);
+
 const SplitView = (props: {
-    history: H.History,
+    history: H.History;
     match: {
         params: {
-            courseId: string,
-            sessionId: string | undefined,
-            page: string | null
-        }
-    }
+            courseId: string;
+            sessionId: string | undefined;
+            page: string | null;
+        };
+    };
 }) => {
     const [activeView, setActiveView] = useState(
         props.match.params.page === 'add'
@@ -48,6 +51,8 @@ const SplitView = (props: {
     const user = useMyUser();
     const course = useCourse(props.match.params.courseId);
     const session = useSession(props.match.params.sessionId);
+    const sessionQuestions =
+        useQuery<FireQuestion>(props.match.params.sessionId || '', getQuestionsQuery, 'questionId');
     const width = useWindowWidth();
 
     // Handle browser back button
@@ -99,6 +104,7 @@ const SplitView = (props: {
                         course={course}
                         courseUser={courseUser}
                         session={session}
+                        questions={sessionQuestions}
                         user={user}
                         isDesktop={width > MOBILE_BREAKPOINT}
                         backCallback={handleBackClick}

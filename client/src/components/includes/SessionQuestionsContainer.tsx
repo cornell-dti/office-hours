@@ -3,28 +3,35 @@ import SessionQuestion from './SessionQuestion';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
 
+const SHOW_FEEDBACK_QUEUE = 4;
+
 class SessionQuestionsContainer extends React.Component {
     props!: {
-        isTA: boolean,
-        questions: FireQuestion[],
-        myUserId: string,
-        handleJoinClick: Function,
-        triggerUndo: Function,
-        isOpen: boolean,
-        isPast: boolean,
-        openingTime: Date,
-        haveAnotherQuestion: boolean,
+        isTA: boolean;
+        questions: FireQuestion[];
+        myUserId: string;
+        handleJoinClick: Function;
+        triggerUndo: Function;
+        isOpen: boolean;
+        isPast: boolean;
+        openingTime: Date;
+        haveAnotherQuestion: boolean;
     };
 
     state!: {
-        sentNotification: boolean
+        sentNotification: boolean;
     };
+
+    constructor(props: {}) {
+        super(props);
+        this.state = {
+            sentNotification: window.localStorage.getItem('questionUpNotif') === 'sent' || false,
+        };
+    }
 
     componentDidMount() {
         try {
             // Request permission to send desktop notifications
-            // @ts-ignore Permission is added in TS 3.0, remove then
-            // https://github.com/Microsoft/TypeScript/issues/14701
             if (Notification.permission === 'default') {
                 Notification.requestPermission();
             }
@@ -33,40 +40,29 @@ class SessionQuestionsContainer extends React.Component {
         }
     }
 
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            sentNotification: false,
-        };
-    }
-
     render() {
         const questions = this.props.questions;
         // If the user has questions, store them in myQuestion[]
-        const myQuestion = questions && questions.filter(q => q.askerId.id === this.props.myUserId);
+        const myQuestion = questions && questions.filter(q => q.askerId === this.props.myUserId);
         // Make sure that the data has loaded and user has a question
         if (questions && myQuestion && myQuestion.length > 0) {
             // Get user's position in queue (0 indexed)
-            let myQuestionIndex = questions.indexOf(myQuestion[0]);
-            // Check how many questions ahead of the user are in progress
-            let numProgressQuestions = questions.slice(0, myQuestionIndex).reduce(
-                (isProgress, question) => isProgress + (question.status === 'assigned' ? 1 : 0), 0
-            );
-            // Calculate question index by subtracting number of progress questions
-            myQuestionIndex -= numProgressQuestions;
+            const myQuestionIndex = questions.indexOf(myQuestion[0]);
             // Update tab with user position
             document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
             // if user is up and we haven't already sent a notification, send one.
             if (myQuestionIndex === 0 && !this.state.sentNotification) {
+                window.localStorage.setItem('questionUpNotif', 'sent');
                 this.setState({ sentNotification: true });
                 try {
-                    let n = new Notification('Your question is up!');
+                    const n = new Notification('Your question is up!');
                     setTimeout(n.close.bind(n), 4000);
                 } catch (error) {
                     // Do nothing. iOS crashes because Notification isn't defined
                 }
                 // If next render, the user isn't at 0 anymore, reset state
             } else if (myQuestionIndex !== 0 && this.state.sentNotification) {
+                window.localStorage.setItem('questionUpNotif', '');
                 this.setState({ sentNotification: false });
             }
         } else if (this.props.isTA && questions) {
@@ -83,7 +79,12 @@ class SessionQuestionsContainer extends React.Component {
             <div className="SessionQuestionsContainer splitQuestions" >
                 {!this.props.isTA && myQuestion && myQuestion.length === 0 && this.props.isOpen
                     && !this.props.haveAnotherQuestion &&
-                    <div className="SessionJoinButton" onClick={() => this.props.handleJoinClick()}>
+                    <div
+                        className="SessionJoinButton"
+                        onClick={() =>
+                            this.props.handleJoinClick(questions && myQuestion
+                                && questions.indexOf(myQuestion[0]) > SHOW_FEEDBACK_QUEUE)}
+                    >
                         <p><Icon name="plus" /> Join the Queue</p>
                     </div>
                 }

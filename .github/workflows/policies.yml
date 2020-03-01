@@ -1,0 +1,11 @@
+name: Policies
+on: pull_request
+
+jobs:
+  warn-big-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: cornell-dti/big-diff-warning@master
+        env:
+          BOT_TOKEN: '${{ secrets.BOT_TOKEN }}'

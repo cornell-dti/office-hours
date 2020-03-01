@@ -1,58 +1,26 @@
 import * as React from 'react';
 import { ResponsivePie, PieDatum } from '@nivo/pie';
 
-class QuestionsPieChart extends React.Component {
-    props!: {
-        percentResolved: number,
-        percentUnresolved: number
-    };
+type Props = { percentResolved: number; percentUnresolved: number };
 
-    state!: {
-        data: PieDatum[];
-    };
-
-    constructor(props: {
-        percentResolved: number,
-        percentUnresolved: number
-    }) {
-        super(props);
-        this.state = {
-            data: [
-                {
-                    'id': '% Unanswered',
-                    'value': this.props.percentUnresolved,
-                    'key': 'no-answer',
-                    'color': 'rgba(65, 129, 227, 0.5)'
-                },
-                {
-                    'id': '% Answered',
-                    'value': this.props.percentResolved,
-                    'key': 'answer',
-                    'color': 'rgba(65, 100, 227, 0.5)'
-                }
-            ] as PieDatum[]
-        };
-    }
-
+class QuestionsPieChart extends React.Component<Props> {
     render() {
+        const data: PieDatum[] = [{
+            'id': '% Unanswered',
+            'value': this.props.percentUnresolved,
+            'key': 'no-answer',
+            'color': 'rgba(65, 129, 227, 0.5)'
+        },
+        {
+            'id': '% Answered',
+            'value': this.props.percentResolved,
+            'key': 'answer',
+            'color': 'rgba(65, 100, 227, 0.5)'
+        }];
         return (
             <div className="QuestionsPieChart" style={{ height: 300 }}>
-
                 <ResponsivePie
-                    data={(this.state = {
-                        data: [{
-                            'id': '% Unanswered',
-                            'value': this.props.percentUnresolved,
-                            'key': 'no-answer',
-                            'color': 'rgba(65, 129, 227, 0.5)'
-                        },
-                        {
-                            'id': '% Answered',
-                            'value': this.props.percentResolved,
-                            'key': 'answer',
-                            'color': 'rgba(65, 100, 227, 0.5)'
-                        }] as PieDatum[]
-                    }, this.state.data)}
+                    data={data}
                     margin={{
                         'top': 1,
                         'right': 30,

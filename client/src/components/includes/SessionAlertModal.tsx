@@ -5,19 +5,19 @@ import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
 
 class SessionAlertModal extends React.Component {
     props!: {
-        header?: string,
-        icon?: SemanticICONS,
-        color: string,
-        description: string,
-        OHSession?: AppSession,
-        buttons: string[],
-        cancelAction?: Function,
-        mainAction?: Function,
-        displayShade: boolean
+        header?: string;
+        icon?: SemanticICONS;
+        color: string;
+        description: string;
+        OHSession?: FireSession;
+        buttons: string[];
+        cancelAction?: Function;
+        mainAction?: Function;
+        displayShade: boolean;
     };
 
     state!: {
-        displayModal: boolean
+        displayModal: boolean;
     };
 
     constructor(props: {}) {
@@ -31,17 +31,17 @@ class SessionAlertModal extends React.Component {
         this.setState({
             displayModal: false
         });
-    }
+    };
 
     render() {
 
         // Check if cancelAction is supplied
-        let cancel = this.props.cancelAction !== undefined ? this.props.cancelAction : this.defaultCancel;
+        const cancel = this.props.cancelAction !== undefined ? this.props.cancelAction : this.defaultCancel;
 
         // Check if cancelMain is supplied
-        let main = this.props.mainAction !== undefined ? this.props.mainAction : cancel;
+        const main = this.props.mainAction !== undefined ? this.props.mainAction : cancel;
 
-        let buttons = this.props.buttons.map((button, i: number, arr) =>
+        const buttons = this.props.buttons.map((button, i: number, arr) =>
             (
                 <button
                     key={i}
@@ -52,11 +52,13 @@ class SessionAlertModal extends React.Component {
                 </button>
             ));
 
-        let shadeDisplay = this.props.displayShade ? 'shade' : '';
+        const shadeDisplay = this.props.displayShade ? 'shade' : '';
 
         // Copied over from ProfessorOHInfoDelete
-        let taList = this.props.OHSession ?
-            this.props.OHSession.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.computedName) : [];
+        const taList = this.props.OHSession
+            ? ['COMPUTE TA NAMES'] // RYAN_TODO: actually compute TA names
+            // ? this.props.OHSession.tas.nodes.map(ta => ta.userByUserId.computedName)
+            : [];
 
         return (
             this.state.displayModal && (

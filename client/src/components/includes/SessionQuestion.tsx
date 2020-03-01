@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-delimiter-style */
 import * as React from 'react';
 import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
@@ -35,17 +36,17 @@ import { Observable } from 'rxjs';
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
 
-class SessionQuestion extends React.Component {
-    props!: {
-        question: FireQuestion,
-        index: number,
-        isTA: boolean,
-        includeRemove: boolean,
-        myUserId: string,
-        triggerUndo: Function,
-        isPast: boolean,
-    };
+type Props = {
+    question: FireQuestion,
+    index: number,
+    isTA: boolean,
+    includeRemove: boolean,
+    myUserId: string,
+    triggerUndo: Function,
+    isPast: boolean,
+};
 
+class SessionQuestion extends React.Component<Props> {
     state!: {
         showLocation: boolean,
         location: string,
@@ -59,32 +60,32 @@ class SessionQuestion extends React.Component {
         secondaryTag?: FireTag
     };
 
-    constructor(props: {}) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             showLocation: false,
-            location: this.props.question.location || '',
+            location: props.question.location || '',
             isEditingLocation: false,
             showDotMenu: false,
         };
 
         const asker$: Observable<FireUser> =
-            docData(firestore.doc('users/' + this.props.question.askerId), 'userId');
+            docData(firestore.doc('users/' + props.question.askerId), 'userId');
         asker$.subscribe(asker => this.setState({ asker }));
 
         if (this.props.question.answererId) {
             // RYAN_TODO make this work when we get an answerer id
             const answerer$: Observable<FireUser> =
-                docData(firestore.doc('users/' + this.props.question.answererId), 'userId');
+                docData(firestore.doc('users/' + props.question.answererId), 'userId');
             answerer$.subscribe(answerer => this.setState({ answerer }));
         }
 
         const primaryTag$: Observable<FireTag>
-            = docData(firestore.doc('tags/' + this.props.question.primaryTag), 'tagId');
+            = docData(firestore.doc('tags/' + props.question.primaryTag), 'tagId');
         primaryTag$.subscribe(primaryTag => this.setState({ primaryTag }));
 
         const secondaryTag$: Observable<FireTag>
-            = docData(firestore.doc('tags/' + this.props.question.secondaryTag), 'tagId');
+            = docData(firestore.doc('tags/' + props.question.secondaryTag), 'tagId');
         secondaryTag$.subscribe(secondaryTag => this.setState({ secondaryTag }));
     }
 
@@ -114,13 +115,13 @@ class SessionQuestion extends React.Component {
             });
             setTimeout(() => { this.state.isEditingLocation = false; }, 100);
         }
-    }
+    };
 
     toggleLocationTooltip = () => {
         this.setState({
             showLocation: !this.state.showLocation
         });
-    }
+    };
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
@@ -135,18 +136,11 @@ class SessionQuestion extends React.Component {
             status,
             this.state.asker ? this.state.asker.firstName + ' ' + this.state.asker.lastName : 'unknown'
         );
-    }
+    };
 
     setDotMenu = (status: boolean) => {
         this.setState({ showDotMenu: status });
-    }
-
-    // triggerUndoDontKnow = (questionId: number, name: string) => {
-    //     this.setState({
-    //         undoQuestionIdDontKnow: questionId,
-    //         undoName: name,
-    //     });
-    // }
+    };
 
     handleUndoDontKnow = (questionId: number, UndoDontKnow: Function) => {
         UndoDontKnow({
@@ -155,12 +149,12 @@ class SessionQuestion extends React.Component {
                 status: 'unresolved'
             }
         });
-    }
+    };
 
     render() {
-        let question = this.props.question;
+        const question = this.props.question;
         const studentCSS = this.props.isTA ? '' : ' Student';
-        const includeBookmark = this.props.question.askerId.id === this.props.myUserId;
+        const includeBookmark = this.props.question.askerId === this.props.myUserId;
 
         return (
             <div className="QueueQuestions">
@@ -211,13 +205,20 @@ class SessionQuestion extends React.Component {
                 <div className="QuestionInfo">
                     {this.props.isTA && this.state.asker &&
                         <div className="studentInformation">
-                            <img src={this.state.asker.photoUrl} />
+                            <img
+                                src={this.state.asker === undefined
+                                    ? '/placeholder.png'
+                                    : this.state.asker.photoUrl}
+                                alt={this.state.asker === undefined
+                                    ? 'Asker profile picture'
+                                    : `${this.state.asker.firstName} ${this.state.asker.lastName} profile picture`}
+                            />
                             <span className="Name">
                                 {this.state.asker.firstName + ' ' + this.state.asker.lastName}
                                 {question.status === 'assigned' &&
                                     <React.Fragment>
                                         <span className="assigned"> is assigned
-                                        {this.state.answerer &&
+                                            {this.state.answerer &&
                                                 (' to ' + (this.state.answerer.userId === this.props.myUserId
                                                     ? 'you'
                                                     : this.state.answerer.firstName + ' '
@@ -249,7 +250,7 @@ class SessionQuestion extends React.Component {
                     {question.timeEntered != null &&
                         <p className="Time">
                             posted at&nbsp;
-                        {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
+                            {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
                         </p>}
                 </div>
                 {this.props.isTA &&
@@ -284,7 +285,7 @@ class SessionQuestion extends React.Component {
                                     >
                                         ...
 
-                                            {this.state.showDotMenu &&
+                                        {this.state.showDotMenu &&
                                             <div
                                                 className="IReallyDontKnow"
                                                 tabIndex={1}
@@ -312,13 +313,14 @@ class SessionQuestion extends React.Component {
                         <hr />
                         <p
                             className="Remove"
-                        // onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
+                            // RYAN_TODO: support remove question
+                            // onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
                         >
                             <Icon name="close" /> Remove
                         </p>
                     </div>
                 }
-            </div >
+            </div>
         );
     }
 }

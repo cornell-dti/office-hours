@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-delimiter-style */
 import * as React from 'react';
 
 import { Redirect } from 'react-router';
@@ -8,7 +9,7 @@ import SessionAlertModal from './SessionAlertModal';
 import moment from 'moment';
 
 import { collectionData, firestore, auth } from '../../firebase';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
@@ -52,6 +53,11 @@ class AddQuestion extends React.Component {
             redirect: false,
             tags: []
         };
+    }
+
+    // Keep window size in state for conditional rendering
+    componentDidMount() {
+        window.addEventListener('resize', this.updateWindowDimensions);
 
         const tags$ = collectionData(
             firestore
@@ -63,29 +69,24 @@ class AddQuestion extends React.Component {
         tags$.subscribe((tags) => this.setState({ tags }));
     }
 
-    // Keep window size in state for conditional rendering
-    componentDidMount() {
-        window.addEventListener('resize', this.updateWindowDimensions);
-    }
-
     componentWillUnmount() {
         window.removeEventListener('resize', this.updateWindowDimensions);
     }
 
     updateWindowDimensions = () => {
         this.setState({ width: window.innerWidth });
-    }
+    };
 
     handleXClick = () => {
         this.setState({ redirect: true });
-    }
+    };
 
     public handlePrimarySelected = (tag: FireTag | undefined): void => {
         this.setState(this.state.stage <= 10
             ? { stage: 20, selectedPrimary: tag }
             : { stage: 10, selectedPrimary: undefined, selectedSecondary: undefined }
         );
-    }
+    };
 
     public handleSecondarySelected = (tag: FireTag): void => {
         if (this.state.selectedSecondary) {
@@ -97,7 +98,7 @@ class AddQuestion extends React.Component {
         } else {
             this.setState({ stage: 30, selectedSecondary: tag });
         }
-    }
+    };
 
     public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
@@ -111,7 +112,7 @@ class AddQuestion extends React.Component {
             location: target.value.length <= LOCATION_CHAR_LIMIT ? target.value : this.state.location,
             stage: stage
         });
-    }
+    };
 
     public handleUpdateQuestion = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
@@ -119,7 +120,7 @@ class AddQuestion extends React.Component {
             question: target.value.length <= this.props.course.charLimit ? target.value : this.state.question,
             stage: target.value.length > 0 ? 50 : 40
         });
-    }
+    };
 
     public addQuestion = () => {
         if (auth.currentUser != null && this.state.selectedPrimary != null &&
@@ -137,7 +138,7 @@ class AddQuestion extends React.Component {
             });
             this.setState({ redirect: true });
         }
-    }
+    };
 
     public handleJoinClick = (): void => {
         if (this.state.stage !== 60 &&
@@ -146,7 +147,7 @@ class AddQuestion extends React.Component {
         } else {
             this.addQuestion();
         }
-    }
+    };
 
     public handleKeyPressDown = (event: React.KeyboardEvent<HTMLElement>) => {
         // CTRL + ENTER or CMD + ENTER adds the question ONLY if cursor in Question textbox
@@ -155,7 +156,7 @@ class AddQuestion extends React.Component {
         } else if (!event.repeat && event.keyCode === 27) {
             this.handleXClick();
         }
-    }
+    };
 
     public questionAdded = () => this.setState({ redirect: true });
     // RYAN_TODO Add question functionality
@@ -169,7 +170,7 @@ class AddQuestion extends React.Component {
             );
         }
 
-        let questionCharsLeft = this.props.course.charLimit - this.state.question.length;
+        const questionCharsLeft = this.props.course.charLimit - this.state.question.length;
 
         return (
             <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e)} >
@@ -262,7 +263,7 @@ class AddQuestion extends React.Component {
                                 {this.state.stage > 40 ?
                                     <p className="AddButton active" onClick={() => this.handleJoinClick()} >
                                         Add My Question
-                                </p>
+                                    </p>
                                     : <p className="AddButton"> Add My Question </p>
                                 }
                             </div>

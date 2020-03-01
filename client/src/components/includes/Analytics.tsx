@@ -19,15 +19,15 @@ export class Analytics extends React.Component {
         this.sendPageChange(props.location.pathname, props.location.search);
     }
 
-    componentWillReceiveProps(nextProps: AnalyticsProps) {
+    componentDidUpdate(prevProps: AnalyticsProps) {
         // When props change, check if the URL has changed or not
-        if (this.props.location.pathname !== nextProps.location.pathname
-            || this.props.location.search !== nextProps.location.search) {
-            this.sendPageChange(nextProps.location.pathname, nextProps.location.search);
+        if (this.props.location.pathname !== prevProps.location.pathname
+            || this.props.location.search !== prevProps.location.search) {
+            this.sendPageChange(this.props.location.pathname, this.props.location.search);
         }
     }
 
-    sendPageChange(pathname: string, search: string = '') {
+    sendPageChange(pathname: string, search = '') {
         const page = pathname + search;
         ReactGA.set({ page });
         ReactGA.pageview(page);

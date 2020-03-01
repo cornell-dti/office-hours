@@ -1,5 +1,5 @@
 name: CI
-on: pull_request
+on: push
 
 jobs:
   build:
@@ -8,7 +8,11 @@ jobs:
       - uses: actions/checkout@master
       - name: Set up Node
         uses: actions/setup-node@v1
-      - name: Install and Build
+        with:
+          node-version: 10.x
+      - name: Install
         run: yarn install
+      - name: Install for client
+        run: cd client && yarn install
       - name: Lint client
-        run: cd client && yarn install && yarn tslint --project tsconfig.json -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'
+        run: cd client && yarn lint

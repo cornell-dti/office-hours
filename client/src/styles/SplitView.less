@@ -84,8 +84,10 @@ section .SessionJoinButton {
     color: #ffffff;
     height: 56px;
     text-align: left;
-    position: relative;
-    top: -12px;
+    top: 0;
+    z-index: 1;
+    position: sticky;
+    position: -webkit-sticky;
 
     .undoClose {
         position: absolute;
@@ -150,3 +152,26 @@ section .SessionJoinButton {
         background-color: #79b8b8;
     }
 }
+
+  .feedbackModal {
+    .Feedback {
+      position: fixed;
+      z-index: 4;
+      top: 0;
+      left: 0;
+      @media only screen and (min-width: @mobile-breakpoint) {
+        top: 15%;
+        left: 15%;
+      }
+    }
+  }
+  
+  .feedbackShade {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    background-color: hsla(0, 0%, 44%, 0.8);
+  }  

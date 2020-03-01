@@ -1,54 +1,29 @@
 import * as React from 'react';
 import { ResponsiveLine, LineSerieData } from '@nivo/line';
 
-class QuestionsLineChart extends React.Component {
-    props!: {
-        lineData: {
-            'x': string,
-            'y': number
-        }[],
-        yMax: number,
-        calcTickVals: (yMax: number) => number[]
-    };
+type Props = {
+    lineData: {
+        'x': string;
+        'y': number;
+    }[];
+    yMax: number;
+    calcTickVals: (yMax: number) => number[];
+};
 
-    state!: {
-        data: LineSerieData[];
-    };
-
-    constructor(props: {
-        lineData: {
-            'x': string,
-            'y': number
-        }[],
-        yMax: number,
-        calcTickVals: (yMax: number) => number[]
-    }) {
-        super(props);
-        this.state = {
-            data: [
-                {
-                    'id': 'questions',
-                    'color': 'hsl(100, 20%, 34%)',
-                    'data': this.props.lineData
-                }
-            ] as LineSerieData[]
-        };
-    }
-
+class QuestionsLineChart extends React.Component<Props> {
     render() {
+        const data: LineSerieData[] = [
+            {
+                'id': 'questions',
+                'color': 'hsl(100, 20%, 34%)',
+                'data': this.props.lineData
+            }
+        ];
         return (
             <div className="QuestionsLineChart" style={{ height: 300 }}>
                 <ResponsiveLine
                     colors="#979797"
-                    data={(this.state = {
-                        data: [
-                            {
-                                'id': 'questions',
-                                'color': 'hsl(100, 20%, 34%)',
-                                'data': this.props.lineData
-                            }
-                        ] as LineSerieData[]
-                    }, this.state.data)}
+                    data={data}
                     margin={{
                         'top': 20,
                         'right': 20,
