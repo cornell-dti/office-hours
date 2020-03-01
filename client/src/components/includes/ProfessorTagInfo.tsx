@@ -27,7 +27,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                 level: 1,
                 tagId: '',
                 name: '',
-                courseId: firestore.collection('courses').doc(props.courseId)
+                courseId: props.courseId
             },
             newTagText: '',
             newTags: []
@@ -103,7 +103,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                 courseId: this.state.tag.courseId,
                 level: 2,
                 name: tagText,
-                parentTag: parentTag
+                parentTag: parentTag.id
             });
         });
         batch.commit();
@@ -122,8 +122,8 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         // deleted tags
         this.props.childTags
             .filter(firetag => !this.state.newTags.includes(firetag.name))
-            .forEach(tag =>
-                batch.delete(firestore.collection('tags').doc(tag.tagId)));
+            .forEach(firetag =>
+                batch.delete(firestore.collection('tags').doc(firetag.tagId)));
 
         // new tags
         const preexistingTags = this.props.childTags
@@ -138,7 +138,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                     courseId: this.state.tag.courseId,
                     level: 2,
                     name: tagText,
-                    parentTag: parentTag
+                    parentTag: parentTag.id
                 });
             });
 

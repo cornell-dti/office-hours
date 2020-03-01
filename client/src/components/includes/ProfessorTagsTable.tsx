@@ -6,10 +6,11 @@ import { useQuery } from '../../firehooks';
 
 const getQuery = (courseId: string) => firestore
     .collection('tags')
-    .where('courseId', '==', firestore.doc('courses/' + courseId));
+    .where('courseId', '==', courseId);
 
 const ProfessorTagsTable = (props: { courseId: string }) => {
     const tags = useQuery<FireTag>(props.courseId, getQuery, 'tagId');
+    console.log(tags);
 
     return (
         <React.Fragment>
@@ -31,7 +32,7 @@ const ProfessorTagsTable = (props: { courseId: string }) => {
                                 tag={tag}
                                 key={tag.tagId}
                                 index={i}
-                                childTags={tags.filter(t => t.parentTag && t.parentTag.id === tag.tagId)}
+                                childTags={tags.filter(t => t.parentTag && t.parentTag === tag.tagId)}
                                 courseId={props.courseId}
                             />
                         )}

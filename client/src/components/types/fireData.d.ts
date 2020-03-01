@@ -75,9 +75,9 @@ interface FireQuestion {
 
 interface FireTag {
     active: boolean;
-    courseId: firebase.firestore.DocumentReference;
+    courseId: string;
     level: number;
     tagId: string;
     name: string;
-    parentTag?: firebase.firestore.DocumentReference;
+    parentTag?: string;
 }
