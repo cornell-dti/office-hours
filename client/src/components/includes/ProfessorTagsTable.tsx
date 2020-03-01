@@ -10,7 +10,6 @@ const getQuery = (courseId: string) => firestore
 
 const ProfessorTagsTable = (props: { courseId: string }) => {
     const tags = useQuery<FireTag>(props.courseId, getQuery, 'tagId');
-    console.log(tags);
 
     return (
         <React.Fragment>

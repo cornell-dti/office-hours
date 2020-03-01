@@ -77,6 +77,22 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         }));
     };
 
+    clearState = (): void => {
+        this.setState(
+            {
+                tag: {
+                    active: true,
+                    level: 1,
+                    tagId: '',
+                    name: '',
+                    courseId: this.props.courseId
+                },
+                newTagText: '',
+                newTags: []
+            }
+        );
+    };
+
     handleCreateAssignment = (): void => {
         const batch = firestore.batch();
 
@@ -107,6 +123,8 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             });
         });
         batch.commit();
+
+        this.clearState();
     };
 
     handleEditAssignment = (): void => {
