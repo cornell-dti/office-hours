@@ -210,7 +210,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                                     <Icon
                                         className="Remove"
                                         name="close"
-                                        onClick={() => this.handleRemoveChildTag(name)}
+                                        onClick={() => this.handleRemoveChildTag(childTag)}
                                     />
                                 </div>
                             ))
