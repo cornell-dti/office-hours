@@ -210,7 +210,7 @@ class AddQuestion extends React.Component {
                                 {this.state.selectedPrimary ?
                                     this.state.tags
                                         .filter((tag) => tag.active && tag.level === 2)
-                                        .filter((tag) => ((tag.parentTag && tag.parentTag.id) ===
+                                        .filter((tag) => (tag.parentTag ===
                                             // @ts-ignore I'm checking for presence in the ternary
                                             this.state.selectedPrimary.tagId)
                                         ).map((tag) => (<SelectedTags
