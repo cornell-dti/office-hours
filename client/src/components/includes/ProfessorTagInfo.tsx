@@ -9,13 +9,13 @@ type PropTypes = {
     tag?: FireTag
     courseId: string
     childTags: FireTag[]
-}
+};
 
 type State = {
     tag: FireTag
     newTagText: string
     newTags: string[]
-}
+};
 
 class ProfessorTagInfo extends React.Component<PropTypes, State> {
 
@@ -27,9 +27,9 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                 level: 1,
                 tagId: '',
                 name: '',
-                courseId: firestore.collection("courses").doc(props.courseId)
+                courseId: firestore.collection('courses').doc(props.courseId)
             },
-            newTagText: "",
+            newTagText: '',
             newTags: []
         };
     }
@@ -69,19 +69,19 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             newTags: [...prevState.newTags, prevState.newTagText],
             newTagText: ''
         }));
-    }
+    };
 
     handleRemoveChildTag = (name: string): void => {
         this.setState(prevState => ({
             newTags: prevState.newTags.filter(tag => tag !== name)
         }));
-    }
+    };
 
     handleCreateAssignment = (): void => {
-        var batch = firestore.batch();
+        const batch = firestore.batch();
 
         // need to create this first so the child tags have the doc reference
-        var parentTag = firestore.collection("tags").doc();
+        const parentTag = firestore.collection("tags").doc();
         batch.set(parentTag, {
             active: this.state.tag.active,
             courseId: this.state.tag.courseId,
@@ -97,7 +97,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
 
         // below is essentially add new child a bunch of times
         this.state.newTags.forEach(tagText => {
-            var childTag = firestore.collection("tags").doc();
+            const childTag = firestore.collection('tags').doc();
             batch.set(childTag, {
                 active: this.state.tag.active,
                 courseId: this.state.tag.courseId,
@@ -117,7 +117,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                 console.log(error);
                 console.log("batch create did not work");
             });
-    }
+    };
 
     handleEditAssignment = (): void => {
         // console.log('RYAN_TODO update tag and children');
