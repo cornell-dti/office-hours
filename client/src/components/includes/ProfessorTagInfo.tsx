@@ -1,233 +1,180 @@
+/* eslint-disable @typescript-eslint/member-delimiter-style */
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
-import gql from 'graphql-tag';
-import { Mutation } from 'react-apollo';
+import { firestore } from '../../firebase';
 
-const CREATE_ASSIGNMENT = gql`
-    mutation CreateAssignment($courseId: Int!, $name: String!, $activated: Boolean!, $childNames: [String]!,
-        $childActivateds:[Int]!) {
-        apiCreatePrimaryTag(input: {_courseId: $courseId, _iname: $name, _activated: $activated,
-            _childNames: $childNames, _childActivateds: $childActivateds}) {
-            tags {
-                tagId
-            }
-        }
-    }
-`;
+type PropTypes = {
+    isNew: boolean
+    cancelCallback: Function
+    tag?: FireTag
+    courseId: string
+    childTags: FireTag[]
+};
 
-const EDIT_ASSIGNMENT = gql`
-    mutation EditAssignment($id: Int!, $name: String!, $activated: Boolean!, $childNames: [String]!,
-        $childActivateds:[Int]!, $childIds: [Int]!) {
-        apiEditPrimaryTag(input: {_parentId: $id, _iname: $name, _activated: $activated,
-            _childNames: $childNames, _childActivateds: $childActivateds, _childIds: $childIds}) {
-            tags {
-                tagId
-            }
-        }
-    }
-`;
+type State = {
+    tag: FireTag
+    newTagText: string
+    newTags: string[]
+};
 
-class ProfessorTagInfo extends React.Component {
+class ProfessorTagInfo extends React.Component<PropTypes, State> {
 
-    props: {
-        isNew: boolean
-        cancelCallback: Function
-        tag?: AppTag
-        refreshCallback: Function
-        courseId: number
-    };
-
-    state: {
-        tag: AppTag
-        newTagText: string
-    };
-
-    constructor(props: {}) {
+    constructor(props: PropTypes) {
         super(props);
         this.state = {
             tag: {
+                active: true,
                 level: 1,
-                activated: true,
-                tagId: -1, // new tag
-                name: ''
+                tagId: '',
+                name: '',
+                courseId: firestore.collection('courses').doc(props.courseId)
             },
-            newTagText: ''
+            newTagText: '',
+            newTags: []
         };
     }
 
-    componentWillReceiveProps(props: { tag?: AppTag }) {
+    componentWillReceiveProps(props: PropTypes) {
         if (props.tag) {
             this.setState({
                 tag: props.tag,
-                newTagText: ''
-            });
-        } else {
-            this.setState({
-                tag: {
-                    level: 1,
-                    activated: true,
-                    tagId: -1, // new tag
-                    name: ''
-                },
-                newTagText: ''
+                newTags: props.childTags.map(firetag => firetag.name)
             });
         }
     }
 
     handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        var newState = Object.assign({}, this.state.tag);
+        const newState = Object.assign({}, this.state.tag);
         const target = event.target;
         newState.name = target.value;
         this.setState({ tag: newState });
-    }
+    };
 
     handleNewTagTextChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const target = event.target;
         this.setState({ newTagText: target.value });
-    }
+    };
 
     handleActiveChange = (active: boolean): void => {
-        var newState = Object.assign({}, this.state.tag);
-        newState.activated = active;
+        const newState = Object.assign({}, this.state.tag);
+        newState.active = active;
         this.setState({ tag: newState });
-    }
-
-    helperAddNewChildTag(newTag: AppTag) {
-        if (this.state.tag.tagRelationsByParentId) {
-            this.setState({
-                tag: {
-                    ...this.state.tag,
-                    tagRelationsByParentId:
-                        { nodes: [...this.state.tag.tagRelationsByParentId.nodes, { tagByChildId: newTag }] }
-                }
-            });
-        } else {
-            var newState = Object.assign({}, this.state.tag);
-            newState.tagRelationsByParentId = { nodes: [{ tagByChildId: newTag }] };
-            this.setState({ tag: newState });
-        }
-    }
+    };
 
     handleNewTagEnter = (): void => {
         if (this.state.newTagText.length === 0) {
             return;
         }
-        var newTag: AppTag = {
-            activated: true,
-            level: 2,
-            tagId: -1,
-            name: this.state.newTagText
-        };
-        this.helperAddNewChildTag(newTag);
-        this.setState({ newTagText: '' });
-    }
-
-    // Sorry, this function is a bit of a mess. Please refactor it when you get spare time.
-    // There are many corner cases to handle, so definitely test your implementation a lot!
-    handleRemoveChildTag = (index: number): void => {
-        // This case should never happen
-        if (!this.state.tag.tagRelationsByParentId) {
-            return;
-        }
-        var newChildTags = Object.assign({}, this.state.tag.tagRelationsByParentId);
-        var filteredTags = newChildTags.nodes.filter((childTag) => childTag.tagByChildId.activated);
-        var newChildTag = Object.assign({}, filteredTags[index]);
-        newChildTag.tagByChildId = { ...newChildTag.tagByChildId, activated: false };
-        var allTags = newChildTags.nodes;
-        var newTags = [];
-        var shownIndex = -1;
-        var doneRemoving = false;
-        // Loop through all the tags (activated and not activated) to find the tag that was
-        // removed by the user. We want to match index to the index'th tag that is activated.
-        // For all other tags, we want to add their previous version; for the removed tag, we
-        // add its previous version with activated = false (stored in newChildTag).
-        for (var i = 0; i < allTags.length; i++) {
-            if (allTags[i].tagByChildId.activated) {
-                shownIndex++;
-            }
-            if (shownIndex === index && !doneRemoving) {
-                newTags.push(newChildTag);
-                doneRemoving = true;
-            } else {
-                newTags.push(allTags[i]);
-            }
-        }
-        this.setState({
-            tag: {
-                ...this.state.tag,
-                tagRelationsByParentId:
-                {
-                    nodes: newTags
-                }
-            }
-        });
-    }
-
-    handleCreateAssignment = (CreateAssignment: Function): void => {
-        var childNames: string[] = [];
-        var childActivateds: boolean[] = [];
-        if (this.state.tag.tagRelationsByParentId) {
-            var filteredDeleted = this.state.tag.tagRelationsByParentId.nodes
-                .filter((childTag) => childTag.tagByChildId.activated);
-            childNames = filteredDeleted.map((childTag) => childTag.tagByChildId.name);
-            // Line below is redundant, since it will always be true, but I've kept it here
-            // for verbosity
-            childActivateds = filteredDeleted.map((childTag) => childTag.tagByChildId.activated);
-        }
-
-        CreateAssignment({
-            variables: {
-                courseId: this.props.courseId,
-                name: this.state.tag.name,
-                activated: this.state.tag.activated,
-                childNames: childNames,
-                childActivateds: childActivateds
-            }
-        });
-
-        this.state = {
-            tag: {
-                level: 1,
-                activated: true,
-                tagId: -1, // new tag
-                name: ''
-            },
+        this.setState(prevState => ({
+            newTags: [...prevState.newTags, prevState.newTagText],
             newTagText: ''
-        };
-    }
+        }));
+    };
 
-    handleEditAssignment = (EditAssignment: Function): void => {
-        var childIds: number[] = [];
-        var childNames: string[] = [];
-        var childActivateds: number[] = [];
-        if (this.state.tag.tagRelationsByParentId) {
-            var childTags = this.state.tag.tagRelationsByParentId.nodes;
-            childIds = childTags.map((childTag) => childTag.tagByChildId.tagId);
-            childNames = childTags.map((childTag) => childTag.tagByChildId.name);
-            childActivateds = childTags.map((childTag) => childTag.tagByChildId.activated ? 1 : 0);
+    handleRemoveChildTag = (name: string): void => {
+        this.setState(prevState => ({
+            newTags: prevState.newTags.filter(tag => tag !== name)
+        }));
+    };
+
+    handleCreateAssignment = (): void => {
+        const batch = firestore.batch();
+
+        // need to create this first so the child tags have the doc reference
+        const parentTag = firestore.collection('tags').doc();
+        batch.set(parentTag, {
+            active: this.state.tag.active,
+            courseId: this.state.tag.courseId,
+            level: 1,
+            name: this.state.tag.name
+        });
+
+        // converts reference parentTag to the string format stored in state
+        this.setState(function (prevState) {
+            prevState.tag.tagId = parentTag.id;
+            return { tag: prevState.tag };
+        });
+
+        // below is essentially add new child a bunch of times
+        this.state.newTags.forEach(tagText => {
+            const childTag = firestore.collection('tags').doc();
+            batch.set(childTag, {
+                active: this.state.tag.active,
+                courseId: this.state.tag.courseId,
+                level: 2,
+                name: tagText,
+                parentTag: parentTag
+            });
+        });
+
+        batch.commit()
+            .then(function () {
+                // Successful upload
+                console.log('batch create successful');
+            })
+            .catch(function (error: string) {
+                // Unsuccessful upload
+                console.log(error);
+                console.log('batch create did not work');
+            });
+    };
+
+    handleEditAssignment = (): void => {
+        // console.log('RYAN_TODO update tag and children');
+        const batch = firestore.batch();
+
+        const parentTag = firestore.collection('tags').doc(this.state.tag.tagId);
+
+        // deals w/ case where parent tag name is changed
+        // no checking yet, like if A1 is changed to A0 but A0 already exists
+        if (this.props.tag && this.state.tag.name !== this.props.tag.name) {
+            batch.update(parentTag, { name: this.state.tag.name });
         }
 
-        EditAssignment({
-            variables: {
-                id: this.state.tag.tagId,
-                name: this.state.tag.name,
-                activated: this.state.tag.activated,
-                childIds: childIds,
-                childNames: childNames,
-                childActivateds: childActivateds
-            }
-        });
-    }
+        // deleted tags
+        this.props.childTags
+            .filter(firetag => !this.state.newTags.includes(firetag.name))
+            .forEach(tag =>
+                batch.delete(firestore.collection('tags').doc(tag.tagId)));
+
+        // new tags
+        const preexistingTags = this.props.childTags
+            .filter(firetag => this.state.newTags.includes(firetag.name))
+            .map(firetag => firetag.name);
+        this.state.newTags
+            .filter(tag => preexistingTags.includes(tag))
+            .forEach(tagText => {
+                const childTag = firestore.collection('tags').doc();
+                batch.set(childTag, {
+                    active: this.state.tag.active,
+                    courseId: this.state.tag.courseId,
+                    level: 2,
+                    name: tagText,
+                    parentTag: parentTag
+                });
+            });
+
+        batch.commit()
+            .then(function () {
+                // Successful upload
+                console.log('batch edit successful');
+            })
+            .catch(function (error: string) {
+                // Unsuccessful upload
+                console.log(error);
+                console.log('batch edit did not work');
+            });
+    };
 
     handleEnterPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (e.key === 'Enter') {
             this.handleNewTagEnter();
         }
-    }
+    };
 
     render() {
         return (
-            <React.Fragment>
+            <React.Fragment >
                 <div className="ProfessorTagInfo">
                     <div className="Assignment InputSection">
                         <div className="InputHeader">Assignment Name</div>
@@ -243,13 +190,13 @@ class ProfessorTagInfo extends React.Component {
                     <div className="Status InputSection">
                         <div className="InputHeader">Status</div>
                         <div
-                            className={'ActiveButton first ' + (this.state.tag.activated ? 'Selected' : '')}
+                            className={'ActiveButton first ' + (this.state.tag.active ? 'Selected' : '')}
                             onClick={() => this.handleActiveChange(true)}
                         >
                             Active
                         </div>
                         <div
-                            className={'ActiveButton ' + (this.state.tag.activated ? '' : 'Selected')}
+                            className={'ActiveButton ' + (this.state.tag.active ? '' : 'Selected')}
                             onClick={() => this.handleActiveChange(false)}
                         >
                             Inactive
@@ -257,25 +204,17 @@ class ProfessorTagInfo extends React.Component {
                     </div>
                     <div className="ChildTags InputSection" onKeyDown={(e) => this.handleEnterPress(e)}>
                         <div className="InputHeader">Tags</div>
-                        {
-                            this.state.tag.tagRelationsByParentId &&
-                            this.state.tag.tagRelationsByParentId.nodes
-                                .filter((childTag) => childTag.tagByChildId.activated)
-                                .map((childTag, i) => {
-                                    return (
-                                        <div
-                                            key={i}
-                                            className="SelectedChildTag"
-                                        >
-                                            {childTag.tagByChildId.name}
-                                            <Icon
-                                                className="Remove"
-                                                name="close"
-                                                onClick={() => this.handleRemoveChildTag(i)}
-                                            />
-                                        </div>
-                                    );
-                                })
+                        {this.state.newTags
+                            .map((childTag, i) => (
+                                <div key={i} className="SelectedChildTag" >
+                                    {childTag}
+                                    <Icon
+                                        className="Remove"
+                                        name="close"
+                                        onClick={() => this.handleRemoveChildTag(childTag)}
+                                    />
+                                </div>
+                            ))
                         }
                         <input
                             className="InputChildTag"
@@ -297,36 +236,28 @@ class ProfessorTagInfo extends React.Component {
                         Cancel
                     </button>
                     {this.props.isNew ?
-                        <Mutation mutation={CREATE_ASSIGNMENT} onCompleted={() => this.props.refreshCallback()}>
-                            {(CreateAssignment) =>
-                                <button
-                                    className="Bottom Edit"
-                                    onClick={() => {
-                                        this.handleCreateAssignment(CreateAssignment);
-                                        this.props.cancelCallback();
-                                    }}
-                                >
-                                    Create
-                                </button>
-                            }
-                        </Mutation>
+                        <button
+                            className="Bottom Edit"
+                            onClick={() => {
+                                this.handleCreateAssignment();
+                                this.props.cancelCallback();
+                            }}
+                        >
+                            Create
+                        </button>
                         :
-                        <Mutation mutation={EDIT_ASSIGNMENT} onCompleted={() => this.props.refreshCallback()}>
-                            {(EditAssignment) =>
-                                <button
-                                    className="Bottom Edit"
-                                    onClick={() => {
-                                        this.handleEditAssignment(EditAssignment);
-                                        this.props.cancelCallback();
-                                    }}
-                                >
-                                    Save Changes
-                                </button>
-                            }
-                        </Mutation>
+                        <button
+                            className="Bottom Edit"
+                            onClick={() => {
+                                this.handleEditAssignment();
+                                this.props.cancelCallback();
+                            }}
+                        >
+                            Save Changes
+                        </button>
                     }
                 </div>
-            </React.Fragment>
+            </React.Fragment >
         );
     }
 }

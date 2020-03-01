@@ -3,46 +3,33 @@ import { ResponsiveBar, BarDatum, BarExtendedDatum } from '@nivo/bar';
 import { Icon } from 'semantic-ui-react';
 
 class QuestionsBarChart extends React.Component {
-    props: {
-        barData: {}[],
-        yMax: number,
-        sessionKeys: string[],
-        sessionDict: {},
-        calcTickVals: (yMax: number) => number[]
+    props!: {
+        barData: {}[];
+        yMax: number;
+        sessionKeys: string[];
+        sessionDict: {
+            [key: string]: {
+                ta: string;
+                questions: number;
+                answered: number;
+                startHour: string;
+                endHour: string;
+                building: string;
+                room: string;
+            };
+        };
+        calcTickVals: (yMax: number) => number[];
     };
 
-    state: {
+    state!: {
         data: BarDatum[];
         sessionKeys: string[];
     };
 
-    constructor(props: {
-        barData: {}[],
-        yMax: number,
-        sessionDict: {},
-        calcTickVals: (yMax: number) => number[]
-    }) {
-        super(props);
-        this.state = {
-            data: this.props.barData as BarDatum[],
-            sessionKeys: this.props.sessionKeys
-        };
-    }
-
-    isEmpty(obj: {}) {
-        for (var k in obj) {
-            if (obj.hasOwnProperty(k)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     createTooltipFunc(sessionId: string) {
-
-        if (!(this.isEmpty(this.props.sessionDict))) {
-            var session = this.props.sessionDict[sessionId];
-            var percent = Math.round((session.answered / (session.questions)) * 100);
+        if (Object.keys(this.props.sessionDict).length > 0) {
+            const session = this.props.sessionDict[sessionId];
+            const percent = Math.round((session.answered / (session.questions)) * 100);
             return (function (e: BarExtendedDatum) {
                 return (
                     <div className="bar-tooltip">
@@ -75,16 +62,9 @@ class QuestionsBarChart extends React.Component {
     render() {
         return (
             <div className="QuestionsBarChart" style={{ height: 300 }}>
-
                 <ResponsiveBar
-                    data={(this.state = {
-                        data: this.props.barData as BarDatum[],
-                        sessionKeys: this.props.sessionKeys
-                    }, this.state.data)}
-                    keys={(this.state = {
-                        data: this.props.barData as BarDatum[],
-                        sessionKeys: this.props.sessionKeys
-                    }, this.state.sessionKeys)}
+                    data={this.props.barData as BarDatum[]}
+                    keys={this.props.sessionKeys}
                     indexBy="date"
                     margin={{
                         'top': 5,
@@ -96,11 +76,7 @@ class QuestionsBarChart extends React.Component {
                     maxValue={this.props.yMax}
                     innerPadding={3}
                     padding={0.3}
-                    colorBy={
-                        function (e: BarDatum) {
-                            return '#d8d8d8';
-                        }
-                    }
+                    colors="#d8d8d8"
                     // @ts-ignore - TODO: Figure out how to avoid this and get a string from Reacttext
                     tooltip={(node) => { return this.createTooltipFunc(node.id)(); }}
 
@@ -139,9 +115,7 @@ class QuestionsBarChart extends React.Component {
                     legends={[
                     ]}
                 />
-
             </div>
-
         );
     }
 }

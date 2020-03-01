@@ -1,60 +1,29 @@
 import * as React from 'react';
 import { ResponsiveLine, LineSerieData } from '@nivo/line';
 
-class QuestionsLineChart extends React.Component {
+type Props = {
+    lineData: {
+        'x': string;
+        'y': number;
+    }[];
+    yMax: number;
+    calcTickVals: (yMax: number) => number[];
+};
 
-    props: {
-        lineData: {
-            'x': string,
-            'y': number
-        }[],
-        yMax: number,
-        calcTickVals: (yMax: number) => number[]
-    };
-
-    state: {
-        data: LineSerieData[];
-    };
-
-    constructor(props: {
-        lineData: {
-            'x': string,
-            'y': number
-        }[],
-        yMax: number,
-        calcTickVals: (yMax: number) => number[]
-    }) {
-        super(props);
-        this.state = {
-            data: [
-                {
-                    'id': 'questions',
-                    'color': 'hsl(100, 20%, 34%)',
-                    'data': this.props.lineData
-                }
-            ] as LineSerieData[]
-        };
-    }
-
+class QuestionsLineChart extends React.Component<Props> {
     render() {
+        const data: LineSerieData[] = [
+            {
+                'id': 'questions',
+                'color': 'hsl(100, 20%, 34%)',
+                'data': this.props.lineData
+            }
+        ];
         return (
             <div className="QuestionsLineChart" style={{ height: 300 }}>
-
                 <ResponsiveLine
-                    colorBy={
-                        function (e: LineSerieData) {
-                            return '#979797';
-                        }
-                    }
-                    data={(this.state = {
-                        data: [
-                            {
-                                'id': 'questions',
-                                'color': 'hsl(100, 20%, 34%)',
-                                'data': this.props.lineData
-                            }
-                        ] as LineSerieData[]
-                    }, this.state.data)}
+                    colors="#979797"
+                    data={data}
                     margin={{
                         'top': 20,
                         'right': 20,
@@ -90,24 +59,19 @@ class QuestionsLineChart extends React.Component {
                         'legendPosition': 'end'
                     }}
                     enableGridX={false}
-                    dotSize={8}
-                    dotColor="#ffffff"
-                    dotBorderWidth={2}
-                    dotBorderColor="#999"
-                    enableDotLabel={false}
+                    pointSize={8}
+                    pointColor="#ffffff"
+                    pointBorderWidth={2}
+                    pointBorderColor="#999"
+                    enablePointLabel={false}
                     // dotLabel="y"
                     // dotLabelYOffset={-12}
                     animate={true}
                     motionStiffness={90}
                     motionDamping={15}
-                    legends={[
-
-                    ]}
-
+                    legends={[]}
                 />
-
             </div>
-
         );
     }
 }

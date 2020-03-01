@@ -2,116 +2,25 @@ import * as React from 'react';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
-import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
-import { Redirect } from 'react-router';
+import { useMyUser, useCourse } from '../../firehooks';
 
-const METADATA_QUERY = gql`
-query GetMetadata($courseId: Int!) {
-    apiGetCurrentUser {
-        nodes {
-            computedName
-            computedAvatar
-            courseUsersByUserId(condition:{courseId:$courseId}) {
-                nodes {
-                    role
-                }
-            }
-        }
-    }
-    courseByCourseId(courseId: $courseId) {
-        code
-        courseUsersByCourseIdList {
-          role
-          userByUserId {
-            firstName
-            lastName
-            email
-            userId
-          }
-        }
-    }
-}`;
+type Props = { match: { params: { courseId: string } } };
 
-interface ProfessorMetadataData {
-    apiGetCurrentUser: {
-        nodes: [AppUserRole]
-    };
-    courseByCourseId: {
-        code: string;
-        courseUsersByCourseIdList: [{
-            role: string;
-            userByUserId: AppUser;
-        }]
-    };
-}
+const ProfessorDashboardView = ({ match: { params: { courseId } } }: Props) => {
+    const user = useMyUser();
+    const course = useCourse(courseId);
 
-interface MetadataVariables {
-    courseId: number;
-}
-
-class ProfessorMetadataDataQuery extends Query<ProfessorMetadataData, MetadataVariables> { }
-
-class ProfessorDashboardView extends React.Component {
-
-    props: {
-        match: {
-            params: {
-                courseId: string;
-            }
-        }
-    };
-
-    constructor(props: {}) {
-        super(props);
-    }
-
-    render() {
-        let courseId = parseInt(this.props.match.params.courseId, 10);
-        return (
-            <div className="ProfessorView">
-                <ProfessorMetadataDataQuery query={METADATA_QUERY} variables={{ courseId: courseId }} >
-                    {({ loading, data }) => {
-                        var courseCode: string = 'Loading...';
-                        if (!loading && data) {
-                            courseCode = data.courseByCourseId.code;
-                            // Redirect if current user != professor
-                            if (data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role !== 'professor') {
-                                return <Redirect to={'/course/' + this.props.match.params.courseId} />;
-                            }
-                        }
-                        return (
-                            <React.Fragment>
-                                <ProfessorSidebar
-                                    courseId={courseId}
-                                    code={courseCode}
-                                    selected={4}
-                                />
-                                {data && data.apiGetCurrentUser &&
-                                    <TopBar
-                                        courseId={courseId}
-                                        user={data.apiGetCurrentUser.nodes[0]}
-                                        context="professor"
-                                        role={data.apiGetCurrentUser.nodes[0].courseUsersByUserId.nodes[0].role}
-                                    />
-                                }
-                                <section className="rightOfSidebar">
-                                    <div className="main">
-                                        {data && data.courseByCourseId &&
-                                            <ProfessorRolesTable
-                                                courseId={courseId}
-                                                data={data.courseByCourseId.courseUsersByCourseIdList}
-                                            />
-                                        }
-                                    </div>
-                                </section>
-                            </React.Fragment>
-                        );
-                    }}
-                </ProfessorMetadataDataQuery>
-            </div>
-        );
-    }
-}
+    return (
+        <div className="ProfessorView">
+            <ProfessorSidebar courseId={courseId} code={course ? course.code : 'Loading'} selected={4} />
+            <TopBar courseId={courseId} user={user} context="professor" role="professor" />
+            <section className="rightOfSidebar">
+                <div className="main">
+                    <ProfessorRolesTable courseId={courseId} />
+                </div>
+            </section>
+        </div>
+    );
+};
 
 export default ProfessorDashboardView;

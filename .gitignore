@@ -19,7 +19,10 @@ node_modules
 
 # all folders and files beginning with a period
 .*
-!.github
+## Exceptions
+!.github/
+!.eslintrc.json
+!.firebaserc
 
 npm-debug.log*
 yarn-debug.log*
