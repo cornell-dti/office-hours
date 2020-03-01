@@ -106,25 +106,13 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                 parentTag: parentTag
             });
         });
-
-        batch.commit()
-            .then(function () {
-                // Successful upload
-                console.log('batch create successful');
-            })
-            .catch(function (error: string) {
-                // Unsuccessful upload
-                console.log(error);
-                console.log('batch create did not work');
-            });
+        batch.commit();
     };
 
     handleEditAssignment = (): void => {
-        // console.log('RYAN_TODO update tag and children');
         const batch = firestore.batch();
 
         const parentTag = firestore.collection('tags').doc(this.state.tag.tagId);
-
         // deals w/ case where parent tag name is changed
         // no checking yet, like if A1 is changed to A0 but A0 already exists
         if (this.props.tag && this.state.tag.name !== this.props.tag.name) {
@@ -142,7 +130,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             .filter(firetag => this.state.newTags.includes(firetag.name))
             .map(firetag => firetag.name);
         this.state.newTags
-            .filter(tag => preexistingTags.includes(tag))
+            .filter(tag => !preexistingTags.includes(tag))
             .forEach(tagText => {
                 const childTag = firestore.collection('tags').doc();
                 batch.set(childTag, {
@@ -154,16 +142,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                 });
             });
 
-        batch.commit()
-            .then(function () {
-                // Successful upload
-                console.log('batch edit successful');
-            })
-            .catch(function (error: string) {
-                // Unsuccessful upload
-                console.log(error);
-                console.log('batch edit did not work');
-            });
+        batch.commit();
     };
 
     handleEnterPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
