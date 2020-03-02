@@ -129,7 +129,7 @@ class AddQuestion extends React.Component {
                 askerId: auth.currentUser.uid,
                 content: this.state.question,
                 location: this.state.location,
-                sessionId: firestore.doc('sessions/' + this.props.session.sessionId),
+                sessionId: this.props.session.sessionId,
                 status: 'unresolved',
                 timeEntered: firebase.firestore.FieldValue.serverTimestamp(),
                 primaryTag: this.state.selectedPrimary.tagId,
@@ -216,7 +216,7 @@ class AddQuestion extends React.Component {
                                         ).map((tag) => (<SelectedTags
                                             key={tag.tagId}
                                             tag={tag}
-                                            isSelected={!!this.state.selectedSecondary}
+                                            isSelected={this.state.selectedSecondary == tag}
                                             onClick={() => this.handleSecondarySelected(tag)}
                                         />))
                                     : <p className="placeHolder">Select a category</p>}

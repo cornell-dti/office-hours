@@ -100,21 +100,37 @@ class SessionQuestion extends React.Component<Props> {
         return String(index);
     }
 
-    public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>, updateLocation: Function): void => {
+    public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         this.state.isEditingLocation = true;
         const target = event.target as HTMLTextAreaElement;
         if (target.value.length <= LOCATION_CHAR_LIMIT) {
             this.setState({
                 location: target.value
             });
-            updateLocation({
-                variables: {
-                    questionId: this.props.question.questionId,
-                    location: target.value,
-                }
+
+            const batch = firestore.batch();
+            const question = firestore.collection('questions').doc(this.props.question.questionId);
+            batch.update(question, {
+                location: target.value
             });
-            setTimeout(() => { this.state.isEditingLocation = false; }, 100);
+            batch.commit();
+
+            setTimeout(() => {
+                this.setState({
+                    isEditingLocation: false
+                });
+            }, 1000);
         }
+    };
+
+    handleQuestionStatus = (): void => {
+        const batch = firestore.batch();
+        const question = firestore.collection('questions').doc(this.props.question.questionId);
+        batch.update(question, {
+            status: "retracted"
+        });
+        batch.commit();
+
     };
 
     toggleLocationTooltip = () => {
@@ -158,7 +174,7 @@ class SessionQuestion extends React.Component<Props> {
 
         return (
             <div className="QueueQuestions">
-                {includeBookmark && <div className="Bookmark" />}
+                {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
                 <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
                     {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                 </p>
@@ -183,7 +199,7 @@ class SessionQuestion extends React.Component<Props> {
                             <textarea
                                 className="TextInput question"
                                 value={this.state.location}
-                            // onChange={(e) => this.handleUpdateLocation(e, updateLocation)}
+                                onChange={(e) => this.handleUpdateLocation(e)}
                             />
                             {this.state.isEditingLocation ?
                                 <Loader
@@ -201,7 +217,6 @@ class SessionQuestion extends React.Component<Props> {
                         </div>
                     </div>
                 }
-                {this.state.showLocation && <div className="modalShade" />}
                 <div className="QuestionInfo">
                     {this.props.isTA && this.state.asker &&
                         <div className="studentInformation">
@@ -308,13 +323,12 @@ class SessionQuestion extends React.Component<Props> {
                         </div>
                     </div>
                 }
-                {this.props.includeRemove && !includeBookmark && !this.props.isPast &&
+                {this.props.includeRemove && !this.props.isPast &&
                     <div className="Buttons">
                         <hr />
                         <p
                             className="Remove"
-                            // RYAN_TODO: support remove question
-                            // onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
+                            onClick={() => this.handleQuestionStatus()}
                         >
                             <Icon name="close" /> Remove
                         </p>
