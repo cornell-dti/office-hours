@@ -3,17 +3,24 @@ import { Icon } from 'semantic-ui-react';
 
 type Props = {
     course: FireCourse;
-    role: string;
-    selectCourse?: Function; // If not provided, default to redirection to the course's page
-    selected?: boolean;
+    // If not provided, it means that the student is not enrolled in the class yet.
+    role?: FireCourseRole;
+    onSelectCourse: (addCourse: boolean) => void;
+    editable: boolean;
+    selected: boolean;
 };
 
 class CourseCard extends React.Component<Props> {
-    componentDidMount() {
-        if (this.props.selectCourse && this.props.role !== 'student') {
-            this.props.selectCourse(this.props.course, true);
+    selectCourse = () => {
+        const { role, onSelectCourse, editable, selected } = this.props;
+        if (!editable) {
+            this.redirect('/course/' + this.props.course.courseId);
+            return;
         }
-    }
+        if (role === undefined || role === 'student') {
+            onSelectCourse(!selected);
+        }
+    };
 
     redirect = (href: string) => {
         document.location.href = href;
@@ -29,28 +36,23 @@ class CourseCard extends React.Component<Props> {
         return (
             <div
                 className={'CourseCard' + (this.props.selected ? ' selected' : '')}
-                onClick={() => this.props.selectCourse ?
-                    // Must not be a TA/Prof to be able to deselect a course
-                    (this.props.role === 'student' &&
-                        this.props.selectCourse(this.props.course, !this.props.selected)) :
-                    this.redirect('/course/' + this.props.course.courseId)
-                }
+                onClick={this.selectCourse}
             >
                 <div className="courseText">
                     <div className="courseCode">
                         {this.props.course.code}
-                        {role !== '' && <span className="role">{role}</span>}
+                        {role && <span className="role">{role}</span>}
                     </div>
                     <div className="courseName">
                         {this.props.course.name}
                     </div>
                 </div>
                 <div className="courseColor">
-                    {this.props.selected !== undefined &&
-                        (this.props.selected ?
-                            <Icon className="icon" name="check" /> :
-                            <Icon className="icon" name="plus" />)
-                    }
+                    {this.props.editable && (
+                        this.props.selected
+                            ? <Icon className="icon" name="check" />
+                            : <Icon className="icon" name="plus" />
+                    )}
                 </div>
             </div>
         );

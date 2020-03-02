@@ -71,6 +71,10 @@ const myCourseUsersObservable: Observable<FireCourseUser[]> = loggedIn$.pipe(
 const myCourseUsersSingletonObservable = new SingletonObservable([], myCourseUsersObservable);
 export const useMyCourseUsers: () => readonly FireCourseUser[] =
     createUseSingletonObservableHook(myCourseUsersSingletonObservable);
+const myOptionalCourseUsersSingletonObservable =
+    new SingletonObservable<FireCourseUser[] | null>(null, myCourseUsersObservable);
+export const useOptionalMyCourseUsers: () => readonly FireCourseUser[] | null =
+    createUseSingletonObservableHook(myOptionalCourseUsersSingletonObservable);
 
 export const useMyCourseUser = (courseId: string): FireCourseUser | undefined =>
     useMyCourseUsers().find(courseUser => courseUser.courseId === courseId);

@@ -8,7 +8,7 @@ const TopBar = (props: {
     user?: FireUser;
     // A user's role: student, ta, or professor
     // We show TA's and Profs extra links
-    role: string;
+    role: FireCourseRole;
     // Whether we're in a "professor" view or "student" view
     // controls where "switch view" goes
     context: string;
