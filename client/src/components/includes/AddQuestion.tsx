@@ -216,7 +216,7 @@ class AddQuestion extends React.Component {
                                         ).map((tag) => (<SelectedTags
                                             key={tag.tagId}
                                             tag={tag}
-                                            isSelected={this.state.selectedSecondary == tag}
+                                            isSelected={this.state.selectedSecondary === tag}
                                             onClick={() => this.handleSecondarySelected(tag)}
                                         />))
                                     : <p className="placeHolder">Select a category</p>}

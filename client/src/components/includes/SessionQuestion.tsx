@@ -127,7 +127,7 @@ class SessionQuestion extends React.Component<Props> {
         const batch = firestore.batch();
         const question = firestore.collection('questions').doc(this.props.question.questionId);
         batch.update(question, {
-            status: "retracted"
+            status: 'retracted'
         });
         batch.commit();
 

@@ -1,9 +1,9 @@
 import * as React from 'react';
-import TopBar from '../includes/TopBar';
+// import TopBar from '../includes/TopBar';
 // import gql from 'graphql-tag';
 // import { Query } from 'react-apollo';
-import QMeLogo from '../../media/QLogo2.svg';
-import CourseCard from '../includes/CourseCard';
+// import QMeLogo from '../../media/QLogo2.svg';
+// import CourseCard from '../includes/CourseCard';
 
 const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 1);
 

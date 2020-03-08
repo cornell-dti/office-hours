@@ -5,7 +5,7 @@ import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 
 import { Icon } from 'semantic-ui-react';
-import SessionAlertModal from './SessionAlertModal';
+// import SessionAlertModal from './SessionAlertModal';
 
 // RYAN_TODO
 // const UNDO_QUESTION = gql`
