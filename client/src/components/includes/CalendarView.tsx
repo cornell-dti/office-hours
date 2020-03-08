@@ -28,7 +28,7 @@ export default ({ session, sessionCallback, course, courseUser }: Props) => {
         (course && course.courseId) || '', getQuery, 'sessionId'
     );
     const filteredSessions = sessions && sessions.filter(session =>
-        selectedDate < session.startTime.toDate()
+        selectedDate <= session.startTime.toDate()
         && session.endTime.toDate() < datePlus(selectedDate, ONE_DAY)
     );
 

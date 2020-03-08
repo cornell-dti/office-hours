@@ -5,7 +5,7 @@ import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 
 import { Icon } from 'semantic-ui-react';
-import SessionAlertModal from './SessionAlertModal';
+// import SessionAlertModal from './SessionAlertModal';
 
 type Props = {
     course: FireCourse;
@@ -187,7 +187,8 @@ class SessionView extends React.Component<Props, State> {
                 {/* FUTURE_TODO - Just pass in the session and not a bunch of bools */}
                 <SessionQuestionsContainer
                     isTA={this.props.courseUser.role !== 'student'}
-                    questions={this.props.questions}
+                    questions={this.props.questions.filter(
+                        q => q.status === 'unresolved' || q.status === 'assigned')}
                     handleJoinClick={this.props.joinCallback}
                     myUserId={this.props.user.userId}
                     triggerUndo={this.triggerUndo}
@@ -196,7 +197,7 @@ class SessionView extends React.Component<Props, State> {
                     openingTime={this.getOpeningTime(this.props.session, this.props.course.queueOpenInterval)}
                     haveAnotherQuestion={haveAnotherQuestion}
                 />
-                {lastAskedQuestion !== null && this.state.showAbsent && !this.state.dismissedAbsent && (
+                {/* {this.state.showAbsent && !this.state.dismissedAbsent && (
                     <SessionAlertModal
                         color={'red'}
                         description={'A TA has marked you as absent from this office hour ' +
@@ -206,7 +207,7 @@ class SessionView extends React.Component<Props, State> {
                         cancelAction={() => this.setState({ dismissedAbsent: true })}
                         displayShade={true}
                     />
-                )}
+                )} */}
             </section>
         );
     }

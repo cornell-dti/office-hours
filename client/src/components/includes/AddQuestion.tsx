@@ -62,7 +62,7 @@ class AddQuestion extends React.Component {
         const tags$ = collectionData(
             firestore
                 .collection('tags')
-                .where('courseId', '==', firestore.doc('courses/' + this.props.course.courseId)),
+                .where('courseId', '==', this.props.course.courseId),
             'tagId'
         );
 
@@ -127,14 +127,16 @@ class AddQuestion extends React.Component {
             this.state.selectedSecondary != null) {
             firestore.collection('questions').add({
                 askerId: auth.currentUser.uid,
+                answererId: '',
                 content: this.state.question,
                 location: this.state.location,
-                sessionId: firestore.doc('sessions/' + this.props.session.sessionId),
+                sessionId: this.props.session.sessionId,
                 status: 'unresolved',
-                timeEntered: firebase.firestore.FieldValue.serverTimestamp(),
+                timeEntered: firebase.firestore.Timestamp.now(),
                 primaryTag: this.state.selectedPrimary.tagId,
                 secondaryTag: this.state.selectedSecondary.tagId,
-                endTime: this.props.session.endTime.seconds
+                endTime: this.props.session.endTime.seconds,
+                resolved: false
             });
             this.setState({ redirect: true });
         }
@@ -159,7 +161,6 @@ class AddQuestion extends React.Component {
     };
 
     public questionAdded = () => this.setState({ redirect: true });
-    // RYAN_TODO Add question functionality
     render() {
         if (this.state.redirect) {
             return (
@@ -171,7 +172,6 @@ class AddQuestion extends React.Component {
         }
 
         const questionCharsLeft = this.props.course.charLimit - this.state.question.length;
-
         return (
             <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e)} >
                 {(this.state.stage < 60 || this.state.width < this.props.mobileBreakpoint) &&
@@ -216,12 +216,13 @@ class AddQuestion extends React.Component {
                                         ).map((tag) => (<SelectedTags
                                             key={tag.tagId}
                                             tag={tag}
-                                            isSelected={!!this.state.selectedSecondary}
+                                            isSelected={this.state.selectedSecondary === tag}
                                             onClick={() => this.handleSecondarySelected(tag)}
                                         />))
                                     : <p className="placeHolder">Select a category</p>}
                             </div>
                             <hr />
+
                             <div className="tagsMiniContainer">
                                 <p className="header">
                                     Location <span

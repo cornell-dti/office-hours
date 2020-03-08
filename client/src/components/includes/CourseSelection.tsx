@@ -4,6 +4,7 @@ import QMeLogo from '../../media/QLogo2.svg';
 import CourseCard from '../includes/CourseCard';
 import { firestore } from '../../firebase';
 
+
 type Props = {
     readonly user: FireUser;
     readonly allCourses: readonly FireCourse[];
