@@ -161,7 +161,6 @@ class AddQuestion extends React.Component {
     };
 
     public questionAdded = () => this.setState({ redirect: true });
-    // RYAN_TODO Add question functionality
     render() {
         if (this.state.redirect) {
             return (
