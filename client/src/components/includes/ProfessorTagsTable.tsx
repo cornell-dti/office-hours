@@ -4,15 +4,12 @@ import ProfessorTagsRow from './ProfessorTagsRow';
 import { firestore } from '../../firebase';
 import { useQuery } from '../../firehooks';
 
+const getQuery = (courseId: string) => firestore
+    .collection('tags')
+    .where('courseId', '==', courseId);
+
 const ProfessorTagsTable = (props: { courseId: string }) => {
-
-    const getQuery = () => firestore
-        .collection('tags')
-        .where('courseId', '==', firestore.doc('courses/' + props.courseId));
-
-    const [tags, setQuery] = useQuery<FireTag>(getQuery(), 'tagId');
-    // Update query when course id prop changes
-    React.useEffect(() => setQuery(getQuery()), [props.courseId]);
+    const tags = useQuery<FireTag>(props.courseId, getQuery, 'tagId');
 
     return (
         <React.Fragment>
@@ -34,7 +31,7 @@ const ProfessorTagsTable = (props: { courseId: string }) => {
                                 tag={tag}
                                 key={tag.tagId}
                                 index={i}
-                                childTags={tags.filter(t => t.parentTag && t.parentTag.id === tag.tagId)}
+                                childTags={tags.filter(t => t.parentTag && t.parentTag === tag.tagId)}
                                 courseId={props.courseId}
                             />
                         )}

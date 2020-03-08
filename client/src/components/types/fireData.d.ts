@@ -6,23 +6,23 @@ interface FireTimestamp {
 
 interface FireSession {
     building: string;
-    courseId: firebase.firestore.DocumentReference;
+    courseId: string;
     endTime: FireTimestamp;
     room: string;
-    sessionSeriesId?: firebase.firestore.DocumentReference;
+    sessionSeriesId?: string;
     startTime: FireTimestamp;
-    tas: firebase.firestore.DocumentReference[];
+    tas: string[];
     title?: string;
     sessionId: string;
 }
 
 interface FireSessionSeries {
     building: string;
-    courseId: firebase.firestore.DocumentReference;
+    courseId: string;
     endTime: FireTimestamp;
     room: string;
     startTime: FireTimestamp;
-    tas: firebase.firestore.DocumentReference[];
+    tas: string[];
     title?: string;
     sessionSeriesId: string;
 }
@@ -34,16 +34,20 @@ interface FireCourse {
     queueOpenInterval: number;
     semester: string;
     startDate: FireTimestamp;
+    professors: readonly string[];
+    tas: readonly string[];
     courseId: string;
     charLimit: number;
+    term: string;
+    year: string;
 }
 
-type FireCouseRole = 'professor' | 'ta' | 'student';
+type FireCourseRole = 'professor' | 'ta' | 'student';
 
 interface FireCourseUser {
-    courseId: firebase.firestore.DocumentReference;
-    userId: firebase.firestore.DocumentReference;
-    role: FireCouseRole;
+    courseId: string;
+    userId: string;
+    role: FireCourseRole;
     courseUserId: string;
 }
 
@@ -58,24 +62,25 @@ interface FireUser {
 }
 
 interface FireQuestion {
-    askerId: firebase.firestore.DocumentReference;
-    answererId: firebase.firestore.DocumentReference;
+    askerId: string;
+    answererId: string;
     content: string;
     location: string;
-    sessionId: firebase.firestore.DocumentReference;
-    status: 'assigned' | 'resolved' | 'retracted' | 'unresolved';
+    sessionId: string;
+    status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
+    resolved: boolean;
     timeAddressed: FireTimestamp;
     timeEntered: FireTimestamp;
-    primaryTag: firebase.firestore.DocumentReference;
-    secondaryTag: firebase.firestore.DocumentReference;
+    primaryTag: string;
+    secondaryTag: string;
     questionId: string;
 }
 
 interface FireTag {
     active: boolean;
-    courseId: firebase.firestore.DocumentReference;
+    courseId: string;
     level: number;
     tagId: string;
     name: string;
-    parentTag?: firebase.firestore.DocumentReference;
+    parentTag?: string;
 }

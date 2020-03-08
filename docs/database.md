@@ -39,6 +39,9 @@ And then load in the schema using the dump as described above (using `psql`).
 ### A note on timestamps
 Wherever timestamps appear in the schema, we default to using the `timestamp with time zone` type, since it gives us consistency across clients in different time zones. Whenever providing timestamps to the database, please include the client's timezone! The most common way to do this is to format the timestamp string as an ISO 8601 string that includes the timezone offset.
 
+### A note on making changes locally
+In order to add a course to your local postgres databse, the server must first be shut off before you make changes to the "courses" table.
+
 ## Symbols
 |Symbol|Description|
 |---|---|
@@ -82,7 +85,7 @@ Each row in courses represents a specific course offering that is using Queue Me
 |:---:|---|
 |Read|All users|
 |Insert|-|
-|Update|-|
+|Update|Professors for the course|
 |Delete|-|
 
 ### users
@@ -433,6 +436,19 @@ Update's the course_user value for a given course and user (specified by ID). Wi
 
 ##### Returns
 All the fields of the updated row from the [course users](#course_users) table
+
+#### api\_update\_course\_settings
+
+##### Description
+Updates the char_limit and queue_open_interval values for a given course (specified by the course ID), provided that the current user for the specified course has a 'professor' role.
+
+##### Parameters
+- \_course\_id (int): The id of the course that you want to update the settings for
+- \_char\_limit (int): the new character limit for the course
+- \_queue\_open\_interval (interval): the new time interval of when a course's queue should be open prior to the start time
+
+##### Returns
+All the fields of the updated row from the [courses](#courses) table
 
 #### api\_get\_current\_user
 

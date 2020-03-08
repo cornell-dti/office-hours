@@ -14,47 +14,39 @@ interface CategoryTag {
     resolvedQuestions: number;
     percentResolved: number;
     childTags: {
-        name: string,
-        questionCount: number
+        name: string;
+        questionCount: number;
     }[];
     yMax: number;
 }
 
-const ProfessorDashboardView = (props: {
-    match: {
-        params: {
-            courseId: string;
-        }
-    }
-}) => {
+const getQuery = (courseId: string) => firestore
+    .collection('tags')
+    // RYAN_TODO filter based on today's date.
+    .where('courseId', '==', firestore.doc('courses/' + courseId));
+
+// Fetching all questions for a course might be expensive/have performance implications
+// This should be rarely done, though.
+const getQuestionsQuery = (courseId: string) => firestore
+    .collection('questions')
+    // RYAN_TODO filter based on today's date.
+    .where('courseId', '==', firestore.doc('courses/' + courseId));
+
+type Props = { match: { params: { courseId: string } } };
+
+const ProfessorDashboardView = ({ match: { params: { courseId } } }: Props) => {
     const [currentCategory, setCurrentCategory] = useState<CategoryTag | undefined>();
 
-    const getQuery = () => firestore
-        .collection('tags')
-        // RYAN_TODO filter based on today's date.
-        .where('courseId', '==', firestore.doc('courses/' + props.match.params.courseId));
-
-    const [tags, setQuery] = useQuery<FireTag>(getQuery(), 'tagId');
-
-    // Fetching all questions for a course might be expensive/have performance implications
-    // This should be rarely done, though.
-    const getQuestionsQuery = () => firestore
-        .collection('questions')
-        // RYAN_TODO filter based on today's date.
-        .where('courseId', '==', firestore.doc('courses/' + props.match.params.courseId));
-
-    const [questions] = useQuery<FireQuestion>(getQuestionsQuery(), 'questionId');
-
-    // Update query when course id prop changes
-    React.useEffect(() => setQuery(getQuery()), [props.match.params.courseId]);
+    const tags = useQuery<FireTag>(courseId, getQuery, 'tagId');
+    const questions = useQuery<FireQuestion>(courseId, getQuestionsQuery, 'questionId');
 
     const categories: CategoryTag[] = tags
         .filter((tag) => tag.level === 1)
         .map((tag) => {
-            const enrichedChildTags: (FireTag & { questionCount: number, resolvedQuestionCount: number })[] = tags
-                .filter(t => t.parentTag && t.parentTag.id === tag.tagId)
+            const enrichedChildTags: (FireTag & { questionCount: number; resolvedQuestionCount: number })[] = tags
+                .filter(t => t.parentTag && t.parentTag === tag.tagId)
                 .map(t => {
-                    const tagQuestions = questions.filter(q => q.secondaryTag.id === t.tagId);
+                    const tagQuestions = questions.filter(q => q.secondaryTag === t.tagId);
                     return {
                         ...t,
                         questionCount: tagQuestions.length,
@@ -88,10 +80,10 @@ const ProfessorDashboardView = (props: {
     };
 
     const calcTickVals = (yMax: number) => {
-        let end = yMax + (5 - yMax % 5);
+        const end = yMax + (5 - yMax % 5);
         let start = 0;
-        let step = end / 5;
-        let tickVals = [];
+        const step = end / 5;
+        const tickVals = [];
 
         while (end + step >= start) {
             tickVals.push(start);
@@ -101,7 +93,6 @@ const ProfessorDashboardView = (props: {
         return tickVals;
     };
 
-    const courseId = props.match.params.courseId;
     const course = useCourse(courseId);
 
     return (

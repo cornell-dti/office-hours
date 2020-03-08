@@ -4,25 +4,25 @@ import moment from 'moment';
 import { Dropdown, Checkbox, Icon, DropdownItemProps, DropdownProps } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { firestore, Timestamp } from '../../firebase';
+import { createSeries, updateSeries } from '../../firebasefunctions';
 
 const ProfessorOHInfo = (props: {
-    session?: FireSession,
-    courseId: string,
-    isNewOH: boolean,
-    taOptions: DropdownItemProps[],
-    taUserIdsDefault?: number[],
-    toggleEdit: Function,
+    session?: FireSession;
+    courseId: string;
+    isNewOH: boolean;
+    taOptions: DropdownItemProps[];
+    taUserIdsDefault?: number[];
+    toggleEdit: Function;
 }) => {
     const session = props.session || undefined;
 
     const [startTime, setStartTime] = useState<moment.Moment | undefined>
-        (session && moment(session.startTime.seconds * 1000));
+    (session && moment(session.startTime.seconds * 1000));
     const [endTime, setEndTime] = useState<moment.Moment | undefined>
-        (session && moment(session.endTime.seconds * 1000));
+    (session && moment(session.endTime.seconds * 1000));
     const [taSelected, setTaSelected] = useState<(string | undefined)[]>
-        (session && session.tas
-            ? session.tas.map(dRef => dRef.id)
-            : []);
+        (session && session.tas ? session.tas : [undefined]);
     const [locationBuildingSelected, setLocationBuildingSelected] = useState(session && session.building);
     const [locationRoomNumSelected, setLocationRoomNumSelected] = useState(session && session.room);
     const [isSeriesMutation, setIsSeriesMutation] = useState(!!(session && session.sessionSeriesId));
@@ -41,6 +41,7 @@ const ProfessorOHInfo = (props: {
     const handleStartTime = (currStartTime: moment.Moment) => {
         // Prevents end time from occuring before start time
         const newEndTime = moment(currStartTime).add(1, 'hours');
+        setStartTime(currStartTime);
         setEndTime(newEndTime);
         updateNotification('');
     };
@@ -60,10 +61,11 @@ const ProfessorOHInfo = (props: {
     };
 
     const handleTaList = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps, index: number) => {
-        // Immutably update the value at index
-        // tslint:disable-next-line: max-line-length
-        // https://medium.com/@giltayar/immutably-setting-a-value-in-a-js-array-or-how-an-array-is-also-an-object-55337f4d6702
-        setTaSelected(old => Object.assign([...old], { index: String(data.value) }));
+        setTaSelected(old => {
+            const newArray = [...old];
+            newArray[index] = String(data.value);
+            return newArray;
+        });
         updateNotification('');
     };
 
@@ -87,6 +89,69 @@ const ProfessorOHInfo = (props: {
         ]);
     };
 
+    /** A do-it-all function that can create/edit sessions/series. */
+    const mutateSessionOrSeries = (): void => {
+        const startMomentTime = startTime;
+        if (startMomentTime === undefined) {
+            return;
+        }
+        const startTimestamp = Timestamp.fromDate(startMomentTime.toDate());
+        const endMomentTime = endTime;
+        if (endMomentTime === undefined) {
+            return;
+        }
+        const endTimestamp = Timestamp.fromDate(endMomentTime.toDate());
+        if (locationBuildingSelected === undefined || locationRoomNumSelected === undefined) {
+            return;
+        }
+        const propsSession = props.session;
+        const taDocuments: string[] = [];
+        taSelected.forEach(ta => {
+            if (ta !== undefined) {
+                taDocuments.push(ta);
+            }
+        });
+        if (isSeriesMutation) {
+            const series: Omit<FireSessionSeries, 'sessionSeriesId'> = {
+                building: locationBuildingSelected,
+                courseId: props.courseId,
+                endTime: endTimestamp,
+                room: locationRoomNumSelected,
+                startTime: startTimestamp,
+                tas: taDocuments,
+                title
+            };
+            if (propsSession) {
+                const seriesId = propsSession.sessionSeriesId;
+                if (seriesId === undefined) {
+                    return;
+                }
+                updateSeries(firestore, seriesId, series);
+            } else {
+                createSeries(firestore, series);
+            }
+        } else {
+            const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
+            const sessionWithoutSessionSeriesId = {
+                building: locationBuildingSelected,
+                courseId: props.courseId,
+                endTime: endTimestamp,
+                room: locationRoomNumSelected,
+                startTime: startTimestamp,
+                tas: taDocuments,
+                title
+            };
+            const newSession: Omit<FireSession, 'sessionId'> = sessionSeriesId === undefined
+                ? sessionWithoutSessionSeriesId
+                : { ...sessionWithoutSessionSeriesId, sessionSeriesId };
+            if (propsSession) {
+                firestore.collection('sessions').doc(propsSession.sessionId).update(newSession);
+            } else {
+                firestore.collection('sessions').add(newSession);
+            }
+        }
+    };
+
     let isMaxTA = false;
     // -1 to account for the "TA Name" placeholder
     if (taSelected.length >= props.taOptions.length - 1) {
@@ -96,14 +161,14 @@ const ProfessorOHInfo = (props: {
     // Warning if fields are empty
     // Warning if end time (state) is in the past
     // Disable save button if default start time (prop) is in the past
-    let disableEmpty = startTime == null || endTime == null;
-    let disableState = endTime !== null && moment(endTime).isBefore();
-    let disableProps = !(props.session == null) && moment(props.session.endTime).isBefore();
+    const disableEmpty = startTime == null || endTime == null;
+    const disableState = endTime !== null && moment(endTime).isBefore();
+    const disableProps = !(props.session == null) && moment(props.session.endTime).isBefore();
 
     const emptyNotification = 'Please fill in valid times';
     const stateNotification = 'End time has already passed!';
 
-    let AddTA = taSelected.map(
+    const AddTA = taSelected.map(
         (ta, i) => {
             return (
                 <div className={'AddTA ' + (i === 0 ? 'First' : 'Additional')} key={i}>
@@ -187,7 +252,7 @@ const ProfessorOHInfo = (props: {
                             // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
                             // Will not compile if removed
                             showTimeSelectOnly={true}
-                            timeIntervals={30}
+                            timeIntervals={10}
                             dateFormat="LT"
                             placeholderText="12:00 PM"
                             readOnly={true}
@@ -204,7 +269,7 @@ const ProfessorOHInfo = (props: {
                             // Manually added showTimeSelectOnly property to react-datepicker/index.d.ts
                             // Will not compile if removed
                             showTimeSelectOnly={true}
-                            timeIntervals={30}
+                            timeIntervals={10}
                             dateFormat="LT"
                             minTime={startTime || moment().startOf('day')}
                             maxTime={moment().endOf('day')}
@@ -236,18 +301,14 @@ const ProfessorOHInfo = (props: {
                         } else if (disableState) {
                             updateNotification(stateNotification);
                         } else {
-                            // If is new OH
-                            // _onClickCreateSession(e, CreateSession);
+                            mutateSessionOrSeries();
                             clearFields();
-                            // Else
-                            // _onClickEditSession(e, () => 1);
                             props.toggleEdit();
                         }
                     }}
                     disabled={disableProps}
                 >
-                    Save Changes
-                    {/* OR Create */}
+                    {props.isNewOH ? 'Create' : 'Save Changes'}
                 </button>
                 <span className="EditNotification">
                     {notification}

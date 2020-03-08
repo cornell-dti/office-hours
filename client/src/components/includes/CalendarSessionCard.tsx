@@ -1,14 +1,14 @@
 import * as React from 'react';
 import Moment from 'react-moment';
-const chevron = require('../../media/chevron.svg');
+import chevron from '../../media/chevron.svg';
 
 const CalendarSessionCard = (props: {
-    includeBookmark: boolean | null,
-    numAhead: number,
-    session: FireSession,
-    callback: (sessionId: string) => void,
-    active: boolean,
-    status: string
+    includeBookmark: boolean | null;
+    numAhead: number;
+    session: FireSession;
+    callback: (sessionId: string) => void;
+    active: boolean;
+    status: string;
 }) => {
     const handleOnClick = () => {
         props.callback(props.session.sessionId);
@@ -20,7 +20,7 @@ const CalendarSessionCard = (props: {
 
     const tas: FireUser[] = []; // session.sessionTasBySessionId.nodes;
 
-    let timeDesc = '';
+    const timeDesc = '';
     return (
         <div className={(props.active && 'active') + ' CalendarSessionCard'} onClick={handleOnClick}>
             {props.includeBookmark && <div className="Bookmark" />}
@@ -50,13 +50,13 @@ const CalendarSessionCard = (props: {
                 <div className="Queue">
                     <span className="Ahead">
                         Ahead: &nbsp;
-                            <span className={'AheadNum ' + (props.numAhead === 0 && 'zero')}>
+                        <span className={'AheadNum ' + (props.numAhead === 0 && 'zero')}>
                             {props.numAhead}
                         </span>
                     </span>
                     <span className="Finished">
                         Finished: &nbsp;
-                            <span className="FinishedNum">
+                        <span className="FinishedNum">
                             {questions.filter(q => q.status === 'resolved').length}
                         </span>
                     </span>
@@ -64,7 +64,7 @@ const CalendarSessionCard = (props: {
                 <div className="TimeDesc">{timeDesc}</div>
             </div>
             <div className="OpenButton">
-                <img src={chevron} />
+                <img src={chevron} alt="Open session dropdown" />
             </div>
         </div>
     );

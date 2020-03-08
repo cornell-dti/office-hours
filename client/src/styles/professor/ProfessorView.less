@@ -1,25 +1,6 @@
 .ProfessorView {
     overflow: auto;
     padding-bottom: 50px;
-    .main {
-        margin-right: 50px;
-        margin-left: 200px+50px;
-
-        .CalendarWeekSelect {
-            margin: 5px 0;
-            background-color: transparent;
-            border-top: none;
-        }
-
-        .SelectCategory {
-            padding-top: 200px;
-            font-family: Roboto;
-            font-size: 28px;
-            font-weight: 300;
-            color: @text-grey;
-        }
-
-    }
 
     input:not(.DateInput_input) {
         border:none;
@@ -39,6 +20,33 @@
         color: #a0a0a0;
         outline: none;
         user-select: none;
+    }
+
+    .main {
+        margin-right: 50px;
+        margin-left: 200px+50px;
+
+        .CalendarWeekSelect {
+            margin: 5px 0;
+            background-color: transparent;
+            border-top: none;
+        }
+
+        .SelectCategory {
+            padding-top: 200px;
+            font-family: Roboto;
+            font-size: 28px;
+            font-weight: 300;
+            color: @text-grey;
+        }
+
+        Button#profSettings {
+            float: right;
+            font-size: 14px;
+            color: black;
+            margin-top: 30px;
+            padding: 15px 0px;
+        }
     }
 
     // Dropdown CSS

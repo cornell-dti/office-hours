@@ -2,12 +2,11 @@ import * as React from 'react';
 import { groupBy } from 'lodash';
 
 import CalendarSessionCard from './CalendarSessionCard';
-import { useQuery } from '../../firehooks';
-import { firestore } from '../../firebase';
 
-const CalendarSessions = (props: {
+const CalendarSessions = ({ activeSession, course, sessions, callback }: {
     activeSession?: FireSession;
     course: FireCourse;
+    sessions: FireSession[];
     callback: (sessionId: string) => void;
 }) => {
     const labelSession = (session: FireSession, intervalMs: number) => {
@@ -21,15 +20,6 @@ const CalendarSessions = (props: {
 
         return 'Upcoming';
     };
-
-    const getQuery = () => firestore
-        .collection('sessions')
-        // RYAN_TODO filter based on today's date.
-        .where('courseId', '==', firestore.doc('courses/' + props.course.courseId));
-
-    const [sessions, setQuery] = useQuery<FireSession>(getQuery(), 'sessionId');
-    // Update query when course id prop changes
-    React.useEffect(() => setQuery(getQuery()), [props.course.courseId]);
 
     const sessionCards = sessions.map(session => {
         // RYAN_TODO
@@ -47,9 +37,9 @@ const CalendarSessions = (props: {
                 numAhead={numAhead}
                 session={session}
                 key={session.sessionId}
-                callback={props.callback}
-                active={props.activeSession ? props.activeSession.sessionId === session.sessionId : false}
-                status={labelSession(session, props.course.queueOpenInterval * 1000)}
+                callback={callback}
+                active={activeSession ? activeSession.sessionId === session.sessionId : false}
+                status={labelSession(session, course.queueOpenInterval * 1000)}
             />
         );
     });

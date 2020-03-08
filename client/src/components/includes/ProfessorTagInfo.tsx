@@ -1,118 +1,177 @@
+/* eslint-disable @typescript-eslint/member-delimiter-style */
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
 
-class ProfessorTagInfo extends React.Component {
-    props!: {
-        isNew: boolean
-        cancelCallback: Function
-        tag?: FireTag
-        courseId: string
-        childTags: FireTag[]
-    };
+type PropTypes = {
+    isNew: boolean
+    cancelCallback: Function
+    tag?: FireTag
+    courseId: string
+    childTags: FireTag[]
+};
 
-    state!: {
-        tag: FireTag
-        newTagText: string
-    };
+type State = {
+    tag: FireTag
+    newTagText: string
+    newTags: string[]
+};
 
-    constructor(props: {
-        isNew: boolean
-        cancelCallback: Function
-        tag?: FireTag
-        courseId: string
-        childTags: FireTag[]
-    }) {
+class ProfessorTagInfo extends React.Component<PropTypes, State> {
+
+    constructor(props: PropTypes) {
         super(props);
         this.state = {
             tag: {
-                courseId: firestore.collection('courses').doc(props.courseId),
-                level: 1,
                 active: true,
-                tagId: '', // new tag
-                name: ''
+                level: 1,
+                tagId: '',
+                name: '',
+                courseId: props.courseId
             },
-            newTagText: ''
+            newTagText: '',
+            newTags: []
         };
     }
 
-    componentWillReceiveProps(props: { tag?: FireTag }) {
+    componentWillReceiveProps(props: PropTypes) {
         if (props.tag) {
             this.setState({
                 tag: props.tag,
-                newTagText: ''
-            });
-        } else {
-            this.setState({
-                tag: {
-                    level: 1,
-                    active: true,
-                    tagId: '', // new tag
-                    name: ''
-                },
-                newTagText: ''
+                newTags: props.childTags.map(firetag => firetag.name)
             });
         }
     }
 
     handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        let newState = Object.assign({}, this.state.tag);
+        const newState = Object.assign({}, this.state.tag);
         const target = event.target;
         newState.name = target.value;
         this.setState({ tag: newState });
-    }
+    };
 
     handleNewTagTextChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const target = event.target;
         this.setState({ newTagText: target.value });
-    }
+    };
 
     handleActiveChange = (active: boolean): void => {
-        let newState = Object.assign({}, this.state.tag);
+        const newState = Object.assign({}, this.state.tag);
         newState.active = active;
         this.setState({ tag: newState });
-    }
-
-    helperAddNewChildTag(newTag: FireTag) {
-        console.log('RYAN_TODO add child tag: ', newTag);
-    }
+    };
 
     handleNewTagEnter = (): void => {
         if (this.state.newTagText.length === 0) {
             return;
         }
-        let newTag: FireTag = {
-            active: true,
-            level: 2,
-            tagId: '',
-            name: this.state.newTagText,
-            courseId: firestore.collection('courses').doc(this.props.courseId)
-        };
-        this.helperAddNewChildTag(newTag);
-        this.setState({ newTagText: '' });
-    }
+        this.setState(prevState => ({
+            newTags: [...prevState.newTags, prevState.newTagText],
+            newTagText: ''
+        }));
+    };
 
-    handleRemoveChildTag = (id: string): void => {
-        console.log('RYAN_TODO delete tag ', id);
-    }
+    handleRemoveChildTag = (name: string): void => {
+        this.setState(prevState => ({
+            newTags: prevState.newTags.filter(tag => tag !== name)
+        }));
+    };
+
+    clearState = (): void => {
+        this.setState(
+            {
+                tag: {
+                    active: true,
+                    level: 1,
+                    tagId: '',
+                    name: '',
+                    courseId: this.props.courseId
+                },
+                newTagText: '',
+                newTags: []
+            }
+        );
+    };
 
     handleCreateAssignment = (): void => {
-        console.log('RYAN_TODO create tag and children');
-    }
+        const batch = firestore.batch();
+
+        // need to create this first so the child tags have the doc reference
+        const parentTag = firestore.collection('tags').doc();
+        batch.set(parentTag, {
+            active: this.state.tag.active,
+            courseId: this.state.tag.courseId,
+            level: 1,
+            name: this.state.tag.name
+        });
+
+        // converts reference parentTag to the string format stored in state
+        this.setState(function (prevState) {
+            prevState.tag.tagId = parentTag.id;
+            return { tag: prevState.tag };
+        });
+
+        // below is essentially add new child a bunch of times
+        this.state.newTags.forEach(tagText => {
+            const childTag = firestore.collection('tags').doc();
+            batch.set(childTag, {
+                active: this.state.tag.active,
+                courseId: this.state.tag.courseId,
+                level: 2,
+                name: tagText,
+                parentTag: parentTag.id
+            });
+        });
+        batch.commit();
+
+        this.clearState();
+    };
 
     handleEditAssignment = (): void => {
-        console.log('RYAN_TODO update tag and children');
-    }
+        const batch = firestore.batch();
+
+        const parentTag = firestore.collection('tags').doc(this.state.tag.tagId);
+        // deals w/ case where parent tag name is changed
+        // no checking yet, like if A1 is changed to A0 but A0 already exists
+        if (this.props.tag && this.state.tag.name !== this.props.tag.name) {
+            batch.update(parentTag, { name: this.state.tag.name });
+        }
+
+        // deleted tags
+        this.props.childTags
+            .filter(firetag => !this.state.newTags.includes(firetag.name))
+            .forEach(firetag =>
+                batch.delete(firestore.collection('tags').doc(firetag.tagId)));
+
+        // new tags
+        const preexistingTags = this.props.childTags
+            .filter(firetag => this.state.newTags.includes(firetag.name))
+            .map(firetag => firetag.name);
+        this.state.newTags
+            .filter(tag => !preexistingTags.includes(tag))
+            .forEach(tagText => {
+                const childTag = firestore.collection('tags').doc();
+                batch.set(childTag, {
+                    active: this.state.tag.active,
+                    courseId: this.state.tag.courseId,
+                    level: 2,
+                    name: tagText,
+                    parentTag: parentTag.id
+                });
+            });
+
+        batch.commit();
+    };
 
     handleEnterPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (e.key === 'Enter') {
             this.handleNewTagEnter();
         }
-    }
+    };
 
     render() {
         return (
-            <React.Fragment>
+            <React.Fragment >
                 <div className="ProfessorTagInfo">
                     <div className="Assignment InputSection">
                         <div className="InputHeader">Assignment Name</div>
@@ -142,15 +201,14 @@ class ProfessorTagInfo extends React.Component {
                     </div>
                     <div className="ChildTags InputSection" onKeyDown={(e) => this.handleEnterPress(e)}>
                         <div className="InputHeader">Tags</div>
-                        {this.props.childTags
-                            .filter((childTag) => childTag.active)
+                        {this.state.newTags
                             .map((childTag, i) => (
                                 <div key={i} className="SelectedChildTag" >
-                                    {childTag.name}
+                                    {childTag}
                                     <Icon
                                         className="Remove"
                                         name="close"
-                                        onClick={() => this.handleRemoveChildTag(childTag.tagId)}
+                                        onClick={() => this.handleRemoveChildTag(childTag)}
                                     />
                                 </div>
                             ))
@@ -177,26 +235,26 @@ class ProfessorTagInfo extends React.Component {
                     {this.props.isNew ?
                         <button
                             className="Bottom Edit"
-                        // onClick={() => {
-                        //     this.handleCreateAssignment(CreateAssignment);
-                        //     this.props.cancelCallback();
-                        // }}
+                            onClick={() => {
+                                this.handleCreateAssignment();
+                                this.props.cancelCallback();
+                            }}
                         >
                             Create
                         </button>
                         :
                         <button
                             className="Bottom Edit"
-                        // onClick={() => {
-                        //     this.handleEditAssignment(EditAssignment);
-                        //     this.props.cancelCallback();
-                        // }}
+                            onClick={() => {
+                                this.handleEditAssignment();
+                                this.props.cancelCallback();
+                            }}
                         >
                             Save Changes
                         </button>
                     }
                 </div>
-            </React.Fragment>
+            </React.Fragment >
         );
     }
 }

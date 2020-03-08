@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-delimiter-style */
 import * as React from 'react';
 import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
@@ -5,6 +6,8 @@ import { firestore } from '../../firebase';
 import { docData } from 'rxfire/firestore';
 import SelectedTags from './SelectedTags';
 import { Observable } from 'rxjs';
+//This is used to make a timestamp
+import * as firebase from 'firebase/app';
 
 // import SelectedTags from './SelectedTags';
 
@@ -35,58 +38,189 @@ import { Observable } from 'rxjs';
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
 
-class SessionQuestion extends React.Component {
-    props!: {
-        question: FireQuestion,
-        index: number,
-        isTA: boolean,
-        includeRemove: boolean,
-        myUserId: string,
-        triggerUndo: Function,
-        isPast: boolean,
-    };
+type Props = {
+    question: FireQuestion,
+    index: number,
+    isTA: boolean,
+    includeRemove: boolean,
+    myUserId: string,
+    triggerUndo: Function,
+    isPast: boolean,
+};
 
-    state!: {
-        showLocation: boolean,
-        location: string,
-        isEditingLocation: boolean,
-        showDotMenu: boolean,
-        undoQuestionIdDontKnow?: number,
-        undoName?: string,
-        asker?: FireUser,
-        answerer?: FireUser,
-        primaryTag?: FireTag,
-        secondaryTag?: FireTag
-    };
+type State = {
+    showLocation: boolean,
+    location: string,
+    isEditingLocation: boolean,
+    showDotMenu: boolean,
+    undoQuestionIdDontKnow?: number,
+    undoName?: string,
+    //The loaded value of these variables
+    asker?: FireUser | null,
+    answerer?: FireUser | null,
+    primaryTag?: FireTag | null,
+    secondaryTag?: FireTag | null,
+    //This is used for memoization so that we don't fetch the same
+    //user information multiple times
+    loadedAnswererId?: string | null,
+    loadedAskerId?: string | null,
+    loadedPrimaryTag?: string | null,
+    loadedSecondaryTag?: string | null,
+    loading: boolean
+};
 
-    constructor(props: {}) {
+//We no longer support dynamic updating of asker, answer, tags etc
+
+class SessionQuestion extends React.Component<Props> {
+    state!:State
+
+    constructor(props: Props) {
         super(props);
         this.state = {
             showLocation: false,
-            location: this.props.question.location || '',
+            location: props.question.location || '',
             isEditingLocation: false,
             showDotMenu: false,
+            //This code is used to load relevant information and cache it
+            asker: null,
+            answerer: null,
+            primaryTag: null,
+            secondaryTag: null,
+            //This is used for memoization so that we don't fetch the same
+            //user information multiple times
+            loadedAnswererId: null,
+            loadedAskerId: null,
+            loadedPrimaryTag: null,
+            loadedSecondaryTag: null,
+            //Not currently loading these
+            loading: false
         };
+        
+    }
 
+    static getDerivedStateFromProps(props : Props, state : State) {
+        //Assign null to these fields
+        let stateChanges = {
+            loadedPrimaryTag: state.loadedPrimaryTag,
+            primaryTag: state.primaryTag,
+            loadedAnswererId: state.loadedAnswererId,
+            answerer: state.answerer,
+            loadedSecondaryTag: state.loadedSecondaryTag,
+            secondaryTag: state.secondaryTag,
+            loadedAskerId: state.loadedAskerId,
+            asker: state.asker,
+            loading: state.loading
+        }
+
+        //Invalidate props when information is stale
+        if (state.loadedPrimaryTag !== props.question.primaryTag){
+            stateChanges.loadedPrimaryTag = props.question.primaryTag
+            stateChanges.primaryTag = null
+            stateChanges.loading = false
+        }
+        if (state.loadedAnswererId !== props.question.answererId){
+            stateChanges.loadedAnswererId = props.question.answererId
+            stateChanges.answerer = null
+            stateChanges.loading = false
+        }
+        if (state.loadedSecondaryTag !== props.question.secondaryTag){
+            stateChanges.loadedSecondaryTag = props.question.secondaryTag
+            stateChanges.secondaryTag = null
+            stateChanges.loading = false
+        }
+        if (state.loadedAskerId !== props.question.askerId){
+            stateChanges.loadedAskerId = props.question.askerId
+            stateChanges.asker = null
+            stateChanges.loading = false
+        }
+
+        return Object.assign(state, stateChanges)
+    }
+
+    componentDidUpdate(props : Props, state: State) {
+        let shouldUpdateLoad = false
+        //Make a get request for the asker if their information is invalidated
+        if (!state.loading && state.asker === null){
+            firestore.doc('users/' + state.loadedAskerId).get().then(
+                (doc) => {
+                    if (doc.exists){
+                        this.setState({
+                            asker: doc.data()
+                        })
+                    }
+                }
+            )
+            shouldUpdateLoad = true
+        }
+        //Make a get request for the answerer if their information is invalidated
+        if (!state.loading && props.question.answererId && state.answerer === null){
+            firestore.doc('users/' + state.loadedAnswererId).get().then(
+                (doc) => {
+                    if (doc.exists){
+                        this.setState({
+                            answerer: doc.data()
+                        })
+                    }
+                }
+            )
+            shouldUpdateLoad = true
+        }
+        //Make requests for the tags
+        if (!state.loading && state.primaryTag === null){
+            firestore.doc('tags/' + state.loadedPrimaryTag).get().then(
+                (doc) => {
+                    if (doc.exists){
+                        this.setState({
+                            primaryTag: doc.data()
+                        })
+                    }
+                }
+            )
+            shouldUpdateLoad = true
+        }
+        if (!state.loading && state.secondaryTag === null){
+            firestore.doc('tags/' + state.loadedSecondaryTag).get().then(
+                (doc) => {
+                    if (doc.exists){
+                        this.setState({
+                            secondaryTag: doc.data()
+                        })
+                    }
+                }
+            )
+            shouldUpdateLoad = true
+        }
+        if (shouldUpdateLoad){
+            this.setState({
+                loading: true
+            })
+        }
+    }
+
+    //These observables need to be constructed here because their state
+    //need to be updated upon changes in props
+    /*componentWillReceiveProps(props : Props){
         const asker$: Observable<FireUser> =
-            docData(firestore.doc('users/' + this.props.question.askerId), 'userId');
-        asker$.subscribe(asker => this.setState({ asker }));
+        docData(firestore.doc('users/' + props.question.askerId), 'userId');
+        const askerSubscription = asker$.subscribe(asker => this.setState({ asker }));
 
+        //If the answerer ID is obtained, fetch the answerer information
         if (this.props.question.answererId) {
             // RYAN_TODO make this work when we get an answerer id
             const answerer$: Observable<FireUser> =
-                docData(firestore.doc('users/' + this.props.question.answererId), 'userId');
+                docData(firestore.doc('users/' + props.question.answererId), 'userId');
             answerer$.subscribe(answerer => this.setState({ answerer }));
         }
 
+        //Primary and secondary tags
         const primaryTag$: Observable<FireTag>
-            = docData(firestore.doc('tags/' + this.props.question.primaryTag), 'tagId');
+            = docData(firestore.doc('tags/' + props.question.primaryTag), 'tagId');
         primaryTag$.subscribe(primaryTag => this.setState({ primaryTag }));
 
         const secondaryTag$: Observable<FireTag>
-            = docData(firestore.doc('tags/' + this.props.question.secondaryTag), 'tagId');
+            = docData(firestore.doc('tags/' + props.question.secondaryTag), 'tagId');
         secondaryTag$.subscribe(secondaryTag => this.setState({ secondaryTag }));
-    }
+    }*/
 
     // Given an index from [1..n], converts it to text that is displayed on the
     // question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
@@ -98,6 +232,7 @@ class SessionQuestion extends React.Component {
         // 'th';
         return String(index);
     }
+
 
     public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>, updateLocation: Function): void => {
         this.state.isEditingLocation = true;
@@ -114,12 +249,41 @@ class SessionQuestion extends React.Component {
             });
             setTimeout(() => { this.state.isEditingLocation = false; }, 100);
         }
-    }
+    };
 
     toggleLocationTooltip = () => {
         this.setState({
             showLocation: !this.state.showLocation
         });
+    };
+
+    //This function attempts to assign this question to the current user
+    assignQuestion = (event: React.MouseEvent<HTMLElement>) => {
+        //Attempt to assign question to me
+        firestore.doc(`questions/${this.props.question.questionId}`).update({
+            status: 'assigned',
+            answererId: this.props.myUserId
+        })
+    }
+
+    //This function produces a no show
+    studentNoShow = (event : React.MouseEvent<HTMLElement>) => {
+        console.log(`questions/${this.props.question.questionId}`)
+        firestore.doc(`questions/${this.props.question.questionId}`).update({
+            status: 'no-show',
+            //This question has been "resolved" and will not show up again
+            resolved: true
+        })
+    }
+
+    //This function notes that a question has been done
+    questionDone = (event : React.MouseEvent<HTMLElement>) => {
+        firestore.doc(`questions/${this.props.question.questionId}`).update({
+            status: 'resolved',
+            timeAddressed: firebase.firestore.Timestamp.now(),
+            //This question has been "resolved" and will not show up again
+            resolved: true
+        })
     }
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
@@ -135,18 +299,11 @@ class SessionQuestion extends React.Component {
             status,
             this.state.asker ? this.state.asker.firstName + ' ' + this.state.asker.lastName : 'unknown'
         );
-    }
+    };
 
     setDotMenu = (status: boolean) => {
         this.setState({ showDotMenu: status });
-    }
-
-    // triggerUndoDontKnow = (questionId: number, name: string) => {
-    //     this.setState({
-    //         undoQuestionIdDontKnow: questionId,
-    //         undoName: name,
-    //     });
-    // }
+    };
 
     handleUndoDontKnow = (questionId: number, UndoDontKnow: Function) => {
         UndoDontKnow({
@@ -155,12 +312,12 @@ class SessionQuestion extends React.Component {
                 status: 'unresolved'
             }
         });
-    }
+    };
 
     render() {
-        let question = this.props.question;
+        const question = this.props.question;
         const studentCSS = this.props.isTA ? '' : ' Student';
-        const includeBookmark = this.props.question.askerId.id === this.props.myUserId;
+        const includeBookmark = this.props.question.askerId === this.props.myUserId;
 
         return (
             <div className="QueueQuestions">
@@ -211,13 +368,20 @@ class SessionQuestion extends React.Component {
                 <div className="QuestionInfo">
                     {this.props.isTA && this.state.asker &&
                         <div className="studentInformation">
-                            <img src={this.state.asker.photoUrl} />
+                            <img
+                                src={this.state.asker === undefined
+                                    ? '/placeholder.png'
+                                    : this.state.asker.photoUrl}
+                                alt={this.state.asker === undefined
+                                    ? 'Asker profile picture'
+                                    : `${this.state.asker.firstName} ${this.state.asker.lastName} profile picture`}
+                            />
                             <span className="Name">
                                 {this.state.asker.firstName + ' ' + this.state.asker.lastName}
                                 {question.status === 'assigned' &&
                                     <React.Fragment>
                                         <span className="assigned"> is assigned
-                                        {this.state.answerer &&
+                                            {this.state.answerer &&
                                                 (' to ' + (this.state.answerer.userId === this.props.myUserId
                                                     ? 'you'
                                                     : this.state.answerer.firstName + ' '
@@ -249,7 +413,7 @@ class SessionQuestion extends React.Component {
                     {question.timeEntered != null &&
                         <p className="Time">
                             posted at&nbsp;
-                        {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
+                            {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
                         </p>}
                 </div>
                 {this.props.isTA &&
@@ -259,7 +423,10 @@ class SessionQuestion extends React.Component {
                             {question.status === 'unresolved' &&
                                 <p
                                     className="Begin"
-                                // onClick={(e) => this._onClick(e, updateQuestion, 'assigned')}
+                                    onClick = {
+                                        //Assign question
+                                        (e) => this.assignQuestion(e)
+                                    }
                                 >
                                     Assign to Me
                                 </p>
@@ -268,12 +435,19 @@ class SessionQuestion extends React.Component {
                                 <React.Fragment>
                                     <p
                                         className="Delete"
-                                    // onClick={(e) => this._onClick(e, updateQuestion, 'no-show')}
+                                        onClick = {
+                                            //No show
+                                            (e) => this.studentNoShow(e)
+                                        }
                                     >
                                         No show
                                     </p>
                                     <p
                                         className="Done"
+                                        onClick = {
+                                            //Done
+                                            (e) => this.questionDone(e)
+                                        }
                                     // onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
                                     >
                                         Done
@@ -284,7 +458,7 @@ class SessionQuestion extends React.Component {
                                     >
                                         ...
 
-                                            {this.state.showDotMenu &&
+                                        {this.state.showDotMenu &&
                                             <div
                                                 className="IReallyDontKnow"
                                                 tabIndex={1}
@@ -312,13 +486,14 @@ class SessionQuestion extends React.Component {
                         <hr />
                         <p
                             className="Remove"
-                        // onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
+                            // RYAN_TODO: support remove question
+                            // onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
                         >
                             <Icon name="close" /> Remove
                         </p>
                     </div>
                 }
-            </div >
+            </div>
         );
     }
 }

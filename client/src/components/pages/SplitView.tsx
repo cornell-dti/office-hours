@@ -6,13 +6,16 @@ import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import AddQuestion from '../includes/AddQuestion';
 
-import { useCourse, useSession, useMyCourseUser, useMyUser } from '../../firehooks';
+import { useCourse, useSession, useMyCourseUser, useMyUser, useQuery } from '../../firehooks';
 
 import TopBar from '../includes/TopBar';
 import { Loader } from 'semantic-ui-react';
+import { firestore } from '../../firebase';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
+// Number of questions to be displayed
+const NUM_QUESTIONS_SHOWN = 10;
 
 const useWindowWidth = () => {
     const [width, setWidth] = useState(window.innerWidth);
@@ -28,15 +31,26 @@ const useWindowWidth = () => {
     return width;
 };
 
+const getQuestionsQuery = (sessionId: string) => 
+{return firestore.collection('questions')
+//Which belong to the current session
+.where('sessionId', '==', sessionId)
+//Which are not yet resolved
+.where('resolved', '==', false)
+//Sorted in ascending order by time entered
+.orderBy('timeEntered', 'asc')
+//Limited to the next 10 questions
+.limit(NUM_QUESTIONS_SHOWN);}
+
 const SplitView = (props: {
-    history: H.History,
+    history: H.History;
     match: {
         params: {
-            courseId: string,
-            sessionId: string | undefined,
-            page: string | null
-        }
-    }
+            courseId: string;
+            sessionId: string | undefined;
+            page: string | null;
+        };
+    };
 }) => {
     const [activeView, setActiveView] = useState(
         props.match.params.page === 'add'
@@ -48,6 +62,8 @@ const SplitView = (props: {
     const user = useMyUser();
     const course = useCourse(props.match.params.courseId);
     const session = useSession(props.match.params.sessionId);
+    const sessionQuestions =
+        useQuery<FireQuestion>(props.match.params.sessionId || '', getQuestionsQuery, 'questionId');
     const width = useWindowWidth();
 
     // Handle browser back button
@@ -99,6 +115,7 @@ const SplitView = (props: {
                         course={course}
                         courseUser={courseUser}
                         session={session}
+                        questions={sessionQuestions}
                         user={user}
                         isDesktop={width > MOBILE_BREAKPOINT}
                         backCallback={handleBackClick}

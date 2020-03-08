@@ -12,6 +12,8 @@ import ProfessorTagsView from './pages/ProfessorTagsView';
 import ProfessorRoles from './pages/ProfessorRoles';
 import ProfessorDashboardView from './pages/ProfessorDashboardView';
 import ProfessorPeopleView from './pages/ProfessorPeopleView';
+import CourseEditView from './pages/CourseEditView';
+import CourseSelectionView from './pages/CourseSelectionView';
 import { Analytics } from './includes/Analytics';
 import { Loader } from 'semantic-ui-react';
 import { userUpload } from '../firebasefunctions';
@@ -19,12 +21,18 @@ import { useMyCourseUser } from '../firehooks';
 
 ReactGA.initialize('UA-123790900-1');
 
-// RYAN_TOOD get sensible default instead of 5
-const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 5);
+const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 8);
 
-// Since the type is unknown, we have to use the any type in the next two lines.
-// tslint:disable-next-line: no-any
-const PrivateRoute = ({ component, requireProfessor, ...rest }: any) => {
+// Since the type is too polymorphic, we have to use the any type in the next few lines.
+type PrivateRouteProps = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    component: React.ComponentType<any>;
+    requireProfessor?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [restKey: string]: any;
+};
+
+const PrivateRoute = ({ component, requireProfessor, ...rest }: PrivateRouteProps) => {
     // RYAN_TODO fix this
     // Check if the course is active or not, if not redirect to default course
     // let startDate = moment(data.courseByCourseId.startDate, 'YYYY-MM-DD');
@@ -39,9 +47,9 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: any) => {
     // 1: Not logged in
     // 2: Logged in
 
-    const courseId = requireProfessor ? rest.computedMatch.params.courseId : undefined;
+    const courseId: string = requireProfessor ? rest.computedMatch.params.courseId : DEFAULT_COURSE_ID;
 
-    const [isLoggedIn, setIsLoggedIn] = React.useState(0);
+    const [isLoggedIn, setIsLoggedIn] = React.useState<0 | 1 | 2>(0);
     const cu = useMyCourseUser(courseId);
     const courseUser = courseId && cu;
 
@@ -54,23 +62,40 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: any) => {
         }
     });
 
-    if (isLoggedIn === 0 || (requireProfessor && !courseUser)) {
+    if (isLoggedIn === 0) {
         return <Loader active={true} content={'Loading'} />;
-    } else if (isLoggedIn === 2 && !requireProfessor) {
-        return (<Route {...rest} component={component} />);
-    } else if (requireProfessor && courseUser && courseUser.role === 'professor') {
+    }
+    if (isLoggedIn === 1) {
+        return <Redirect to={{ pathname: '/login' }} />;
+    }
+
+    if (requireProfessor) {
+        if (!courseUser) {
+            // Course user might load after loging status load.
+            // We still display the loading screen while waiting for a final verdict
+            // whether the user can enter professor view.
+            return <Loader active={true} content={'Loading'} />;
+        }
+        if (courseUser.role === 'professor') {
+            return <Route {...rest} component={component} />;
+        }
+    } else {
         return (<Route {...rest} component={component} />);
     }
 
     return <Redirect to={{ pathname: '/login' }} />;
 };
 
-const App = ({ }) => (
+// RYAN_TODO: make edit and home private route.
+
+const App = () => (
     <Router>
         <div className="App">
             <Route path="/" component={Analytics} />
             <Switch>
                 <Route path="/login" component={LoginView} />
+                <Route path="/edit" component={CourseEditView} />
+                <Route path="/home" component={CourseSelectionView} />
                 <PrivateRoute
                     path="/professor-tags/course/:courseId"
                     component={ProfessorTagsView}
