@@ -72,7 +72,7 @@ type State = {
 //We no longer support dynamic updating of asker, answer, tags etc
 
 class SessionQuestion extends React.Component<Props> {
-    state!:State
+    state!: State;
 
     constructor(props: Props) {
         super(props);
@@ -98,9 +98,9 @@ class SessionQuestion extends React.Component<Props> {
         
     }
 
-    static getDerivedStateFromProps(props : Props, state : State) {
+    static getDerivedStateFromProps(props: Props, state: State) {
         //Assign null to these fields
-        let stateChanges = {
+        const stateChanges = {
             loadedPrimaryTag: state.loadedPrimaryTag,
             primaryTag: state.primaryTag,
             loadedAnswererId: state.loadedAnswererId,
@@ -110,35 +110,38 @@ class SessionQuestion extends React.Component<Props> {
             loadedAskerId: state.loadedAskerId,
             asker: state.asker,
             loading: state.loading
-        }
+        };
 
         //Invalidate props when information is stale
         if (state.loadedPrimaryTag !== props.question.primaryTag){
-            stateChanges.loadedPrimaryTag = props.question.primaryTag
-            stateChanges.primaryTag = null
-            stateChanges.loading = false
-        }
-        if (state.loadedAnswererId !== props.question.answererId){
-            stateChanges.loadedAnswererId = props.question.answererId
-            stateChanges.answerer = null
-            stateChanges.loading = false
-        }
-        if (state.loadedSecondaryTag !== props.question.secondaryTag){
-            stateChanges.loadedSecondaryTag = props.question.secondaryTag
-            stateChanges.secondaryTag = null
-            stateChanges.loading = false
-        }
-        if (state.loadedAskerId !== props.question.askerId){
-            stateChanges.loadedAskerId = props.question.askerId
-            stateChanges.asker = null
-            stateChanges.loading = false
-        }
+            stateChanges.loadedPrimaryTag = props.question.primaryTag;
+            stateChanges.primaryTag = null;
+            stateChanges.loading = false;
+        };
 
-        return Object.assign(state, stateChanges)
+        if (state.loadedAnswererId !== props.question.answererId){
+            stateChanges.loadedAnswererId = props.question.answererId;
+            stateChanges.answerer = null;
+            stateChanges.loading = false;
+        };
+
+        if (state.loadedSecondaryTag !== props.question.secondaryTag){
+            stateChanges.loadedSecondaryTag = props.question.secondaryTag;
+            stateChanges.secondaryTag = null;
+            stateChanges.loading = false;
+        };
+
+        if (state.loadedAskerId !== props.question.askerId){
+            stateChanges.loadedAskerId = props.question.askerId;
+            stateChanges.asker = null;
+            stateChanges.loading = false;
+        };
+
+        return Object.assign(state, stateChanges);
     }
 
     componentDidUpdate(props : Props, state: State) {
-        let shouldUpdateLoad = false
+        let shouldUpdateLoad = false;
         //Make a get request for the asker if their information is invalidated
         if (!state.loading && state.asker === null){
             firestore.doc('users/' + state.loadedAskerId).get().then(
@@ -146,12 +149,12 @@ class SessionQuestion extends React.Component<Props> {
                     if (doc.exists){
                         this.setState({
                             asker: doc.data()
-                        })
+                        });
                     }
                 }
-            )
+            );
             shouldUpdateLoad = true
-        }
+        };
         //Make a get request for the answerer if their information is invalidated
         if (!state.loading && props.question.answererId && state.answerer === null){
             firestore.doc('users/' + state.loadedAnswererId).get().then(
@@ -159,12 +162,12 @@ class SessionQuestion extends React.Component<Props> {
                     if (doc.exists){
                         this.setState({
                             answerer: doc.data()
-                        })
+                        });
                     }
                 }
-            )
-            shouldUpdateLoad = true
-        }
+            );
+            shouldUpdateLoad = true;
+        };
         //Make requests for the tags
         if (!state.loading && state.primaryTag === null){
             firestore.doc('tags/' + state.loadedPrimaryTag).get().then(
@@ -172,11 +175,11 @@ class SessionQuestion extends React.Component<Props> {
                     if (doc.exists){
                         this.setState({
                             primaryTag: doc.data()
-                        })
+                        });
                     }
                 }
-            )
-            shouldUpdateLoad = true
+            );
+            shouldUpdateLoad = true;
         }
         if (!state.loading && state.secondaryTag === null){
             firestore.doc('tags/' + state.loadedSecondaryTag).get().then(
@@ -184,16 +187,16 @@ class SessionQuestion extends React.Component<Props> {
                     if (doc.exists){
                         this.setState({
                             secondaryTag: doc.data()
-                        })
+                        });
                     }
                 }
-            )
-            shouldUpdateLoad = true
+            );
+            shouldUpdateLoad = true;
         }
         if (shouldUpdateLoad){
             this.setState({
                 loading: true
-            })
+            });
         }
     }
 
