@@ -142,7 +142,6 @@ class SessionView extends React.Component<Props, State> {
             );
 
         const userQuestions = questions.filter(question => question.askerId === user.userId);
-        console.log(userQuestions);
         const lastAskedQuestion = userQuestions.length > 0 ?
             userQuestions.reduce(
                 (prev, current) => prev.timeEntered.toDate() > current.timeEntered.toDate() ? prev : current
