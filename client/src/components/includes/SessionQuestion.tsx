@@ -140,7 +140,7 @@ class SessionQuestion extends React.Component<Props> {
         return Object.assign(state, stateChanges);
     }
 
-    componentDidUpdate(props : Props, state: State) {
+    componentDidUpdate(props: Props, state: State) {
         let shouldUpdateLoad = false;
         //Make a get request for the asker if their information is invalidated
         if (!state.loading && state.asker === null){
@@ -153,7 +153,7 @@ class SessionQuestion extends React.Component<Props> {
                     }
                 }
             );
-            shouldUpdateLoad = true
+            shouldUpdateLoad = true;
         };
         //Make a get request for the answerer if their information is invalidated
         if (!state.loading && props.question.answererId && state.answerer === null){
@@ -266,28 +266,28 @@ class SessionQuestion extends React.Component<Props> {
         firestore.doc(`questions/${this.props.question.questionId}`).update({
             status: 'assigned',
             answererId: this.props.myUserId
-        })
-    }
+        });
+    };
 
     //This function produces a no show
-    studentNoShow = (event : React.MouseEvent<HTMLElement>) => {
+    studentNoShow = (event: React.MouseEvent<HTMLElement>) => {
         console.log(`questions/${this.props.question.questionId}`)
         firestore.doc(`questions/${this.props.question.questionId}`).update({
             status: 'no-show',
             //This question has been "resolved" and will not show up again
             resolved: true
-        })
-    }
+        });
+    };
 
     //This function notes that a question has been done
-    questionDone = (event : React.MouseEvent<HTMLElement>) => {
+    questionDone = (event: React.MouseEvent<HTMLElement>) => {
         firestore.doc(`questions/${this.props.question.questionId}`).update({
             status: 'resolved',
             timeAddressed: firebase.firestore.Timestamp.now(),
             //This question has been "resolved" and will not show up again
             resolved: true
-        })
-    }
+        });
+    };
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
