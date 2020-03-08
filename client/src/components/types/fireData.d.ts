@@ -38,6 +38,8 @@ interface FireCourse {
     tas: readonly string[];
     courseId: string;
     charLimit: number;
+    term: string;
+    year: string;
 }
 
 type FireCourseRole = 'professor' | 'ta' | 'student';
@@ -66,6 +68,7 @@ interface FireQuestion {
     location: string;
     sessionId: string;
     status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
+    resolved: boolean;
     timeAddressed: FireTimestamp;
     timeEntered: FireTimestamp;
     primaryTag: string;

@@ -14,6 +14,8 @@ import { firestore } from '../../firebase';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
+// Number of questions to be displayed
+const NUM_QUESTIONS_SHOWN = 10;
 
 const useWindowWidth = () => {
     const [width, setWidth] = useState(window.innerWidth);
@@ -29,7 +31,16 @@ const useWindowWidth = () => {
     return width;
 };
 
-const getQuestionsQuery = (sessionId: string) => firestore.collection('questions').where('sessionId', '==', sessionId);
+const getQuestionsQuery = (sessionId: string) => 
+{return firestore.collection('questions')
+    //Which belong to the current session
+    .where('sessionId', '==', sessionId)
+    //Which are not yet resolved
+    .where('resolved', '==', false)
+    //Sorted in ascending order by time entered
+    .orderBy('timeEntered', 'asc')
+    //Limited to the next 10 questions
+    .limit(NUM_QUESTIONS_SHOWN);};
 
 const SplitView = (props: {
     history: H.History;
