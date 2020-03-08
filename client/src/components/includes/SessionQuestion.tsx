@@ -108,12 +108,10 @@ class SessionQuestion extends React.Component<Props> {
                 location: target.value
             });
 
-            const batch = firestore.batch();
             const question = firestore.collection('questions').doc(this.props.question.questionId);
-            batch.update(question, {
+            question.update({
                 location: target.value
             });
-            batch.commit();
 
             setTimeout(() => {
                 this.setState({
@@ -124,13 +122,10 @@ class SessionQuestion extends React.Component<Props> {
     };
 
     handleQuestionStatus = (): void => {
-        const batch = firestore.batch();
         const question = firestore.collection('questions').doc(this.props.question.questionId);
-        batch.update(question, {
+        question.update({
             status: 'retracted'
         });
-        batch.commit();
-
     };
 
     toggleLocationTooltip = () => {
