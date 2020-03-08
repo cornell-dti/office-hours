@@ -137,7 +137,7 @@ class SessionQuestion extends React.Component<Props> {
             stateChanges.loading = false;
         };
 
-        return Object.assign(state, stateChanges);
+        return {...state, ...stateChanges};
     }
 
     componentDidUpdate(props: Props, state: State) {
@@ -200,31 +200,6 @@ class SessionQuestion extends React.Component<Props> {
         }
     }
 
-    //These observables need to be constructed here because their state
-    //need to be updated upon changes in props
-    /*componentWillReceiveProps(props : Props){
-        const asker$: Observable<FireUser> =
-        docData(firestore.doc('users/' + props.question.askerId), 'userId');
-        const askerSubscription = asker$.subscribe(asker => this.setState({ asker }));
-
-        //If the answerer ID is obtained, fetch the answerer information
-        if (this.props.question.answererId) {
-            // RYAN_TODO make this work when we get an answerer id
-            const answerer$: Observable<FireUser> =
-                docData(firestore.doc('users/' + props.question.answererId), 'userId');
-            answerer$.subscribe(answerer => this.setState({ answerer }));
-        }
-
-        //Primary and secondary tags
-        const primaryTag$: Observable<FireTag>
-            = docData(firestore.doc('tags/' + props.question.primaryTag), 'tagId');
-        primaryTag$.subscribe(primaryTag => this.setState({ primaryTag }));
-
-        const secondaryTag$: Observable<FireTag>
-            = docData(firestore.doc('tags/' + props.question.secondaryTag), 'tagId');
-        secondaryTag$.subscribe(secondaryTag => this.setState({ secondaryTag }));
-    }*/
-
     // Given an index from [1..n], converts it to text that is displayed on the
     // question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
@@ -260,7 +235,6 @@ class SessionQuestion extends React.Component<Props> {
         });
     };
 
-    //This function attempts to assign this question to the current user
     assignQuestion = (event: React.MouseEvent<HTMLElement>) => {
         //Attempt to assign question to me
         firestore.doc(`questions/${this.props.question.questionId}`).update({
@@ -450,7 +424,6 @@ class SessionQuestion extends React.Component<Props> {
                                             //Done
                                             (e) => this.questionDone(e)
                                         }
-                                    // onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
                                     >
                                         Done
                                     </p>
