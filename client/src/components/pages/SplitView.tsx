@@ -33,14 +33,14 @@ const useWindowWidth = () => {
 
 const getQuestionsQuery = (sessionId: string) => 
 {return firestore.collection('questions')
-//Which belong to the current session
-.where('sessionId', '==', sessionId)
-//Which are not yet resolved
-.where('resolved', '==', false)
-//Sorted in ascending order by time entered
-.orderBy('timeEntered', 'asc')
-//Limited to the next 10 questions
-.limit(NUM_QUESTIONS_SHOWN);}
+    //Which belong to the current session
+    .where('sessionId', '==', sessionId)
+    //Which are not yet resolved
+    .where('resolved', '==', false)
+    //Sorted in ascending order by time entered
+    .orderBy('timeEntered', 'asc')
+    //Limited to the next 10 questions
+    .limit(NUM_QUESTIONS_SHOWN);};
 
 const SplitView = (props: {
     history: H.History;

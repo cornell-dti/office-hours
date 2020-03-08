@@ -271,7 +271,6 @@ class SessionQuestion extends React.Component<Props> {
 
     //This function produces a no show
     studentNoShow = (event: React.MouseEvent<HTMLElement>) => {
-        console.log(`questions/${this.props.question.questionId}`)
         firestore.doc(`questions/${this.props.question.questionId}`).update({
             status: 'no-show',
             //This question has been "resolved" and will not show up again
