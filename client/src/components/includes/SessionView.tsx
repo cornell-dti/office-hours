@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import TopBar from '../includes/TopBar';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
@@ -6,16 +6,6 @@ import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 
 import { Icon } from 'semantic-ui-react';
 import SessionAlertModal from './SessionAlertModal';
-
-// RYAN_TODO
-// const UNDO_QUESTION = gql`
-// mutation UndoQuestion($questionId: Int!, $status: String!) {
-//     updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeAddressed: null, answererId: null},
-//         questionId: $questionId}) {
-//         clientMutationId
-//     }
-// }
-// `;
 
 type Props = {
     course: FireCourse;
@@ -27,6 +17,7 @@ type Props = {
     user: FireUser;
     courseUser: FireCourseUser;
 };
+
 type State = {
     undoAction?: string;
     undoName?: string;

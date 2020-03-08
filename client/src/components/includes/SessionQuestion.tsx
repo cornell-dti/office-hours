@@ -6,6 +6,8 @@ import { firestore } from '../../firebase';
 import { docData } from 'rxfire/firestore';
 import SelectedTags from './SelectedTags';
 import { Observable } from 'rxjs';
+//This is used to make a timestamp
+import * as firebase from 'firebase/app';
 
 // import SelectedTags from './SelectedTags';
 
@@ -46,19 +48,31 @@ type Props = {
     isPast: boolean,
 };
 
+type State = {
+    showLocation: boolean,
+    location: string,
+    isEditingLocation: boolean,
+    showDotMenu: boolean,
+    undoQuestionIdDontKnow?: number,
+    undoName?: string,
+    //The loaded value of these variables
+    asker?: FireUser | null,
+    answerer?: FireUser | null,
+    primaryTag?: FireTag | null,
+    secondaryTag?: FireTag | null,
+    //This is used for memoization so that we don't fetch the same
+    //user information multiple times
+    loadedAnswererId?: string | null,
+    loadedAskerId?: string | null,
+    loadedPrimaryTag?: string | null,
+    loadedSecondaryTag?: string | null,
+    loading: boolean
+};
+
+//We no longer support dynamic updating of asker, answer, tags etc
+
 class SessionQuestion extends React.Component<Props> {
-    state!: {
-        showLocation: boolean,
-        location: string,
-        isEditingLocation: boolean,
-        showDotMenu: boolean,
-        undoQuestionIdDontKnow?: number,
-        undoName?: string,
-        asker?: FireUser,
-        answerer?: FireUser,
-        primaryTag?: FireTag,
-        secondaryTag?: FireTag
-    };
+    state!: State;
 
     constructor(props: Props) {
         super(props);
@@ -67,26 +81,123 @@ class SessionQuestion extends React.Component<Props> {
             location: props.question.location || '',
             isEditingLocation: false,
             showDotMenu: false,
+            //This code is used to load relevant information and cache it
+            asker: null,
+            answerer: null,
+            primaryTag: null,
+            secondaryTag: null,
+            //This is used for memoization so that we don't fetch the same
+            //user information multiple times
+            loadedAnswererId: null,
+            loadedAskerId: null,
+            loadedPrimaryTag: null,
+            loadedSecondaryTag: null,
+            //Not currently loading these
+            loading: false
+        };
+        
+    }
+
+    static getDerivedStateFromProps(props: Props, state: State) {
+        //Assign null to these fields
+        const stateChanges = {
+            loadedPrimaryTag: state.loadedPrimaryTag,
+            primaryTag: state.primaryTag,
+            loadedAnswererId: state.loadedAnswererId,
+            answerer: state.answerer,
+            loadedSecondaryTag: state.loadedSecondaryTag,
+            secondaryTag: state.secondaryTag,
+            loadedAskerId: state.loadedAskerId,
+            asker: state.asker,
+            loading: state.loading
         };
 
-        const asker$: Observable<FireUser> =
-            docData(firestore.doc('users/' + props.question.askerId), 'userId');
-        asker$.subscribe(asker => this.setState({ asker }));
+        //Invalidate props when information is stale
+        if (state.loadedPrimaryTag !== props.question.primaryTag){
+            stateChanges.loadedPrimaryTag = props.question.primaryTag;
+            stateChanges.primaryTag = null;
+            stateChanges.loading = false;
+        };
 
-        if (this.props.question.answererId) {
-            // RYAN_TODO make this work when we get an answerer id
-            const answerer$: Observable<FireUser> =
-                docData(firestore.doc('users/' + props.question.answererId), 'userId');
-            answerer$.subscribe(answerer => this.setState({ answerer }));
+        if (state.loadedAnswererId !== props.question.answererId){
+            stateChanges.loadedAnswererId = props.question.answererId;
+            stateChanges.answerer = null;
+            stateChanges.loading = false;
+        };
+
+        if (state.loadedSecondaryTag !== props.question.secondaryTag){
+            stateChanges.loadedSecondaryTag = props.question.secondaryTag;
+            stateChanges.secondaryTag = null;
+            stateChanges.loading = false;
+        };
+
+        if (state.loadedAskerId !== props.question.askerId){
+            stateChanges.loadedAskerId = props.question.askerId;
+            stateChanges.asker = null;
+            stateChanges.loading = false;
+        };
+
+        return {...state, ...stateChanges};
+    }
+
+    componentDidUpdate(props: Props, state: State) {
+        let shouldUpdateLoad = false;
+        //Make a get request for the asker if their information is invalidated
+        if (!state.loading && state.asker === null){
+            firestore.doc('users/' + state.loadedAskerId).get().then(
+                (doc) => {
+                    if (doc.exists){
+                        this.setState({
+                            asker: doc.data()
+                        });
+                    }
+                }
+            );
+            shouldUpdateLoad = true;
+        };
+        //Make a get request for the answerer if their information is invalidated
+        if (!state.loading && props.question.answererId && state.answerer === null){
+            firestore.doc('users/' + state.loadedAnswererId).get().then(
+                (doc) => {
+                    if (doc.exists){
+                        this.setState({
+                            answerer: doc.data()
+                        });
+                    }
+                }
+            );
+            shouldUpdateLoad = true;
+        };
+        //Make requests for the tags
+        if (!state.loading && state.primaryTag === null){
+            firestore.doc('tags/' + state.loadedPrimaryTag).get().then(
+                (doc) => {
+                    if (doc.exists){
+                        this.setState({
+                            primaryTag: doc.data()
+                        });
+                    }
+                }
+            );
+            shouldUpdateLoad = true;
         }
-
-        const primaryTag$: Observable<FireTag>
-            = docData(firestore.doc('tags/' + props.question.primaryTag), 'tagId');
-        primaryTag$.subscribe(primaryTag => this.setState({ primaryTag }));
-
-        const secondaryTag$: Observable<FireTag>
-            = docData(firestore.doc('tags/' + props.question.secondaryTag), 'tagId');
-        secondaryTag$.subscribe(secondaryTag => this.setState({ secondaryTag }));
+        if (!state.loading && state.secondaryTag === null){
+            firestore.doc('tags/' + state.loadedSecondaryTag).get().then(
+                (doc) => {
+                    if (doc.exists){
+                        this.setState({
+                            secondaryTag: doc.data()
+                        });
+                    }
+                }
+            );
+            shouldUpdateLoad = true;
+        }
+        if (shouldUpdateLoad){
+            this.setState({
+                loading: true
+            });
+        }
     }
 
     // Given an index from [1..n], converts it to text that is displayed on the
@@ -99,6 +210,7 @@ class SessionQuestion extends React.Component<Props> {
         // 'th';
         return String(index);
     }
+
 
     public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>, updateLocation: Function): void => {
         this.state.isEditingLocation = true;
@@ -120,6 +232,33 @@ class SessionQuestion extends React.Component<Props> {
     toggleLocationTooltip = () => {
         this.setState({
             showLocation: !this.state.showLocation
+        });
+    };
+
+    assignQuestion = (event: React.MouseEvent<HTMLElement>) => {
+        //Attempt to assign question to me
+        firestore.doc(`questions/${this.props.question.questionId}`).update({
+            status: 'assigned',
+            answererId: this.props.myUserId
+        });
+    };
+
+    //This function produces a no show
+    studentNoShow = (event: React.MouseEvent<HTMLElement>) => {
+        firestore.doc(`questions/${this.props.question.questionId}`).update({
+            status: 'no-show',
+            //This question has been "resolved" and will not show up again
+            resolved: true
+        });
+    };
+
+    //This function notes that a question has been done
+    questionDone = (event: React.MouseEvent<HTMLElement>) => {
+        firestore.doc(`questions/${this.props.question.questionId}`).update({
+            status: 'resolved',
+            timeAddressed: firebase.firestore.Timestamp.now(),
+            //This question has been "resolved" and will not show up again
+            resolved: true
         });
     };
 
@@ -260,7 +399,10 @@ class SessionQuestion extends React.Component<Props> {
                             {question.status === 'unresolved' &&
                                 <p
                                     className="Begin"
-                                // onClick={(e) => this._onClick(e, updateQuestion, 'assigned')}
+                                    onClick = {
+                                        //Assign question
+                                        (e) => this.assignQuestion(e)
+                                    }
                                 >
                                     Assign to Me
                                 </p>
@@ -269,13 +411,19 @@ class SessionQuestion extends React.Component<Props> {
                                 <React.Fragment>
                                     <p
                                         className="Delete"
-                                    // onClick={(e) => this._onClick(e, updateQuestion, 'no-show')}
+                                        onClick = {
+                                            //No show
+                                            (e) => this.studentNoShow(e)
+                                        }
                                     >
                                         No show
                                     </p>
                                     <p
                                         className="Done"
-                                    // onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
+                                        onClick = {
+                                            //Done
+                                            (e) => this.questionDone(e)
+                                        }
                                     >
                                         Done
                                     </p>
