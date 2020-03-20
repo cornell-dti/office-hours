@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import TopBar from '../includes/TopBar';
 import SessionInformationHeader from '../includes/SessionInformationHeader';
