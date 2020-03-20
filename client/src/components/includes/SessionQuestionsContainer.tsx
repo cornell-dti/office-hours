@@ -8,6 +8,7 @@ const SHOW_FEEDBACK_QUEUE = 4;
 type Props = {
     readonly isTA: boolean;
     readonly questions: readonly FireQuestion[];
+    readonly tags: { readonly [tagId: string]: FireTag };
     readonly myUserId: string;
     readonly handleJoinClick: Function;
     readonly triggerUndo: Function;
@@ -103,6 +104,7 @@ const SessionQuestionsContainer = (props: Props) => {
                     <SessionQuestion
                         key={myQuestion[0].questionId}
                         question={myQuestion[0]}
+                        tags={props.tags}
                         index={questions.indexOf(myQuestion[0])}
                         isTA={props.isTA}
                         includeRemove={true}
@@ -118,6 +120,7 @@ const SessionQuestionsContainer = (props: Props) => {
                     <SessionQuestion
                         key={question.questionId}
                         question={question}
+                        tags={props.tags}
                         index={i}
                         isTA={props.isTA}
                         includeRemove={false}
