@@ -6,11 +6,12 @@ import { datePlus, normalizeDateToDateStart, normalizeDateToWeekStart } from './
 export const userUpload = (user: firebase.User | null, db: firebase.firestore.Firestore) => {
   if (user != null) {
     const uid = user.uid;
-    const email = user.email;
-    const displayName = user.displayName;
-    const photoUrl = user.photoURL;
+    const email = user.email || 'Dummy Display Name';
+    const displayName = user.displayName || 'Dummy Email';
+    const photoUrl = user.photoURL || 'Dummy Display Name';
     const metaData = user.metadata;
-    const createdAt = metaData.creationTime;
+    const createdAt = firestore.Timestamp.fromDate(
+      metaData.creationTime ? new Date(metaData.creationTime) : new Date());
     let stringSplit = -1;
     let firstName = displayName;
     let lastName = '';
@@ -21,14 +22,34 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
         lastName = displayName.substring(stringSplit + 1);
       }
     }
-    db.collection('users').doc(uid).set({
-      email,
-      firstName,
-      lastName,
-      photoUrl,
-      createdAt,
-      lastActivityAt: firestore.FieldValue.serverTimestamp()
-    }).catch(() => console.error('Unable to upload user.'));
+    const lastActivityAt = firestore.FieldValue.serverTimestamp() as unknown as FireTimestamp;
+    db.runTransaction(async (transaction) => {
+      const userDocumentReference = db.collection('users').doc(uid);
+      const userDocument = await transaction.get(userDocumentReference);
+      if (userDocument.exists) {
+        const partialUserDocument: Partial<FireUser> = {
+          email,
+          firstName,
+          lastName,
+          photoUrl,
+          createdAt,
+          lastActivityAt
+        };
+        transaction.update(userDocumentReference, partialUserDocument);
+      } else {
+        const fullUserDocument: Omit<FireUser, 'userId'> = {
+          email,
+          firstName,
+          lastName,
+          photoUrl,
+          createdAt,
+          lastActivityAt,
+          courses: [],
+          roles: {}
+        };
+        transaction.set(userDocumentReference, fullUserDocument);
+      }
+    }).catch(() => console.error('Unable to upload user.'));;
   }
 };
 

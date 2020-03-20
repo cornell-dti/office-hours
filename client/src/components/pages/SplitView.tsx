@@ -6,7 +6,7 @@ import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import AddQuestion from '../includes/AddQuestion';
 
-import { useCourse, useSession, useMyCourseUser, useMyUser, useQuery } from '../../firehooks';
+import { useCourse, useSession, useMyUser, useQuery } from '../../firehooks';
 
 import TopBar from '../includes/TopBar';
 import { Loader } from 'semantic-ui-react';
@@ -31,7 +31,7 @@ const useWindowWidth = () => {
     return width;
 };
 
-const getQuestionsQuery = (sessionId: string) => 
+const getQuestionsQuery = (sessionId: string) =>
 {return firestore.collection('questions')
     //Which belong to the current session
     .where('sessionId', '==', sessionId)
@@ -58,7 +58,6 @@ const SplitView = (props: {
             : props.match.params.sessionId ? 'session' : 'calendar'
     );
 
-    const courseUser = useMyCourseUser(props.match.params.courseId);
     const user = useMyUser();
     const course = useCourse(props.match.params.courseId);
     const session = useSession(props.match.params.sessionId);
@@ -105,15 +104,14 @@ const SplitView = (props: {
             {(width > MOBILE_BREAKPOINT || activeView === 'calendar') &&
                 <CalendarView
                     course={course}
-                    courseUser={courseUser}
+                    user={user}
                     session={session}
                     sessionCallback={handleSessionClick}
                 />
             }{(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
-                (session && course && user && courseUser ?
+                (session && course && user ?
                     <SessionView
                         course={course}
-                        courseUser={courseUser}
                         session={session}
                         questions={sessionQuestions}
                         user={user}
@@ -124,7 +122,7 @@ const SplitView = (props: {
                     : <section className="StudentSessionView">
                         <TopBar
                             user={user}
-                            role={courseUser ? courseUser.role : 'student'}
+                            role={(user && course && user.roles[course.courseId]) || 'student'}
                             context="student"
                             courseId={props.match.params.courseId}
                         />

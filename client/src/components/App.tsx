@@ -17,11 +17,11 @@ import CourseSelectionView from './pages/CourseSelectionView';
 import { Analytics } from './includes/Analytics';
 import { Loader } from 'semantic-ui-react';
 import { userUpload } from '../firebasefunctions';
-import { useMyCourseUser } from '../firehooks';
+import { useMyUser } from '../firehooks';
 
 ReactGA.initialize('UA-123790900-1');
 
-const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 8);
+const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 'info4998');
 
 // Since the type is too polymorphic, we have to use the any type in the next few lines.
 type PrivateRouteProps = {
@@ -50,17 +50,18 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: PrivateRouteProp
     const courseId: string = requireProfessor ? rest.computedMatch.params.courseId : DEFAULT_COURSE_ID;
 
     const [isLoggedIn, setIsLoggedIn] = React.useState<0 | 1 | 2>(0);
-    const cu = useMyCourseUser(courseId);
-    const courseUser = courseId && cu;
+    const user = useMyUser();
 
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            setIsLoggedIn(2);
-            userUpload(user, firestore);
-        } else {
-            setIsLoggedIn(1);
-        }
-    });
+    React.useEffect(() => {
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                setIsLoggedIn(2);
+                userUpload(user, firestore);
+            } else {
+                setIsLoggedIn(1);
+            }
+        });
+    }, []);
 
     if (isLoggedIn === 0) {
         return <Loader active={true} content={'Loading'} />;
@@ -70,13 +71,13 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: PrivateRouteProp
     }
 
     if (requireProfessor) {
-        if (!courseUser) {
+        if (!user) {
             // Course user might load after loging status load.
             // We still display the loading screen while waiting for a final verdict
             // whether the user can enter professor view.
             return <Loader active={true} content={'Loading'} />;
         }
-        if (courseUser.role === 'professor') {
+        if (user.roles[courseId] === 'professor') {
             return <Route {...rest} component={component} />;
         }
     } else {

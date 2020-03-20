@@ -13,14 +13,14 @@ type Props = {
     session?: FireSession;
     sessionCallback: (sessionId: string) => void;
     course?: FireCourse;
-    courseUser?: FireCourseUser;
+    user?: FireUser;
 };
 
 const getQuery = (courseId: string) => firestore.collection('sessions').where('courseId', '==', courseId);
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 
-export default ({ session, sessionCallback, course, courseUser }: Props) => {
+export default ({ session, sessionCallback, course, user }: Props) => {
     const [selectedDateEpoch, setSelectedDate] = React.useState(new Date().setHours(0, 0, 0, 0));
     const selectedDate = new Date(selectedDateEpoch);
 
@@ -36,7 +36,7 @@ export default ({ session, sessionCallback, course, courseUser }: Props) => {
         <aside className="CalendarView">
             <CalendarHeader
                 currentCourseCode={(course && course.code) || 'Loading'}
-                role={(courseUser && courseUser.role)}
+                role={(user && course && (user.roles[course.courseId] || 'student'))}
             />
             <CalendarDaySelect callback={setSelectedDate} />
             {course ?
