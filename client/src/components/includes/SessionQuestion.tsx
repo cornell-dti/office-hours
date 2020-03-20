@@ -38,6 +38,7 @@ const LOCATION_CHAR_LIMIT = 40;
 
 type Props = {
     question: FireQuestion,
+    tags: { readonly [tagId: string]: FireTag };
     index: number,
     isTA: boolean,
     includeRemove: boolean,
@@ -56,21 +57,17 @@ type State = {
     //The loaded value of these variables
     asker?: FireUser | null,
     answerer?: FireUser | null,
-    primaryTag?: FireTag | null,
-    secondaryTag?: FireTag | null,
     //This is used for memoization so that we don't fetch the same
     //user information multiple times
     loadedAnswererId?: string | null,
     loadedAskerId?: string | null,
-    loadedPrimaryTag?: string | null,
-    loadedSecondaryTag?: string | null,
     loading: boolean
 };
 
 //We no longer support dynamic updating of asker, answer, tags etc
 
-class SessionQuestion extends React.Component<Props> {
-    state!: State;
+class SessionQuestion extends React.Component<Props, State> {
+    state: State;
 
     constructor(props: Props) {
         super(props);
@@ -82,14 +79,10 @@ class SessionQuestion extends React.Component<Props> {
             //This code is used to load relevant information and cache it
             asker: null,
             answerer: null,
-            primaryTag: null,
-            secondaryTag: null,
             //This is used for memoization so that we don't fetch the same
             //user information multiple times
             loadedAnswererId: null,
             loadedAskerId: null,
-            loadedPrimaryTag: null,
-            loadedSecondaryTag: null,
             //Not currently loading these
             loading: false
         };
@@ -99,33 +92,18 @@ class SessionQuestion extends React.Component<Props> {
     static getDerivedStateFromProps(props: Props, state: State) {
         //Assign null to these fields
         const stateChanges = {
-            loadedPrimaryTag: state.loadedPrimaryTag,
-            primaryTag: state.primaryTag,
             loadedAnswererId: state.loadedAnswererId,
             answerer: state.answerer,
-            loadedSecondaryTag: state.loadedSecondaryTag,
-            secondaryTag: state.secondaryTag,
             loadedAskerId: state.loadedAskerId,
             asker: state.asker,
             loading: state.loading
         };
 
         //Invalidate props when information is stale
-        if (state.loadedPrimaryTag !== props.question.primaryTag){
-            stateChanges.loadedPrimaryTag = props.question.primaryTag;
-            stateChanges.primaryTag = null;
-            stateChanges.loading = false;
-        };
 
         if (state.loadedAnswererId !== props.question.answererId){
             stateChanges.loadedAnswererId = props.question.answererId;
             stateChanges.answerer = null;
-            stateChanges.loading = false;
-        };
-
-        if (state.loadedSecondaryTag !== props.question.secondaryTag){
-            stateChanges.loadedSecondaryTag = props.question.secondaryTag;
-            stateChanges.secondaryTag = null;
             stateChanges.loading = false;
         };
 
@@ -146,7 +124,7 @@ class SessionQuestion extends React.Component<Props> {
                 (doc) => {
                     if (doc.exists){
                         this.setState({
-                            asker: doc.data()
+                            asker: doc.data() as FireUser | undefined
                         });
                     }
                 }
@@ -159,38 +137,13 @@ class SessionQuestion extends React.Component<Props> {
                 (doc) => {
                     if (doc.exists){
                         this.setState({
-                            answerer: doc.data()
+                            answerer: doc.data() as FireUser | undefined
                         });
                     }
                 }
             );
             shouldUpdateLoad = true;
         };
-        //Make requests for the tags
-        if (!state.loading && state.primaryTag === null){
-            firestore.doc('tags/' + state.loadedPrimaryTag).get().then(
-                (doc) => {
-                    if (doc.exists){
-                        this.setState({
-                            primaryTag: doc.data()
-                        });
-                    }
-                }
-            );
-            shouldUpdateLoad = true;
-        }
-        if (!state.loading && state.secondaryTag === null){
-            firestore.doc('tags/' + state.loadedSecondaryTag).get().then(
-                (doc) => {
-                    if (doc.exists){
-                        this.setState({
-                            secondaryTag: doc.data()
-                        });
-                    }
-                }
-            );
-            shouldUpdateLoad = true;
-        }
         if (shouldUpdateLoad){
             this.setState({
                 loading: true
@@ -385,12 +338,12 @@ class SessionQuestion extends React.Component<Props> {
                 <div className="BottomBar">
                     {this.props.isTA && <span className="Spacer" />}
                     <div className="Tags">
-                        {this.state.primaryTag && <SelectedTags
-                            tag={this.state.primaryTag}
+                        {this.props.tags[this.props.question.primaryTag] && <SelectedTags
+                            tag={this.props.tags[this.props.question.primaryTag]}
                             isSelected={false}
                         />}
-                        {this.state.secondaryTag && <SelectedTags
-                            tag={this.state.secondaryTag}
+                        {this.props.tags[this.props.question.secondaryTag] && <SelectedTags
+                            tag={this.props.tags[this.props.question.secondaryTag]}
                             isSelected={false}
                         />}
                     </div>

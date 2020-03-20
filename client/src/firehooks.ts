@@ -85,6 +85,18 @@ export const useMyCourses = (): readonly FireCourse[] => {
     return allCourses.filter(course => myCourseUsers.some(courseUser => courseUser.courseId === course.courseId));
 };
 
+const courseTagQuery = (courseId: string) => firestore.collection('tags').where('courseId', '==', courseId);
+export const useCourseTags = (courseId: string): { readonly [tagId: string]: FireTag } => {
+    const tagsList = useQuery<FireTag>(courseId, courseTagQuery, 'tagId');
+    const tags: { [tagId: string]: FireTag } = {};
+
+    tagsList.forEach(tag => {
+        tags[tag.tagId] = tag;
+    });
+
+    return tags;
+};
+
 // Primatives
 // Look up a doc in Firebase by ID
 export const useCourseUser = (courseUserId: string | undefined) =>
