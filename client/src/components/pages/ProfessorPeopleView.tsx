@@ -8,7 +8,7 @@ import 'react-dates/initialize';
 import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import moment from 'moment';
-import { useMyUser, useCourse } from '../../firehooks';
+import { useMyUser, useCourse, useCourseUsersMap } from '../../firehooks';
 import TopBar from '../includes/TopBar';
 import { firestore, collectionData } from '../../firebase';
 import { combineLatest, Observable } from 'rxjs';
@@ -29,6 +29,7 @@ const ProfessorPeopleView = (props: {
 
     const user = useMyUser();
     const course = useCourse(courseId);
+    const courseUsers = useCourseUsersMap(courseId);
 
     const [sessions, setSessions] = useState<FireSession[]>([]);
     const [questions, setQuestions] = useState<FireQuestion[][]>([]);
@@ -92,7 +93,14 @@ const ProfessorPeopleView = (props: {
         building: busiestSession.building,
         room: busiestSession.room,
         dayOfWeek: moment(busiestSession.startTime.seconds * 1000).format('dddd'),
-        date: moment(busiestSession.startTime.seconds * 1000).format('MMMM Do YYYY')
+        date: moment(busiestSession.startTime.seconds * 1000).format('MMMM Do YYYY'),
+        taNames: busiestSession.tas.map(userId => {
+            const courseUser = courseUsers[userId];
+            if (courseUser === undefined) {
+                return 'unknown';
+            }
+            return `${courseUser.firstName} ${courseUser.lastName}`;
+        }).join(', ')
     };
 
     // Line Chart
@@ -223,8 +231,7 @@ const ProfessorPeopleView = (props: {
                                                 {busiestSessionInfo.building} {busiestSessionInfo.room}
                                             </p>
                                             <p className="maroon-descript">
-                                                {/* RYAN_TODO Get TA Data */}
-                                                {/* {busiestSessionInfo.taName} */}
+                                                {busiestSessionInfo.taNames}
                                             </p>
                                         </div>
                                     </div>
