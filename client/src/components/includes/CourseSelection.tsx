@@ -8,34 +8,28 @@ import { firestore } from '../../firebase';
 type Props = {
     readonly user: FireUser;
     readonly allCourses: readonly FireCourse[];
-    readonly myCourseUsers: readonly FireCourseUser[];
     readonly isEdit: boolean;
 };
 
-function CourseSelection({ user, isEdit, allCourses, myCourseUsers }: Props): React.ReactElement {
+function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElement {
+    const currentlyEnrolledCourseIds = new Set(user.courses);
     const [selectedCourses, setSelectedCourses] = React.useState<FireCourse[]>(
-        allCourses.filter(course => {
-            const correspondingCourseUser = myCourseUsers.find(user => user.courseId === course.courseId);
-            return correspondingCourseUser !== undefined && correspondingCourseUser.role === 'student';
-        })
+        allCourses.filter(
+            ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] === undefined
+        )
     );
-    const coursesToEnroll: FireCourse[] = [];
-    const courseUserIdsOfCoursesToUnenroll: string[] = [];
-    allCourses.forEach(course => {
-        const correspondingCourseUser = myCourseUsers.find(user => user.courseId === course.courseId);
-        if (selectedCourses.some(selected => selected.courseId === course.courseId)) {
+    const coursesToEnroll: string[] = [];
+    const coursesToUnenroll: string[] = [];
+    allCourses.forEach(({ courseId }) => {
+        if (selectedCourses.some(selected => selected.courseId === courseId)) {
             // The course is selected.
-            if (correspondingCourseUser === undefined) {
-                coursesToEnroll.push(course);
-            } else if (correspondingCourseUser.role !== 'student') {
-                throw new Error('Something is wrong with our input validation. '
-                    + 'Users should not be able to select classes that they are TAing.'
-                    + `Bad course: ${course}, bad role: ${correspondingCourseUser.role}`);
+            if (!currentlyEnrolledCourseIds.has(courseId)) {
+                coursesToEnroll.push(courseId);
             }
             // Otherwise, it means that the course has already been enrolled. We just keep it.
         } else {
             // The course is not selected.
-            if (!correspondingCourseUser || correspondingCourseUser.role !== 'student') {
+            if (!currentlyEnrolledCourseIds.has(courseId) || user.roles[courseId] !== undefined) {
                 // Either
                 // - Previously not enrolled, still not enrolled.
                 // - Is a professor or a TA of the class. Cannot change by themselves.
@@ -43,13 +37,16 @@ function CourseSelection({ user, isEdit, allCourses, myCourseUsers }: Props): Re
                 return;
             }
             // They are students in that class, legit to unenroll.
-            courseUserIdsOfCoursesToUnenroll.push(correspondingCourseUser.courseUserId);
+            coursesToUnenroll.push(courseId);
         }
     });
 
-    const canSave = coursesToEnroll.length + courseUserIdsOfCoursesToUnenroll.length === 0;
+    const canSave = coursesToEnroll.length + coursesToUnenroll.length === 0;
+
+    console.log({ coursesToEnroll, coursesToUnenroll, selectedCourses, user });
 
     const onSelectCourse = (course: FireCourse, addCourse: boolean) => {
+        console.log({ course, addCourse });
         setSelectedCourses((previousSelectedCourses) => (
             addCourse
                 ? [...previousSelectedCourses, course]
@@ -58,19 +55,11 @@ function CourseSelection({ user, isEdit, allCourses, myCourseUsers }: Props): Re
     };
 
     const onSubmit = () => {
-        const batch = firestore.batch();
-        coursesToEnroll.forEach(course => {
-            const document: Omit<FireCourseUser, 'courseUserId'> = {
-                userId: user.userId,
-                courseId: course.courseId,
-                role: 'student'
-            };
-            batch.set(firestore.collection('courseUsers').doc(), document);
-        });
-        courseUserIdsOfCoursesToUnenroll.forEach(courseUserId => {
-            batch.delete(firestore.collection('courseUsers').doc(courseUserId));
-        });
-        batch.commit();
+        const newCourseSet = new Set(currentlyEnrolledCourseIds);
+        coursesToEnroll.forEach(courseId => newCourseSet.add(courseId));
+        coursesToUnenroll.forEach(courseId => newCourseSet.delete(courseId));
+        const userUpdate: Partial<FireUser> = { courses: Array.from(newCourseSet.values()) };
+        firestore.collection('users').doc(user.userId).update(userUpdate);
     };
 
     const selectedCoursesString = selectedCourses.length === 0
@@ -101,8 +90,9 @@ function CourseSelection({ user, isEdit, allCourses, myCourseUsers }: Props): Re
                     </div>
                     <div className="CourseCards">
                         {allCourses.map((course) => {
-                            const relevantCourseUser = myCourseUsers.find(user => user.courseId === course.courseId);
-                            const role = relevantCourseUser && relevantCourseUser.role;
+                            const role = currentlyEnrolledCourseIds.has(course.courseId)
+                                ? (user.roles[course.courseId] || 'student')
+                                : undefined;
                             return (
                                 <CourseCard
                                     key={course.courseId}

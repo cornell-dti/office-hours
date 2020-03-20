@@ -60,29 +60,14 @@ const allCoursesSingletonObservable = new SingletonObservable([], allCoursesObse
 export const useAllCourses: () => readonly FireCourse[] =
     createUseSingletonObservableHook(allCoursesSingletonObservable);
 
-const myCourseUsersObservable: Observable<FireCourseUser[]> = loggedIn$.pipe(
-    switchMap(user =>
-        collectionData<FireCourseUser>(
-            firestore.collection('courseUsers').where('userId', '==', user.uid),
-            'courseUserId'
-        )
-    )
-);
-const myCourseUsersSingletonObservable = new SingletonObservable([], myCourseUsersObservable);
-export const useMyCourseUsers: () => readonly FireCourseUser[] =
-    createUseSingletonObservableHook(myCourseUsersSingletonObservable);
-const myOptionalCourseUsersSingletonObservable =
-    new SingletonObservable<FireCourseUser[] | null>(null, myCourseUsersObservable);
-export const useOptionalMyCourseUsers: () => readonly FireCourseUser[] | null =
-    createUseSingletonObservableHook(myOptionalCourseUsersSingletonObservable);
-
-export const useMyCourseUser = (courseId: string): FireCourseUser | undefined =>
-    useMyCourseUsers().find(courseUser => courseUser.courseId === courseId);
-
 export const useMyCourses = (): readonly FireCourse[] => {
     const allCourses = useAllCourses();
-    const myCourseUsers = useMyCourseUsers();
-    return allCourses.filter(course => myCourseUsers.some(courseUser => courseUser.courseId === course.courseId));
+    const user = useMyUser();
+    if (user === undefined) {
+        return [];
+    }
+    const currentlyEnrolledCourseIds = new Set(user.courses);
+    return allCourses.filter(({ courseId }) => currentlyEnrolledCourseIds.has(courseId));
 };
 
 const courseTagQuery = (courseId: string) => firestore.collection('tags').where('courseId', '==', courseId);
@@ -97,10 +82,15 @@ export const useCourseTags = (courseId: string): { readonly [tagId: string]: Fir
     return tags;
 };
 
+const courseUserQuery = (courseId: string) => (
+    firestore.collection('users').where('courses', 'array-contains', courseId)
+);
+export const useUsersInCourse = (courseId: string): readonly FireUser[] => (
+    useQuery<FireUser>(courseId, courseUserQuery, 'userId')
+);
+
 // Primatives
 // Look up a doc in Firebase by ID
-export const useCourseUser = (courseUserId: string | undefined) =>
-    useDoc<FireCourse>('courseUsers', courseUserId, 'courseUserId');
 export const useCourse = (courseId: string | undefined): FireCourse | undefined =>
     useAllCourses().find(course => course.courseId === courseId);
 export const useQuestion = (questionId: string | undefined) =>

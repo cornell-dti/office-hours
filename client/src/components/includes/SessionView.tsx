@@ -16,7 +16,6 @@ type Props = {
     backCallback: Function;
     joinCallback: Function;
     user: FireUser;
-    courseUser: FireCourseUser;
 };
 
 type UndoState = {
@@ -33,7 +32,7 @@ type AbsentState = {
 };
 
 const SessionViewInHooks = (
-    { course, session, questions, isDesktop, backCallback, joinCallback, user, courseUser }: Props
+    { course, session, questions, isDesktop, backCallback, joinCallback, user }: Props
 ) => {
     const tags = useCourseTags(course.courseId);
     const [
@@ -154,7 +153,7 @@ const SessionViewInHooks = (
             {isDesktop &&
                 <TopBar
                     user={user}
-                    role={courseUser.role}
+                    role={user.roles[course.courseId] || 'student'}
                     context="session"
                     courseId={course.courseId}
                 />
@@ -187,7 +186,7 @@ const SessionViewInHooks = (
             }
             {/* FUTURE_TODO - Just pass in the session and not a bunch of bools */}
             <SessionQuestionsContainer
-                isTA={courseUser.role !== 'student'}
+                isTA={user.roles[course.courseId] !== undefined}
                 questions={questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
                 tags={tags}
                 handleJoinClick={joinCallback}

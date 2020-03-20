@@ -1,46 +1,88 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Dropdown, Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
 
 import { firestore } from '../../firebase';
-import { switchMap, map } from 'rxjs/operators';
-import { docData, collection } from 'rxfire/firestore';
-// Importing combineLatest from rxjs/operators broke everything...
-import { combineLatest } from 'rxjs';
-import { useCourse } from '../../firehooks';
+import { useCourse, useUsersInCourse } from '../../firehooks';
+
+const getUserRoleUpdate = (
+    user: FireUser,
+    courseId: string,
+    role: FireCourseRole
+): Partial<FireUser> => {
+    const courses = [...user.courses];
+    if (!courses.includes(courseId)) {
+        courses.push(courseId);
+    }
+    const roles = { ...user.roles };
+    if (role === 'student') {
+        delete roles[courseId];
+    } else {
+        roles[courseId] = role;
+    }
+    return { courses, roles };
+};
+
+const getCourseRoleUpdate = (
+    course: FireCourse,
+    userId: string,
+    newRole: FireCourseRole
+): Partial<FireCourse> => ({
+    professors: addOrRemoveFromRoleIdList(
+        newRole === 'professor',
+        course.professors,
+        userId
+    ),
+    tas: addOrRemoveFromRoleIdList(
+        newRole === 'ta',
+        course.tas,
+        userId
+    )
+});
+
+const getCourseRoleUpdates = (
+    course: FireCourse,
+    userRoleUpdates: readonly (readonly [string, FireCourseRole])[]
+): Partial<FireCourse> => {
+    const professors = userRoleUpdates.reduce(
+        (previousProfessors, [userId, newRole]) => (
+            addOrRemoveFromRoleIdList(newRole === 'professor', previousProfessors, userId)
+        ),
+        course.professors
+    );
+    const tas = userRoleUpdates.reduce(
+        (previousTAs, [userId, newRole]) => (
+            addOrRemoveFromRoleIdList(newRole === 'ta', previousTAs, userId)
+        ),
+        course.tas
+    );
+    return { professors, tas };
+};
 
 const addTa = async (
-    courseId: string,
-    existingCourseUsers: enrichedFireCourseUser[],
+    course: FireCourse,
     taEmailList: readonly string[]
 ): Promise<void> => {
     const taUserDocuments = await firestore.collection('users').where('email', 'in', taEmailList).get();
     const missingSet = new Set(taEmailList);
-    const exsitingCourseUserEmailToCourseUserId = new Map<string, string>();
-    existingCourseUsers.forEach(
-        ({ email, courseUserId }) => exsitingCourseUserEmailToCourseUserId.set(email, courseUserId)
-    );
     const batch = firestore.batch();
-    const addedEmails: string[] = [];
-    const updatedEmails: string[] = [];
+    const updatedUsers: FireUser[] = [];
     taUserDocuments.forEach(document => {
-        const userId = document.id;
-        const { email } = document.data() as FireUser;
-        const existingCourseUserId = exsitingCourseUserEmailToCourseUserId.get(email);
-        if (existingCourseUserId != null) {
-            batch.set(firestore.collection('courseUsers').doc(existingCourseUserId), { role: 'ta', courseId, userId });
-            updatedEmails.push(email);
-        } else {
-            batch.set(firestore.collection('courseUsers').doc(), { role: 'ta', courseId, userId });
-            addedEmails.push(email);
-        }
+        const existingUser = { userId: document.id, ...document.data() } as FireUser;
+        const { email } = existingUser;
+        const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, 'ta');
+        batch.update(firestore.collection('users').doc(existingUser.userId), roleUpdate);
+        updatedUsers.push(existingUser);
         missingSet.delete(email);
     });
+    batch.update(
+        firestore.collection('courses').doc(course.courseId),
+        getCourseRoleUpdates(course, updatedUsers.map(user => [user.userId, 'ta'] as const))
+    );
     await batch.commit();
     const message = 'Successfully\n'
-        + `added: [${addedEmails.join(', ')}];\n`
-        + `updated: [${updatedEmails.join(', ')}];\n`
+        + `updated: [${updatedUsers.map(user => user.email).join(', ')}];\n`
         + `[${Array.from(missingSet).join(', ')}] do not exist in our system yet.`;
     alert(message);
 };
@@ -57,15 +99,13 @@ const addOrRemoveFromRoleIdList = (
     }
 };
 
-const RoleDropdown = ({ default: role, courseUserId, userId, course }: {
-    default: string;
-    courseUserId: string;
-    userId: string;
-    course: FireCourse;
+const RoleDropdown = ({ user, course }: {
+    readonly user: EnrichedFireUser;
+    readonly course: FireCourse;
 }) => {
     return (
         <Dropdown
-            text={role}
+            text={user.role}
             options={[
                 { key: 1, text: 'Student', value: 'student' },
                 { key: 2, text: 'TA', value: 'ta' },
@@ -73,26 +113,15 @@ const RoleDropdown = ({ default: role, courseUserId, userId, course }: {
             ]}
             onChange={(e, newValue) => {
                 const newRole = newValue.value as FireCourseRole;
-                const courseUserUpdate: Omit<FireCourseUser, 'courseUserId'> = {
-                    role: newRole,
-                    courseId: course.courseId,
-                    userId,
-                };
                 const batch = firestore.batch();
-                batch.update(firestore.collection('courseUsers').doc(courseUserId), courseUserUpdate);
-                const courseUpdate: Partial<FireCourse> = {
-                    professors: addOrRemoveFromRoleIdList(
-                        newRole === 'professor',
-                        course.professors,
-                        userId
-                    ),
-                    tas: addOrRemoveFromRoleIdList(
-                        newRole === 'ta',
-                        course.tas,
-                        userId
-                    )
-                };
-                batch.update(firestore.collection('courses').doc(course.courseId), courseUpdate);
+                batch.update(
+                    firestore.collection('users').doc(user.userId),
+                    getUserRoleUpdate(user, course.courseId, newRole)
+                );
+                batch.update(
+                    firestore.collection('courses').doc(course.courseId),
+                    getCourseRoleUpdate(course, user.userId, newRole)
+                );
                 batch.commit();
             }}
         />
@@ -101,58 +130,35 @@ const RoleDropdown = ({ default: role, courseUserId, userId, course }: {
 
 type columnT = 'firstName' | 'lastName' | 'email' | 'role';
 
-type enrichedFireCourseUser = FireUser & { role: FireCourseRole; courseUserId: string };
+type EnrichedFireUser = FireUser & { role: FireCourseRole };
 
 export default ({ courseId }: { courseId: string }) => {
     const [direction, setDirection] = useState<'descending' | 'ascending'>('ascending');
     const [column, setColumn] = useState<columnT>('email');
-    const [data, setData] = useState<enrichedFireCourseUser[]>([]);
     const course = useCourse(courseId);
 
-    // Fetch data for the table
-    // First, get user id's for all enrolled by querying CourseUsers
-    // Next, map each course user to that user object
-    // Add the role from the courseUser to the User so we can display data
-    useEffect(
-        () => {
-            const courseUsers$ = collection(
-                firestore
-                    .collection('courseUsers')
-                    .where('courseId', '==', courseId)
-            );
+    const courseUsers: readonly EnrichedFireUser[] = useUsersInCourse(courseId)
+        .map(user => ({ ...user, role: user.roles[courseId] || 'student' }));
 
-            const users$ = courseUsers$.pipe(switchMap(courseUsers =>
-                combineLatest(...courseUsers.map(courseUserDocument => {
-                    const courseUserId = courseUserDocument.id;
-                    const { userId, role } = courseUserDocument.data() as FireCourseUser;
-                    return docData<FireUser>(firestore.doc(`users/${userId}`), 'userId').pipe(
-                        map(u => ({ ...u, role, courseUserId }))
-                    );
-                }))
-            ));
-
-            const subscription = users$.subscribe(u => setData(u));
-            return () => subscription.unsubscribe();
-        },
-        [courseId]
-    );
+    const sortedCourseUsers: readonly EnrichedFireUser[] = (() => {
+        const sorted = _.sortBy(courseUsers, [column]);
+        return direction === 'ascending' ? sorted : sorted.reverse();
+    })();
 
     const importTAButtonOnClick = (): void => {
         const response = prompt('Please enter a comma-separated list of TA emails:');
-        if (response == null) {
+        if (response == null || course == null) {
             return;
         }
-        addTa(courseId, data, response.split(',').map(email => email.trim()));
+        addTa(course, response.split(',').map(email => email.trim()));
     };
 
     const handleSort = (clickedColumn: columnT) => () => {
         if (column !== clickedColumn) {
             setDirection('ascending');
             setColumn(clickedColumn);
-            setData(_.sortBy(data, [clickedColumn]));
         } else {
-            setDirection(direction === 'ascending' ? 'descending' : 'ascending');
-            setData(data.reverse());
+            setDirection(previousDirection => previousDirection === 'ascending' ? 'descending' : 'ascending');
         }
     };
 
@@ -192,18 +198,13 @@ export default ({ courseId }: { courseId: string }) => {
                         <button onClick={importTAButtonOnClick}>Import TAs</button>
                     </Table.Cell>
                 </Table.Row>
-                {course && data.map(u => (
+                {course && sortedCourseUsers.map(u => (
                     <Table.Row key={u.userId}>
                         <Table.Cell>{u.firstName}</Table.Cell>
                         <Table.Cell>{u.lastName}</Table.Cell>
                         <Table.Cell>{u.email}</Table.Cell>
                         <Table.Cell textAlign="right" className="dropdownCell">
-                            <RoleDropdown
-                                default={u.role}
-                                courseUserId={u.courseUserId}
-                                userId={u.userId}
-                                course={course}
-                            />
+                            <RoleDropdown user={u} course={course} />
                         </Table.Cell>
                     </Table.Row>
                 ))}
