@@ -54,6 +54,14 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         ));
     };
 
+    const onSwitch = () => {
+        if (isEdit) {
+            window.location.href = '/home';
+        } else {
+            window.location.href = '/edit';
+        }
+    };
+
     const onSubmit = () => {
         const newCourseSet = new Set(currentlyEnrolledCourseIds);
         coursesToEnroll.forEach(courseId => newCourseSet.add(courseId));
@@ -108,21 +116,26 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     </div>
                 </div>
             </div>
-            {isEdit && (
-                <div className="EnrollBar">
-                    <div className="EnrolledCourses web">
-                        {selectedCoursesString}
-                    </div>
-                    <div className="buttons">
+            <div className="EnrollBar">
+                <div className="EnrolledCourses web">
+                    {isEdit && selectedCoursesString}
+                </div>
+                <div className="buttons">
+                    <button className="switch" onClick={onSwitch}>
+                        {isEdit ? 'Home' : 'Edit'}
+                    </button>
+                    {isEdit && (
                         <button className={'save' + (canSave ? ' disabled' : '')} onClick={onSubmit}>
                             Save
                         </button>
+                    )}
+                    {isEdit && (
                         <button className="cancel" onClick={() => setSelectedCourses([])}>
                             Cancel
                         </button>
-                    </div>
+                    )}
                 </div>
-            )}
+            </div>
         </div>
     );
 }
