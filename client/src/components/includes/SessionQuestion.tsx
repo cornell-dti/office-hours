@@ -3,9 +3,7 @@ import * as React from 'react';
 import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import { firestore } from '../../firebase';
-import { docData } from 'rxfire/firestore';
 import SelectedTags from './SelectedTags';
-import { Observable } from 'rxjs';
 //This is used to make a timestamp
 import * as firebase from 'firebase/app';
 
@@ -95,7 +93,7 @@ class SessionQuestion extends React.Component<Props> {
             //Not currently loading these
             loading: false
         };
-        
+
     }
 
     static getDerivedStateFromProps(props: Props, state: State) {
@@ -213,7 +211,7 @@ class SessionQuestion extends React.Component<Props> {
 
 
     public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
-        this.state.isEditingLocation = true;
+        this.setState({ isEditingLocation: true });
         const target = event.target as HTMLTextAreaElement;
         if (target.value.length <= LOCATION_CHAR_LIMIT) {
             this.setState({
