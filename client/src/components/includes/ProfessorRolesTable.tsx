@@ -4,7 +4,7 @@ import { Dropdown, Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
 
 import { firestore } from '../../firebase';
-import { useCourse, useUsersInCourse } from '../../firehooks';
+import { useCourse, useCourseUsers } from '../../firehooks';
 
 const getUserRoleUpdate = (
     user: FireUser,
@@ -137,7 +137,7 @@ export default ({ courseId }: { courseId: string }) => {
     const [column, setColumn] = useState<columnT>('email');
     const course = useCourse(courseId);
 
-    const courseUsers: readonly EnrichedFireUser[] = useUsersInCourse(courseId)
+    const courseUsers: readonly EnrichedFireUser[] = useCourseUsers(courseId)
         .map(user => ({ ...user, role: user.roles[courseId] || 'student' }));
 
     const sortedCourseUsers: readonly EnrichedFireUser[] = (() => {

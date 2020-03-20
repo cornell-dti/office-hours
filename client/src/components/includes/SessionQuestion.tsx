@@ -38,6 +38,7 @@ const LOCATION_CHAR_LIMIT = 40;
 
 type Props = {
     question: FireQuestion,
+    users: { readonly[userId: string]: FireUser };
     tags: { readonly [tagId: string]: FireTag };
     index: number,
     isTA: boolean,
@@ -54,14 +55,6 @@ type State = {
     showDotMenu: boolean,
     undoQuestionIdDontKnow?: number,
     undoName?: string,
-    //The loaded value of these variables
-    asker?: FireUser | null,
-    answerer?: FireUser | null,
-    //This is used for memoization so that we don't fetch the same
-    //user information multiple times
-    loadedAnswererId?: string | null,
-    loadedAskerId?: string | null,
-    loading: boolean
 };
 
 //We no longer support dynamic updating of asker, answer, tags etc
@@ -75,80 +68,8 @@ class SessionQuestion extends React.Component<Props, State> {
             showLocation: false,
             location: props.question.location || '',
             isEditingLocation: false,
-            showDotMenu: false,
-            //This code is used to load relevant information and cache it
-            asker: null,
-            answerer: null,
-            //This is used for memoization so that we don't fetch the same
-            //user information multiple times
-            loadedAnswererId: null,
-            loadedAskerId: null,
-            //Not currently loading these
-            loading: false
+            showDotMenu: false
         };
-
-    }
-
-    static getDerivedStateFromProps(props: Props, state: State) {
-        //Assign null to these fields
-        const stateChanges = {
-            loadedAnswererId: state.loadedAnswererId,
-            answerer: state.answerer,
-            loadedAskerId: state.loadedAskerId,
-            asker: state.asker,
-            loading: state.loading
-        };
-
-        //Invalidate props when information is stale
-
-        if (state.loadedAnswererId !== props.question.answererId){
-            stateChanges.loadedAnswererId = props.question.answererId;
-            stateChanges.answerer = null;
-            stateChanges.loading = false;
-        };
-
-        if (state.loadedAskerId !== props.question.askerId){
-            stateChanges.loadedAskerId = props.question.askerId;
-            stateChanges.asker = null;
-            stateChanges.loading = false;
-        };
-
-        return {...state, ...stateChanges};
-    }
-
-    componentDidUpdate(props: Props, state: State) {
-        let shouldUpdateLoad = false;
-        //Make a get request for the asker if their information is invalidated
-        if (!state.loading && state.asker === null){
-            firestore.doc('users/' + state.loadedAskerId).get().then(
-                (doc) => {
-                    if (doc.exists){
-                        this.setState({
-                            asker: doc.data() as FireUser | undefined
-                        });
-                    }
-                }
-            );
-            shouldUpdateLoad = true;
-        };
-        //Make a get request for the answerer if their information is invalidated
-        if (!state.loading && props.question.answererId && state.answerer === null){
-            firestore.doc('users/' + state.loadedAnswererId).get().then(
-                (doc) => {
-                    if (doc.exists){
-                        this.setState({
-                            answerer: doc.data() as FireUser | undefined
-                        });
-                    }
-                }
-            );
-            shouldUpdateLoad = true;
-        };
-        if (shouldUpdateLoad){
-            this.setState({
-                loading: true
-            });
-        }
     }
 
     // Given an index from [1..n], converts it to text that is displayed on the
@@ -232,10 +153,11 @@ class SessionQuestion extends React.Component<Props, State> {
             }
         });
         const question = this.props.question;
+        const asker = this.props.users[question.askerId];
         this.props.triggerUndo(
             question.questionId,
             status,
-            this.state.asker ? this.state.asker.firstName + ' ' + this.state.asker.lastName : 'unknown'
+            asker.firstName + ' ' + asker.lastName
         );
     };
 
@@ -256,6 +178,11 @@ class SessionQuestion extends React.Component<Props, State> {
         const question = this.props.question;
         const studentCSS = this.props.isTA ? '' : ' Student';
         const includeBookmark = this.props.question.askerId === this.props.myUserId;
+
+        const asker = this.props.users[question.askerId];
+        const answerer = question.answererId ? undefined : this.props.users[question.answererId];
+        const primaryTag = this.props.tags[this.props.question.primaryTag];
+        const secondaryTag = this.props.tags[this.props.question.secondaryTag];
 
         return (
             <div className="QueueQuestions">
@@ -303,26 +230,22 @@ class SessionQuestion extends React.Component<Props, State> {
                     </div>
                 }
                 <div className="QuestionInfo">
-                    {this.props.isTA && this.state.asker &&
+                    {this.props.isTA && asker &&
                         <div className="studentInformation">
                             <img
-                                src={this.state.asker === undefined
-                                    ? '/placeholder.png'
-                                    : this.state.asker.photoUrl}
-                                alt={this.state.asker === undefined
-                                    ? 'Asker profile picture'
-                                    : `${this.state.asker.firstName} ${this.state.asker.lastName} profile picture`}
+                                src={asker.photoUrl || '/placeholder.png'}
+                                alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
                             />
                             <span className="Name">
-                                {this.state.asker.firstName + ' ' + this.state.asker.lastName}
+                                {asker.firstName + ' ' + asker.lastName}
                                 {question.status === 'assigned' &&
                                     <React.Fragment>
                                         <span className="assigned"> is assigned
-                                            {this.state.answerer &&
-                                                (' to ' + (this.state.answerer.userId === this.props.myUserId
+                                            {answerer &&
+                                                (' to ' + (answerer.userId === this.props.myUserId
                                                     ? 'you'
-                                                    : this.state.answerer.firstName + ' '
-                                                    + this.state.answerer.lastName))}
+                                                    : answerer.firstName + ' '
+                                                    + answerer.lastName))}
                                         </span>
                                     </React.Fragment>
                                 }
@@ -338,14 +261,8 @@ class SessionQuestion extends React.Component<Props, State> {
                 <div className="BottomBar">
                     {this.props.isTA && <span className="Spacer" />}
                     <div className="Tags">
-                        {this.props.tags[this.props.question.primaryTag] && <SelectedTags
-                            tag={this.props.tags[this.props.question.primaryTag]}
-                            isSelected={false}
-                        />}
-                        {this.props.tags[this.props.question.secondaryTag] && <SelectedTags
-                            tag={this.props.tags[this.props.question.secondaryTag]}
-                            isSelected={false}
-                        />}
+                        {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} />}
+                        {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} />}
                     </div>
                     {question.timeEntered != null &&
                         <p className="Time">

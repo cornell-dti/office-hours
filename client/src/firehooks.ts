@@ -85,9 +85,19 @@ export const useCourseTags = (courseId: string): { readonly [tagId: string]: Fir
 const courseUserQuery = (courseId: string) => (
     firestore.collection('users').where('courses', 'array-contains', courseId)
 );
-export const useUsersInCourse = (courseId: string): readonly FireUser[] => (
+export const useCourseUsers = (courseId: string): readonly FireUser[] => (
     useQuery<FireUser>(courseId, courseUserQuery, 'userId')
 );
+export const useCourseUsersMap = (courseId: string): { readonly [userId: string]: FireUser } => {
+    const courseUsers = useCourseUsers(courseId);
+    const map: { [userId: string]: FireUser } = {};
+
+    courseUsers.forEach(user => {
+        map[user.userId] = user;
+    });
+
+    return map;
+};
 
 // Primatives
 // Look up a doc in Firebase by ID

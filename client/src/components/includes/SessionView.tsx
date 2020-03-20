@@ -5,7 +5,7 @@ import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 
 import { Icon } from 'semantic-ui-react';
-import { useCourseTags } from '../../firehooks';
+import { useCourseTags, useCourseUsersMap } from '../../firehooks';
 // import SessionAlertModal from './SessionAlertModal';
 
 type Props = {
@@ -35,6 +35,7 @@ const SessionViewInHooks = (
     { course, session, questions, isDesktop, backCallback, joinCallback, user }: Props
 ) => {
     const tags = useCourseTags(course.courseId);
+    const users = useCourseUsersMap(course.courseId);
     const [
         { undoAction, undoName, undoQuestionId, timeoutId },
         setUndoState
@@ -188,6 +189,7 @@ const SessionViewInHooks = (
             <SessionQuestionsContainer
                 isTA={user.roles[course.courseId] !== undefined}
                 questions={questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
+                users={users}
                 tags={tags}
                 handleJoinClick={joinCallback}
                 myUserId={user.userId}
