@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import { RouteComponentProps } from 'react-router';
 import { Icon } from 'semantic-ui-react';
 
 import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
@@ -19,13 +20,7 @@ import { docData } from 'rxfire/firestore';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 
-const ProfessorView = (props: {
-    match: {
-        params: {
-            courseId: string;
-        };
-    };
-}) => {
+const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
     const week = new Date();
     week.setHours(0, 0, 0, 0);
     const daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
@@ -41,7 +36,6 @@ const ProfessorView = (props: {
         setSelectedWeekEpoch(old => old + ((previousWeek ? -7 : 7) * ONE_DAY));
     };
 
-    const courseId = props.match.params.courseId;
     const course = useCourse(courseId);
     const me = useMyUser();
 

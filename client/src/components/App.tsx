@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import * as ReactGA from 'react-ga';
 import moment from 'moment';
@@ -25,10 +26,9 @@ ReactGA.initialize('UA-123790900-1');
 const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 'info4998');
 
 // Since the type is too polymorphic, we have to use the any type in the next few lines.
-type PrivateRouteProps = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    component: React.ComponentType<any>;
-    requireProfessor?: boolean;
+type PrivateRouteProps<P extends { courseId?: string }> = {
+    component: React.ComponentType<RouteComponentProps<P>>;
+    requireProfessor: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [restKey: string]: any;
 };
@@ -43,7 +43,9 @@ const getDefaultRedirectCourseId = (user: FireUser | undefined, courses: readonl
     return DEFAULT_COURSE_ID;
 };
 
-const PrivateRoute = ({ component, requireProfessor, ...rest }: PrivateRouteProps) => {
+const PrivateRoute = <P extends { courseId?: string }>(
+    { component, requireProfessor, ...rest }: PrivateRouteProps<P>
+) => {
     const courses = useAllCourses();
 
     // Show a loader or redirect based on current auth state
@@ -112,45 +114,47 @@ export default () => {
                 <Route path="/" component={Analytics} />
                 <Switch>
                     <Route path="/login" component={LoginView} />
-                    <PrivateRoute path="/edit" component={CourseEditView} />
-                    <PrivateRoute path="/home" component={CourseSelectionView} />
+                    <PrivateRoute path="/edit" component={CourseEditView} requireProfessor={false} />
+                    <PrivateRoute path="/home" component={CourseSelectionView} requireProfessor={false} />
                     <PrivateRoute
                         path="/professor-tags/course/:courseId"
                         component={ProfessorTagsView}
                         exact={true}
-                        requireProfessor={true}
+                        requireProfessor
                     />
                     <PrivateRoute
                         path="/professor-people/course/:courseId"
                         component={ProfessorPeopleView}
                         exact={true}
-                        requireProfessor={true}
+                        requireProfessor
                     />
                     <PrivateRoute
                         path="/professor-dashboard/course/:courseId"
                         component={ProfessorDashboardView}
                         exact={true}
-                        requireProfessor={true}
+                        requireProfessor
                     />
                     <PrivateRoute
                         path="/professor-roles/course/:courseId"
                         component={ProfessorRoles}
                         exact={true}
-                        requireProfessor={true}
+                        requireProfessor
                     />
                     <PrivateRoute
                         path="/professor/course/:courseId"
                         component={ProfessorView}
                         exact={true}
-                        requireProfessor={true}
+                        requireProfessor
                     />
                     <PrivateRoute
                         path="/course/:courseId/session/:sessionId/:page?"
                         component={SplitView}
+                        requireProfessor={false}
                     />
                     <PrivateRoute
                         path="/course/:courseId"
                         component={SplitView}
+                        requireProfessor={false}
                     />
                     <Redirect from="/" to={'/course/' + getDefaultRedirectCourseId(user, courses)} />
                 </Switch>
