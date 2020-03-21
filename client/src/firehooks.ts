@@ -4,7 +4,11 @@ import { firestore, loggedIn$ } from './firebase';
 import { collectionData, docData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { SingletonObservable, createUseSingletonObservableHook } from './utilities/singleton-observable-hook';
+import {
+    SingletonObservable,
+    createUseSingletonObservableHook,
+    createUseParamaterizedSingletonObservableHook
+} from './utilities/singleton-observable-hook';
 
 export const useDoc = <T>(collection: string, id: string | undefined, idField: string) => {
     const [doc, setDoc] = useState<T | undefined>();
@@ -98,6 +102,13 @@ export const useCourseUsersMap = (courseId: string): { readonly [userId: string]
 
     return map;
 };
+
+const getSessionQuestionsQuery = (sessionId: string) => firestore.collection('questions')
+    .where('sessionId', '==', sessionId)
+    .orderBy('timeEntered', 'asc');
+export const useSessionQuestions = createUseParamaterizedSingletonObservableHook(sessionId =>
+    new SingletonObservable([], collectionData<FireQuestion>(getSessionQuestionsQuery(sessionId), 'questionId'))
+);
 
 // Primatives
 // Look up a doc in Firebase by ID

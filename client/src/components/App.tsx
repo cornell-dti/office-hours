@@ -34,7 +34,7 @@ type PrivateRouteProps = {
 };
 
 const getDefaultRedirectCourseId = (user: FireUser | undefined, courses: readonly FireCourse[]): string => {
-    if (user) {
+    if (user && user.courses) {
         const firstCourseId = user.courses[0];
         if (firstCourseId !== undefined) {
             return firstCourseId;
@@ -75,7 +75,7 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: PrivateRouteProp
     if (isLoggedIn === 1) {
         return <Redirect to={{ pathname: '/login' }} />;
     }
-    if (!user || courses.length === 0) {
+    if (!user || !user.roles || !user.courses || courses.length === 0) {
         // User and courses might load after loging status load.
         // We still display the loading screen while waiting for a final verdict
         // whether the user can enter professor view.
@@ -97,7 +97,6 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: PrivateRouteProp
     const course = courses.find(course => courseId === course.courseId);
     if (course === undefined
         || !moment().isBetween(moment(course.startDate.toDate()), moment(course.endDate.toDate()))) {
-        console.log(course, courseId);
         return <Redirect to={{ pathname: '/course/' + getDefaultRedirectCourseId(user, courses) }} />;
     }
     return <Route {...rest} component={component} />;

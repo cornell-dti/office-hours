@@ -6,7 +6,7 @@ import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import AddQuestion from '../includes/AddQuestion';
 
-import { useCourse, useSession, useMyUser, useQuery } from '../../firehooks';
+import { useCourse, useSession, useMyUser, useQuery, useSessionQuestions } from '../../firehooks';
 
 import TopBar from '../includes/TopBar';
 import { Loader } from 'semantic-ui-react';
@@ -61,8 +61,9 @@ const SplitView = (props: {
     const user = useMyUser();
     const course = useCourse(props.match.params.courseId);
     const session = useSession(props.match.params.sessionId);
-    const sessionQuestions =
-        useQuery<FireQuestion>(props.match.params.sessionId || '', getQuestionsQuery, 'questionId');
+    const sessionQuestions = useSessionQuestions(props.match.params.sessionId || '')
+        .filter(question => !question.resolved)
+        .filter((_, index) => index < NUM_QUESTIONS_SHOWN);
     const width = useWindowWidth();
 
     // Handle browser back button
