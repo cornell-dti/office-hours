@@ -68,5 +68,13 @@ export const createUseParamaterizedSingletonObservableHook = <T>(
     observerCreator: (parameter: string) => SingletonObservable<T>
 ): ((parameter: string) => T) => {
     const manager = new ParamaterizedSingletonObservableManager(observerCreator);
-    return (parameter: string) => createUseSingletonObservableHook(manager.get(parameter))();
+    return (parameter: string) => {
+        const singletonObservable = manager.get(parameter);
+        const [value, setValue] = useState(singletonObservable.get());
+        useEffect(() => {
+            const subscription = singletonObservable.subscribe(latest => setValue(latest));
+            return () => subscription.unsubscribe();
+        }, [singletonObservable]);
+        return value;
+    };
 };
