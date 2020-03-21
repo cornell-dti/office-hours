@@ -26,7 +26,6 @@ const ProfessorView = (props: {
         };
     };
 }) => {
-    // RYAN_TODO Simplify.
     const week = new Date();
     week.setHours(0, 0, 0, 0);
     const daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
