@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import { RouteComponentProps } from 'react-router';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import QuestionsPieChart from '../includes/QuestionsPieChart';
 import QuestionsLineChart from '../includes/QuestionsLineChart';
@@ -14,13 +15,7 @@ import { firestore, collectionData } from '../../firebase';
 import { combineLatest, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-const ProfessorPeopleView = (props: {
-    match: {
-        params: {
-            courseId: string;
-        };
-    };
-}) => {
+const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) => {
     const courseId = props.match.params.courseId;
 
     const [startDate, setStartDate] = useState(moment(new Date()).add(-4, 'months'));

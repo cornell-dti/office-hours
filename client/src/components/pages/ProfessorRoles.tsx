@@ -1,12 +1,11 @@
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
 import { useMyUser, useCourse } from '../../firehooks';
 
-type Props = { match: { params: { courseId: string } } };
-
-const ProfessorDashboardView = ({ match: { params: { courseId } } }: Props) => {
+const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
     const user = useMyUser();
     const course = useCourse(courseId);
 

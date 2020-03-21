@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import TagsBarChart from '../includes/TagsBarChart';
@@ -30,9 +31,7 @@ const getQuestionsQuery = (courseId: string) => firestore
     .collection('questions')
     .where('courseId', '==', firestore.doc('courses/' + courseId));
 
-type Props = { match: { params: { courseId: string } } };
-
-const ProfessorDashboardView = ({ match: { params: { courseId } } }: Props) => {
+const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
     const [currentCategory, setCurrentCategory] = useState<CategoryTag | undefined>();
 
     const tags = useQuery<FireTag>(courseId, getQuery, 'tagId');
