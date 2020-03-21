@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-delimiter-style */
 import * as React from 'react';
 
 import { Redirect } from 'react-router';
@@ -25,21 +24,21 @@ class AddQuestion extends React.Component {
      * 60 - Warning modal (replaces question modal) - toggles after submit if n minutes are left in queue
      */
     props!: {
-        session: FireSession,
-        course: FireCourse,
-        mobileBreakpoint: number
+        session: FireSession;
+        course: FireCourse;
+        mobileBreakpoint: number;
     };
 
     state!: {
-        location: string,
-        question: string,
-        selectedTags: number[],
-        stage: number,
-        width: number,
-        redirect: boolean,
-        tags: FireTag[],
-        selectedPrimary?: FireTag,
-        selectedSecondary?: FireTag,
+        location: string;
+        question: string;
+        selectedTags: number[];
+        stage: number;
+        width: number;
+        redirect: boolean;
+        tags: FireTag[];
+        selectedPrimary?: FireTag;
+        selectedSecondary?: FireTag;
     };
 
     constructor(props: {}) {
