@@ -39,8 +39,9 @@ export default ({ session, sessionCallback, course, user }: Props) => {
                 role={(user && course && (user.roles[course.courseId] || 'student'))}
             />
             <CalendarDaySelect callback={setSelectedDate} />
-            {course ?
+            {course && user ?
                 <CalendarSessions
+                    user={user}
                     activeSession={session}
                     callback={sessionCallback}
                     course={course}

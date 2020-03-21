@@ -30,6 +30,24 @@ export class SingletonObservable<T> {
     public subscribe = (next: (value: T) => void): Subscription => this.observable.subscribe({ next });
 }
 
+export class ParamaterizedSingletonObservableManager<T> {
+    private readonly map: Map<string, SingletonObservable<T>>;
+
+    public constructor(private readonly observerCreator: (parameter: string) => SingletonObservable<T>) {
+        this.map = new Map();
+    }
+
+    public get = (parameter: string): SingletonObservable<T> => {
+        const observable = this.map.get(parameter);
+        if (observable != null) {
+            return observable;
+        }
+        const newObservable = this.observerCreator(parameter);
+        this.map.set(parameter, newObservable);
+        return newObservable;
+    };
+}
+
 /**
   * @see SingletonObservable
   *
@@ -44,4 +62,11 @@ export const createUseSingletonObservableHook = <T>(singletonObservable: Singlet
         }, []);
         return value;
     };
+};
+
+export const createUseParamaterizedSingletonObservableHook = <T>(
+    observerCreator: (parameter: string) => SingletonObservable<T>
+): ((parameter: string) => T) => {
+    const manager = new ParamaterizedSingletonObservableManager(observerCreator);
+    return (parameter: string) => createUseSingletonObservableHook(manager.get(parameter))();
 };

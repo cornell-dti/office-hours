@@ -3,8 +3,9 @@ import { groupBy } from 'lodash';
 
 import CalendarSessionCard from './CalendarSessionCard';
 
-const CalendarSessions = ({ activeSession, course, sessions, callback }: {
+const CalendarSessions = ({ activeSession, user, course, sessions, callback }: {
     activeSession?: FireSession;
+    user: FireUser;
     course: FireCourse;
     sessions: FireSession[];
     callback: (sessionId: string) => void;
@@ -22,19 +23,9 @@ const CalendarSessions = ({ activeSession, course, sessions, callback }: {
     };
 
     const sessionCards = sessions.map(session => {
-        // RYAN_TODO
-        // const unresolvedQuestions = 0;
-        // session.questionsBySessionId.nodes.filter((q) => q.status === 'unresolved');
-        const userQuestions = []; // unresolvedQuestions.filter((q) => q.userByAskerId.userId === this.props.myUserId);
-
-        const numAhead = 0;
-        // userQuestions.length === 0 ? unresolvedQuestions.length : unresolvedQuestions.filter((q) =>
-        //     q.timeEntered <= userQuestions[0].timeEntered).length - 1;
-
         return (
             <CalendarSessionCard
-                includeBookmark={userQuestions.length > 0}
-                numAhead={numAhead}
+                user={user}
                 session={session}
                 key={session.sessionId}
                 callback={callback}
