@@ -64,7 +64,7 @@ class ProfessorOHInfoDelete extends React.Component {
         const timeEnd = moment(this.props.session.endTime.toDate()).format('h:mm A');
 
         const disable = moment(this.props.session.startTime.toDate()).isBefore();
-        // RYAN_TODO
+        // RYAN_TODO: hookify this component and call useSessionTANames()
         const taList: string[] = [];
         // this.props.session.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.computedName);
 

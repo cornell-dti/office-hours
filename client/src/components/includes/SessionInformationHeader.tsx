@@ -3,7 +3,7 @@ import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
 
 import people from '../../media/people.svg';
-import { useSessionQuestions } from '../../firehooks';
+import { useSessionQuestions, useSessionTAs } from '../../firehooks';
 
 type Props = {
     session: FireSession;
@@ -14,8 +14,7 @@ type Props = {
 };
 
 const SessionInformationHeader = ({ session, course, callback, myUserId, isDesktop }: Props) => {
-    // RYAN_TODO: Read TA Users
-    const tas: FireUser[] = []; // session.sessionTasBySessionId.nodes;
+    const tas = useSessionTAs(session);
 
     const questions: FireQuestion[] = useSessionQuestions(session.sessionId);
 

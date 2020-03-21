@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Moment from 'react-moment';
 import chevron from '../../media/chevron.svg';
-import { useSessionQuestions } from '../../firehooks';
+import { useSessionQuestions, useSessionTANames } from '../../firehooks';
 
 const CalendarSessionCard = (props: {
     user: FireUser;
@@ -28,8 +28,7 @@ const CalendarSessionCard = (props: {
 
     const includeBookmark = userQuestions.length > 0;
 
-    // RYAN_TODO: Read TA Users
-    const tas: FireUser[] = []; // session.sessionTasBySessionId.nodes;
+    const tas = useSessionTANames(session);
 
     const timeDesc = '';
     return (
@@ -52,10 +51,7 @@ const CalendarSessionCard = (props: {
                 </div>
                 <div className="Tas">
                     {session.title ||
-                        (tas.length > 2
-                            ? tas.map(ta => ta.firstName + ' ' + ta.lastName).join(', ')
-                            : tas.map(ta => ta.firstName + ' ' + ta.lastName).join(' and ')
-                        )
+                        (tas.length > 2  ? tas.join(', ') : tas.join(' and '))
                     }
                 </div>
                 <div className="Queue">
