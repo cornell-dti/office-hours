@@ -1,20 +1,19 @@
-/* eslint-disable @typescript-eslint/member-delimiter-style */
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
 
 type PropTypes = {
-    isNew: boolean
-    cancelCallback: Function
-    tag?: FireTag
-    courseId: string
-    childTags: FireTag[]
+    isNew: boolean;
+    cancelCallback: Function;
+    tag?: FireTag;
+    courseId: string;
+    childTags: FireTag[];
 };
 
 type State = {
-    tag: FireTag
-    newTagText: string
-    newTags: string[]
+    tag: FireTag;
+    newTagText: string;
+    newTags: string[];
 };
 
 class ProfessorTagInfo extends React.Component<PropTypes, State> {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/member-delimiter-style */
 import * as React from 'react';
 import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
@@ -37,24 +36,24 @@ import * as firebase from 'firebase/app';
 const LOCATION_CHAR_LIMIT = 40;
 
 type Props = {
-    question: FireQuestion,
+    question: FireQuestion;
     users: { readonly[userId: string]: FireUser };
     tags: { readonly [tagId: string]: FireTag };
-    index: number,
-    isTA: boolean,
-    includeRemove: boolean,
-    myUserId: string,
-    triggerUndo: Function,
-    isPast: boolean,
+    index: number;
+    isTA: boolean;
+    includeRemove: boolean;
+    myUserId: string;
+    triggerUndo: Function;
+    isPast: boolean;
 };
 
 type State = {
-    showLocation: boolean,
-    location: string,
-    isEditingLocation: boolean,
-    showDotMenu: boolean,
-    undoQuestionIdDontKnow?: number,
-    undoName?: string,
+    showLocation: boolean;
+    location: string;
+    isEditingLocation: boolean;
+    showDotMenu: boolean;
+    undoQuestionIdDontKnow?: number;
+    undoName?: string;
 };
 
 //We no longer support dynamic updating of asker, answer, tags etc
