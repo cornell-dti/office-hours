@@ -81,6 +81,9 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: PrivateRouteProp
             return <Route {...rest} component={component} />;
         }
     } else {
+        if (user && user.courses.length === 0) {
+            return <Redirect to={{ pathname: '/edit' }} />;
+        }
         return (<Route {...rest} component={component} />);
     }
 
