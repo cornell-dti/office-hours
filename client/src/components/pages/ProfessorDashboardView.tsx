@@ -22,14 +22,12 @@ interface CategoryTag {
 
 const getQuery = (courseId: string) => firestore
     .collection('tags')
-    // RYAN_TODO filter based on today's date.
     .where('courseId', '==', firestore.doc('courses/' + courseId));
 
 // Fetching all questions for a course might be expensive/have performance implications
 // This should be rarely done, though.
 const getQuestionsQuery = (courseId: string) => firestore
     .collection('questions')
-    // RYAN_TODO filter based on today's date.
     .where('courseId', '==', firestore.doc('courses/' + courseId));
 
 type Props = { match: { params: { courseId: string } } };
