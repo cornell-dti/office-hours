@@ -69,19 +69,19 @@ const PrivateRoute = ({ component, requireProfessor, ...rest }: PrivateRouteProp
         });
     }, []);
 
-    if (isLoggedIn === 0 || courses.length === 0) {
+    if (isLoggedIn === 0) {
         return <Loader active={true} content={'Loading'} />;
     }
     if (isLoggedIn === 1) {
         return <Redirect to={{ pathname: '/login' }} />;
     }
-
-    if (!user) {
-        // User might load after loging status load.
+    if (!user || courses.length === 0) {
+        // User and courses might load after loging status load.
         // We still display the loading screen while waiting for a final verdict
         // whether the user can enter professor view.
         return <Loader active={true} content={'Loading'} />;
     }
+
     if (requireProfessor) {
         if (user.roles[courseId || DEFAULT_COURSE_ID] === 'professor') {
             return <Route {...rest} component={component} />;

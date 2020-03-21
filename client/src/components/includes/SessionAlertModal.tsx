@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, ReactElement } from 'react';
 import moment from 'moment';
 import { Icon } from 'semantic-ui-react';
 import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
+import { useCourseUsersMap } from '../../firehooks';
 
 type Props = {
     readonly header?: string;
@@ -18,7 +19,8 @@ type Props = {
 const SessionAlertModal = (
     { header, icon, color, description, OHSession, buttons, cancelAction, mainAction, displayShade }: Props
 ) => {
-    const [displayModal, setDisplayModal] = useState(false);
+    const courseUsers = useCourseUsersMap((OHSession && OHSession.courseId) || 'DUMMY');
+    const [displayModal, setDisplayModal] = useState(true);
 
     const defaultCancel = () => setDisplayModal(false);
 
@@ -41,11 +43,20 @@ const SessionAlertModal = (
 
     // Copied over from ProfessorOHInfoDelete
     const taList = OHSession
-        ? ['COMPUTE TA NAMES'] // RYAN_TODO: actually compute TA names
-        // ? this.props.OHSession.tas.nodes.map(ta => ta.userByUserId.computedName)
+        ? OHSession.tas.map(userId => {
+            const courseUser = courseUsers[userId];
+            if (courseUser === undefined) {
+                return 'unknown';
+            }
+            return `${courseUser.firstName} ${courseUser.lastName}`;
+        })
         : [];
 
-    return displayModal && (
+    if (!displayModal) {
+        return null as unknown as ReactElement;
+    }
+
+    return (
         <div className="SessionAlertModal">
             <div className={'modalShadeAlert ' + shadeDisplay} onClick={() => cancel()} />
             <div className={'modalContent ' + shadeDisplay}>
