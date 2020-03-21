@@ -89,8 +89,8 @@ export const useCourseTags = (courseId: string): { readonly [tagId: string]: Fir
 const courseUserQuery = (courseId: string) => (
     firestore.collection('users').where('courses', 'array-contains', courseId)
 );
-export const useCourseUsers = (courseId: string): readonly FireUser[] => (
-    useQuery<FireUser>(courseId, courseUserQuery, 'userId')
+export const useCourseUsers = createUseParamaterizedSingletonObservableHook(courseId =>
+    new SingletonObservable([], collectionData<FireUser>(courseUserQuery(courseId), 'userId'))
 );
 export const useCourseUsersMap = (courseId: string): { readonly [userId: string]: FireUser } => {
     const courseUsers = useCourseUsers(courseId);
@@ -102,6 +102,23 @@ export const useCourseUsersMap = (courseId: string): { readonly [userId: string]
 
     return map;
 };
+
+const dummySession = { courseId: 'DUMMY', tas: [] };
+export const useSessionTAs = (session: Pick<FireSession, 'courseId' | 'tas'> = dummySession): readonly FireUser[] => {
+    const courseUsers = useCourseUsersMap(session.courseId);
+    const tas: FireUser[] = [];
+    session.tas.forEach(userId => {
+        const courseUser = courseUsers[userId];
+        if (courseUser === undefined) {
+            return;
+        }
+        tas.push(courseUser);
+    });
+    return tas;
+};
+export const useSessionTANames = (session: Pick<FireSession, 'courseId' | 'tas'> = dummySession): readonly string[] => (
+    useSessionTAs(session).map(courseUser => `${courseUser.firstName} ${courseUser.lastName}`)
+);
 
 const getSessionQuestionsQuery = (sessionId: string) => firestore.collection('questions')
     .where('sessionId', '==', sessionId)

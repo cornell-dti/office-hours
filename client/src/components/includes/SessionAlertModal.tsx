@@ -2,7 +2,7 @@ import React, { useState, ReactElement } from 'react';
 import moment from 'moment';
 import { Icon } from 'semantic-ui-react';
 import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
-import { useCourseUsersMap } from '../../firehooks';
+import { useSessionTANames } from '../../firehooks';
 
 type Props = {
     readonly header?: string;
@@ -19,7 +19,7 @@ type Props = {
 const SessionAlertModal = (
     { header, icon, color, description, OHSession, buttons, cancelAction, mainAction, displayShade }: Props
 ) => {
-    const courseUsers = useCourseUsersMap((OHSession && OHSession.courseId) || 'DUMMY');
+    const tas = useSessionTANames(OHSession);
     const [displayModal, setDisplayModal] = useState(true);
 
     const defaultCancel = () => setDisplayModal(false);
@@ -42,15 +42,7 @@ const SessionAlertModal = (
     const shadeDisplay = displayShade ? 'shade' : '';
 
     // Copied over from ProfessorOHInfoDelete
-    const taList = OHSession
-        ? OHSession.tas.map(userId => {
-            const courseUser = courseUsers[userId];
-            if (courseUser === undefined) {
-                return 'unknown';
-            }
-            return `${courseUser.firstName} ${courseUser.lastName}`;
-        })
-        : [];
+    const taList = OHSession ? tas : [];
 
     if (!displayModal) {
         return null as unknown as ReactElement;
