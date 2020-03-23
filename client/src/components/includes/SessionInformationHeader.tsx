@@ -4,6 +4,7 @@ import { Icon } from 'semantic-ui-react';
 
 import people from '../../media/people.svg';
 import { useSessionQuestions, useSessionTAs } from '../../firehooks';
+import { computeNumberAhead } from '../../utilities/questions';
 
 type Props = {
     session: FireSession;
@@ -15,17 +16,7 @@ type Props = {
 
 const SessionInformationHeader = ({ session, course, callback, myUserId, isDesktop }: Props) => {
     const tas = useSessionTAs(session);
-
-    const questions: FireQuestion[] = useSessionQuestions(session.sessionId);
-
-    const unresolvedQuestions = questions.filter(question => !question.resolved);
-    const userQuestions = unresolvedQuestions.filter(question => question.askerId === myUserId);
-
-    const numAhead = userQuestions.length === 0
-        ? unresolvedQuestions.length
-        : unresolvedQuestions.filter(
-            question => question.timeEntered.toDate() <= userQuestions[0].timeEntered.toDate()
-        ).length - 1;
+    const numAhead = computeNumberAhead(useSessionQuestions(session.sessionId), myUserId || '');
 
     if (isDesktop) {
         return (

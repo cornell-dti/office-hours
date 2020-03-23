@@ -2,6 +2,10 @@ import * as React from 'react';
 import Moment from 'react-moment';
 import chevron from '../../media/chevron.svg';
 import { useSessionQuestions, useSessionTANames } from '../../firehooks';
+import {
+    filterAndpartitionQuestions,
+    computeNumberAheadFromFilterAndpartitionQuestions
+} from '../../utilities/questions';
 
 const CalendarSessionCard = (props: {
     user: FireUser;
@@ -17,14 +21,8 @@ const CalendarSessionCard = (props: {
     const session = props.session;
     const questions: FireQuestion[] = useSessionQuestions(session.sessionId);
 
-    const unresolvedQuestions = questions.filter(question => !question.resolved);
-    const userQuestions = unresolvedQuestions.filter(question => question.askerId === props.user.userId);
-
-    const numAhead = userQuestions.length === 0
-        ? unresolvedQuestions.length
-        : unresolvedQuestions.filter(
-            question => question.timeEntered.toDate() <= userQuestions[0].timeEntered.toDate()
-        ).length - 1;
+    const [unresolvedQuestions, userQuestions] = filterAndpartitionQuestions(questions, props.user.userId);
+    const numAhead = computeNumberAheadFromFilterAndpartitionQuestions(unresolvedQuestions, userQuestions);
 
     const includeBookmark = userQuestions.length > 0;
 

@@ -124,7 +124,7 @@ class AddQuestion extends React.Component {
     public addQuestion = () => {
         if (auth.currentUser != null && this.state.selectedPrimary != null &&
             this.state.selectedSecondary != null) {
-            firestore.collection('questions').add({
+            const newQuestion: Omit<FireQuestion, 'questionId'> = {
                 askerId: auth.currentUser.uid,
                 answererId: '',
                 content: this.state.question,
@@ -133,10 +133,9 @@ class AddQuestion extends React.Component {
                 status: 'unresolved',
                 timeEntered: firebase.firestore.Timestamp.now(),
                 primaryTag: this.state.selectedPrimary.tagId,
-                secondaryTag: this.state.selectedSecondary.tagId,
-                endTime: this.props.session.endTime.seconds,
-                resolved: false
-            });
+                secondaryTag: this.state.selectedSecondary.tagId
+            };
+            firestore.collection('questions').add(newQuestion);
             this.setState({ redirect: true });
         }
     };

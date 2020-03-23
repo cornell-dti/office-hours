@@ -10,6 +10,7 @@ import { useCourse, useSession, useMyUser, useSessionQuestions } from '../../fir
 
 import TopBar from '../includes/TopBar';
 import { Loader } from 'semantic-ui-react';
+import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -49,8 +50,7 @@ const SplitView = (props: {
     const user = useMyUser();
     const course = useCourse(props.match.params.courseId);
     const session = useSession(props.match.params.sessionId);
-    const sessionQuestions = useSessionQuestions(props.match.params.sessionId || '')
-        .filter(question => !question.resolved)
+    const sessionQuestions = filterUnresolvedQuestions(useSessionQuestions(props.match.params.sessionId || ''))
         .filter((_, index) => index < NUM_QUESTIONS_SHOWN);
     const width = useWindowWidth();
 
