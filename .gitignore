@@ -23,6 +23,7 @@ node_modules
 !.github/
 !.eslintrc.json
 !.firebaserc
+!.editorconfig
 
 npm-debug.log*
 yarn-debug.log*

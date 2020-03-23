@@ -128,9 +128,7 @@ class SessionQuestion extends React.Component<Props, State> {
     //This function produces a no show
     studentNoShow = (event: React.MouseEvent<HTMLElement>) => {
         firestore.doc(`questions/${this.props.question.questionId}`).update({
-            status: 'no-show',
-            //This question has been "resolved" and will not show up again
-            resolved: true
+            status: 'no-show'
         });
     };
 
@@ -138,9 +136,7 @@ class SessionQuestion extends React.Component<Props, State> {
     questionDone = (event: React.MouseEvent<HTMLElement>) => {
         firestore.doc(`questions/${this.props.question.questionId}`).update({
             status: 'resolved',
-            timeAddressed: firebase.firestore.Timestamp.now(),
-            //This question has been "resolved" and will not show up again
-            resolved: true
+            timeAddressed: firebase.firestore.Timestamp.now()
         });
     };
 
