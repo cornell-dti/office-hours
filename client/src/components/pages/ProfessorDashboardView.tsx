@@ -21,20 +21,20 @@ interface CategoryTag {
     yMax: number;
 }
 
-const getQuery = (courseId: string) => firestore
+const getTagsQuery = (courseId: string) => firestore
     .collection('tags')
-    .where('courseId', '==', firestore.doc('courses/' + courseId));
+    .where('courseId', '==', courseId);
 
 // Fetching all questions for a course might be expensive/have performance implications
 // This should be rarely done, though.
 const getQuestionsQuery = (courseId: string) => firestore
     .collection('questions')
-    .where('courseId', '==', firestore.doc('courses/' + courseId));
+    .where('courseId', '==', courseId);
 
 const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
     const [currentCategory, setCurrentCategory] = useState<CategoryTag | undefined>();
 
-    const tags = useQuery<FireTag>(courseId, getQuery, 'tagId');
+    const tags = useQuery<FireTag>(courseId, getTagsQuery, 'tagId');
     const questions = useQuery<FireQuestion>(courseId, getQuestionsQuery, 'questionId');
 
     const categories: CategoryTag[] = tags

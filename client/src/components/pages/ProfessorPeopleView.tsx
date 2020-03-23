@@ -70,8 +70,8 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const allQuestions = questions.flat();
     const totalQuestions = allQuestions.length;
     const unresolvedQuestions = allQuestions.filter(q => q.status === 'unresolved');
-    const percentUnresolved = unresolvedQuestions.length / totalQuestions;
-    const percentResolved = 1 - percentUnresolved;
+    const percentUnresolved = Math.round(100 * unresolvedQuestions.length / totalQuestions);
+    const percentResolved = 100 - percentUnresolved;
 
     // Busiest Session Data
     const busiestSessionIndex = questions.reduce(
