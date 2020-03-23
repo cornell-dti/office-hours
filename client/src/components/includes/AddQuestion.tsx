@@ -13,7 +13,25 @@ import * as firebase from 'firebase/app';
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
 
-class AddQuestion extends React.Component {
+type Props = {
+    session: FireSession;
+    course: FireCourse;
+    mobileBreakpoint: number;
+};
+
+type State = {
+    location: string;
+    question: string;
+    selectedTags: number[];
+    stage: number;
+    width: number;
+    redirect: boolean;
+    tags: FireTag[];
+    selectedPrimary?: FireTag;
+    selectedSecondary?: FireTag;
+};
+
+class AddQuestion extends React.Component<Props, State> {
     /*
      * State machine states
      * 10 - initial state - nothing selected, secondary & text fields locked
@@ -23,42 +41,21 @@ class AddQuestion extends React.Component {
      * 50 - contents in question field - unlocks submit button
      * 60 - Warning modal (replaces question modal) - toggles after submit if n minutes are left in queue
      */
-    props!: {
-        session: FireSession;
-        course: FireCourse;
-        mobileBreakpoint: number;
+    state: State = {
+        location: '',
+        question: '',
+        stage: 10,
+        width: window.innerWidth,
+        selectedTags: [],
+        redirect: false,
+        tags: []
     };
-
-    state!: {
-        location: string;
-        question: string;
-        selectedTags: number[];
-        stage: number;
-        width: number;
-        redirect: boolean;
-        tags: FireTag[];
-        selectedPrimary?: FireTag;
-        selectedSecondary?: FireTag;
-    };
-
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            location: '',
-            question: '',
-            stage: 10,
-            width: window.innerWidth,
-            selectedTags: [],
-            redirect: false,
-            tags: []
-        };
-    }
 
     // Keep window size in state for conditional rendering
     componentDidMount() {
         window.addEventListener('resize', this.updateWindowDimensions);
 
-        const tags$ = collectionData(
+        const tags$ = collectionData<FireTag>(
             firestore
                 .collection('tags')
                 .where('courseId', '==', this.props.course.courseId),
@@ -89,11 +86,11 @@ class AddQuestion extends React.Component {
 
     public handleSecondarySelected = (tag: FireTag): void => {
         if (this.state.selectedSecondary) {
-            this.setState(
-                this.state.selectedSecondary.tagId === tag.tagId
-                    ? { stage: 20, selectedSecondary: undefined }
-                    : { selectedSecondary: tag }
-            );
+            if (this.state.selectedSecondary.tagId === tag.tagId) {
+                this.setState({ stage: 20, selectedSecondary: undefined });
+            } else {
+                this.setState({ selectedSecondary: tag });
+            }
         } else {
             this.setState({ stage: 30, selectedSecondary: tag });
         }
@@ -169,6 +166,8 @@ class AddQuestion extends React.Component {
             );
         }
 
+        const { selectedPrimary, selectedSecondary } = this.state;
+
         const questionCharsLeft = this.props.course.charLimit - this.state.question.length;
         return (
             <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e)} >
@@ -183,7 +182,7 @@ class AddQuestion extends React.Component {
                             <div className="tagsMiniContainer">
                                 <p className="header">Categories</p>
                                 <div className="QuestionTags">
-                                    {!this.state.selectedPrimary ?
+                                    {!selectedPrimary ?
                                         this.state.tags
                                             // Only show primary tags
                                             .filter((tag) => tag.active && tag.level === 1)
@@ -195,7 +194,7 @@ class AddQuestion extends React.Component {
                                                 onClick={() => this.handlePrimarySelected(tag)}
                                             />))
                                         : <SelectedTags
-                                            tag={this.state.selectedPrimary}
+                                            tag={selectedPrimary}
                                             isSelected={true}
                                             onClick={() => this.handlePrimarySelected(undefined)}
                                         />
@@ -205,16 +204,14 @@ class AddQuestion extends React.Component {
                             <hr />
                             <div className="tagsMiniContainer">
                                 <p className="header">Tags</p>
-                                {this.state.selectedPrimary ?
+                                {selectedPrimary ?
                                     this.state.tags
                                         .filter((tag) => tag.active && tag.level === 2)
-                                        .filter((tag) => (tag.parentTag ===
-                                            // @ts-ignore I'm checking for presence in the ternary
-                                            this.state.selectedPrimary.tagId)
-                                        ).map((tag) => (<SelectedTags
+                                        .filter((tag) => (tag.parentTag === selectedPrimary.tagId))
+                                        .map((tag) => (<SelectedTags
                                             key={tag.tagId}
                                             tag={tag}
-                                            isSelected={this.state.selectedSecondary === tag}
+                                            isSelected={selectedSecondary === tag}
                                             onClick={() => this.handleSecondarySelected(tag)}
                                         />))
                                     : <p className="placeHolder">Select a category</p>}
