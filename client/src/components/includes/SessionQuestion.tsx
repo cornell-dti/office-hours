@@ -56,7 +56,7 @@ type State = {
     undoName?: string;
 };
 
-//We no longer support dynamic updating of asker, answer, tags etc
+const FEATURE_TA_COMMENT_ENABLE_FLAG = localStorage.getItem('FEATURE_TA_COMMENT_ENABLE_FLAG') === 'true';
 
 class SessionQuestion extends React.Component<Props, State> {
     state: State;
@@ -138,6 +138,15 @@ class SessionQuestion extends React.Component<Props, State> {
             status: 'resolved',
             timeAddressed: firebase.firestore.Timestamp.now()
         });
+    };
+
+    questionComment = () => {
+        const taComment = prompt('Your comment', this.props.question.taComment);
+        if (taComment == null) {
+            return;
+        }
+        const update: Partial<FireQuestion> = { taComment: taComment };
+        firestore.doc(`questions/${this.props.question.questionId}`).update(update);
     };
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
@@ -252,6 +261,9 @@ class SessionQuestion extends React.Component<Props, State> {
                     </div>
                     {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
                         <p className={'Question' + studentCSS}>{question.content}</p>}
+                    {question.taComment && (
+                        <p className={'Question' + studentCSS}>TA Comment: {question.taComment}</p>
+                    )}
                 </div>
                 <div className="BottomBar">
                     {this.props.isTA && <span className="Spacer" />}
@@ -300,6 +312,11 @@ class SessionQuestion extends React.Component<Props, State> {
                                     >
                                         Done
                                     </p>
+                                    {FEATURE_TA_COMMENT_ENABLE_FLAG && (
+                                        <p className="Done" onClick={this.questionComment}>
+                                            Edit Comment
+                                        </p>
+                                    )}
                                     <p
                                         className="DotMenu"
                                     // onClick={() => this.setDotMenu(!this.state.showDotMenu)}
