@@ -48,7 +48,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         setSelectedCourses((previousSelectedCourses) => (
             addCourse
                 ? [...previousSelectedCourses, course]
-                : previousSelectedCourses.filter(c => c !== course)
+                : previousSelectedCourses.filter(c => c.courseId !== course.courseId)
         ));
     };
 
@@ -65,7 +65,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         coursesToEnroll.forEach(courseId => newCourseSet.add(courseId));
         coursesToUnenroll.forEach(courseId => newCourseSet.delete(courseId));
         const userUpdate: Partial<FireUser> = { courses: Array.from(newCourseSet.values()) };
-        firestore.collection('users').doc(user.userId).update(userUpdate);
+        firestore.collection('users').doc(user.userId).update(userUpdate).then(() => {
+            window.location.href = '/courses';
+        });
     };
 
     const selectedCoursesString = selectedCourses.length === 0
@@ -106,7 +108,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                     role={role}
                                     onSelectCourse={(addCourse) => onSelectCourse(course, addCourse)}
                                     editable={isEdit}
-                                    selected={selectedCourses.includes(course)
+                                    selected={selectedCourses.map(course => course.courseId).includes(course.courseId)
                                         || (role !== undefined && role !== 'student')}
                                 />
                             );
@@ -119,15 +121,17 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     {isEdit && selectedCoursesString}
                 </div>
                 <div className="buttons">
-                    <button className="switch" onClick={onSwitch}>
-                        {isEdit ? 'Home' : 'Edit'}
-                    </button>
-                    {isEdit && (
-                        <button className={'save' + (canSave ? ' disabled' : '')} onClick={onSubmit}>
-                            Save
+                    {user.courses.length > 0 && (
+                        <button className="switch" onClick={onSwitch}>
+                            {isEdit ? 'Home' : 'Edit'}
                         </button>
                     )}
                     {isEdit && (
+                        <button className={'save' + (canSave ? ' disabled' : '')} onClick={onSubmit}>
+                            {user.courses.length > 0 ? 'Save' : 'Enroll'}
+                        </button>
+                    )}
+                    {isEdit && user.courses.length > 0 && (
                         <button className="cancel" onClick={() => setSelectedCourses([])}>
                             Cancel
                         </button>
