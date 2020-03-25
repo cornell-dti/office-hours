@@ -73,6 +73,7 @@ interface FireQuestion {
     askerId: string;
     answererId: string;
     content: string;
+    taComment?: string;
     location: string;
     sessionId: string;
     status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
