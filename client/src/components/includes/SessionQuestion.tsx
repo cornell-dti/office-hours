@@ -104,7 +104,7 @@ class SessionQuestion extends React.Component<Props, State> {
         }
     };
 
-    handleQuestionStatus = (): void => {
+    retractQuestion = (): void => {
         const question = firestore.collection('questions').doc(this.props.question.questionId);
         question.update({
             status: 'retracted'
@@ -117,7 +117,7 @@ class SessionQuestion extends React.Component<Props, State> {
         });
     };
 
-    assignQuestion = (event: React.MouseEvent<HTMLElement>) => {
+    assignQuestion = () => {
         //Attempt to assign question to me
         firestore.doc(`questions/${this.props.question.questionId}`).update({
             status: 'assigned',
@@ -125,15 +125,13 @@ class SessionQuestion extends React.Component<Props, State> {
         });
     };
 
-    //This function produces a no show
-    studentNoShow = (event: React.MouseEvent<HTMLElement>) => {
+    studentNoShow = () => {
         firestore.doc(`questions/${this.props.question.questionId}`).update({
             status: 'no-show'
         });
     };
 
-    //This function notes that a question has been done
-    questionDone = (event: React.MouseEvent<HTMLElement>) => {
+    questionDone = () => {
         firestore.doc(`questions/${this.props.question.questionId}`).update({
             status: 'resolved',
             timeAddressed: firebase.firestore.Timestamp.now()
@@ -169,13 +167,9 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({ showDotMenu: status });
     };
 
-    handleUndoDontKnow = (questionId: number, UndoDontKnow: Function) => {
-        UndoDontKnow({
-            variables: {
-                questionId: questionId,
-                status: 'unresolved'
-            }
-        });
+    questionDontKnow = () => {
+        const update: Partial<FireQuestion> = { status: 'unresolved', answererId: '' };
+        firestore.doc(`questions/${this.props.question.questionId}`).update(update);
     };
 
     render() {
@@ -282,36 +276,14 @@ class SessionQuestion extends React.Component<Props, State> {
                         <hr />
                         <div className="TAButtons">
                             {question.status === 'unresolved' &&
-                                <p
-                                    className="Begin"
-                                    onClick = {
-                                        //Assign question
-                                        (e) => this.assignQuestion(e)
-                                    }
-                                >
+                                <p className="Begin" onClick={this.assignQuestion}>
                                     Assign to Me
                                 </p>
                             }
                             {question.status === 'assigned' &&
                                 <React.Fragment>
-                                    <p
-                                        className="Delete"
-                                        onClick = {
-                                            //No show
-                                            (e) => this.studentNoShow(e)
-                                        }
-                                    >
-                                        No show
-                                    </p>
-                                    <p
-                                        className="Done"
-                                        onClick = {
-                                            //Done
-                                            (e) => this.questionDone(e)
-                                        }
-                                    >
-                                        Done
-                                    </p>
+                                    <p className="Delete" onClick={this.studentNoShow}>No show</p>
+                                    <p className="Done" onClick={this.questionDone}>Done</p>
                                     {FEATURE_TA_COMMENT_ENABLE_FLAG && (
                                         <p className="Done" onClick={this.questionComment}>
                                             Edit Comment
@@ -319,10 +291,9 @@ class SessionQuestion extends React.Component<Props, State> {
                                     )}
                                     <p
                                         className="DotMenu"
-                                    // onClick={() => this.setDotMenu(!this.state.showDotMenu)}
+                                        onClick={() => this.setDotMenu(!this.state.showDotMenu)}
                                     >
                                         ...
-
                                         {this.state.showDotMenu &&
                                             <div
                                                 className="IReallyDontKnow"
@@ -331,10 +302,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                             >
                                                 <p
                                                     className="DontKnowButton"
-                                                // onClick={() => this.handleUndoDontKnow(
-                                                //     question.questionId,
-                                                //     UndoDontKnow
-                                                // )}
+                                                    onClick={this.questionDontKnow}
                                                 >
                                                     I Really Don't Know
                                                 </p>
@@ -349,10 +317,7 @@ class SessionQuestion extends React.Component<Props, State> {
                 {this.props.includeRemove && !this.props.isPast &&
                     <div className="Buttons">
                         <hr />
-                        <p
-                            className="Remove"
-                            onClick={() => this.handleQuestionStatus()}
-                        >
+                        <p className="Remove" onClick={this.retractQuestion}>
                             <Icon name="close" /> Remove
                         </p>
                     </div>
