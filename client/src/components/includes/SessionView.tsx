@@ -175,10 +175,8 @@ const SessionViewInHooks = (
                         {undoText}
                         <span
                             className="undoLink"
-                            onClick={() =>
-                                console.log('RYAN_TODO')
-                                // this.handleUndoClick(undoQuestion, refetch)
-                            }
+                            // RYAN_TODO
+                            // onClick={() => this.handleUndoClick(undoQuestion, refetch)}
                         >
                             Undo
                         </span>

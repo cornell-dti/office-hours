@@ -1,5 +1,5 @@
 {
-  "extends": ["plugin:@typescript-eslint/recommended", "react-app"],
+  "extends": ["plugin:@typescript-eslint/recommended", "eslint:recommended", "react-app"],
   "rules": {
     "@typescript-eslint/class-name-casing": "error",
     "@typescript-eslint/explicit-function-return-type": "off",
@@ -42,6 +42,7 @@
       {
         "code": 120
       }
-    ]
+    ],
+    "no-console": "error"
   }
 }
