@@ -16,6 +16,7 @@ interface FireSession {
     sessionId: string;
 }
 
+/** This data is never stored in the database. */
 interface FireSessionSeries {
     building: string;
     courseId: string;

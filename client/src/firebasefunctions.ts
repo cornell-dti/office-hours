@@ -84,8 +84,7 @@ export const createSeries = async (
   const now = new Date();
   const currentDate = new Date(courseStartWeek);
   const batch = db.batch();
-  const sessionSeriesDocument = db.collection('sessionSeries').doc();
-  const sessionSeriesId = sessionSeriesDocument.id;
+  const sessionSeriesId = db.collection('sessions').doc().id;
   while (currentDate <= courseEndWeek) {
     // Create new course only if:
     // - the session is not already the past
@@ -111,7 +110,6 @@ export const createSeries = async (
     }
     currentDate.setDate(currentDate.getDate() + 7); // move 1 week forward.
   }
-  batch.set(sessionSeriesDocument, sessionSeries);
   await batch.commit();
 };
 
@@ -144,14 +142,12 @@ export const updateSeries = async (
     };
     batch.set(db.collection('sessions').doc(sessionId), newSession);
   });
-  batch.set(db.collection('sessionSeries').doc(sessionSeriesId), sessionSeries);
   await batch.commit();
 };
 
 export const deleteSeries = async (db: firebase.firestore.Firestore, sessionSeriesId: string): Promise<void> => {
   const querySnapshot = await db.collection('sessions').where('sessionSeriesId', '==', sessionSeriesId).get();
   const batch = db.batch();
-  batch.delete(db.collection('sessionSeries').doc(sessionSeriesId));
   querySnapshot.docs.forEach(document => batch.delete(db.collection('sessions').doc(document.id)));
   await batch.commit();
 };
