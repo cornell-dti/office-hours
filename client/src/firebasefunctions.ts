@@ -49,7 +49,8 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
         };
         transaction.set(userDocumentReference, fullUserDocument);
       }
-    }).catch(() => console.error('Unable to upload user.'));;
+    // eslint-disable-next-line no-console
+    }).catch(() => console.error('Unable to upload user.'));
   }
 };
 
