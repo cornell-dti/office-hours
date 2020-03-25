@@ -92,7 +92,7 @@ class ProfessorCalendarTable extends React.Component<Props, State> {
 
         this.props.sessions.forEach((node: FireSession) => {
             // 0 = Monday..., 5 = Saturday, 6 = Sunday
-            const dayIndexQuery = (new Date(node.startTime.seconds).getDay() + 6) % 7;
+            const dayIndexQuery = (new Date(node.startTime.toDate()).getDay() + 6) % 7;
             sessions[dayIndexQuery].push(node);
         });
 
