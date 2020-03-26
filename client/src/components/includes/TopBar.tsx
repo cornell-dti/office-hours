@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Icon } from 'semantic-ui-react';
 import { logOut } from '../../firebasefunctions';
+import { useHistory } from 'react-router';
 
 const TopBar = (props: {
     courseId: string;
@@ -13,13 +14,14 @@ const TopBar = (props: {
     // controls where "switch view" goes
     context: string;
 }) => {
+    const history = useHistory();
+
     const [showMenu, setShowMenu] = useState(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : '/placeholder.png');
 
     const userPhotoUrl = props.user ? props.user.photoUrl : '/placeholder.png';
     useEffect(() => setImage(userPhotoUrl), [userPhotoUrl]);
 
-    const redirect = (href: string) => document.location.href = href;
     return (
         <div className="MenuBox" tabIndex={1} onBlur={() => setShowMenu(false)}>
             <header className="topBar">
@@ -44,10 +46,10 @@ const TopBar = (props: {
                     {props.role === 'professor' &&
                         <React.Fragment>
                             {props.context === 'professor' ?
-                                <li onMouseDown={() => redirect('/course/' + props.courseId)}>
+                                <li onMouseDown={() => history.push('/course/' + props.courseId)}>
                                     <span><Icon name="sync alternate" /></span>
                                     Switch View
-                                </li> : <li onMouseDown={() => redirect('/professor/course/' + props.courseId)}>
+                                </li> : <li onMouseDown={() => history.push('/professor/course/' + props.courseId)}>
                                     <span><Icon name="sync alternate" /></span>
                                     Switch View
                                 </li>

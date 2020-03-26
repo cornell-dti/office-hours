@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { useHistory } from 'react-router';
+
 import TopBar from '../includes/TopBar';
 import QMeLogo from '../../media/QLogo2.svg';
 import CourseCard from '../includes/CourseCard';
@@ -12,6 +14,12 @@ type Props = {
 };
 
 function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElement {
+    const history = useHistory();
+    const isRedirectingRef = React.useRef(false);
+    // Normal editing mode (isNormalEditingMode=true) has all the controls.
+    // On the contrary, onboarding (isNormalEditingMode=false) has only enroll button.
+    const isNormalEditingMode = user.courses.length > 0 && !isRedirectingRef.current;
+
     const currentlyEnrolledCourseIds = new Set(user.courses);
     const [selectedCourses, setSelectedCourses] = React.useState<FireCourse[]>(
         allCourses.filter(
@@ -53,9 +61,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     const onSwitch = () => {
         if (isEdit) {
-            window.location.href = '/home';
+            history.push('/home');
         } else {
-            window.location.href = '/edit';
+            history.push('/edit');
         }
     };
 
@@ -64,8 +72,10 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         coursesToEnroll.forEach(courseId => newCourseSet.add(courseId));
         coursesToUnenroll.forEach(courseId => newCourseSet.delete(courseId));
         const userUpdate: Partial<FireUser> = { courses: Array.from(newCourseSet.values()) };
+        isRedirectingRef.current = true;
         firestore.collection('users').doc(user.userId).update(userUpdate).then(() => {
-            window.location.href = '/courses';
+            history.push('/courses');
+            isRedirectingRef.current = false;
         });
     };
 
@@ -120,17 +130,17 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     {isEdit && selectedCoursesString}
                 </div>
                 <div className="buttons">
-                    {user.courses.length > 0 && (
+                    {isNormalEditingMode && (
                         <button className="switch" onClick={onSwitch}>
                             {isEdit ? 'Home' : 'Edit'}
                         </button>
                     )}
                     {isEdit && (
                         <button className={'save' + (canSave ? ' disabled' : '')} onClick={onSubmit}>
-                            {user.courses.length > 0 ? 'Save' : 'Enroll'}
+                            {isNormalEditingMode ? 'Save' : 'Enroll'}
                         </button>
                     )}
-                    {isEdit && user.courses.length > 0 && (
+                    {isEdit && isNormalEditingMode && (
                         <button className="cancel" onClick={() => setSelectedCourses([])}>
                             Cancel
                         </button>

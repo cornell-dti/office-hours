@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
+import { useHistory } from 'react-router';
 
 type Props = {
     course: FireCourse;
@@ -10,11 +11,12 @@ type Props = {
     selected: boolean;
 };
 
-class CourseCard extends React.Component<Props> {
-    selectCourse = () => {
-        const { role, onSelectCourse, editable, selected } = this.props;
+const CourseCard = ({ course, role, onSelectCourse, editable, selected }: Props) => {
+    const history = useHistory();
+
+    const selectCourse = () => {
         if (!editable) {
-            this.redirect('/course/' + this.props.course.courseId);
+            history.push('/course/' + course.courseId);
             return;
         }
         if (role === undefined || role === 'student') {
@@ -22,41 +24,35 @@ class CourseCard extends React.Component<Props> {
         }
     };
 
-    redirect = (href: string) => {
-        document.location.href = href;
-    };
-
-    render() {
-        let role = '';
-        if (this.props.role === 'ta') {
-            role = 'TA';
-        } else if (this.props.role === 'professor') {
-            role = 'PROF';
-        }
-        return (
-            <div
-                className={'CourseCard' + (this.props.selected ? ' selected' : '')}
-                onClick={this.selectCourse}
-            >
-                <div className="courseText">
-                    <div className="courseCode">
-                        {this.props.course.code}
-                        {role && <span className="role">{role}</span>}
-                    </div>
-                    <div className="courseName">
-                        {this.props.course.name}
-                    </div>
+    let roleString = '';
+    if (role === 'ta') {
+        roleString = 'TA';
+    } else if (role === 'professor') {
+        roleString = 'PROF';
+    }
+    return (
+        <div
+            className={'CourseCard' + (selected ? ' selected' : '')}
+            onClick={selectCourse}
+        >
+            <div className="courseText">
+                <div className="courseCode">
+                    {course.code}
+                    {roleString && <span className="role">{roleString}</span>}
                 </div>
-                <div className="courseColor">
-                    {this.props.editable && (
-                        this.props.selected
-                            ? <Icon className="icon" name="check" />
-                            : <Icon className="icon" name="plus" />
-                    )}
+                <div className="courseName">
+                    {course.name}
                 </div>
             </div>
-        );
-    }
-}
+            <div className="courseColor">
+                {editable && (
+                    selected
+                        ? <Icon className="icon" name="check" />
+                        : <Icon className="icon" name="plus" />
+                )}
+            </div>
+        </div>
+    );
+};
 
 export default CourseCard;
