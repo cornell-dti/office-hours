@@ -6,24 +6,21 @@ type Props = {
         'x': string;
         'y': number;
     }[];
-    yMax: number;
-    calcTickVals: (yMax: number) => number[];
 };
 
 class QuestionsLineChart extends React.Component<Props> {
     render() {
-        const data: LineSerieData[] = [
-            {
-                'id': 'questions',
-                'color': 'hsl(100, 20%, 34%)',
-                'data': this.props.lineData
-            }
-        ];
         return (
             <div className="QuestionsLineChart" style={{ height: 300 }}>
                 <ResponsiveLine
                     colors="#979797"
-                    data={data}
+                    data={[
+                        {
+                            'id': 'questions',
+                            'color': 'hsl(100, 20%, 34%)',
+                            'data': this.props.lineData
+                        }
+                    ]}
                     margin={{
                         'top': 20,
                         'right': 20,
@@ -47,10 +44,6 @@ class QuestionsLineChart extends React.Component<Props> {
                         'tickRotation': -60
                     }}
                     enableGridX={false}
-                    dotSize={8}
-                    dotColor="#ffffff"
-                    dotBorderWidth={2}
-                    dotBorderColor="#999"
                 />
             </div>
         );

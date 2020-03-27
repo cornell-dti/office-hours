@@ -5,6 +5,7 @@ import ProfessorSidebar from '../includes/ProfessorSidebar';
 import QuestionsPieChart from '../includes/QuestionsPieChart';
 import QuestionsLineChart from '../includes/QuestionsLineChart';
 import QuestionsBarChart from '../includes/QuestionsBarChart';
+// import AverageWaitTimes from '../includes/AverageWaitTimes';
 import 'react-dates/initialize';
 import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
@@ -106,21 +107,6 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         }))
         : [];
 
-    const calcTickVals = (yMax: number) => {
-        if (yMax === 0) {
-            return [0];
-        }
-        const end = yMax + (6 - (yMax % 6));
-        let start = 0;
-        const step = end / 6;
-        const tickVals = [];
-        while (end + step >= start) {
-            tickVals.push(start);
-            start += step;
-        }
-        return tickVals;
-    };
-
     // Bar Chart
     const sessionDict: {
         [key: string]: {
@@ -149,7 +135,6 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
 
     const barGraphData = sessions.map((s, i) => ({ [s.sessionId]: questions[i] ? questions[i].length : 0 }));
 
-    const chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
     return (
         <div className="ProfessorView">
             <ProfessorSidebar courseId={courseId} code={(course && course.code) || 'Loading'} selected={3} />
@@ -198,8 +183,6 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                             barData={barGraphData}
                                             sessionKeys={sessions.map(s => s.sessionId)}
                                             sessionDict={sessionDict}
-                                            yMax={chartYMax}
-                                            calcTickVals={calcTickVals}
                                         />
                                     </div>
                                 </div>
@@ -234,10 +217,35 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                 <div className="questions-line-container">
                                     <QuestionsLineChart
                                         lineData={lineChartQuestions}
-                                        yMax={chartYMax}
-                                        calcTickVals={calcTickVals}
                                     />
                                 </div>
+                                {/* <div className="Average-Wait-Box">
+                                     <div className="average-time-bar-container">
+                                         <AverageWaitTimes
+                                             barData={[
+                                                 { date: 'Sep 29', time: 10, questions: 60 },
+                                                 { date: 'Oct 6', time: 5, questions: 100 },
+                                                 { date: 'Oct 13', time: 1, questions: 10 },
+                                                 { date: 'Oct 19', time: 14, questions: 28 },
+                                                 { date: 'Oct 20', time: 18, questions: 50 },
+                                                 { date: 'Oct 27', time: 20, questions: 15 },
+                                                 { date: 'Nov 2', time: 11, questions: 22 },
+                                                 { date: 'Nov 3', time: 13, questions: 43 },
+                                                 { date: 'Nov 9', time: 14, questions: 11 },
+                                                 { date: 'Nov 10', time: 11, questions: 51 },
+                                                 { date: 'Nov 16', time: 10, questions: 19 },
+                                                 { date: 'Nov 17', time: 3, questions: 21 },
+                                                 { date: 'Nov 23', time: 9, questions: 24 },
+                                                 { date: 'Nov 24', time: 19, questions: 66 }
+                                             ]}
+                                         />
+                                     </div>
+                                     <div className="average-wait-text">
+                                         <div>
+                                             <p className="average-wait-title">Average Wait Times</p>
+                                         </div>
+                                     </div>
+                                 </div> */}
                             </div>
                         </div>)
                         : (<div className="no-question-warning">

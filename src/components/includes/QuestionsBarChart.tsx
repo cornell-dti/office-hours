@@ -4,7 +4,6 @@ import { Icon } from 'semantic-ui-react';
 
 type Props = {
     barData: BarDatum[];
-    yMax: number;
     sessionKeys: string[];
     sessionDict: {
         [key: string]: {
@@ -17,7 +16,6 @@ type Props = {
             room: string;
         };
     };
-    calcTickVals: (yMax: number) => number[];
 };
 
 class QuestionsBarChart extends React.Component<Props> {
@@ -66,7 +64,6 @@ class QuestionsBarChart extends React.Component<Props> {
                         'left': 50
                     }}
                     enableLabel={false}
-                    maxValue={this.props.yMax}
                     innerPadding={3}
                     padding={0.3}
                     colors="#d8d8d8"
@@ -86,25 +83,14 @@ class QuestionsBarChart extends React.Component<Props> {
                         'tickSize': 1,
                         'tickPadding': 12,
                         'tickRotation': 0,
-                        'legendOffset': -40,
-                        'legendPosition': 'end',
-                        'tickValues': this.props.calcTickVals(this.props.yMax)
+                        'legendOffset': -40
+                        // 'legendPosition': 'center' // should be middle, outdated package
                     }}
                     axisBottom={{
-                        'legend': '',
                         'tickSize': 1,
                         'tickPadding': 12,
-                        'tickRotation': -60,
-                        'legendOffset': 40,
-                        'legendPosition': 'end'
+                        'tickRotation': -60
                     }}
-                    labelSkipWidth={12}
-                    labelSkipHeight={12}
-                    labelTextColor="inherit:darker(1.6)"
-                    animate={true}
-                    motionStiffness={90}
-                    motionDamping={15}
-                    legends={[]}
                 />
             </div>
         );

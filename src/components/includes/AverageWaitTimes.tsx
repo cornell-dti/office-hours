@@ -1,17 +1,13 @@
+/* eslint-disable @typescript-eslint/indent */
 import * as React from 'react';
-import { ResponsiveBar, BarExtendedDatum } from '@nivo/bar';
+import { ResponsiveBar } from '@nivo/bar';
 
-class AverageWaitTimes extends React.Component {
-  props: { barData: { date: string, time: number, questions: number }[] };
+type Props = { barData: { date: string; time: number; questions: number }[] };
 
-  constructor(props: AverageWaitTimes['props']) {
-    super(props);
-  }
-
+class AverageWaitTimes extends React.Component<Props> {
   createTooltipFunc(date: string) {
     const bar = this.props.barData.reduce((retValue, currBar) => currBar.date === date ? currBar : retValue);
-    return function (e: BarExtendedDatum) {
-      return (
+    return (
         <div className="bar-tooltip">
           <div className="tooltip-title">
             Wait Times
@@ -26,12 +22,11 @@ class AverageWaitTimes extends React.Component {
               <br /> questions</div>
           </div>
         </div>
-      );
-    };
+    );
   }
 
   render() {
-    // below two lines necessary because layout="horizontal" 
+    // below two lines necessary because layout="horizontal"
     const data = this.props.barData;
     data.reverse();
 
@@ -57,8 +52,7 @@ class AverageWaitTimes extends React.Component {
           padding={0.3}
           colors={'#70d59d'}
 
-          // @ts-ignore - TODO: Figure out how to avoid this and get a string from Reacttext
-          tooltip={(node) => { return this.createTooltipFunc(node.indexValue)(); }}
+          tooltip={(node) => this.createTooltipFunc(node.indexValue as string)}
           theme={{
             tooltip: {
               container: {

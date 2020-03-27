@@ -35,22 +35,7 @@ class QuestionsPieChart extends React.Component<Props> {
                     borderColor="inherit:darker(0.2)"
                     enableRadialLabels={false}
                     enableSlicesLabels={false}
-                    radialLabelsSkipAngle={10}
-                    radialLabelsTextXOffset={6}
-                    radialLabelsTextColor="#333333"
-                    radialLabelsLinkOffset={0}
-                    radialLabelsLinkDiagonalLength={16}
-                    radialLabelsLinkHorizontalLength={24}
-                    radialLabelsLinkStrokeWidth={1}
-                    radialLabelsLinkColor="inherit"
-                    slicesLabelsSkipAngle={10}
-                    slicesLabelsTextColor="#333333"
-                    animate={true}
-                    motionStiffness={90}
-                    motionDamping={15}
                     isInteractive={false}
-                    defs={[]}
-                    fill={[]}
                 />
             </div>
         );
