@@ -7,9 +7,8 @@ node_modules
 /coverage
 
 # production
-/build
-/client/build
-/client/src/styles/index.min.css
+build
+src/styles/index.min.css
 
 # misc
 .DS_Store
@@ -31,5 +30,3 @@ yarn-error.log*
 
 .idea
 .DS_Store
-
-client/src/styles/index.min.css
