@@ -12,7 +12,5 @@ jobs:
           node-version: 10.x
       - name: Install
         run: yarn install
-      - name: Install for client
-        run: cd client && yarn install
       - name: Lint client
-        run: cd client && yarn lint
+        run: yarn lint

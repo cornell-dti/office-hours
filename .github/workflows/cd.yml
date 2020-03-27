@@ -2,7 +2,7 @@ name: CD
 on:
   push:
     branches:
-      - develop-firebase
+      - master
 
 jobs:
   deploy:
@@ -15,14 +15,11 @@ jobs:
           node-version: 10.x
       - name: Install
         run: yarn install
-      - name: Install for client
-        run: cd client && yarn install
       - name: Build Client
-        run: cd client && yarn deploy
+        run: yarn deploy
       - name: Deploy Client
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          cd client
           yarn firebase use default
           yarn firebase deploy --token "$FIREBASE_TOKEN" --non-interactive --only hosting
