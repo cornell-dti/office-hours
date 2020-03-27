@@ -1,17 +1,17 @@
 import * as React from 'react';
 
-class CalendarDateItem extends React.PureComponent {
-    props: {
-        index: number,
-        active: boolean,
-        day: string,
-        date: number,
-        handleClick: Function
-    };
+type Props = {
+    index: number;
+    active: boolean;
+    day: string;
+    date: number;
+    handleClick: Function;
+};
 
+class CalendarDateItem extends React.PureComponent<Props> {
     _onClick = () => {
         this.props.handleClick(this.props.index);
-    }
+    };
 
     render() {
         return (

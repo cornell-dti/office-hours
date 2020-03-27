@@ -1,104 +1,88 @@
-import * as React from 'react';
-import * as moment from 'moment';
+import React, { useState, ReactElement } from 'react';
+import moment from 'moment';
 import { Icon } from 'semantic-ui-react';
 import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
+import { useSessionTANames } from '../../firehooks';
 
-class SessionAlertModal extends React.Component {
+type Props = {
+    readonly header?: string;
+    readonly icon?: SemanticICONS;
+    readonly color: string;
+    readonly description: string;
+    readonly OHSession?: FireSession;
+    readonly buttons: string[];
+    readonly cancelAction?: Function;
+    readonly mainAction?: Function;
+    readonly displayShade: boolean;
+};
 
-    props: {
-        header?: string,
-        icon?: SemanticICONS,
-        color: string,
-        description: string,
-        OHSession?: AppSession,
-        buttons: string[],
-        cancelAction?: Function,
-        mainAction?: Function,
-        displayShade: boolean
-    };
+const SessionAlertModal = (
+    { header, icon, color, description, OHSession, buttons, cancelAction, mainAction, displayShade }: Props
+) => {
+    const tas = useSessionTANames(OHSession);
+    const [displayModal, setDisplayModal] = useState(true);
 
-    state: {
-        displayModal: boolean
-    };
+    const defaultCancel = () => setDisplayModal(false);
 
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            displayModal: true
-        };
+    // Check if cancelAction is supplied
+    const cancel = cancelAction !== undefined ? cancelAction : defaultCancel;
+    // Check if cancelMain is supplied
+    const main = mainAction !== undefined ? mainAction : cancel;
+
+    const buttonsToRender = buttons.map((button, i) => (
+        <button
+            key={i}
+            className={buttons.length - 1 === i ? 'last' : ''}
+            onClick={() => buttons.length - 1 === i ? main() : cancel()}
+        >
+            {button}
+        </button>
+    ));
+
+    const shadeDisplay = displayShade ? 'shade' : '';
+
+    // Copied over from ProfessorOHInfoDelete
+    const taList = OHSession ? tas : [];
+
+    if (!displayModal) {
+        return null as unknown as ReactElement;
     }
 
-    defaultCancel = () => {
-        this.setState({
-            displayModal: false
-        });
-    }
-
-    render() {
-
-        // Check if cancelAction is supplied
-        let cancel = this.props.cancelAction !== undefined ? this.props.cancelAction : this.defaultCancel;
-
-        // Check if cancelMain is supplied
-        let main = this.props.mainAction !== undefined ? this.props.mainAction : cancel;
-
-        var buttons = this.props.buttons.map((button, i: number, arr) =>
-            (
-                <button
-                    key={i}
-                    className={arr.length - 1 === i ? 'last' : ''}
-                    onClick={() => arr.length - 1 === i ? main() : cancel()}
-                >
-                    {button}
-                </button>
-            ));
-
-        let shadeDisplay = this.props.displayShade ? 'shade' : '';
-
-        // Copied over from ProfessorOHInfoDelete
-        var taList = this.props.OHSession ?
-            this.props.OHSession.sessionTasBySessionId.nodes.map(ta => ta.userByUserId.computedName) : [];
-
-        return (
-            this.state.displayModal && (
-                <div className="SessionAlertModal">
-                    <div
-                        className={'modalShadeAlert ' + shadeDisplay}
-                        onClick={() => cancel()}
-                    />
-                    <div className={'modalContent ' + shadeDisplay}>
-                        <div className={'text ' + this.props.color}>
-                            {this.props.header && <div className="title">{this.props.header}</div>}
-                            {this.props.icon &&
-                                <div className="Icon">
-                                    <Icon name={this.props.icon} />
-                                </div>}
-                            {this.props.description}
+    return (
+        <div className="SessionAlertModal">
+            <div className={'modalShadeAlert ' + shadeDisplay} onClick={() => cancel()} />
+            <div className={'modalContent ' + shadeDisplay}>
+                <div className={'text ' + color}>
+                    {header && <div className="title">{header}</div>}
+                    {icon && (
+                        <div className="Icon">
+                            <Icon name={icon} />
                         </div>
-                        {/* Copied over from ProfessorOHInfoDelete */}
-                        {this.props.OHSession &&
-                            <div className="info">
-                                <div className="ta">
-                                    {taList.join(', ')}
-                                    {taList.length === 0 && '(No TA Assigned)'}
-                                </div>
-                                <div>
-                                    <span>
-                                        {moment(this.props.OHSession.startTime).format('h:mm A')}&nbsp;
-                                        to {moment(this.props.OHSession.endTime).format('h:mm A')}
-                                    </span>
-                                    <span>
-                                        {this.props.OHSession.building} {this.props.OHSession.room}
-                                    </span>
-                                </div>
-                            </div>}
-                        <div className="buttons">
-                            {buttons}
+                    )}
+                    {description}
+                </div>
+                {/* Copied over from ProfessorOHInfoDelete */}
+                {OHSession && (
+                    <div className="info">
+                        <div className="ta">
+                            {taList.join(', ')}
+                            {taList.length === 0 && '(No TA Assigned)'}
+                        </div>
+                        <div>
+                            <span>
+                                {moment(OHSession.startTime).format('h:mm A')}&nbsp;
+                                to {moment(OHSession.endTime).format('h:mm A')}
+                            </span>
+                            <span>
+                                {OHSession.building} {OHSession.room}
+                            </span>
                         </div>
                     </div>
-                </div>)
-        );
-    }
-}
+                )}
+                <div className="buttons">{buttonsToRender}</div>
+            </div>
+        </div>
+    );
+};
 
 export default SessionAlertModal;

@@ -1,18 +1,21 @@
+/* eslint-disable @typescript-eslint/indent */
+
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
-const QMeLogo = require('../../media/QLogo2.svg');
+import QMeLogo from '../../media/QLogo2.svg';
 
-class Popup extends React.Component {
-  props: {
-    show: boolean,
-    topTitle: string,
-    description: string,
-    buttonLabel: string,
-    link: string,
-    hideFunction: () => void
-  };
+type Props = {
+  show: boolean;
+  topTitle: string;
+  description: string;
+  buttonLabel: string;
+  link: string;
+  hideFunction: () => void;
+};
+
+class Popup extends React.Component<Props> {
   render() {
-    let isShown = this.props.show ? ' feedback' : '';
+    const isShown = this.props.show ? ' feedback' : '';
 
     return (
       <React.Fragment>
@@ -20,7 +23,7 @@ class Popup extends React.Component {
           <button className="closeIcon" onClick={() => this.props.hideFunction()}>
             <Icon name="x" />
           </button>
-          <img src={QMeLogo} className="QMeLogo" />
+          <img src={QMeLogo} className="QMeLogo" alt="Queue Me In Logo" />
           <h2>{this.props.topTitle}</h2>
           <p>{this.props.description}</p>
         </section>

@@ -1,69 +1,73 @@
 import * as React from 'react';
 import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
-import gql from 'graphql-tag';
-import { Mutation } from 'react-apollo';
-
+import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
+//This is used to make a timestamp
+import * as firebase from 'firebase/app';
 
-const UPDATE_QUESTION = gql`
-mutation UpdateQuestion($questionId: Int!, $status: String) {
-    updateQuestionByQuestionId(input: {questionPatch: {status: $status}, questionId: $questionId}) {
-        clientMutationId
-    }
-}
-`;
-const UPDATE_LOCATION = gql`
-mutation UpdateLocation($questionId: Int!, $location: String) {
-    updateQuestionByQuestionId(input: {questionPatch: {location: $location}, questionId: $questionId}) {
-        clientMutationId
-    }
-}
-`;
+// import SelectedTags from './SelectedTags';
 
-const UNDO_DONT_KNOW = gql`
-mutation UndoDontKnow($questionId: Int!, $status: String!) {
-    updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeAddressed: null, answererId: null},
-        questionId: $questionId}) {
-        clientMutationId
-    }
-}
-`;
+// const UPDATE_QUESTION = gql`
+// mutation UpdateQuestion($questionId: Int!, $status: String) {
+//     updateQuestionByQuestionId(input: {questionPatch: {status: $status}, questionId: $questionId}) {
+//         clientMutationId
+//     }
+// }
+// `;
+// const UPDATE_LOCATION = gql`
+// mutation UpdateLocation($questionId: Int!, $location: String) {
+//     updateQuestionByQuestionId(input: {questionPatch: {location: $location}, questionId: $questionId}) {
+//         clientMutationId
+//     }
+// }
+// `;
+
+// const UNDO_DONT_KNOW = gql`
+// mutation UndoDontKnow($questionId: Int!, $status: String!) {
+//     updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeAddressed: null, answererId: null},
+//         questionId: $questionId}) {
+//         clientMutationId
+//     }
+// }
+// `;
+
+// TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
 
-class SessionQuestion extends React.Component {
-    props: {
-        question: AppQuestion,
-        index: number,
-        isTA: boolean,
-        includeRemove: boolean,
-        includeBookmark: boolean,
-        myUserId: number,
-        triggerUndo: Function,
-        refetch: Function,
-        isPast: boolean,
-    };
+type Props = {
+    question: FireQuestion;
+    users: { readonly[userId: string]: FireUser };
+    tags: { readonly [tagId: string]: FireTag };
+    index: number;
+    isTA: boolean;
+    includeRemove: boolean;
+    myUserId: string;
+    triggerUndo: Function;
+    isPast: boolean;
+};
 
-    state: {
-        showLocation: boolean,
-        location: string,
-        isEditingLocation: boolean,
-        showDotMenu: boolean,
-        undoQuestionIdDontKnow?: number,
-        undoName?: string,
-        avatar: string
-    };
+type State = {
+    showLocation: boolean;
+    location: string;
+    isEditingLocation: boolean;
+    showDotMenu: boolean;
+    undoQuestionIdDontKnow?: number;
+    undoName?: string;
+};
 
-    constructor(props: {}) {
+const FEATURE_TA_COMMENT_ENABLE_FLAG = localStorage.getItem('FEATURE_TA_COMMENT_ENABLE_FLAG') === 'true';
+
+class SessionQuestion extends React.Component<Props, State> {
+    state: State;
+
+    constructor(props: Props) {
         super(props);
         this.state = {
             showLocation: false,
-            location: this.props.question.location || '',
+            location: props.question.location || '',
             isEditingLocation: false,
-            showDotMenu: false,
-            undoQuestionIdDontKnow: undefined,
-            undoName: undefined,
-            avatar: this.props.question.userByAskerId.computedAvatar
+            showDotMenu: false
         };
     }
 
@@ -78,28 +82,70 @@ class SessionQuestion extends React.Component {
         return String(index);
     }
 
-    public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>, updateLocation: Function): void => {
-        this.state.isEditingLocation = true;
+
+    public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+        this.setState({ isEditingLocation: true });
         const target = event.target as HTMLTextAreaElement;
         if (target.value.length <= LOCATION_CHAR_LIMIT) {
             this.setState({
                 location: target.value
             });
-            updateLocation({
-                variables: {
-                    questionId: this.props.question.questionId,
-                    location: target.value,
-                }
+
+            const question = firestore.collection('questions').doc(this.props.question.questionId);
+            question.update({
+                location: target.value
             });
-            setTimeout(() => { this.state.isEditingLocation = false; }, 100);
+
+            setTimeout(() => {
+                this.setState({
+                    isEditingLocation: false
+                });
+            }, 1000);
         }
-    }
+    };
+
+    retractQuestion = (): void => {
+        const question = firestore.collection('questions').doc(this.props.question.questionId);
+        question.update({
+            status: 'retracted'
+        });
+    };
 
     toggleLocationTooltip = () => {
         this.setState({
             showLocation: !this.state.showLocation
         });
-    }
+    };
+
+    assignQuestion = () => {
+        //Attempt to assign question to me
+        firestore.doc(`questions/${this.props.question.questionId}`).update({
+            status: 'assigned',
+            answererId: this.props.myUserId
+        });
+    };
+
+    studentNoShow = () => {
+        firestore.doc(`questions/${this.props.question.questionId}`).update({
+            status: 'no-show'
+        });
+    };
+
+    questionDone = () => {
+        firestore.doc(`questions/${this.props.question.questionId}`).update({
+            status: 'resolved',
+            timeAddressed: firebase.firestore.Timestamp.now()
+        });
+    };
+
+    questionComment = () => {
+        const taComment = prompt('Your comment', this.props.question.taComment);
+        if (taComment == null) {
+            return;
+        }
+        const update: Partial<FireQuestion> = { taComment: taComment };
+        firestore.doc(`questions/${this.props.question.questionId}`).update(update);
+    };
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
@@ -109,29 +155,36 @@ class SessionQuestion extends React.Component {
             }
         });
         const question = this.props.question;
-        this.props.triggerUndo(question.questionId, status, question.userByAskerId.computedName);
-    }
+        const asker = this.props.users[question.askerId];
+        this.props.triggerUndo(
+            question.questionId,
+            status,
+            asker.firstName + ' ' + asker.lastName
+        );
+    };
 
     setDotMenu = (status: boolean) => {
         this.setState({ showDotMenu: status });
-    }
+    };
 
-    handleUndoDontKnow = (questionId: number, UndoDontKnow: Function) => {
-        UndoDontKnow({
-            variables: {
-                questionId: questionId,
-                status: 'unresolved'
-            }
-        });
-    }
+    questionDontKnow = () => {
+        const update: Partial<FireQuestion> = { status: 'unresolved', answererId: '' };
+        firestore.doc(`questions/${this.props.question.questionId}`).update(update);
+    };
 
     render() {
-        var question = this.props.question;
+        const question = this.props.question;
         const studentCSS = this.props.isTA ? '' : ' Student';
+        const includeBookmark = this.props.question.askerId === this.props.myUserId;
+
+        const asker = this.props.users[question.askerId];
+        const answerer = question.answererId ? undefined : this.props.users[question.answererId];
+        const primaryTag = this.props.tags[this.props.question.primaryTag];
+        const secondaryTag = this.props.tags[this.props.question.secondaryTag];
 
         return (
             <div className="QueueQuestions">
-                {this.props.includeBookmark && <div className="Bookmark" />}
+                {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
                 <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
                     {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                 </p>
@@ -141,64 +194,56 @@ class SessionQuestion extends React.Component {
                             onClick={this.toggleLocationTooltip}
                             name="map marker alternate"
                         />
-                        <Mutation mutation={UPDATE_LOCATION}>
-                            {(updateLocation) => (
-                                <div
-                                    className="LocationTooltip"
-                                    style={{ visibility: this.state.showLocation ? 'visible' : 'hidden' }}
+                        <div
+                            className="LocationTooltip"
+                            style={{ visibility: this.state.showLocation ? 'visible' : 'hidden' }}
+                        >
+                            <p>
+                                Location &nbsp; <span
+                                    className={'characterCount ' +
+                                        (this.state.location.length >= 40 ? 'warn' : '')}
                                 >
-                                    <p>
-                                        Location &nbsp; <span
-                                            className={'characterCount ' +
-                                                (this.state.location.length >= 40 ? 'warn' : '')}
-                                        >
-                                            {this.state.location.length}/{LOCATION_CHAR_LIMIT}
-                                        </span>
-                                    </p>
-                                    <textarea
-                                        className="TextInput question"
-                                        value={this.state.location}
-                                        onChange={(e) => this.handleUpdateLocation(e, updateLocation)}
-                                    />
-                                    {this.state.isEditingLocation ?
-                                        <Loader
-                                            className={'locationLoader'}
-                                            active={true}
-                                            inline={true}
-                                            size={'tiny'}
-                                        /> : <Icon name="check" />}
-                                    <div
-                                        className="DoneButton"
-                                        onClick={this.toggleLocationTooltip}
-                                    >
-                                        Done
-                                    </div>
-                                </div>
-                            )}
-                        </Mutation>
-                        {this.state.showLocation && <div className="modalShade" />}
+                                    {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                </span>
+                            </p>
+                            <textarea
+                                className="TextInput question"
+                                value={this.state.location}
+                                onChange={(e) => this.handleUpdateLocation(e)}
+                            />
+                            {this.state.isEditingLocation ?
+                                <Loader
+                                    className={'locationLoader'}
+                                    active={true}
+                                    inline={true}
+                                    size={'tiny'}
+                                /> : <Icon name="check" />}
+                            <div
+                                className="DoneButton"
+                                onClick={this.toggleLocationTooltip}
+                            >
+                                Done
+                            </div>
+                        </div>
                     </div>
                 }
                 <div className="QuestionInfo">
-                    {this.props.isTA &&
+                    {this.props.isTA && asker &&
                         <div className="studentInformation">
                             <img
-                                src={this.state.avatar}
-                                onError={
-                                    (() => this.setState({
-                                        avatar: '/placeholder.png'
-                                    }))
-                                }
+                                src={asker.photoUrl || '/placeholder.png'}
+                                alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
                             />
                             <span className="Name">
-                                {question.userByAskerId.computedName}
+                                {asker.firstName + ' ' + asker.lastName}
                                 {question.status === 'assigned' &&
                                     <React.Fragment>
                                         <span className="assigned"> is assigned
-                                        {question.userByAnswererId &&
-                                                (' to ' + (question.userByAnswererId.userId === this.props.myUserId
+                                            {answerer &&
+                                                (' to ' + (answerer.userId === this.props.myUserId
                                                     ? 'you'
-                                                    : question.userByAnswererId.computedName))}
+                                                    : answerer.firstName + ' '
+                                                    + answerer.lastName))}
                                         </span>
                                     </React.Fragment>
                                 }
@@ -208,110 +253,75 @@ class SessionQuestion extends React.Component {
                     <div className="Location">
                         {this.props.isTA && question.location}
                     </div>
-                    {(this.props.isTA || this.props.includeBookmark || this.props.includeRemove) &&
+                    {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
                         <p className={'Question' + studentCSS}>{question.content}</p>}
+                    {question.taComment && (
+                        <p className={'Question' + studentCSS}>TA Comment: {question.taComment}</p>
+                    )}
                 </div>
                 <div className="BottomBar">
                     {this.props.isTA && <span className="Spacer" />}
                     <div className="Tags">
-                        {question.questionTagsByQuestionId.nodes.map(
-                            (tag) => <SelectedTags
-                                key={tag.tagByTagId.tagId}
-                                isSelected={false}
-                                tag={tag.tagByTagId.name}
-                                level={tag.tagByTagId.level}
-                                onClick={null}
-                            />
-                        )}
+                        {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} />}
+                        {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} />}
                     </div>
-                    <p className="Time">
-                        posted at&nbsp;
-                        {<Moment date={question.timeEntered} interval={0} format={'hh:mm A'} />}
-                    </p>
+                    {question.timeEntered != null &&
+                        <p className="Time">
+                            posted at&nbsp;
+                            {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
+                        </p>}
                 </div>
                 {this.props.isTA &&
                     <div className="Buttons">
                         <hr />
-                        <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
-                            {(updateQuestion) =>
-                                <div className="TAButtons">
-                                    {question.status === 'unresolved' &&
-                                        <p
-                                            className="Begin"
-                                            onClick={(e) => this._onClick(e, updateQuestion, 'assigned')}
-                                        >
-                                            Assign to Me
-                                        </p>
-                                    }
-                                    {question.status === 'assigned' &&
-                                        <React.Fragment>
-                                            <p
-                                                className="Delete"
-                                                onClick={(e) => this._onClick(e, updateQuestion, 'no-show')}
-                                            >
-                                                No show
-                                            </p>
-                                            <p
-                                                className="Done"
-                                                onClick={(e) => this._onClick(e, updateQuestion, 'resolved')}
-                                            >
-                                                Done
-                                            </p>
-                                            <p
-                                                className="DotMenu"
-                                                onClick={() => this.setDotMenu(!this.state.showDotMenu)}
-                                            >
-                                                ...
-
-                                            {this.state.showDotMenu &&
-                                                    <Mutation
-                                                        mutation={UNDO_DONT_KNOW}
-                                                        onCompleted={() => this.props.refetch()}
-                                                    >
-                                                        {(UndoDontKnow) =>
-                                                            <React.Fragment>
-                                                                <div
-                                                                    className="IReallyDontKnow"
-                                                                    tabIndex={1}
-                                                                    onClick={() => this.setDotMenu(false)}
-                                                                >
-                                                                    <p
-                                                                        className="DontKnowButton"
-                                                                        onClick={() => this.handleUndoDontKnow(
-                                                                            question.questionId,
-                                                                            UndoDontKnow
-                                                                        )}
-                                                                    >
-                                                                        I Really Don't Know
-                                                                    </p>
-                                                                </div>
-                                                            </React.Fragment>
-                                                        }
-                                                    </Mutation>
-                                                }
-                                            </p>
-                                        </React.Fragment>
-                                    }
-                                </div>
+                        <div className="TAButtons">
+                            {question.status === 'unresolved' &&
+                                <p className="Begin" onClick={this.assignQuestion}>
+                                    Assign to Me
+                                </p>
                             }
-                        </Mutation>
+                            {question.status === 'assigned' &&
+                                <React.Fragment>
+                                    <p className="Delete" onClick={this.studentNoShow}>No show</p>
+                                    <p className="Done" onClick={this.questionDone}>Done</p>
+                                    {FEATURE_TA_COMMENT_ENABLE_FLAG && (
+                                        <p className="Done" onClick={this.questionComment}>
+                                            Edit Comment
+                                        </p>
+                                    )}
+                                    <p
+                                        className="DotMenu"
+                                        onClick={() => this.setDotMenu(!this.state.showDotMenu)}
+                                    >
+                                        ...
+                                        {this.state.showDotMenu &&
+                                            <div
+                                                className="IReallyDontKnow"
+                                                tabIndex={1}
+                                                onClick={() => this.setDotMenu(false)}
+                                            >
+                                                <p
+                                                    className="DontKnowButton"
+                                                    onClick={this.questionDontKnow}
+                                                >
+                                                    I Really Don't Know
+                                                </p>
+                                            </div>
+                                        }
+                                    </p>
+                                </React.Fragment>
+                            }
+                        </div>
                     </div>
                 }
-                <Mutation mutation={UPDATE_QUESTION} onCompleted={() => this.props.refetch()}>
-                    {(updateQuestion) =>
-                        this.props.includeRemove && !this.props.includeBookmark && !this.props.isPast &&
-                        this.props.question.status !== 'assigned' &&
-                        <div className="Buttons">
-                            <hr />
-                            <p
-                                className="Remove"
-                                onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
-                            >
-                                <Icon name="close" /> Remove
-                            </p>
-                        </div>
-                    }
-                </Mutation>
+                {this.props.includeRemove && !this.props.isPast &&
+                    <div className="Buttons">
+                        <hr />
+                        <p className="Remove" onClick={this.retractQuestion}>
+                            <Icon name="close" /> Remove
+                        </p>
+                    </div>
+                }
             </div>
         );
     }
