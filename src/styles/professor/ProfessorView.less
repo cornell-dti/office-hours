@@ -1,0 +1,82 @@
+.ProfessorView {
+    overflow: auto;
+    padding-bottom: 50px;
+
+    input:not(.DateInput_input) {
+        border:none;
+        background-color: #edeff2;
+        height: 25px;
+        padding-left: 10px;
+
+        .ProfessorOHInfo {
+        margin: 0px 20px;
+        }
+    }
+
+    Button:not(.react-datepicker__navigation) {
+        cursor: pointer;
+        background-color: transparent;
+        border: none;
+        color: #a0a0a0;
+        outline: none;
+        user-select: none;
+    }
+
+    .main {
+        margin-right: 50px;
+        margin-left: 200px+50px;
+
+        .CalendarWeekSelect {
+            margin: 5px 0;
+            background-color: transparent;
+            border-top: none;
+        }
+
+        .SelectCategory {
+            padding-top: 200px;
+            font-family: Roboto;
+            font-size: 28px;
+            font-weight: 300;
+            color: @text-grey;
+        }
+
+        Button#profSettings {
+            float: right;
+            font-size: 14px;
+            color: black;
+            margin-top: 30px;
+            padding: 15px 0px;
+        }
+    }
+
+    // Dropdown CSS
+    .ui.selection.dropdown {
+        width: 40%;
+        margin-right: 20px;
+        background-color: #edeff2;
+        border-radius: 0px;
+        border: none;
+        color: black;
+        padding: 5px 10px;
+        min-height: 25px;
+    }
+
+    .ui.selection.dropdown>.dropdown.icon{
+        padding: 4px 10px;
+    }
+
+    .ui.dropdown:not(.button)>.default.text {
+        color: #898989;
+    }
+
+    .ui.selection.active.dropdown .menu {
+        border-color: gainsboro!important;
+        border-radius: 0;
+    }
+
+    // End Dropdown CSS
+
+    .rightOfSidebar {
+        min-width: 820px;
+    }
+}

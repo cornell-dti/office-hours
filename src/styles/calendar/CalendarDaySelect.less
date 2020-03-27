@@ -1,0 +1,72 @@
+@red: #f67d7d;
+
+.CalendarDaySelect {
+    background: white;
+    color: @text-grey;
+    border-bottom: solid 1px #e3e3e3;
+
+    .month {
+        font-family: Roboto;
+        font-size: 17px;
+        font-weight: 500;
+        margin: 0 20px;
+        padding: 10px 0;
+        border-bottom: solid 1px #ebebeb;
+    }
+
+    .selector {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+
+        .LastWeek,
+        .NextWeek {
+            cursor: pointer;
+        }
+    }
+}
+
+.menuDate .date:hover {
+    background-color: #fcd9d9;
+    border-radius: 50%;
+    margin: auto;
+    height: 30px;
+    width: 30px;
+}
+
+.menuDate {
+    cursor: pointer;
+    height: 54px;
+    width: 30px;
+
+    &.active {
+        cursor: default;
+
+        &>.date {
+            color: white;
+            background-color: @red;
+            border-radius: 50%;
+            margin: auto;
+            height: 30px;
+            width: 30px;
+        }
+    }
+
+    &>.day {
+        font-size: 11px;
+        padding-bottom: 5px;
+        color: #777;
+    }
+
+    &>.date {
+        font-size: 15px;
+        padding: 6px 0px;
+    }
+
+    &>.notification {
+        font-size: 32px;
+        height: 20px;
+        color: @red;
+    }
+}
