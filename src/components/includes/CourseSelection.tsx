@@ -20,13 +20,13 @@ export enum PageState {
 
 function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElement {
     const history = useHistory();
-    const [isWriting, setIsWriting] = React.useState(false);
+    const [isWritingChanges, setIsWritingChanges] = React.useState(false);
 
     const [pageState, setPageState] = React.useState<PageState>(PageState.done);
 
     // Normal editing mode (isNormalEditingMode=true) has all the controls.
     // On the contrary, onboarding (isNormalEditingMode=false) has only enroll button.
-    const isNormalEditingMode = user.courses.length > 0 && isWriting;
+    const isNormalEditingMode = user.courses.length > 0 && !isWritingChanges;
 
     const currentlyEnrolledCourseIds = new Set(user.courses);
     const [selectedCourses, setSelectedCourses] = React.useState<FireCourse[]>(
@@ -81,9 +81,11 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         coursesToEnroll.forEach(courseId => newCourseSet.add(courseId));
         coursesToUnenroll.forEach(courseId => newCourseSet.delete(courseId));
         const userUpdate: Partial<FireUser> = { courses: Array.from(newCourseSet.values()) };
-        setIsWriting(true);
+        setIsWritingChanges(true);
+        setPageState(PageState.pending);
         firestore.collection('users').doc(user.userId).update(userUpdate).then(() => {
-            setIsWriting(false);
+            setIsWritingChanges(false);
+            setPageState(PageState.done);
         });
     };
 
