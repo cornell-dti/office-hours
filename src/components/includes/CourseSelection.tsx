@@ -14,9 +14,9 @@ type Props = {
 };
 
 export enum PageState {
-    ready = "ready",
-    pending = "pending",
-};
+    ready = 'ready',
+    pending = 'pending',
+}
 
 function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElement {
     const history = useHistory();
@@ -147,7 +147,8 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                         </button>
                     )}
                     {isEdit && (
-                        <button className={'save' + (isSaveDisabled ? ' disabled' : '')} disabled={isSaveDisabled} onClick={onSubmit}>
+                        <button className={'save' + (isSaveDisabled ? ' disabled' : '')}
+                            disabled={isSaveDisabled} onClick={onSubmit}>
                             {isNormalEditingMode ? 'Save' : 'Enroll'}
                         </button>
                     )}
