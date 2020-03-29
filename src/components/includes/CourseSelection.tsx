@@ -62,7 +62,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         canSave = (coursesToEnroll.length + coursesToUnenroll.length === 0) && !isWritingChanges;
         pageState = isWritingChanges ? PageState.pending : PageState.ready;
 
-    }, [coursesToEnroll, coursesToUnenroll, isWritingChanges]);
+    }, [isWritingChanges]);
 
     const onSelectCourse = (course: FireCourse, addCourse: boolean) => {
         setSelectedCourses((previousSelectedCourses) => (
