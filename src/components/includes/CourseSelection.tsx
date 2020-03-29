@@ -92,14 +92,10 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         const userUpdate: Partial<FireUser> = { courses: Array.from(newCourseSet.values()) };
         setIsWritingChanges(true);
         firestore.collection('users').doc(user.userId).update(userUpdate).then(() => {
-            history.push("/home");
+            history.push('/home');
             setIsWritingChanges(false);
         });
     };
-
-    const onGoTo = (page: string) => {
-
-    }
 
     const selectedCoursesString = selectedCourses.length === 0
         ? 'No Classes Chosen'
@@ -128,25 +124,26 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                         </div>
                     </div>
                     <div className="CourseCards">
-                        {allCourses.filter(course => selectedCourseIds.includes(course.courseId) || isEdit).map((course) => {
-                            const role = currentlyEnrolledCourseIds.has(course.courseId)
-                                ? (user.roles[course.courseId] || 'student')
-                                : undefined;
-                            const selected = selectedCourseIds.includes(course.courseId)
-                                || (role !== undefined && role !== 'student');
-                            return (
-                                <div>
-                                    <CourseCard
-                                        key={course.courseId}
-                                        course={course}
-                                        role={role}
-                                        onSelectCourse={(addCourse) => onSelectCourse(course, addCourse)}
-                                        editable={isEdit}
-                                        selected={selected}
-                                    />
-                                </div>
-                            );
-                        })}
+                        {allCourses.filter(course => selectedCourseIds.includes(course.courseId) || isEdit)
+                            .map((course) => {
+                                const role = currentlyEnrolledCourseIds.has(course.courseId)
+                                    ? (user.roles[course.courseId] || 'student')
+                                    : undefined;
+                                const selected = selectedCourseIds.includes(course.courseId)
+                                    || (role !== undefined && role !== 'student');
+                                return (
+                                    <div>
+                                        <CourseCard
+                                            key={course.courseId}
+                                            course={course}
+                                            role={role}
+                                            onSelectCourse={(addCourse) => onSelectCourse(course, addCourse)}
+                                            editable={isEdit}
+                                            selected={selected}
+                                        />
+                                    </div>
+                                );
+                            })}
                     </div>
                 </div>
             </div>
