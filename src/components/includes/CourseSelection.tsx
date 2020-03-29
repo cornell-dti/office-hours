@@ -14,14 +14,14 @@ type Props = {
 };
 
 export enum PageState {
-    ready,
-    pending,
+    ready = "ready",
+    pending = "pending",
 };
 
 function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElement {
     const history = useHistory();
     const [isWritingChanges, setIsWritingChanges] = React.useState(false);
-    let pageState = PageState.ready;
+    const [pageState, setPageState] = React.useState(PageState.ready);
 
     // Normal editing mode (isNormalEditingMode=true) has all the controls.
     // On the contrary, onboarding (isNormalEditingMode=false) has only enroll button.
@@ -56,13 +56,12 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         }
     });
 
-    let isSaveDisabled = (coursesToEnroll.length + coursesToUnenroll.length === 0) && !isWritingChanges;
+    const [isSaveDisabled, setIsSaveDisabled] = React.useState(false);
 
     React.useEffect(() => {
-        isSaveDisabled = (coursesToEnroll.length + coursesToUnenroll.length === 0) && !isWritingChanges;
-        pageState = isWritingChanges ? PageState.pending : PageState.ready;
-
-    }, [isWritingChanges]);
+        setIsSaveDisabled((coursesToEnroll.length + coursesToUnenroll.length === 0) && !isWritingChanges);
+        setPageState(isWritingChanges ? PageState.pending : PageState.ready);
+    }, [isWritingChanges, coursesToEnroll, coursesToUnenroll]);
 
     const onSelectCourse = (course: FireCourse, addCourse: boolean) => {
         setSelectedCourses((previousSelectedCourses) => (
