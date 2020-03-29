@@ -86,9 +86,14 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         const userUpdate: Partial<FireUser> = { courses: Array.from(newCourseSet.values()) };
         setIsWritingChanges(true);
         firestore.collection('users').doc(user.userId).update(userUpdate).then(() => {
+            history.push("/home");
             setIsWritingChanges(false);
         });
     };
+
+    const onGoTo = (page: string) => {
+
+    }
 
     const selectedCoursesString = selectedCourses.length === 0
         ? 'No Classes Chosen'
@@ -121,16 +126,20 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                             const role = currentlyEnrolledCourseIds.has(course.courseId)
                                 ? (user.roles[course.courseId] || 'student')
                                 : undefined;
+                            const selected = selectedCourses.map(course => course.courseId).includes(course.courseId)
+                                || (role !== undefined && role !== 'student');
                             return (
-                                <CourseCard
-                                    key={course.courseId}
-                                    course={course}
-                                    role={role}
-                                    onSelectCourse={(addCourse) => onSelectCourse(course, addCourse)}
-                                    editable={isEdit}
-                                    selected={selectedCourses.map(course => course.courseId).includes(course.courseId)
-                                        || (role !== undefined && role !== 'student')}
-                                />
+                                <div>
+                                    <CourseCard
+                                        key={course.courseId}
+                                        course={course}
+                                        role={role}
+                                        onSelectCourse={(addCourse) => onSelectCourse(course, addCourse)}
+                                        editable={isEdit}
+                                        selected={selected}
+                                    />
+
+                                </div>
                             );
                         })}
                     </div>
