@@ -56,10 +56,10 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         }
     });
 
-    let canSave = false;
+    let isSaveDisabled = (coursesToEnroll.length + coursesToUnenroll.length === 0) && !isWritingChanges;
 
     React.useEffect(() => {
-        canSave = (coursesToEnroll.length + coursesToUnenroll.length === 0) && !isWritingChanges;
+        isSaveDisabled = (coursesToEnroll.length + coursesToUnenroll.length === 0) && !isWritingChanges;
         pageState = isWritingChanges ? PageState.pending : PageState.ready;
 
     }, [isWritingChanges]);
@@ -149,7 +149,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                         </button>
                     )}
                     {isEdit && (
-                        <button className={'save' + (canSave ? ' disabled' : '')} onClick={onSubmit}>
+                        <button className={'save' + (isSaveDisabled ? ' disabled' : '')} disabled={isSaveDisabled} onClick={onSubmit}>
                             {isNormalEditingMode ? 'Save' : 'Enroll'}
                         </button>
                     )}
