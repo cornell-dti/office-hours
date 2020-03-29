@@ -25,7 +25,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     // Normal editing mode (isNormalEditingMode=true) has all the controls.
     // On the contrary, onboarding (isNormalEditingMode=false) has only enroll button.
-    const isNormalEditingMode = user.courses.length > 0 && !isWritingChanges;
+    const isNormalEditingMode = user.courses.length > 0;
 
     const currentlyEnrolledCourseIds = new Set(user.courses);
     const [selectedCourses, setSelectedCourses] = React.useState<FireCourse[]>(
