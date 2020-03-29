@@ -80,7 +80,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     };
 
     const onSubmit = () => {
-        console.log("butts");
         const newCourseSet = new Set(currentlyEnrolledCourseIds);
         coursesToEnroll.forEach(courseId => newCourseSet.add(courseId));
         coursesToUnenroll.forEach(courseId => newCourseSet.delete(courseId));
