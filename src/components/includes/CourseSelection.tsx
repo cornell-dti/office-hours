@@ -13,12 +13,16 @@ type Props = {
     readonly isEdit: boolean;
 };
 
+
+
 function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElement {
     const history = useHistory();
-    const isRedirectingRef = React.useRef(false);
+    const [isWriting, setIsWriting] = React.useState(false);
+
+
     // Normal editing mode (isNormalEditingMode=true) has all the controls.
     // On the contrary, onboarding (isNormalEditingMode=false) has only enroll button.
-    const isNormalEditingMode = user.courses.length > 0 && !isRedirectingRef.current;
+    const isNormalEditingMode = user.courses.length > 0 && isWriting;
 
     const currentlyEnrolledCourseIds = new Set(user.courses);
     const [selectedCourses, setSelectedCourses] = React.useState<FireCourse[]>(
@@ -68,14 +72,14 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     };
 
     const onSubmit = () => {
+        console.log("butts");
         const newCourseSet = new Set(currentlyEnrolledCourseIds);
         coursesToEnroll.forEach(courseId => newCourseSet.add(courseId));
         coursesToUnenroll.forEach(courseId => newCourseSet.delete(courseId));
         const userUpdate: Partial<FireUser> = { courses: Array.from(newCourseSet.values()) };
-        isRedirectingRef.current = true;
+        setIsWriting(true);
         firestore.collection('users').doc(user.userId).update(userUpdate).then(() => {
-            history.push('/courses');
-            isRedirectingRef.current = false;
+            setIsWriting(false);
         });
     };
 
