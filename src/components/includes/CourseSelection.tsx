@@ -33,6 +33,8 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
             ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] === undefined
         )
     );
+    const [selectedCourseIds, setSelectedCourseIds] = React.useState<string[]>([]);
+
     const coursesToEnroll: string[] = [];
     const coursesToUnenroll: string[] = [];
     allCourses.forEach(({ courseId }) => {
@@ -62,6 +64,10 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         setIsSaveDisabled((coursesToEnroll.length + coursesToUnenroll.length === 0) && !isWritingChanges);
         setPageState(isWritingChanges ? PageState.pending : PageState.ready);
     }, [isWritingChanges, coursesToEnroll, coursesToUnenroll]);
+
+    React.useEffect(() => {
+        setSelectedCourseIds(selectedCourses.map(course => course.courseId));
+    }, [selectedCourses]);
 
     const onSelectCourse = (course: FireCourse, addCourse: boolean) => {
         setSelectedCourses((previousSelectedCourses) => (
@@ -122,11 +128,11 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                         </div>
                     </div>
                     <div className="CourseCards">
-                        {allCourses.map((course) => {
+                        {allCourses.filter(course => selectedCourseIds.includes(course.courseId) || isEdit).map((course) => {
                             const role = currentlyEnrolledCourseIds.has(course.courseId)
                                 ? (user.roles[course.courseId] || 'student')
                                 : undefined;
-                            const selected = selectedCourses.map(course => course.courseId).includes(course.courseId)
+                            const selected = selectedCourseIds.includes(course.courseId)
                                 || (role !== undefined && role !== 'student');
                             return (
                                 <div>
@@ -138,7 +144,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                         editable={isEdit}
                                         selected={selected}
                                     />
-
                                 </div>
                             );
                         })}
