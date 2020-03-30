@@ -13,12 +13,16 @@ type Props = {
     readonly isEdit: boolean;
 };
 
+export type PageState = 'ready' | 'pending';
+
 function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElement {
     const history = useHistory();
-    const isRedirectingRef = React.useRef(false);
+    const [isWritingChanges, setIsWritingChanges] = React.useState(false);
+    const [pageState, setPageState] = React.useState('ready');
+
     // Normal editing mode (isNormalEditingMode=true) has all the controls.
     // On the contrary, onboarding (isNormalEditingMode=false) has only enroll button.
-    const isNormalEditingMode = user.courses.length > 0 && !isRedirectingRef.current;
+    const isNormalEditingMode = user.courses.length > 0;
 
     const currentlyEnrolledCourseIds = new Set(user.courses);
     const [selectedCourses, setSelectedCourses] = React.useState<FireCourse[]>(
@@ -26,6 +30,8 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
             ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] === undefined
         )
     );
+    const [selectedCourseIds, setSelectedCourseIds] = React.useState<string[]>([]);
+
     const coursesToEnroll: string[] = [];
     const coursesToUnenroll: string[] = [];
     allCourses.forEach(({ courseId }) => {
@@ -49,7 +55,16 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         }
     });
 
-    const canSave = coursesToEnroll.length + coursesToUnenroll.length === 0;
+    const [isSaveDisabled, setIsSaveDisabled] = React.useState(false);
+
+    React.useEffect(() => {
+        setIsSaveDisabled((coursesToEnroll.length + coursesToUnenroll.length === 0) && !isWritingChanges);
+        setPageState(isWritingChanges ? 'pending' : 'ready');
+    }, [isWritingChanges, coursesToEnroll, coursesToUnenroll]);
+
+    React.useEffect(() => {
+        setSelectedCourseIds(selectedCourses.map(course => course.courseId));
+    }, [selectedCourses]);
 
     const onSelectCourse = (course: FireCourse, addCourse: boolean) => {
         setSelectedCourses((previousSelectedCourses) => (
@@ -72,10 +87,10 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         coursesToEnroll.forEach(courseId => newCourseSet.add(courseId));
         coursesToUnenroll.forEach(courseId => newCourseSet.delete(courseId));
         const userUpdate: Partial<FireUser> = { courses: Array.from(newCourseSet.values()) };
-        isRedirectingRef.current = true;
+        setIsWritingChanges(true);
         firestore.collection('users').doc(user.userId).update(userUpdate).then(() => {
-            history.push('/courses');
-            isRedirectingRef.current = false;
+            history.push('/home');
+            setIsWritingChanges(false);
         });
     };
 
@@ -106,22 +121,26 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                         </div>
                     </div>
                     <div className="CourseCards">
-                        {allCourses.map((course) => {
-                            const role = currentlyEnrolledCourseIds.has(course.courseId)
-                                ? (user.roles[course.courseId] || 'student')
-                                : undefined;
-                            return (
-                                <CourseCard
-                                    key={course.courseId}
-                                    course={course}
-                                    role={role}
-                                    onSelectCourse={(addCourse) => onSelectCourse(course, addCourse)}
-                                    editable={isEdit}
-                                    selected={selectedCourses.map(course => course.courseId).includes(course.courseId)
-                                        || (role !== undefined && role !== 'student')}
-                                />
-                            );
-                        })}
+                        {allCourses.filter(course => selectedCourseIds.includes(course.courseId) || isEdit)
+                            .map((course) => {
+                                const role = currentlyEnrolledCourseIds.has(course.courseId)
+                                    ? (user.roles[course.courseId] || 'student')
+                                    : undefined;
+                                const selected = selectedCourseIds.includes(course.courseId)
+                                    || (role !== undefined && role !== 'student');
+                                return (
+                                    <div>
+                                        <CourseCard
+                                            key={course.courseId}
+                                            course={course}
+                                            role={role}
+                                            onSelectCourse={(addCourse) => onSelectCourse(course, addCourse)}
+                                            editable={isEdit}
+                                            selected={selected}
+                                        />
+                                    </div>
+                                );
+                            })}
                     </div>
                 </div>
             </div>
@@ -136,7 +155,8 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                         </button>
                     )}
                     {isEdit && (
-                        <button className={'save' + (canSave ? ' disabled' : '')} onClick={onSubmit}>
+                        <button className={'save' + (isSaveDisabled ? ' disabled' : '')}
+                            disabled={isSaveDisabled} onClick={onSubmit}>
                             {isNormalEditingMode ? 'Save' : 'Enroll'}
                         </button>
                     )}
