@@ -13,15 +13,12 @@ type Props = {
     readonly isEdit: boolean;
 };
 
-export enum PageState {
-    ready = 'ready',
-    pending = 'pending',
-}
+export type PageState = 'ready' | 'pending'
 
 function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElement {
     const history = useHistory();
     const [isWritingChanges, setIsWritingChanges] = React.useState(false);
-    const [pageState, setPageState] = React.useState(PageState.ready);
+    const [pageState, setPageState] = React.useState('ready');
 
     // Normal editing mode (isNormalEditingMode=true) has all the controls.
     // On the contrary, onboarding (isNormalEditingMode=false) has only enroll button.
@@ -62,7 +59,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     React.useEffect(() => {
         setIsSaveDisabled((coursesToEnroll.length + coursesToUnenroll.length === 0) && !isWritingChanges);
-        setPageState(isWritingChanges ? PageState.pending : PageState.ready);
+        setPageState(isWritingChanges ? 'pending' : 'ready');
     }, [isWritingChanges, coursesToEnroll, coursesToUnenroll]);
 
     React.useEffect(() => {
