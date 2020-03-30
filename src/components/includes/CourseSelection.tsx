@@ -13,7 +13,7 @@ type Props = {
     readonly isEdit: boolean;
 };
 
-export type PageState = 'ready' | 'pending'
+export type PageState = 'ready' | 'pending';
 
 function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElement {
     const history = useHistory();
