@@ -121,7 +121,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                         </div>
                     </div>
                     <div className="CourseCards">
-                        {allCourses.filter(course => selectedCourseIds.includes(course.courseId) || isEdit)
+                        {allCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
+                            currentlyEnrolledCourseIds.has(course.courseId)
+                            || isEdit)
                             .map((course) => {
                                 const role = currentlyEnrolledCourseIds.has(course.courseId)
                                     ? (user.roles[course.courseId] || 'student')
