@@ -1,3 +1,13 @@
+/**
+ * If you changed the routing logic, make sure to test the following stuff to ensure the behavior
+ * is correct:
+ *
+ * 1. Try sign out and visit private endpoints
+ * 2. Try sign in as student and visit an unauthorized professor course.
+ * 3. Try sign in as student with zero courses
+ * 4. Try sign in as student with some courses
+ */
+
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
@@ -21,14 +31,6 @@ import { userUpload } from '../firebasefunctions';
 import { useMyUser, useAllCourses } from '../firehooks';
 
 ReactGA.initialize('UA-123790900-1');
-
-// Since the type is too polymorphic, we have to use the any type in the next few lines.
-type PrivateRouteProps<P extends { courseId?: string }> = {
-    component: React.ComponentType<RouteComponentProps<P>>;
-    requireProfessor: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [restKey: string]: any;
-};
 
 const findValidCourse = (courses: readonly FireCourse[], courseId: string) => courses.find(course =>
     courseId === course.courseId
@@ -54,22 +56,13 @@ const getDefaultRedirect = (user: FireUser | undefined, courses: readonly FireCo
     return '/edit';
 };
 
-const PrivateRoute = <P extends { courseId?: string }>(
-    { component, requireProfessor, ...rest }: PrivateRouteProps<P>
-) => {
-    const courses = useAllCourses();
-
-    // Show a loader or redirect based on current auth state
-    // isLoggedIn STATES:
-    // 0: Fetching currently logged in status
-    // 1: Not logged in
-    // 2: Logged in
-
-    const courseId: string | null | undefined = rest.computedMatch.params.courseId;
-    // const courseId: string = requireProfessor ?  : DEFAULT_COURSE_ID;
-
+/**
+ * 0: Fetching currently logged in status
+ * 1: Not logged in
+ * 2: Logged in
+ */
+const useLoginStatus = () => {
     const [isLoggedIn, setIsLoggedIn] = React.useState<0 | 1 | 2>(0);
-    const user = useMyUser();
 
     React.useEffect(() => {
         auth.onAuthStateChanged((user) => {
@@ -82,42 +75,109 @@ const PrivateRoute = <P extends { courseId?: string }>(
         });
     }, []);
 
-    if (isLoggedIn === 0) {
-        return <Loader active={true} content={'Loading'} />;
-    }
-    if (isLoggedIn === 1) {
-        return <Redirect to={{ pathname: '/login' }} />;
-    }
+    return isLoggedIn;
+};
+
+const useLoadedData = () => {
+    const courses = useAllCourses();
+    const user = useMyUser();
+
     if (!user || !user.roles || !user.courses || courses.length === 0) {
         // User and courses might load after loging status load.
         // We still display the loading screen while waiting for a final verdict
         // whether the user can enter professor view.
-        return <Loader active={true} content={'Loading'} />;
+        return null;
+    }
+    return [user, courses] as const;
+};
+
+type RouteAction = 'LOADING' | 'LOGIN' | readonly [FireUser, readonly FireCourse[]];
+
+/** @returns what the router should do considering only login status and data loading status. */
+const useBaseRouteAction = (): RouteAction => {
+    const isLoggedIn = useLoginStatus();
+    const loadedData = useLoadedData();
+
+    if (isLoggedIn === 0) {
+        return 'LOADING';
+    }
+    if (isLoggedIn === 1) {
+        return 'LOGIN';
     }
 
-    if (requireProfessor) {
-        if (user.roles[courseId || 'info4998'] === 'professor') {
-            return <Route {...rest} component={component} />;
-        }
+    return loadedData === null ? 'LOADING' : loadedData;
+};
+
+/**
+ * @returns what the router should do considering only login status, data loading status, and
+ * professor permisson check.
+ */
+const useRouteActionWithPermissionCheck = (
+    requireProfessor: boolean | undefined,
+    courseId: string | null | undefined
+): RouteAction => {
+    const action = useBaseRouteAction();
+    if (action === 'LOADING' || action === 'LOGIN') {
+        return action;
+    }
+    const [user] = action;
+    if (requireProfessor && user.roles[courseId || 'info4998'] !== 'professor') {
+        return 'LOGIN';
+    }
+    return action;
+};
+
+// Since the type is too polymorphic, we have to use the any type in the next few lines.
+type PrivateRouteProps<P extends {}> = {
+    component: React.ComponentType<RouteComponentProps<P>>;
+    requireProfessor: boolean;
+    path: string;
+    exact?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [restKey: string]: any;
+};
+
+const PrivateRoute = <P extends {}>(
+    { component, requireProfessor, ...rest }: PrivateRouteProps<P>
+) => {
+    const courseId: string | null | undefined = rest.computedMatch.params.courseId;
+    const routeAction = useRouteActionWithPermissionCheck(requireProfessor, courseId);
+
+    if (routeAction === 'LOADING') {
+        return <Loader active={true} content={'Loading'} />;
+    }
+    if (routeAction === 'LOGIN') {
         return <Redirect to={{ pathname: '/login' }} />;
     }
+
+    const [user, courses] = routeAction;
+
     if (user.courses.length === 0 && rest.location.pathname !== '/edit') {
         return <Redirect to={{ pathname: '/edit' }} />;
     }
-    if (courseId == null) {
-        return <Route {...rest} component={component} />;
-    }
-    const course = findValidCourse(courses, courseId);
-    if (course === undefined) {
-        return <Redirect to={{ pathname: getDefaultRedirect(user, courses) }} />;
+    if (courseId != null) {
+        const course = findValidCourse(courses, courseId);
+        if (course === undefined) {
+            return <Redirect to={{ pathname: getDefaultRedirect(user, courses) }} />;
+        }
     }
     return <Route {...rest} component={component} />;
 };
 
-export default () => {
-    const user = useMyUser();
-    const courses = useAllCourses();
+const DefaultRoute = () => {
+    const routeAction = useBaseRouteAction();
 
+    if (routeAction === 'LOADING') {
+        return <Loader active={true} content={'Loading'} />;
+    }
+    if (routeAction === 'LOGIN') {
+        return <Redirect to={{ pathname: '/login' }} />;
+    }
+    const [user, courses] = routeAction;
+    return <Redirect from="/" to={getDefaultRedirect(user, courses)} />;
+};
+
+export default () => {
     return (
         <Router>
             <div className="App">
@@ -166,7 +226,7 @@ export default () => {
                         component={SplitView}
                         requireProfessor={false}
                     />
-                    <Redirect from="/" to={getDefaultRedirect(user, courses)} />
+                    <DefaultRoute />
                 </Switch>
             </div>
         </Router>
