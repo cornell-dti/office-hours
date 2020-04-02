@@ -155,7 +155,7 @@ export const deleteSeries = async (db: firebase.firestore.Firestore, sessionSeri
 export const logOut = () => {
   auth().signOut().then(() => {
     // Success
-  }).catch(error => {
+  }).catch(() => {
     // Fail
   });
 };

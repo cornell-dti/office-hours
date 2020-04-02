@@ -55,7 +55,7 @@ const SplitView = (props: {
     const width = useWindowWidth();
 
     // Handle browser back button
-    props.history.listen((location, action) => {
+    props.history.listen((location) => {
         setActiveView(
             location.pathname.indexOf('add') !== -1
                 ? 'addQuestion'

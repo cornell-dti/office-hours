@@ -295,7 +295,7 @@ const ProfessorOHInfo = (props: {
                 </button>
                 <button
                     className="Bottom Edit"
-                    onClick={(e) => {
+                    onClick={() => {
                         if (disableEmpty) {
                             updateNotification(emptyNotification);
                         } else if (disableState) {
