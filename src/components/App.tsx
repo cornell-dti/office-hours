@@ -22,9 +22,6 @@ import { useMyUser, useAllCourses } from '../firehooks';
 
 ReactGA.initialize('UA-123790900-1');
 
-// FUTURE_TODO: Use Firebase Remote Config to control this.
-const DEFAULT_COURSE_ID = String(window.localStorage.getItem('lastid') || 'info4998');
-
 // Since the type is too polymorphic, we have to use the any type in the next few lines.
 type PrivateRouteProps<P extends { courseId?: string }> = {
     component: React.ComponentType<RouteComponentProps<P>>;
@@ -33,14 +30,28 @@ type PrivateRouteProps<P extends { courseId?: string }> = {
     [restKey: string]: any;
 };
 
-const getDefaultRedirectCourseId = (user: FireUser | undefined, courses: readonly FireCourse[]): string => {
+const findValidCourse = (courses: readonly FireCourse[], courseId: string) => courses.find(course =>
+    courseId === course.courseId
+    && moment().isBetween(moment(course.startDate.toDate()), moment(course.endDate.toDate())));
+
+const getDefaultRedirectCourseId = (user: FireUser | undefined, courses: readonly FireCourse[]): string | undefined => {
     if (user && user.courses) {
-        const firstCourseId = user.courses[0];
-        if (firstCourseId !== undefined) {
-            return firstCourseId;
+        for (let i = 0; i < user.courses.length; i += 1) {
+            const courseId = user.courses[i];
+            if (findValidCourse(courses, courseId) !== undefined) {
+                return courseId;
+            }
         }
     }
-    return DEFAULT_COURSE_ID;
+    return undefined;
+};
+
+const getDefaultRedirect = (user: FireUser | undefined, courses: readonly FireCourse[]): string => {
+    const courseId = getDefaultRedirectCourseId(user, courses);
+    if (courseId) {
+        return '/course/' + courseId;
+    }
+    return '/edit';
 };
 
 const PrivateRoute = <P extends { courseId?: string }>(
@@ -85,7 +96,7 @@ const PrivateRoute = <P extends { courseId?: string }>(
     }
 
     if (requireProfessor) {
-        if (user.roles[courseId || DEFAULT_COURSE_ID] === 'professor') {
+        if (user.roles[courseId || 'info4998'] === 'professor') {
             return <Route {...rest} component={component} />;
         }
         return <Redirect to={{ pathname: '/login' }} />;
@@ -96,10 +107,9 @@ const PrivateRoute = <P extends { courseId?: string }>(
     if (courseId == null) {
         return <Route {...rest} component={component} />;
     }
-    const course = courses.find(course => courseId === course.courseId);
-    if (course === undefined
-        || !moment().isBetween(moment(course.startDate.toDate()), moment(course.endDate.toDate()))) {
-        return <Redirect to={{ pathname: '/course/' + getDefaultRedirectCourseId(user, courses) }} />;
+    const course = findValidCourse(courses, courseId);
+    if (course === undefined) {
+        return <Redirect to={{ pathname: getDefaultRedirect(user, courses) }} />;
     }
     return <Route {...rest} component={component} />;
 };
@@ -156,7 +166,7 @@ export default () => {
                         component={SplitView}
                         requireProfessor={false}
                     />
-                    <Redirect from="/" to={'/course/' + getDefaultRedirectCourseId(user, courses)} />
+                    <Redirect from="/" to={getDefaultRedirect(user, courses)} />
                 </Switch>
             </div>
         </Router>
