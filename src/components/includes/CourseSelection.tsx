@@ -18,7 +18,7 @@ export type PageState = 'ready' | 'pending';
 function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElement {
     const history = useHistory();
     const [isWritingChanges, setIsWritingChanges] = React.useState(false);
-    const [pageState, setPageState] = React.useState('ready');
+    const [, setPageState] = React.useState<PageState>('ready');
 
     // Normal editing mode (isNormalEditingMode=true) has all the controls.
     // On the contrary, onboarding (isNormalEditingMode=false) has only enroll button.
