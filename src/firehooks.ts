@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+import * as firebase from 'firebase/app';
 import { firestore, loggedIn$ } from './firebase';
 import { collectionData, docData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
@@ -92,7 +93,8 @@ const courseUserQuery = (courseId: string) => (
 export const useCourseUsers = createUseParamaterizedSingletonObservableHook(courseId =>
     new SingletonObservable([], collectionData<FireUser>(courseUserQuery(courseId), 'userId'))
 );
-export const useCourseUsersMap = (courseId: string): { readonly [userId: string]: FireUser } => {
+type FireUserMap = { readonly [userId: string]: FireUser };
+export const useCourseUsersMap = (courseId: string): FireUserMap => {
     const courseUsers = useCourseUsers(courseId);
     const map: { [userId: string]: FireUser } = {};
 
@@ -102,6 +104,36 @@ export const useCourseUsersMap = (courseId: string): { readonly [userId: string]
 
     return map;
 };
+
+const dummyProfessorOrTAList = ['DUMMY'];
+const courseProfessorOrTaQuery = (professorsOrTas: readonly string[]) => (
+    firestore
+        .collection('users')
+        .where(
+            firebase.firestore.FieldPath.documentId(),
+            'in',
+            professorsOrTas.length === 0 ? dummyProfessorOrTAList : professorsOrTas
+        )
+);
+const useCourseCourseProfessorOrTaMap = (course: FireCourse, type: 'professor' | 'ta'): FireUserMap => {
+    const courseUsers = useQuery<FireUser, readonly string[]>(
+        type === 'professor' ? course.professors : course.tas,
+        courseProfessorOrTaQuery,
+        'userId'
+    );
+    const map: { [userId: string]: FireUser } = {};
+
+    courseUsers.forEach(user => {
+        map[user.userId] = user;
+    });
+
+    return map;
+};
+export const useCourseProfessorMap = (course: FireCourse): FireUserMap => (
+    useCourseCourseProfessorOrTaMap(course, 'professor')
+);
+export const useCourseTAMap = (course: FireCourse): FireUserMap => useCourseCourseProfessorOrTaMap(course, 'ta');
+
 
 const dummySession = { courseId: 'DUMMY', tas: [] };
 export const useSessionTAs = (session: Pick<FireSession, 'courseId' | 'tas'> = dummySession): readonly FireUser[] => {
