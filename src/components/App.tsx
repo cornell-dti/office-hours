@@ -16,6 +16,7 @@ import moment from 'moment';
 
 import { auth, firestore } from '../firebase';
 
+import AdminView from './pages/AdminView';
 import LoginView from './pages/LoginView';
 import ProfessorView from './pages/ProfessorView';
 import SplitView from './pages/SplitView';
@@ -184,6 +185,7 @@ export default () => {
                 <Route path="/" component={Analytics} />
                 <Switch>
                     <Route path="/login" component={LoginView} />
+                    <PrivateRoute path="/admin" component={AdminView} requireProfessor={false} />
                     <PrivateRoute path="/edit" component={CourseEditView} requireProfessor={false} />
                     <PrivateRoute path="/home" component={CourseSelectionView} requireProfessor={false} />
                     <PrivateRoute
