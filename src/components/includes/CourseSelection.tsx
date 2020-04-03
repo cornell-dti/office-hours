@@ -89,8 +89,10 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     const onCancel = () => {
         // don't add newly-selected courses... add back the newly-deselected courses
-        setSelectedCourses([...(selectedCourses.filter(course => !coursesToEnroll.includes(course.courseId))),
-        ...allCourses.filter(course => coursesToUnenroll.includes(course.courseId))]);
+        setSelectedCourses([
+            ...(selectedCourses.filter(course => !coursesToEnroll.includes(course.courseId))),
+            ...allCourses.filter(course => coursesToUnenroll.includes(course.courseId))
+        ]);
 
         history.push('/home');
     };
@@ -153,7 +155,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                 </div>
                 <div className="buttons">
                     {!isEdit && (
-                        <button className="switch" onClick={() => { history.push('/edit') }}>
+                        <button className="switch" onClick={() => { history.push('/edit'); }}>
                             Edit
                         </button>
                     )}
