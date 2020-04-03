@@ -30,6 +30,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
             ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] === undefined
         )
     );
+
     const [selectedCourseIds, setSelectedCourseIds] = React.useState<string[]>([]);
 
     const coursesToEnroll: string[] = [];
@@ -74,14 +75,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         ));
     };
 
-    const onSwitch = () => {
-        if (isEdit) {
-            history.push('/home');
-        } else {
-            history.push('/edit');
-        }
-    };
-
     const onSubmit = () => {
         const newCourseSet = new Set(currentlyEnrolledCourseIds);
         coursesToEnroll.forEach(courseId => newCourseSet.add(courseId));
@@ -92,6 +85,14 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
             history.push('/home');
             setIsWritingChanges(false);
         });
+    };
+
+    const onCancel = () => {
+        // don't add newly-selected courses... add back the newly-deselected courses
+        setSelectedCourses([...(selectedCourses.filter(course => !coursesToEnroll.includes(course.courseId))),
+        ...allCourses.filter(course => coursesToUnenroll.includes(course.courseId))]);
+
+        history.push('/home');
     };
 
     const selectedCoursesString = selectedCourses.length === 0
@@ -151,9 +152,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     {isEdit && selectedCoursesString}
                 </div>
                 <div className="buttons">
-                    {isNormalEditingMode && (
-                        <button className="switch" onClick={onSwitch}>
-                            {isEdit ? 'Home' : 'Edit'}
+                    {!isEdit && (
+                        <button className="switch" onClick={() => { history.push('/edit') }}>
+                            Edit
                         </button>
                     )}
                     {isEdit && (
@@ -163,7 +164,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                         </button>
                     )}
                     {isEdit && isNormalEditingMode && (
-                        <button className="cancel" onClick={() => setSelectedCourses([])}>
+                        <button className={'cancel'} onClick={onCancel}>
                             Cancel
                         </button>
                     )}
