@@ -3,7 +3,7 @@ import * as firebase from 'firebase/app';
 
 import { useAllCourses, useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
 import { firestore } from '../../firebase';
-import { importProfessorsOrTAsFromPrompt } from '../../firebasefunctions';
+import ProfessorRolesTable from '../includes/ProfessorRolesTable';
 
 const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) => {
     const professorMap = useCourseProfessorMap(course);
@@ -12,78 +12,49 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
     return (
         <div>
             <div className="course-section">
-                <h3>Course ID</h3>
-                <div>{course.courseId}</div>
+                <h3>{course.courseId} ({course.code}: {course.name})</h3>
+                <div>Semester: {course.semester}, year: {course.year}, term: {course.term}</div>
             </div>
             <div className="course-section">
-                <h3>Course Name</h3>
-                <div>{course.name}</div>
-            </div>
-            <div className="course-section">
-                <h3>Course Code</h3>
-                <div>{course.code}</div>
-            </div>
-            <div className="course-section">
-                <h3>Semester</h3>
-                <div>{course.semester}</div>
-            </div>
-            <div className="course-section">
-                <h3>Year</h3>
-                <div>{course.year}</div>
-            </div>
-            <div className="course-section">
-                <h3>Term</h3>
-                <div>{course.term}</div>
-            </div>
-            <div className="course-section">
-                <h3>Queue Open Interval</h3>
-                <div>{course.queueOpenInterval}</div>
-            </div>
-            <div className="course-section">
-                <h3>Char Limit</h3>
-                <div>{course.charLimit}</div>
-            </div>
-            <div className="course-section">
-                <h3>Start Date</h3>
-                <div>{course.startDate.toDate().toLocaleDateString()}</div>
-            </div>
-            <div className="course-section">
-                <h3>End Date</h3>
-                <div>{course.endDate.toDate().toLocaleDateString()}</div>
+                <h3>Settings: </h3>
+                <div>Queue Open Interval{course.queueOpenInterval}</div>
+                <div>Char Limit: {course.charLimit}</div>
+                <div>Start Date: {course.startDate.toDate().toLocaleDateString()}</div>
+                <div>End Date: {course.endDate.toDate().toLocaleDateString()}</div>
             </div>
             <div className="course-section">
                 <h3>Professors</h3>
-                <div>
+                {course.professors.length === 0 && <div>None</div>}
+                <ul>
                     {course.professors.map(id => {
                         const professor = professorMap[id];
                         if (professor == null) {
                             return null;
                         }
                         return (
-                            <div key={id}>
-                                <h4>{professor.firstName} {professor.lastName}</h4>
-                                <div>{professor.email}</div>
-                            </div>
+                            <li key={id}>
+                                {professor.firstName} {professor.lastName} ({professor.email})
+                            </li>
                         );
                     })}
-                </div>
+                </ul>
             </div>
             <div className="course-section">
                 <h3>TAs</h3>
-                <div>
+                {course.tas.length === 0 && <div>None</div>}
+                <ul>
                     {course.tas.map(id => {
                         const ta = taMap[id];
                         if (ta == null) {
                             return null;
                         }
                         return (
-                            <div key={id}>
-                                <h4>{ta.firstName} {ta.lastName}</h4>
-                                <div>{ta.email}</div>
-                            </div>
+                            <li key={id}>
+                                {ta.firstName} {ta.lastName} ({ta.email})
+                            </li>
                         );
                     })}
-                </div>
+                </ul>
             </div>
         </div>
     );
@@ -134,6 +105,7 @@ const AdminEditableCourseCard = ({ course }: { readonly course: FireCourse }) =>
 
 const AdminCourseCard = ({ course }: { readonly course: FireCourse }) => {
     const [isEditingMode, setIsEditingMode] = useState(false);
+    const [showRolesTable, setShowRolesTable] = useState(false);
     return (
         <div className="course">
             {!isEditingMode && <AdminReadOnlyCourseCard course={course} />}
@@ -142,13 +114,11 @@ const AdminCourseCard = ({ course }: { readonly course: FireCourse }) => {
                 <button onClick={() => setIsEditingMode(prev => !prev)}>
                     To {isEditingMode ? 'Read Only' : 'Editing'} Mode
                 </button>
-                <button onClick={() => importProfessorsOrTAsFromPrompt(firestore, course, 'professor')}>
-                    Import Professors
-                </button>
-                <button onClick={() => importProfessorsOrTAsFromPrompt(firestore, course, 'ta')}>
-                    Import TAs
+                <button onClick={() => setShowRolesTable(prev => !prev)}>
+                    {showRolesTable ? 'Hide' : 'Show'} Roles Table
                 </button>
             </div>
+            {showRolesTable && <ProfessorRolesTable courseId={course.courseId} />}
         </div>
     );
 };

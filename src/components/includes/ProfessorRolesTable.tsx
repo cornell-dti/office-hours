@@ -41,6 +41,12 @@ export default ({ courseId }: { courseId: string }) => {
         return direction === 'ascending' ? sorted : sorted.reverse();
     })();
 
+    const importProfessorsButtonOnClick = (): void => {
+        if (course != null) {
+            importProfessorsOrTAsFromPrompt(firestore, course, 'professor');
+        }
+    };
+
     const importTAButtonOnClick = (): void => {
         if (course != null) {
             importProfessorsOrTAsFromPrompt(firestore, course, 'ta');
@@ -88,6 +94,9 @@ export default ({ courseId }: { courseId: string }) => {
             </Table.Header>
             <Table.Body>
                 <Table.Row>
+                    <Table.Cell>
+                        <button onClick={importProfessorsButtonOnClick}>Import Professors</button>
+                    </Table.Cell>
                     <Table.Cell>
                         <button onClick={importTAButtonOnClick}>Import TAs</button>
                     </Table.Cell>
