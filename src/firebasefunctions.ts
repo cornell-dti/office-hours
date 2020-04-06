@@ -238,7 +238,7 @@ const getCourseRoleUpdates = (
 };
 
 /**
- * Imports Professor and TAs to a course in a single batched write.
+ * Imports either Professor or TAs to a course in a single batched write.
  * Update roles table of each user.
  * Update users' roles of the table.
  * @param db 
@@ -252,31 +252,45 @@ const importProfessorsOrTAs = async (
     role: 'professor' | 'ta',
     emailList: readonly string[]
 ): Promise<void> => {
-    const taUserDocuments = await db.collection('users').where('email', 'in', emailList).get();
+    const taUserQuery = db.collection('users').where('email', 'in', emailList).get();
+    const pendingUserQuery = db.collection('pendingTAs').where('email', 'in', emailList).get();
     const missingSet = new Set(emailList);
     const batch = db.batch();
     const updatedUsers: FireUser[] = [];
-    taUserDocuments.forEach((document) => {
-        const existingUser = { userId: document.id, ...document.data() } as FireUser;
-        const { email } = existingUser;
-        const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, role);
-        batch.update(db.collection('users').doc(existingUser.userId), roleUpdate);
-        updatedUsers.push(existingUser);
-        missingSet.delete(email);
-    });
-    batch.update(
-        db.collection('courses').doc(course.courseId),
-        getCourseRoleUpdates(
-            course,
-            updatedUsers.map((user) => [user.userId, role] as const)
-        )
-    );
-    await batch.commit();
-    const message =
-        'Successfully\n' +
-        `updated: [${updatedUsers.map((user) => user.email).join(', ')}];\n` +
-        `[${Array.from(missingSet).join(', ')}] do not exist in our system yet.`;
-    alert(message);
+    const pendingUsers: Partial<FireUser>[] = [];
+
+    return Promise.all([taUserQuery, pendingUserQuery]).then(([taUserDocs, pendingUserDocs]) => {
+        taUserDocs.forEach((document) => {
+            const existingUser = { userId: document.id, ...document.data() } as FireUser;
+            const { email } = existingUser;
+            const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, role);
+            batch.update(db.collection('users').doc(existingUser.userId), roleUpdate);
+            updatedUsers.push(existingUser);
+            missingSet.delete(email);
+        });
+
+        batch.update(
+            db.collection('courses').doc(course.courseId),
+            getCourseRoleUpdates(
+                course,
+                updatedUsers.map((user) => [user.userId, role] as const)
+            )
+        );
+
+        // users that didn't create an account yet, but were
+        // requested as prof | ta already: just add to their roles
+        pendingUserDocs.forEach(doc => {
+            // batch.update(db.collection('pendingTAs'))
+            const pendingUser: Partial<FireUser> = { userId: doc.id, ...doc.data() } as Partial<FireUser>;
+        });
+    }).then(_ => {
+        batch.commit();
+        const message =
+            'Successfully\n' +
+            `updated: [${updatedUsers.map((user) => user.email).join(', ')}];\n` +
+            `[${Array.from(missingSet).join(', ')}] do not exist in our system yet.`;
+        alert(message);
+    })
 };
 
 /**
