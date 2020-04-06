@@ -189,7 +189,7 @@ export const deleteSeries = async (db: firebase.firestore.Firestore, sessionSeri
  * @param role 
  */
 const getUserRoleUpdate = (
-    user: FireUser,
+    user: Pick<FireUser, 'courses' | 'roles'>,
     courseId: string,
     role: FireCourseRole
 ): Partial<FireUser> => {
@@ -253,11 +253,13 @@ const importProfessorsOrTAs = async (
     emailList: readonly string[]
 ): Promise<void> => {
     const taUserQuery = db.collection('users').where('email', 'in', emailList).get();
-    const pendingUserQuery = db.collection('pendingTAs').where('email', 'in', emailList).get();
+    const pendingUserQuery = db.collection('pendingTas').where('email', 'in', emailList).get();
     const missingSet = new Set(emailList);
     const batch = db.batch();
     const updatedUsers: FireUser[] = [];
-    const pendingUsers: Partial<FireUser>[] = [];
+
+    // users that aren't even pending
+    const uncreatedUsers: Partial<FireUser>[] = [];
 
     return Promise.all([taUserQuery, pendingUserQuery]).then(([taUserDocs, pendingUserDocs]) => {
         taUserDocs.forEach((document) => {
@@ -277,10 +279,16 @@ const importProfessorsOrTAs = async (
             )
         );
 
-        // users that didn't create an account yet, but were
-        // requested as prof | ta already: just add to their roles
+        // pending users that didn't create an account yet, but were
+        // requested as prof | ta before already: just add to their roles
         pendingUserDocs.forEach(doc => {
-            const pendingUser: Partial<FireUser> = { userId: doc.id, ...doc.data() } as Partial<FireUser>;
+            const pendingUser: Pick<FireUser, 'courses' | 'roles' | 'userId'> = {
+                userId: doc.id, ...doc.data()
+            } as Pick<FireUser, 'courses' | 'roles' | 'userId'>;
+
+            const roleUpdate = getUserRoleUpdate(pendingUser, course.courseId, role);
+
+            batch.update(db.collection('pendingTas').doc(pendingUser.userId), roleUpdate);
         });
     }).then(_ => {
         batch.commit();
