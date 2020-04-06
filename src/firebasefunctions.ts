@@ -280,7 +280,6 @@ const importProfessorsOrTAs = async (
         // users that didn't create an account yet, but were
         // requested as prof | ta already: just add to their roles
         pendingUserDocs.forEach(doc => {
-            // batch.update(db.collection('pendingTAs'))
             const pendingUser: Partial<FireUser> = { userId: doc.id, ...doc.data() } as Partial<FireUser>;
         });
     }).then(_ => {
