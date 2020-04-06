@@ -171,8 +171,8 @@ export const updateSeries = async (
 };
 
 export const deleteSeries = async (db: firebase.firestore.Firestore, sessionSeriesId: string): Promise<void> => {
-  const querySnapshot = await db.collection('sessions').where('sessionSeriesId', '==', sessionSeriesId).get();
-  const batch = db.batch();
+    const querySnapshot = await db.collection('sessions').where('sessionSeriesId', '==', sessionSeriesId).get();
+    const batch = db.batch();
     querySnapshot.docs.forEach((document) =>
         batch.delete(db.collection('sessions').doc(document.id))
     );
@@ -181,6 +181,13 @@ export const deleteSeries = async (db: firebase.firestore.Firestore, sessionSeri
 
 /* User Management Functions */
 
+/**
+ * Updates a user's "roles" table. Returns the user's
+ * updated courses list, and the user's the updated roles table.
+ * @param user 
+ * @param courseId 
+ * @param role 
+ */
 const getUserRoleUpdate = (
     user: FireUser,
     courseId: string,
@@ -208,6 +215,11 @@ const getCourseRoleUpdate = (
     tas: addOrRemoveFromRoleIdList(newRole === 'ta', course.tas, userId),
 });
 
+/**
+ * Update user roles to reflect new professor, TAs
+ * @param course 
+ * @param userRoleUpdates 
+ */
 const getCourseRoleUpdates = (
     course: FireCourse,
     userRoleUpdates: readonly (readonly [string, FireCourseRole])[]
@@ -225,6 +237,15 @@ const getCourseRoleUpdates = (
     return { professors, tas };
 };
 
+/**
+ * Imports Professor and TAs to a course in a single batched write.
+ * Update roles table of each user.
+ * Update users' roles of the table.
+ * @param db 
+ * @param course 
+ * @param role 
+ * @param emailList 
+ */
 const importProfessorsOrTAs = async (
     db: firebase.firestore.Firestore,
     course: FireCourse,
@@ -258,6 +279,12 @@ const importProfessorsOrTAs = async (
     alert(message);
 };
 
+/**
+ * Conditionally add or remove user from a course's roles list.
+ * @param isAdd 
+ * @param roleIdList 
+ * @param userId 
+ */
 const addOrRemoveFromRoleIdList = (
     isAdd: boolean,
     roleIdList: readonly string[],
