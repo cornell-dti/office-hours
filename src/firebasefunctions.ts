@@ -290,8 +290,6 @@ const importProfessorsOrTAs = async (
             const pendingUser: PendingUser = { email: doc.data().email, ...doc.data() } as PendingUser;
             const { email } = pendingUser;
 
-            console.log('use pending TA ' + email);
-
             const roleUpdate = getUserRoleUpdate(pendingUser, course.courseId, role);
 
             batch.update(db.collection('pendingTas').doc(doc.id), roleUpdate);
@@ -301,14 +299,13 @@ const importProfessorsOrTAs = async (
 
         // now, those remaining in missingSet are completely new. Need to
         // add them to pendingTAs
-        const courseId = course.courseId;
         const uncreatedUsers: PendingUser[] = Array.from(missingSet).map((email): PendingUser => {
-            console.log('creating pending TA ' + email);
+
             let user: PendingUser = {
                 email: email,
                 courses: [course.courseId],
                 roles: {}
-            }
+            };
 
             user = { ...user, ...getUserRoleUpdate(user, course.courseId, role) };
 
@@ -319,13 +316,15 @@ const importProfessorsOrTAs = async (
             return user;
         });
 
+        return uncreatedUsers;
 
-    }).then(() => {
+
+    }).then((uncreatedUsers) => {
         batch.commit();
         const message =
             'Successfully\n' +
             `updated: [${updatedUsers.map((user) => user.email).join(', ')}];\n` +
-            `[${Array.from(missingSet).join(', ')}] could not be set to pending.`;
+            `[${uncreatedUsers.join(', ')}] could not be set to pending.`;
         alert(message);
     });
 };
