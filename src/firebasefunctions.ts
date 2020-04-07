@@ -3,7 +3,8 @@
 import { firestore, auth } from 'firebase/app';
 import { datePlus, normalizeDateToDateStart, normalizeDateToWeekStart } from './utilities/date';
 
-type PendingUser = Pick<FireUser, 'courses' | 'roles' | 'userId'>;
+type PendingUser = Pick<FireUser, 'courses' | 'roles' | 'email'>;
+type CourseRolesUser = Pick<FireUser, 'courses' | 'roles'>;
 
 /* Basic Functions */
 
@@ -184,14 +185,14 @@ export const deleteSeries = async (db: firebase.firestore.Firestore, sessionSeri
 /* User Management Functions */
 
 /**
- * Updates a user's "roles" table. Returns the user's
+ * Updates a user's 'roles' table. Returns the user's
  * updated courses list, and the user's the updated roles table.
  * @param user 
  * @param courseId 
  * @param role 
  */
 const getUserRoleUpdate = (
-    user: Pick<FireUser, 'courses' | 'roles'>,
+    user: CourseRolesUser,
     courseId: string,
     role: FireCourseRole
 ): Partial<FireUser> => {
@@ -243,6 +244,9 @@ const getCourseRoleUpdates = (
  * Imports either Professor or TAs to a course in a single batched write.
  * Update roles table of each user.
  * Update users' roles of the table.
+ * 
+ * Assumptions: no duplicate emails. There will be problems in the
+ * initial write to pendingTas otherwise.
  * @param db 
  * @param course 
  * @param role 
@@ -260,8 +264,6 @@ const importProfessorsOrTAs = async (
     const batch = db.batch();
     const updatedUsers: FireUser[] = [];
 
-    // users that aren't even pending
-    const uncreatedUsers: Partial<FireUser>[] = [];
 
     return Promise.all([taUserQuery, pendingUserQuery]).then(([taUserDocs, pendingUserDocs]) => {
         taUserDocs.forEach((document) => {
@@ -282,24 +284,50 @@ const importProfessorsOrTAs = async (
         );
 
         // pending users that didn't create an account yet, but were
-        // requested already: just course add to their roles
+        // requested already: just new course role to their roles.
+        // Should overwrite previous role value for this course
         pendingUserDocs.forEach(doc => {
-            const pendingUser: PendingUser = {
-                userId: doc.id, ...doc.data()
-            } as PendingUser;
+            const pendingUser: PendingUser = { email: doc.data().email, ...doc.data() } as PendingUser;
+            const { email } = pendingUser;
+
+            console.log('use pending TA ' + email);
 
             const roleUpdate = getUserRoleUpdate(pendingUser, course.courseId, role);
 
-            batch.update(db.collection('pendingTas').doc(pendingUser.userId), roleUpdate);
+            batch.update(db.collection('pendingTas').doc(doc.id), roleUpdate);
+
+            missingSet.delete(email);
         });
-    }).then(_ => {
+
+        // now, those remaining in missingSet are completely new. Need to
+        // add them to pendingTAs
+        const courseId = course.courseId;
+        const uncreatedUsers: PendingUser[] = Array.from(missingSet).map((email): PendingUser => {
+            console.log('creating pending TA ' + email);
+            let user: PendingUser = {
+                email: email,
+                courses: [course.courseId],
+                roles: {}
+            }
+
+            user = { ...user, ...getUserRoleUpdate(user, course.courseId, role) };
+
+            batch.set(db.collection('pendingTas').doc(), user);
+
+            missingSet.delete(email);
+
+            return user;
+        });
+
+
+    }).then(() => {
         batch.commit();
         const message =
             'Successfully\n' +
             `updated: [${updatedUsers.map((user) => user.email).join(', ')}];\n` +
-            `[${Array.from(missingSet).join(', ')}] do not exist in our system yet.`;
+            `[${Array.from(missingSet).join(', ')}] could not be set to pending.`;
         alert(message);
-    })
+    });
 };
 
 /**
