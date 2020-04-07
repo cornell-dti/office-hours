@@ -3,6 +3,8 @@
 import { firestore, auth } from 'firebase/app';
 import { datePlus, normalizeDateToDateStart, normalizeDateToWeekStart } from './utilities/date';
 
+type PendingUser = Pick<FireUser, 'courses' | 'roles' | 'userId'>;
+
 /* Basic Functions */
 
 export const userUpload = (user: firebase.User | null, db: firebase.firestore.Firestore) => {
@@ -280,11 +282,11 @@ const importProfessorsOrTAs = async (
         );
 
         // pending users that didn't create an account yet, but were
-        // requested as prof | ta before already: just add to their roles
+        // requested already: just course add to their roles
         pendingUserDocs.forEach(doc => {
-            const pendingUser: Pick<FireUser, 'courses' | 'roles' | 'userId'> = {
+            const pendingUser: PendingUser = {
                 userId: doc.id, ...doc.data()
-            } as Pick<FireUser, 'courses' | 'roles' | 'userId'>;
+            } as PendingUser;
 
             const roleUpdate = getUserRoleUpdate(pendingUser, course.courseId, role);
 
