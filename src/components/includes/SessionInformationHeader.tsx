@@ -95,7 +95,7 @@ const SessionInformationHeader = ({ session, course, callback, myUserId, isDeskt
                 <div className="OfficeHourInfo">
                     <div className="OfficeHourDate">
                         <p><Icon name="calendar" />
-                            <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
+                            <Moment date={session.startTime.toDate()} interval={0} format={'dddd, D MMM'} />
                         </p>
                     </div>
                     <p>{session.title || (<React.Fragment>
