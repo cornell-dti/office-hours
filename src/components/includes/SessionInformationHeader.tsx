@@ -68,8 +68,8 @@ const SessionInformationHeader = ({ session, course, callback, myUserId, isDeskt
                 <div className="CourseInfo">
                     <div className="CourseDetails">
                         <p className="Location">{session.building + ' ' + session.room}</p>
-                        <Moment date={session.startTime} interval={0} format={'h:mm A'} />
-                        <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
+                        <Moment date={session.startTime.toDate()} interval={0} format={'h:mm A'} />
+                        <Moment date={session.endTime.toDate()} interval={0} format={' - h:mm A'} />
                     </div>
                     <div className="Picture">
                         <img
