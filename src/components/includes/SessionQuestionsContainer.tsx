@@ -5,7 +5,7 @@ import moment from 'moment';
 
 const SHOW_FEEDBACK_QUEUE = 4;
 //Maximum number of questions to be shown to user
-const NUM_QUESTIONS_SHOWN = 8;
+const NUM_QUESTIONS_SHOWN = 20;
 
 type Props = {
     readonly isTA: boolean;
