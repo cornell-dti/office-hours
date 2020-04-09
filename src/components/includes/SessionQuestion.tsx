@@ -253,18 +253,20 @@ class SessionQuestion extends React.Component<Props, State> {
                     <div className="Location">
                         {this.props.isTA && question.location}
                     </div>
-                    {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
-                        <p className={'Question' + studentCSS}>{question.content}</p>}
+                    {(this.props.isTA || includeBookmark || this.props.includeRemove) ?
+                        <p className={'Question' + studentCSS}>{question.content}</p> :
+                        <p className={'Question' + studentCSS}>Another Student's Question</p>}
                     {question.taComment && (
                         <p className={'Question' + studentCSS}>TA Comment: {question.taComment}</p>
                     )}
                 </div>
                 <div className="BottomBar">
                     {this.props.isTA && <span className="Spacer" />}
+                    {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
                     <div className="Tags">
                         {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} />}
                         {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} />}
-                    </div>
+                    </div>}
                     {question.timeEntered != null &&
                         <p className="Time">
                             posted at&nbsp;
