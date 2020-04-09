@@ -39,7 +39,7 @@ const SessionQuestionsContainer = (props: Props) => {
     }, []);
 
     const allQuestions = props.questions;
-    
+
     // If the user has questions, store them in myQuestion[]
     const myQuestion = allQuestions && allQuestions.filter(q => q.askerId === props.myUserId);
 
@@ -121,10 +121,9 @@ const SessionQuestionsContainer = (props: Props) => {
                         isPast={props.isPast}
                         myUserId={props.myUserId}
                     />
-                    <p className="Queue">Queue</p>
                 </div>
             }
-            {shownQuestions && shownQuestions.length > 0 &&
+            {shownQuestions && shownQuestions.length > 0 && props.isTA &&
                 shownQuestions.map((question, i: number) => (
                     <SessionQuestion
                         key={question.questionId}
