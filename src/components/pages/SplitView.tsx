@@ -115,15 +115,7 @@ const SplitView = (props: {
                             context="student"
                             courseId={props.match.params.courseId}
                         />
-                        <p className="welcomeMessage">
-                            Welcome{user && ', '}
-                            <span className="welcomeName">
-                                {user && user.firstName}
-                            </span>
-                        </p>
-                        <p className="noSessionSelected">
-                            Please select an office hour from the calendar.
-                        </p>
+                        <Loader />
                     </section>
                 )}
             {activeView === 'addQuestion' && <>
