@@ -14,8 +14,6 @@ import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
-// Number of questions to be displayed
-const NUM_QUESTIONS_SHOWN = 10;
 
 const useWindowWidth = () => {
     const [width, setWidth] = useState(window.innerWidth);
@@ -50,8 +48,7 @@ const SplitView = (props: {
     const user = useMyUser();
     const course = useCourse(props.match.params.courseId);
     const session = useSession(props.match.params.sessionId);
-    const sessionQuestions = filterUnresolvedQuestions(useSessionQuestions(props.match.params.sessionId || ''))
-        .filter((_, index) => index < NUM_QUESTIONS_SHOWN);
+    const sessionQuestions = filterUnresolvedQuestions(useSessionQuestions(props.match.params.sessionId || ''));
     const width = useWindowWidth();
 
     // Handle browser back button
@@ -102,7 +99,7 @@ const SplitView = (props: {
                     <SessionView
                         course={course}
                         session={session}
-                        questions={sessionQuestions}
+                        questions={sessionQuestions as FireQuestion[]}
                         user={user}
                         isDesktop={width > MOBILE_BREAKPOINT}
                         backCallback={handleBackClick}
