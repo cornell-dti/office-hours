@@ -24,7 +24,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
 
     const user = useMyUser();
     const course = useCourse(courseId);
-    const courseUsers = useCourseUsersMap(courseId);
+    const courseUsers = useCourseUsersMap(courseId, true);
 
     const [sessions, setSessions] = useState<FireSession[]>([]);
     const [questions, setQuestions] = useState<FireQuestion[][]>([]);
