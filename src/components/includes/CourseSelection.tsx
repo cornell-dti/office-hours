@@ -22,7 +22,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     // Normal editing mode (isNormalEditingMode=true) has all the controls.
     // On the contrary, onboarding (isNormalEditingMode=false) has only enroll button.
-    const isNormalEditingMode = user.courses.length > 0;
+    const [isNormalEditingMode, setEditingMode] = React.useState<boolean>(user.courses.length > 0);
 
     const currentlyEnrolledCourseIds = new Set(user.courses);
     const [selectedCourses, setSelectedCourses] = React.useState<FireCourse[]>(
@@ -84,6 +84,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         firestore.collection('users').doc(user.userId).update(userUpdate).then(() => {
             history.push('/home');
             setIsWritingChanges(false);
+            setEditingMode(user.courses.length > 0);
         });
     };
 
@@ -97,9 +98,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         history.push('/home');
     };
 
-    const selectedCoursesString = selectedCourses.length === 0
+    const selectedCoursesString = (selectedCourses.length === 0
         ? 'No Classes Chosen'
-        : selectedCourses.map(c => c.code).join(', ');
+        : selectedCourses.map(c => c.code).join(', ')) + ' ' + isNormalEditingMode;
 
     return (
         <div>
