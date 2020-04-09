@@ -29,7 +29,7 @@ const LoginView: React.FC = () => {
 
     if (showContact) {
         return (
-            <div className="LoginView contact"> >
+            <div className="LoginView contact">
                 <section className="topPanel contact">
                     <button className="x" onClick={() => setShowContact(false)}>
                         <Icon name="x" />
