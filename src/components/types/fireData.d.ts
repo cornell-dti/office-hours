@@ -59,11 +59,9 @@ type FireCourseRole = 'professor' | 'ta' | 'student';
  * @see FireCourse
  */
 interface FireUser {
-    createdAt: FireTimestamp;
     firstName: string;
     lastName: string;
     photoUrl: string;
-    lastActivityAt: FireTimestamp;
     userId: string;
     email: string;
     courses: readonly string[];
