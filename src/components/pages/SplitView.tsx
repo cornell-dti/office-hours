@@ -8,7 +8,6 @@ import AddQuestion from '../includes/AddQuestion';
 
 import { useCourse, useSession, useMyUser, useSessionQuestions } from '../../firehooks';
 
-import TopBar from '../includes/TopBar';
 import { Loader } from 'semantic-ui-react';
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 
@@ -108,23 +107,8 @@ const SplitView = (props: {
                         backCallback={handleBackClick}
                         joinCallback={handleJoinClick}
                     />
-                    : <section className="StudentSessionView">
-                        <TopBar
-                            user={user}
-                            role={(user && course && user.roles[course.courseId]) || 'student'}
-                            context="student"
-                            courseId={props.match.params.courseId}
-                        />
-                        <p className="welcomeMessage">
-                            Welcome{user && ', '}
-                            <span className="welcomeName">
-                                {user && user.firstName}
-                            </span>
-                        </p>
-                        <p className="noSessionSelected">
-                            Please select an office hour from the calendar.
-                        </p>
-                    </section>
+                    : 
+                    <Loader active = {true} content = "Loading" />
                 )}
             {activeView === 'addQuestion' && <>
                 <div className="modal">
