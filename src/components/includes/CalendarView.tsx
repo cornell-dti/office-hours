@@ -37,6 +37,7 @@ export default ({ session, sessionCallback, course, user }: Props) => {
             <CalendarHeader
                 currentCourseCode={(course && course.code) || 'Loading'}
                 role={(user && course && (user.roles[course.courseId] || 'student'))}
+                avatar={user && user.photoUrl}
             />
             <CalendarDaySelect callback={setSelectedDate} />
             {course && user ?
