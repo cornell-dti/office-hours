@@ -4,7 +4,7 @@ import * as firebase from 'firebase/app';
 import { firestore, loggedIn$ } from './firebase';
 import { collectionData, docData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import {
     SingletonObservable,
     createUseSingletonObservableHook,
@@ -91,11 +91,14 @@ const courseUserQuery = (courseId: string) => (
     firestore.collection('users').where('courses', 'array-contains', courseId)
 );
 export const useCourseUsers = createUseParamaterizedSingletonObservableHook(courseId =>
-    new SingletonObservable([], collectionData<FireUser>(courseUserQuery(courseId), 'userId'))
+    new SingletonObservable(
+        [],
+        courseId === '' ? of([]) : collectionData<FireUser>(courseUserQuery(courseId), 'userId')
+    )
 );
 type FireUserMap = { readonly [userId: string]: FireUser };
-export const useCourseUsersMap = (courseId: string): FireUserMap => {
-    const courseUsers = useCourseUsers(courseId);
+export const useCourseUsersMap = (courseId: string, canReadUsers: boolean): FireUserMap => {
+    const courseUsers = useCourseUsers(canReadUsers ? courseId : '');
     const map: { [userId: string]: FireUser } = {};
 
     courseUsers.forEach(user => {
@@ -137,7 +140,7 @@ export const useCourseTAMap = (course: FireCourse): FireUserMap => useCourseCour
 
 const dummySession = { courseId: 'DUMMY', tas: [] };
 export const useSessionTAs = (session: Pick<FireSession, 'courseId' | 'tas'> = dummySession): readonly FireUser[] => {
-    const courseUsers = useCourseUsersMap(session.courseId);
+    const courseUsers = useCourseUsersMap(session.courseId, true);
     const tas: FireUser[] = [];
     session.tas.forEach(userId => {
         const courseUser = courseUsers[userId];
