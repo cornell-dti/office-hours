@@ -70,18 +70,22 @@ interface FireUser {
     roles: { readonly [courseId: string]: PrivilegedFireCourseRole | undefined };
 }
 
-interface FireQuestion {
-    askerId: string;
+interface FireQuestionPrivate {
     answererId: string;
     content: string;
     taComment?: string;
     location: string;
+    primaryTag: string;
+    secondaryTag: string;
+    questionId: string;
+}
+
+interface FireQuestion {
+    askerId: string;
     sessionId: string;
     status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
     timeAddressed?: FireTimestamp;
     timeEntered: FireTimestamp;
-    primaryTag: string;
-    secondaryTag: string;
     questionId: string;
 }
 

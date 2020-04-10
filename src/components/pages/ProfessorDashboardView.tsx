@@ -35,20 +35,33 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
     const [currentCategory, setCurrentCategory] = useState<CategoryTag | undefined>();
 
     const tags = useQuery<FireTag>(courseId, getTagsQuery, 'tagId');
-    const questions = useQuery<FireQuestion>(courseId, getQuestionsQuery, 'questionId');
+    const rawQuestions = useQuery<FireQuestion>(courseId, getQuestionsQuery, 'questionId');
+    const [questions, setQuestions] = useState<[FireQuestion, FireQuestionPrivate][]>([]);
+    
+    React.useEffect(() => {
+        Promise.all(
+            rawQuestions.map(async (q): Promise<[FireQuestion, FireQuestionPrivate]> => {
+                const content = await firestore.doc(`/questions/${q.questionId}/content/private`).get();
 
+                return [q, { ...content.data() } as FireQuestionPrivate];
+            })
+        ).then(questions => {
+            setQuestions([...questions]);
+        });
+    }, [rawQuestions]);
+  
     const categories: CategoryTag[] = tags
         .filter((tag) => tag.level === 1)
         .map((tag) => {
             const enrichedChildTags: (FireTag & { questionCount: number; resolvedQuestionCount: number })[] = tags
                 .filter(t => t.parentTag && t.parentTag === tag.tagId)
                 .map(t => {
-                    const tagQuestions = questions.filter(q => q.secondaryTag === t.tagId);
+                    const tagQuestions = questions.filter(q => q[1].secondaryTag === t.tagId);
                     return {
                         ...t,
                         questionCount: tagQuestions.length,
                         resolvedQuestionCount: tagQuestions
-                            .filter(q => q.status === 'resolved' || q.status === 'retracted')
+                            .filter(q => q[0].status === 'resolved' || q[0].status === 'retracted')
                             .length
                     };
                 });

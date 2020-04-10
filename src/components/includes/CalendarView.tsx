@@ -8,6 +8,7 @@ import CalendarSessions from './CalendarSessions';
 import { firestore } from '../../firebase';
 import { useQueryWithLoading } from '../../firehooks';
 import { datePlus } from '../../utilities/date';
+import moment from 'moment';
 
 type Props = {
     session?: FireSession;
@@ -22,15 +23,18 @@ const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* m
 
 export default ({ session, sessionCallback, course, user }: Props) => {
     const [selectedDateEpoch, setSelectedDate] = React.useState(new Date().setHours(0, 0, 0, 0));
-    const selectedDate = new Date(selectedDateEpoch);
+    const selectedDate = moment(new Date(selectedDateEpoch));
 
     const sessions = useQueryWithLoading<FireSession>(
         (course && course.courseId) || '', getQuery, 'sessionId'
     );
-    const filteredSessions = sessions && sessions.filter(session =>
-        selectedDate <= session.startTime.toDate()
-        && session.endTime.toDate() < datePlus(selectedDate, ONE_DAY)
-    );
+    
+    const filteredSessions = sessions && sessions.filter(session => {
+       const start =  moment(session.startTime.toDate());
+       const end = moment(session.endTime.toDate());
+
+       return start.isSame(selectedDate, 'day') || end.isSame(selectedDate, 'day');
+    });
 
     return (
         <aside className="CalendarView">

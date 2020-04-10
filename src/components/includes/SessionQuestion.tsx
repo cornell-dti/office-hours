@@ -37,6 +37,7 @@ const LOCATION_CHAR_LIMIT = 40;
 
 type Props = {
     question: FireQuestion;
+    content?: FireQuestionPrivate;
     users: { readonly[userId: string]: FireUser };
     tags: { readonly [tagId: string]: FireTag };
     index: number;
@@ -65,7 +66,7 @@ class SessionQuestion extends React.Component<Props, State> {
         super(props);
         this.state = {
             showLocation: false,
-            location: props.question.location || '',
+            location: (props.content && props.content.location) || '',
             isEditingLocation: false,
             showDotMenu: false
         };
@@ -139,12 +140,16 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     questionComment = () => {
-        const taComment = prompt('Your comment', this.props.question.taComment);
+        if (!this.props.content) {
+            return;
+        }
+
+        const taComment = prompt('Your comment', this.props.content.taComment);
         if (taComment == null) {
             return;
         }
-        const update: Partial<FireQuestion> = { taComment: taComment };
-        firestore.doc(`questions/${this.props.question.questionId}`).update(update);
+        const update: Partial<FireQuestionPrivate> = { taComment: taComment };
+        firestore.doc(`questions/${this.props.question.questionId}/content/private`).update(update);
     };
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
@@ -168,19 +173,22 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     questionDontKnow = () => {
-        const update: Partial<FireQuestion> = { status: 'unresolved', answererId: '' };
-        firestore.doc(`questions/${this.props.question.questionId}`).update(update);
+        const update0: Partial<FireQuestion> = { status: 'unresolved' };
+        const update1: Partial<FireQuestionPrivate> = { answererId: '' };
+        firestore.doc(`questions/${this.props.question.questionId}`).update(update0);
+        firestore.doc(`questions/${this.props.question.questionId}/content/private`).update(update1);
     };
 
     render() {
         const question = this.props.question;
+        const { content } = this.props;
         const studentCSS = this.props.isTA ? '' : ' Student';
         const includeBookmark = this.props.question.askerId === this.props.myUserId;
 
         const asker = this.props.users[question.askerId];
-        const answerer = question.answererId ? undefined : this.props.users[question.answererId];
-        const primaryTag = this.props.tags[this.props.question.primaryTag];
-        const secondaryTag = this.props.tags[this.props.question.secondaryTag];
+        const answerer = content && content.answererId ? this.props.users[content.answererId] : undefined;
+        const primaryTag = content ? this.props.tags[content.primaryTag] : '';
+        const secondaryTag = content ? this.props.tags[content.secondaryTag] : '';
 
         return (
             <div className="QueueQuestions">
@@ -251,12 +259,12 @@ class SessionQuestion extends React.Component<Props, State> {
                         </div>
                     }
                     <div className="Location">
-                        {this.props.isTA && question.location}
+                        {this.props.isTA && content && content.location}
                     </div>
                     {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
-                        <p className={'Question' + studentCSS}>{question.content}</p>}
-                    {question.taComment && (
-                        <p className={'Question' + studentCSS}>TA Comment: {question.taComment}</p>
+                        <p className={'Question' + studentCSS}>{content && content.content}</p>}
+                    {content && content.taComment && (
+                        <p className={'Question' + studentCSS}>TA Comment: {content.taComment}</p>
                     )}
                 </div>
                 <div className="BottomBar">

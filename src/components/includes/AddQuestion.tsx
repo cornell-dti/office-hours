@@ -123,16 +123,21 @@ class AddQuestion extends React.Component<Props, State> {
             this.state.selectedSecondary != null) {
             const newQuestion: Omit<FireQuestion, 'questionId'> = {
                 askerId: auth.currentUser.uid,
+                sessionId: this.props.session.sessionId,
+                status: 'unresolved',
+                timeEntered: firebase.firestore.Timestamp.now()
+            };
+            const newQuestionPrivate: Omit<FireQuestionPrivate, 'questionId'> = {
                 answererId: '',
                 content: this.state.question,
                 location: this.state.location,
-                sessionId: this.props.session.sessionId,
-                status: 'unresolved',
-                timeEntered: firebase.firestore.Timestamp.now(),
                 primaryTag: this.state.selectedPrimary.tagId,
                 secondaryTag: this.state.selectedSecondary.tagId
             };
-            firestore.collection('questions').add(newQuestion);
+            firestore.collection('questions').add(newQuestion).then(questionDoc => 
+                questionDoc.collection('content').doc('private').set(newQuestionPrivate)
+            ).catch(error => console.log(error));
+
             this.setState({ redirect: true });
         }
     };
