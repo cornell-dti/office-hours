@@ -12,3 +12,10 @@ export const normalizeDateToWeekStart = (date: Date): Date => {
     normalized.setDate(normalized.getDate() - normalized.getDay());
     return normalized;
 };
+
+export const hasOverlap = (
+    interval1Start: Date,
+    interval1End: Date,
+    interval2Start: Date,
+    interval2End: Date
+): boolean => interval1End >= interval2Start || interval1Start >= interval2End;

@@ -7,7 +7,7 @@ import CalendarSessions from './CalendarSessions';
 
 import { firestore } from '../../firebase';
 import { useQueryWithLoading } from '../../firehooks';
-import moment from 'moment';
+import { hasOverlap } from '../../utilities/date';
 
 type Props = {
     session?: FireSession;
@@ -20,18 +20,18 @@ const getQuery = (courseId: string) => firestore.collection('sessions').where('c
 
 export default ({ session, sessionCallback, course, user }: Props) => {
     const [selectedDateEpoch, setSelectedDate] = React.useState(new Date().setHours(0, 0, 0, 0));
-    const selectedDate = moment(new Date(selectedDateEpoch));
+    const selectedDate = new Date(selectedDateEpoch);
+    selectedDate.setHours(0, 0, 0, 0);
+    const selectedDateEnd = new Date(selectedDate);
+    selectedDateEnd.setHours(23, 59, 59);
 
     const sessions = useQueryWithLoading<FireSession>(
         (course && course.courseId) || '', getQuery, 'sessionId'
     );
 
-    const filteredSessions = sessions && sessions.filter(session => {
-        const start = moment(session.startTime.toDate());
-        const end = moment(session.endTime.toDate());
-
-        return start.isSame(selectedDate, 'day') || end.isSame(selectedDate, 'day');
-    });
+    const filteredSessions = sessions && sessions.filter(
+        session => hasOverlap(selectedDate, selectedDateEnd, session.startTime.toDate(), session.endTime.toDate())
+    );
 
     return (
         <aside className="CalendarView">
