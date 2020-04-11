@@ -34,8 +34,9 @@ type AbsentState = {
 const SessionViewInHooks = (
     { course, session, questions, isDesktop, backCallback, joinCallback, user }: Props
 ) => {
+    const isTa = user.roles[course.courseId] !== undefined;
     const tags = useCourseTags(course.courseId);
-    const users = useCourseUsersMap(course.courseId);
+    const users = useCourseUsersMap(course.courseId, isTa);
     const [
         { undoAction, undoName, undoQuestionId, timeoutId },
         setUndoState
@@ -183,7 +184,7 @@ const SessionViewInHooks = (
             }
             {/* FUTURE_TODO - Just pass in the session and not a bunch of bools */}
             <SessionQuestionsContainer
-                isTA={user.roles[course.courseId] !== undefined}
+                isTA={isTa}
                 questions={questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
                 users={users}
                 tags={tags}

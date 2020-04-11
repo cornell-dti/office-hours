@@ -220,10 +220,15 @@ class AddQuestion extends React.Component<Props, State> {
 
                             <div className="tagsMiniContainer">
                                 <p className="header">
-                                    Location <span
+                                    {'Location '}
+                                    <span
                                         className={'characterCount ' + (this.state.location.length >= 40 ? 'warn' : '')}
                                     >
-                                        {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                        (
+                                        {LOCATION_CHAR_LIMIT - this.state.location.length}
+                                        {' '}
+                                        character{LOCATION_CHAR_LIMIT - this.state.location.length !== 1 && 's'} left
+                                        )
                                     </span>
                                 </p>
                                 {this.state.stage >= 30 ?
@@ -241,7 +246,7 @@ class AddQuestion extends React.Component<Props, State> {
                             <hr />
                             <div className="tagsMiniContainer">
                                 <p className="header">
-                                    Question
+                                    {'Question '}
                                     <span className={'characterCount ' + (questionCharsLeft <= 0 ? 'warn' : '')} >
                                         ({questionCharsLeft} character{questionCharsLeft !== 1 && 's'} left)
                                     </span>
