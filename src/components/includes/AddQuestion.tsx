@@ -134,9 +134,9 @@ class AddQuestion extends React.Component<Props, State> {
                 primaryTag: this.state.selectedPrimary.tagId,
                 secondaryTag: this.state.selectedSecondary.tagId
             };
-            firestore.collection('questions').add(newQuestion).then(questionDoc => 
+            firestore.collection('questions').add(newQuestion).then(questionDoc =>
                 questionDoc.collection('content').doc('private').set(newQuestionPrivate)
-            ).catch(error => console.log(error));
+            );
 
             this.setState({ redirect: true });
         }

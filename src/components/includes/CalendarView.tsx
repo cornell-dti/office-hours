@@ -7,7 +7,6 @@ import CalendarSessions from './CalendarSessions';
 
 import { firestore } from '../../firebase';
 import { useQueryWithLoading } from '../../firehooks';
-import { datePlus } from '../../utilities/date';
 import moment from 'moment';
 
 type Props = {
@@ -19,8 +18,6 @@ type Props = {
 
 const getQuery = (courseId: string) => firestore.collection('sessions').where('courseId', '==', courseId);
 
-const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
-
 export default ({ session, sessionCallback, course, user }: Props) => {
     const [selectedDateEpoch, setSelectedDate] = React.useState(new Date().setHours(0, 0, 0, 0));
     const selectedDate = moment(new Date(selectedDateEpoch));
@@ -28,12 +25,12 @@ export default ({ session, sessionCallback, course, user }: Props) => {
     const sessions = useQueryWithLoading<FireSession>(
         (course && course.courseId) || '', getQuery, 'sessionId'
     );
-    
-    const filteredSessions = sessions && sessions.filter(session => {
-       const start =  moment(session.startTime.toDate());
-       const end = moment(session.endTime.toDate());
 
-       return start.isSame(selectedDate, 'day') || end.isSame(selectedDate, 'day');
+    const filteredSessions = sessions && sessions.filter(session => {
+        const start = moment(session.startTime.toDate());
+        const end = moment(session.endTime.toDate());
+
+        return start.isSame(selectedDate, 'day') || end.isSame(selectedDate, 'day');
     });
 
     return (
