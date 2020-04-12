@@ -7,6 +7,7 @@ import { DropdownItemProps } from 'semantic-ui-react';
 
 type Props = {
     courseId: string;
+    course?: FireCourse;
     sessions: FireSession[];
     taOptions: DropdownItemProps[];
 };
@@ -139,11 +140,12 @@ class ProfessorCalendarTable extends React.Component<Props, State> {
                         isDeleteVisible={this.state.isDeleteVisible}
                         updateDeleteVisible={this.updateDeleteVisible}
                         content={
-                            <ProfessorOHInfoDelete
+                            this.props.course ? <ProfessorOHInfoDelete
+                                course={this.props.course}
                                 session={sessions[this.state.dayIndex][this.state.rowIndex]}
                                 toggleDelete={() => this.updateDeleteVisible(false)}
                                 toggleEdit={() => this.toggleEdit(this.state.currentDay, this.state.currentRow, true)}
-                            />
+                            /> : <div />
                         }
                     />}
                 <table className="Calendar">

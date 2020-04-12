@@ -70,24 +70,22 @@ interface FireUser {
     roles: { readonly [courseId: string]: PrivilegedFireCourseRole | undefined };
 }
 
-interface FireQuestionPrivate {
+interface FireQuestion {
+    askerId: string;
     answererId: string;
     content: string;
     taComment?: string;
     location: string;
+    sessionId: string;
+    status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
+    timeAddressed?: FireTimestamp;
+    timeEntered: FireTimestamp;
     primaryTag: string;
     secondaryTag: string;
     questionId: string;
 }
 
-interface FireQuestion {
-    askerId: string;
-    sessionId: string;
-    status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
-    timeAddressed?: FireTimestamp;
-    timeEntered: FireTimestamp;
-    questionId: string;
-}
+type FireQuestionSlot = Pick<FireQuestion, 'askerId' | 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
 
 interface FireTag {
     active: boolean;

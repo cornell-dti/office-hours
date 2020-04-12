@@ -37,7 +37,6 @@ const LOCATION_CHAR_LIMIT = 40;
 
 type Props = {
     question: FireQuestion;
-    content?: FireQuestionPrivate;
     users: { readonly[userId: string]: FireUser };
     tags: { readonly [tagId: string]: FireTag };
     index: number;
@@ -66,7 +65,7 @@ class SessionQuestion extends React.Component<Props, State> {
         super(props);
         this.state = {
             showLocation: false,
-            location: (props.content && props.content.location) || '',
+            location: props.question.location || '',
             isEditingLocation: false,
             showDotMenu: false
         };
@@ -106,10 +105,12 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     retractQuestion = (): void => {
-        const question = firestore.collection('questions').doc(this.props.question.questionId);
-        question.update({
-            status: 'retracted'
-        });
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
+        const questionUpdate: Partial<FireQuestion> = slotUpdate;
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     toggleLocationTooltip = () => {
@@ -119,37 +120,45 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     assignQuestion = () => {
-        //Attempt to assign question to me
-        firestore.doc(`questions/${this.props.question.questionId}`).update({
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
+        const questionUpdate: Partial<FireQuestion> = {
             status: 'assigned',
             answererId: this.props.myUserId
-        });
+        };
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     studentNoShow = () => {
-        firestore.doc(`questions/${this.props.question.questionId}`).update({
-            status: 'no-show'
-        });
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'no-show' };
+        const questionUpdate: Partial<FireQuestion> = slotUpdate;
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     questionDone = () => {
-        firestore.doc(`questions/${this.props.question.questionId}`).update({
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'resolved' };
+        const questionUpdate: Partial<FireQuestion> = {
             status: 'resolved',
             timeAddressed: firebase.firestore.Timestamp.now()
-        });
+        };
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     questionComment = () => {
-        if (!this.props.content) {
-            return;
-        }
-
-        const taComment = prompt('Your comment', this.props.content.taComment);
+        const taComment = prompt('Your comment', this.props.question.taComment);
         if (taComment == null) {
             return;
         }
-        const update: Partial<FireQuestionPrivate> = { taComment: taComment };
-        firestore.doc(`questions/${this.props.question.questionId}/content/private`).update(update);
+        const update: Partial<FireQuestion> = { taComment: taComment };
+        firestore.doc(`questions/${this.props.question.questionId}`).update(update);
     };
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
@@ -173,22 +182,26 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     questionDontKnow = () => {
-        const update0: Partial<FireQuestion> = { status: 'unresolved' };
-        const update1: Partial<FireQuestionPrivate> = { answererId: '' };
-        firestore.doc(`questions/${this.props.question.questionId}`).update(update0);
-        firestore.doc(`questions/${this.props.question.questionId}/content/private`).update(update1);
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'unresolved' };
+        const questionUpdate: Partial<FireQuestion> = { status: 'unresolved', answererId: '' };
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     render() {
         const question = this.props.question;
-        const { content } = this.props;
         const studentCSS = this.props.isTA ? '' : ' Student';
         const includeBookmark = this.props.question.askerId === this.props.myUserId;
 
         const asker = this.props.users[question.askerId];
-        const answerer = content && content.answererId ? this.props.users[content.answererId] : undefined;
-        const primaryTag = content ? this.props.tags[content.primaryTag] : '';
-        const secondaryTag = content ? this.props.tags[content.secondaryTag] : '';
+        const answerer = question.answererId
+            ? undefined : this.props.users[question.answererId];
+        const primaryTag = this.props.question.primaryTag
+            ? undefined : this.props.tags[this.props.question.primaryTag];
+        const secondaryTag = this.props.question.secondaryTag
+            ? undefined : this.props.tags[this.props.question.secondaryTag];
 
         return (
             <div className="QueueQuestions">
@@ -259,12 +272,12 @@ class SessionQuestion extends React.Component<Props, State> {
                         </div>
                     }
                     <div className="Location">
-                        {this.props.isTA && content && content.location}
+                        {this.props.isTA && question.location}
                     </div>
                     {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
-                        <p className={'Question' + studentCSS}>{content && content.content}</p>}
-                    {content && content.taComment && (
-                        <p className={'Question' + studentCSS}>TA Comment: {content.taComment}</p>
+                        <p className={'Question' + studentCSS}>{question.content}</p>}
+                    {question.taComment && (
+                        <p className={'Question' + studentCSS}>TA Comment: {question.taComment}</p>
                     )}
                 </div>
                 <div className="BottomBar">

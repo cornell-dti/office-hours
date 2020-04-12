@@ -47,7 +47,6 @@ const SplitView = (props: {
     const user = useMyUser();
     const course = useCourse(props.match.params.courseId);
     const session = useSession(props.match.params.sessionId);
-    const sessionQuestions = filterUnresolvedQuestions(useSessionQuestions(props.match.params.sessionId || ''));
     const width = useWindowWidth();
 
     // Handle browser back button
@@ -98,13 +97,12 @@ const SplitView = (props: {
                     <SessionView
                         course={course}
                         session={session}
-                        questions={sessionQuestions as FireQuestion[]}
                         user={user}
                         isDesktop={width > MOBILE_BREAKPOINT}
                         backCallback={handleBackClick}
                         joinCallback={handleJoinClick}
                     />
-                    : 
+                    :
                     <Loader active = {true} content = "Loading" />
                 )}
             {activeView === 'addQuestion' && <>

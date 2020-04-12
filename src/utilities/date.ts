@@ -18,4 +18,6 @@ export const hasOverlap = (
     interval1End: Date,
     interval2Start: Date,
     interval2End: Date
-): boolean => interval1End >= interval2Start || interval1Start >= interval2End;
+): boolean =>
+    (interval1Start <= interval2End && interval2Start <= interval1Start) ||
+    (interval1End <= interval2End && interval2Start <= interval1End);
