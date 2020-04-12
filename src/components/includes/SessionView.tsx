@@ -5,13 +5,14 @@ import SessionInformationHeader from '../includes/SessionInformationHeader';
 import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
 
 import { Icon } from 'semantic-ui-react';
-import { useCourseTags, useCourseUsersMap } from '../../firehooks';
+import { useCourseTags, useCourseUsersMap, useSessionQuestions } from '../../firehooks';
+import { filterUnresolvedQuestions } from '../../utilities/questions';
 // import SessionAlertModal from './SessionAlertModal';
 
 type Props = {
     course: FireCourse;
     session: FireSession;
-    questions: FireQuestion[];
+    questions: readonly FireQuestion[];
     isDesktop: boolean;
     backCallback: Function;
     joinCallback: Function;
@@ -31,12 +32,15 @@ type AbsentState = {
     lastAskedQuestion: FireQuestion | null;
 };
 
-const SessionViewInHooks = (
+const SessionView = (
     { course, session, questions, isDesktop, backCallback, joinCallback, user }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
     const tags = useCourseTags(course.courseId);
     const users = useCourseUsersMap(course.courseId, isTa);
+
+    // console.log('dd');
+
     const [
         { undoAction, undoName, undoQuestionId, timeoutId },
         setUndoState
@@ -161,7 +165,7 @@ const SessionViewInHooks = (
             <SessionInformationHeader
                 session={session}
                 course={course}
-                myUserId={user.userId}
+                user={user}
                 callback={backCallback}
                 isDesktop={isDesktop}
             />
@@ -211,4 +215,8 @@ const SessionViewInHooks = (
     );
 };
 
-export default SessionViewInHooks;
+export default (props: Omit<Props, 'questions'>) => {
+    const isTa = props.user.roles[props.course.courseId] !== undefined;
+    const questions = filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));
+    return <SessionView questions={questions} {...props} />;
+};

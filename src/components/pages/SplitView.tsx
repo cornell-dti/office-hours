@@ -6,10 +6,10 @@ import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import AddQuestion from '../includes/AddQuestion';
 
-import { useCourse, useSession, useMyUser, useSessionQuestions } from '../../firehooks';
+import { useCourse, useSession, useMyUser } from '../../firehooks';
 
+import TopBar from '../includes/TopBar';
 import { Loader } from 'semantic-ui-react';
-import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -47,7 +47,6 @@ const SplitView = (props: {
     const user = useMyUser();
     const course = useCourse(props.match.params.courseId);
     const session = useSession(props.match.params.sessionId);
-    const sessionQuestions = filterUnresolvedQuestions(useSessionQuestions(props.match.params.sessionId || ''));
     const width = useWindowWidth();
 
     // Handle browser back button
@@ -94,19 +93,36 @@ const SplitView = (props: {
                     sessionCallback={handleSessionClick}
                 />
             }{(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
-                (session && course && user ?
-                    <SessionView
-                        course={course}
-                        session={session}
-                        questions={sessionQuestions as FireQuestion[]}
-                        user={user}
-                        isDesktop={width > MOBILE_BREAKPOINT}
-                        backCallback={handleBackClick}
-                        joinCallback={handleJoinClick}
-                    />
-                    : 
-                    <Loader active = {true} content = "Loading" />
-                )}
+                (course && user) ? (
+                    session ? (
+                        <SessionView
+                            course={course}
+                            session={session}
+                            user={user}
+                            isDesktop={width > MOBILE_BREAKPOINT}
+                            backCallback={handleBackClick}
+                            joinCallback={handleJoinClick}
+                        />
+                    ) : (
+                        <section className="StudentSessionView">
+                            <TopBar
+                                user={user}
+                                role={(user && course && user.roles[course.courseId]) || 'student'}
+                                context="student"
+                                courseId={props.match.params.courseId}
+                            />
+                            <p className="welcomeMessage">
+                                Welcome{user && ', '}
+                                <span className="welcomeName">
+                                    {user && user.firstName}
+                                </span>
+                            </p>
+                            <p className="noSessionSelected">
+                                Please select an office hour from the calendar.
+                            </p>
+                        </section>
+                    )
+                ) : <Loader active={true} content="Loading" />}
             {activeView === 'addQuestion' && <>
                 <div className="modal">
                     {course && session

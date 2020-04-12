@@ -9,6 +9,7 @@ type Props = {
     readonly icon?: SemanticICONS;
     readonly color: string;
     readonly description: string;
+    readonly course: FireCourse;
     readonly OHSession?: FireSession;
     readonly buttons: string[];
     readonly cancelAction?: Function;
@@ -17,9 +18,9 @@ type Props = {
 };
 
 const SessionAlertModal = (
-    { header, icon, color, description, OHSession, buttons, cancelAction, mainAction, displayShade }: Props
+    { header, icon, color, description, course, OHSession, buttons, cancelAction, mainAction, displayShade }: Props
 ) => {
-    const tas = useSessionTANames(OHSession);
+    const tas = useSessionTANames(course, OHSession);
     const [displayModal, setDisplayModal] = useState(true);
 
     const defaultCancel = () => setDisplayModal(false);

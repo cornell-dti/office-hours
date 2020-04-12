@@ -121,18 +121,26 @@ class AddQuestion extends React.Component<Props, State> {
     public addQuestion = () => {
         if (auth.currentUser != null && this.state.selectedPrimary != null &&
             this.state.selectedSecondary != null) {
-            const newQuestion: Omit<FireQuestion, 'questionId'> = {
+            const batch = firestore.batch();
+            const questionId = firestore.collection('questions').doc().id;
+            const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
                 askerId: auth.currentUser.uid,
+                sessionId: this.props.session.sessionId,
+                status: 'unresolved',
+                timeEntered: firebase.firestore.Timestamp.now()
+            };
+            const newQuestion: Omit<FireQuestion, 'questionId'> = {
+                ...newQuestionSlot,
                 answererId: '',
                 content: this.state.question,
                 location: this.state.location,
-                sessionId: this.props.session.sessionId,
-                status: 'unresolved',
-                timeEntered: firebase.firestore.Timestamp.now(),
                 primaryTag: this.state.selectedPrimary.tagId,
                 secondaryTag: this.state.selectedSecondary.tagId
             };
-            firestore.collection('questions').add(newQuestion);
+            batch.set(firestore.collection('questionSlots').doc(questionId), newQuestionSlot);
+            batch.set(firestore.collection('questions').doc(questionId), newQuestion);
+            batch.commit();
+
             this.setState({ redirect: true });
         }
     };
@@ -280,6 +288,7 @@ class AddQuestion extends React.Component<Props, State> {
                             + '. Consider adding yourself to a later queue.'}
                         buttons={['Cancel Question', 'Add Anyway']}
                         cancelAction={this.handleXClick}
+                        course={this.props.course}
                         mainAction={() => this.handleJoinClick()}
                         displayShade={this.state.width < this.props.mobileBreakpoint}
                     />

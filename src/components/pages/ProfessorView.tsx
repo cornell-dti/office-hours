@@ -132,6 +132,7 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
                     <div className="Calendar">
                         <ProfessorCalendarTable
                             courseId={courseId}
+                            course={course}
                             sessions={sessions}
                             taOptions={taOptions}
                         />

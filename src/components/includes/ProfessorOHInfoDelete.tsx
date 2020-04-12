@@ -22,12 +22,13 @@ import { useSessionTANames } from '../../firehooks';
 // `;
 
 type Props = {
+    readonly course: FireCourse;
     readonly session: FireSession;
     readonly toggleDelete: () => void;
     readonly toggleEdit: () => void;
 };
 
-const ProfessorOHInfoDelete = ({ session, toggleDelete, toggleEdit }: Props) => {
+const ProfessorOHInfoDelete = ({ course, session, toggleDelete, toggleEdit }: Props) => {
     const [isChecked, setIsChecked] = useState(false);
 
     const toggleCheckbox = () => setIsChecked(previous => !previous);
@@ -49,7 +50,7 @@ const ProfessorOHInfoDelete = ({ session, toggleDelete, toggleEdit }: Props) => 
     const timeEnd = moment(session.endTime.toDate()).format('h:mm A');
 
     const disable = moment(session.startTime.toDate()).isBefore();
-    const taList = useSessionTANames(session);
+    const taList = useSessionTANames(course, session);
 
     return (
         <React.Fragment>

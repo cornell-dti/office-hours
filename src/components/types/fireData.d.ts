@@ -85,6 +85,8 @@ interface FireQuestion {
     questionId: string;
 }
 
+type FireQuestionSlot = Pick<FireQuestion, 'askerId' | 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
+
 interface FireTag {
     active: boolean;
     courseId: string;

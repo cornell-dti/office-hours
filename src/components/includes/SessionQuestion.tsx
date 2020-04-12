@@ -105,10 +105,12 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     retractQuestion = (): void => {
-        const question = firestore.collection('questions').doc(this.props.question.questionId);
-        question.update({
-            status: 'retracted'
-        });
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
+        const questionUpdate: Partial<FireQuestion> = slotUpdate;
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     toggleLocationTooltip = () => {
@@ -118,24 +120,36 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     assignQuestion = () => {
-        //Attempt to assign question to me
-        firestore.doc(`questions/${this.props.question.questionId}`).update({
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
+        const questionUpdate: Partial<FireQuestion> = {
             status: 'assigned',
             answererId: this.props.myUserId
-        });
+        };
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     studentNoShow = () => {
-        firestore.doc(`questions/${this.props.question.questionId}`).update({
-            status: 'no-show'
-        });
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'no-show' };
+        const questionUpdate: Partial<FireQuestion> = slotUpdate;
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     questionDone = () => {
-        firestore.doc(`questions/${this.props.question.questionId}`).update({
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'resolved' };
+        const questionUpdate: Partial<FireQuestion> = {
             status: 'resolved',
             timeAddressed: firebase.firestore.Timestamp.now()
-        });
+        };
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     questionComment = () => {
@@ -168,8 +182,12 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     questionDontKnow = () => {
-        const update: Partial<FireQuestion> = { status: 'unresolved', answererId: '' };
-        firestore.doc(`questions/${this.props.question.questionId}`).update(update);
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'unresolved' };
+        const questionUpdate: Partial<FireQuestion> = { status: 'unresolved', answererId: '' };
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     render() {
@@ -178,9 +196,12 @@ class SessionQuestion extends React.Component<Props, State> {
         const includeBookmark = this.props.question.askerId === this.props.myUserId;
 
         const asker = this.props.users[question.askerId];
-        const answerer = question.answererId ? undefined : this.props.users[question.answererId];
-        const primaryTag = this.props.tags[this.props.question.primaryTag];
-        const secondaryTag = this.props.tags[this.props.question.secondaryTag];
+        const answerer = question.answererId
+            ? undefined : this.props.users[question.answererId];
+        const primaryTag = this.props.question.primaryTag
+            ? undefined : this.props.tags[this.props.question.primaryTag];
+        const secondaryTag = this.props.question.secondaryTag
+            ? undefined : this.props.tags[this.props.question.secondaryTag];
 
         return (
             <div className="QueueQuestions">

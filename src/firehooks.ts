@@ -139,8 +139,11 @@ export const useCourseTAMap = (course: FireCourse): FireUserMap => useCourseCour
 
 
 const dummySession = { courseId: 'DUMMY', tas: [] };
-export const useSessionTAs = (session: Pick<FireSession, 'courseId' | 'tas'> = dummySession): readonly FireUser[] => {
-    const courseUsers = useCourseUsersMap(session.courseId, true);
+export const useSessionTAs = (
+    course: FireCourse,
+    session: Pick<FireSession, 'courseId' | 'tas'> = dummySession,
+): readonly FireUser[] => {
+    const courseUsers = { ...useCourseProfessorMap(course), ...useCourseTAMap(course) };
     const tas: FireUser[] = [];
     session.tas.forEach(userId => {
         const courseUser = courseUsers[userId];
@@ -151,16 +154,26 @@ export const useSessionTAs = (session: Pick<FireSession, 'courseId' | 'tas'> = d
     });
     return tas;
 };
-export const useSessionTANames = (session: Pick<FireSession, 'courseId' | 'tas'> = dummySession): readonly string[] => (
-    useSessionTAs(session).map(courseUser => `${courseUser.firstName} ${courseUser.lastName}`)
+export const useSessionTANames = (
+    course: FireCourse,
+    session: Pick<FireSession, 'courseId' | 'tas'> = dummySession
+): readonly string[] => (
+    useSessionTAs(course, session).map(courseUser => `${courseUser.firstName} ${courseUser.lastName}`)
 );
 
 const getSessionQuestionsQuery = (sessionId: string) => firestore.collection('questions')
     .where('sessionId', '==', sessionId)
     .orderBy('timeEntered', 'asc');
-export const useSessionQuestions = createUseParamaterizedSingletonObservableHook(sessionId =>
-    new SingletonObservable([], collectionData<FireQuestion>(getSessionQuestionsQuery(sessionId), 'questionId'))
-);
+const getSessionQuestionSlotsQuery = (sessionId: string) => firestore.collection('questionSlots')
+    .where('sessionId', '==', sessionId)
+    .orderBy('timeEntered', 'asc');
+const useParameterizedSessionQuestions = createUseParamaterizedSingletonObservableHook(parameter => {
+    const [sessionId, isTA] = parameter.split('/');
+    const query = isTA === 'true' ? getSessionQuestionsQuery(sessionId) : getSessionQuestionSlotsQuery(sessionId);
+    return new SingletonObservable([], collectionData<FireQuestion>(query, 'questionId'));
+});
+export const useSessionQuestions = (sessionId: string, isTA: boolean): FireQuestion[] =>
+    useParameterizedSessionQuestions(`${sessionId}/${isTA}`);
 
 // Primatives
 // Look up a doc in Firebase by ID
