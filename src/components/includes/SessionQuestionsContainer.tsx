@@ -2,6 +2,7 @@ import * as React from 'react';
 import SessionQuestion from './SessionQuestion';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
+import { useDoc } from '../../firehooks';
 
 const SHOW_FEEDBACK_QUEUE = 4;
 //Maximum number of questions to be shown to user
@@ -20,6 +21,40 @@ type Props = {
     readonly isPast: boolean;
     readonly openingTime: Date;
     readonly haveAnotherQuestion: boolean;
+};
+
+type StudentMyQuestionProps = {
+    readonly questionId: string;
+    readonly tags: { readonly [tagId: string]: FireTag };
+    readonly index: number;
+    readonly triggerUndo: Function;
+    readonly isPast: boolean;
+    readonly myUserId: string;
+};
+
+const StudentMyQuestion = ({ questionId, tags, index, triggerUndo, isPast, myUserId }: StudentMyQuestionProps) => {
+    const studentQuestion = useDoc<FireQuestion>('questions', questionId, 'questionId');
+    if (studentQuestion == null) {
+        return <div />;
+    }
+
+    return (
+        <div className="User">
+            <p className="QuestionHeader">My Question</p>
+            <SessionQuestion
+                key={questionId}
+                question={studentQuestion}
+                users={{}}
+                tags={tags}
+                index={index}
+                isTA={false}
+                includeRemove={true}
+                triggerUndo={triggerUndo}
+                isPast={isPast}
+                myUserId={myUserId}
+            />
+        </div>
+    );
 };
 
 const SessionQuestionsContainer = (props: Props) => {
@@ -107,21 +142,14 @@ const SessionQuestionsContainer = (props: Props) => {
                 </div>
             }
             {shownQuestions && myQuestion && myQuestion.length > 0 &&
-                <div className="User">
-                    <p className="QuestionHeader">My Question</p>
-                    <SessionQuestion
-                        key={myQuestion[0].questionId}
-                        question={myQuestion[0]}
-                        users={props.users}
-                        tags={props.tags}
-                        index={allQuestions.indexOf(myQuestion[0])}
-                        isTA={props.isTA}
-                        includeRemove={true}
-                        triggerUndo={props.triggerUndo}
-                        isPast={props.isPast}
-                        myUserId={props.myUserId}
-                    />
-                </div>
+                <StudentMyQuestion
+                    questionId={myQuestion[0].questionId}
+                    tags={props.tags}
+                    index={allQuestions.indexOf(myQuestion[0])}
+                    triggerUndo={props.triggerUndo}
+                    isPast={props.isPast}
+                    myUserId={props.myUserId}
+                />
             }
             {shownQuestions && shownQuestions.length > 0 && props.isTA &&
                 shownQuestions.map((question, i: number) => (
