@@ -143,7 +143,7 @@ export const useSessionTAs = (
     course: FireCourse,
     session: Pick<FireSession, 'courseId' | 'tas'> = dummySession,
 ): readonly FireUser[] => {
-    const courseUsers = { ...useCourseProfessorMap(course), ...useCourseTAMap(course) }
+    const courseUsers = { ...useCourseProfessorMap(course), ...useCourseTAMap(course) };
     const tas: FireUser[] = [];
     session.tas.forEach(userId => {
         const courseUser = courseUsers[userId];
