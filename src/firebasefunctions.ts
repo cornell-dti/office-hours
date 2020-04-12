@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/indent */
-
 import { firestore, auth } from 'firebase/app';
 import { datePlus, normalizeDateToDateStart, normalizeDateToWeekStart } from './utilities/date';
 
@@ -8,13 +6,9 @@ import { datePlus, normalizeDateToDateStart, normalizeDateToWeekStart } from './
 export const userUpload = (user: firebase.User | null, db: firebase.firestore.Firestore) => {
     if (user != null) {
         const uid = user.uid;
-        const email = user.email || 'Dummy Display Name';
-        const displayName = user.displayName || 'Dummy Email';
-        const photoUrl = user.photoURL || 'Dummy Display Name';
-        const metaData = user.metadata;
-        const createdAt = firestore.Timestamp.fromDate(
-            metaData.creationTime ? new Date(metaData.creationTime) : new Date()
-        );
+        const email = user.email || 'Dummy Email';
+        const displayName = user.displayName || 'Dummy name';
+        const photoUrl = user.photoURL || 'Dummy photo';
         let stringSplit = -1;
         let firstName = displayName;
         let lastName = '';
@@ -25,7 +19,6 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
                 lastName = displayName.substring(stringSplit + 1);
             }
         }
-        const lastActivityAt = (firestore.FieldValue.serverTimestamp() as unknown) as FireTimestamp;
         db.runTransaction(async (transaction) => {
             const userDocumentReference = db.collection('users').doc(uid);
             const userDocument = await transaction.get(userDocumentReference);
@@ -35,8 +28,6 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
                     firstName,
                     lastName,
                     photoUrl,
-                    createdAt,
-                    lastActivityAt,
                 };
                 transaction.update(userDocumentReference, partialUserDocument);
             } else {
@@ -45,8 +36,6 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
                     firstName,
                     lastName,
                     photoUrl,
-                    createdAt,
-                    lastActivityAt,
                     courses: [],
                     roles: {},
                 };
@@ -171,8 +160,8 @@ export const updateSeries = async (
 };
 
 export const deleteSeries = async (db: firebase.firestore.Firestore, sessionSeriesId: string): Promise<void> => {
-  const querySnapshot = await db.collection('sessions').where('sessionSeriesId', '==', sessionSeriesId).get();
-  const batch = db.batch();
+    const querySnapshot = await db.collection('sessions').where('sessionSeriesId', '==', sessionSeriesId).get();
+    const batch = db.batch();
     querySnapshot.docs.forEach((document) =>
         batch.delete(db.collection('sessions').doc(document.id))
     );
