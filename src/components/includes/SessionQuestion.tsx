@@ -197,11 +197,11 @@ class SessionQuestion extends React.Component<Props, State> {
 
         const asker = this.props.users[question.askerId];
         const answerer = question.answererId
-            ? undefined : this.props.users[question.answererId];
+            ? this.props.users[question.answererId] : undefined;
         const primaryTag = this.props.question.primaryTag
-            ? undefined : this.props.tags[this.props.question.primaryTag];
+            ? this.props.tags[this.props.question.primaryTag] : undefined;
         const secondaryTag = this.props.question.secondaryTag
-            ? undefined : this.props.tags[this.props.question.secondaryTag];
+            ? this.props.tags[this.props.question.secondaryTag] : undefined;
 
         return (
             <div className="QueueQuestions">
