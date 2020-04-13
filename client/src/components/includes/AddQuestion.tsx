@@ -224,7 +224,7 @@ class AddQuestion extends React.Component {
                             <hr />
                             <div className="tagsMiniContainer">
                                 <p className="header">
-                                    Location <span
+                                    Location/Optional Zoom Link <span
                                         className={'characterCount ' + (this.state.location.length >= 40 ? 'warn' : '')}
                                     >
                                         {this.state.location.length}/{LOCATION_CHAR_LIMIT}
@@ -237,7 +237,7 @@ class AddQuestion extends React.Component {
                                             className="TextInput location"
                                             value={this.state.location}
                                             onChange={this.handleUpdateLocation}
-                                            placeholder="Where will you be?"
+                                            placeholder="Where will you be? What is your Zoom Link?"
                                         />
                                     </div>
                                     : <p className="placeHolder text">Finish selecting tags...</p>}
