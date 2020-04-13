@@ -125,20 +125,15 @@ class SessionView extends React.Component<Props, State> {
 
     render() {
         let undoText = '';
-        let undoStatus = 'unresolved';
         if (this.state.undoAction) {
             if (this.state.undoAction === 'resolved') {
                 undoText = this.state.undoName + ' has been resolved! ';
-                undoStatus = 'assigned';
             } else if (this.state.undoAction === 'no-show') {
                 undoText = this.state.undoName + ' has been marked as a no-show. ';
-                undoStatus = 'assigned';
             } else if (this.state.undoAction === 'retracted') {
                 undoText = 'You have removed your question. ';
-                undoStatus = 'unresolved';
             } else if (this.state.undoAction === 'assigned') {
                 undoText = this.state.undoName + ' has been assigned to you! ';
-                undoStatus = 'unresolved';
             }
         }
 

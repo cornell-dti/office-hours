@@ -101,7 +101,7 @@ class SessionQuestion extends React.Component<Props> {
     }
 
     public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>, updateLocation: Function): void => {
-        this.state.isEditingLocation = true;
+        this.setState({ isEditingLocation: true });
         const target = event.target as HTMLTextAreaElement;
         if (target.value.length <= LOCATION_CHAR_LIMIT) {
             this.setState({
@@ -113,7 +113,7 @@ class SessionQuestion extends React.Component<Props> {
                     location: target.value,
                 }
             });
-            setTimeout(() => { this.state.isEditingLocation = false; }, 100);
+            setTimeout(() => this.setState({ isEditingLocation: false }), 100);
         }
     };
 
@@ -313,8 +313,8 @@ class SessionQuestion extends React.Component<Props> {
                         <hr />
                         <p
                             className="Remove"
-                            // RYAN_TODO: support remove question
-                            // onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
+                        // RYAN_TODO: support remove question
+                        // onClick={(e) => this._onClick(e, updateQuestion, 'retracted')}
                         >
                             <Icon name="close" /> Remove
                         </p>
