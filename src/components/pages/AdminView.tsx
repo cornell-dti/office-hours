@@ -162,7 +162,7 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
         <div className="course">
             <h2>Create New Course</h2>
             <div className="course-section">
-                <h3>Course Name</h3>
+                <h3>Course Id</h3>
                 <input type="text" value={courseId} onChange={e => setCourseId(e.currentTarget.value)} />
             </div>
             <div className="course-section">
