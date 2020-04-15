@@ -26,6 +26,7 @@ const CalendarSessions = ({ activeSession, user, course, sessions, callback }: {
         return (
             <CalendarSessionCard
                 user={user}
+                course={course}
                 session={session}
                 key={session.sessionId}
                 callback={callback}

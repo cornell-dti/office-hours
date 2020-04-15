@@ -9,6 +9,7 @@ import {
 
 const CalendarSessionCard = (props: {
     user: FireUser;
+    course: FireCourse;
     session: FireSession;
     callback: (sessionId: string) => void;
     active: boolean;
@@ -19,14 +20,15 @@ const CalendarSessionCard = (props: {
     };
 
     const session = props.session;
-    const questions: FireQuestion[] = useSessionQuestions(session.sessionId);
+    const isTA = props.user.roles[session.courseId] !== undefined;
+    const questions: FireQuestion[] = useSessionQuestions(session.sessionId, isTA);
 
     const [unresolvedQuestions, userQuestions] = filterAndpartitionQuestions(questions, props.user.userId);
     const numAhead = computeNumberAheadFromFilterAndpartitionQuestions(unresolvedQuestions, userQuestions);
 
     const includeBookmark = userQuestions.length > 0;
 
-    const tas = useSessionTANames(session);
+    const tas = useSessionTANames(props.course, session);
 
     const timeDesc = '';
     return (

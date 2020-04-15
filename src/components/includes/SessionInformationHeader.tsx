@@ -10,13 +10,15 @@ type Props = {
     session: FireSession;
     course: FireCourse;
     callback: Function;
-    myUserId?: string;
+    user: FireUser;
     isDesktop: boolean;
 };
 
-const SessionInformationHeader = ({ session, course, callback, myUserId, isDesktop }: Props) => {
-    const tas = useSessionTAs(session);
-    const numAhead = computeNumberAhead(useSessionQuestions(session.sessionId), myUserId || '');
+const SessionInformationHeader = ({ session, course, callback, user, isDesktop }: Props) => {
+    const tas = useSessionTAs(course, session);
+    const numAhead = computeNumberAhead(
+        useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined), user.userId
+    );
 
     if (isDesktop) {
         return (

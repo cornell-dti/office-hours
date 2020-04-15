@@ -35,7 +35,7 @@
     "build-less": "cd src/styles && less-watch-compiler ./ ./ index.less",
     "build-less:prod": "lessc --clean-css src/styles/index.less src/styles/index.min.css",
     "deploy": "yarn build-less:prod && yarn build",
-    "deploy:staging": "REACT_APP_IS_STAGING=true yarn build-less:prod && yarn build",
+    "deploy:staging": "yarn build-less:prod && REACT_APP_IS_STAGING=true yarn build",
     "eject": "react-scripts eject",
     "start": "concurrently \"yarn run build-less\" \"react-scripts start\"",
     "s": "yarn start",
