@@ -1,8 +1,8 @@
-name: CD
+name: Release
 on:
   push:
     branches:
-      - master
+      - release
 
 jobs:
   deploy:
@@ -16,10 +16,10 @@ jobs:
       - name: Install
         run: yarn install
       - name: Build Client
-        run: yarn deploy:staging
-      - name: Deploy Client
+        run: yarn deploy
+      - name: Deploy
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          yarn firebase use default
+          yarn firebase use production
           yarn firebase deploy --token "$FIREBASE_TOKEN" --non-interactive --only hosting

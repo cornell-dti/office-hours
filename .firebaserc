@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "qmi-test",
+    "production": "queue-me-in-prod"
+  }
+}
