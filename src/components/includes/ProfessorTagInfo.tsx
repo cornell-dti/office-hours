@@ -43,10 +43,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     }
 
     handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        const newState = Object.assign({}, this.state.tag);
-        const target = event.target;
-        newState.name = target.value;
-        this.setState({ tag: newState });
+        this.setState((state) => ({ tag: { ...state.tag, name: event.target.value } }));
     };
 
     handleNewTagTextChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -55,9 +52,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     };
 
     handleActiveChange = (active: boolean): void => {
-        const newState = Object.assign({}, this.state.tag);
-        newState.active = active;
-        this.setState({ tag: newState });
+        this.setState((state) => ({ tag: { ...state.tag, active } }));
     };
 
     handleNewTagEnter = (): void => {
@@ -170,7 +165,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
 
     render() {
         return (
-            <React.Fragment >
+            <>
                 <div className="ProfessorTagInfo">
                     <div className="Assignment InputSection">
                         <div className="InputHeader">Assignment Name</div>
@@ -228,11 +223,12 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                     </div>
                 </div>
                 <div className="EditButtons">
-                    <button className="Bottom Cancel" onClick={() => this.props.cancelCallback()}>
+                    <button type="button" className="Bottom Cancel" onClick={() => this.props.cancelCallback()}>
                         Cancel
                     </button>
                     {this.props.isNew ?
                         <button
+                            type="button"
                             className="Bottom Edit"
                             onClick={() => {
                                 this.handleCreateAssignment();
@@ -243,6 +239,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                         </button>
                         :
                         <button
+                            type="button"
                             className="Bottom Edit"
                             onClick={() => {
                                 this.handleEditAssignment();
@@ -253,7 +250,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                         </button>
                     }
                 </div>
-            </React.Fragment >
+            </>
         );
     }
 }

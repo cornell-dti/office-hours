@@ -39,12 +39,12 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                         <Icon name="calendar alternate outline" />
                         <Moment date={session.startTime.seconds * 1000} interval={0} format={'dddd, MMM D'} />
                     </p>
-                    <p>{session.title || (<React.Fragment>
+                    <p>{session.title || (<>
                         Held by
                         <span className="black">
                             {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(' and ')}
                         </span>
-                    </React.Fragment>)}</p>
+                    </>)}</p>
                 </div>
                 <div className="QueueWrap">
                     <div className="QueueInfo">
@@ -100,12 +100,12 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                             <Moment date={session.startTime.toDate()} interval={0} format={'dddd, D MMM'} />
                         </p>
                     </div>
-                    <p>{session.title || (<React.Fragment>
+                    <p>{session.title || (<>
                         Held by
                         <span className="black">
                             {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(' and ')}
                         </span>
-                    </React.Fragment>)}
+                    </>)}
                     </p>
                 </div>
             </div>

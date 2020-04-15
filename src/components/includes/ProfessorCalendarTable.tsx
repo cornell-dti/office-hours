@@ -1,9 +1,8 @@
 import * as React from 'react';
+import { DropdownItemProps } from 'semantic-ui-react';
 import ProfessorCalendarRow from './ProfessorCalendarRow';
 import ProfessorDelete from './ProfessorDelete';
 import ProfessorOHInfoDelete from './ProfessorOHInfoDelete';
-
-import { DropdownItemProps } from 'semantic-ui-react';
 
 type Props = {
     courseId: string;
@@ -47,7 +46,7 @@ class ProfessorCalendarTable extends React.Component<Props, State> {
         for (let i = 0; i < 7; i++) {
             isExpanded.push(new Array<boolean>(sessionsLength).fill(false));
         }
-        this.setState({ isExpanded: isExpanded });
+        this.setState({ isExpanded });
     }
 
     toggleEdit = (day: number, row: number, forceClose?: boolean) => {
@@ -73,10 +72,7 @@ class ProfessorCalendarTable extends React.Component<Props, State> {
     };
 
     updateDeleteInfo = (dayIndex: number, rowIndex: number) => {
-        this.setState({
-            dayIndex: dayIndex,
-            rowIndex: rowIndex
-        });
+        this.setState({ dayIndex, rowIndex });
     };
 
     updateDeleteVisible = (toggle: boolean) => {

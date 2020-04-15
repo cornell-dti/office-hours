@@ -1,7 +1,7 @@
 import * as React from 'react';
-import SessionQuestion from './SessionQuestion';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
+import SessionQuestion from './SessionQuestion';
 import { useDoc } from '../../firehooks';
 
 const SHOW_FEEDBACK_QUEUE = 4;
@@ -126,7 +126,7 @@ const SessionQuestionsContainer = (props: Props) => {
             }
             {!props.isTA && myQuestion && myQuestion.length === 0 && props.isOpen
                 && props.haveAnotherQuestion &&
-                <React.Fragment>
+                <>
                     <div className="SessionClosedMessage">
                         You are holding a spot in another active queue.
                         To join this queue, please retract your question from the other queue!
@@ -134,7 +134,7 @@ const SessionQuestionsContainer = (props: Props) => {
                     <div className="SessionJoinButton disabled">
                         <p><Icon name="plus" /> Join the Queue</p>
                     </div>
-                </React.Fragment>
+                </>
             }
             {shownQuestions && shownQuestions.length > 0 && props.isPast &&
                 <div className="SessionClosedMessage">
@@ -168,7 +168,7 @@ const SessionQuestionsContainer = (props: Props) => {
                 ))
             }
             {shownQuestions && shownQuestions.length === 0 &&
-                <React.Fragment>
+                <>
                     <p className="noQuestionsHeading">
                         {props.isOpen ? 'Queue Currently Empty' :
                             props.isPast ? 'Queue Has Closed' : 'Queue Not Open Yet'}
@@ -189,7 +189,7 @@ const SessionQuestionsContainer = (props: Props) => {
                             ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
                             : <p className="noQuestionsWarning">No questions in the queue yet. </p>
                     }
-                </React.Fragment>
+                </>
             }
         </div>
     );

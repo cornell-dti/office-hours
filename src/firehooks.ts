@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 
 import * as firebase from 'firebase/app';
-import { firestore, loggedIn$ } from './firebase';
 import { collectionData, docData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
+import { firestore, loggedIn$ } from './firebase';
 import {
     SingletonObservable,
     createUseSingletonObservableHook,

@@ -1,7 +1,9 @@
-import * as React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { Icon } from 'semantic-ui-react';
+import { Icon, DropdownItemProps } from 'semantic-ui-react';
+import { of, combineLatest, Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { docData } from 'rxfire/firestore';
 
 import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
@@ -10,13 +12,9 @@ import ProfessorSettings from '../includes/ProfessorSettings';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
-import { DropdownItemProps } from 'semantic-ui-react';
 
 import { useCourse, useMyUser } from '../../firehooks';
 import { firestore, collectionData } from '../../firebase';
-import { of, combineLatest, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { docData } from 'rxfire/firestore';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 
@@ -105,6 +103,7 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
                         taOptions={taOptions}
                     />
                     <button
+                        type="button"
                         id="profSettings"
                         onClick={() => setSettingsVisible(visible => !visible)}
                     >

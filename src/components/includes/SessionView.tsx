@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-
-import TopBar from '../includes/TopBar';
-import SessionInformationHeader from '../includes/SessionInformationHeader';
-import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
-
 import { Icon } from 'semantic-ui-react';
+
+import TopBar from './TopBar';
+import SessionInformationHeader from './SessionInformationHeader';
+import SessionQuestionsContainer from './SessionQuestionsContainer';
+
 import { useCourseTags, useCourseUsersMap, useSessionQuestions } from '../../firehooks';
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 // import SessionAlertModal from './SessionAlertModal';

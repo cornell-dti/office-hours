@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Dropdown, Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
 
@@ -95,10 +94,10 @@ export default ({ courseId }: { courseId: string }) => {
             <Table.Body>
                 <Table.Row>
                     <Table.Cell>
-                        <button onClick={importProfessorsButtonOnClick}>Import Professors</button>
+                        <button type="button" onClick={importProfessorsButtonOnClick}>Import Professors</button>
                     </Table.Cell>
                     <Table.Cell>
-                        <button onClick={importTAButtonOnClick}>Import TAs</button>
+                        <button type="button" onClick={importTAButtonOnClick}>Import TAs</button>
                     </Table.Cell>
                 </Table.Row>
                 {course && sortedCourseUsers.map(u => (

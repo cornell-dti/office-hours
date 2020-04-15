@@ -18,9 +18,9 @@ class Popup extends React.Component<Props> {
     const isShown = this.props.show ? ' feedback' : '';
 
     return (
-      <React.Fragment>
+      <>
         <section className={'topPanel' + isShown}>
-          <button className="closeIcon" onClick={() => this.props.hideFunction()}>
+          <button type="button" className="closeIcon" onClick={() => this.props.hideFunction()}>
             <Icon name="x" />
           </button>
           <img src={QMeLogo} className="QMeLogo" alt="Queue Me In Logo" />
@@ -35,7 +35,7 @@ class Popup extends React.Component<Props> {
             {this.props.buttonLabel}
           </a>
         </section>
-      </React.Fragment>
+      </>
     );
   }
 }

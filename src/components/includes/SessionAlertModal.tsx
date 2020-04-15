@@ -1,6 +1,7 @@
 import React, { useState, ReactElement } from 'react';
 import moment from 'moment';
 import { Icon } from 'semantic-ui-react';
+// eslint-disable-next-line import/no-unresolved
 import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
 import { useSessionTANames } from '../../firehooks';
 
@@ -33,6 +34,7 @@ const SessionAlertModal = (
     const buttonsToRender = buttons.map((button, i) => (
         <button
             key={i}
+            type="button"
             className={buttons.length - 1 === i ? 'last' : ''}
             onClick={() => buttons.length - 1 === i ? main() : cancel()}
         >

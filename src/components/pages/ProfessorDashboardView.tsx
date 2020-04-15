@@ -1,11 +1,10 @@
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import { Dropdown, DropdownProps } from 'semantic-ui-react';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import TagsBarChart from '../includes/TagsBarChart';
 
-import { Dropdown, DropdownProps } from 'semantic-ui-react';
 import { useMyUser, useQuery, useCourse } from '../../firehooks';
 import { firestore } from '../../firebase';
 

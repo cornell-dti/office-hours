@@ -98,7 +98,7 @@ const AdminEditableCourseCard = ({ course }: { readonly course: FireCourse }) =>
                 <h3>Term</h3>
                 <input type="text" value={term} onChange={e => setTerm(e.currentTarget.value)} />
             </div>
-            <button onClick={onSave}>Save</button>
+            <button type="button" onClick={onSave}>Save</button>
         </div>
     );
 };
@@ -111,10 +111,10 @@ const AdminCourseCard = ({ course }: { readonly course: FireCourse }) => {
             {!isEditingMode && <AdminReadOnlyCourseCard course={course} />}
             {isEditingMode && <AdminEditableCourseCard course={course} />}
             <div>
-                <button onClick={() => setIsEditingMode(prev => !prev)}>
+                <button type="button" onClick={() => setIsEditingMode(prev => !prev)}>
                     To {isEditingMode ? 'Read Only' : 'Editing'} Mode
                 </button>
-                <button onClick={() => setShowRolesTable(prev => !prev)}>
+                <button type="button" onClick={() => setShowRolesTable(prev => !prev)}>
                     {showRolesTable ? 'Hide' : 'Show'} Roles Table
                 </button>
             </div>
@@ -193,7 +193,7 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
                 <h3>End Date</h3>
                 <div>{endDate.toLocaleDateString()}</div>
             </div>
-            <button disabled={disabled} onClick={onSave}>Save</button>
+            <button type="button" disabled={disabled} onClick={onSave}>Save</button>
         </div>
     );
 };
@@ -211,7 +211,8 @@ const AdminView = () => {
                 ))}
                 {inCreationMode && <AdminCourseCreator onSubmit={() => setInCreationMode(false)} />}
             </div>
-            {!inCreationMode && <button onClick={() => setInCreationMode(true)}>Create New Course</button>}
+            {!inCreationMode &&
+            <button type="button" onClick={() => setInCreationMode(true)}>Create New Course</button>}
         </div>
     );
 };
