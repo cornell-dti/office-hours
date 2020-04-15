@@ -1,8 +1,8 @@
-@red: #f67d7d;
+$red: #f67d7d;
 
 .CalendarDaySelect {
     background: white;
-    color: @text-grey;
+    color: $text-grey;
     border-bottom: solid 1px #e3e3e3;
 
     .month {
@@ -45,7 +45,7 @@
 
         &>.date {
             color: white;
-            background-color: @red;
+            background-color: $red;
             border-radius: 50%;
             margin: auto;
             height: 30px;
@@ -67,6 +67,6 @@
     &>.notification {
         font-size: 32px;
         height: 20px;
-        color: @red;
+        color: $red;
     }
 }

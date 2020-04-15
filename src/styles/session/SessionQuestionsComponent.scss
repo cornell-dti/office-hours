@@ -18,8 +18,8 @@
         width: 30px;
         margin: 13px 0 12px 12px;
         color: white;
-        background-color: @number-blue;
-        border: solid @number-blue 0px;
+        background-color: $number-blue;
+        border: solid $number-blue 0px;
         border-radius: 5px;
         text-align: center;
     }
@@ -86,14 +86,14 @@
         padding: 14px;
 
         i {
-            color: @number-blue;
+            color: $number-blue;
         }
 
         .modalShade {
             display: none;
         }
 
-        @media only screen and (max-width: @mobile-breakpoint) {
+        @media only screen and (max-width: $mobile-breakpoint) {
             .modalShade {
                 display: block;
             }
@@ -122,7 +122,7 @@
         padding: 8px 0 0 20px;
         text-align: left;
 
-        @media only screen and (max-width: @mobile-breakpoint) {
+        @media only screen and (max-width: $mobile-breakpoint) {
             position: fixed;
             top: 50%;
             left: 50%;
@@ -139,7 +139,7 @@
             color: #8c8c8c;
             margin-bottom: 6px;
 
-            @media only screen and (max-width: @mobile-breakpoint) {
+            @media only screen and (max-width: $mobile-breakpoint) {
                 margin-bottom: 20px;
             }
 
@@ -147,7 +147,7 @@
                 opacity: 0.5;
                 font-size: 11px;
 
-                @media only screen and (max-width: @mobile-breakpoint) {
+                @media only screen and (max-width: $mobile-breakpoint) {
                     font-size: 14px;
                 }
 
@@ -160,7 +160,7 @@
         .TextInput {
             font-weight: normal;
             border: 0px;
-            color: @text-grey;
+            color: $text-grey;
             padding: 5px 25px 5px 8px;
             resize: none;
             border-radius: 3px;
@@ -169,7 +169,7 @@
             width: 275px;
             opacity: 0.6;
 
-            @media only screen and (max-width: @mobile-breakpoint) {
+            @media only screen and (max-width: $mobile-breakpoint) {
                 width: 264px;
                 height: 45px;
             }
@@ -183,7 +183,7 @@
             left: 275px;
             color: #afabab;
 
-            @media only screen and (max-width: @mobile-breakpoint) {
+            @media only screen and (max-width: $mobile-breakpoint) {
                 top: 80px;
                 left: 260px;
 
@@ -193,10 +193,10 @@
         .DoneButton {
             display: none;
 
-            @media only screen and (max-width: @mobile-breakpoint) {
+            @media only screen and (max-width: $mobile-breakpoint) {
                 display: block;
                 margin: 26px 0 0 -24px;
-                background-color: @brand-primary;
+                background-color: $brand-primary;
                 height: 44px;
                 border-bottom-left-radius: 8px;
                 border-bottom-right-radius: 8px;
@@ -210,7 +210,7 @@
     }
 
     .LocationTooltip::after {
-        @media only screen and (min-width: @mobile-breakpoint) {
+        @media only screen and (min-width: $mobile-breakpoint) {
             content: "";
             position: absolute;
             width: 0;
@@ -301,13 +301,13 @@
             }
 
             .Begin {
-                border: 0.5px solid @number-blue;
-                color: @number-blue;
+                border: 0.5px solid $number-blue;
+                color: $number-blue;
             }
 
             .Done {
-                border: 0.5px solid @tag-blue;
-                color: @tag-blue;
+                border: 0.5px solid $tag-blue;
+                color: $tag-blue;
             }
 
             .DotMenu {
@@ -333,7 +333,7 @@
                 margin-top: 15px;
                 right: 0;
                 z-index: 1;
-                
+
                 p {
                     width: 200px;
                     color: black;

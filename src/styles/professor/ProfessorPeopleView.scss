@@ -1,16 +1,16 @@
 .ProfessorView{
 
     .DateInput_input__focused {
-        border-bottom: 2px solid @brand-primary;
+        border-bottom: 2px solid $brand-primary;
     }
     .CalendarDay__selected {
-        background: @tag-blue;
-        border-color: @tag-blue;
+        background: $tag-blue;
+        border-color: $tag-blue;
     }
 
     .CalendarDay__selected_span {
-        background: @brand-primary;
-        border-color: @tag-blue;
+        background: $brand-primary;
+        border-color: $tag-blue;
     }
 
     .CalendarDay__hovered_span, .CalendarDay__hovered_span:hover {

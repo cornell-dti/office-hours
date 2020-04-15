@@ -1,6 +1,6 @@
-@header-color: #7ab7fe;
-@even-color: #edeff2;
-@odd-color: white;
+$header-color: #7ab7fe;
+$even-color: #edeff2;
+$odd-color: white;
 
 .ProfessorCalendarTable {
     text-align: left;
@@ -36,7 +36,7 @@
             color: white;
             font-size: 20px;
             padding-left: 5%;
-            background-color: @header-color;
+            background-color: $header-color;
             font-weight: 500;
         }
 

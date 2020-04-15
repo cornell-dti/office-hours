@@ -1,16 +1,16 @@
-@even-color: #edeff2;
-@odd-color: #ffffff;
+$even-color: #edeff2;
+$odd-color: #ffffff;
 
 .even {
-    background-color: @even-color;
+    background-color: $even-color;
 }
 
 .odd {
-    background-color: @odd-color;
+    background-color: $odd-color;
 }
 
 .NoOH {
-    background-color: @even-color;
+    background-color: $even-color;
 }
 
 .Pair.true {

@@ -9,7 +9,7 @@
 
     .Add {
         .NewOHButton {
-            color: @text-grey;
+            color: $text-grey;
             background-color: white;
             padding: 15px;
             border-radius: 3px;
@@ -41,7 +41,7 @@
                 padding: 15px;
                 border-radius: 3px;
                 text-align: left;
-                color: @text-grey;
+                color: $text-grey;
 
                 .plus.icon {
                     margin-right: 10px;

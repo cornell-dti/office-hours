@@ -26,12 +26,12 @@
                 font-size: 18px;
             }
         }
-    
+
         .courseName {
             font-size: 20px;
         }
     }
-    
+
     .courseColor {
         position: relative;
         bottom: 0;
@@ -57,7 +57,7 @@
     box-shadow: 5px 10px 20px gray;
 }
 
-@media only screen and (max-width: @mobile-breakpoint) {
+@media only screen and (max-width: $mobile-breakpoint) {
     .CourseCard {
         // min-width: 200px;
         // max-width: 200px;

@@ -37,7 +37,7 @@ section .SessionJoinButton {
 }
 
 .noSessionSelected {
-    color: @text-grey;
+    color: $text-grey;
     font-family: Roboto;
     font-size: 18px;
     padding-top: 25vh;
@@ -71,7 +71,7 @@ section .SessionJoinButton {
     font-family: Roboto;
     font-size: 28px;
     font-weight: 300;
-    color: @text-grey;
+    color: $text-grey;
 }
 
 .welcomeName {
@@ -109,13 +109,13 @@ section .SessionJoinButton {
 
 .Bookmark {
     position: absolute;
-    border: 10px solid @tag-blue;
+    border: 10px solid $tag-blue;
     border-bottom: 12px solid transparent;
     height: 33px;
     top: 0;
 }
 
-@media only screen and (max-width: @mobile-breakpoint) {
+@media only screen and (max-width: $mobile-breakpoint) {
     aside.CalendarView, section.StudentSessionView {
         width: 100%;
         position: relative;
@@ -159,13 +159,13 @@ section .SessionJoinButton {
       z-index: 4;
       top: 0;
       left: 0;
-      @media only screen and (min-width: @mobile-breakpoint) {
+      @media only screen and (min-width: $mobile-breakpoint) {
         top: 15%;
         left: 15%;
       }
     }
   }
-  
+
   .feedbackShade {
     position: fixed;
     top: 0;
@@ -174,4 +174,4 @@ section .SessionJoinButton {
     right: 0;
     z-index: 3;
     background-color: hsla(0, 0%, 44%, 0.8);
-  }  
+  }
