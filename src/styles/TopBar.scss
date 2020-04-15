@@ -54,7 +54,7 @@
         padding-bottom: 10px;
         transition-duration: .2s;
         transition-property: box-shadow, color;
-        transition-timing-function: @curve-standard;
+        transition-timing-function: $curve-standard;
     }
 
     .userProfile:hover {
@@ -62,7 +62,7 @@
     }
 
     .userProfile:hover .name {
-        color: @text-grey;
+        color: $text-grey;
     }
 
     i.icons .corner.icon {

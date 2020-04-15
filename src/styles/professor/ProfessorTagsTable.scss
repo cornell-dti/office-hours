@@ -1,6 +1,6 @@
-@header-color: #7ab7fe;
-@even-color: #edeff2;
-@odd-color: white;
+$header-color: #7ab7fe;
+$even-color: #edeff2;
+$odd-color: white;
 
 .Spacing {
     height: 15px;
@@ -36,7 +36,7 @@
         th {
             padding: 7px 0px;
             color: white;
-            background-color: @header-color;
+            background-color: $header-color;
             text-align: left;
             font-weight: 500;
         }

@@ -1,6 +1,6 @@
 .DesktopSessionInformationHeader {
     width: 100%;
-    background-color: @brand-primary;
+    background-color: $brand-primary;
     font-size: 13px;
     color: white;
     text-align: left;
@@ -50,7 +50,7 @@
             height: 84px;
             border-radius: 8px;
             background-color: #ffffff;
-            color: @text-grey;
+            color: $text-grey;
             text-align: center;
             padding-top: 18px;
             p {
@@ -80,12 +80,12 @@
             font-weight: 500;
             text-align: left;
             margin: 0px;
-            color: @text-grey;
+            color: $text-grey;
             cursor: pointer;
             display: inline-block;
 
             .left {
-                border: solid @text-grey;
+                border: solid $text-grey;
                 border-width: 0 1px 1px 0;
                 display: inline-block;
                 padding: 4px;
@@ -112,7 +112,7 @@
                 }
 
                 .Location {
-                    color: @text-grey;
+                    color: $text-grey;
                     padding-bottom: 3px;
                 }
             }
@@ -154,7 +154,7 @@
 
             p {
                 font-size: 16px;
-                color: @text-grey;
+                color: $text-grey;
             }
 
             .users {
@@ -176,7 +176,7 @@
               font-size: 14px;
 
               .black {
-                color: @text-grey;
+                color: $text-grey;
               }
             }
 

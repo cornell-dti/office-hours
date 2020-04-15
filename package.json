@@ -8,11 +8,7 @@
     "@nivo/line": "^0.59.3",
     "@nivo/pie": "^0.59.1",
     "@types/node": "^12.12.15",
-    "concurrently": "^5.1.0",
     "firebase": "^7.9.1",
-    "less": "^3.8.1",
-    "less-plugin-clean-css": "^1.5.1",
-    "less-watch-compiler": "^1.12.1",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.21",
     "react": "^16.8.0",
@@ -32,14 +28,10 @@
   },
   "scripts": {
     "build": "react-scripts build",
-    "build-less": "cd src/styles && less-watch-compiler ./ ./ index.less",
-    "build-less:prod": "lessc --clean-css src/styles/index.less src/styles/index.min.css",
-    "deploy": "yarn build-less:prod && yarn build",
-    "deploy:staging": "yarn build-less:prod && REACT_APP_IS_STAGING=true yarn build",
-    "eject": "react-scripts eject",
-    "start": "concurrently \"yarn run build-less\" \"react-scripts start\"",
+    "build:staging": "REACT_APP_IS_STAGING=true react-scripts build",
+    "start": "react-scripts start",
     "s": "yarn start",
-    "test": "react-scripts test --env=jsdom",
+    "test": "react-scripts test",
     "lint": "eslint . --ext tsx --ext ts",
     "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
@@ -60,6 +52,7 @@
     "@types/react-router": "^5.1.1",
     "@types/react-router-dom": "^5.1.0",
     "firebase-tools": "^7.13.1",
+    "node-sass": "^4.13.1",
     "typescript": "^3.7.3"
   },
   "browserslist": {

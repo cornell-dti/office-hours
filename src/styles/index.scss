@@ -1,6 +1,6 @@
 // THIS VALUE ALSO LIVES IN SplitView.tsx,
 // IF YOU UPDATE THIS, UPDATE THAT
-@mobile-breakpoint: 920px;
+$mobile-breakpoint: 920px;
 
 @import '../../node_modules/react-dates/lib/css/_datepicker.css';
 
@@ -38,8 +38,8 @@
 
 // Multiple views
 @import "./TopBar";
-@import "./FeedbackPopup.less";
-@import "./ModalMenu.less";
+@import "./FeedbackPopup";
+@import "./ModalMenu";
 
 // Professor
 @import "./professor/ProfessorView";

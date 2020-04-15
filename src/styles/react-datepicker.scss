@@ -10,12 +10,12 @@
 
 .react-datepicker__time-list-item {
     border-bottom: solid 1px #e6e6e6;
-    transition: all .15s @curve-standard;
+    transition: all .15s $curve-standard;
 }
 
 .react-datepicker__day--keyboard-selected {
-    background-color: @brand-primary;
-    transition: all .15s @curve-standard;
+    background-color: $brand-primary;
+    transition: all .15s $curve-standard;
 }
 .react-datepicker__day--keyboard-selected:hover {
     background-color: #4683bb;

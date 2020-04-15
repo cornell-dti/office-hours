@@ -1,27 +1,27 @@
-@text-color: #888888;
-@num-color: #545454;
-@time-color: #696969;
-@border-color: #bfbfbf;
-@interior-color: #e6e6e6;
-@live: #70d59d;
-@open: #ffdba6;
+$text-color: #888888;
+$num-color: #545454;
+$time-color: #696969;
+$border-color: #bfbfbf;
+$interior-color: #e6e6e6;
+$live: #70d59d;
+$open: #ffdba6;
 
 .noHoursHeading {
     padding-top: 20vh;
     font-weight: bold;
-    color: @text-grey;
+    color: $text-grey;
 }
 
 .noHoursBody {
     font-family: Roboto;
     font-size: 15px;
-    color: @text-grey;
+    color: $text-grey;
 }
 
 .CalendarSessions h6 {
     font-size: 14px;
     font-weight: normal;
-    color: @text-grey;
+    color: $text-grey;
     text-align: left;
     padding-left: 12px;
     margin: 0;
@@ -29,7 +29,7 @@
     line-height: 0;
 }
 
-@media only screen and (min-width: @mobile-breakpoint) {
+@media only screen and (min-width: $mobile-breakpoint) {
     .CalendarSessionCard.active {
         background-color: #d8d8d8;
     }
@@ -42,7 +42,7 @@
     overflow: hidden;
     display: flex;
     cursor: pointer;
-    color: @text-color;
+    color: $text-color;
     background-color: white;
     position: relative;
 
@@ -56,7 +56,7 @@
 
     .TimeInfo {
         display: inline-block;
-        color: @time-color;
+        color: $time-color;
     }
 
     .Indicator {
@@ -68,19 +68,19 @@
         }
 
         &.Ongoing * > {
-            background-color: @live;
-            box-shadow:  0 1px 4px 1px @live;
+            background-color: $live;
+            box-shadow:  0 1px 4px 1px $live;
         }
 
         &.Open * > {
-            background-color: @open;
-            box-shadow: 0 1px 4px 1px @open;
+            background-color: $open;
+            box-shadow: 0 1px 4px 1px $open;
         }
 
         &.Past, &.Upcoming {
             .Circle {
-                background-color: @interior-color;
-                border-color: @border-color;
+                background-color: $interior-color;
+                border-color: $border-color;
                 box-shadow: none;
             }
         }
@@ -93,7 +93,7 @@
         text-align: left;
 
         .Location {
-            color: @text-grey;
+            color: $text-grey;
             font-size: 14px;
             font-weight: 500;
         }
@@ -108,13 +108,13 @@
                     margin-right: 8px;
                     color: #ff6767;
                     &.zero {
-                        color: @num-color;
+                        color: $num-color;
                     }
                 }
             }
             .Finished {
                 .FinishedNum {
-                    color: @num-color;
+                    color: $num-color;
                 }
             }
         }
@@ -125,7 +125,7 @@
     }
 
     .OpenButton {
-        color: @text-grey;
+        color: $text-grey;
         font-size: 30px;
         margin-top: 15px;
         padding-bottom: 10px;

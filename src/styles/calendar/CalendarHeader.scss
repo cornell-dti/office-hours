@@ -95,7 +95,7 @@
             display: flex;
         }
 
-        @media only screen and (max-width: @mobile-breakpoint) {
+        @media only screen and (max-width: $mobile-breakpoint) {
             .mobileHeaderFace {
                 position: absolute;
                 right: 10px;

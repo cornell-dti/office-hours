@@ -1,6 +1,6 @@
-@deselect: #898989;
-@selectprimary: #5f87ef;
-@selectsecondary: #e4efff;
+$deselect: #898989;
+$selectprimary: #5f87ef;
+$selectsecondary: #e4efff;
 
 .ProfessorSidebar {
     height: 100%;
@@ -46,18 +46,18 @@
             width: 100%;
             float: left;
             text-align: left;
-            color: @deselect;
+            color: $deselect;
         }
         button:hover {
-            background-color: @selectsecondary;
-            color: @selectprimary;
+            background-color: $selectsecondary;
+            color: $selectprimary;
         }
 
         .selected {
             margin-left: 0px !important;
-            color: @selectprimary;
-            border-left: solid 5px @selectprimary;
-            background-color: @selectsecondary;
+            color: $selectprimary;
+            border-left: solid 5px $selectprimary;
+            background-color: $selectsecondary;
             font-weight: 500;
 
             i.icon {
