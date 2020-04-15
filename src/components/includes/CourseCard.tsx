@@ -32,7 +32,7 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected }: Props)
     }
     return (
         <div
-            className={'CourseCard' + (selected ? ' selected' : '')}
+            className={'CourseCard' + (selected && editable ? ' selected' : '')}
             onClick={selectCourse}
         >
             <div className="courseText">
