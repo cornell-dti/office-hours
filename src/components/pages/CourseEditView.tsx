@@ -1,6 +1,6 @@
 import * as React from 'react';
-import CourseSelection from '../includes/CourseSelection';
 import { Loader } from 'semantic-ui-react';
+import CourseSelection from '../includes/CourseSelection';
 import { useMyUser, useAllCourses } from '../../firehooks';
 
 export default () => {

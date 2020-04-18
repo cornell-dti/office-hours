@@ -1,8 +1,7 @@
-import * as React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import { Icon } from 'semantic-ui-react';
 import { logOut } from '../../firebasefunctions';
-import { useHistory } from 'react-router';
 
 const TopBar = (props: {
     courseId: string;
@@ -34,7 +33,7 @@ const TopBar = (props: {
                     </div>
                 </div>
             </header>
-            {showMenu && <React.Fragment>
+            {showMenu && <>
                 <ul className="desktop logoutMenu" tabIndex={1}>
                     <li onMouseDown={() => logOut()}>
                         <span><Icon name="sign out" /></span> Log Out
@@ -44,7 +43,7 @@ const TopBar = (props: {
                         Send Feedback
                     </li>
                     {props.role === 'professor' &&
-                        <React.Fragment>
+                        <>
                             {props.context === 'professor' ?
                                 <li onMouseDown={() => history.push('/course/' + props.courseId)}>
                                     <span><Icon name="sync alternate" /></span>
@@ -54,10 +53,10 @@ const TopBar = (props: {
                                     Switch View
                                 </li>
                             }
-                        </React.Fragment>
+                        </>
                     }
                 </ul>
-            </React.Fragment>}
+            </>}
         </div>
     );
 };

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { useHistory } from 'react-router';
 
-import TopBar from '../includes/TopBar';
+import TopBar from './TopBar';
 import QMeLogo from '../../media/QLogo2.svg';
-import CourseCard from '../includes/CourseCard';
+import CourseCard from './CourseCard';
 import { firestore } from '../../firebase';
 
 
@@ -156,18 +156,22 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                 </div>
                 <div className="buttons">
                     {!isEdit && (
-                        <button className="switch" onClick={() => { history.push('/edit'); }}>
+                        <button type="button" className="switch" onClick={() => { history.push('/edit'); }}>
                             Edit
                         </button>
                     )}
                     {isEdit && (
-                        <button className={'save' + (isSaveDisabled ? ' disabled' : '')}
-                            disabled={isSaveDisabled} onClick={onSubmit}>
+                        <button
+                            type="button"
+                            className={'save' + (isSaveDisabled ? ' disabled' : '')}
+                            disabled={isSaveDisabled}
+                            onClick={onSubmit}
+                        >
                             {isNormalEditingMode ? 'Save' : 'Enroll'}
                         </button>
                     )}
                     {isEdit && isNormalEditingMode && (
-                        <button className={'cancel'} onClick={onCancel}>
+                        <button type="button" className={'cancel'} onClick={onCancel}>
                             Cancel
                         </button>
                     )}

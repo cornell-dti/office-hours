@@ -2,13 +2,13 @@ import * as React from 'react';
 
 import { Redirect } from 'react-router';
 import { Icon } from 'semantic-ui-react';
-
-import SelectedTags from '../includes/SelectedTags';
-import SessionAlertModal from './SessionAlertModal';
 import moment from 'moment';
+import * as firebase from 'firebase/app';
+
+import SelectedTags from './SelectedTags';
+import SessionAlertModal from './SessionAlertModal';
 
 import { collectionData, firestore, auth } from '../../firebase';
-import * as firebase from 'firebase/app';
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
@@ -106,7 +106,7 @@ class AddQuestion extends React.Component<Props, State> {
         } else { stage = 30; }
         this.setState({
             location: target.value.length <= LOCATION_CHAR_LIMIT ? target.value : this.state.location,
-            stage: stage
+            stage
         });
     };
 

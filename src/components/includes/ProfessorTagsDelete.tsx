@@ -1,16 +1,16 @@
 import * as React from 'react';
 import { Checkbox } from 'semantic-ui-react';
 
-class ProfessorTagsDelete extends React.Component {
-    props!: {
-        assignmentName: string;
-        isActivated: boolean;
-        numQuestions: number;
-    };
+type Props = {
+    assignmentName: string;
+    isActivated: boolean;
+    numQuestions: number;
+};
 
+class ProfessorTagsDelete extends React.Component<Props> {
     render() {
         return (
-            <React.Fragment>
+            <>
                 <div className="ProfessorTagsDelete">
                     <div className="question">
                         Are you sure you want to delete this tag?
@@ -33,10 +33,10 @@ class ProfessorTagsDelete extends React.Component {
                         </div>
                     </div>
                 </div>
-                <button className="Delete">
+                <button type="button" className="Delete">
                     Delete
                 </button>
-            </React.Fragment>
+            </>
         );
     }
 }

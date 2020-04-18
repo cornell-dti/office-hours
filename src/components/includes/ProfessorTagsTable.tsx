@@ -12,7 +12,7 @@ const ProfessorTagsTable = (props: { courseId: string }) => {
     const tags = useQuery<FireTag>(props.courseId, getQuery, 'tagId');
 
     return (
-        <React.Fragment>
+        <>
             <div className="Spacing" />
             <div className="ProfessorTagsTable">
                 <table className="Tags">
@@ -37,7 +37,7 @@ const ProfessorTagsTable = (props: { courseId: string }) => {
                         )}
                 </table>
             </div>
-        </React.Fragment>
+        </>
     );
 };
 

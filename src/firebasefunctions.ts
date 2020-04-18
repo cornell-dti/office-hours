@@ -244,6 +244,7 @@ const importProfessorsOrTAs = async (
         'Successfully\n' +
         `updated: [${updatedUsers.map((user) => user.email).join(', ')}];\n` +
         `[${Array.from(missingSet).join(', ')}] do not exist in our system yet.`;
+    // eslint-disable-next-line no-alert
     alert(message);
 };
 
@@ -254,9 +255,8 @@ const addOrRemoveFromRoleIdList = (
 ): readonly string[] => {
     if (isAdd) {
         return roleIdList.includes(userId) ? roleIdList : [...roleIdList, userId];
-    } else {
-        return roleIdList.filter((id) => id !== userId);
     }
+    return roleIdList.filter((id) => id !== userId);
 };
 
 export const changeRole = (
@@ -282,6 +282,7 @@ export const importProfessorsOrTAsFromPrompt = (
     course: FireCourse,
     role: 'professor' | 'ta'
 ): void => {
+    // eslint-disable-next-line no-alert
     const response = prompt(
         `Please enter a comma-separated list of ${role === 'professor' ? role : 'TA'} emails:`
     );

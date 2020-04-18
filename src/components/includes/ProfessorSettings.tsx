@@ -44,7 +44,7 @@ class ProfessorSettings extends React.Component<Props, State> {
 
     render() {
         return (
-            <React.Fragment>
+            <>
                 <div className="ProfessorSettings">
                     <div className="title">
                         Settings
@@ -67,6 +67,7 @@ class ProfessorSettings extends React.Component<Props, State> {
                     <div className="settingDesc">
                         The character limit for the queue is &nbsp;
                         <button
+                            type="button"
                             className="decrement"
                             onClick={() => this.setState({
                                 charLimit: Math.max(this.state.charLimit - CHAR_INCREMENT, 0)
@@ -81,6 +82,7 @@ class ProfessorSettings extends React.Component<Props, State> {
                             onChange={(e) => this.handleCharLimit(e.target.value)}
                         />
                         <button
+                            type="button"
                             className="increment"
                             onClick={() => this.setState({
                                 charLimit: Math.min(this.state.charLimit + CHAR_INCREMENT, 999)
@@ -91,6 +93,7 @@ class ProfessorSettings extends React.Component<Props, State> {
                     </div>
                 </div>
                 <button
+                    type="button"
                     className="Action"
                     onClick={() => {
                         this.updateCourseSettings();
@@ -99,7 +102,7 @@ class ProfessorSettings extends React.Component<Props, State> {
                 >
                     Save
                 </button>
-            </React.Fragment>
+            </>
         );
     }
 }

@@ -78,6 +78,7 @@ const ProfessorCalendarRow = (props: {
                         <td>{props.sessions[i].building} {props.sessions[i].room}</td>
                         <td>
                             <button
+                                type="button"
                                 className="Edit"
                                 onClick={() => toggleEdit(i)}
                             >
@@ -86,6 +87,7 @@ const ProfessorCalendarRow = (props: {
                         </td>
                         <td>
                             <button
+                                type="button"
                                 className="Delete"
                                 onClick={() => updateDeleteInfo(props.dayNumber, i)}
                             >
@@ -104,6 +106,7 @@ const ProfessorCalendarRow = (props: {
                                 toggleEdit={() => toggleEdit(i)}
                             />
                             <button
+                                type="button"
                                 className="Bottom Delete"
                                 onClick={() => updateDeleteInfo(props.dayNumber, i)}
                             >
