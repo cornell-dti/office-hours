@@ -1,20 +1,19 @@
-import * as React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
+import { combineLatest, Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import moment from 'moment';
+import { DateRangePicker } from 'react-dates';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import QuestionsPieChart from '../includes/QuestionsPieChart';
 import QuestionsLineChart from '../includes/QuestionsLineChart';
 import QuestionsBarChart from '../includes/QuestionsBarChart';
 // import AverageWaitTimes from '../includes/AverageWaitTimes';
 import 'react-dates/initialize';
-import { DateRangePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
-import moment from 'moment';
 import { useMyUser, useCourse, useCourseUsersMap } from '../../firehooks';
 import TopBar from '../includes/TopBar';
 import { firestore, collectionData } from '../../firebase';
-import { combineLatest, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 
 const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) => {
     const courseId = props.match.params.courseId;
@@ -25,7 +24,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
 
     const user = useMyUser();
     const course = useCourse(courseId);
-    const courseUsers = useCourseUsersMap(courseId);
+    const courseUsers = useCourseUsersMap(courseId, true);
 
     const [sessions, setSessions] = useState<FireSession[]>([]);
     const [questions, setQuestions] = useState<FireQuestion[][]>([]);

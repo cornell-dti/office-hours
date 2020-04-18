@@ -1,103 +1,10 @@
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Dropdown, Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
 
 import { firestore } from '../../firebase';
 import { useCourse, useCourseUsers } from '../../firehooks';
-
-const getUserRoleUpdate = (
-    user: FireUser,
-    courseId: string,
-    role: FireCourseRole
-): Partial<FireUser> => {
-    const courses = [...user.courses];
-    if (!courses.includes(courseId)) {
-        courses.push(courseId);
-    }
-    const roles = { ...user.roles };
-    if (role === 'student') {
-        delete roles[courseId];
-    } else {
-        roles[courseId] = role;
-    }
-    return { courses, roles };
-};
-
-const getCourseRoleUpdate = (
-    course: FireCourse,
-    userId: string,
-    newRole: FireCourseRole
-): Partial<FireCourse> => ({
-    professors: addOrRemoveFromRoleIdList(
-        newRole === 'professor',
-        course.professors,
-        userId
-    ),
-    tas: addOrRemoveFromRoleIdList(
-        newRole === 'ta',
-        course.tas,
-        userId
-    )
-});
-
-const getCourseRoleUpdates = (
-    course: FireCourse,
-    userRoleUpdates: readonly (readonly [string, FireCourseRole])[]
-): Partial<FireCourse> => {
-    const professors = userRoleUpdates.reduce(
-        (previousProfessors, [userId, newRole]) => (
-            addOrRemoveFromRoleIdList(newRole === 'professor', previousProfessors, userId)
-        ),
-        course.professors
-    );
-    const tas = userRoleUpdates.reduce(
-        (previousTAs, [userId, newRole]) => (
-            addOrRemoveFromRoleIdList(newRole === 'ta', previousTAs, userId)
-        ),
-        course.tas
-    );
-    return { professors, tas };
-};
-
-const addTa = async (
-    course: FireCourse,
-    taEmailList: readonly string[]
-): Promise<void> => {
-    const taUserDocuments = await firestore.collection('users').where('email', 'in', taEmailList).get();
-    const missingSet = new Set(taEmailList);
-    const batch = firestore.batch();
-    const updatedUsers: FireUser[] = [];
-    taUserDocuments.forEach(document => {
-        const existingUser = { userId: document.id, ...document.data() } as FireUser;
-        const { email } = existingUser;
-        const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, 'ta');
-        batch.update(firestore.collection('users').doc(existingUser.userId), roleUpdate);
-        updatedUsers.push(existingUser);
-        missingSet.delete(email);
-    });
-    batch.update(
-        firestore.collection('courses').doc(course.courseId),
-        getCourseRoleUpdates(course, updatedUsers.map(user => [user.userId, 'ta'] as const))
-    );
-    await batch.commit();
-    const message = 'Successfully\n'
-        + `updated: [${updatedUsers.map(user => user.email).join(', ')}];\n`
-        + `[${Array.from(missingSet).join(', ')}] do not exist in our system yet.`;
-    alert(message);
-};
-
-const addOrRemoveFromRoleIdList = (
-    isAdd: boolean,
-    roleIdList: readonly string[],
-    userId: string
-): readonly string[] => {
-    if (isAdd) {
-        return roleIdList.includes(userId) ? roleIdList : [...roleIdList, userId];
-    } else {
-        return roleIdList.filter(id => id !== userId);
-    }
-};
+import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions';
 
 const RoleDropdown = ({ user, course }: {
     readonly user: EnrichedFireUser;
@@ -111,19 +18,7 @@ const RoleDropdown = ({ user, course }: {
                 { key: 2, text: 'TA', value: 'ta' },
                 { key: 3, text: 'Professor', value: 'professor' },
             ]}
-            onChange={(e, newValue) => {
-                const newRole = newValue.value as FireCourseRole;
-                const batch = firestore.batch();
-                batch.update(
-                    firestore.collection('users').doc(user.userId),
-                    getUserRoleUpdate(user, course.courseId, newRole)
-                );
-                batch.update(
-                    firestore.collection('courses').doc(course.courseId),
-                    getCourseRoleUpdate(course, user.userId, newRole)
-                );
-                batch.commit();
-            }}
+            onChange={(e, newValue) => changeRole(firestore, user, course, newValue.value as FireCourseRole)}
         />
     );
 };
@@ -145,12 +40,16 @@ export default ({ courseId }: { courseId: string }) => {
         return direction === 'ascending' ? sorted : sorted.reverse();
     })();
 
-    const importTAButtonOnClick = (): void => {
-        const response = prompt('Please enter a comma-separated list of TA emails:');
-        if (response == null || course == null) {
-            return;
+    const importProfessorsButtonOnClick = (): void => {
+        if (course != null) {
+            importProfessorsOrTAsFromPrompt(firestore, course, 'professor');
         }
-        addTa(course, response.split(',').map(email => email.trim()));
+    };
+
+    const importTAButtonOnClick = (): void => {
+        if (course != null) {
+            importProfessorsOrTAsFromPrompt(firestore, course, 'ta');
+        }
     };
 
     const handleSort = (clickedColumn: columnT) => () => {
@@ -195,7 +94,10 @@ export default ({ courseId }: { courseId: string }) => {
             <Table.Body>
                 <Table.Row>
                     <Table.Cell>
-                        <button onClick={importTAButtonOnClick}>Import TAs</button>
+                        <button type="button" onClick={importProfessorsButtonOnClick}>Import Professors</button>
+                    </Table.Cell>
+                    <Table.Cell>
+                        <button type="button" onClick={importTAButtonOnClick}>Import TAs</button>
                     </Table.Cell>
                 </Table.Row>
                 {course && sortedCourseUsers.map(u => (

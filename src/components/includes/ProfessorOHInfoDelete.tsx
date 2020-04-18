@@ -22,12 +22,13 @@ import { useSessionTANames } from '../../firehooks';
 // `;
 
 type Props = {
+    readonly course: FireCourse;
     readonly session: FireSession;
     readonly toggleDelete: () => void;
     readonly toggleEdit: () => void;
 };
 
-const ProfessorOHInfoDelete = ({ session, toggleDelete, toggleEdit }: Props) => {
+const ProfessorOHInfoDelete = ({ course, session, toggleDelete, toggleEdit }: Props) => {
     const [isChecked, setIsChecked] = useState(false);
 
     const toggleCheckbox = () => setIsChecked(previous => !previous);
@@ -49,10 +50,10 @@ const ProfessorOHInfoDelete = ({ session, toggleDelete, toggleEdit }: Props) => 
     const timeEnd = moment(session.endTime.toDate()).format('h:mm A');
 
     const disable = moment(session.startTime.toDate()).isBefore();
-    const taList = useSessionTANames(session);
+    const taList = useSessionTANames(course, session);
 
     return (
-        <React.Fragment>
+        <>
             <div className="ProfessorOHInfoDelete">
                 <div className="question">
                     Are you sure you want to delete this office hour?
@@ -85,6 +86,7 @@ const ProfessorOHInfoDelete = ({ session, toggleDelete, toggleEdit }: Props) => 
                 {disable && <div className="EndedText">This session has already passed!</div>}
             </div>
             <button
+                type="button"
                 className="Delete"
                 onClick={() => {
                     _deleteSessionOrSeries();
@@ -95,7 +97,7 @@ const ProfessorOHInfoDelete = ({ session, toggleDelete, toggleEdit }: Props) => 
             >
                 Delete
             </button>
-        </React.Fragment>
+        </>
     );
 };
 

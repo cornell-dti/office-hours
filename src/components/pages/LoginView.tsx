@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
+import { useHistory } from 'react-router-dom';
 
 import firebase, { app, firestore } from '../../firebase';
-import { useHistory } from 'react-router-dom';
 import { userUpload } from '../../firebasefunctions';
 
 import QMeLogo from '../../media/QLogo2.svg';
@@ -29,9 +29,9 @@ const LoginView: React.FC = () => {
 
     if (showContact) {
         return (
-            <div className="LoginView"> >
+            <div className="LoginView contact">
                 <section className="topPanel contact">
-                    <button className="x" onClick={() => setShowContact(false)}>
+                    <button type="button" className="x" onClick={() => setShowContact(false)}>
                         <Icon name="x" />
                     </button>
                     <img src={QMeLogo} className="QMeLogo" alt="Queue Me In Logo" />
@@ -55,13 +55,13 @@ const LoginView: React.FC = () => {
             <section className="topPanel">
                 <img src={QMeLogo} className="QMeLogo" alt="Queue Me In Logo" />
                 Office Hours Simplified
-                <button className="contactText" onClick={() => setShowContact(true)}>
+                <button type="button" className="contactText" onClick={() => setShowContact(true)}>
                     Interested in using Queue Me In for<br />your students?
                 </button>
             </section>
             <section className="bottomPanel">
                 <p className="hintText" >Use your Cornell NetID to login</p>
-                <button className="loginButton" onClick={auth}>
+                <button type="button" className="loginButton" onClick={auth}>
                     <img src={googleLogo} className="googleLogo" alt="Google Login Logo" />
                     <span className="loginButtonText">Sign in with Google</span>
                 </button>

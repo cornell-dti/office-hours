@@ -1,0 +1,32 @@
+$primary-tag-selected: #d6eafe;
+$secondary-tag: #bf7913;
+$secondary-tag-selected: #ffdba6;
+
+.tag {
+    font-weight: normal;
+    display: inline-block;
+    font-size: 13px;
+    border: 0.5px solid;
+    padding: 2px 10px;
+    margin: 0 6px 0 0;
+    border-radius: 12px;
+    cursor: pointer;
+
+    &.primaryTag {
+        color: $tag-blue;
+        border-color: $tag-blue;
+        &.selectedTag {
+            background: $primary-tag-selected;
+            border-color: $primary-tag-selected;
+        }
+    }
+
+    &.secondaryTag {
+        color: $secondary-tag;
+        border-color: $secondary-tag;
+        &.selectedTag {
+            background: $secondary-tag-selected;
+            border-color: $secondary-tag-selected;
+        }
+    }
+}

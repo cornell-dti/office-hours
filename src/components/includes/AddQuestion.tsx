@@ -2,13 +2,13 @@ import * as React from 'react';
 
 import { Redirect } from 'react-router';
 import { Icon } from 'semantic-ui-react';
-
-import SelectedTags from '../includes/SelectedTags';
-import SessionAlertModal from './SessionAlertModal';
 import moment from 'moment';
+import * as firebase from 'firebase/app';
+
+import SelectedTags from './SelectedTags';
+import SessionAlertModal from './SessionAlertModal';
 
 import { collectionData, firestore, auth } from '../../firebase';
-import * as firebase from 'firebase/app';
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
@@ -106,7 +106,7 @@ class AddQuestion extends React.Component<Props, State> {
         } else { stage = 30; }
         this.setState({
             location: target.value.length <= LOCATION_CHAR_LIMIT ? target.value : this.state.location,
-            stage: stage
+            stage
         });
     };
 
@@ -121,18 +121,26 @@ class AddQuestion extends React.Component<Props, State> {
     public addQuestion = () => {
         if (auth.currentUser != null && this.state.selectedPrimary != null &&
             this.state.selectedSecondary != null) {
-            const newQuestion: Omit<FireQuestion, 'questionId'> = {
+            const batch = firestore.batch();
+            const questionId = firestore.collection('questions').doc().id;
+            const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
                 askerId: auth.currentUser.uid,
+                sessionId: this.props.session.sessionId,
+                status: 'unresolved',
+                timeEntered: firebase.firestore.Timestamp.now()
+            };
+            const newQuestion: Omit<FireQuestion, 'questionId'> = {
+                ...newQuestionSlot,
                 answererId: '',
                 content: this.state.question,
                 location: this.state.location,
-                sessionId: this.props.session.sessionId,
-                status: 'unresolved',
-                timeEntered: firebase.firestore.Timestamp.now(),
                 primaryTag: this.state.selectedPrimary.tagId,
                 secondaryTag: this.state.selectedSecondary.tagId
             };
-            firestore.collection('questions').add(newQuestion);
+            batch.set(firestore.collection('questionSlots').doc(questionId), newQuestionSlot);
+            batch.set(firestore.collection('questions').doc(questionId), newQuestion);
+            batch.commit();
+
             this.setState({ redirect: true });
         }
     };
@@ -220,10 +228,14 @@ class AddQuestion extends React.Component<Props, State> {
 
                             <div className="tagsMiniContainer">
                                 <p className="header">
-                                    Location <span
+                                    Location or Zoom Link<span
                                         className={'characterCount ' + (this.state.location.length >= 40 ? 'warn' : '')}
                                     >
-                                        {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                        (
+                                        {LOCATION_CHAR_LIMIT - this.state.location.length}
+                                        {' '}
+                                        character{LOCATION_CHAR_LIMIT - this.state.location.length !== 1 && 's'} left
+                                        )
                                     </span>
                                 </p>
                                 {this.state.stage >= 30 ?
@@ -233,7 +245,7 @@ class AddQuestion extends React.Component<Props, State> {
                                             className="TextInput location"
                                             value={this.state.location}
                                             onChange={this.handleUpdateLocation}
-                                            placeholder="Where will you be?"
+                                            placeholder="What is your zoom link?"
                                         />
                                     </div>
                                     : <p className="placeHolder text">Finish selecting tags...</p>}
@@ -241,7 +253,7 @@ class AddQuestion extends React.Component<Props, State> {
                             <hr />
                             <div className="tagsMiniContainer">
                                 <p className="header">
-                                    Question
+                                    {'Question '}
                                     <span className={'characterCount ' + (questionCharsLeft <= 0 ? 'warn' : '')} >
                                         ({questionCharsLeft} character{questionCharsLeft !== 1 && 's'} left)
                                     </span>
@@ -275,6 +287,7 @@ class AddQuestion extends React.Component<Props, State> {
                             + '. Consider adding yourself to a later queue.'}
                         buttons={['Cancel Question', 'Add Anyway']}
                         cancelAction={this.handleXClick}
+                        course={this.props.course}
                         mainAction={() => this.handleJoinClick()}
                         displayShade={this.state.width < this.props.mobileBreakpoint}
                     />

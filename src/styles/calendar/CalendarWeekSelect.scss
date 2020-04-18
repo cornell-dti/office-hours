@@ -1,0 +1,35 @@
+.CalendarWeekSelect {
+    background-color: white;
+    color: $text-grey;
+    font-size: 13px;
+    padding: 15px;
+    display: flex;
+    flex-direction: row;
+    border-top: solid 2px #ebebeb;
+    justify-content: center;
+    align-items: center;
+    margin: 0px 20px;
+    clear: both;
+
+    .LastWeek, .NextWeek {
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 30px;
+        padding: 10px 10px 15px 10px;
+    }
+
+    .CurrentWeek {
+        font-size: 24px;
+        min-width: 220px;
+        .Date {
+            padding: 0px 14px;
+            .Month {
+                font-weight: 500;
+            }
+        }
+    }
+}
+
+.flipped {
+    transform: scaleX(-1);
+}

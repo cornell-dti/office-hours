@@ -10,13 +10,15 @@ type Props = {
     session: FireSession;
     course: FireCourse;
     callback: Function;
-    myUserId?: string;
+    user: FireUser;
     isDesktop: boolean;
 };
 
-const SessionInformationHeader = ({ session, course, callback, myUserId, isDesktop }: Props) => {
-    const tas = useSessionTAs(session);
-    const numAhead = computeNumberAhead(useSessionQuestions(session.sessionId), myUserId || '');
+const SessionInformationHeader = ({ session, course, callback, user, isDesktop }: Props) => {
+    const tas = useSessionTAs(course, session);
+    const numAhead = computeNumberAhead(
+        useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined), user.userId
+    );
 
     if (isDesktop) {
         return (
@@ -37,12 +39,12 @@ const SessionInformationHeader = ({ session, course, callback, myUserId, isDeskt
                         <Icon name="calendar alternate outline" />
                         <Moment date={session.startTime.seconds * 1000} interval={0} format={'dddd, MMM D'} />
                     </p>
-                    <p>{session.title || (<React.Fragment>
+                    <p>{session.title || (<>
                         Held by
                         <span className="black">
                             {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(' and ')}
                         </span>
-                    </React.Fragment>)}</p>
+                    </>)}</p>
                 </div>
                 <div className="QueueWrap">
                     <div className="QueueInfo">
@@ -68,8 +70,8 @@ const SessionInformationHeader = ({ session, course, callback, myUserId, isDeskt
                 <div className="CourseInfo">
                     <div className="CourseDetails">
                         <p className="Location">{session.building + ' ' + session.room}</p>
-                        <Moment date={session.startTime} interval={0} format={'h:mm A'} />
-                        <Moment date={session.endTime} interval={0} format={' - h:mm A'} />
+                        <Moment date={session.startTime.toDate()} interval={0} format={'h:mm A'} />
+                        <Moment date={session.endTime.toDate()} interval={0} format={' - h:mm A'} />
                     </div>
                     <div className="Picture">
                         <img
@@ -95,15 +97,15 @@ const SessionInformationHeader = ({ session, course, callback, myUserId, isDeskt
                 <div className="OfficeHourInfo">
                     <div className="OfficeHourDate">
                         <p><Icon name="calendar" />
-                            <Moment date={session.startTime} interval={0} format={'dddd, D MMM'} />
+                            <Moment date={session.startTime.toDate()} interval={0} format={'dddd, D MMM'} />
                         </p>
                     </div>
-                    <p>{session.title || (<React.Fragment>
+                    <p>{session.title || (<>
                         Held by
                         <span className="black">
                             {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(' and ')}
                         </span>
-                    </React.Fragment>)}
+                    </>)}
                     </p>
                 </div>
             </div>

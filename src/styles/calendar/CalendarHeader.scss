@@ -1,0 +1,110 @@
+.Header {
+    position: relative;
+    box-shadow: 0 1px 6px 1px rgba(208, 208, 208, 0.47);
+    background-color: white;
+    height: 46px;
+
+    .LogoContainer {
+        float: left;
+        width: 90px;
+        height: 100%;
+        // padding-top: 9px; // Manual vertical align
+
+        .QMeLogo {
+            display: block;
+            margin: auto;
+            width: 28px;
+            padding: 9px 0;
+        }
+    }
+
+    .CalendarHeader>span {
+        line-height: 25px;
+        padding: 0 10px;
+    }
+
+    .CalendarHeader {
+        background: #7ab7fe;
+        background-image: linear-gradient(74deg, #668ae9, #6db9ea);
+        color: white;
+        height: 100%;
+        font-size: 15px;
+        font-weight: 500;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+
+        .TAMarker {
+            justify-content: center;
+            border-radius: 3px;
+            color: #7ab7fe;
+            background-color: white;
+            margin: 0px 10px;
+            width: 44px;
+
+            &.Professor {
+                width: 60px;
+            }
+        }
+
+        .RotateDown {
+            transform: rotate(90deg); // Temporary fix for icon placeholder
+            cursor: pointer;
+            filter: brightness(0) invert(1);
+            padding: 0 10px;
+        }
+
+        .logoutMenu {
+            span {
+                padding-right: 10px;
+            }
+        }
+
+        .courseMenu {
+            margin-left: 90px;
+            width: 300px;
+            position: fixed;
+            top: 45px;
+            overflow: hidden;
+            bottom: auto;
+            box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
+            padding: 0;
+
+            button {
+                font-size: 15px;
+                font-weight: 500;
+                text-align: center;
+            }
+
+            .editClasses {
+                font-size: 13px;
+                text-align: left;
+                padding-left: 20px;
+                color: white;
+                background-color: #77bbfa;
+                z-index: 2;
+            }
+        }
+
+        .mobileHeaderFace {
+            display: none;
+        }
+
+        span {
+            display: flex;
+        }
+
+        @media only screen and (max-width: $mobile-breakpoint) {
+            .mobileHeaderFace {
+                position: absolute;
+                right: 10px;
+                top: 10px;
+                height: 24px;
+                border-radius: 28px;
+                display: inline;
+                cursor: pointer;
+            }
+        }
+    }
+}

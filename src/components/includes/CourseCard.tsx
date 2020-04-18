@@ -32,7 +32,7 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected }: Props)
     }
     return (
         <div
-            className={'CourseCard' + (selected ? ' selected' : '')}
+            className={'CourseCard' + (selected && editable ? ' selected' : '')}
             onClick={selectCourse}
         >
             <div className="courseText">
@@ -45,10 +45,14 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected }: Props)
                 </div>
             </div>
             <div className="courseColor">
-                {editable && (
+                {editable ? (
                     selected
                         ? <Icon className="icon" name="check" />
                         : <Icon className="icon" name="plus" />
+                ) : (
+                    <div>
+                        Go to course
+                    </div>
                 )}
             </div>
         </div>

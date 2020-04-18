@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 
-import { firestore, loggedIn$ } from './firebase';
+import * as firebase from 'firebase/app';
 import { collectionData, docData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { firestore, loggedIn$ } from './firebase';
 import {
     SingletonObservable,
     createUseSingletonObservableHook,
@@ -90,10 +91,14 @@ const courseUserQuery = (courseId: string) => (
     firestore.collection('users').where('courses', 'array-contains', courseId)
 );
 export const useCourseUsers = createUseParamaterizedSingletonObservableHook(courseId =>
-    new SingletonObservable([], collectionData<FireUser>(courseUserQuery(courseId), 'userId'))
+    new SingletonObservable(
+        [],
+        courseId === '' ? of([]) : collectionData<FireUser>(courseUserQuery(courseId), 'userId')
+    )
 );
-export const useCourseUsersMap = (courseId: string): { readonly [userId: string]: FireUser } => {
-    const courseUsers = useCourseUsers(courseId);
+type FireUserMap = { readonly [userId: string]: FireUser };
+export const useCourseUsersMap = (courseId: string, canReadUsers: boolean): FireUserMap => {
+    const courseUsers = useCourseUsers(canReadUsers ? courseId : '');
     const map: { [userId: string]: FireUser } = {};
 
     courseUsers.forEach(user => {
@@ -103,9 +108,42 @@ export const useCourseUsersMap = (courseId: string): { readonly [userId: string]
     return map;
 };
 
+const dummyProfessorOrTAList = ['DUMMY'];
+const courseProfessorOrTaQuery = (professorsOrTas: readonly string[]) => (
+    firestore
+        .collection('users')
+        .where(
+            firebase.firestore.FieldPath.documentId(),
+            'in',
+            professorsOrTas.length === 0 ? dummyProfessorOrTAList : professorsOrTas
+        )
+);
+const useCourseCourseProfessorOrTaMap = (course: FireCourse, type: 'professor' | 'ta'): FireUserMap => {
+    const courseUsers = useQuery<FireUser, readonly string[]>(
+        type === 'professor' ? course.professors : course.tas,
+        courseProfessorOrTaQuery,
+        'userId'
+    );
+    const map: { [userId: string]: FireUser } = {};
+
+    courseUsers.forEach(user => {
+        map[user.userId] = user;
+    });
+
+    return map;
+};
+export const useCourseProfessorMap = (course: FireCourse): FireUserMap => (
+    useCourseCourseProfessorOrTaMap(course, 'professor')
+);
+export const useCourseTAMap = (course: FireCourse): FireUserMap => useCourseCourseProfessorOrTaMap(course, 'ta');
+
+
 const dummySession = { courseId: 'DUMMY', tas: [] };
-export const useSessionTAs = (session: Pick<FireSession, 'courseId' | 'tas'> = dummySession): readonly FireUser[] => {
-    const courseUsers = useCourseUsersMap(session.courseId);
+export const useSessionTAs = (
+    course: FireCourse,
+    session: Pick<FireSession, 'courseId' | 'tas'> = dummySession,
+): readonly FireUser[] => {
+    const courseUsers = { ...useCourseProfessorMap(course), ...useCourseTAMap(course) };
     const tas: FireUser[] = [];
     session.tas.forEach(userId => {
         const courseUser = courseUsers[userId];
@@ -116,16 +154,26 @@ export const useSessionTAs = (session: Pick<FireSession, 'courseId' | 'tas'> = d
     });
     return tas;
 };
-export const useSessionTANames = (session: Pick<FireSession, 'courseId' | 'tas'> = dummySession): readonly string[] => (
-    useSessionTAs(session).map(courseUser => `${courseUser.firstName} ${courseUser.lastName}`)
+export const useSessionTANames = (
+    course: FireCourse,
+    session: Pick<FireSession, 'courseId' | 'tas'> = dummySession
+): readonly string[] => (
+    useSessionTAs(course, session).map(courseUser => `${courseUser.firstName} ${courseUser.lastName}`)
 );
 
 const getSessionQuestionsQuery = (sessionId: string) => firestore.collection('questions')
     .where('sessionId', '==', sessionId)
     .orderBy('timeEntered', 'asc');
-export const useSessionQuestions = createUseParamaterizedSingletonObservableHook(sessionId =>
-    new SingletonObservable([], collectionData<FireQuestion>(getSessionQuestionsQuery(sessionId), 'questionId'))
-);
+const getSessionQuestionSlotsQuery = (sessionId: string) => firestore.collection('questionSlots')
+    .where('sessionId', '==', sessionId)
+    .orderBy('timeEntered', 'asc');
+const useParameterizedSessionQuestions = createUseParamaterizedSingletonObservableHook(parameter => {
+    const [sessionId, isTA] = parameter.split('/');
+    const query = isTA === 'true' ? getSessionQuestionsQuery(sessionId) : getSessionQuestionSlotsQuery(sessionId);
+    return new SingletonObservable([], collectionData<FireQuestion>(query, 'questionId'));
+});
+export const useSessionQuestions = (sessionId: string, isTA: boolean): FireQuestion[] =>
+    useParameterizedSessionQuestions(`${sessionId}/${isTA}`);
 
 // Primatives
 // Look up a doc in Firebase by ID

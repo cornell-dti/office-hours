@@ -1,7 +1,6 @@
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Icon, DropdownItemProps } from 'semantic-ui-react';
-import ProfessorOHInfo from '../includes/ProfessorOHInfo';
+import ProfessorOHInfo from './ProfessorOHInfo';
 import ProfessorTagInfo from './ProfessorTagInfo';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -15,14 +14,14 @@ const ProfessorAddNew = (props: {
     return (
         <div className="ProfessorAddNew">
             <div className={'Add ' + !editVisible}>
-                <button className="NewOHButton" onClick={() => setEditVisible(true)}>
+                <button type="button" className="NewOHButton" onClick={() => setEditVisible(true)}>
                     <Icon name="plus" />
                     {text}
                 </button>
             </div>
             <div className={'ExpandedAdd ' + editVisible}>
                 <div className="NewOHHeader">
-                    <button className="ExpandedNewOHButton" onClick={() => setEditVisible(false)}>
+                    <button type="button" className="ExpandedNewOHButton" onClick={() => setEditVisible(false)}>
                         <Icon name="plus" />
                         {text}
                     </button>

@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-
-import TopBar from '../includes/TopBar';
-import SessionInformationHeader from '../includes/SessionInformationHeader';
-import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
-
 import { Icon } from 'semantic-ui-react';
-import { useCourseTags, useCourseUsersMap } from '../../firehooks';
+
+import TopBar from './TopBar';
+import SessionInformationHeader from './SessionInformationHeader';
+import SessionQuestionsContainer from './SessionQuestionsContainer';
+
+import { useCourseTags, useCourseUsersMap, useSessionQuestions } from '../../firehooks';
+import { filterUnresolvedQuestions } from '../../utilities/questions';
 // import SessionAlertModal from './SessionAlertModal';
 
 type Props = {
     course: FireCourse;
     session: FireSession;
-    questions: FireQuestion[];
+    questions: readonly FireQuestion[];
     isDesktop: boolean;
     backCallback: Function;
     joinCallback: Function;
@@ -31,11 +32,15 @@ type AbsentState = {
     lastAskedQuestion: FireQuestion | null;
 };
 
-const SessionViewInHooks = (
+const SessionView = (
     { course, session, questions, isDesktop, backCallback, joinCallback, user }: Props
 ) => {
+    const isTa = user.roles[course.courseId] !== undefined;
     const tags = useCourseTags(course.courseId);
-    const users = useCourseUsersMap(course.courseId);
+    const users = useCourseUsersMap(course.courseId, isTa);
+
+    // console.log('dd');
+
     const [
         { undoAction, undoName, undoQuestionId, timeoutId },
         setUndoState
@@ -99,6 +104,8 @@ const SessionViewInHooks = (
         });
     };
 
+    // RYAN_TODO: implement UNDO feature
+    /*
     const handleUndoClick = (undoQuestion: Function, status: string, refetch: Function) => {
         undoQuestion({
             variables: {
@@ -107,6 +114,7 @@ const SessionViewInHooks = (
             }
         });
     };
+    */
 
     const isOpen = (session: FireSession, interval: number): boolean => {
         const intervalInMilliseconds = interval * 1000 * 60;
@@ -121,33 +129,28 @@ const SessionViewInHooks = (
     );
 
     let undoText = '';
-    let undoStatus = 'unresolved';
+    // RYAN_TODO: implement UNDO feature
+    // let undoStatus = 'unresolved';
     if (undoAction) {
         if (undoAction === 'resolved') {
             undoText = undoName + ' has been resolved! ';
-            undoStatus = 'assigned';
+            // undoStatus = 'assigned';
         } else if (undoAction === 'no-show') {
             undoText = undoName + ' has been marked as a no-show. ';
-            undoStatus = 'assigned';
+            // undoStatus = 'assigned';
         } else if (undoAction === 'retracted') {
             undoText = 'You have removed your question. ';
-            undoStatus = 'unresolved';
+            // undoStatus = 'unresolved';
         } else if (undoAction === 'assigned') {
             undoText = undoName + ' has been assigned to you! ';
-            undoStatus = 'unresolved';
+            // undoStatus = 'unresolved';
         }
     }
+
 
     // First check that the session is not ended yet.
     const haveAnotherQuestion = new Date(session.endTime.toDate()) >= new Date()
         && questions.some(({ askerId, status }) => askerId === user.userId && status === 'unresolved');
-
-    const userQuestions = questions.filter(question => question.askerId === user.userId);
-    const lastAskedQuestion = userQuestions.length > 0 ?
-        userQuestions.reduce(
-            (prev, current) => prev.timeEntered.toDate() > current.timeEntered.toDate() ? prev : current
-        )
-        : null;
 
     return (
         <section className="StudentSessionView">
@@ -162,7 +165,7 @@ const SessionViewInHooks = (
             <SessionInformationHeader
                 session={session}
                 course={course}
-                myUserId={user.userId}
+                user={user}
                 callback={backCallback}
                 isDesktop={isDesktop}
             />
@@ -176,7 +179,7 @@ const SessionViewInHooks = (
                         <span
                             className="undoLink"
                             // RYAN_TODO
-                            // onClick={() => this.handleUndoClick(undoQuestion, refetch)}
+                            // onClick={() => this._handleUndoClick(undoQuestion, refetch)}
                         >
                             Undo
                         </span>
@@ -185,7 +188,7 @@ const SessionViewInHooks = (
             }
             {/* FUTURE_TODO - Just pass in the session and not a bunch of bools */}
             <SessionQuestionsContainer
-                isTA={user.roles[course.courseId] !== undefined}
+                isTA={isTa}
                 questions={questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
                 users={users}
                 tags={tags}
@@ -212,4 +215,8 @@ const SessionViewInHooks = (
     );
 };
 
-export default SessionViewInHooks;
+export default (props: Omit<Props, 'questions'>) => {
+    const isTa = props.user.roles[props.course.courseId] !== undefined;
+    const questions = filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));
+    return <SessionView questions={questions} {...props} />;
+};

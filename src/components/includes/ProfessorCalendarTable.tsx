@@ -1,12 +1,12 @@
 import * as React from 'react';
+import { DropdownItemProps } from 'semantic-ui-react';
 import ProfessorCalendarRow from './ProfessorCalendarRow';
 import ProfessorDelete from './ProfessorDelete';
 import ProfessorOHInfoDelete from './ProfessorOHInfoDelete';
 
-import { DropdownItemProps } from 'semantic-ui-react';
-
 type Props = {
     courseId: string;
+    course?: FireCourse;
     sessions: FireSession[];
     taOptions: DropdownItemProps[];
 };
@@ -46,7 +46,7 @@ class ProfessorCalendarTable extends React.Component<Props, State> {
         for (let i = 0; i < 7; i++) {
             isExpanded.push(new Array<boolean>(sessionsLength).fill(false));
         }
-        this.setState({ isExpanded: isExpanded });
+        this.setState({ isExpanded });
     }
 
     toggleEdit = (day: number, row: number, forceClose?: boolean) => {
@@ -72,10 +72,7 @@ class ProfessorCalendarTable extends React.Component<Props, State> {
     };
 
     updateDeleteInfo = (dayIndex: number, rowIndex: number) => {
-        this.setState({
-            dayIndex: dayIndex,
-            rowIndex: rowIndex
-        });
+        this.setState({ dayIndex, rowIndex });
     };
 
     updateDeleteVisible = (toggle: boolean) => {
@@ -139,11 +136,12 @@ class ProfessorCalendarTable extends React.Component<Props, State> {
                         isDeleteVisible={this.state.isDeleteVisible}
                         updateDeleteVisible={this.updateDeleteVisible}
                         content={
-                            <ProfessorOHInfoDelete
+                            this.props.course ? <ProfessorOHInfoDelete
+                                course={this.props.course}
                                 session={sessions[this.state.dayIndex][this.state.rowIndex]}
                                 toggleDelete={() => this.updateDeleteVisible(false)}
                                 toggleEdit={() => this.toggleEdit(this.state.currentDay, this.state.currentRow, true)}
-                            />
+                            /> : <div />
                         }
                     />}
                 <table className="Calendar">

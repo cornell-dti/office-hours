@@ -183,6 +183,7 @@ const ProfessorOHInfo = (props: {
                     />
                     {i === 0 ?
                         <button
+                            type="button"
                             className={'AddTAButton ' + isMaxTA}
                             disabled={isMaxTA}
                             onClick={() => incAddTA()}
@@ -191,6 +192,7 @@ const ProfessorOHInfo = (props: {
                             Add TA
                         </button> :
                         <button
+                            type="button"
                             className="AddTAButton"
                             onClick={() => decAddTA(i)}
                         >
@@ -203,7 +205,7 @@ const ProfessorOHInfo = (props: {
     );
 
     return (
-        <React.Fragment>
+        <>
             <div className="ProfessorOHInfo">
                 <div className="row">
                     <Icon name="marker" />
@@ -288,14 +290,16 @@ const ProfessorOHInfo = (props: {
             </div>
             <div className="EditButtons">
                 <button
+                    type="button"
                     className="Bottom Cancel"
                     onClick={() => props.toggleEdit()}
                 >
                     Cancel
                 </button>
                 <button
+                    type="button"
                     className="Bottom Edit"
-                    onClick={(e) => {
+                    onClick={() => {
                         if (disableEmpty) {
                             updateNotification(emptyNotification);
                         } else if (disableState) {
@@ -314,7 +318,7 @@ const ProfessorOHInfo = (props: {
                     {notification}
                 </span>
             </div>
-        </React.Fragment>
+        </>
     );
 };
 

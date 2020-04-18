@@ -57,7 +57,7 @@ export default ({ currentCourseCode, role, avatar }: Props): React.ReactElement 
                                 </a>
                             </li>
                         )}
-                        {role && role !== 'professor' && (
+                        {role && (
                             <li>
                                 <a className="editClasses" href={'/edit'}>
                                     Edit Classes
@@ -68,7 +68,7 @@ export default ({ currentCourseCode, role, avatar }: Props): React.ReactElement 
                 }
             </div>
             {showMenu && (
-                <ul className="logoutMenu" onClick={() => setShowMenu(false)} >
+                <ul className="desktop logoutMenu" onClick={() => setShowMenu(false)} >
                     {/* RYAN_TODO: figure out what's the purpose of this code. */}
                     {/* {this.props.isTa &&
                             <React.Fragment>
@@ -77,10 +77,9 @@ export default ({ currentCourseCode, role, avatar }: Props): React.ReactElement 
                             </React.Fragment>
                         } */}
                     <li onClick={() => logOut()}> <span><Icon name="sign out" /></span>Log Out</li>
-                    <li>
-                        <a href="https://goo.gl/forms/7ozmsHfXYWNs8Y2i1" target="_blank" rel="noopener noreferrer">
-                            <span><Icon name="edit" /></span>Send Feedback
-                        </a>
+                    <li onMouseDown={() => window.open('https://goo.gl/forms/7ozmsHfXYWNs8Y2i1', '_blank')}>
+                        <span><Icon name="edit" /></span>
+                        Send Feedback
                     </li>
                 </ul>
             )}

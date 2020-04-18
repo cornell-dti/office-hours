@@ -1,0 +1,56 @@
+$header-color: #7ab7fe;
+$even-color: #edeff2;
+$odd-color: white;
+
+.Spacing {
+    height: 15px;
+    clear: left;
+}
+
+.ProfessorTagsTable {
+    text-align: left;
+    min-width: 900px;
+    margin-top: 30px;
+
+    .Tags {
+        width: 100%;
+        border-collapse: collapse;
+
+        tr:first-child {
+            th:first-child {
+                border-top-left-radius: 10px;
+            }
+            th:last-child {
+                border-top-right-radius: 10px;
+            }
+        }
+
+        .rows{
+            width: 100%;
+        }
+
+        .None {
+            text-align: center;
+        }
+
+        th {
+            padding: 7px 0px;
+            color: white;
+            background-color: $header-color;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        #statusColumn {
+            min-width: 72px;
+        }
+
+        th:first-child {
+            padding-left: 5%;
+        }
+
+        td {
+            padding: 7px 0px;
+        }
+    }
+}

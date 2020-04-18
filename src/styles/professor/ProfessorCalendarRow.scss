@@ -1,0 +1,58 @@
+$even-color: #edeff2;
+$odd-color: #ffffff;
+
+.even {
+    background-color: $even-color;
+}
+
+.odd {
+    background-color: $odd-color;
+}
+
+.NoOH {
+    background-color: $even-color;
+}
+
+.Pair.true {
+    .Preview {
+        color: white;
+        background-color: #898989;
+        .Edit, .Delete {
+            color: white;
+        }
+    }
+    .ExpandedEdit {
+        border-bottom: 1px solid #d9d9d9;
+    }
+}
+
+.Pair {
+    td:first-child {
+        width: 35%;
+    }
+
+    .ExpandedEdit.false {
+        display: none;
+    }
+
+    .Preview {
+        td:first-child {
+            padding-left: 5%;
+        }
+    }
+
+    Button {
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    .ExpandedEdit {
+        background-color: white;
+
+        .Delete {
+            background-color: white;
+            border: 1px solid gray;
+            float: left;
+        }
+    }
+}

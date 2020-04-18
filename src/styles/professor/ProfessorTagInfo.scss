@@ -1,0 +1,130 @@
+.ProfessorTagInfo {
+    margin: 0 40px;
+    color: #898989;
+
+    .InputSection {
+        margin: 15px 0;
+
+        .InputHeader {
+            font-size: 12px;
+            font-weight: 500;
+            color: #898989;
+            margin-bottom: 10px;
+        }
+
+        .AssignmentInput input {
+            width: 100%;
+        }
+    }
+
+    input {
+        font-size: 12px;
+    }
+
+    .Status {
+        .ActiveButton {
+            width: 70px;
+            height: 25px;
+            line-height: 25px;
+            font-size: 12px;
+            border: solid 1px #979797;
+            color: #979797;
+            text-align: center;
+            display: inline-block;
+            cursor: pointer;
+
+            &.Selected {
+                background-color: #d8d8d8;
+                color: $text-grey;
+                cursor: default;
+            }
+
+            &.first {
+                border-right: none;
+            }
+        }
+    }
+
+    .ChildTags {
+        .SelectedChildTag {
+            display: inline-block;
+            min-width: 120px;
+            height: 30px;
+            border-radius: 10px;
+            text-align: center;
+            color: #898989;
+            border: 1px solid #898989;
+            line-height: 30px;
+            font-size: 12px;
+            margin-right: 30px;
+            position: relative;
+            padding-right: 25px;
+            padding-left: 10px;
+
+            .Remove {
+                position: absolute;
+                right: 5px;
+                cursor: pointer;
+            }
+        }
+
+        .InputChildTag {
+            &:focus {
+                outline: none;
+            }
+        }
+
+        .InputChildTagEnter {
+            background: #898989;
+            color: #edeff2;
+            padding: 1.5px 5px;
+            margin-bottom: 1px;
+            line-height: 22px;
+            vertical-align: bottom;
+            width: auto;
+            cursor: pointer;
+            display: inline-block;
+
+            &.disabled {
+                cursor: default;
+                opacity: 0.4;
+            }
+        }
+    }
+}
+
+.ExpandedEdit, .ExpandedAdd {
+    .Bottom {
+        font-size: 14px;
+        padding: 10px 0px;
+        border-radius: 3px;
+        font-size: 14px;
+        margin: 20px 15px 13px;
+        width: 125px;
+    }
+
+    .EditButtons {
+        border-top: 1px solid #d9d9d9;
+        margin-top: 20px;
+        background-color: white;
+        width: 100%;
+
+        .Cancel {
+            float: right;
+            background-color: white;
+            border: 1px solid gray;
+        }
+
+        .Edit {
+            float: right;
+            background-color: #7ab7fe;
+            border: 1px solid #7ab7fe;
+            color: white;
+        }
+
+        .Edit:disabled {
+            background-color: gainsboro;
+            border: 1px solid gainsboro;
+        }
+    }
+}

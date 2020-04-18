@@ -26,6 +26,7 @@ const CalendarSessions = ({ activeSession, user, course, sessions, callback }: {
         return (
             <CalendarSessionCard
                 user={user}
+                course={course}
                 session={session}
                 key={session.sessionId}
                 callback={callback}
@@ -37,28 +38,28 @@ const CalendarSessions = ({ activeSession, user, course, sessions, callback }: {
     const groupedCards = sessionCards && groupBy(sessionCards, (card: React.ReactElement) => card.props.status);
     return (
         <div className="CalendarSessions">
-            {sessions.length === 0 && <React.Fragment>
+            {sessions.length === 0 && <>
                 <p className="noHoursHeading">No Office Hours</p>
                 <p className="noHoursBody">No office hours are scheduled for today.</p>
-            </React.Fragment>}
-            {groupedCards && <React.Fragment>
-                {'Past' in groupedCards && <React.Fragment>
+            </>}
+            {groupedCards && <>
+                {'Past' in groupedCards && <>
                     <h6>Past</h6>
                     {groupedCards.Past}
-                </React.Fragment>}
-                {'Open' in groupedCards && <React.Fragment>
+                </>}
+                {'Open' in groupedCards && <>
                     <h6>Open</h6>
                     {groupedCards.Open}
-                </React.Fragment>}
-                {'Ongoing' in groupedCards && <React.Fragment>
+                </>}
+                {'Ongoing' in groupedCards && <>
                     <h6>Ongoing</h6>
                     {groupedCards.Ongoing}
-                </React.Fragment>}
-                {'Upcoming' in groupedCards && <React.Fragment>
+                </>}
+                {'Upcoming' in groupedCards && <>
                     <h6>Upcoming</h6>
                     {groupedCards.Upcoming}
-                </React.Fragment>}
-            </React.Fragment>}
+                </>}
+            </>}
         </div>
     );
 };

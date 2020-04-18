@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
+import * as firebase from 'firebase/app';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
 //This is used to make a timestamp
-import * as firebase from 'firebase/app';
 
 // import SelectedTags from './SelectedTags';
 
@@ -105,37 +105,49 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     retractQuestion = (): void => {
-        const question = firestore.collection('questions').doc(this.props.question.questionId);
-        question.update({
-            status: 'retracted'
-        });
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
+        const questionUpdate: Partial<FireQuestion> = slotUpdate;
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     toggleLocationTooltip = () => {
-        this.setState({
-            showLocation: !this.state.showLocation
-        });
+        this.setState(({ showLocation }) => ({ showLocation: !showLocation }));
     };
 
     assignQuestion = () => {
-        //Attempt to assign question to me
-        firestore.doc(`questions/${this.props.question.questionId}`).update({
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
+        const questionUpdate: Partial<FireQuestion> = {
             status: 'assigned',
             answererId: this.props.myUserId
-        });
+        };
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     studentNoShow = () => {
-        firestore.doc(`questions/${this.props.question.questionId}`).update({
-            status: 'no-show'
-        });
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'no-show' };
+        const questionUpdate: Partial<FireQuestion> = slotUpdate;
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     questionDone = () => {
-        firestore.doc(`questions/${this.props.question.questionId}`).update({
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'resolved' };
+        const questionUpdate: Partial<FireQuestion> = {
             status: 'resolved',
             timeAddressed: firebase.firestore.Timestamp.now()
-        });
+        };
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     questionComment = () => {
@@ -143,7 +155,7 @@ class SessionQuestion extends React.Component<Props, State> {
         if (taComment == null) {
             return;
         }
-        const update: Partial<FireQuestion> = { taComment: taComment };
+        const update: Partial<FireQuestion> = { taComment };
         firestore.doc(`questions/${this.props.question.questionId}`).update(update);
     };
 
@@ -151,7 +163,7 @@ class SessionQuestion extends React.Component<Props, State> {
         updateQuestion({
             variables: {
                 questionId: this.props.question.questionId,
-                status: status,
+                status,
             }
         });
         const question = this.props.question;
@@ -168,8 +180,12 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     questionDontKnow = () => {
-        const update: Partial<FireQuestion> = { status: 'unresolved', answererId: '' };
-        firestore.doc(`questions/${this.props.question.questionId}`).update(update);
+        const batch = firestore.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'unresolved' };
+        const questionUpdate: Partial<FireQuestion> = { status: 'unresolved', answererId: '' };
+        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
+        batch.commit();
     };
 
     render() {
@@ -178,9 +194,12 @@ class SessionQuestion extends React.Component<Props, State> {
         const includeBookmark = this.props.question.askerId === this.props.myUserId;
 
         const asker = this.props.users[question.askerId];
-        const answerer = question.answererId ? undefined : this.props.users[question.answererId];
-        const primaryTag = this.props.tags[this.props.question.primaryTag];
-        const secondaryTag = this.props.tags[this.props.question.secondaryTag];
+        const answerer = question.answererId
+            ? this.props.users[question.answererId] : undefined;
+        const primaryTag = this.props.question.primaryTag
+            ? this.props.tags[this.props.question.primaryTag] : undefined;
+        const secondaryTag = this.props.question.secondaryTag
+            ? this.props.tags[this.props.question.secondaryTag] : undefined;
 
         return (
             <div className="QueueQuestions">
@@ -237,7 +256,7 @@ class SessionQuestion extends React.Component<Props, State> {
                             <span className="Name">
                                 {asker.firstName + ' ' + asker.lastName}
                                 {question.status === 'assigned' &&
-                                    <React.Fragment>
+                                    <>
                                         <span className="assigned"> is assigned
                                             {answerer &&
                                                 (' to ' + (answerer.userId === this.props.myUserId
@@ -245,7 +264,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                                     : answerer.firstName + ' '
                                                     + answerer.lastName))}
                                         </span>
-                                    </React.Fragment>
+                                    </>
                                 }
                             </span>
                         </div>
@@ -281,7 +300,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                 </p>
                             }
                             {question.status === 'assigned' &&
-                                <React.Fragment>
+                                <>
                                     <p className="Delete" onClick={this.studentNoShow}>No show</p>
                                     <p className="Done" onClick={this.questionDone}>Done</p>
                                     {FEATURE_TA_COMMENT_ENABLE_FLAG && (
@@ -309,7 +328,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                             </div>
                                         }
                                     </p>
-                                </React.Fragment>
+                                </>
                             }
                         </div>
                     </div>

@@ -16,7 +16,7 @@ jobs:
       - name: Install
         run: yarn install
       - name: Build Client
-        run: yarn deploy
+        run: yarn build:staging
       - name: Deploy Client
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

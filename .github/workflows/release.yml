@@ -1,0 +1,25 @@
+name: Release
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+      - name: Install
+        run: yarn install
+      - name: Build Client
+        run: yarn build
+      - name: Deploy
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          yarn firebase use production
+          yarn firebase deploy --token "$FIREBASE_TOKEN" --non-interactive --only hosting
