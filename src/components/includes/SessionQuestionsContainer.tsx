@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
 import SessionQuestion from './SessionQuestion';
-import { useDoc } from '../../firehooks';
+import { firestore } from '../../firebase';
 
 const SHOW_FEEDBACK_QUEUE = 4;
 //Maximum number of questions to be shown to user
@@ -33,7 +33,28 @@ type StudentMyQuestionProps = {
 };
 
 const StudentMyQuestion = ({ questionId, tags, index, triggerUndo, isPast, myUserId }: StudentMyQuestionProps) => {
-    const studentQuestion = useDoc<FireQuestion>('questions', questionId, 'questionId');
+    const [studentQuestion, setStudentQuestion] = React.useState<FireQuestion | undefined>();
+    React.useEffect(
+        () => {
+            return firestore.collection('questions').doc(questionId).onSnapshot(snapshot => {
+                setStudentQuestion({ ...snapshot.data(), questionId: snapshot.id } as FireQuestion);
+            }, () => {
+                // Do nothing when there is an error.
+
+                // Note: there is a race condition going on when adding question happened.
+                // 1. Adding question writes to two collections: questionSlots and questions.
+                // 2. Firebase is smart enough to detect that adding those document will eventually
+                //    succeed, so it adds the document to the local database and triggers a new
+                //    onSnapshot with the new questionSlot data.
+                // 3. This hook is trying the full question from the remote. By the time the local
+                //    snapshot is updated, the remote data might not been written yet, so it will
+                //    fail with an error.
+                // 4. This error will eventually go away, since the full question data will eventually
+                //    be written.
+            });
+        },
+        [questionId]
+    );
     if (studentQuestion == null) {
         return <div />;
     }
