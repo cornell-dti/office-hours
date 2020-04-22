@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from 'semantic-ui-react';
+import addNotification from 'react-push-notification';
 
 import TopBar from './TopBar';
 import SessionInformationHeader from './SessionInformationHeader';
@@ -56,6 +57,15 @@ const SessionView = (
         if (cachedPrevQuestions === questions) {
             return;
         }
+        
+        if ((user.roles[course.courseId] === 'professor' || user.roles[course.courseId] === 'ta') && questions.length > 0) {
+            addNotification({
+                title: 'A new question has been added!',
+                message: 'Check the queue.',
+                native: true
+            })
+        }
+
         const myQuestions = questions.filter(q => q.askerId === user.userId);
         const lastAskedQuestion = myQuestions.length > 0
             ? myQuestions.reduce(
@@ -78,7 +88,7 @@ const SessionView = (
             return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
         setCachedPrevQuestions(questions);
-    }, [questions, cachedPrevQuestions, user.userId]);
+    }, [questions, cachedPrevQuestions, user.userId, user.roles, course.courseId]);
 
     const dismissUndo = () => {
         if (timeoutId) {

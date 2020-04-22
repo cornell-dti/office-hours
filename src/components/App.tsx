@@ -15,6 +15,7 @@ import * as ReactGA from 'react-ga';
 import moment from 'moment';
 import { Loader } from 'semantic-ui-react';
 
+import { Notifications } from 'react-push-notification';
 import { auth, firestore } from '../firebase';
 
 import AdminView from './pages/AdminView';
@@ -182,6 +183,7 @@ export default () => {
     return (
         <Router>
             <div className="App">
+                <Notifications />
                 <Route path="/" component={Analytics} />
                 <Switch>
                     <Route path="/login" component={LoginView} />
