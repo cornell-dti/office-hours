@@ -54,9 +54,17 @@ const SessionView = (
     const [cachedPrevQuestions, setCachedPrevQuestions] = useState(questions);
 
     useEffect(() => {
-        if (cachedPrevQuestions === questions) {
+        const cachedSet = new Set(cachedPrevQuestions.map(q => q.questionId));
+
+        const questionIds = questions.map(q => q.questionId);
+
+        const newQuestions = new Set(questionIds.filter(q => !cachedSet.has(q)));
+
+        if (newQuestions.size <= 0) {
             return;
         }
+
+
         if ((user.roles[course.courseId] === 'professor' || user.roles[course.courseId] === 'ta')
         && (questions.length > 0)) {
             addNotification({
