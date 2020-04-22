@@ -51,14 +51,16 @@ const SessionView = (
         dismissedAbsent: true,
         lastAskedQuestion: null
     });
-    const [cachedPrevQuestions, setCachedPrevQuestions] = useState(questions);
+
+    const [prevQuestSet, setPrevQuestSet] = useState(new Set(questions.map(q => q.questionId)));
+
+
 
     useEffect(() => {
-        const cachedSet = new Set(cachedPrevQuestions.map(q => q.questionId));
 
         const questionIds = questions.map(q => q.questionId);
 
-        const newQuestions = new Set(questionIds.filter(q => !cachedSet.has(q)));
+        const newQuestions = new Set(questionIds.filter(q => !prevQuestSet.has(q)));
 
         if (newQuestions.size <= 0) {
             return;
@@ -70,12 +72,6 @@ const SessionView = (
                 message: 'Check the queue.',
                 native: true
             })
-        }
-    }, [cachedPrevQuestions, course.courseId, questions, user.roles]);
-
-    useEffect(() => {
-        if (cachedPrevQuestions === questions) {
-            return;
         }
 
         const myQuestions = questions.filter(q => q.askerId === user.userId);
@@ -99,8 +95,8 @@ const SessionView = (
             }
             return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
-        setCachedPrevQuestions(questions);
-    }, [cachedPrevQuestions, questions, user.userId]);
+        setPrevQuestSet(new Set(questions.map(q => q.questionId)));
+    }, [prevQuestSet, questions, user.userId, course.courseId, user.roles]);
 
 
     const dismissUndo = () => {
