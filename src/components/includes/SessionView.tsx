@@ -57,13 +57,18 @@ const SessionView = (
         if (cachedPrevQuestions === questions) {
             return;
         }
-        
-        if ((user.roles[course.courseId] === 'professor' || user.roles[course.courseId] === 'ta') && questions.length > 0) {
+        if ((user.roles[course.courseId] === 'professor' || user.roles[course.courseId] === 'ta') && (questions.length > 0)) {
             addNotification({
                 title: 'A new question has been added!',
                 message: 'Check the queue.',
                 native: true
             })
+        }
+    }, [cachedPrevQuestions, course.courseId, questions, user.roles]);
+
+    useEffect(() => {
+        if (cachedPrevQuestions === questions) {
+            return;
         }
 
         const myQuestions = questions.filter(q => q.askerId === user.userId);
@@ -88,7 +93,8 @@ const SessionView = (
             return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
         setCachedPrevQuestions(questions);
-    }, [questions, cachedPrevQuestions, user.userId, user.roles, course.courseId]);
+    }, [cachedPrevQuestions, questions, user.userId]);
+
 
     const dismissUndo = () => {
         if (timeoutId) {
