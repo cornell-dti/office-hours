@@ -231,7 +231,7 @@ const importProfessorsOrTAs = async (
         return db.collection('users').where('email', 'in', emailList).get().then(taUserDocuments => {
             const updatedUsersThisBlock: FireUser[] = [];
 
-            taUserDocuments.forEach((document: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => {
+            taUserDocuments.forEach((document) => {
                 const existingUser = { userId: document.id, ...document.data() } as FireUser;
                 const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, role);
                 batch.update(db.collection('users').doc(existingUser.userId), roleUpdate);
