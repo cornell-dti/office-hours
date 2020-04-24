@@ -229,34 +229,42 @@ const importProfessorsOrTAs = async (
 
     Promise.all(emailBlocks.map(emailList => {
         return db.collection('users').where('email', 'in', emailList).get().then(taUserDocuments => {
-            const updatedUsersThisBlock: FireUser[] = [];
+            // const updatedUsersThisBlock: FireUser[] = [];
+            // const userUpdatesThisBlock: Partial<FireUser>[] = [];
+            const updatesThisBlock: {user: FireUser; roleUpdate: Partial<FireUser>}[] = [];
 
             taUserDocuments.forEach((document) => {
                 const existingUser = { userId: document.id, ...document.data() } as FireUser;
                 const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, role);
-                batch.update(db.collection('users').doc(existingUser.userId), roleUpdate);
-                updatedUsersThisBlock.push(existingUser);
+                updatesThisBlock.push({
+                    user: existingUser,
+                    roleUpdate
+                })
             });
             
+            return updatesThisBlock;
+        });
+            
+    })).then(updatedBlocks => {
+        updatedBlocks.forEach(updateBlock => {
+            updateBlock.forEach(({user, roleUpdate}) => {
+                const {email} = user;
+                updatedUsers.push(user);
+                missingSet.delete(email);
+
+                batch.update(db.collection('users').doc(user.userId), roleUpdate);
+            })
+
             batch.update(
                 db.collection('courses').doc(course.courseId),
                 getCourseRoleUpdates(
                     course,
-                    updatedUsers.map((user) => [user.userId, role] as const)
+                    updateBlock.map(({user}) => [user.userId, role] as const)
                 )
             );
 
-            return updatedUsersThisBlock;
         });
-            
-    })).then((updatedUsersBlocks) => {
-        updatedUsersBlocks.forEach(block => {
-            block.forEach(user => {
-                const { email } = user;
-                updatedUsers.push(user);
-                missingSet.delete(email);
-            })
-        })
+        
         batch.commit();
     }).then(() => {
         const message =
