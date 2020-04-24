@@ -1,5 +1,6 @@
 import { firestore, auth } from 'firebase/app';
 import { datePlus, normalizeDateToDateStart, normalizeDateToWeekStart } from './utilities/date';
+import { blockArray } from './firehooks';
 
 /* Basic Functions */
 
@@ -218,34 +219,55 @@ const importProfessorsOrTAs = async (
     db: firebase.firestore.Firestore,
     course: FireCourse,
     role: 'professor' | 'ta',
-    emailList: readonly string[]
+    emailListTotal: readonly string[]
 ): Promise<void> => {
-    const taUserDocuments = await db.collection('users').where('email', 'in', emailList).get();
-    const missingSet = new Set(emailList);
+    const missingSet = new Set(emailListTotal);
     const batch = db.batch();
     const updatedUsers: FireUser[] = [];
-    taUserDocuments.forEach((document) => {
-        const existingUser = { userId: document.id, ...document.data() } as FireUser;
-        const { email } = existingUser;
-        const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, role);
-        batch.update(db.collection('users').doc(existingUser.userId), roleUpdate);
-        updatedUsers.push(existingUser);
-        missingSet.delete(email);
-    });
-    batch.update(
-        db.collection('courses').doc(course.courseId),
-        getCourseRoleUpdates(
-            course,
-            updatedUsers.map((user) => [user.userId, role] as const)
-        )
-    );
-    await batch.commit();
-    const message =
+    
+    const emailBlocks = blockArray(emailListTotal, 10);
+
+    Promise.all(emailBlocks.map(emailList => {
+        return db.collection('users').where('email', 'in', emailList).get().then(taUserDocuments => {
+            const updatedUsersThisBlock: FireUser[] = [];
+
+            taUserDocuments.forEach((document) => {
+                const existingUser = { userId: document.id, ...document.data() } as FireUser;
+                const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, role);
+                batch.update(db.collection('users').doc(existingUser.userId), roleUpdate);
+                updatedUsersThisBlock.push(existingUser);
+            });
+            
+            batch.update(
+                db.collection('courses').doc(course.courseId),
+                getCourseRoleUpdates(
+                    course,
+                    updatedUsers.map((user) => [user.userId, role] as const)
+                )
+            );
+
+            return updatedUsersThisBlock;
+        });
+            
+    })).then((updatedUsersBlocks) => {
+        updatedUsersBlocks.forEach(block => {
+            block.forEach(user => {
+                const { email } = user;
+                updatedUsers.push(user);
+                missingSet.delete(email);
+            })
+        })
+        batch.commit();
+    }).then(() => {
+        const message =
         'Successfully\n' +
         `updated: [${updatedUsers.map((user) => user.email).join(', ')}];\n` +
         `[${Array.from(missingSet).join(', ')}] do not exist in our system yet.`;
-    // eslint-disable-next-line no-alert
-    alert(message);
+        // eslint-disable-next-line no-alert
+        alert(message);
+    });
+
+    
 };
 
 const addOrRemoveFromRoleIdList = (
