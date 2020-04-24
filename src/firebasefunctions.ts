@@ -229,34 +229,46 @@ const importProfessorsOrTAs = async (
 
     Promise.all(emailBlocks.map(emailList => {
         return db.collection('users').where('email', 'in', emailList).get().then(taUserDocuments => {
-            const updatedUsersThisBlock: FireUser[] = [];
+            // const updatedUsersThisBlock: FireUser[] = [];
+            // const userUpdatesThisBlock: Partial<FireUser>[] = [];
+            const updatesThisBlock: {user: FireUser; roleUpdate: Partial<FireUser>}[] = [];
 
             taUserDocuments.forEach((document) => {
                 const existingUser = { userId: document.id, ...document.data() } as FireUser;
                 const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, role);
-                batch.update(db.collection('users').doc(existingUser.userId), roleUpdate);
-                updatedUsersThisBlock.push(existingUser);
+                updatesThisBlock.push({
+                    user: existingUser,
+                    roleUpdate
+                })
             });
             
-            batch.update(
-                db.collection('courses').doc(course.courseId),
-                getCourseRoleUpdates(
-                    course,
-                    updatedUsers.map((user) => [user.userId, role] as const)
-                )
-            );
-
-            return updatedUsersThisBlock;
+            return updatesThisBlock;
         });
             
-    })).then((updatedUsersBlocks) => {
-        updatedUsersBlocks.forEach(block => {
-            block.forEach(user => {
-                const { email } = user;
+    })).then(updatedBlocks => {
+        const allUpdates: {user: FireUser; roleUpdate: Partial<FireUser>}[] = [];
+
+        updatedBlocks.forEach(updateBlock => {
+            updateBlock.forEach(({user, roleUpdate}) => {
+                const {email} = user;
                 updatedUsers.push(user);
                 missingSet.delete(email);
+                allUpdates.push({user, roleUpdate});
+                // update user's roles table
+                batch.update(db.collection('users').doc(user.userId), roleUpdate);
             })
-        })
+            
+        });
+        // update course's ta/professor roles
+        batch.update(
+            db.collection('courses').doc(course.courseId),
+            getCourseRoleUpdates(
+                course,
+                allUpdates.map(({user}) => [user.userId, role] as const)
+            )
+        )
+        
+
         batch.commit();
     }).then(() => {
         const message =
