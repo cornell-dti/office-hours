@@ -58,7 +58,8 @@ const SessionView = (
             return;
         }
         
-        if ((user.roles[course.courseId] === 'professor' || user.roles[course.courseId] === 'ta') && questions.length > 0) {
+        if ((user.roles[course.courseId] === 'professor' ||
+        user.roles[course.courseId] === 'ta') && questions.length > 0) {
             addNotification({
                 title: 'A new question has been added!',
                 message: 'Check the queue.',
