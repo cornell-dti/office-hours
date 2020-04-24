@@ -28,17 +28,22 @@ export const useDoc = <T>(collection: string, id: string | undefined, idField: s
     return doc;
 };
 
-// Pass in a query parameter and a firebase query generator and return the results.
-// The indirection through query parameter is important because useEffect does shallow
-// comparisons on the objects in the array for memoization. Without storing
-// the query, we re-render and re-fetch infinitely.
+/**
+ * Pass in a query parameter and a firebase query generator and return the results.
+ * The indirection through query parameter is important because useEffect does shallow
+ * comparisons on the objects in the array for memoization. Without storing
+ * the query, we re-render and re-fetch infinitely.
+ */
 export const useQueryWithLoading = <T, P=string>(
     queryParameter: P, getQuery: (parameter: P) => firebase.firestore.Query, idField: string
 ): T[] | null => {
     const [result, setResult] = useState<T[] | null>(null);
+
     useEffect(
         () => {
             const results$: Observable<T[]> = collectionData(getQuery(queryParameter), idField);
+
+            // updates results as they come in. Triggers re-renders.
             const subscription = results$.subscribe(results => setResult(results));
             return () => { subscription.unsubscribe(); };
         },
@@ -46,9 +51,49 @@ export const useQueryWithLoading = <T, P=string>(
     );
     return result;
 };
+
+export const useBatchQueryWithLoading = <T, P=string>(
+    queryParameter: P, getQueries: (parameter: P) => (firebase.firestore.Query)[], idField: string
+): T[] | null => {
+    const [result, setResult] = useState<T[] | null>(null);
+
+    useEffect(
+        () => {
+            let partialResult: T[] = [];
+
+            const effects = getQueries(queryParameter).map(getQuery => {
+                const results$: Observable<T[]> = collectionData(getQuery, idField);
+
+                // updates results as they come in. Triggers re-renders.
+                const subscription = results$.subscribe(results => {
+                    partialResult = [...partialResult, ...results];
+                })
+                return () => { subscription.unsubscribe(); };
+            });
+
+            setResult(partialResult);
+
+            return () => {
+                effects.forEach(unsubscription => unsubscription());
+            }
+            
+        },
+        [queryParameter, getQueries, idField]
+    );
+    return result;
+};
+
 export const useQuery = <T, P=string>(
-    queryParameter: P, getQuery: (parameter: P) => firebase.firestore.Query, idField: string
+    queryParameter: P,
+    getQuery: (parameter: P) => firebase.firestore.Query,
+    idField: string
 ): T[] => useQueryWithLoading(queryParameter, getQuery, idField) || [];
+
+export const useBatchQuery = <T, P=string>(
+    queryParameter: P,
+    getQuery: (parameter: P) => firebase.firestore.Query[],
+    idField: string
+): T[] => useBatchQueryWithLoading(queryParameter, getQuery, idField) || [];
 
 const myUserObservable = loggedIn$.pipe(
     switchMap(u =>
@@ -61,7 +106,9 @@ export const useMyUser: () => FireUser | undefined = createUseSingletonObservabl
 const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
     switchMap(() => collectionData<FireCourse>(firestore.collection('courses'), 'courseId'))
 );
+
 const allCoursesSingletonObservable = new SingletonObservable([], allCoursesObservable);
+
 export const useAllCourses: () => readonly FireCourse[] =
     createUseSingletonObservableHook(allCoursesSingletonObservable);
 
@@ -109,19 +156,41 @@ export const useCourseUsersMap = (courseId: string, canReadUsers: boolean): Fire
 };
 
 const dummyProfessorOrTAList = ['DUMMY'];
-const courseProfessorOrTaQuery = (professorsOrTas: readonly string[]) => (
-    firestore
+
+const courseProfessorOrTaQuery = (professorsOrTas: readonly string[]) => {
+    return firestore
         .collection('users')
         .where(
             firebase.firestore.FieldPath.documentId(),
             'in',
             professorsOrTas.length === 0 ? dummyProfessorOrTAList : professorsOrTas
         )
-);
+};
+
+const courseProfessorOrTaBatchQuery = (professorsOrTas: readonly string[]) => {
+    const blocks = blockArray(professorsOrTas.length === 0 ? dummyProfessorOrTAList : professorsOrTas, 10);
+
+    return blocks.map(block => firestore.collection('users').where(
+        firebase.firestore.FieldPath.documentId(),
+        'in',
+        block
+    ));
+    
+};
+
+const blockArray = <T>(arr: readonly T[], blockSize: number) => {
+    let result: T[][] = [];
+    for (let i = 0; i < arr.length; i += blockSize) {
+        result = [...result, arr.slice(i, Math.min(arr.length, i + blockSize))];
+    }
+
+    return result;
+}
+
 const useCourseCourseProfessorOrTaMap = (course: FireCourse, type: 'professor' | 'ta'): FireUserMap => {
-    const courseUsers = useQuery<FireUser, readonly string[]>(
+    const courseUsers = useBatchQuery<FireUser, readonly string[]>(
         type === 'professor' ? course.professors : course.tas,
-        courseProfessorOrTaQuery,
+        courseProfessorOrTaBatchQuery,
         'userId'
     );
     const map: { [userId: string]: FireUser } = {};
