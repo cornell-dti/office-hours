@@ -226,17 +226,18 @@ const importProfessorsOrTAs = async (
     const updatedUsers: FireUser[] = [];
     
     const emailBlocks = blockArray(emailListTotal, 10);
-    
+
     Promise.all(emailBlocks.map(emailList => {
         return db.collection('users').where('email', 'in', emailList).get().then(taUserDocuments => {
+            const updatedUsersThisBlock: FireUser[] = [];
+
             taUserDocuments.forEach((document: firestore.QueryDocumentSnapshot<firestore.DocumentData>) => {
                 const existingUser = { userId: document.id, ...document.data() } as FireUser;
-                const { email } = existingUser;
                 const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, role);
                 batch.update(db.collection('users').doc(existingUser.userId), roleUpdate);
-                updatedUsers.push(existingUser);
-                missingSet.delete(email);
+                updatedUsersThisBlock.push(existingUser);
             });
+            
             batch.update(
                 db.collection('courses').doc(course.courseId),
                 getCourseRoleUpdates(
@@ -244,9 +245,18 @@ const importProfessorsOrTAs = async (
                     updatedUsers.map((user) => [user.userId, role] as const)
                 )
             );
+
+            return updatedUsersThisBlock;
         });
             
-    })).then(() => {
+    })).then((updatedUsersBlocks) => {
+        updatedUsersBlocks.forEach(block => {
+            block.forEach(user => {
+                const { email } = user;
+                updatedUsers.push(user);
+                missingSet.delete(email);
+            })
+        })
         batch.commit();
     }).then(() => {
         const message =
