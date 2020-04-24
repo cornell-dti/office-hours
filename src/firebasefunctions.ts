@@ -246,26 +246,29 @@ const importProfessorsOrTAs = async (
         });
             
     })).then(updatedBlocks => {
+        const allUpdates: {user: FireUser; roleUpdate: Partial<FireUser>}[] = [];
+
         updatedBlocks.forEach(updateBlock => {
             updateBlock.forEach(({user, roleUpdate}) => {
                 const {email} = user;
                 updatedUsers.push(user);
                 missingSet.delete(email);
+                allUpdates.push({user, roleUpdate});
                 // update user's roles table
                 batch.update(db.collection('users').doc(user.userId), roleUpdate);
             })
-
-            // update courses's 'professor' | 'ta' table
-            batch.update(
-                db.collection('courses').doc(course.courseId),
-                getCourseRoleUpdates(
-                    course,
-                    updateBlock.map(({user}) => [user.userId, role] as const)
-                )
-            );
-
+            
         });
+        // update course's ta/professor roles
+        batch.update(
+            db.collection('courses').doc(course.courseId),
+            getCourseRoleUpdates(
+                course,
+                allUpdates.map(({user}) => [user.userId, role] as const)
+            )
+        )
         
+
         batch.commit();
     }).then(() => {
         const message =
