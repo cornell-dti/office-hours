@@ -67,11 +67,11 @@ export const useBatchQueryWithLoading = <T, P=string>(
                 // updates results as they come in. Triggers re-renders.
                 const subscription = results$.subscribe(results => {
                     partialResult = [...partialResult, ...results];
+                    setResult(partialResult);
                 })
                 return () => { subscription.unsubscribe(); };
             });
 
-            setResult(partialResult);
 
             return () => {
                 effects.forEach(unsubscription => unsubscription());
@@ -82,6 +82,7 @@ export const useBatchQueryWithLoading = <T, P=string>(
     );
     return result;
 };
+
 
 export const useQuery = <T, P=string>(
     queryParameter: P,
@@ -168,7 +169,7 @@ const courseProfessorOrTaBatchQuery = (professorsOrTas: readonly string[]) => {
     
 };
 
-const blockArray = <T>(arr: readonly T[], blockSize: number) => {
+export const blockArray = <T>(arr: readonly T[], blockSize: number) => {
     let result: T[][] = [];
     for (let i = 0; i < arr.length; i += blockSize) {
         result = [...result, arr.slice(i, Math.min(arr.length, i + blockSize))];
