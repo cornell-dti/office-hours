@@ -251,10 +251,11 @@ const importProfessorsOrTAs = async (
                 const {email} = user;
                 updatedUsers.push(user);
                 missingSet.delete(email);
-
+                // update user's roles table
                 batch.update(db.collection('users').doc(user.userId), roleUpdate);
             })
 
+            // update courses's 'professor' | 'ta' table
             batch.update(
                 db.collection('courses').doc(course.courseId),
                 getCourseRoleUpdates(
