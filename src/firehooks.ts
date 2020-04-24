@@ -157,16 +157,6 @@ export const useCourseUsersMap = (courseId: string, canReadUsers: boolean): Fire
 
 const dummyProfessorOrTAList = ['DUMMY'];
 
-const courseProfessorOrTaQuery = (professorsOrTas: readonly string[]) => {
-    return firestore
-        .collection('users')
-        .where(
-            firebase.firestore.FieldPath.documentId(),
-            'in',
-            professorsOrTas.length === 0 ? dummyProfessorOrTAList : professorsOrTas
-        )
-};
-
 const courseProfessorOrTaBatchQuery = (professorsOrTas: readonly string[]) => {
     const blocks = blockArray(professorsOrTas.length === 0 ? dummyProfessorOrTAList : professorsOrTas, 10);
 
