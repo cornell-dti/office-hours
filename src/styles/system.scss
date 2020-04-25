@@ -1,0 +1,22 @@
+
+
+////////////////////////////////////////////////
+// Easing curves
+////////////////////////////////////////////////
+
+// Animating from on screen to on screen
+$curve-standard: cubic-bezier(.4,0,.2,1);
+// Entering a screen from off a side
+$curve-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
+// Exiting a screen off a side
+$curve-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+
+
+////////////////////////////////////////////////
+// Colors
+////////////////////////////////////////////////
+$brand-primary: #77bbfa;
+$text-grey: #484848;
+$tag-blue: #5599db;
+$number-blue: #7c8fba;
+$button-blue: #155693;

@@ -13,7 +13,9 @@ import { RouteComponentProps } from 'react-router';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import * as ReactGA from 'react-ga';
 import moment from 'moment';
+import { Loader } from 'semantic-ui-react';
 
+import { Notifications } from 'react-push-notification';
 import { auth, firestore } from '../firebase';
 
 import AdminView from './pages/AdminView';
@@ -27,7 +29,6 @@ import ProfessorPeopleView from './pages/ProfessorPeopleView';
 import CourseEditView from './pages/CourseEditView';
 import CourseSelectionView from './pages/CourseSelectionView';
 import { Analytics } from './includes/Analytics';
-import { Loader } from 'semantic-ui-react';
 import { userUpload } from '../firebasefunctions';
 import { useMyUser, useAllCourses } from '../firehooks';
 
@@ -182,6 +183,7 @@ export default () => {
     return (
         <Router>
             <div className="App">
+                <Notifications />
                 <Route path="/" component={Analytics} />
                 <Switch>
                     <Route path="/login" component={LoginView} />

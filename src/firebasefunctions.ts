@@ -1,5 +1,6 @@
 import { firestore, auth } from 'firebase/app';
 import { datePlus, normalizeDateToDateStart, normalizeDateToWeekStart } from './utilities/date';
+import { blockArray } from './firehooks';
 
 /* Basic Functions */
 
@@ -218,33 +219,67 @@ const importProfessorsOrTAs = async (
     db: firebase.firestore.Firestore,
     course: FireCourse,
     role: 'professor' | 'ta',
-    emailList: readonly string[]
+    emailListTotal: readonly string[]
 ): Promise<void> => {
-    const taUserDocuments = await db.collection('users').where('email', 'in', emailList).get();
-    const missingSet = new Set(emailList);
+    const missingSet = new Set(emailListTotal);
     const batch = db.batch();
     const updatedUsers: FireUser[] = [];
-    taUserDocuments.forEach((document) => {
-        const existingUser = { userId: document.id, ...document.data() } as FireUser;
-        const { email } = existingUser;
-        const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, role);
-        batch.update(db.collection('users').doc(existingUser.userId), roleUpdate);
-        updatedUsers.push(existingUser);
-        missingSet.delete(email);
-    });
-    batch.update(
-        db.collection('courses').doc(course.courseId),
-        getCourseRoleUpdates(
-            course,
-            updatedUsers.map((user) => [user.userId, role] as const)
+    
+    const emailBlocks = blockArray(emailListTotal, 10);
+
+    Promise.all(emailBlocks.map(emailList => {
+        return db.collection('users').where('email', 'in', emailList).get().then(taUserDocuments => {
+            // const updatedUsersThisBlock: FireUser[] = [];
+            // const userUpdatesThisBlock: Partial<FireUser>[] = [];
+            const updatesThisBlock: {user: FireUser; roleUpdate: Partial<FireUser>}[] = [];
+
+            taUserDocuments.forEach((document) => {
+                const existingUser = { userId: document.id, ...document.data() } as FireUser;
+                const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, role);
+                updatesThisBlock.push({
+                    user: existingUser,
+                    roleUpdate
+                })
+            });
+            
+            return updatesThisBlock;
+        });
+            
+    })).then(updatedBlocks => {
+        const allUpdates: {user: FireUser; roleUpdate: Partial<FireUser>}[] = [];
+
+        updatedBlocks.forEach(updateBlock => {
+            updateBlock.forEach(({user, roleUpdate}) => {
+                const {email} = user;
+                updatedUsers.push(user);
+                missingSet.delete(email);
+                allUpdates.push({user, roleUpdate});
+                // update user's roles table
+                batch.update(db.collection('users').doc(user.userId), roleUpdate);
+            })
+            
+        });
+        // update course's ta/professor roles
+        batch.update(
+            db.collection('courses').doc(course.courseId),
+            getCourseRoleUpdates(
+                course,
+                allUpdates.map(({user}) => [user.userId, role] as const)
+            )
         )
-    );
-    await batch.commit();
-    const message =
+        
+
+        batch.commit();
+    }).then(() => {
+        const message =
         'Successfully\n' +
         `updated: [${updatedUsers.map((user) => user.email).join(', ')}];\n` +
         `[${Array.from(missingSet).join(', ')}] do not exist in our system yet.`;
-    alert(message);
+        // eslint-disable-next-line no-alert
+        alert(message);
+    });
+
+    
 };
 
 const addOrRemoveFromRoleIdList = (
@@ -254,9 +289,8 @@ const addOrRemoveFromRoleIdList = (
 ): readonly string[] => {
     if (isAdd) {
         return roleIdList.includes(userId) ? roleIdList : [...roleIdList, userId];
-    } else {
-        return roleIdList.filter((id) => id !== userId);
     }
+    return roleIdList.filter((id) => id !== userId);
 };
 
 export const changeRole = (
@@ -282,6 +316,7 @@ export const importProfessorsOrTAsFromPrompt = (
     course: FireCourse,
     role: 'professor' | 'ta'
 ): void => {
+    // eslint-disable-next-line no-alert
     const response = prompt(
         `Please enter a comma-separated list of ${role === 'professor' ? role : 'TA'} emails:`
     );

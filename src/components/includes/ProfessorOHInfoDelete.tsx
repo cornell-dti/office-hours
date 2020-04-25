@@ -53,7 +53,7 @@ const ProfessorOHInfoDelete = ({ course, session, toggleDelete, toggleEdit }: Pr
     const taList = useSessionTANames(course, session);
 
     return (
-        <React.Fragment>
+        <>
             <div className="ProfessorOHInfoDelete">
                 <div className="question">
                     Are you sure you want to delete this office hour?
@@ -86,6 +86,7 @@ const ProfessorOHInfoDelete = ({ course, session, toggleDelete, toggleEdit }: Pr
                 {disable && <div className="EndedText">This session has already passed!</div>}
             </div>
             <button
+                type="button"
                 className="Delete"
                 onClick={() => {
                     _deleteSessionOrSeries();
@@ -96,7 +97,7 @@ const ProfessorOHInfoDelete = ({ course, session, toggleDelete, toggleEdit }: Pr
             >
                 Delete
             </button>
-        </React.Fragment>
+        </>
     );
 };
 

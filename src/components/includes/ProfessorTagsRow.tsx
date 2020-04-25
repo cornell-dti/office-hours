@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Icon } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfessorTagInfo from './ProfessorTagInfo';
@@ -32,7 +31,7 @@ const ProfessorTagsRow = (props: {
                 </td>
                 <td>{props.tag.active ? 'Active' : 'Inactive'}</td>
                 <td>
-                    <button className="Edit" onClick={() => setShowEdit(!showEdit)}>
+                    <button type="button" className="Edit" onClick={() => setShowEdit(!showEdit)}>
                         <Icon name="pencil" />
                     </button>
                 </td>

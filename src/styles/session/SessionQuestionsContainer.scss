@@ -1,0 +1,61 @@
+.SessionQuestionsContainer {
+
+    // .QueueQuestions {
+    //     &.MyQuestion {
+    //         border: solid 3px #ffdba6;
+    //     }
+    // }
+
+    .Queue, .QuestionHeader {
+        text-align: left;
+        font-size: 16px;
+        color: $text-grey;
+        margin: 0;
+        font-weight: 500;
+        margin-top: 12px;
+    }
+
+    .noQuestionsHeading {
+        margin-top: 140px;
+        font-size: 24px;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        color: $text-grey;
+    }
+
+    .noQuestionsWarning {
+        font-size: 19.2px;
+        color: $text-grey;
+    }
+
+    .SessionClosedMessage {
+        margin: 20px auto;
+        padding: 0 10px;
+        font-size: 19px;
+        font-weight: 400;
+        letter-spacing: 0.3px;
+        color: $text-grey;
+    }
+}
+
+
+@media only screen and (max-width: $mobile-breakpoint) {
+    .SessionQuestionsContainer {
+        .noQuestionsHeading {
+            margin-top: 40px;
+        }
+
+        .noQuestionsWarning, .noQuestionsHeading {
+            font-size: 15px;
+        }
+
+        .Queue, .QuestionHeader {
+            margin-left:12px;
+        }
+
+        .SessionClosedMessage {
+            margin: 20px auto;
+            font-size: 16px;
+        }
+    }
+}

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-
-import TopBar from '../includes/TopBar';
-import SessionInformationHeader from '../includes/SessionInformationHeader';
-import SessionQuestionsContainer from '../includes/SessionQuestionsContainer';
-
 import { Icon } from 'semantic-ui-react';
+import addNotification from 'react-push-notification';
+
+import TopBar from './TopBar';
+import SessionInformationHeader from './SessionInformationHeader';
+import SessionQuestionsContainer from './SessionQuestionsContainer';
+
 import { useCourseTags, useCourseUsersMap, useSessionQuestions } from '../../firehooks';
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 // import SessionAlertModal from './SessionAlertModal';
@@ -50,12 +51,30 @@ const SessionView = (
         dismissedAbsent: true,
         lastAskedQuestion: null
     });
-    const [cachedPrevQuestions, setCachedPrevQuestions] = useState(questions);
+
+    const [prevQuestSet, setPrevQuestSet] = useState(new Set(questions.map(q => q.questionId)));
+
+
 
     useEffect(() => {
-        if (cachedPrevQuestions === questions) {
+
+        const questionIds = questions.map(q => q.questionId);
+
+        const newQuestions = new Set(questionIds.filter(q => !prevQuestSet.has(q)));
+
+        if (newQuestions.size <= 0) {
             return;
         }
+        
+        if ((user.roles[course.courseId] === 'professor' ||
+        user.roles[course.courseId] === 'ta') && questions.length > 0) {
+            addNotification({
+                title: 'A new question has been added!',
+                message: 'Check the queue.',
+                native: true
+            })
+        }
+
         const myQuestions = questions.filter(q => q.askerId === user.userId);
         const lastAskedQuestion = myQuestions.length > 0
             ? myQuestions.reduce(
@@ -77,8 +96,9 @@ const SessionView = (
             }
             return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
-        setCachedPrevQuestions(questions);
-    }, [questions, cachedPrevQuestions, user.userId]);
+        setPrevQuestSet(new Set(questions.map(q => q.questionId)));
+    }, [prevQuestSet, questions, user.userId, course.courseId, user.roles]);
+
 
     const dismissUndo = () => {
         if (timeoutId) {

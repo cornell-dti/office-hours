@@ -1,0 +1,190 @@
+.DesktopSessionInformationHeader {
+    width: 100%;
+    background-color: $brand-primary;
+    font-size: 13px;
+    color: white;
+    text-align: left;
+    letter-spacing: 0.6px;
+
+    .Picture {
+        height: 100%;
+        width: 72px;
+        margin: 32px 48px 58px;
+        display: inline-block;
+        vertical-align: top;
+
+        img {
+            height: 72px;
+            width: 72px;
+            border-radius: 36px;
+        }
+    }
+
+    .Details {
+        margin-top: 32px;
+        display: inline-block;
+
+        .Location {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        p time {
+            margin-bottom: 8px;
+        }
+
+        .Date {
+            margin-bottom: 20px;
+        }
+    }
+    .QueueWrap {
+        height: 100%;
+        vertical-align: top;
+        margin: 40px 48px 0 0;
+        float: right;
+        font-size: 14px;
+
+        .QueueInfo {
+            width: 84px;
+            height: 84px;
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: $text-grey;
+            text-align: center;
+            padding-top: 18px;
+            p {
+                padding-top: 9px;
+            }
+        }
+
+        .red {
+            color: #f46565;
+        }
+    }
+
+}
+
+.SessionInformationHeader {
+    background-color: white;
+    font-size: 15px;
+    width: 100%;
+    border-bottom: solid 1px #e3e3e3;
+
+    .header {
+        padding: 10px 25px 10px 20px;
+        text-align:left;
+
+        .BackButton {
+            font-size: 15px;
+            font-weight: 500;
+            text-align: left;
+            margin: 0px;
+            color: $text-grey;
+            cursor: pointer;
+            display: inline-block;
+
+            .left {
+                border: solid $text-grey;
+                border-width: 0 1px 1px 0;
+                display: inline-block;
+                padding: 4px;
+                margin-right: 10px;
+            }
+
+            .left {
+                transform: rotate(135deg);
+                -webkit-transform: rotate(135deg);
+            }
+        }
+
+        .CourseInfo {
+
+            .CourseDetails {
+                float: left;
+                padding: 15px 0px 10px 19px;
+
+                p {
+                    font-size: 16px;
+                    text-align: left;
+                    color: gray;
+                    margin: 0px;
+                }
+
+                .Location {
+                    color: $text-grey;
+                    padding-bottom: 3px;
+                }
+            }
+
+            .Picture {
+                float: right;
+                padding-right: 10px;
+
+                img {
+                    display: inline-block;
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 35px;
+                    vertical-align: middle;
+                    object-fit: cover;
+                }
+            }
+        }
+    }
+
+    .MoreInformation {
+        display: inline-block;
+        width: 100%;
+        padding: 0 20px 20px;
+
+        hr {
+          display: block;
+          height: 1px;
+          border: 0;
+          border-top: 1px solid #ccc;
+          margin: 0;
+          padding: 0;
+        }
+
+        .QueueInfo {
+            float: left;
+            padding-top: 20px;
+            padding-left: 30px;
+
+            p {
+                font-size: 16px;
+                color: $text-grey;
+            }
+
+            .users {
+                font-size: 30px;
+            }
+
+            .red {
+              color: red;
+            }
+        }
+
+        .OfficeHourInfo {
+            float: right;
+            padding-top: 20px;
+            padding-right: 20px;
+
+            p {
+              color: gray;
+              font-size: 14px;
+
+              .black {
+                color: $text-grey;
+              }
+            }
+
+            .OfficeHourDate {
+                float: right;
+                width: 100%;
+                padding-bottom: 5px;
+            }
+        }
+    }
+}

@@ -1,0 +1,188 @@
+.QuestionView {
+  background-color: white;
+  height: 100%;
+  color: $text-grey;
+  position: relative;
+  overflow-y: auto;
+
+  .AddQuestion {
+    hr {
+      display: block;
+      height: 1px;
+      border: 0;
+      border-top: 1px solid #ccc;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+    }
+
+    .queueHeader {
+      background-color: white;
+      padding: 15px 15px 0px;
+
+      span {
+        display: inline-block;
+        font-size: 21px;
+        vertical-align: middle;
+      }
+
+      .title {
+        font-weight: 500;
+        padding-bottom: 8px;
+      }
+
+      .xbutton {
+        float: left;
+        cursor: pointer;
+      }
+    }
+
+    // .taHeader { /* Above button */
+    //   background-color: white;
+    //   padding: 10px 0;
+    //   padding-left: 3%;
+
+    //   .QuestionTaInfo {
+    //     font-size: 20px;
+    //     text-align: left;
+
+    //     img {
+    //       display: inline-block;
+    //       margin-right: 10px;
+    //       width: 35px;
+    //       height: 35px;
+    //       border-radius: 35px;
+    //       vertical-align: middle;
+    //       object-fit: cover;
+    //     }
+
+    //     .taName {
+    //       display: inline-block;
+    //       font-size: 20px;
+    //       vertical-align: middle;
+    //       margin-left: 5px;
+    //     }
+    //   }
+    // }
+
+    .tagsContainer {
+      background-color: white;
+
+      hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid #ccc;
+        margin: 0.5em 0;
+        padding: 0;
+        clear:both;
+      }
+
+      .tagsMiniContainer {
+        padding: 10px 32px;
+        clear: both;
+        width: 100%;
+        display:inline-block;
+        text-align: left;
+
+        p {
+          text-align: left;
+          margin-bottom:0.5em;
+        }
+
+        .header {
+            font-size: 15px;
+
+            .characterCount {
+              color: #717171;
+
+              &.warn {
+                color: #ce2a2a;
+              }
+            }
+        }
+
+        .placeHolder {
+          font-size: 15px;
+          font-weight: normal;
+          color: #C3C2C2;
+          padding-top: 1px;
+        }
+
+        .placeHolder.text {
+            height: 72px;
+        }
+
+        .TextInput {
+            font-weight: normal;
+            border: 0px;
+            color: $text-grey;
+            font-size:15px;
+            padding: 8px;
+            border-radius: 3.3px;
+            resize: none;
+            margin-top: 3px;
+
+            @media only screen and (min-width: $mobile-breakpoint) {
+                border: solid 0.7px #979797;
+            }
+
+            &::placeholder {
+                color: #545454;
+                font-weight: 300;
+            }
+        }
+        .TextInput.location {
+            width: 100%;
+            height: 36px;
+            @media only screen and (min-width: $mobile-breakpoint) {
+              text-indent: 21px;
+              width: 60%;
+            }
+        }
+
+        .TextInput.question {
+            width: 100%;
+            height: 72px;
+        }
+      }
+    }
+
+    .locationInput {
+        position: relative;
+        .map.marker.alternate.icon {
+            display: none;
+            @media only screen and (min-width: $mobile-breakpoint) {
+                display: block;
+                position: absolute;
+                top: 11px;
+                left: 4px;
+                font-size: 20px;
+                color: #e6e6e6;
+            }
+        }
+    }
+
+    .addButtonWrapper{
+      padding-bottom: 20px;
+    }
+
+    .AddButton {
+        width: 180px;
+        height: 30px;
+        color: white;
+        font-size: 13px;
+        border-radius: 4px;
+        display: block;
+        margin: auto 32px 0px auto;
+        padding-top: 6px;
+        cursor: pointer;
+        background-color: #d8d8d8;
+        transition: all 0.3s ease;
+    }
+    .AddButton.active {
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+        background-color: $brand-primary;
+    }
+  }
+}

@@ -1,0 +1,170 @@
+.LoginView.contact {
+    flex-direction: column;
+}
+
+.QMeLogo {
+    display: block;
+    width: 83px;
+    padding-bottom: 40px;
+    margin-top: 70px;
+}
+
+.topPanel {
+    height: 45vh;
+    background-image: linear-gradient(#155693 0%, #6db9ea 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    line-height: 1.4;
+    font-size: 18px;
+    margin-bottom: 40px;
+    position: relative;
+
+    .contactText {
+        background-color: transparent;
+        color: white;
+        border: none;
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        position: absolute;
+        bottom: 30px;
+        left: calc(50% - 125px);
+    }
+
+    &.contact {
+        background-image: none;
+        background-color: white;
+        color: $number-blue;
+        justify-content: center;
+        font-size: 19px;
+        margin-bottom: 0;
+        padding: 0 40px;
+        position: relative;
+
+        h2 {
+            font-size: 22px;
+            margin: 12% 0 30px;
+        }
+
+        .x {
+            position: absolute;
+            background-color: transparent;
+            border: none;
+            color: black;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
+
+        .QMeLogo {
+            float: left;
+            padding-bottom: 0;
+            margin-top: 0;
+        }
+    }
+}
+
+.bottomPanel {
+    height: 55vh;
+
+    &.contact {
+        background-color: $brand-primary;
+        padding-top: 80px;
+
+        .contactButton {
+            background-color: $button-blue;
+            box-shadow: 2px 4px 4px 0 rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            padding: 15px 50px;
+            width: 247px;
+            font-size: 20px;
+            height: 40px;
+            color: white;
+        }
+    }
+
+}
+
+.hintText {
+    color: grey;
+}
+
+@media only screen and (min-width: $mobile-breakpoint) { // Desktop View
+    .LoginView {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(51, 73, 94, 0.725);
+        min-height: 100%;
+        top: 20vh;
+        padding: 10vh 0;
+    }
+
+    .LoginView::after {
+        content: "";
+        background-image: url('/mann.jpg');
+        background-size: cover;
+        opacity: 0.5;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        position: fixed;
+        z-index: -1;
+    }
+
+    .topPanel,
+    .bottomPanel {
+        height: 500px;
+        font-size: 20px;
+        box-shadow: 10px 10px 111px 0px rgba(0, 0, 0, 0.65);
+        min-width: 400px;
+        max-width: 475px;
+    }
+
+    .topPanel {
+        margin: 0;
+        border-radius: 15px 0 0 15px;
+
+        &.contact {
+            height: 300px;
+            min-width: 800px;
+            border-radius: 15px 15px 0 0;
+            display: block;
+
+            .QMeLogo {
+                margin: 70px 30px;
+            }
+        }
+    }
+
+    .bottomPanel {
+        color: #8d8d8d;
+        border-radius: 0 15px 15px 0;
+        background-color: white;
+        position: relative;
+
+        &.contact {
+            height: 200px;
+            min-width: 800px;
+            border-radius: 0 0 15px 15px;
+        }
+    }
+
+    .QMeLogo {
+        width: 118px;
+        margin-top: 100px;
+    }
+
+    .hintText {
+        padding-top: 50%;
+    }
+
+}
+
+

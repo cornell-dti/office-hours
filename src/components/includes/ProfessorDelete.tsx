@@ -1,34 +1,24 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 
-class ProfessorDelete extends React.Component {
-    props!: {
-        isDeleteVisible: boolean;
-        updateDeleteVisible: Function;
-        content: JSX.Element;
-    };
+type Props = {
+    isDeleteVisible: boolean;
+    updateDeleteVisible: Function;
+    content: JSX.Element;
+}
 
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            isToggled: false
-        };
-        this.updateDeleteVisible = this.updateDeleteVisible.bind(this);
-    }
-
-    updateDeleteVisible(toggle: boolean) {
-        this.props.updateDeleteVisible(toggle);
-    }
+class ProfessorDelete extends React.Component<Props> {
+    updateDeleteVisible = (toggle: boolean) => this.props.updateDeleteVisible(toggle);
 
     render() {
         return (
             <div className={'ProfessorDelete ' + this.props.isDeleteVisible}>
                 <div className="content">
-                    <button className="x" onClick={() => this.updateDeleteVisible(false)}>
+                    <button type="button" className="x" onClick={() => this.updateDeleteVisible(false)}>
                         <Icon name="x" />
                     </button>
                     {this.props.content}
-                    <button className="Cancel" onClick={() => this.updateDeleteVisible(false)}>
+                    <button type="button" className="Cancel" onClick={() => this.updateDeleteVisible(false)}>
                         Cancel
                     </button>
                 </div>
