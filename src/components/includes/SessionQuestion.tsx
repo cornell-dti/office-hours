@@ -4,40 +4,13 @@ import Moment from 'react-moment';
 import * as firebase from 'firebase/app';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
-//This is used to make a timestamp
-
-// import SelectedTags from './SelectedTags';
-
-// const UPDATE_QUESTION = gql`
-// mutation UpdateQuestion($questionId: Int!, $status: String) {
-//     updateQuestionByQuestionId(input: {questionPatch: {status: $status}, questionId: $questionId}) {
-//         clientMutationId
-//     }
-// }
-// `;
-// const UPDATE_LOCATION = gql`
-// mutation UpdateLocation($questionId: Int!, $location: String) {
-//     updateQuestionByQuestionId(input: {questionPatch: {location: $location}, questionId: $questionId}) {
-//         clientMutationId
-//     }
-// }
-// `;
-
-// const UNDO_DONT_KNOW = gql`
-// mutation UndoDontKnow($questionId: Int!, $status: String!) {
-//     updateQuestionByQuestionId(input: {questionPatch: {status: $status, timeAddressed: null, answererId: null},
-//         questionId: $questionId}) {
-//         clientMutationId
-//     }
-// }
-// `;
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
 
 type Props = {
     question: FireQuestion;
-    users: { readonly[userId: string]: FireUser };
+    users: { readonly [userId: string]: FireUser };
     tags: { readonly [tagId: string]: FireTag };
     index: number;
     isTA: boolean;
@@ -270,7 +243,18 @@ class SessionQuestion extends React.Component<Props, State> {
                         </div>
                     }
                     <div className="Location">
-                        {this.props.isTA && question.location}
+                        {this.props.isTA &&
+                            question.location &&
+                            question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
+                            <a href={question.location}>
+                                Zoom Link
+                            </a>
+                        }
+                        {this.props.isTA &&
+                            question.location &&
+                            question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
+                            question.location
+                        }
                     </div>
                     {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
                         <p className={'Question' + studentCSS}>{question.content}</p>}
@@ -290,7 +274,8 @@ class SessionQuestion extends React.Component<Props, State> {
                             {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
                         </p>}
                 </div>
-                {this.props.isTA &&
+                {
+                    this.props.isTA &&
                     <div className="Buttons">
                         <hr />
                         <div className="TAButtons">
@@ -333,7 +318,8 @@ class SessionQuestion extends React.Component<Props, State> {
                         </div>
                     </div>
                 }
-                {this.props.includeRemove && !this.props.isPast &&
+                {
+                    this.props.includeRemove && !this.props.isPast &&
                     <div className="Buttons">
                         <hr />
                         <p className="Remove" onClick={this.retractQuestion}>
@@ -341,7 +327,7 @@ class SessionQuestion extends React.Component<Props, State> {
                         </p>
                     </div>
                 }
-            </div>
+            </div >
         );
     }
 }

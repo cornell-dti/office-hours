@@ -228,7 +228,7 @@ class AddQuestion extends React.Component<Props, State> {
 
                             <div className="tagsMiniContainer">
                                 <p className="header">
-                                    Location or Zoom Link<span
+                                    Location or Zoom Link &nbsp;<span
                                         className={'characterCount ' + (this.state.location.length >= 40 ? 'warn' : '')}
                                     >
                                         (
