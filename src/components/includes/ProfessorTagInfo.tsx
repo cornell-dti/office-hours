@@ -43,7 +43,8 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     }
 
     handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        this.setState((state) => ({ tag: { ...state.tag, name: event.target.value } }));
+        const name = event.currentTarget.value;
+        this.setState((state) => ({ tag: { ...state.tag, name } }));
     };
 
     handleNewTagTextChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -100,10 +101,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         });
 
         // converts reference parentTag to the string format stored in state
-        this.setState(function (prevState) {
-            prevState.tag.tagId = parentTag.id;
-            return { tag: prevState.tag };
-        });
+        this.setState((prevState) => ({ tag: { ...prevState.tag, tagId: parentTag.id } }));
 
         // below is essentially add new child a bunch of times
         this.state.newTags.forEach(tagText => {

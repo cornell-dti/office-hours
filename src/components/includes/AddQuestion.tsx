@@ -78,7 +78,7 @@ class AddQuestion extends React.Component<Props, State> {
     };
 
     public handlePrimarySelected = (tag: FireTag | undefined): void => {
-        this.setState(this.state.stage <= 10
+        this.setState(({ stage }) => stage <= 10
             ? { stage: 20, selectedPrimary: tag }
             : { stage: 10, selectedPrimary: undefined, selectedSecondary: undefined }
         );
@@ -98,24 +98,24 @@ class AddQuestion extends React.Component<Props, State> {
 
     public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
-        let stage;
+        let stage: number;
         if (target.value.length > 0) {
             if (this.state.question.length > 0) {
                 stage = 50;
             } else { stage = 40; }
         } else { stage = 30; }
-        this.setState({
-            location: target.value.length <= LOCATION_CHAR_LIMIT ? target.value : this.state.location,
+        this.setState(({ location }) => ({
+            location: target.value.length <= LOCATION_CHAR_LIMIT ? target.value : location,
             stage
-        });
+        }));
     };
 
     public handleUpdateQuestion = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
-        this.setState({
-            question: target.value.length <= this.props.course.charLimit ? target.value : this.state.question,
+        this.setState(({ question }) => ({
+            question: target.value.length <= this.props.course.charLimit ? target.value : question,
             stage: target.value.length > 0 ? 50 : 40
-        });
+        }));
     };
 
     public addQuestion = () => {
@@ -228,7 +228,7 @@ class AddQuestion extends React.Component<Props, State> {
 
                             <div className="tagsMiniContainer">
                                 <p className="header">
-                                    Location or Zoom Link<span
+                                    Location or Zoom Link &nbsp;<span
                                         className={'characterCount ' + (this.state.location.length >= 40 ? 'warn' : '')}
                                     >
                                         (

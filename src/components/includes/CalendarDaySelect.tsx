@@ -9,18 +9,13 @@ const dayList = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
 
-class CalendarDaySelect extends React.Component {
+type Props = { callback: (time: number) => void };
+type State = { selectedWeekEpoch: number; active: number };
 
-    props!: {
-        callback: (time: number) => void;
-    };
+class CalendarDaySelect extends React.Component<Props, State> {
+    state: State;
 
-    state!: {
-        selectedWeekEpoch: number;
-        active: number;
-    };
-
-    constructor(props: {}) {
+    constructor(props: Props) {
         super(props);
         const week = new Date(); // now
         week.setHours(0, 0, 0, 0); // beginning of today (00:00:00.000)
@@ -56,9 +51,9 @@ class CalendarDaySelect extends React.Component {
             <div className="CalendarDaySelect">
                 <p className="month">{monthNames[now.getMonth()]}</p>
                 <div className="selector">
-                    <span className="LastWeek" onClick={() => this.incrementWeek(false)}>
+                    <button type="button" className="LastWeek" onClick={() => this.incrementWeek(false)}>
                         <img src={chevron} alt="Previous Week" className="flipped" />
-                    </span>
+                    </button>
                     {dayList.map((day, i) => <CalendarDateItem
                         key={i}
                         index={i}
@@ -67,9 +62,9 @@ class CalendarDaySelect extends React.Component {
                         active={i === this.state.active}
                         handleClick={this.handleDateClick}
                     />)}
-                    <span className="NextWeek" onClick={() => this.incrementWeek(true)}>
+                    <button type="button" className="NextWeek" onClick={() => this.incrementWeek(true)}>
                         <img src={chevron} alt="Next Week" />
-                    </span>
+                    </button>
                 </div>
             </div>
         );

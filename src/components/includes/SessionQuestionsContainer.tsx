@@ -5,12 +5,12 @@ import SessionQuestion from './SessionQuestion';
 import { firestore } from '../../firebase';
 
 const SHOW_FEEDBACK_QUEUE = 4;
-//Maximum number of questions to be shown to user
+// Maximum number of questions to be shown to user
 const NUM_QUESTIONS_SHOWN = 20;
 
 type Props = {
     readonly isTA: boolean;
-    //Note that these questions are sorted by time asked
+    // Note that these questions are sorted by time asked
     readonly questions: readonly FireQuestion[];
     readonly users: { readonly [userId: string]: FireUser };
     readonly tags: { readonly [tagId: string]: FireTag };
