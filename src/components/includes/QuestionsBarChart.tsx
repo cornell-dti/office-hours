@@ -47,9 +47,8 @@ class QuestionsBarChart extends React.Component<Props> {
                     </div>
                 </div>
             );
-        } else {
-            return <div>N/A</div>;
         }
+        return <div>N/A</div>;
     }
 
     render() {

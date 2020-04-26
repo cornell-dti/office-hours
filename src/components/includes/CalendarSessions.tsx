@@ -13,9 +13,11 @@ const CalendarSessions = ({ activeSession, user, course, sessions, callback }: {
     const labelSession = (session: FireSession, intervalMs: number) => {
         if (new Date(session.endTime.toDate()) < new Date()) {
             return 'Past';
-        } else if (new Date(session.startTime.toDate()) < new Date()) {
+        }
+        if (new Date(session.startTime.toDate()) < new Date()) {
             return 'Ongoing';
-        } else if (new Date(session.startTime.toDate()) < new Date(new Date().getTime() + intervalMs)) {
+        }
+        if (new Date(session.startTime.toDate()) < new Date(new Date().getTime() + intervalMs)) {
             return 'Open';
         }
 

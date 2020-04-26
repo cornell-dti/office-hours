@@ -8,22 +8,20 @@ type Props = {
     selected: number;
 }
 
-class ProfessorSidebar extends React.Component<Props> {
+const ProfessorSidebar = ({ courseId, code, selected }: Props) => {
+    const selectedArray: string[] = ['', '', '', ''];
+    selectedArray[selected] = 'selected';
 
-    render() {
-        const selectedArray: string[] = ['', '', '', ''];
-        selectedArray[this.props.selected] = 'selected';
-
-        return (
-            <div className="ProfessorSidebar">
-                <div className="nav">
-                    <div className="header">
-                        <span>
-                            {this.props.code}
-                            {/* <Icon name="dropdown" /> */}
-                        </span>
-                    </div>
-                    {/* <div className="manage">
+    return (
+        <div className="ProfessorSidebar">
+            <div className="nav">
+                <div className="header">
+                    <span>
+                        {code}
+                        {/* <Icon name="dropdown" /> */}
+                    </span>
+                </div>
+                {/* <div className="manage">
                         <button className={selectedArray[0]}>
                             <Icon name="users" />
                             People
@@ -34,45 +32,44 @@ class ProfessorSidebar extends React.Component<Props> {
                             </button>
                     </div>
                     <div className="divider" /> */}
-                    <div className="actions">
-                        <Link to={'/professor/course/' + this.props.courseId}>
-                            <button type="button" className={selectedArray[0]}>
-                                <Icon name="setting" />
+                <div className="actions">
+                    <Link to={'/professor/course/' + courseId}>
+                        <button type="button" className={selectedArray[0]}>
+                            <Icon name="setting" />
                                 Manage Hours
-                            </button>
-                        </Link>
-                        <Link to={'/professor-tags/course/' + this.props.courseId}>
-                            <button type="button" className={selectedArray[1]}>
-                                <Icon name="settings" />
+                        </button>
+                    </Link>
+                    <Link to={'/professor-tags/course/' + courseId}>
+                        <button type="button" className={selectedArray[1]}>
+                            <Icon name="settings" />
                                 Manage Tags
-                            </button>
-                        </Link>
-                        <Link to={'/professor-dashboard/course/' + this.props.courseId}>
-                            <button type="button" className={selectedArray[2]}>
-                                <Icon name="line graph" />
+                        </button>
+                    </Link>
+                    <Link to={'/professor-dashboard/course/' + courseId}>
+                        <button type="button" className={selectedArray[2]}>
+                            <Icon name="line graph" />
                                 Dashboard
-                            </button>
-                        </Link>
-                        <Link to={'/professor-people/course/' + this.props.courseId}>
-                            <button type="button" className={selectedArray[3]}>
-                                <Icon name="users" />
+                        </button>
+                    </Link>
+                    <Link to={'/professor-people/course/' + courseId}>
+                        <button type="button" className={selectedArray[3]}>
+                            <Icon name="users" />
                                 People
-                            </button>
-                        </Link>
-                        <Link to={'/professor-roles/course/' + this.props.courseId}>
-                            <button type="button" className={selectedArray[4]}>
-                                <Icon name="id card outline" />
+                        </button>
+                    </Link>
+                    <Link to={'/professor-roles/course/' + courseId}>
+                        <button type="button" className={selectedArray[4]}>
+                            <Icon name="id card outline" />
                                 Manage Roles
-                            </button>
-                        </Link>
-                    </div>
+                        </button>
+                    </Link>
                 </div>
-                {/* <svg className="logo" width="100" height="100">
+            </div>
+            {/* <svg className="logo" width="100" height="100">
                     <circle cx="50" cy="50" r="10" fill="#7ab7fe" />
                 </svg> */}
-            </div>
-        );
-    }
+        </div>
+    );
 }
 
 export default ProfessorSidebar;

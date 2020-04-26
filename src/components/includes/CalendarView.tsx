@@ -30,9 +30,9 @@ export default ({ session, sessionCallback, course, user }: Props) => {
     );
 
     const filteredSessions = sessions && sessions.filter(
-        session => {
-            const sessionStart = session.startTime.toDate();
-            const sessionEnd = session.endTime.toDate();
+        s => {
+            const sessionStart = s.startTime.toDate();
+            const sessionEnd = s.endTime.toDate();
             return hasOverlap(sessionStart, sessionEnd, selectedDate, selectedDateEnd);
         }
     );
