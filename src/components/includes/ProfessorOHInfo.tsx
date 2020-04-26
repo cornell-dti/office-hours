@@ -170,6 +170,11 @@ const ProfessorOHInfo = (props: {
 
     const AddTA = taSelected.map(
         (ta, i) => {
+            // Filter dropdown by checking if TA has not been selected yet
+            // Include currently selected TA, or else dropdown can't prepopulate if option is missing
+            const dropdownOptions = props.taOptions.filter(ta =>
+                ta.value === taSelected[i] || !taSelected.some(s => s === ta.value));
+
             return (
                 <div className={'AddTA ' + (i === 0 ? 'First' : 'Additional')} key={i}>
                     <Icon name="user" />
@@ -177,7 +182,7 @@ const ProfessorOHInfo = (props: {
                         className="dropdown"
                         placeholder="TA Name"
                         selection={true}
-                        options={props.taOptions}
+                        options={dropdownOptions}
                         value={taSelected[i]}
                         onChange={(event, data) => handleTaList(event, data, i)}
                     />
