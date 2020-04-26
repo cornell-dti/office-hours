@@ -43,7 +43,8 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     }
 
     handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        this.setState((state) => ({ tag: { ...state.tag, name: event.target.value } }));
+        const name = event.currentTarget.value;
+        this.setState((state) => ({ tag: { ...state.tag, name } }));
     };
 
     handleNewTagTextChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
