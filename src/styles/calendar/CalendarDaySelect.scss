@@ -23,6 +23,13 @@ $red: #f67d7d;
         .LastWeek,
         .NextWeek {
             cursor: pointer;
+            background-color: transparent;
+            border-color: transparent;
+        }
+
+        .LastWeek,
+        .NextWeek:focus {
+            outline: 0;
         }
     }
 }
@@ -35,10 +42,17 @@ $red: #f67d7d;
     width: 30px;
 }
 
+.menuDate:focus {
+    outline: 0;
+}
+
 .menuDate {
     cursor: pointer;
     height: 54px;
     width: 30px;
+    background-color: transparent;
+    border-color: transparent;
+    padding: 0;
 
     &.active {
         cursor: default;

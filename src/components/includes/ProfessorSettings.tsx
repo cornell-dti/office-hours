@@ -69,9 +69,9 @@ class ProfessorSettings extends React.Component<Props, State> {
                         <button
                             type="button"
                             className="decrement"
-                            onClick={() => this.setState({
-                                charLimit: Math.max(this.state.charLimit - CHAR_INCREMENT, 0)
-                            })}
+                            onClick={() => this.setState(({ charLimit }) => ({
+                                charLimit: Math.max(charLimit - CHAR_INCREMENT, 0)
+                            }))}
                             disabled={this.state.charLimit <= 0}
                         >
                             <Icon name="minus" />
@@ -84,9 +84,9 @@ class ProfessorSettings extends React.Component<Props, State> {
                         <button
                             type="button"
                             className="increment"
-                            onClick={() => this.setState({
-                                charLimit: Math.min(this.state.charLimit + CHAR_INCREMENT, 999)
-                            })}
+                            onClick={() => this.setState(({ charLimit }) => ({
+                                charLimit: Math.min(charLimit + CHAR_INCREMENT, 999)
+                            }))}
                         >
                             <Icon name="plus" />
                         </button>

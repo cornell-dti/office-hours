@@ -65,7 +65,7 @@ const SessionView = (
         if (newQuestions.size <= 0) {
             return;
         }
-        
+
         if ((user.roles[course.courseId] === 'professor' ||
         user.roles[course.courseId] === 'ta') && questions.length > 0) {
             addNotification({
@@ -136,16 +136,16 @@ const SessionView = (
     };
     */
 
-    const isOpen = (session: FireSession, interval: number): boolean => {
+    const isOpen = (s: FireSession, interval: number): boolean => {
         const intervalInMilliseconds = interval * 1000 * 60;
-        return session.startTime.toDate().getTime() - intervalInMilliseconds < new Date().getTime()
-            && session.endTime.toDate().getTime() > new Date().getTime();
+        return s.startTime.toDate().getTime() - intervalInMilliseconds < new Date().getTime()
+            && s.endTime.toDate().getTime() > new Date().getTime();
     };
 
-    const isPast = (session: FireSession): boolean => new Date() > new Date(session.endTime.toDate());
+    const isPast = (s: FireSession): boolean => new Date() > new Date(s.endTime.toDate());
 
-    const getOpeningTime = (session: FireSession, interval: number): Date => (
-        new Date(new Date(session.startTime.toDate()).getTime() - interval * 1000 * 60)
+    const getOpeningTime = (s: FireSession, interval: number): Date => (
+        new Date(new Date(s.startTime.toDate()).getTime() - interval * 1000 * 60)
     );
 
     let undoText = '';

@@ -44,12 +44,12 @@ class CalendarWeekSelect extends React.Component<Props, State> {
     //     return weekText;
     // }
 
-    getMonth(epoch: number): string {
+    static getMonth(epoch: number): string {
         const now = new Date(epoch);
         return monthNames[now.getMonth()];
     }
 
-    getDay(epoch: number): number {
+    static getDay(epoch: number): number {
         const now = new Date(epoch);
         return now.getDate();
     }
@@ -89,16 +89,16 @@ class CalendarWeekSelect extends React.Component<Props, State> {
                 <div className="CurrentWeek">
                     <span className="Date">
                         <span className="Month">
-                            {this.getMonth(thisWeekEpoch)}
+                            {CalendarWeekSelect.getMonth(thisWeekEpoch)}
                         </span>
-                        {' ' + this.getDay(thisWeekEpoch)}
+                        {' ' + CalendarWeekSelect.getDay(thisWeekEpoch)}
                     </span>
                     -
                     <span className="Date">
                         <span className="Month">
-                            {this.getMonth(nextWeekEpoch)}
+                            {CalendarWeekSelect.getMonth(nextWeekEpoch)}
                         </span>
-                        {' ' + this.getDay(nextWeekEpoch)}
+                        {' ' + CalendarWeekSelect.getDay(nextWeekEpoch)}
                     </span>
                 </div>
                 <span className="NextWeek" onClick={() => this.handleWeekClick(false)}>
