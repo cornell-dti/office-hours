@@ -45,7 +45,7 @@ export default ({ session, sessionCallback, course, user }: Props) => {
                 avatar={user && user.photoUrl}
             />
             <CalendarDaySelect callback={setSelectedDate} />
-            {course && user ?
+            {course && user && sessions ?
                 <CalendarSessions
                     user={user}
                     activeSession={session}

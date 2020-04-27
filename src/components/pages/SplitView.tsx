@@ -92,7 +92,7 @@ const SplitView = (props: {
                     sessionCallback={handleSessionClick}
                 />
             }{(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
-                (course && user) ? (
+                ((course && user) ? (
                     session ? (
                         <SessionView
                             course={course}
@@ -121,7 +121,7 @@ const SplitView = (props: {
                             </p>
                         </section>
                     )
-                ) : <Loader active={true} content="Loading" />}
+                ) : <Loader active={true} content="Loading" />)}
             {activeView === 'addQuestion' && <>
                 <div className="modal">
                     {course && session
