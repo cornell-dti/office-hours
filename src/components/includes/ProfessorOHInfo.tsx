@@ -306,7 +306,7 @@ const ProfessorOHInfo = (props: {
                             updateNotification(stateNotification);
                         } else {
                             mutateSessionOrSeries();
-                            clearFields();
+                            (props.isNewOH && clearFields()); 
                             props.toggleEdit();
                         }
                     }}
