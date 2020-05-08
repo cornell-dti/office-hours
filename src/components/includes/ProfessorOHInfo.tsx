@@ -139,6 +139,7 @@ const ProfessorOHInfo = (props: {
                 room: locationRoomNumSelected,
                 startTime: startTimestamp,
                 tas: taDocuments,
+                totalQuestions: 0,
                 title
             };
             const newSession: Omit<FireSession, 'sessionId'> = sessionSeriesId === undefined

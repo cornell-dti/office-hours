@@ -117,6 +117,7 @@ export const createSeries = async (
                 startTime: firestore.Timestamp.fromDate(sessionStart),
                 tas: sessionSeries.tas,
                 title: sessionSeries.title,
+                totalQuestions: 0,
             };
             batch.set(db.collection('sessions').doc(), derivedSession);
         }
@@ -154,6 +155,7 @@ export const updateSeries = async (
             startTime,
             tas: sessionSeries.tas,
             title: sessionSeries.title,
+            totalQuestions: 0,
         };
         batch.set(db.collection('sessions').doc(sessionId), newSession);
     });

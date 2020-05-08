@@ -42,7 +42,7 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                     <p>{session.title || (<>
                         Held by
                         <span className="black">
-                            {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(' and ')}
+                            {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(', ')}
                         </span>
                     </>)}</p>
                 </div>
