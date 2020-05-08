@@ -15,6 +15,10 @@ interface FireSession {
     title?: string;
     sessionId: string;
     totalQuestions: number;
+    assignedQuestions: number;
+    resolvedQuestions: number;
+    totalWaitTime: number;
+    totalResolveTime: number;
 }
 
 /** This data is never stored in the database. */
@@ -85,7 +89,7 @@ interface FireQuestion {
     questionId: string;
 }
 
-type FireQuestionSlot = Pick<FireQuestion, 'timeAssigned' | 'timeAddressed' | 'askerId' 
+type FireQuestionSlot = Pick<FireQuestion, 'askerId' 
 | 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
 
 interface FireTag {

@@ -208,7 +208,7 @@ const SessionView = (
             }
             {/* FUTURE_TODO - Just pass in the session and not a bunch of bools */}
             <SessionQuestionsContainer
-                session = {session}
+                session={session}
                 isTA={isTa}
                 questions={questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
                 users={users}

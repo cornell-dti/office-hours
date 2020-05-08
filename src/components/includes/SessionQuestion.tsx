@@ -92,8 +92,7 @@ class SessionQuestion extends React.Component<Props, State> {
 
     assignQuestion = () => {
         const batch = firestore.batch();
-        const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned',
-        timeAssigned: firebase.firestore.Timestamp.now() };
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
         const questionUpdate: Partial<FireQuestion> = {
             status: 'assigned',
             answererId: this.props.myUserId,
@@ -115,8 +114,7 @@ class SessionQuestion extends React.Component<Props, State> {
 
     questionDone = () => {
         const batch = firestore.batch();
-        const slotUpdate: Partial<FireQuestionSlot> = { status: 'resolved',
-            timeAddressed: firebase.firestore.Timestamp.now() };
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'resolved' };
         const questionUpdate: Partial<FireQuestion> = {
             status: 'resolved',
             timeAddressed: firebase.firestore.Timestamp.now()

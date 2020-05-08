@@ -118,6 +118,10 @@ export const createSeries = async (
                 tas: sessionSeries.tas,
                 title: sessionSeries.title,
                 totalQuestions: 0,
+                assignedQuestions: 0,
+                resolvedQuestions: 0,
+                totalWaitTime: 0,
+                totalResolveTime: 0,
             };
             batch.set(db.collection('sessions').doc(), derivedSession);
         }
@@ -156,6 +160,10 @@ export const updateSeries = async (
             tas: sessionSeries.tas,
             title: sessionSeries.title,
             totalQuestions: 0,
+            assignedQuestions: 0,
+            resolvedQuestions: 0,
+            totalWaitTime: 0,
+            totalResolveTime: 0,
         };
         batch.set(db.collection('sessions').doc(sessionId), newSession);
     });

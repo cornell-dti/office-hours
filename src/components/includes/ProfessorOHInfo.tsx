@@ -140,6 +140,10 @@ const ProfessorOHInfo = (props: {
                 startTime: startTimestamp,
                 tas: taDocuments,
                 totalQuestions: 0,
+                assignedQuestions: 0,
+                resolvedQuestions: 0,
+                totalWaitTime: 0,
+                totalResolveTime: 0,
                 title
             };
             const newSession: Omit<FireSession, 'sessionId'> = sessionSeriesId === undefined
