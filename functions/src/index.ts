@@ -19,18 +19,18 @@ const db = admin.firestore();
 exports.onQuestionCreate = functions.firestore
     .document('questions/{questionId}')
     .onCreate((snap) => {
-    // Get data object and obtain session ID
-    const data = snap.data();
-    const sessionId = data!.sessionId;
+        // Get data object and obtain session ID
+        const data = snap.data();
+        const sessionId = data!.sessionId;
 
-    // Log Session ID for debugging
-    // console.log(`Session ID is: ${sessionId}`);
+        // Log Session ID for debugging
+        // console.log(`Session ID is: ${sessionId}`);
 
-	// Increment total number of questions of relevant session
-	const increment = admin.firestore.FieldValue.increment(1);
-	return db.doc(`sessions/${sessionId}`).update({
-		totalQuestions: increment
-	});
+        // Increment total number of questions of relevant session
+        const increment = admin.firestore.FieldValue.increment(1);
+        return db.doc(`sessions/${sessionId}`).update({
+            totalQuestions: increment
+    });
 });
 
 // This map maps a question status to a tuple of
