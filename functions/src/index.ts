@@ -86,9 +86,9 @@ exports.onQuestionUpdate = functions.firestore
         }
 
         // Log for debugging
-        console.log(`Status change from ${prevStatus} to ${newStatus}. Changes:
+        /*console.log(`Status change from ${prevStatus} to ${newStatus}. Changes:
             ${numQuestionChange} ${numAssignedChange} ${numResolvedChange}
-            ${waitTimeChange} ${resolveTimeChange}`);
+            ${waitTimeChange} ${resolveTimeChange}`);*/
 
         // Update relevant statistics in database
         return db.doc(`sessions/${sessionId}`).update({
