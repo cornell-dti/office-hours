@@ -30,8 +30,8 @@ exports.onQuestionCreate = functions.firestore
         const increment = admin.firestore.FieldValue.increment(1);
         return db.doc(`sessions/${sessionId}`).update({
             totalQuestions: increment
+        });
     });
-});
 
 // This map maps a question status to a tuple of
 // 1. The number of questions this counts as (0 if no show or retracted)
@@ -47,55 +47,55 @@ questionStatusNumbers.set("no-show", [0, 0, 0]);
 exports.onQuestionUpdate = functions.firestore
     .document('questions/{questionId}')
     .onUpdate((change) => {
-    const newQuestion = change.after.data()!;
-    const prevQuestion = change.before.data()!;
+        const newQuestion = change.after.data()!;
+        const prevQuestion = change.before.data()!;
 
-    //Derive session ID
-    const sessionId = newQuestion.sessionId;
+        //Derive session ID
+        const sessionId = newQuestion.sessionId;
 
-    //Derive changes in counts
-    const newStatus = newQuestion.status;
-    const prevStatus = prevQuestion.status;
-    const newNumbers = questionStatusNumbers.get(newStatus)!;
-    const prevNumbers = questionStatusNumbers.get(prevStatus)!;
+        //Derive changes in counts
+        const newStatus = newQuestion.status;
+        const prevStatus = prevQuestion.status;
+        const newNumbers = questionStatusNumbers.get(newStatus)!;
+        const prevNumbers = questionStatusNumbers.get(prevStatus)!;
 
-    //Grab number of changes
-    const numQuestionChange = newNumbers[0] - prevNumbers[0];
-    const numAssignedChange = newNumbers[1] - prevNumbers[1];
-    const numResolvedChange = newNumbers[2] - prevNumbers[2];
+        //Grab number of changes
+        const numQuestionChange = newNumbers[0] - prevNumbers[0];
+        const numAssignedChange = newNumbers[1] - prevNumbers[1];
+        const numResolvedChange = newNumbers[2] - prevNumbers[2];
 
-    let waitTimeChange = 0;
-    let resolveTimeChange = 0;
+        let waitTimeChange = 0;
+        let resolveTimeChange = 0;
 
-    // Derive timing changes (changes from assigned to unassigned)
-    if (numAssignedChange == 1){
-        // Add new time addressed
-        waitTimeChange = newQuestion.timeAssigned.seconds - newQuestion.timeEntered.seconds;
-    }
-    else if (numAssignedChange == -1){
-        // Subtract previous time addressed
-        waitTimeChange = prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds;
-    }
+        // Derive timing changes (changes from assigned to unassigned)
+        if (numAssignedChange == 1){
+            // Add new time addressed
+            waitTimeChange = newQuestion.timeAssigned.seconds - newQuestion.timeEntered.seconds;
+        }
+        else if (numAssignedChange == -1){
+            // Subtract previous time addressed
+            waitTimeChange = prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds;
+        }
 
-    // Derive timing changes (changes from assigned to resolved)
-    if (numResolvedChange == 1){
-        resolveTimeChange = newQuestion.timeAddressed.seconds - newQuestion.timeAssigned.seconds;
-    }
-    else if (numResolvedChange == -1){
-        resolveTimeChange = prevQuestion.timeAssigned.seconds - prevQuestion.timeAddressed.seconds;
-    }
+        // Derive timing changes (changes from assigned to resolved)
+        if (numResolvedChange == 1){
+            resolveTimeChange = newQuestion.timeAddressed.seconds - newQuestion.timeAssigned.seconds;
+        }
+        else if (numResolvedChange == -1){
+            resolveTimeChange = prevQuestion.timeAssigned.seconds - prevQuestion.timeAddressed.seconds;
+        }
 
-    // Log for debugging
-    console.log(`Status change from ${prevStatus} to ${newStatus}. Changes:
-        ${numQuestionChange} ${numAssignedChange} ${numResolvedChange}
-        ${waitTimeChange} ${resolveTimeChange}`);
+        // Log for debugging
+        console.log(`Status change from ${prevStatus} to ${newStatus}. Changes:
+            ${numQuestionChange} ${numAssignedChange} ${numResolvedChange}
+            ${waitTimeChange} ${resolveTimeChange}`);
 
-    // Update relevant statistics in database
-    return db.doc(`sessions/${sessionId}`).update({
-        totalQuestions: admin.firestore.FieldValue.increment(numQuestionChange),
-        assignedQuestions: admin.firestore.FieldValue.increment(numAssignedChange),
-        resolvedQuestions: admin.firestore.FieldValue.increment(numResolvedChange),
-        totalWaitTime: admin.firestore.FieldValue.increment(waitTimeChange),
-        totalResolveTime: admin.firestore.FieldValue.increment(resolveTimeChange),
+        // Update relevant statistics in database
+        return db.doc(`sessions/${sessionId}`).update({
+            totalQuestions: admin.firestore.FieldValue.increment(numQuestionChange),
+            assignedQuestions: admin.firestore.FieldValue.increment(numAssignedChange),
+            resolvedQuestions: admin.firestore.FieldValue.increment(numResolvedChange),
+            totalWaitTime: admin.firestore.FieldValue.increment(waitTimeChange),
+            totalResolveTime: admin.firestore.FieldValue.increment(resolveTimeChange),
+        });
     });
-});
