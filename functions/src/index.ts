@@ -37,7 +37,7 @@ exports.onQuestionCreate = functions.firestore
 // 1. The number of questions this counts as (0 if no show or retracted)
 // 2. The number of assigned questions this counts as (1 if assigned / resolved)
 // 3. The number of resolved questions this counts as (1 if resolved only)
-const questionStatusNumbers = new Map<string, number[]>();
+const questionStatusNumbers = new Map<string, [number, number, number]>();
 questionStatusNumbers.set("assigned", [1, 1, 0]);
 questionStatusNumbers.set("resolved", [1, 1, 1]);
 questionStatusNumbers.set("retracted", [0, 0, 0]);
