@@ -7,6 +7,15 @@
     flex: 1 1 400px;
     width: 300px;
 
+    &.selected {
+        opacity: 0.6;
+    }
+    
+    &.active:hover {
+        cursor: pointer;
+        box-shadow: 5px 10px 20px gray;
+    }
+
     .courseText {
         padding: 30px;
         min-height: 150px;
@@ -46,15 +55,6 @@
             padding-top: 15px;
         }
     }
-}
-
-.CourseCard.selected {
-    opacity: 0.6;
-}
-
-.CourseCard:hover {
-    cursor: pointer;
-    box-shadow: 5px 10px 20px gray;
 }
 
 @media only screen and (max-width: $mobile-breakpoint) {

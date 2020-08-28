@@ -24,9 +24,23 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     // On the contrary, onboarding (isNormalEditingMode=false) has only enroll button.
     const [isNormalEditingMode, setEditingMode] = React.useState<boolean>(user.courses.length > 0);
 
+    const [currentCourses, setCurrentCourses] = React.useState<FireCourse[]>([]);
+    const [formerCourses, setFormerCourses] = React.useState<FireCourse[]>([]);
+
+    React.useEffect(() => {
+        const now = Date.now();
+        setCurrentCourses(allCourses.filter((course) => {
+            return course.endDate.seconds * 1000 >= now;
+        }));
+
+        setFormerCourses(allCourses.filter((course) => {
+            return course.endDate.seconds * 1000 < now;
+        }));
+    }, [allCourses]);
+
     const currentlyEnrolledCourseIds = new Set(user.courses);
     const [selectedCourses, setSelectedCourses] = React.useState<FireCourse[]>(
-        allCourses.filter(
+        currentCourses.filter(
             ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] === undefined
         )
     );
@@ -35,7 +49,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     const coursesToEnroll: string[] = [];
     const coursesToUnenroll: string[] = [];
-    allCourses.forEach(({ courseId }) => {
+    currentCourses.forEach(({ courseId }) => {
         if (selectedCourses.some(selected => selected.courseId === courseId)) {
             // The course is selected.
             if (!currentlyEnrolledCourseIds.has(courseId)) {
@@ -92,7 +106,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         // don't add newly-selected courses... add back the newly-deselected courses
         setSelectedCourses([
             ...(selectedCourses.filter(course => !coursesToEnroll.includes(course.courseId))),
-            ...allCourses.filter(course => coursesToUnenroll.includes(course.courseId))
+            ...currentCourses.filter(course => coursesToUnenroll.includes(course.courseId))
         ]);
 
         history.push('/home');
@@ -125,7 +139,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                         </div>
                     </div>
                     <div className="CourseCards">
-                        {allCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
+                        {currentCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
                             currentlyEnrolledCourseIds.has(course.courseId)
                             || isEdit)
                             .map((course) => {
@@ -148,6 +162,35 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                 );
                             })}
                     </div>
+                    {!isEdit ? <>
+                        <div className="description">
+                            <div className="subtitle">
+                                Former Classes
+                            </div>
+                        </div>
+                        <div className="CourseCards CourseCardsInactive">
+                            {formerCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
+                                currentlyEnrolledCourseIds.has(course.courseId))
+                                .map((course) => {
+                                    const role = currentlyEnrolledCourseIds.has(course.courseId)
+                                        ? (user.roles[course.courseId] || 'student')
+                                        : undefined;
+                                    return (
+                                        <div>
+                                            <CourseCard
+                                                key={course.courseId}
+                                                course={course}
+                                                role={role}
+                                                inactive={true}
+                                                onSelectCourse={() => { }}
+                                                editable={false}
+                                                selected={false}
+                                            />
+                                        </div>
+                                    );
+                                })}
+                        </div>
+                    </> : <></>}
                 </div>
             </div>
             <div className="EnrollBar">
