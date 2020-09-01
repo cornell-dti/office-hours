@@ -32,7 +32,10 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                     />
                 </div>
                 <div className="Details">
-                    <p className="Location">{session.building + ' ' + session.room}</p>
+                    {session.modality !== "virtual" ?
+                        <p className="Location">{session.building + ' ' + session.room}</p> : <></>}
+                    {session.modality === "hybrid" ? <p className="location">or</p> : <></>}
+                    {session.modality === "virtual" ? <p className="location">Online</p> : <></>}
                     <Moment date={session.startTime.seconds * 1000} interval={0} format={'h:mm A'} />
                     <Moment date={session.endTime.seconds * 1000} interval={0} format={' - h:mm A'} />
                     <p className="Date">
@@ -69,7 +72,9 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                 </p>
                 <div className="CourseInfo">
                     <div className="CourseDetails">
-                        <p className="Location">{session.building + ' ' + session.room}</p>
+                        {session.modality !== 'virtual' ? <span>
+                            <p className="Location">{`${session.building} ${session.room}`}</p>
+                        </span> : <span>Online</span>}
                         <Moment date={session.startTime.toDate()} interval={0} format={'h:mm A'} />
                         <Moment date={session.endTime.toDate()} interval={0} format={' - h:mm A'} />
                     </div>

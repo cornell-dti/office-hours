@@ -1,11 +1,17 @@
 import * as React from 'react';
 import { useState } from 'react';
 import moment from 'moment';
-import { Dropdown, Checkbox, Icon, DropdownItemProps, DropdownProps } from 'semantic-ui-react';
+import { Dropdown, Checkbox, Icon, DropdownItemProps, DropdownProps, Button } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { firestore, Timestamp } from '../../firebase';
 import { createSeries, updateSeries } from '../../firebasefunctions';
+
+enum Modality {
+    VIRTUAL = 'virtual',
+    HYBRID = 'hybrid',
+    INPERSON = 'in-person'
+}
 
 const ProfessorOHInfo = (props: {
     session?: FireSession;
@@ -17,20 +23,33 @@ const ProfessorOHInfo = (props: {
 }) => {
     const session = props.session || undefined;
 
-    const [startTime, setStartTime] = useState<moment.Moment | undefined>
-    (session && moment(session.startTime.seconds * 1000));
-    const [endTime, setEndTime] = useState<moment.Moment | undefined>
-    (session && moment(session.endTime.seconds * 1000));
-    const [taSelected, setTaSelected] = useState<(string | undefined)[]>
-        (session && session.tas ? session.tas : [undefined]);
-    const [locationBuildingSelected, setLocationBuildingSelected] = useState(session && session.building);
-    const [locationRoomNumSelected, setLocationRoomNumSelected] = useState(session && session.room);
-    const [isSeriesMutation, setIsSeriesMutation] = useState(!!(session && session.sessionSeriesId));
-    const [notification, setNotification] = useState(
-        session && moment(session.endTime).isBefore()
-            ? 'This session has already passed!'
-            : '');
+    const [startTime, setStartTime] = useState<moment.Moment | undefined>();
+    const [endTime, setEndTime] = useState<moment.Moment | undefined>();
+    const [taSelected, setTaSelected] = useState<(string | undefined)[]>([]);
+    const [locationBuildingSelected, setLocationBuildingSelected] = useState<string | undefined>();
+    const [locationRoomNumSelected, setLocationRoomNumSelected] = useState<string | undefined>();
+    const [isSeriesMutation, setIsSeriesMutation] = useState(false);
+    const [notification, setNotification] = useState<string | undefined>();
     const [title, setTitle] = useState(session && session.title);
+    const [modality, setModality] = useState(Modality.VIRTUAL);
+
+    React.useEffect(() => {
+        if (session) {
+            setStartTime(moment(session.startTime.seconds * 1000));
+            setEndTime(moment(session.endTime.seconds * 1000));
+            setTaSelected(session.tas ? session.tas : [undefined]);
+            if (session.modality !== "virtual") {
+                setLocationBuildingSelected(session.building);
+                setLocationRoomNumSelected(session.room);
+            }
+            setIsSeriesMutation(!!(session.sessionSeriesId));
+            setNotification(
+                moment(session.endTime).isBefore()
+                    ? 'This session has already passed!'
+                    : '');
+            setTitle(session.title);
+        }
+    }, [session]);
 
     const updateNotification = (n: string) => {
         if (notification !== 'This session has already passed!') {
@@ -112,7 +131,8 @@ const ProfessorOHInfo = (props: {
             }
         });
         if (isSeriesMutation) {
-            const series: Omit<FireSessionSeries, 'sessionSeriesId'> = {
+            const series: FireSessionSeriesDefinition = {
+                modality,
                 building: locationBuildingSelected,
                 courseId: props.courseId,
                 endTime: endTimestamp,
@@ -133,17 +153,20 @@ const ProfessorOHInfo = (props: {
         } else {
             const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
             const sessionWithoutSessionSeriesId = {
-                building: locationBuildingSelected,
+                modality,
                 courseId: props.courseId,
                 endTime: endTimestamp,
-                room: locationRoomNumSelected,
                 startTime: startTimestamp,
                 tas: taDocuments,
                 title
             };
+            const sessionLocation = modality !== Modality.VIRTUAL ? {
+                building: locationBuildingSelected,
+                room: locationRoomNumSelected,
+            } : {};
             const newSession: Omit<FireSession, 'sessionId'> = sessionSeriesId === undefined
                 ? sessionWithoutSessionSeriesId
-                : { ...sessionWithoutSessionSeriesId, sessionSeriesId };
+                : { ...sessionWithoutSessionSeriesId, ...sessionLocation, sessionSeriesId };
             if (propsSession) {
                 firestore.collection('sessions').doc(propsSession.sessionId).update(newSession);
             } else {
@@ -213,6 +236,14 @@ const ProfessorOHInfo = (props: {
         <>
             <div className="ProfessorOHInfo">
                 <div className="row">
+                    Modality
+                    <Button.Group>
+                        <Button active={modality === Modality.VIRTUAL} onClick={() => setModality(Modality.VIRTUAL)}>Virtual</Button>
+                        <Button active={modality === Modality.HYBRID} onClick={() => setModality(Modality.HYBRID)}>Hybrid</Button>
+                        <Button active={modality === Modality.INPERSON} onClick={() => setModality(Modality.INPERSON)}>In Person</Button>
+                    </Button.Group>
+                </div>
+                <div className="row">
                     <Icon name="marker" />
                     <input
                         className="long"
@@ -224,7 +255,7 @@ const ProfessorOHInfo = (props: {
                 <div className="row TA">
                     {AddTA}
                 </div>
-                <div className="row">
+                {modality !== Modality.VIRTUAL ? <div className="row">
                     <Icon name="marker" />
                     <input
                         className="long"
@@ -238,7 +269,7 @@ const ProfessorOHInfo = (props: {
                         value={locationRoomNumSelected || ''}
                         onChange={(e) => handleTextField(e, setLocationRoomNumSelected)}
                     />
-                </div>
+                </div> : <></>}
                 <div className="Time">
                     <Icon name="time" />
                     <div className="datePicker">
@@ -311,7 +342,7 @@ const ProfessorOHInfo = (props: {
                             updateNotification(stateNotification);
                         } else {
                             mutateSessionOrSeries();
-                            (props.isNewOH && clearFields()); 
+                            (props.isNewOH && clearFields());
                             props.toggleEdit();
                         }
                     }}

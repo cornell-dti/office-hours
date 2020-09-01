@@ -4,11 +4,12 @@ interface FireTimestamp {
     toDate(): Date;
 }
 
-interface FireSession {
-    building: string;
+type FireSessionModality = 'in-person' | 'hybrid' | 'virtual';
+
+interface FireBaseSession {
+    modality: FireSessionModality;
     courseId: string;
     endTime: FireTimestamp;
-    room: string;
     sessionSeriesId?: string;
     startTime: FireTimestamp;
     tas: string[];
@@ -16,17 +17,61 @@ interface FireSession {
     sessionId: string;
 }
 
-/** This data is never stored in the database. */
-interface FireSessionSeries {
+interface FireSessionLocation {
+    room: string;
     building: string;
+}
+
+interface FireVirtualSession extends FireBaseSession {
+    modality: 'virtual';
+}
+
+interface FireInPersonSession extends FireBaseSession, FireSessionLocation {
+    modality: 'in-person';
+    building: string;
+    room: string;
+}
+
+interface FireHybridSession extends FireBaseSession, FireSessionLocation {
+    modality: 'hybrid';
+    building: string;
+    room: string;
+}
+
+type FireSession = FireHybridSession | FireInPersonSession | FireVirtualSession;
+
+/** This data is never stored in the database. */
+interface FireBaseSessionSeries {
+    modality: FireSessionModality;
     courseId: string;
     endTime: FireTimestamp;
-    room: string;
     startTime: FireTimestamp;
     tas: string[];
     title?: string;
     sessionSeriesId: string;
 }
+
+interface FireVirtualSessionSeries extends FireBaseSessionSeries {
+    modality: 'virtual';
+}
+
+interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
+    modality: 'hybrid';
+    building: string;
+    room: string;
+}
+
+interface FireInPersonSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
+    modality: 'in-person';
+    building: string;
+    room: string;
+}
+
+type FireSessionSeries = FireVirtualSessionSeries | FireHybridSessionSeries | FireInPersonSessionSeries;
+type FireSessionSeriesDefinition =
+    Omit<FireVirtualSessionSeries, 'sessionSeriesId'>
+    | Omit<FireHybridSessionSeries, 'sessionSeriesId'>
+    | Omit<FireInPersonSessionSeries, 'sessionSeriesId'>;
 
 /** @see FireUser for the enrollment invariant. */
 interface FireCourse {
