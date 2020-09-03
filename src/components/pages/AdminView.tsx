@@ -123,8 +123,8 @@ const AdminCourseCard = ({ course }: { readonly course: FireCourse }) => {
     );
 };
 
-const startDate = new Date('2020-03-30');
-const endDate = new Date('2020-06-30');
+const startDate = new Date('2020-09-02');
+const endDate = new Date('2020-12-21');
 
 const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => {
     const [courseId, setCourseId] = useState('');
