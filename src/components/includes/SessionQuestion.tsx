@@ -16,6 +16,7 @@ type Props = {
     isTA: boolean;
     includeRemove: boolean;
     myUserId: string;
+    virtualLocation?: string;
     triggerUndo: Function;
     isPast: boolean;
 };
@@ -95,7 +96,8 @@ class SessionQuestion extends React.Component<Props, State> {
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
         const questionUpdate: Partial<FireQuestion> = {
             status: 'assigned',
-            answererId: this.props.myUserId
+            answererId: this.props.myUserId,
+            ...(this.props.virtualLocation ? { answererLocation: this.props.virtualLocation } : {})
         };
         batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
         batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);

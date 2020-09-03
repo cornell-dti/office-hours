@@ -38,6 +38,10 @@ interface FireHybridSession extends FireBaseSession, FireSessionLocation {
     room: string;
 }
 
+interface FireVirtualSessionProfile {
+    virtualLocation?: string;
+}
+
 type FireSession = FireHybridSession | FireInPersonSession | FireVirtualSession;
 
 /** This data is never stored in the database. */

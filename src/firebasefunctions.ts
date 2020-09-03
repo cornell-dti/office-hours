@@ -361,3 +361,15 @@ export const importProfessorsOrTAsFromPrompt = (
         );
     }
 };
+
+export const updateVirtualLocation = (
+    db: firebase.firestore.Firestore,
+    user: FireUser,
+    session: FireSession,
+    virtualLocation: string): Promise<void> => {
+    return db.doc(`/sessionProfiles/${session.sessionId}/profiles/${user.userId}`).set({
+        virtualLocation
+    }, {
+        merge: true
+    }).then(() => {})
+};
