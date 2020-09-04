@@ -81,11 +81,12 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
 
     const busiestSession: FireSession | undefined = sessions[busiestSessionIndex];
     const busiestSessionInfo = busiestSession && {
+        ...(busiestSession.modality !== "virtual" ? {
+            building: busiestSession.building, room: busiestSession.room, online: false as const
+        } : { online: true as const }),
         ohDate: moment(busiestSession.startTime.seconds * 1000).format('MMMM Do'),
         startHour: moment(busiestSession.startTime.seconds * 1000).format('h:mm a'),
         endHour: moment(busiestSession.endTime.seconds * 1000).format('h:mm a'),
-        building: busiestSession.building,
-        room: busiestSession.room,
         dayOfWeek: moment(busiestSession.startTime.seconds * 1000).format('dddd'),
         date: moment(busiestSession.startTime.seconds * 1000).format('MMMM Do YYYY'),
         taNames: busiestSession.tas.map(userId => {
@@ -124,6 +125,16 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const sessionDict: {
         [key: string]: {
             ta: string;
+            online: true;
+            questions: number;
+            answered: number;
+            startHour: string;
+            endHour: string;
+        };
+    } | {
+        [key: string]: {
+            ta: string;
+            online: false;
             questions: number;
             answered: number;
             startHour: string;
@@ -134,16 +145,30 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     } = {};
 
     sessions.forEach((t, i) => {
-        sessionDict[t.sessionId] = {
-            // Ryan Todo
-            ta: '',
-            questions: questions[i] ? questions[i].length : 0,
-            answered: questions[i] && questions[i].filter(q => q.status !== 'unresolved').length,
-            startHour: moment(t.startTime.seconds * 1000).format('h:mm a'),
-            endHour: moment(t.endTime.seconds * 1000).format('h:mm a'),
-            building: t.building,
-            room: t.room
-        };
+        if (t.modality === "virtual") {
+            sessionDict[t.sessionId] = {
+                // Ryan Todo
+                ta: '',
+                questions: questions[i] ? questions[i].length : 0,
+                answered: questions[i] && questions[i].filter(q => q.status !== 'unresolved').length,
+                startHour: moment(t.startTime.seconds * 1000).format('h:mm a'),
+                endHour: moment(t.endTime.seconds * 1000).format('h:mm a'),
+                online: true,
+
+            };
+        } else {
+            sessionDict[t.sessionId] = {
+                // Ryan Todo
+                ta: '',
+                questions: questions[i] ? questions[i].length : 0,
+                answered: questions[i] && questions[i].filter(q => q.status !== 'unresolved').length,
+                startHour: moment(t.startTime.seconds * 1000).format('h:mm a'),
+                endHour: moment(t.endTime.seconds * 1000).format('h:mm a'),
+                online: false,
+                building: t.building,
+                room: t.room
+            };
+        }
     });
 
     const barGraphData = sessions.map((s, i) => ({ [s.sessionId]: questions[i] ? questions[i].length : 0 }));
@@ -221,9 +246,10 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                             <p className="maroon-descript">
                                                 {busiestSessionInfo.startHour} - {busiestSessionInfo.endHour}
                                             </p>
-                                            <p className="maroon-descript">
-                                                {busiestSessionInfo.building} {busiestSessionInfo.room}
-                                            </p>
+                                            {busiestSessionInfo.online ? <p className="maroon-descript">Online</p> :
+                                                <p className="maroon-descript">
+                                                    {busiestSessionInfo.building} {busiestSessionInfo.room}
+                                                </p>}
                                             <p className="maroon-descript">
                                                 {busiestSessionInfo.taNames}
                                             </p>

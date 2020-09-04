@@ -15,6 +15,7 @@ type Props = {
     readonly users: { readonly [userId: string]: FireUser };
     readonly tags: { readonly [tagId: string]: FireTag };
     readonly myUserId: string;
+    readonly myVirtualLocation?: string;
     readonly handleJoinClick: Function;
     readonly triggerUndo: Function;
     readonly isOpen: boolean;
@@ -180,6 +181,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         users={props.users}
                         tags={props.tags}
                         index={i}
+                        virtualLocation={props.myVirtualLocation}
                         isTA={props.isTA}
                         includeRemove={false}
                         triggerUndo={props.triggerUndo}

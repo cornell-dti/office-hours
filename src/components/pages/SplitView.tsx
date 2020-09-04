@@ -111,13 +111,13 @@ const SplitView = (props: {
                                 courseId={props.match.params.courseId}
                             />
                             <p className="welcomeMessage">
-                                Welcome{user && ', '}
+                                    Welcome{user && ', '}
                                 <span className="welcomeName">
                                     {user && user.firstName}
                                 </span>
                             </p>
                             <p className="noSessionSelected">
-                                Please select an office hour from the calendar.
+                                    Please select an office hour from the calendar.
                             </p>
                         </section>
                     )

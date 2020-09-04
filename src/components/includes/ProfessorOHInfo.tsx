@@ -1,11 +1,17 @@
 import * as React from 'react';
 import { useState } from 'react';
 import moment from 'moment';
-import { Dropdown, Checkbox, Icon, DropdownItemProps, DropdownProps } from 'semantic-ui-react';
+import { Dropdown, Checkbox, Icon, DropdownItemProps, DropdownProps, Button } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { firestore, Timestamp } from '../../firebase';
 import { createSeries, updateSeries } from '../../firebasefunctions';
+
+enum Modality {
+    VIRTUAL = 'virtual',
+    HYBRID = 'hybrid',
+    INPERSON = 'in-person'
+}
 
 const ProfessorOHInfo = (props: {
     session?: FireSession;
@@ -17,20 +23,33 @@ const ProfessorOHInfo = (props: {
 }) => {
     const session = props.session || undefined;
 
-    const [startTime, setStartTime] = useState<moment.Moment | undefined>
-    (session && moment(session.startTime.seconds * 1000));
-    const [endTime, setEndTime] = useState<moment.Moment | undefined>
-    (session && moment(session.endTime.seconds * 1000));
-    const [taSelected, setTaSelected] = useState<(string | undefined)[]>
-        (session && session.tas ? session.tas : [undefined]);
-    const [locationBuildingSelected, setLocationBuildingSelected] = useState(session && session.building);
-    const [locationRoomNumSelected, setLocationRoomNumSelected] = useState(session && session.room);
-    const [isSeriesMutation, setIsSeriesMutation] = useState(!!(session && session.sessionSeriesId));
-    const [notification, setNotification] = useState(
-        session && moment(session.endTime).isBefore()
-            ? 'This session has already passed!'
-            : '');
+    const [startTime, setStartTime] = useState<moment.Moment | undefined>();
+    const [endTime, setEndTime] = useState<moment.Moment | undefined>();
+    const [taSelected, setTaSelected] = useState<{ id: string | null }[]>([]);
+    const [locationBuildingSelected, setLocationBuildingSelected] = useState<string | undefined>();
+    const [locationRoomNumSelected, setLocationRoomNumSelected] = useState<string | undefined>();
+    const [isSeriesMutation, setIsSeriesMutation] = useState(false);
+    const [notification, setNotification] = useState<string | undefined>();
     const [title, setTitle] = useState(session && session.title);
+    const [modality, setModality] = useState(Modality.VIRTUAL);
+
+    React.useEffect(() => {
+        if (session) {
+            setStartTime(moment(session.startTime.seconds * 1000));
+            setEndTime(moment(session.endTime.seconds * 1000));
+            setTaSelected(session.tas ? session.tas.map(ta => ({ id: ta })) : []);
+            if (session.modality !== "virtual") {
+                setLocationBuildingSelected(session.building);
+                setLocationRoomNumSelected(session.room);
+            }
+            setIsSeriesMutation(!!(session.sessionSeriesId));
+            setNotification(
+                moment(session.endTime).isBefore()
+                    ? 'This session has already passed!'
+                    : '');
+            setTitle(session.title);
+        }
+    }, [session]);
 
     const updateNotification = (n: string) => {
         if (notification !== 'This session has already passed!') {
@@ -60,10 +79,12 @@ const ProfessorOHInfo = (props: {
         updateNotification('');
     };
 
-    const handleTaList = (event: React.SyntheticEvent<HTMLElement>, data: DropdownProps, index: number) => {
+    const handleTaList = (_event: React.SyntheticEvent<HTMLElement>, data: DropdownProps, index: number) => {
         setTaSelected(old => {
             const newArray = [...old];
-            newArray[index] = String(data.value);
+            if (data.value) {
+                newArray[index] = { id: data.value.toString() };
+            }
             return newArray;
         });
         updateNotification('');
@@ -72,14 +93,14 @@ const ProfessorOHInfo = (props: {
     const clearFields = () => {
         setStartTime(undefined);
         setEndTime(undefined);
-        setTaSelected([undefined]);
+        setTaSelected([]);
         setLocationBuildingSelected('');
         setLocationRoomNumSelected('');
         setTitle('');
     };
 
     const incAddTA = () => {
-        setTaSelected((old) => [...old, undefined]);
+        setTaSelected((old) => [...old, { id: null }]);
     };
 
     const decAddTA = (index: number) => {
@@ -90,66 +111,86 @@ const ProfessorOHInfo = (props: {
     };
 
     /** A do-it-all function that can create/edit sessions/series. */
-    const mutateSessionOrSeries = (): void => {
+    const mutateSessionOrSeries = (): Promise<void> => {
         const startMomentTime = startTime;
         if (startMomentTime === undefined) {
-            return;
+            return Promise.reject(new Error("No start time."));
         }
         const startTimestamp = Timestamp.fromDate(startMomentTime.toDate());
         const endMomentTime = endTime;
         if (endMomentTime === undefined) {
-            return;
+            return Promise.reject(new Error("No end time."));
         }
         const endTimestamp = Timestamp.fromDate(endMomentTime.toDate());
-        if (locationBuildingSelected === undefined || locationRoomNumSelected === undefined) {
-            return;
-        }
+
         const propsSession = props.session;
         const taDocuments: string[] = [];
         taSelected.forEach(ta => {
-            if (ta !== undefined) {
-                taDocuments.push(ta);
+            if (ta && ta.id) {
+                taDocuments.push(ta.id);
             }
         });
         if (isSeriesMutation) {
-            const series: Omit<FireSessionSeries, 'sessionSeriesId'> = {
-                building: locationBuildingSelected,
-                courseId: props.courseId,
-                endTime: endTimestamp,
-                room: locationRoomNumSelected,
-                startTime: startTimestamp,
-                tas: taDocuments,
-                title
-            };
+            let series: FireSessionSeriesDefinition;
+
+            if (modality === Modality.VIRTUAL) {
+                series = {
+                    modality,
+                    courseId: props.courseId,
+                    endTime: endTimestamp,
+                    startTime: startTimestamp,
+                    tas: taDocuments,
+                    title,
+                }
+            } else {
+                if ((locationBuildingSelected === undefined || locationRoomNumSelected === undefined)) {
+                    return Promise.reject(new Error("No location for non-virtual session."));
+                }
+
+                series = {
+                    modality,
+                    courseId: props.courseId,
+                    endTime: endTimestamp,
+                    startTime: startTimestamp,
+                    tas: taDocuments,
+                    title,
+                    building: locationBuildingSelected,
+                    room: locationRoomNumSelected,
+                };
+            }
+
             if (propsSession) {
                 const seriesId = propsSession.sessionSeriesId;
                 if (seriesId === undefined) {
-                    return;
+                    return Promise.reject(new Error("No session id."));
                 }
-                updateSeries(firestore, seriesId, series);
-            } else {
-                createSeries(firestore, series);
+                return updateSeries(firestore, seriesId, series);
             }
-        } else {
-            const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
-            const sessionWithoutSessionSeriesId = {
-                building: locationBuildingSelected,
-                courseId: props.courseId,
-                endTime: endTimestamp,
-                room: locationRoomNumSelected,
-                startTime: startTimestamp,
-                tas: taDocuments,
-                title
-            };
-            const newSession: Omit<FireSession, 'sessionId'> = sessionSeriesId === undefined
-                ? sessionWithoutSessionSeriesId
-                : { ...sessionWithoutSessionSeriesId, sessionSeriesId };
-            if (propsSession) {
-                firestore.collection('sessions').doc(propsSession.sessionId).update(newSession);
-            } else {
-                firestore.collection('sessions').add(newSession);
-            }
+
+            return createSeries(firestore, series);
         }
+
+        const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
+        const sessionWithoutSessionSeriesId = {
+            modality,
+            courseId: props.courseId,
+            endTime: endTimestamp,
+            startTime: startTimestamp,
+            tas: taDocuments,
+            title
+        };
+        const sessionLocation = modality !== Modality.VIRTUAL ? {
+            building: locationBuildingSelected,
+            room: locationRoomNumSelected,
+        } : {};
+        const newSession: Omit<FireSession, 'sessionId'> = sessionSeriesId === undefined
+            ? sessionWithoutSessionSeriesId
+            : { ...sessionWithoutSessionSeriesId, ...sessionLocation, sessionSeriesId };
+        if (propsSession) {
+            return firestore.collection('sessions').doc(propsSession.sessionId).update(newSession);
+        }
+
+        return firestore.collection('sessions').add(newSession).then(() => { });
     };
 
     let isMaxTA = false;
@@ -168,50 +209,78 @@ const ProfessorOHInfo = (props: {
     const emptyNotification = 'Please fill in valid times';
     const stateNotification = 'End time has already passed!';
 
-    const AddTA = taSelected.map(
-        (ta, i) => {
-            // Filter dropdown by checking if TA has not been selected yet
-            // Include currently selected TA, or else dropdown can't prepopulate if option is missing
-            const dropdownOptions = props.taOptions.filter(ta =>
-                ta.value === taSelected[i] || !taSelected.some(s => s === ta.value));
+    const AddTA =
+        (<div>
+            <div>
+                {taSelected.map(
+                    (ta, i) => {
+                        // Filter dropdown by checking if TA has not been selected yet
+                        // Include currently selected TA, or else dropdown can't prepopulate if option is missing
+                        const dropdownOptions = props.taOptions.filter(ta =>
+                            ta.value === taSelected[i].id || !taSelected.some(s => s.id === ta.value));
 
-            return (
-                <div className={'AddTA ' + (i === 0 ? 'First' : 'Additional')} key={i}>
-                    <Icon name="user" />
-                    <Dropdown
-                        className="dropdown"
-                        placeholder="TA Name"
-                        selection={true}
-                        options={dropdownOptions}
-                        value={taSelected[i]}
-                        onChange={(event, data) => handleTaList(event, data, i)}
-                    />
-                    {i === 0 ?
-                        <button
-                            type="button"
-                            className={'AddTAButton ' + isMaxTA}
-                            disabled={isMaxTA}
-                            onClick={() => incAddTA()}
-                        >
-                            <Icon name="plus" />
-                            Add TA
-                        </button> :
-                        <button
-                            type="button"
-                            className="AddTAButton"
-                            onClick={() => decAddTA(i)}
-                        >
-                            <Icon name="x" />
-                        </button>
+                        return (
+                            <div className={'AddTA ' + (i === 0 ? 'First' : 'Additional')} key={ta.id || i}>
+                                <Icon name="user" />
+                                <Dropdown
+                                    className="dropdown"
+                                    placeholder="TA Name"
+                                    selection={true}
+                                    options={dropdownOptions}
+                                    value={ta.id === null ? undefined : ta.id}
+                                    onChange={(event, data) => handleTaList(event, data, i)}
+                                />
+                                <button
+                                    type="button"
+                                    className="AddTAButton"
+                                    onClick={() => decAddTA(i)}
+                                >
+                                    <Icon name="x" />
+                                </button>
+
+                            </div>
+                        );
                     }
-                </div>
-            );
-        }
-    );
+                )}
+            </div>
+            <button
+                type="button"
+                className={'AddTAButton ' + isMaxTA}
+                disabled={isMaxTA}
+                onClick={() => incAddTA()}
+            >
+                <Icon name="plus" />
+                Add TA
+            </button>
+        </div>
+        );
 
     return (
         <>
             <div className="ProfessorOHInfo">
+                <div className="row">
+                    Modality
+                    <Button.Group>
+                        <Button
+                            active={modality === Modality.VIRTUAL}
+                            onClick={() => setModality(Modality.VIRTUAL)}
+                        >
+                            Virtual
+                        </Button>
+                        <Button
+                            active={modality === Modality.HYBRID}
+                            onClick={() => setModality(Modality.HYBRID)}
+                        >
+                            Hybrid
+                        </Button>
+                        <Button
+                            active={modality === Modality.INPERSON}
+                            onClick={() => setModality(Modality.INPERSON)}
+                        >
+                            In Person
+                        </Button>
+                    </Button.Group>
+                </div>
                 <div className="row">
                     <Icon name="marker" />
                     <input
@@ -224,7 +293,7 @@ const ProfessorOHInfo = (props: {
                 <div className="row TA">
                     {AddTA}
                 </div>
-                <div className="row">
+                {modality !== Modality.VIRTUAL ? <div className="row">
                     <Icon name="marker" />
                     <input
                         className="long"
@@ -238,7 +307,7 @@ const ProfessorOHInfo = (props: {
                         value={locationRoomNumSelected || ''}
                         onChange={(e) => handleTextField(e, setLocationRoomNumSelected)}
                     />
-                </div>
+                </div> : <></>}
                 <div className="Time">
                     <Icon name="time" />
                     <div className="datePicker">
@@ -310,9 +379,17 @@ const ProfessorOHInfo = (props: {
                         } else if (disableState) {
                             updateNotification(stateNotification);
                         } else {
-                            mutateSessionOrSeries();
-                            (props.isNewOH && clearFields()); 
-                            props.toggleEdit();
+                            mutateSessionOrSeries().then(() => {
+                                // eslint-disable-next-line no-console
+                                console.log("Success!");
+                            }).catch(err => {
+                                // eslint-disable-next-line no-console
+                                console.error(err);
+                            }).finally(() => {
+                                (props.isNewOH && clearFields());
+                                props.toggleEdit();
+                            });
+
                         }
                     }}
                     disabled={disableProps}
