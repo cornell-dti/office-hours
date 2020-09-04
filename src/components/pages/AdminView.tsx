@@ -4,7 +4,7 @@ import * as firebase from 'firebase/app';
 import { useAllCourses, useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
 import { firestore } from '../../firebase';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
-import { CURRENT_SEMESTER}  from '../../constants';
+import { CURRENT_SEMESTER } from '../../constants';
 
 const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) => {
     const professorMap = useCourseProfessorMap(course);
@@ -216,7 +216,7 @@ const AdminView = () => {
             </div>
 
             {!inCreationMode &&
-            <button type="button" onClick={() => setInCreationMode(true)}>Create New Course</button>}
+                <button type="button" onClick={() => setInCreationMode(true)}>Create New Course</button>}
 
             <h2>Archived Courses</h2>
             <div className="course-container">
@@ -225,7 +225,7 @@ const AdminView = () => {
                 ))}
             </div>
             {!inCreationMode &&
-            <button type="button" onClick={() => setInCreationMode(true)}>Create New Course</button>}
+                <button type="button" onClick={() => setInCreationMode(true)}>Create New Course</button>}
         </div>
     );
 };
