@@ -1,13 +1,15 @@
 .AdminView {
     .course-container {
-        display: flex;
+        display: grid;
+        grid-template-columns: auto auto auto auto;
+        grid-gap: 5%;
         flex-direction: row;
         justify-content: center;
         align-content: center;
     }
 
     .course {
-        width: 600px;
+        width: 100%;
         margin: 1em auto;
         padding: 1em;
         border: 1px solid #ccc;
