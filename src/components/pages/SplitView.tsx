@@ -92,7 +92,7 @@ const SplitView = (props: {
                     sessionCallback={handleSessionClick}
                 />
             }{(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
-                (course && user) ? (
+                ((course && user) ? (
                     session ? (
                         <SessionView
                             course={course}
@@ -111,17 +111,17 @@ const SplitView = (props: {
                                 courseId={props.match.params.courseId}
                             />
                             <p className="welcomeMessage">
-                                Welcome{user && ', '}
+                                    Welcome{user && ', '}
                                 <span className="welcomeName">
                                     {user && user.firstName}
                                 </span>
                             </p>
                             <p className="noSessionSelected">
-                                Please select an office hour from the calendar.
+                                    Please select an office hour from the calendar.
                             </p>
                         </section>
                     )
-                ) : <Loader active={true} content="Loading" />}
+                ) : <Loader active={true} content="Loading" />)}
             {activeView === 'addQuestion' && <>
                 <div className="modal">
                     {course && session

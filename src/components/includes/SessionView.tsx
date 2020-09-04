@@ -5,9 +5,12 @@ import addNotification from 'react-push-notification';
 import TopBar from './TopBar';
 import SessionInformationHeader from './SessionInformationHeader';
 import SessionQuestionsContainer from './SessionQuestionsContainer';
+import UpdateProfile from './UpdateProfile';
 
-import { useCourseTags, useCourseUsersMap, useSessionQuestions } from '../../firehooks';
+import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile } from '../../firehooks';
 import { filterUnresolvedQuestions } from '../../utilities/questions';
+import { updateVirtualLocation } from '../../firebasefunctions';
+import { firestore } from '../../firebase';
 // import SessionAlertModal from './SessionAlertModal';
 
 type Props = {
@@ -40,8 +43,6 @@ const SessionView = (
     const tags = useCourseTags(course.courseId);
     const users = useCourseUsersMap(course.courseId, isTa);
 
-    // console.log('dd');
-
     const [
         { undoAction, undoName, undoQuestionId, timeoutId },
         setUndoState
@@ -54,10 +55,9 @@ const SessionView = (
 
     const [prevQuestSet, setPrevQuestSet] = useState(new Set(questions.map(q => q.questionId)));
 
-
+    const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
 
     useEffect(() => {
-
         const questionIds = questions.map(q => q.questionId);
 
         const newQuestions = new Set(questionIds.filter(q => !prevQuestSet.has(q)));
@@ -67,7 +67,7 @@ const SessionView = (
         }
 
         if ((user.roles[course.courseId] === 'professor' ||
-        user.roles[course.courseId] === 'ta') && questions.length > 0) {
+            user.roles[course.courseId] === 'ta') && questions.length > 0) {
             addNotification({
                 title: 'A new question has been added!',
                 message: 'Check the queue.',
@@ -189,6 +189,14 @@ const SessionView = (
                 callback={backCallback}
                 isDesktop={isDesktop}
             />
+            {
+                isTa ? <UpdateProfile
+                    virtualLocation={sessionProfile?.virtualLocation}
+                    onUpdate={(virtualLocation) => {
+                        updateVirtualLocation(firestore, user, session, virtualLocation);
+                    }}
+                /> : <></>
+            }
             {undoQuestionId &&
                 <div className="undoContainer">
                     <p className="undoClose" onClick={dismissUndo}>
@@ -198,8 +206,8 @@ const SessionView = (
                         {undoText}
                         <span
                             className="undoLink"
-                            // RYAN_TODO
-                            // onClick={() => this._handleUndoClick(undoQuestion, refetch)}
+                        // RYAN_TODO
+                        // onClick={() => this._handleUndoClick(undoQuestion, refetch)}
                         >
                             Undo
                         </span>
@@ -209,6 +217,7 @@ const SessionView = (
             {/* FUTURE_TODO - Just pass in the session and not a bunch of bools */}
             <SessionQuestionsContainer
                 isTA={isTa}
+                myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
                 questions={questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
                 users={users}
                 tags={tags}

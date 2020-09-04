@@ -4,6 +4,7 @@ import * as firebase from 'firebase/app';
 import { useAllCourses, useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
 import { firestore } from '../../firebase';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
+import { CURRENT_SEMESTER } from '../../constants';
 
 const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) => {
     const professorMap = useCourseProfessorMap(course);
@@ -123,16 +124,18 @@ const AdminCourseCard = ({ course }: { readonly course: FireCourse }) => {
     );
 };
 
-const startDate = new Date('2020-03-30');
-const endDate = new Date('2020-06-30');
+const startDate = new Date('2020-09-02');
+const endDate = new Date('2020-12-21');
+const currentTerm = CURRENT_SEMESTER.substring(0, 2);
+const currentYear = CURRENT_SEMESTER.substring(2, 4);
 
 const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => {
     const [courseId, setCourseId] = useState('');
     const [name, setName] = useState('');
     const [code, setCode] = useState('');
-    const [semester, setSemester] = useState('');
-    const [year, setYear] = useState('');
-    const [term, setTerm] = useState('');
+    const [semester, setSemester] = useState(CURRENT_SEMESTER);
+    const [year, setYear] = useState(currentTerm);
+    const [term, setTerm] = useState(currentYear);
 
     const disabled = courseId.trim().length === 0
         || name.trim().length === 0
@@ -206,13 +209,23 @@ const AdminView = () => {
         <div className="AdminView">
             <h2>Courses</h2>
             <div className="course-container">
-                {courses.map(course => (
+                {courses.filter(course => course.semester === CURRENT_SEMESTER).map(course => (
                     <AdminCourseCard key={course.courseId} course={course} />
                 ))}
                 {inCreationMode && <AdminCourseCreator onSubmit={() => setInCreationMode(false)} />}
             </div>
+
             {!inCreationMode &&
-            <button type="button" onClick={() => setInCreationMode(true)}>Create New Course</button>}
+                <button type="button" onClick={() => setInCreationMode(true)}>Create New Course</button>}
+
+            <h2>Archived Courses</h2>
+            <div className="course-container">
+                {courses.filter(course => course.semester !== CURRENT_SEMESTER).map(course => (
+                    <AdminCourseCard key={course.courseId} course={course} />
+                ))}
+            </div>
+            {!inCreationMode &&
+                <button type="button" onClick={() => setInCreationMode(true)}>Create New Course</button>}
         </div>
     );
 };

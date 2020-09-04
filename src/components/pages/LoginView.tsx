@@ -41,7 +41,7 @@ const LoginView: React.FC = () => {
                 <section className="bottomPanel contact">
                     <a
                         className="contactButton"
-                        href="mailto:queuemein@gmail.com?Subject=Queue%20Me%20In%20For%20Students"
+                        href="mailto:queuemein@cornelldti.org?Subject=Queue%20Me%20In%20For%20Students"
                     >
                         Contact Us
                     </a>
