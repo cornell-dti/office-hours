@@ -35,7 +35,15 @@ type StudentMyQuestionProps = {
     readonly modality: FireSessionModality;
 };
 
-const StudentMyQuestion = ({ questionId, tags, index, triggerUndo, isPast, myUserId, modality }: StudentMyQuestionProps) => {
+const StudentMyQuestion = ({ 
+    questionId, 
+    tags,
+    index,
+    triggerUndo,
+    isPast,
+    myUserId,
+    modality
+}: StudentMyQuestionProps) => {
     const [studentQuestion, setStudentQuestion] = React.useState<FireQuestion | undefined>();
     React.useEffect(
         () => {

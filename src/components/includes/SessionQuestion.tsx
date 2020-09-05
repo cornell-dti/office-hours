@@ -325,7 +325,10 @@ class SessionQuestion extends React.Component<Props, State> {
                 }
                 {
                     question.answererLocation  && <>
-                        <Button className="JoinButton" target="_blank" href={question.answererLocation}>Join Session</Button></>
+                        <Button className="JoinButton" target="_blank" href={question.answererLocation}>
+                            Join Session
+                        </Button>
+                    </>
                 }
                 {
                     this.props.includeRemove && !this.props.isPast &&

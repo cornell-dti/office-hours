@@ -270,7 +270,8 @@ class AddQuestion extends React.Component<Props, State> {
                                         placeholder="What's your question about?"
                                     />
                                     : (<p className="placeHolder text">{
-                                        this.props.session.modality === 'virtual' ? "Select a tag..." : "Enter your location..."
+                                        this.props.session.modality === 'virtual' 
+                                            ? "Select a tag..." : "Enter your location..."
                                     }</p>)}
                             </div>
                             <div className="addButtonWrapper">
