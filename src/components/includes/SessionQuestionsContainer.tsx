@@ -22,6 +22,7 @@ type Props = {
     readonly isPast: boolean;
     readonly openingTime: Date;
     readonly haveAnotherQuestion: boolean;
+    readonly modality: FireSessionModality;
 };
 
 type StudentMyQuestionProps = {
@@ -31,9 +32,10 @@ type StudentMyQuestionProps = {
     readonly triggerUndo: Function;
     readonly isPast: boolean;
     readonly myUserId: string;
+    readonly modality: FireSessionModality;
 };
 
-const StudentMyQuestion = ({ questionId, tags, index, triggerUndo, isPast, myUserId }: StudentMyQuestionProps) => {
+const StudentMyQuestion = ({ questionId, tags, index, triggerUndo, isPast, myUserId, modality }: StudentMyQuestionProps) => {
     const [studentQuestion, setStudentQuestion] = React.useState<FireQuestion | undefined>();
     React.useEffect(
         () => {
@@ -66,6 +68,7 @@ const StudentMyQuestion = ({ questionId, tags, index, triggerUndo, isPast, myUse
             <SessionQuestion
                 key={questionId}
                 question={studentQuestion}
+                modality={modality}
                 users={{}}
                 tags={tags}
                 index={index}
@@ -166,6 +169,7 @@ const SessionQuestionsContainer = (props: Props) => {
             {shownQuestions && myQuestion && myQuestion.length > 0 &&
                 <StudentMyQuestion
                     questionId={myQuestion[0].questionId}
+                    modality={props.modality}
                     tags={props.tags}
                     index={allQuestions.indexOf(myQuestion[0])}
                     triggerUndo={props.triggerUndo}
@@ -177,6 +181,7 @@ const SessionQuestionsContainer = (props: Props) => {
                 shownQuestions.map((question, i: number) => (
                     <SessionQuestion
                         key={question.questionId}
+                        modality={props.modality}
                         question={question}
                         users={props.users}
                         tags={props.tags}

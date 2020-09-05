@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from 'semantic-ui-react';
 import addNotification from 'react-push-notification';
 
@@ -56,6 +56,19 @@ const SessionView = (
     const [prevQuestSet, setPrevQuestSet] = useState(new Set(questions.map(q => q.questionId)));
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
+
+    const updateSessionProfile = useCallback((virtualLocation: string) => {
+        const batch = firestore.batch();
+   
+        const questionUpdate: Partial<FireQuestion> = { answererLocation: virtualLocation };
+        questions.forEach((q) => {
+            if (q.answererId === user.userId && q.status === 'assigned') {
+                batch.update(firestore.doc(`questions/${q.questionId}`), questionUpdate);
+            }
+        });
+    
+        batch.commit();
+    }, [questions, user.userId]);
 
     useEffect(() => {
         const questionIds = questions.map(q => q.questionId);
@@ -194,6 +207,10 @@ const SessionView = (
                     virtualLocation={sessionProfile?.virtualLocation}
                     onUpdate={(virtualLocation) => {
                         updateVirtualLocation(firestore, user, session, virtualLocation);
+                        
+                        if (virtualLocation) {
+                            updateSessionProfile(virtualLocation);
+                        }
                     }}
                 /> : <></>
             }
@@ -217,6 +234,7 @@ const SessionView = (
             {/* FUTURE_TODO - Just pass in the session and not a bunch of bools */}
             <SessionQuestionsContainer
                 isTA={isTa}
+                modality={session.modality}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
                 questions={questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
                 users={users}

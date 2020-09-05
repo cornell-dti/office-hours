@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Icon, Loader } from 'semantic-ui-react';
+import { Icon, Loader, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import * as firebase from 'firebase/app';
 import { firestore } from '../../firebase';
@@ -15,6 +15,7 @@ type Props = {
     index: number;
     isTA: boolean;
     includeRemove: boolean;
+    modality: FireSessionModality;
     myUserId: string;
     virtualLocation?: string;
     triggerUndo: Function;
@@ -182,7 +183,7 @@ class SessionQuestion extends React.Component<Props, State> {
                 <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
                     {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                 </p>
-                {this.props.includeRemove &&
+                {this.props.includeRemove && this.props.modality !== 'virtual' &&
                     <div className="LocationPin">
                         <Icon
                             onClick={this.toggleLocationTooltip}
@@ -245,18 +246,20 @@ class SessionQuestion extends React.Component<Props, State> {
                         </div>
                     }
                     <div className="Location">
-                        {this.props.isTA &&
+                        {
+                            !question.answererLocation && (
+                                <>{this.props.isTA &&
                             question.location &&
                             question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
                             <a href={question.location} target="_blank" rel="noopener noreferrer">
                                 Zoom Link
                             </a>
-                        }
-                        {this.props.isTA &&
+                                }
+                                {this.props.isTA &&
                             question.location &&
                             question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
                             question.location
-                        }
+                                }</>)}
                     </div>
                     {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
                         <p className={'Question' + studentCSS}>{question.content}</p>}
@@ -321,13 +324,17 @@ class SessionQuestion extends React.Component<Props, State> {
                     </div>
                 }
                 {
+                    question.answererLocation  && <>
+                        <Button className="JoinButton" target="_blank" href={question.answererLocation}>Join Session</Button></>
+                }
+                {
                     this.props.includeRemove && !this.props.isPast &&
-                    <div className="Buttons">
-                        <hr />
-                        <p className="Remove" onClick={this.retractQuestion}>
-                            <Icon name="close" /> Remove
-                        </p>
-                    </div>
+                        <div className="Buttons">
+                            <hr />
+                            <p className="Remove" onClick={this.retractQuestion}>
+                                <Icon name="close" /> Remove
+                            </p>
+                        </div>
                 }
             </div >
         );

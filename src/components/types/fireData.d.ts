@@ -122,7 +122,8 @@ interface FireQuestion {
     answererId: string;
     content: string;
     taComment?: string;
-    location: string;
+    location?: string;
+    answererLocation?: string;
     sessionId: string;
     status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
     timeAddressed?: FireTimestamp;
