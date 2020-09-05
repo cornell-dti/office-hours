@@ -367,7 +367,7 @@ export const updateVirtualLocation = (
     user: FireUser,
     session: FireSession,
     virtualLocation: string): Promise<void> => {
-    return db.doc(`/sessionProfiles/${session.sessionId}/profiles/${user.userId}`).set({
+    return db.doc(`/sessions/${session.sessionId}/profiles/${user.userId}`).set({
         virtualLocation
     }, {
         merge: true

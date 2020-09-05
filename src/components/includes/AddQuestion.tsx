@@ -91,6 +91,8 @@ class AddQuestion extends React.Component<Props, State> {
             } else {
                 this.setState({ selectedSecondary: tag });
             }
+        } else if (this.props.session.modality === 'virtual' || this.props.session.modality === 'hybrid') {
+            this.setState({ stage: 40 , selectedSecondary: tag });
         } else {
             this.setState({ stage: 30, selectedSecondary: tag });
         }
@@ -129,11 +131,14 @@ class AddQuestion extends React.Component<Props, State> {
                 status: 'unresolved',
                 timeEntered: firebase.firestore.Timestamp.now()
             };
+
+            const location = this.props.session.modality === 'virtual' ? {} : { location: this.state.location };
+
             const newQuestion: Omit<FireQuestion, 'questionId'> = {
                 ...newQuestionSlot,
+                ...location,
                 answererId: '',
                 content: this.state.question,
-                location: this.state.location,
                 primaryTag: this.state.selectedPrimary.tagId,
                 secondaryTag: this.state.selectedSecondary.tagId
             };
@@ -225,8 +230,7 @@ class AddQuestion extends React.Component<Props, State> {
                                     : <p className="placeHolder">Select a category</p>}
                             </div>
                             <hr />
-
-                            <div className="tagsMiniContainer">
+                            {this.props.session.modality !== 'virtual' && <> <div className="tagsMiniContainer">
                                 <p className="header">
                                     Location or Zoom Link &nbsp;<span
                                         className={'characterCount ' + (this.state.location.length >= 40 ? 'warn' : '')}
@@ -250,7 +254,7 @@ class AddQuestion extends React.Component<Props, State> {
                                     </div>
                                     : <p className="placeHolder text">Finish selecting tags...</p>}
                             </div>
-                            <hr />
+                            <hr /></>}
                             <div className="tagsMiniContainer">
                                 <p className="header">
                                     {'Question '}
@@ -265,7 +269,10 @@ class AddQuestion extends React.Component<Props, State> {
                                         onChange={this.handleUpdateQuestion}
                                         placeholder="What's your question about?"
                                     />
-                                    : <p className="placeHolder text">Enter your location...</p>}
+                                    : (<p className="placeHolder text">{
+                                        this.props.session.modality === 'virtual' 
+                                            ? "Select a tag..." : "Enter your location..."
+                                    }</p>)}
                             </div>
                             <div className="addButtonWrapper">
                                 {this.state.stage > 40 ?

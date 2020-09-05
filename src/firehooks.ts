@@ -238,7 +238,7 @@ export const useSessionProfile: (
     userId: string | undefined,
     sessionId: string | undefined
 ) => FireVirtualSessionProfile | undefined =
-    (userId, sessionId) => useDoc(`/sessionProfiles/${sessionId}/profiles`, userId, 'userId');
+    (userId, sessionId) => useDoc(`/sessions/${sessionId}/profiles`, userId, 'userId');
 
 // Primatives
 // Look up a doc in Firebase by ID
