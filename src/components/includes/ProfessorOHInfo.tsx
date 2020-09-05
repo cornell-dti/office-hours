@@ -260,7 +260,7 @@ const ProfessorOHInfo = (props: {
             <div className="ProfessorOHInfo">
                 <div className="row">
                     Modality
-                    <Button.Group>
+                    <Button.Group className="ModalitySelector">
                         <Button
                             active={modality === Modality.VIRTUAL}
                             onClick={() => setModality(Modality.VIRTUAL)}
@@ -280,6 +280,22 @@ const ProfessorOHInfo = (props: {
                             In Person
                         </Button>
                     </Button.Group>
+                </div>
+                <div className="row">
+                    <p className="description">
+                        {
+                            modality === Modality.VIRTUAL ? 
+                                'In a virtual session each TA can provide their own "Virtual Location" '+
+                                '(e.g. Zoom Link, Google Meet Link)' +
+                                ' which is provided to the student when the TA is assigned to them.'
+                                : modality === Modality.HYBRID ?
+                                    'In a hybrid session the student can either provide a Zoom link'+
+                                    ' or a physical location.'
+                                    :
+                                    'In an in-person session the student can provide their physical'
+                                    + ' location (e.g. by the whiteboard).'
+                        }
+                    </p>
                 </div>
                 <div className="row">
                     <Icon name="marker" />
