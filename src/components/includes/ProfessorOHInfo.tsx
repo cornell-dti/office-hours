@@ -48,6 +48,9 @@ const ProfessorOHInfo = (props: {
                     ? 'This session has already passed!'
                     : '');
             setTitle(session.title);
+            setModality(session.modality === "virtual" ? 
+                Modality.VIRTUAL :session.modality === "hybrid" ? 
+                    Modality.HYBRID : Modality.INPERSON);
         }
     }, [session]);
 
@@ -111,7 +114,7 @@ const ProfessorOHInfo = (props: {
     };
 
     /** A do-it-all function that can create/edit sessions/series. */
-    const mutateSessionOrSeries = (): Promise<void> => {
+    const mutateSessionOrSeries = React.useCallback((): Promise<void> => {
         const startMomentTime = startTime;
         if (startMomentTime === undefined) {
             return Promise.reject(new Error("No start time."));
@@ -171,18 +174,20 @@ const ProfessorOHInfo = (props: {
         }
 
         const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
+    
+        const sessionLocation = modality !== Modality.VIRTUAL ? {
+            building: locationBuildingSelected,
+            room: locationRoomNumSelected,
+        } : {};
         const sessionWithoutSessionSeriesId = {
             modality,
             courseId: props.courseId,
             endTime: endTimestamp,
             startTime: startTimestamp,
             tas: taDocuments,
-            title
+            title,
+            ...sessionLocation
         };
-        const sessionLocation = modality !== Modality.VIRTUAL ? {
-            building: locationBuildingSelected,
-            room: locationRoomNumSelected,
-        } : {};
         const newSession: Omit<FireSession, 'sessionId'> = sessionSeriesId === undefined
             ? sessionWithoutSessionSeriesId
             : { ...sessionWithoutSessionSeriesId, ...sessionLocation, sessionSeriesId };
@@ -191,7 +196,18 @@ const ProfessorOHInfo = (props: {
         }
 
         return firestore.collection('sessions').add(newSession).then(() => { });
-    };
+    }, [
+        endTime,
+        isSeriesMutation,
+        locationBuildingSelected,
+        locationRoomNumSelected,
+        modality,
+        props.courseId,
+        props.session,
+        startTime,
+        taSelected,
+        title
+    ]);
 
     let isMaxTA = false;
     // -1 to account for the "TA Name" placeholder
