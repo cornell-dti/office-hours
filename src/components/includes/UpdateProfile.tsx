@@ -21,13 +21,15 @@ const UpdateProfile: React.FC<Props> = ({ virtualLocation, onUpdate }) => {
             onClose={() => setOpen(false)}
             onOpen={() => setOpen(true)}
             open={open}
-            trigger={<Button className="VirtualLocationButton">Update Virtual Location</Button>}
+            trigger={<Button className="VirtualLocationButton">Update Your Virtual Location</Button>}
         >
-            <Modal.Header>Update Virtual Location</Modal.Header>
+            <Modal.Header>Update Your Virtual Location</Modal.Header>
             <Modal.Content image>
                 <div>
                     <Modal.Description>
-                        <p>Please enter a new virtual location (e.g. Zoom Link, Google Meet)</p>
+                        <p>Please enter a new virtual location 
+                            (e.g. Zoom Link, Google Meet). 
+                            This only updates your link, other TAs will need to set their own link.</p>
                     </Modal.Description>
                     <Input value={link} onChange={(e) => setLink(e.target.value)} />
                 </div>
