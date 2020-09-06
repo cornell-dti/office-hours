@@ -69,7 +69,7 @@ export default ({ currentCourseCode, role, avatar }: Props): React.ReactElement 
             </div>
             {showMenu && (
                 <ul className="desktop logoutMenu" onClick={() => setShowMenu(false)} >
-                    {/* RYAN_TODO: figure out what's the purpose of this code. */}
+                    {/* TODO(ewlsh): figure out what's the purpose of this code. */}
                     {/* {this.props.isTa &&
                             <React.Fragment>
                                 <li>Cancel Session</li>

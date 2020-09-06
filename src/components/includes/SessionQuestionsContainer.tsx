@@ -22,7 +22,7 @@ type Props = {
     readonly isPast: boolean;
     readonly openingTime: Date;
     readonly haveAnotherQuestion: boolean;
-    readonly modality: FireSessionModality;
+    readonly session: FireSession;
 };
 
 type StudentMyQuestionProps = {
@@ -32,7 +32,7 @@ type StudentMyQuestionProps = {
     readonly triggerUndo: Function;
     readonly isPast: boolean;
     readonly myUserId: string;
-    readonly modality: FireSessionModality;
+    readonly session: FireSession;
 };
 
 const StudentMyQuestion = ({ 
@@ -42,7 +42,7 @@ const StudentMyQuestion = ({
     triggerUndo,
     isPast,
     myUserId,
-    modality
+    session,
 }: StudentMyQuestionProps) => {
     const [studentQuestion, setStudentQuestion] = React.useState<FireQuestion | undefined>();
     React.useEffect(
@@ -76,7 +76,7 @@ const StudentMyQuestion = ({
             <SessionQuestion
                 key={questionId}
                 question={studentQuestion}
-                modality={modality}
+                session={session}
                 users={{}}
                 tags={tags}
                 index={index}
@@ -94,6 +94,8 @@ const SessionQuestionsContainer = (props: Props) => {
     const [sentNotification, setSentNotification] = React.useState(
         window.localStorage.getItem('questionUpNotif') === 'sent' || false
     );
+
+    const { session } = props;
 
     React.useEffect(() => {
         try {
@@ -177,7 +179,7 @@ const SessionQuestionsContainer = (props: Props) => {
             {shownQuestions && myQuestion && myQuestion.length > 0 &&
                 <StudentMyQuestion
                     questionId={myQuestion[0].questionId}
-                    modality={props.modality}
+                    session={session}
                     tags={props.tags}
                     index={allQuestions.indexOf(myQuestion[0])}
                     triggerUndo={props.triggerUndo}
@@ -189,7 +191,7 @@ const SessionQuestionsContainer = (props: Props) => {
                 shownQuestions.map((question, i: number) => (
                     <SessionQuestion
                         key={question.questionId}
-                        modality={props.modality}
+                        session={session}
                         question={question}
                         users={props.users}
                         tags={props.tags}

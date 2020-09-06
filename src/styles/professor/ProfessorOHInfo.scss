@@ -22,8 +22,10 @@
         min-width: 200px;
     }
 
-    .ui.buttons.ModalitySelector {
-        margin: 10px;
+    .ui.buttons {
+        &.ModalitySelector, &.HostSelector {
+            margin: 10px;
+        }
     }
 
     .TA {
