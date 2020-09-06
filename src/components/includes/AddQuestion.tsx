@@ -91,7 +91,7 @@ class AddQuestion extends React.Component<Props, State> {
             } else {
                 this.setState({ selectedSecondary: tag });
             }
-        } else if (this.props.session.modality === 'virtual' || this.props.session.modality === 'hybrid') {
+        } else if (this.props.session.modality === 'virtual') {
             this.setState({ stage: 40 , selectedSecondary: tag });
         } else {
             this.setState({ stage: 30, selectedSecondary: tag });
@@ -106,10 +106,18 @@ class AddQuestion extends React.Component<Props, State> {
                 stage = 50;
             } else { stage = 40; }
         } else { stage = 30; }
-        this.setState(({ location }) => ({
-            location: target.value.length <= LOCATION_CHAR_LIMIT ? target.value : location,
-            stage
-        }));
+
+        if (this.props.session.modality === 'in-person') {
+            this.setState(({ location }) => ({
+                location: target.value.length <= LOCATION_CHAR_LIMIT ? target.value : location,
+                stage
+            }));
+        } else {
+            this.setState(() => ({
+                location: target.value,
+                stage
+            }));
+        }
     };
 
     public handleUpdateQuestion = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
@@ -231,17 +239,21 @@ class AddQuestion extends React.Component<Props, State> {
                             </div>
                             <hr />
                             {this.props.session.modality !== 'virtual' && <> <div className="tagsMiniContainer">
-                                <p className="header">
-                                    Location or Zoom Link &nbsp;<span
-                                        className={'characterCount ' + (this.state.location.length >= 40 ? 'warn' : '')}
-                                    >
+                                {<p className="header">
+                                    Location or Zoom Link &nbsp;{
+                                        this.props.session.modality === 'in-person' && <span
+                                            className={
+                                                'characterCount ' +
+                                                (this.state.location.length >= LOCATION_CHAR_LIMIT ? 'warn' : '')
+                                            }
+                                        >
                                         (
-                                        {LOCATION_CHAR_LIMIT - this.state.location.length}
-                                        {' '}
+                                            {LOCATION_CHAR_LIMIT - this.state.location.length}
+                                            {' '}
                                         character{LOCATION_CHAR_LIMIT - this.state.location.length !== 1 && 's'} left
                                         )
-                                    </span>
-                                </p>
+                                        </span>}
+                                </p>}
                                 {this.state.stage >= 30 ?
                                     <div className="locationInput">
                                         <Icon name="map marker alternate" />

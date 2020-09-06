@@ -33,9 +33,11 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                 </div>
                 <div className="Details">
                     {session.modality !== "virtual" ?
-                        <p className="Location">{session.building + ' ' + session.room}</p> : <></>}
-                    {session.modality === "hybrid" ? <p className="location">or</p> : <></>}
-                    {session.modality === "virtual" ? <p className="location">Online</p> : <></>}
+                        <p className="Location">{
+                            [session.building, session.room]
+                                .map(s => s || '')
+                                .join(' ')}</p> : <></>}
+                    {session.modality === "virtual" ? <p className="Location">Online</p> : <></>}
                     <Moment date={session.startTime.seconds * 1000} interval={0} format={'h:mm A'} />
                     <Moment date={session.endTime.seconds * 1000} interval={0} format={' - h:mm A'} />
                     <p className="Date">

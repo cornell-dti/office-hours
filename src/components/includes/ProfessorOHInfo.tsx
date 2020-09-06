@@ -176,8 +176,8 @@ const ProfessorOHInfo = (props: {
         const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
     
         const sessionLocation = modality !== Modality.VIRTUAL ? {
-            building: locationBuildingSelected,
-            room: locationRoomNumSelected,
+            building: locationBuildingSelected || '',
+            room: locationRoomNumSelected || '',
         } : {};
         const sessionWithoutSessionSeriesId = {
             modality,
