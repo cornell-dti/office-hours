@@ -240,15 +240,19 @@ class AddQuestion extends React.Component<Props, State> {
                             <hr />
                             {this.props.session.modality !== 'virtual' && <> <div className="tagsMiniContainer">
                                 {<p className="header">
-                                    Location or Zoom Link &nbsp;<span
-                                        className={'characterCount ' + (this.state.location.length >= 40 ? 'warn' : '')}
-                                    >
+                                    Location or Zoom Link &nbsp;{
+                                        this.props.session.modality === 'in-person' && <span
+                                            className={
+                                                'characterCount ' +
+                                                (this.state.location.length >= LOCATION_CHAR_LIMIT ? 'warn' : '')
+                                            }
+                                        >
                                         (
-                                        {LOCATION_CHAR_LIMIT - this.state.location.length}
-                                        {' '}
+                                            {LOCATION_CHAR_LIMIT - this.state.location.length}
+                                            {' '}
                                         character{LOCATION_CHAR_LIMIT - this.state.location.length !== 1 && 's'} left
                                         )
-                                    </span>
+                                        </span>}
                                 </p>}
                                 {this.state.stage >= 30 ?
                                     <div className="locationInput">
