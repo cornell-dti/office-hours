@@ -137,8 +137,13 @@ const SplitView = (props: {
                 ) : <Loader active={true} content="Loading" />)}
             {activeView === 'addQuestion' && <>
                 <div className="modal">
-                    {course && session
-                        ? <AddQuestion session={session} course={course} mobileBreakpoint={MOBILE_BREAKPOINT} />
+                    {course && session && user
+                        ? <AddQuestion 
+                            user={user}
+                            session={session}
+                            course={course}
+                            mobileBreakpoint={MOBILE_BREAKPOINT}
+                        />
                         : <Loader active={true} content={'Loading'} />
                     }
                 </div>

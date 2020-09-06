@@ -16,6 +16,39 @@ enum Modality {
 class OHMutateError extends Error {
 }
 
+enum Host {
+    STUDENT = 'student',
+    TA = 'ta'
+}
+
+function modalityDescription(modality: Modality) {
+    switch(modality) {
+        case Modality.VIRTUAL:
+            return 'In a virtual session the user can provide their own "Virtual Location" ' +
+        '(e.g. Zoom Link, Google Meet Link)' +
+        ' which is provided to the student or TA when the question is assigned.'
+        case Modality.HYBRID:
+            return 'In a hybrid session the student is asked to provide a Zoom link or a physical location.';
+        case Modality.INPERSON:
+            return 'In an in-person session the student can provide their physical location (e.g. by the whiteboard).';
+        default: 
+            return '';
+    }
+}
+
+function hostDescription(host: Host) {
+    switch(host) {
+        case Host.STUDENT:
+            return 'When the student is the host they are asked to provide a Zoom link.' +
+            'This can be useful when classes want multiple students to join a question at the same time.'
+        case Host.TA: 
+            return 'When the TA is the host they can use the same Zoom link for their entire session - each TA\'s'+ 
+            ' Zoom link is sent to the student once the question is assigned.'
+        default:
+            return '';
+    }
+}
+
 const ProfessorOHInfo = (props: {
     session?: FireSession;
     courseId: string;
@@ -35,6 +68,7 @@ const ProfessorOHInfo = (props: {
     const [notification, setNotification] = useState<string | undefined>();
     const [title, setTitle] = useState(session && session.title);
     const [modality, setModality] = useState(Modality.VIRTUAL);
+    const [host, setHost] = useState(Host.STUDENT);
 
     React.useEffect(() => {
         if (session) {
@@ -142,6 +176,7 @@ const ProfessorOHInfo = (props: {
             if (modality === Modality.VIRTUAL) {
                 series = {
                     modality,
+                    host,
                     courseId: props.courseId,
                     endTime: endTimestamp,
                     startTime: startTimestamp,
@@ -192,6 +227,7 @@ const ProfessorOHInfo = (props: {
             building: locationBuildingSelected || '',
             room: locationRoomNumSelected || '',
         } : {};
+        const sessionHost = modality === Modality.VIRTUAL ? { host } : {};
         const sessionWithoutSessionSeriesId = {
             modality,
             courseId: props.courseId,
@@ -199,11 +235,12 @@ const ProfessorOHInfo = (props: {
             startTime: startTimestamp,
             tas: taDocuments,
             title,
-            ...sessionLocation
+            ...sessionLocation,
+            ...sessionHost
         };
         const newSession: Omit<FireSession, 'sessionId'> = sessionSeriesId === undefined
             ? sessionWithoutSessionSeriesId
-            : { ...sessionWithoutSessionSeriesId, ...sessionLocation, sessionSeriesId };
+            : { ...sessionWithoutSessionSeriesId, ...sessionLocation, ...sessionHost, sessionSeriesId };
         if (propsSession) {
             return firestore.collection('sessions').doc(propsSession.sessionId).update(newSession);
         }
@@ -215,6 +252,7 @@ const ProfessorOHInfo = (props: {
         locationBuildingSelected,
         locationRoomNumSelected,
         modality,
+        host,
         props.courseId,
         props.session,
         startTime,
@@ -312,20 +350,33 @@ const ProfessorOHInfo = (props: {
                 </div>
                 <div className="row">
                     <p className="description">
-                        {
-                            modality === Modality.VIRTUAL ? 
-                                'In a virtual session each TA can provide their own "Virtual Location" '+
-                                '(e.g. Zoom Link, Google Meet Link)' +
-                                ' which is provided to the student when the TA is assigned to them.'
-                                : modality === Modality.HYBRID ?
-                                    'In a hybrid session the student can either provide a Zoom link'+
-                                    ' or a physical location.'
-                                    :
-                                    'In an in-person session the student can provide their physical'
-                                    + ' location (e.g. by the whiteboard).'
-                        }
+                        {modalityDescription(modality)}
                     </p>
                 </div>
+                {modality === Modality.VIRTUAL && <><div className="row">
+                    Host
+                    <Button.Group className="HostSelector">
+                        <Button
+                            active={host === Host.STUDENT}
+                            onClick={() => setHost(Host.STUDENT)}
+                        >
+                            Student Hosted
+                        </Button>
+                        <Button
+                            active={host === Host.TA}
+                            onClick={() => setHost(Host.TA)}
+                        >
+                            TA Hosted
+                        </Button>
+                    </Button.Group>
+                </div>
+                <div className="row">
+                    <p className="description">
+                        {hostDescription(host)}
+                    </p>
+                </div>
+                </>
+                }
                 <div className="row">
                     <Icon name="marker" />
                     <input

@@ -8,7 +8,7 @@ import Linkify from 'linkifyjs/react';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
 
-// TODO_ADD_SERVER_CHECK
+// TODO(ewlsh) Add server-side check. For now we prevent rendering greater than 40 characters.
 const LOCATION_CHAR_LIMIT = 40;
 
 type Props = {
@@ -18,7 +18,7 @@ type Props = {
     index: number;
     isTA: boolean;
     includeRemove: boolean;
-    modality: FireSessionModality;
+    session: FireSession;
     myUserId: string;
     virtualLocation?: string;
     triggerUndo: Function;
@@ -97,12 +97,18 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     assignQuestion = () => {
+        const { session } = this.props;
         const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
+        const location = (
+            session.modality === 'virtual' && 
+            session.host === 'ta' &&
+            this.props.virtualLocation ? { location: this.props.virtualLocation } : {});
+        
         const questionUpdate: Partial<FireQuestion> = {
             status: 'assigned',
             answererId: this.props.myUserId,
-            ...(this.props.virtualLocation ? { answererLocation: this.props.virtualLocation } : {})
+            ...location
         };
         batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
         batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
@@ -141,7 +147,7 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     toggleComment = () => {
-        this.setState(({ enableEditingComment: enableEditingComment }) =>
+        this.setState(({ enableEditingComment }) =>
             ({ enableEditingComment: !enableEditingComment }));
     }
 
@@ -199,7 +205,7 @@ class SessionQuestion extends React.Component<Props, State> {
                             {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                         </p>
                     </div>
-                    {this.props.includeRemove && this.props.modality !== 'virtual' &&
+                    {this.props.includeRemove && this.props.session.modality !== 'virtual' &&
                         <div className="LocationPin">
                             <Icon
                                 onClick={this.toggleLocationTooltip}
@@ -310,6 +316,21 @@ class SessionQuestion extends React.Component<Props, State> {
                     this.props.isTA &&
                     <div className="Buttons">
                         <hr />
+                        
+                        {
+                            this.props.session.modality === 'virtual' &&
+                        question.location && 
+                        ((question.location.startsWith('https://') || question.location.startsWith('http://')) ?
+                          
+                            <Button className="JoinButton" target="_blank" href={question.location}>
+                                Join Session
+                            </Button>
+                           
+                            : 
+                            <a href={question.location}>Invalid Link: {question.location.substr(0, 40)}</a>
+                        )
+                        }
+                        {this.props.isTA &&
                         <div className="TAButtons">
                             {question.status === 'unresolved' &&
                                 <p className="Begin" onClick={this.assignQuestion}>
@@ -342,7 +363,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                     </p>
                                 </>
                             }
-                        </div>
+                        </div>}
                     </div>
                 }
                 {
@@ -359,15 +380,15 @@ class SessionQuestion extends React.Component<Props, State> {
                         </div>
                         <EditComment
                             onValueChange={(newComment: string) => {
-                                //Set a comment
+                                // Set a comment
                                 this.questionComment(newComment, this.props.isTA);
-                                //Disable editing comment
+                                // Disable editing comment
                                 this.setState({
                                     enableEditingComment: false
                                 });
                             }}
                             onCancel={() => {
-                                //Disable editing comment
+                                // Disable editing comment
                                 this.setState({
                                     enableEditingComment: false
                                 });
@@ -377,8 +398,8 @@ class SessionQuestion extends React.Component<Props, State> {
                     </div>
                 }
                 {
-                    question.answererLocation  && <>
-                        <Button className="JoinButton" target="_blank" href={question.answererLocation}>
+                    this.props.session.modality === 'virtual' && question.location  && <>
+                        <Button className="JoinButton" target="_blank" href={question.location}>
                             Join Session
                         </Button>
                     </>

@@ -111,6 +111,7 @@ export const createSeries = async (
             if (sessionSeries.modality === 'virtual') {
                 const derivedSession: Omit<FireVirtualSession, 'sessionId'> = {
                     modality: sessionSeries.modality,
+                    host: sessionSeries.host,
                     sessionSeriesId,
                     courseId: sessionSeries.courseId,
                     endTime: firestore.Timestamp.fromDate(sessionEnd),
@@ -165,6 +166,7 @@ export const updateSeries = async (
         if (sessionSeries.modality === 'virtual') {
             const newSession: Omit<FireVirtualSession, 'sessionId'> = {
                 sessionSeriesId,
+                host: sessionSeries.host,
                 courseId: sessionSeries.courseId,
                 modality: sessionSeries.modality,
                 endTime,

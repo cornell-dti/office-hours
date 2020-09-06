@@ -38,7 +38,7 @@ const ProfessorAddNew = (props: {
                         isNew={true}
                         cancelCallback={() => setEditVisible(false)}
                         courseId={props.courseId}
-                        // RYAN_TODO Figure out how to add tags all at once
+                        // TODO(ewlsh) Figure out how to add tags all at once
                         childTags={[]}
                     />
                 }

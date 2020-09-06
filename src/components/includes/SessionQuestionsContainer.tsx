@@ -37,6 +37,7 @@ type StudentMyQuestionProps = {
     readonly modality: FireSessionModality;
     readonly studentQuestion: FireQuestion | null;
     readonly user: FireUser;
+    readonly session: FireSession;
 };
 
 const StudentMyQuestion = ({
@@ -46,9 +47,9 @@ const StudentMyQuestion = ({
     triggerUndo,
     isPast,
     myUserId,
-    modality,
     studentQuestion,
-    user
+    user,
+    session
 }: StudentMyQuestionProps) => {
     if (studentQuestion == null) {
         return <div />;
@@ -60,7 +61,7 @@ const StudentMyQuestion = ({
             <SessionQuestion
                 key={questionId}
                 question={studentQuestion}
-                modality={modality}
+                session={session}
                 users={{}}
                 user={user}
                 tags={tags}
@@ -79,6 +80,8 @@ const SessionQuestionsContainer = (props: Props) => {
     const [sentNotification, setSentNotification] = React.useState(
         window.localStorage.getItem('questionUpNotif') === 'sent' || false
     );
+
+    const { session } = props;
 
     React.useEffect(() => {
         try {
@@ -177,6 +180,7 @@ const SessionQuestionsContainer = (props: Props) => {
                     questionId={myQuestion.questionId}
                     studentQuestion={myQuestion}
                     modality={props.modality}
+                    session={session}
                     tags={props.tags}
                     index={allQuestions.indexOf(myQuestion)}
                     triggerUndo={props.triggerUndo}
@@ -188,7 +192,7 @@ const SessionQuestionsContainer = (props: Props) => {
                 shownQuestions.map((question, i: number) => (
                     <SessionQuestion
                         key={question.questionId}
-                        modality={props.modality}
+                        session={session}
                         question={question}
                         users={props.users}
                         tags={props.tags}

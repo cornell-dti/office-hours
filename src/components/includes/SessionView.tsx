@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Icon } from 'semantic-ui-react';
 import addNotification from 'react-push-notification';
 
 import TopBar from './TopBar';
@@ -11,7 +10,6 @@ import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfil
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 import { updateVirtualLocation } from '../../firebasefunctions';
 import { firestore } from '../../firebase';
-// import SessionAlertModal from './SessionAlertModal';
 
 type Props = {
     course: FireCourse;
@@ -44,7 +42,7 @@ const SessionView = (
     const users = useCourseUsersMap(course.courseId, isTa);
 
     const [
-        { undoAction, undoName, undoQuestionId, timeoutId },
+        { undoQuestionId, timeoutId },
         setUndoState
     ] = useState<UndoState>({ timeoutId: null });
     const [, setAbsentState] = useState<AbsentState>({
@@ -55,20 +53,26 @@ const SessionView = (
 
     const [prevQuestSet, setPrevQuestSet] = useState(new Set(questions.map(q => q.questionId)));
 
-    const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
+    const sessionProfile = useSessionProfile(user.userId, session.sessionId);
 
     const updateSessionProfile = useCallback((virtualLocation: string) => {
+        if (session.modality !== 'virtual') {
+            return;
+        }
+
         const batch = firestore.batch();
 
-        const questionUpdate: Partial<FireQuestion> = { answererLocation: virtualLocation };
+        const questionUpdate: Partial<FireQuestion> = { location: virtualLocation };
         questions.forEach((q) => {
-            if (q.answererId === user.userId && q.status === 'assigned') {
+            if (session.host === 'ta' && q.answererId === user.userId && q.status === 'assigned') {
+                batch.update(firestore.doc(`questions/${q.questionId}`), questionUpdate);
+            } else if (session.host === 'student' && q.askerId === user.userId) {
                 batch.update(firestore.doc(`questions/${q.questionId}`), questionUpdate);
             }
         });
 
         batch.commit();
-    }, [questions, user.userId]);
+    }, [session, questions, user.userId]);
 
     useEffect(() => {
         const questionIds = questions.map(q => q.questionId);
@@ -137,7 +141,7 @@ const SessionView = (
         });
     };
 
-    // RYAN_TODO: implement UNDO feature
+    // TODO(ewlsh): implement UNDO feature
     /*
     const handleUndoClick = (undoQuestion: Function, status: string, refetch: Function) => {
         undoQuestion({
@@ -161,24 +165,24 @@ const SessionView = (
         new Date(new Date(s.startTime.toDate()).getTime() - interval * 1000 * 60)
     );
 
-    let undoText = '';
-    // RYAN_TODO: implement UNDO feature
+    // let undoText = '';
+    // TODO(ewlsh): implement UNDO feature
     // let undoStatus = 'unresolved';
-    if (undoAction) {
-        if (undoAction === 'resolved') {
-            undoText = undoName + ' has been resolved! ';
-            // undoStatus = 'assigned';
-        } else if (undoAction === 'no-show') {
-            undoText = undoName + ' has been marked as a no-show. ';
-            // undoStatus = 'assigned';
-        } else if (undoAction === 'retracted') {
-            undoText = 'You have removed your question. ';
-            // undoStatus = 'unresolved';
-        } else if (undoAction === 'assigned') {
-            undoText = undoName + ' has been assigned to you! ';
-            // undoStatus = 'unresolved';
-        }
-    }
+    // if (undoAction) {
+    //     if (undoAction === 'resolved') {
+    //         undoText = undoName + ' has been resolved! ';
+    //         // undoStatus = 'assigned';
+    //     } else if (undoAction === 'no-show') {
+    //         undoText = undoName + ' has been marked as a no-show. ';
+    //         // undoStatus = 'assigned';
+    //     } else if (undoAction === 'retracted') {
+    //         undoText = 'You have removed your question. ';
+    //         // undoStatus = 'unresolved';
+    //     } else if (undoAction === 'assigned') {
+    //         undoText = undoName + ' has been assigned to you! ';
+    //         // undoStatus = 'unresolved';
+    //     }
+    // }
 
 
     // First check that the session is not ended yet.
@@ -203,40 +207,47 @@ const SessionView = (
                 isDesktop={isDesktop}
             />
             {
-                session.modality === 'virtual' && isTa ? <UpdateProfile
-                    virtualLocation={sessionProfile?.virtualLocation}
-                    onUpdate={(virtualLocation) => {
-                        updateVirtualLocation(firestore, user, session, virtualLocation);
-
-                        if (virtualLocation) {
-                            updateSessionProfile(virtualLocation);
-                        }
-                    }}
-                /> : <></>
+                session.modality === 'virtual' &&
+                ((session.host === 'ta' && isTa) || 
+                (session.host === 'student' && !isTa && questions.some(q => q.askerId === user.userId)) ? 
+                    <UpdateProfile
+                        zoom={!isTa}
+                        virtualLocation={sessionProfile?.virtualLocation}
+                        onUpdate={(virtualLocation) => {
+                            updateVirtualLocation(firestore, user, session, virtualLocation);
+                        
+                            if (virtualLocation) {
+                                updateSessionProfile(virtualLocation);
+                            }
+                        }}
+                    /> : <></>)
             }
-            {undoQuestionId &&
-                <div className="undoContainer">
-                    <p className="undoClose" onClick={dismissUndo}>
-                        <Icon name="close" />
-                    </p>
-                    <p className="undoText">
-                        {undoText}
-                        <span
-                            className="undoLink"
-                        // RYAN_TODO
-                        // onClick={() => this._handleUndoClick(undoQuestion, refetch)}
-                        >
-                            Undo
-                        </span>
-                    </p>
-                </div>
+            {undoQuestionId && <></>
+                // <div className="undoContainer">
+                //     <p className="undoClose" onClick={dismissUndo}>
+                //         <Icon name="close" />
+                //     </p>
+                //     <p className="undoText">
+                //         {undoText}
+                //         <span
+                //             className="undoLink"
+                //         // TODO(ewlsh)
+                //         // onClick={() => this._handleUndoClick(undoQuestion, refetch)}
+                //         >
+                //             Undo
+                //         </span>
+                //     </p>
+                // </div>
             }
-            {/* FUTURE_TODO - Just pass in the session and not a bunch of bools */}
+            {/* TODO(ewlsh) - Just pass in the session and not a bunch of bools */}
             <SessionQuestionsContainer
                 isTA={isTa}
                 modality={session.modality}
                 session={session}
-                myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
+                myVirtualLocation={
+                    (session.modality === 'virtual' && session.host === 'ta' 
+                    && sessionProfile && sessionProfile.virtualLocation) || undefined
+                }
                 questions={questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
                 users={users}
                 tags={tags}
