@@ -203,7 +203,7 @@ const SessionView = (
                 isDesktop={isDesktop}
             />
             {
-                isTa ? <UpdateProfile
+                session.modality === 'virtual' && isTa ? <UpdateProfile
                     virtualLocation={sessionProfile?.virtualLocation}
                     onUpdate={(virtualLocation) => {
                         updateVirtualLocation(firestore, user, session, virtualLocation);

@@ -247,7 +247,7 @@ class SessionQuestion extends React.Component<Props, State> {
                     }
                     <div className="Location">
                         {
-                            !question.answererLocation && (
+                            (
                                 <>{this.props.isTA &&
                             question.location &&
                             question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
