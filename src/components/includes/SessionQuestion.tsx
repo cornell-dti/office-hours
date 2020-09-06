@@ -5,7 +5,7 @@ import * as firebase from 'firebase/app';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
 
-// TODO_ADD_SERVER_CHECK
+// TODO(ewlsh) Add server-side check. For now we prevent rendering greater than 40 characters.
 const LOCATION_CHAR_LIMIT = 40;
 
 type Props = {
@@ -15,7 +15,7 @@ type Props = {
     index: number;
     isTA: boolean;
     includeRemove: boolean;
-    modality: FireSessionModality;
+    session: FireSession;
     myUserId: string;
     virtualLocation?: string;
     triggerUndo: Function;
@@ -93,12 +93,18 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     assignQuestion = () => {
+        const { session } = this.props;
         const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
+        const location = (
+            session.modality === 'virtual' && 
+            session.host === 'ta' &&
+            this.props.virtualLocation ? { location: this.props.virtualLocation } : {});
+        
         const questionUpdate: Partial<FireQuestion> = {
             status: 'assigned',
             answererId: this.props.myUserId,
-            ...(this.props.virtualLocation ? { answererLocation: this.props.virtualLocation } : {})
+            ...location
         };
         batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
         batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
@@ -183,7 +189,7 @@ class SessionQuestion extends React.Component<Props, State> {
                 <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
                     {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                 </p>
-                {this.props.includeRemove && this.props.modality !== 'virtual' &&
+                {this.props.includeRemove && this.props.session.modality !== 'virtual' &&
                     <div className="LocationPin">
                         <Icon
                             onClick={this.toggleLocationTooltip}
@@ -247,7 +253,8 @@ class SessionQuestion extends React.Component<Props, State> {
                     }
                     <div className="Location">
                         {
-                            !question.answererLocation && (
+                            this.props.session.modality !== 'virtual'
+                            && (
                                 <>{this.props.isTA &&
                             question.location &&
                             question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
@@ -278,18 +285,29 @@ class SessionQuestion extends React.Component<Props, State> {
                             posted at&nbsp;
                             {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
                         </p>}
-                </div>
-                {
-                    this.props.isTA &&
-                    <div className="Buttons">
-                        <hr />
-                        <div className="TAButtons">
-                            {question.status === 'unresolved' &&
+                </div>  
+                <div className="Buttons">
+                    <hr />
+                    {
+                        this.props.session.modality === 'virtual' &&
+                    question.location && 
+                    ((question.location.startsWith('https://') || question.location.startsWith('http://')) ?
+                      
+                        <Button className="JoinButton" target="_blank" href={question.location}>
+                            Join Session
+                        </Button>
+                       
+                        : 
+                        <a href={question.location}>Invalid Link: {question.location.substr(0, 40)}</a>
+                    )
+                    }
+                    {this.props.isTA &&<div className="TAButtons">
+                        {question.status === 'unresolved' &&
                                 <p className="Begin" onClick={this.assignQuestion}>
                                     Assign to Me
                                 </p>
-                            }
-                            {question.status === 'assigned' &&
+                        }
+                        {question.status === 'assigned' &&
                                 <>
                                     <p className="Delete" onClick={this.studentNoShow}>No show</p>
                                     <p className="Done" onClick={this.questionDone}>Done</p>
@@ -319,17 +337,10 @@ class SessionQuestion extends React.Component<Props, State> {
                                         }
                                     </p>
                                 </>
-                            }
-                        </div>
+                        }
                     </div>
-                }
-                {
-                    question.answererLocation  && <>
-                        <Button className="JoinButton" target="_blank" href={question.answererLocation}>
-                            Join Session
-                        </Button>
-                    </>
-                }
+                    }
+                </div>
                 {
                     this.props.includeRemove && !this.props.isPast &&
                         <div className="Buttons">

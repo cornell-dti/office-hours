@@ -24,6 +24,7 @@ interface FireSessionLocation {
 
 interface FireVirtualSession extends FireBaseSession {
     modality: 'virtual';
+    host: VirtualHost;
 }
 
 interface FireInPersonSession extends FireBaseSession, FireSessionLocation {
@@ -55,8 +56,11 @@ interface FireBaseSessionSeries {
     sessionSeriesId: string;
 }
 
+type VirtualHost = 'student' | 'ta';
+
 interface FireVirtualSessionSeries extends FireBaseSessionSeries {
     modality: 'virtual';
+    host: VirtualHost;
 }
 
 interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
@@ -123,7 +127,6 @@ interface FireQuestion {
     content: string;
     taComment?: string;
     location?: string;
-    answererLocation?: string;
     sessionId: string;
     status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
     timeAddressed?: FireTimestamp;

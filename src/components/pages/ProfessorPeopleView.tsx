@@ -147,7 +147,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     sessions.forEach((t, i) => {
         if (t.modality === "virtual") {
             sessionDict[t.sessionId] = {
-                // Ryan Todo
+                // TODO(ewlsh)
                 ta: '',
                 questions: questions[i] ? questions[i].length : 0,
                 answered: questions[i] && questions[i].filter(q => q.status !== 'unresolved').length,
@@ -158,7 +158,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             };
         } else {
             sessionDict[t.sessionId] = {
-                // Ryan Todo
+                // TODO(ewlsh)
                 ta: '',
                 questions: questions[i] ? questions[i].length : 0,
                 answered: questions[i] && questions[i].filter(q => q.status !== 'unresolved').length,

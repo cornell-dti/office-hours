@@ -9,11 +9,13 @@ import SelectedTags from './SelectedTags';
 import SessionAlertModal from './SessionAlertModal';
 
 import { collectionData, firestore, auth } from '../../firebase';
+import { updateVirtualLocation } from '../../firebasefunctions';
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
 
 type Props = {
+    user: FireUser;
     session: FireSession;
     course: FireCourse;
     mobileBreakpoint: number;
@@ -30,6 +32,39 @@ type State = {
     selectedPrimary?: FireTag;
     selectedSecondary?: FireTag;
 };
+
+function locationHeader(session: FireSession): string {
+    switch(session.modality) {
+        case 'hybrid':
+            return 'Location or Zoom Link';
+        case 'virtual':
+            if (session.host === 'student') {
+                return 'Zoom Link';
+            }
+
+            return ''; 
+        case 'in-person':
+        default: 
+            return 'Location';
+    }
+}
+
+function locationPlaceholder(session: FireSession): string {
+    switch(session.modality) {
+        case 'in-person':
+            return 'What is your location in the room?'
+        case 'hybrid':
+            return 'What is your Zoom link or location in the room?'
+        case 'virtual':
+            if (session.host === 'student') {
+                return 'What is your Zoom link?'
+            }
+
+            return '';
+        default: 
+            return 'Location...'
+    }
+}
 
 class AddQuestion extends React.Component<Props, State> {
     /*
@@ -91,7 +126,7 @@ class AddQuestion extends React.Component<Props, State> {
             } else {
                 this.setState({ selectedSecondary: tag });
             }
-        } else if (this.props.session.modality === 'virtual' || this.props.session.modality === 'hybrid') {
+        } else if (this.props.session.modality === 'virtual' && this.props.session.host === 'ta') {
             this.setState({ stage: 40 , selectedSecondary: tag });
         } else {
             this.setState({ stage: 30, selectedSecondary: tag });
@@ -105,11 +140,21 @@ class AddQuestion extends React.Component<Props, State> {
             if (this.state.question.length > 0) {
                 stage = 50;
             } else { stage = 40; }
-        } else { stage = 30; }
-        this.setState(({ location }) => ({
-            location: target.value.length <= LOCATION_CHAR_LIMIT ? target.value : location,
-            stage
-        }));
+        } else {
+            stage = 30;
+        }
+
+        if (this.props.session.modality === 'in-person') {
+            this.setState(({ location }) => ({
+                location: target.value.length <= LOCATION_CHAR_LIMIT ? target.value : location,
+                stage
+            }));
+        } else {
+            this.setState(() => ({
+                location: target.value,
+                stage
+            }));
+        }
     };
 
     public handleUpdateQuestion = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
@@ -132,7 +177,14 @@ class AddQuestion extends React.Component<Props, State> {
                 timeEntered: firebase.firestore.Timestamp.now()
             };
 
-            const location = this.props.session.modality === 'virtual' ? {} : { location: this.state.location };
+            const { session } = this.props;
+
+            const location = session.modality === 'virtual' && session.host === 'ta' ? 
+                { location: '' } : { location: this.state.location };
+            
+            if (session.modality === 'virtual' && session.host==='student') {
+                updateVirtualLocation(firestore, this.props.user, session, this.state.location);
+            }
 
             const newQuestion: Omit<FireQuestion, 'questionId'> = {
                 ...newQuestionSlot,
@@ -169,6 +221,17 @@ class AddQuestion extends React.Component<Props, State> {
     };
 
     public questionAdded = () => this.setState({ redirect: true });
+
+    locationCharacters() {
+        return (
+            `${
+                LOCATION_CHAR_LIMIT - this.state.location.length
+            } character${
+                LOCATION_CHAR_LIMIT - this.state.location.length !== 1 ? 's' : ''
+            } left`
+        );
+    }
+
     render() {
         if (this.state.redirect) {
             return (
@@ -178,6 +241,10 @@ class AddQuestion extends React.Component<Props, State> {
                 />
             );
         }
+
+        const { session } = this.props;
+
+        const showLocation = session.modality !== 'virtual' || session.host === 'student';
 
         const { selectedPrimary, selectedSecondary } = this.state;
 
@@ -230,17 +297,18 @@ class AddQuestion extends React.Component<Props, State> {
                                     : <p className="placeHolder">Select a category</p>}
                             </div>
                             <hr />
-                            {this.props.session.modality !== 'virtual' && <> <div className="tagsMiniContainer">
+                            {showLocation && <> <div className="tagsMiniContainer">
                                 <p className="header">
-                                    Location or Zoom Link &nbsp;<span
-                                        className={'characterCount ' + (this.state.location.length >= 40 ? 'warn' : '')}
-                                    >
-                                        (
-                                        {LOCATION_CHAR_LIMIT - this.state.location.length}
-                                        {' '}
-                                        character{LOCATION_CHAR_LIMIT - this.state.location.length !== 1 && 's'} left
-                                        )
-                                    </span>
+                                    {locationHeader(session)} &nbsp;{
+                                        session.modality === 'in-person' && <span
+                                            className={
+                                                'characterCount ' + (
+                                                    this.state.location.length >= LOCATION_CHAR_LIMIT ? 'warn' : ''
+                                                )
+                                            }
+                                        >
+                                            {this.locationCharacters()}
+                                        </span>}
                                 </p>
                                 {this.state.stage >= 30 ?
                                     <div className="locationInput">
@@ -249,7 +317,7 @@ class AddQuestion extends React.Component<Props, State> {
                                             className="TextInput location"
                                             value={this.state.location}
                                             onChange={this.handleUpdateLocation}
-                                            placeholder="What is your zoom link?"
+                                            placeholder={locationPlaceholder(session)}
                                         />
                                     </div>
                                     : <p className="placeHolder text">Finish selecting tags...</p>}
@@ -270,7 +338,7 @@ class AddQuestion extends React.Component<Props, State> {
                                         placeholder="What's your question about?"
                                     />
                                     : (<p className="placeHolder text">{
-                                        this.props.session.modality === 'virtual' 
+                                        !showLocation
                                             ? "Select a tag..." : "Enter your location..."
                                     }</p>)}
                             </div>
