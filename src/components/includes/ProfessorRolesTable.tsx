@@ -18,7 +18,11 @@ const RoleDropdown = ({ user, course }: {
                 { key: 2, text: 'TA', value: 'ta' },
                 { key: 3, text: 'Professor', value: 'professor' },
             ]}
-            onChange={(e, newValue) => changeRole(firestore, user, course, newValue.value as FireCourseRole)}
+            onChange={(e, newValue) => {
+                if (newValue.value !== user.role) {
+                    changeRole(firestore, user, course, newValue.value as FireCourseRole)
+                }
+            }}
         />
     );
 };
