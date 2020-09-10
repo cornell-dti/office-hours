@@ -3,10 +3,11 @@ import { Dropdown, Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
 
 import { firestore } from '../../firebase';
-import { useCourse, useCourseUsers } from '../../firehooks';
+import { useCourse, useCourseUsers, useMyUser } from '../../firehooks';
 import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions';
 
-const RoleDropdown = ({ user, course }: {
+const RoleDropdown = ({ ownUser, user, course }: {
+    readonly ownUser?: FireUser;
     readonly user: EnrichedFireUser;
     readonly course: FireCourse;
 }) => {
@@ -19,8 +20,11 @@ const RoleDropdown = ({ user, course }: {
                 { key: 3, text: 'Professor', value: 'professor' },
             ]}
             onChange={(e, newValue) => {
-                if (newValue.value !== user.role) {
-                    changeRole(firestore, user, course, newValue.value as FireCourseRole)
+                const newValueRole = newValue.value as FireCourseRole;
+                if (user.role !== undefined && newValueRole !== user.role) {
+                    if (user.userId !== ownUser?.userId || newValueRole !== "student") {
+                        changeRole(firestore, user, course, newValue.value as FireCourseRole);
+                    }
                 }
             }}
         />
@@ -35,6 +39,8 @@ export default ({ courseId }: { courseId: string }) => {
     const [direction, setDirection] = useState<'descending' | 'ascending'>('ascending');
     const [column, setColumn] = useState<columnT>('email');
     const course = useCourse(courseId);
+
+    const self = useMyUser();
 
     const courseUsers: readonly EnrichedFireUser[] = useCourseUsers(courseId)
         .map(user => ({ ...user, role: user.roles[courseId] || 'student' }));
@@ -110,7 +116,7 @@ export default ({ courseId }: { courseId: string }) => {
                         <Table.Cell>{u.lastName}</Table.Cell>
                         <Table.Cell>{u.email}</Table.Cell>
                         <Table.Cell textAlign="right" className="dropdownCell">
-                            <RoleDropdown user={u} course={course} />
+                            <RoleDropdown ownUser={self} user={u} course={course} />
                         </Table.Cell>
                     </Table.Row>
                 ))}
