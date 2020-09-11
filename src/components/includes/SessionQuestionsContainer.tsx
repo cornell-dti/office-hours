@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
 import SessionQuestion from './SessionQuestion';
-import { firestore } from '../../firebase';
+import { useAskerQuestions } from '../../firehooks';
 
 const SHOW_FEEDBACK_QUEUE = 4;
 // Maximum number of questions to be shown to user
@@ -17,6 +17,7 @@ type Props = {
     readonly myUserId: string;
     readonly myVirtualLocation?: string;
     readonly handleJoinClick: Function;
+    readonly session: FireSession;
     readonly triggerUndo: Function;
     readonly isOpen: boolean;
     readonly isPast: boolean;
@@ -33,6 +34,7 @@ type StudentMyQuestionProps = {
     readonly isPast: boolean;
     readonly myUserId: string;
     readonly modality: FireSessionModality;
+    readonly studentQuestion: FireQuestion | null;
 };
 
 const StudentMyQuestion = ({ 
@@ -42,30 +44,9 @@ const StudentMyQuestion = ({
     triggerUndo,
     isPast,
     myUserId,
-    modality
+    modality,
+    studentQuestion
 }: StudentMyQuestionProps) => {
-    const [studentQuestion, setStudentQuestion] = React.useState<FireQuestion | undefined>();
-    React.useEffect(
-        () => {
-            return firestore.collection('questions').doc(questionId).onSnapshot(snapshot => {
-                setStudentQuestion({ ...snapshot.data(), questionId: snapshot.id } as FireQuestion);
-            }, () => {
-                // Do nothing when there is an error.
-
-                // Note: there is a race condition going on when adding question happened.
-                // 1. Adding question writes to two collections: questionSlots and questions.
-                // 2. Firebase is smart enough to detect that adding those document will eventually
-                //    succeed, so it adds the document to the local database and triggers a new
-                //    onSnapshot with the new questionSlot data.
-                // 3. This hook is trying the full question from the remote. By the time the local
-                //    snapshot is updated, the remote data might not been written yet, so it will
-                //    fail with an error.
-                // 4. This error will eventually go away, since the full question data will eventually
-                //    be written.
-            });
-        },
-        [questionId]
-    );
     if (studentQuestion == null) {
         return <div />;
     }
@@ -107,16 +88,28 @@ const SessionQuestionsContainer = (props: Props) => {
     }, []);
 
     const allQuestions = props.questions;
+    const myUserId = props.myUserId;
+    const sessionId = props.session.sessionId;
+
+    const myQuestions = useAskerQuestions(sessionId, myUserId);
 
     // If the user has questions, store them in myQuestion[]
-    const myQuestion = allQuestions && allQuestions.filter(q => q.askerId === props.myUserId);
+    const myQuestion = React.useMemo(() => {
+        if (myQuestions && myQuestions.length > 0) {
+            return myQuestions
+                .sort((a, b) => a.timeEntered.seconds - b.timeEntered.seconds)
+                .find(q => q.status === 'unresolved' || q.status === 'assigned') || null;
+        }
+
+        return null;
+    }, [myQuestions]);
 
     // Only display the top 10 questions on the queue
     const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN));
     // Make sure that the data has loaded and user has a question
-    if (shownQuestions && myQuestion && myQuestion.length > 0) {
+    if (shownQuestions && myQuestion) {
         // Get user's position in queue (0 indexed)
-        const myQuestionIndex = allQuestions.indexOf(myQuestion[0]);
+        const myQuestionIndex = allQuestions.indexOf(myQuestion);
         // Update tab with user position
         document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
         // if user is up and we haven't already sent a notification, send one.
@@ -146,18 +139,18 @@ const SessionQuestionsContainer = (props: Props) => {
 
     return (
         <div className="SessionQuestionsContainer splitQuestions" >
-            {!props.isTA && myQuestion && myQuestion.length === 0 && props.isOpen
+            {!props.isTA && !myQuestion && props.isOpen
                 && !props.haveAnotherQuestion &&
                 <div
                     className="SessionJoinButton"
                     onClick={() =>
                         props.handleJoinClick(shownQuestions && myQuestion
-                            && allQuestions.indexOf(myQuestion[0]) > SHOW_FEEDBACK_QUEUE)}
+                            && allQuestions.indexOf(myQuestion) > SHOW_FEEDBACK_QUEUE)}
                 >
                     <p><Icon name="plus" /> Join the Queue</p>
                 </div>
             }
-            {!props.isTA && myQuestion && myQuestion.length === 0 && props.isOpen
+            {!props.isTA && !myQuestion && props.isOpen
                 && props.haveAnotherQuestion &&
                 <>
                     <div className="SessionClosedMessage">
@@ -174,12 +167,13 @@ const SessionQuestionsContainer = (props: Props) => {
                     This queue has closed and is no longer accepting new questions.
                 </div>
             }
-            {shownQuestions && myQuestion && myQuestion.length > 0 &&
+            {shownQuestions && myQuestion &&
                 <StudentMyQuestion
-                    questionId={myQuestion[0].questionId}
+                    questionId={myQuestion.questionId}
+                    studentQuestion={myQuestion}
                     modality={props.modality}
                     tags={props.tags}
-                    index={allQuestions.indexOf(myQuestion[0])}
+                    index={allQuestions.indexOf(myQuestion)}
                     triggerUndo={props.triggerUndo}
                     isPast={props.isPast}
                     myUserId={props.myUserId}
