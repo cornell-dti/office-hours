@@ -235,6 +235,7 @@ const SessionView = (
             <SessionQuestionsContainer
                 isTA={isTa}
                 modality={session.modality}
+                session={session}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
                 questions={questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
                 users={users}

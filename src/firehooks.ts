@@ -108,6 +108,21 @@ const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
     switchMap(() => collectionData<FireCourse>(firestore.collection('courses'), 'courseId'))
 );
 
+const getAskerQuestionsQuery = (sessionId: string, askerId: string) => {
+    return firestore.collection('questions')
+        .where('sessionId', '==', sessionId)
+        .where('askerId', '==', askerId);
+};
+const useParameterizedAskerQuestions = createUseParamaterizedSingletonObservableHook(parameter => {
+    const [sessionId, askerId] = parameter.split('/');
+
+    const query = getAskerQuestionsQuery(sessionId, askerId);
+    return new SingletonObservable([], collectionData<FireQuestion>(query, 'questionId'));
+});
+export const useAskerQuestions = (sessionId: string, askerId: string): null | FireQuestion[] => {
+    return useParameterizedAskerQuestions(`${sessionId}/${askerId}`);
+}
+
 const allCoursesSingletonObservable = new SingletonObservable([], allCoursesObservable);
 
 export const useAllCourses: () => readonly FireCourse[] =
