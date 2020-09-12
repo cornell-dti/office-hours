@@ -110,6 +110,18 @@ const SplitView = (props: {
                                 context="student"
                                 courseId={props.match.params.courseId}
                             />
+
+                            {Notification.permission !== "granted" && (
+                                <div className="warningArea">
+
+                                    <div>
+                                    &#9888;
+                                    </div>
+                                    <div>
+                                    Enable notifications to know when it's your turn.
+                                    </div>
+                                </div>
+                            )}
                             <p className="welcomeMessage">
                                     Welcome{user && ', '}
                                 <span className="welcomeName">
