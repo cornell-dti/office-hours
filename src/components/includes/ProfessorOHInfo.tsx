@@ -385,13 +385,12 @@ const ProfessorOHInfo = (props: {
                             readOnly={true}
                         />
                     </div >
-                    <Checkbox
+                    {(props.isNewOH || props.session?.sessionSeriesId != null) && <Checkbox
                         className="datePicker shift"
                         label={props.isNewOH ? 'Repeat weekly' : 'Edit all office hours in this series'}
                         checked={isSeriesMutation}
-                        disabled={props.session ? props.session.sessionSeriesId === null : false}
                         onChange={() => setIsSeriesMutation((old) => !old)}
-                    />
+                    />}
                 </div>
             </div>
             <div className="EditButtons">
