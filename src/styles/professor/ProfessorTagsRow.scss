@@ -1,6 +1,12 @@
 .ProfessorTagsTable {
     .Tags {
         .Pair {
+            .ChildTagSeparator {
+                margin: 0 10px;
+                color: #8f8f90;
+                font-size: 10px;
+                vertical-align: text-bottom;
+            }
 
             .ChildTagSeparator {
                 margin: 0 10px;
@@ -9,14 +15,20 @@
                 vertical-align: text-bottom;
             }
 
-            .AssignmentTag {
+            .Preview .AssignmentTag {
                 font-weight: 500;
                 color: $text-grey;
             }
 
-            &.true {
+            &.Open {
                 .ChildTagSeparator {
                     color: #ffffff;
+                }
+
+                .Preview {                    
+                    .AssignmentTag {
+                        color: white;
+                    }
                 }
             }
         }

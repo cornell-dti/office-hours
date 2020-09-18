@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dropdown, DropdownProps } from 'semantic-ui-react';
+
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
+import ProfessorView from '../includes/ProfessorView';
 import TagsBarChart from '../includes/TagsBarChart';
 
 import { useMyUser, useQuery, useCourse } from '../../firehooks';
@@ -92,7 +94,7 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
     const course = useCourse(courseId);
 
     return (
-        <div className="ProfessorView">
+        <ProfessorView>
             <ProfessorSidebar courseId={courseId} code={course ? course.code : 'Loading'} selected={2} />
             <TopBar courseId={courseId} user={useMyUser()} context="professor" role="professor" />
             <section className="rightOfSidebar">
@@ -131,7 +133,7 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
                     }
                 </div>
             </section>
-        </div>
+        </ProfessorView>
     );
 };
 

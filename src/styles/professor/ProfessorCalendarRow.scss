@@ -13,14 +13,16 @@ $odd-color: #ffffff;
     background-color: $even-color;
 }
 
-.Pair.true {
+.Pair.Open {
     .Preview {
         color: white;
         background-color: #898989;
+        
         .Edit, .Delete {
             color: white;
         }
     }
+
     .ExpandedEdit {
         border-bottom: 1px solid #d9d9d9;
     }
@@ -31,7 +33,7 @@ $odd-color: #ffffff;
         width: 35%;
     }
 
-    .ExpandedEdit.false {
+    .ExpandedEdit.Closed {
         display: none;
     }
 

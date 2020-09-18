@@ -3,6 +3,7 @@ import { RouteComponentProps } from 'react-router';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
+import ProfessorView from '../includes/ProfessorView';
 import { useMyUser, useCourse } from '../../firehooks';
 
 const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
@@ -10,7 +11,7 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
     const course = useCourse(courseId);
 
     return (
-        <div className="ProfessorView">
+        <ProfessorView>
             <ProfessorSidebar courseId={courseId} code={course ? course.code : 'Loading'} selected={4} />
             <TopBar courseId={courseId} user={user} context="professor" role="professor" />
             <section className="rightOfSidebar">
@@ -18,7 +19,7 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
                     <ProfessorRolesTable courseId={courseId} />
                 </div>
             </section>
-        </div>
+        </ProfessorView>
     );
 };
 

@@ -13,13 +13,13 @@ const ProfessorAddNew = (props: {
     const text = props.taOptions ? 'Add New Office Hour' : 'Add New Assignment';
     return (
         <div className="ProfessorAddNew">
-            <div className={'Add ' + !editVisible}>
+            <div className={`Add ${!editVisible ? 'Show' : 'Hide'}`}>
                 <button type="button" className="NewOHButton" onClick={() => setEditVisible(true)}>
                     <Icon name="plus" />
                     {text}
                 </button>
             </div>
-            <div className={'ExpandedAdd ' + editVisible}>
+            <div className={`ExpandedAdd ${editVisible ? 'Show' : 'Hide'}`}>
                 <div className="NewOHHeader">
                     <button type="button" className="ExpandedNewOHButton" onClick={() => setEditVisible(false)}>
                         <Icon name="plus" />

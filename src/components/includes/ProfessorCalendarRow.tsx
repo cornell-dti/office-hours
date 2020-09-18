@@ -26,8 +26,8 @@ const ProfessorCalendarRow = (props: {
     updateDeleteVisible: Function;
 }) => {
 
-    const toggleEdit = (row: number) => {
-        props.handleEditToggle(props.dayNumber, row);
+    const toggleEdit = (row: number, state?: boolean) => {
+        props.handleEditToggle(props.dayNumber, row, state);
     };
 
     const updateDeleteInfo = (dayIndex: number, rowIndex: number) => {
@@ -63,7 +63,7 @@ const ProfessorCalendarRow = (props: {
         (session, i) => {
             return (
                 <tbody
-                    className={'Pair ' + props.isExpanded[i] + ' ' + (i % 2 === 0 ? 'odd' : 'even')}
+                    className={`Pair  ${props.isExpanded[i] ? 'Open' : 'Closed'} ${(i % 2 === 0 ? 'odd' : 'even')}`}
                     key={session.sessionId}
                 >
                     <tr className="Preview">
@@ -80,7 +80,7 @@ const ProfessorCalendarRow = (props: {
                             <button
                                 type="button"
                                 className="Edit"
-                                onClick={() => toggleEdit(i)}
+                                onClick={() => toggleEdit(i, true)}
                             >
                                 <Icon name="pencil" />
                             </button>
@@ -96,7 +96,7 @@ const ProfessorCalendarRow = (props: {
                         </td>
                     </tr>
                     <tr>
-                        <td colSpan={5} className={'ExpandedEdit ' + props.isExpanded[i]} >
+                        <td colSpan={5} className={`ExpandedEdit ${props.isExpanded[i] ? 'Open' : 'Closed'}`} >
                             <ProfessorOHInfo
                                 key={props.sessions[i].sessionId}
                                 session={props.sessions[i]}

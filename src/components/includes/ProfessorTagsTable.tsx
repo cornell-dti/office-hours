@@ -21,7 +21,7 @@ const ProfessorTagsTable = (props: { courseId: string }) => {
                             <th>Assignment</th>
                             <th>Tags</th>
                             <th id="statusColumn">Status</th>
-                            <th>Edit</th>
+                            <th>Actions</th>
                         </tr>
                     </tbody>
                     {tags

@@ -20,8 +20,8 @@ import { auth, firestore } from '../firebase';
 
 import AdminView from './pages/AdminView';
 import LoginView from './pages/LoginView';
-import ProfessorView from './pages/ProfessorView';
 import SplitView from './pages/SplitView';
+import ProfessorHoursView from './pages/ProfessorHoursView';
 import ProfessorTagsView from './pages/ProfessorTagsView';
 import ProfessorRoles from './pages/ProfessorRoles';
 import ProfessorDashboardView from './pages/ProfessorDashboardView';
@@ -216,7 +216,7 @@ export default () => {
                     />
                     <PrivateRoute
                         path="/professor/course/:courseId"
-                        component={ProfessorView}
+                        component={ProfessorHoursView}
                         exact={true}
                         requireProfessor
                     />
