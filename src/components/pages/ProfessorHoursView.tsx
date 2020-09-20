@@ -11,6 +11,7 @@ import ProfessorDelete from '../includes/ProfessorDelete';
 import ProfessorSettings from '../includes/ProfessorSettings';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
+import ProfessorView from '../includes/ProfessorView';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
 import { useCourse, useMyUser } from '../../firehooks';
@@ -18,7 +19,7 @@ import { firestore, collectionData } from '../../firebase';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 
-const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
+const ProfessorHoursView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
     const week = new Date();
     week.setHours(0, 0, 0, 0);
     const daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
@@ -84,7 +85,7 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
     );
 
     return (
-        <div className="ProfessorView">
+        <ProfessorView>
             <ProfessorSidebar
                 courseId={courseId}
                 code={course ? course.code : 'Loading'}
@@ -138,8 +139,8 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
                     </div>
                 </div>
             </section>
-        </div>
+        </ProfessorView>
     );
 };
 
-export default ProfessorView;
+export default ProfessorHoursView;

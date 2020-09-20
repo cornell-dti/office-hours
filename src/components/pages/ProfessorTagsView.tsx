@@ -4,6 +4,7 @@ import ProfessorTagsTable from '../includes/ProfessorTagsTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
+import ProfessorView from '../includes/ProfessorView';
 import { useMyUser, useCourse } from '../../firehooks';
 
 const ProfessorTagsView = (
@@ -12,7 +13,7 @@ const ProfessorTagsView = (
     const user = useMyUser();
     const course = useCourse(courseId);
     return (
-        <div className="ProfessorView">
+        <ProfessorView>
             <ProfessorSidebar
                 courseId={courseId}
                 code={course ? course.code : 'Loading...'}
@@ -27,7 +28,7 @@ const ProfessorTagsView = (
                     </div>
                 </div>
             </section>
-        </div>
+        </ProfessorView>
     );
 };
 

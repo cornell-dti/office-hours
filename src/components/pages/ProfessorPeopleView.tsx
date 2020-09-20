@@ -5,6 +5,7 @@ import { switchMap } from 'rxjs/operators';
 import moment from 'moment';
 import { DateRangePicker } from 'react-dates';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
+import ProfessorView from '../includes/ProfessorView';
 import QuestionsPieChart from '../includes/QuestionsPieChart';
 import QuestionsLineChart from '../includes/QuestionsLineChart';
 import QuestionsBarChart from '../includes/QuestionsBarChart';
@@ -175,7 +176,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
 
     const chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
     return (
-        <div className="ProfessorView">
+        <ProfessorView>
             <ProfessorSidebar courseId={courseId} code={(course && course.code) || 'Loading'} selected={3} />
             <TopBar courseId={courseId} user={user} context="professor" role="professor" />
             <section className="rightOfSidebar">
@@ -274,7 +275,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                     }
                 </div>
             </section>
-        </div>
+        </ProfessorView>
     );
 };
 

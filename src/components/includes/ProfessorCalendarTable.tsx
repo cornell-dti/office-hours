@@ -49,7 +49,7 @@ class ProfessorCalendarTable extends React.Component<Props, State> {
         this.setState({ isExpanded });
     }
 
-    toggleEdit = (day: number, row: number, forceClose?: boolean) => {
+    toggleEdit = (day: number, row: number, forceState?: boolean) => {
         const cDay = this.state.currentDay;
         const cRow = this.state.currentRow;
 
@@ -58,8 +58,8 @@ class ProfessorCalendarTable extends React.Component<Props, State> {
             isExpanded[cDay][cRow] = false;
         }
 
-        if (forceClose) {
-            isExpanded[day][row] = false;
+        if (typeof forceState === "boolean") {
+            isExpanded[day][row] = forceState;
         } else {
             isExpanded[day][row] = !isExpanded[day][row];
         }
