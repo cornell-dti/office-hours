@@ -146,8 +146,14 @@ const ProfessorOHInfo = (props: {
                     title,
                 }
             } else {
-                if ((locationBuildingSelected === undefined || locationRoomNumSelected === undefined)) {
-                    return Promise.reject(new Error("No location for non-virtual session."));
+                if (modality === Modality.INPERSON) {
+                    if (!locationBuildingSelected) {
+                        return Promise.reject(new Error("No building provided!"));
+                    }
+
+                    if (!locationRoomNumSelected) {
+                        return Promise.reject(new Error("No room provided!"));
+                    }
                 }
 
                 series = {
@@ -157,8 +163,8 @@ const ProfessorOHInfo = (props: {
                     startTime: startTimestamp,
                     tas: taDocuments,
                     title,
-                    building: locationBuildingSelected,
-                    room: locationRoomNumSelected,
+                    building: locationBuildingSelected || '',
+                    room: locationRoomNumSelected || '',
                 };
             }
 
@@ -329,7 +335,7 @@ const ProfessorOHInfo = (props: {
                     <Icon name="marker" />
                     <input
                         className="long"
-                        placeholder="Building/Location"
+                        placeholder={`Building/Location${modality === Modality.HYBRID ? ' (optional)' : ''}`}
                         value={locationBuildingSelected || ''}
                         onChange={(e) => handleTextField(e, setLocationBuildingSelected)}
                     />
@@ -414,14 +420,16 @@ const ProfessorOHInfo = (props: {
                             mutateSessionOrSeries().then(() => {
                                 // eslint-disable-next-line no-console
                                 console.log("Success!");
-                            }).catch(err => {
-                                // eslint-disable-next-line no-console
-                                console.error(err);
-                            }).finally(() => {
-                                (props.isNewOH && clearFields());
-                                props.toggleEdit();
-                            });
 
+                                if (props.isNewOH) {
+                                    clearFields()
+                                }
+
+                                props.toggleEdit();
+                            }).catch((err: Error) => {
+                                // eslint-disable-next-line no-alert
+                                alert(err.message);
+                            });
                         }
                     }}
                     disabled={disableProps}
