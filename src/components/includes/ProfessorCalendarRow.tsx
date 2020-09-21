@@ -21,13 +21,13 @@ const ProfessorCalendarRow = (props: {
     courseId: string;
     taOptions: DropdownItemProps[];
     isExpanded: boolean[];
-    handleEditToggle: Function;
+    handleEditToggle: (day: number, row: number, forceClose?: boolean) => void;
     updateDeleteInfo: Function;
     updateDeleteVisible: Function;
 }) => {
 
-    const toggleEdit = (row: number) => {
-        props.handleEditToggle(props.dayNumber, row);
+    const toggleEdit = (row: number, close?: boolean) => {
+        props.handleEditToggle(props.dayNumber, row, close);
     };
 
     const updateDeleteInfo = (dayIndex: number, rowIndex: number) => {
@@ -103,7 +103,7 @@ const ProfessorCalendarRow = (props: {
                                 courseId={props.courseId}
                                 isNewOH={false}
                                 taOptions={props.taOptions}
-                                toggleEdit={() => toggleEdit(i)}
+                                toggleEdit={() => toggleEdit(i, true)}
                             />
                             <button
                                 type="button"
