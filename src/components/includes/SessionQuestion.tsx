@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Icon, Loader, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import * as firebase from 'firebase/app';
+import { useState } from "react";
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
 
@@ -29,9 +30,8 @@ type State = {
     showDotMenu: boolean;
     undoQuestionIdDontKnow?: number;
     undoName?: string;
+    enableEditingTAComment: boolean;
 };
-
-const FEATURE_TA_COMMENT_ENABLE_FLAG = localStorage.getItem('FEATURE_TA_COMMENT_ENABLE_FLAG') === 'true';
 
 class SessionQuestion extends React.Component<Props, State> {
     state: State;
@@ -42,7 +42,8 @@ class SessionQuestion extends React.Component<Props, State> {
             showLocation: false,
             location: props.question.location || '',
             isEditingLocation: false,
-            showDotMenu: false
+            showDotMenu: false,
+            enableEditingTAComment: false
         };
     }
 
@@ -126,14 +127,14 @@ class SessionQuestion extends React.Component<Props, State> {
         batch.commit();
     };
 
-    questionComment = () => {
-        const taComment = prompt('Your comment', this.props.question.taComment);
-        if (taComment == null) {
-            return;
-        }
-        const update: Partial<FireQuestion> = { taComment };
+    questionComment = (newComment: string) => {
+        const update: Partial<FireQuestion> = { taComment: newComment };
         firestore.doc(`questions/${this.props.question.questionId}`).update(update);
     };
+
+    toggleTAComment = () => {
+        this.setState(({ enableEditingTAComment }) => ({ enableEditingTAComment: !enableEditingTAComment }));
+    }
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
@@ -172,6 +173,7 @@ class SessionQuestion extends React.Component<Props, State> {
         const asker = this.props.users[question.askerId];
         const answerer = question.answererId
             ? this.props.users[question.answererId] : undefined;
+        const user = this.props.users[this.props.myUserId];
         const primaryTag = this.props.question.primaryTag
             ? this.props.tags[this.props.question.primaryTag] : undefined;
         const secondaryTag = this.props.question.secondaryTag
@@ -226,10 +228,11 @@ class SessionQuestion extends React.Component<Props, State> {
                     {this.props.isTA && asker &&
                         <div className="studentInformation">
                             <img
+                                className="userInformationImg"
                                 src={asker.photoUrl || '/placeholder.png'}
                                 alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
                             />
-                            <span className="Name">
+                            <span className="userInformationName">
                                 {asker.firstName + ' ' + asker.lastName}
                                 {question.status === 'assigned' &&
                                     <>
@@ -267,6 +270,11 @@ class SessionQuestion extends React.Component<Props, State> {
                         <p className={'Question' + studentCSS}>TA Comment: {question.taComment}</p>
                     )}
                 </div>
+                <div className="RightBar">
+                    <button className="commentBtn" onClick={this.toggleTAComment} type="button">
+                        <Icon className="large" name="comment outline"/>
+                    </button>
+                </div>
                 <div className="BottomBar">
                     {this.props.isTA && <span className="Spacer" />}
                     <div className="Tags">
@@ -293,11 +301,6 @@ class SessionQuestion extends React.Component<Props, State> {
                                 <>
                                     <p className="Delete" onClick={this.studentNoShow}>No show</p>
                                     <p className="Done" onClick={this.questionDone}>Done</p>
-                                    {FEATURE_TA_COMMENT_ENABLE_FLAG && (
-                                        <p className="Done" onClick={this.questionComment}>
-                                            Edit Comment
-                                        </p>
-                                    )}
                                     <p
                                         className="DotMenu"
                                         onClick={() => this.setDotMenu(!this.state.showDotMenu)}
@@ -324,6 +327,24 @@ class SessionQuestion extends React.Component<Props, State> {
                     </div>
                 }
                 {
+                    this.state.enableEditingTAComment && <div className="TACommentBox">
+                        <div className="commentTopBar">
+                            <img
+                                className="userInformationImg"
+                                src={user.photoUrl || '/placeholder.png'}
+                                alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
+                            />
+                            <span className="userInformationName">
+                                {user.firstName} {user.lastName}
+                            </span>
+                        </div>
+                        <TAEditComment
+                            onValueChange={(newComment: string) => {this.questionComment(newComment);}}
+                            initComment={question.taComment ? question.taComment : ""}
+                        />
+                    </div>
+                }
+                {
                     question.answererLocation  && <>
                         <Button className="JoinButton" target="_blank" href={question.answererLocation}>
                             Join Session
@@ -342,6 +363,71 @@ class SessionQuestion extends React.Component<Props, State> {
             </div >
         );
     }
+}
+
+type TAEditCommentProps = {
+    readonly initComment: string;
+    readonly onValueChange: Function;
+}
+
+const TAEditComment = (props: TAEditCommentProps) => {
+    const [editable, setEditable] = useState(false);
+    const [comment, setComment] = useState(props.initComment);
+    const [prevComment, setPrevComment] = useState(comment);
+
+    if (editable){
+        return (
+            <div className="commentBody">
+                <textarea
+                    placeholder="Add a comment..."
+                    className="commentTextArea"
+                    onChange={(evt) => {setComment(evt.target.value)}}
+                    value={comment}
+                />
+                <div className="commentBtnHolder">
+                    <button
+                        type="button"
+                        className="commentSaveBtn"
+                        onClick={() => {
+                            props.onValueChange(comment);
+                            setPrevComment(comment);
+                            setEditable(false);
+                        }}
+                    >
+                        Save
+                    </button>
+                    <button
+                        type="button"
+                        className="commentCancelBtn"
+                        onClick={() => {
+                            setComment(prevComment);
+                            setEditable(false);
+                        }}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // Not editable
+    return (
+        <div className="commentBody">
+            <p>{comment !== "" && comment !== undefined ? comment : "Add a comment..."}</p>
+            <a
+                className="commentEdit"
+                onClick={(evt) => {
+                    evt.preventDefault();
+                    setPrevComment(comment);
+                    setEditable(true);
+                }}
+            >
+                edit
+            </a>
+        </div>
+    );
+
 }
 
 export default SessionQuestion;
