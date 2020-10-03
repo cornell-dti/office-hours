@@ -80,13 +80,17 @@
         }
     }
 
-    .RightBar {
+    .TopBar {
         display: flex;
-        justify-content: flex-end;
+        justify-content: flex-start;
+    }
+
+    .RightBar {
+        text-align: right;
+        flex-grow: 1;
         font-weight: 300;
-        margin-top: 10px;
+        margin-top: 16px;
         margin-right: 16px;
-        padding-bottom: 10px;
 
         .commentBtn {
             background-color: Transparent;

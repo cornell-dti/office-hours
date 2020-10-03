@@ -3,10 +3,10 @@ import { Icon, Loader, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import * as firebase from 'firebase/app';
 import { useState } from "react";
-import { firestore } from '../../firebase';
-import SelectedTags from './SelectedTags';
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
+import { firestore } from '../../firebase';
+import SelectedTags from './SelectedTags';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -192,96 +192,98 @@ class SessionQuestion extends React.Component<Props, State> {
 
         return (
             <div className="QueueQuestions">
-                {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
-                <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
-                    {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
-                </p>
-                {this.props.includeRemove && this.props.modality !== 'virtual' &&
-                    <div className="LocationPin">
-                        <Icon
-                            onClick={this.toggleLocationTooltip}
-                            name="map marker alternate"
-                        />
-                        <div
-                            className="LocationTooltip"
-                            style={{ visibility: this.state.showLocation ? 'visible' : 'hidden' }}
-                        >
-                            <p>
-                                Location &nbsp; <span
-                                    className={'characterCount ' +
-                                        (this.state.location.length >= 40 ? 'warn' : '')}
-                                >
-                                    {this.state.location.length}/{LOCATION_CHAR_LIMIT}
-                                </span>
-                            </p>
-                            <textarea
-                                className="TextInput question"
-                                value={this.state.location}
-                                onChange={(e) => this.handleUpdateLocation(e)}
-                            />
-                            {this.state.isEditingLocation ?
-                                <Loader
-                                    className={'locationLoader'}
-                                    active={true}
-                                    inline={true}
-                                    size={'tiny'}
-                                /> : <Icon name="check" />}
-                            <div
-                                className="DoneButton"
+                <div className="TopBar">
+                    {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
+                    <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
+                        {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
+                    </p>
+                    {this.props.includeRemove && this.props.modality !== 'virtual' &&
+                        <div className="LocationPin">
+                            <Icon
                                 onClick={this.toggleLocationTooltip}
+                                name="map marker alternate"
+                            />
+                            <div
+                                className="LocationTooltip"
+                                style={{ visibility: this.state.showLocation ? 'visible' : 'hidden' }}
                             >
-                                Done
+                                <p>
+                                    Location &nbsp; <span
+                                        className={'characterCount ' +
+                                            (this.state.location.length >= 40 ? 'warn' : '')}
+                                    >
+                                        {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                    </span>
+                                </p>
+                                <textarea
+                                    className="TextInput question"
+                                    value={this.state.location}
+                                    onChange={(e) => this.handleUpdateLocation(e)}
+                                />
+                                {this.state.isEditingLocation ?
+                                    <Loader
+                                        className={'locationLoader'}
+                                        active={true}
+                                        inline={true}
+                                        size={'tiny'}
+                                    /> : <Icon name="check" />}
+                                <div
+                                    className="DoneButton"
+                                    onClick={this.toggleLocationTooltip}
+                                >
+                                    Done
+                                </div>
                             </div>
                         </div>
-                    </div>
-                }
-                <div className="QuestionInfo">
-                    {this.props.isTA && asker &&
-                        <div className="studentInformation">
-                            <img
-                                className="userInformationImg"
-                                src={asker.photoUrl || '/placeholder.png'}
-                                alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
-                            />
-                            <span className="userInformationName">
-                                {asker.firstName + ' ' + asker.lastName}
-                                {question.status === 'assigned' &&
-                                    <>
-                                        <span className="assigned"> is assigned
-                                            {answerer &&
-                                                (' to ' + (answerer.userId === this.props.myUserId
-                                                    ? 'you'
-                                                    : answerer.firstName + ' '
-                                                    + answerer.lastName))}
-                                        </span>
-                                    </>
-                                }
-                            </span>
-                        </div>
                     }
-                    <div className="Location">
-                        {
-                            (
-                                <>{this.props.isTA &&
-                            question.location &&
-                            question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
-                            <a href={question.location} target="_blank" rel="noopener noreferrer">
-                                Zoom Link
-                            </a>
-                                }
-                                {this.props.isTA &&
-                            question.location &&
-                            question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
-                            question.location
-                                }</>)}
+                    <div className="QuestionInfo">
+                        {this.props.isTA && asker &&
+                            <div className="studentInformation">
+                                <img
+                                    className="userInformationImg"
+                                    src={asker.photoUrl || '/placeholder.png'}
+                                    alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
+                                />
+                                <span className="userInformationName">
+                                    {asker.firstName + ' ' + asker.lastName}
+                                    {question.status === 'assigned' &&
+                                        <>
+                                            <span className="assigned"> is assigned
+                                                {answerer &&
+                                                    (' to ' + (answerer.userId === this.props.myUserId
+                                                        ? 'you'
+                                                        : answerer.firstName + ' '
+                                                        + answerer.lastName))}
+                                            </span>
+                                        </>
+                                    }
+                                </span>
+                            </div>
+                        }
+                        <div className="Location">
+                            {
+                                (
+                                    <>{this.props.isTA &&
+                                question.location &&
+                                question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
+                                <a href={question.location} target="_blank" rel="noopener noreferrer">
+                                    Zoom Link
+                                </a>
+                                    }
+                                    {this.props.isTA &&
+                                question.location &&
+                                question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
+                                question.location
+                                    }</>)}
+                        </div>
+                        {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
+                        <p className={'Question' + studentCSS}>{question.content}</p>}
                     </div>
-                    {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
-                    <p className={'Question' + studentCSS}>{question.content}</p>}
-                </div>
-                <div className="RightBar">
-                    <button className="commentBtn" onClick={this.toggleComment} type="button">
-                        <Icon className="large" name="comment outline"/>
-                    </button>
+                    <div className="RightBar">
+                        <button className="commentBtn" onClick={this.toggleComment} type="button">
+                            <Icon className="large" name="comment outline"/>
+                        </button>
+                    </div>
                 </div>
                 {(question.studentComment || question.taComment) &&
                 <CommentBox
