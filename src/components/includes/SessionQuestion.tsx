@@ -355,7 +355,7 @@ class SessionQuestion extends React.Component<Props, State> {
                         </div>
                         <TAEditComment
                             onValueChange={(newComment: string) => {this.questionComment(newComment, this.props.isTA);}}
-                            initComment={comment ? comment : ""}
+                            initComment={comment || ""}
                         />
                     </div>
                 }
@@ -453,7 +453,7 @@ type CommentBoxProps = {
     readonly studentCSS?: string;
 }
 
-const CommentBox = (props : CommentBoxProps) => {
+const CommentBox = (props: CommentBoxProps) => {
     return (
         <div className="CommentBox">
             {props.studentComment && (
