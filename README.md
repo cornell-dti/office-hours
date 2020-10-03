@@ -28,6 +28,7 @@ _Screenshots showing major parts of app_
 ## Contributors
 
 ### 2020-21
+* **Nada Attia** - Software Developer
 * **Vanessa Wang** - Software Developer
 * **Connie Lei** - Software Developer
 * **Guanqun Wu** - Software Developer
