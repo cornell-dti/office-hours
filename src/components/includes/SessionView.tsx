@@ -59,14 +59,14 @@ const SessionView = (
 
     const updateSessionProfile = useCallback((virtualLocation: string) => {
         const batch = firestore.batch();
-   
+
         const questionUpdate: Partial<FireQuestion> = { answererLocation: virtualLocation };
         questions.forEach((q) => {
             if (q.answererId === user.userId && q.status === 'assigned') {
                 batch.update(firestore.doc(`questions/${q.questionId}`), questionUpdate);
             }
         });
-    
+
         batch.commit();
     }, [questions, user.userId]);
 
@@ -207,7 +207,7 @@ const SessionView = (
                     virtualLocation={sessionProfile?.virtualLocation}
                     onUpdate={(virtualLocation) => {
                         updateVirtualLocation(firestore, user, session, virtualLocation);
-                        
+
                         if (virtualLocation) {
                             updateSessionProfile(virtualLocation);
                         }
@@ -242,6 +242,7 @@ const SessionView = (
                 tags={tags}
                 handleJoinClick={joinCallback}
                 myUserId={user.userId}
+                user={user}
                 triggerUndo={triggerUndo}
                 isOpen={isOpen(session, course.queueOpenInterval)}
                 isPast={isPast(session)}

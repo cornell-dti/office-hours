@@ -122,6 +122,7 @@ interface FireQuestion {
     answererId: string;
     content: string;
     taComment?: string;
+    studentComment?: string;
     location?: string;
     answererLocation?: string;
     sessionId: string;

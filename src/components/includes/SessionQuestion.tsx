@@ -5,6 +5,8 @@ import * as firebase from 'firebase/app';
 import { useState } from "react";
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
+// @ts-ignore (Note that this library does not provide typescript)
+import Linkify from 'linkifyjs/react';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -21,6 +23,7 @@ type Props = {
     virtualLocation?: string;
     triggerUndo: Function;
     isPast: boolean;
+    readonly user: FireUser;
 };
 
 type State = {
@@ -30,7 +33,7 @@ type State = {
     showDotMenu: boolean;
     undoQuestionIdDontKnow?: number;
     undoName?: string;
-    enableEditingTAComment: boolean;
+    enableEditingComment: boolean;
 };
 
 class SessionQuestion extends React.Component<Props, State> {
@@ -43,7 +46,7 @@ class SessionQuestion extends React.Component<Props, State> {
             location: props.question.location || '',
             isEditingLocation: false,
             showDotMenu: false,
-            enableEditingTAComment: false
+            enableEditingComment: false
         };
     }
 
@@ -127,13 +130,19 @@ class SessionQuestion extends React.Component<Props, State> {
         batch.commit();
     };
 
-    questionComment = (newComment: string) => {
-        const update: Partial<FireQuestion> = { taComment: newComment };
+    questionComment = (newComment: string, isTA: boolean) => {
+        let update: Partial<FireQuestion>
+        if (isTA){
+            update = { taComment: newComment };
+        } else {
+            update = { studentComment: newComment };
+        }
         firestore.doc(`questions/${this.props.question.questionId}`).update(update);
     };
 
-    toggleTAComment = () => {
-        this.setState(({ enableEditingTAComment }) => ({ enableEditingTAComment: !enableEditingTAComment }));
+    toggleComment = () => {
+        this.setState(({ enableEditingComment: enableEditingComment }) =>
+            ({ enableEditingComment: !enableEditingComment }));
     }
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
@@ -173,11 +182,13 @@ class SessionQuestion extends React.Component<Props, State> {
         const asker = this.props.users[question.askerId];
         const answerer = question.answererId
             ? this.props.users[question.answererId] : undefined;
-        const user = this.props.users[this.props.myUserId];
+        const user = this.props.user;
         const primaryTag = this.props.question.primaryTag
             ? this.props.tags[this.props.question.primaryTag] : undefined;
         const secondaryTag = this.props.question.secondaryTag
             ? this.props.tags[this.props.question.secondaryTag] : undefined;
+
+        const comment = this.props.isTA ? question.taComment : question.studentComment;
 
         return (
             <div className="QueueQuestions">
@@ -265,16 +276,20 @@ class SessionQuestion extends React.Component<Props, State> {
                                 }</>)}
                     </div>
                     {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
-                        <p className={'Question' + studentCSS}>{question.content}</p>}
-                    {question.taComment && (
-                        <p className={'Question' + studentCSS}>TA Comment: {question.taComment}</p>
-                    )}
+                    <p className={'Question' + studentCSS}>{question.content}</p>}
                 </div>
                 <div className="RightBar">
-                    <button className="commentBtn" onClick={this.toggleTAComment} type="button">
+                    <button className="commentBtn" onClick={this.toggleComment} type="button">
                         <Icon className="large" name="comment outline"/>
                     </button>
                 </div>
+                {(question.studentComment || question.taComment) &&
+                <CommentBox
+                    studentComment={question.studentComment}
+                    taComment={question.taComment}
+                    studentCSS={studentCSS}
+                />
+                }
                 <div className="BottomBar">
                     {this.props.isTA && <span className="Spacer" />}
                     <div className="Tags">
@@ -327,7 +342,7 @@ class SessionQuestion extends React.Component<Props, State> {
                     </div>
                 }
                 {
-                    this.state.enableEditingTAComment && <div className="TACommentBox">
+                    this.state.enableEditingComment && <div className="CommentBox">
                         <div className="commentTopBar">
                             <img
                                 className="userInformationImg"
@@ -339,8 +354,8 @@ class SessionQuestion extends React.Component<Props, State> {
                             </span>
                         </div>
                         <TAEditComment
-                            onValueChange={(newComment: string) => {this.questionComment(newComment);}}
-                            initComment={question.taComment ? question.taComment : ""}
+                            onValueChange={(newComment: string) => {this.questionComment(newComment, this.props.isTA);}}
+                            initComment={comment ? comment : ""}
                         />
                     </div>
                 }
@@ -414,7 +429,9 @@ const TAEditComment = (props: TAEditCommentProps) => {
     // Not editable
     return (
         <div className="commentBody">
-            <p>{comment !== "" && comment !== undefined ? comment : "Add a comment..."}</p>
+            <Linkify tagName="p">
+                {comment !== "" && comment !== undefined ? comment : "Add a comment..."}
+            </Linkify>
             <a
                 className="commentEdit"
                 onClick={(evt) => {
@@ -428,6 +445,29 @@ const TAEditComment = (props: TAEditCommentProps) => {
         </div>
     );
 
+}
+
+type CommentBoxProps = {
+    readonly studentComment?: string;
+    readonly taComment?: string;
+    readonly studentCSS?: string;
+}
+
+const CommentBox = (props : CommentBoxProps) => {
+    return (
+        <div className="CommentBox">
+            {props.studentComment && (
+                <Linkify className={'Question' + props.studentCSS} tagName="p">
+                    Student Comment: {props.studentComment}
+                </Linkify>
+            )}
+            {props.taComment && (
+                <Linkify className={'Question' + props.studentCSS} tagName="p">
+                    TA Comment: {props.taComment}
+                </Linkify>
+            )}
+        </div>
+    )
 }
 
 export default SessionQuestion;
