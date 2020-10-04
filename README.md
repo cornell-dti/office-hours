@@ -32,6 +32,7 @@ _Screenshots showing major parts of app_
 * **Vanessa Wang** - Software Developer
 * **Connie Lei** - Software Developer
 * **Guanqun Wu** - Software Developer
+* **Jeremy Jung** - Software Developer
 * **Ashley Ticzon** - Designer
 * **Jalil Evans** - Designer
 * **Sophia Wang** - Product Manager
