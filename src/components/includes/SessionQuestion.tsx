@@ -355,8 +355,21 @@ class SessionQuestion extends React.Component<Props, State> {
                                 {user.firstName} {user.lastName}
                             </span>
                         </div>
-                        <TAEditComment
-                            onValueChange={(newComment: string) => {this.questionComment(newComment, this.props.isTA);}}
+                        <EditComment
+                            onValueChange={(newComment: string) => {
+                                //Set a comment
+                                this.questionComment(newComment, this.props.isTA);
+                                //Disable editing comment
+                                this.setState({
+                                    enableEditingComment: false
+                                });
+                            }}
+                            onCancel={() => {
+                                //Disable editing comment
+                                this.setState({
+                                    enableEditingComment: false
+                                });
+                            }}
                             initComment={comment || ""}
                         />
                     </div>
@@ -382,12 +395,13 @@ class SessionQuestion extends React.Component<Props, State> {
     }
 }
 
-type TAEditCommentProps = {
+type EditCommentProps = {
     readonly initComment: string;
     readonly onValueChange: Function;
+    readonly onCancel: Function;
 }
 
-const TAEditComment = (props: TAEditCommentProps) => {
+const EditComment = (props: EditCommentProps) => {
     const [editable, setEditable] = useState(false);
     const [comment, setComment] = useState(props.initComment);
     const [prevComment, setPrevComment] = useState(comment);
@@ -417,6 +431,7 @@ const TAEditComment = (props: TAEditCommentProps) => {
                         type="button"
                         className="commentCancelBtn"
                         onClick={() => {
+                            props.onCancel();
                             setComment(prevComment);
                             setEditable(false);
                         }}
