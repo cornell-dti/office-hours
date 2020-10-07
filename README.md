@@ -26,6 +26,7 @@ _Screenshots showing major parts of app_
 <img src="Screenshots/3.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;"> <img src="Screenshots/4.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;">
 
 ## Contributors
+:)
 
 ### 2020-21
 * **Nada Attia** - Software Developer
