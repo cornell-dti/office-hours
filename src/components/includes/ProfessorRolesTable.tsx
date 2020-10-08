@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Dropdown, Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
-
 import { firestore } from '../../firebase';
-import { useCourse, useCourseUsers } from '../../firehooks';
+import { useCourse, useCourseUsers, useMyUser } from '../../firehooks';
 import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions';
 
-const RoleDropdown = ({ user, course }: {
+const RoleDropdown = ({ user, course, isSelf }: {
     readonly user: EnrichedFireUser;
     readonly course: FireCourse;
+    readonly isSelf?: boolean;
 }) => {
     return (
         <Dropdown
@@ -21,6 +21,12 @@ const RoleDropdown = ({ user, course }: {
             defaultValue={user.role}
             onChange={(e, newValue) => {
                 const newValueRole = newValue.value as FireCourseRole;
+                if (isSelf) {
+                    if (user.role !== 'professor') {
+                        changeRole(firestore, user, course, newValue.value as FireCourseRole);
+                    }
+                    return;
+                }
                 if (user.role !== undefined && newValueRole !== user.role) {
                     changeRole(firestore, user, course, newValue.value as FireCourseRole);
                 }
@@ -37,6 +43,8 @@ export default ({ courseId }: { courseId: string }) => {
     const [direction, setDirection] = useState<'descending' | 'ascending'>('ascending');
     const [column, setColumn] = useState<columnT>('email');
     const course = useCourse(courseId);
+
+    const self = useMyUser();
 
     const courseUsers: readonly EnrichedFireUser[] = useCourseUsers(courseId)
         .map(user => ({ ...user, role: user.roles[courseId] || 'student' }));
@@ -106,13 +114,13 @@ export default ({ courseId }: { courseId: string }) => {
                         <button type="button" onClick={importTAButtonOnClick}>Import TAs</button>
                     </Table.Cell>
                 </Table.Row>
-                {course && sortedCourseUsers.map(user => (
-                    <Table.Row key={user.userId}>
-                        <Table.Cell>{user.firstName}</Table.Cell>
-                        <Table.Cell>{user.lastName}</Table.Cell>
-                        <Table.Cell>{user.email}</Table.Cell>
+                {course && sortedCourseUsers.map(u => (
+                    <Table.Row key={u.userId}>
+                        <Table.Cell>{u.firstName}</Table.Cell>
+                        <Table.Cell>{u.lastName}</Table.Cell>
+                        <Table.Cell>{u.email}</Table.Cell>
                         <Table.Cell textAlign="right" className="dropdownCell">
-                            <RoleDropdown user={user} course={course} />
+                            <RoleDropdown user={u} course={course} isSelf={u.email === self?.email ? true : undefined} />
                         </Table.Cell>
                     </Table.Row>
                 ))}
