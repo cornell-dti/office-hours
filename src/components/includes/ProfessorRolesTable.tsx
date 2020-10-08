@@ -19,12 +19,11 @@ const RoleDropdown = ({ ownUser, user, course }: {
                 { key: 2, text: 'TA', value: 'ta' },
                 { key: 3, text: 'Professor', value: 'professor' },
             ]}
+            defaultValue={user.role}
             onChange={(e, newValue) => {
                 const newValueRole = newValue.value as FireCourseRole;
                 if (user.role !== undefined && newValueRole !== user.role) {
-                    if (user.userId !== ownUser?.userId || newValueRole !== "student") {
-                        changeRole(firestore, user, course, newValue.value as FireCourseRole);
-                    }
+                    changeRole(firestore, user, course, newValue.value as FireCourseRole);
                 }
             }}
         />
