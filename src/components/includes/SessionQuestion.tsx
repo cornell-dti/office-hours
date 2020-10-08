@@ -194,9 +194,11 @@ class SessionQuestion extends React.Component<Props, State> {
             <div className="QueueQuestions">
                 <div className="TopBar">
                     {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
-                    <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
-                        {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
-                    </p>
+                    <div>
+                        <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
+                            {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
+                        </p>
+                    </div>
                     {this.props.includeRemove && this.props.modality !== 'virtual' &&
                         <div className="LocationPin">
                             <Icon
