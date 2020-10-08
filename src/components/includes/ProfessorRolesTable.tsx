@@ -5,14 +5,24 @@ import { firestore } from '../../firebase';
 import { useCourse, useCourseUsers, useMyUser } from '../../firehooks';
 import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions';
 
+
+const toDisplayCase = (role: FireCourseRole) => {
+    if (role === 'ta') {
+        return role.toUpperCase();
+    }
+    return (([f, ...rest]) =>
+        rest.reduce((prev, curr) => prev.concat(curr), f.toUpperCase()))(role.split(""));
+}
+
 const RoleDropdown = ({ user, course, isSelf }: {
     readonly user: EnrichedFireUser;
     readonly course: FireCourse;
     readonly isSelf?: boolean;
 }) => {
+    
     return (
         <Dropdown
-            text={user.role}
+            text={toDisplayCase(user.role)}
             options={[
                 { key: 1, text: 'Student', value: 'student' },
                 { key: 2, text: 'TA', value: 'ta' },
@@ -23,12 +33,12 @@ const RoleDropdown = ({ user, course, isSelf }: {
                 const newValueRole = newValue.value as FireCourseRole;
                 if (isSelf) {
                     if (user.role !== 'professor') {
-                        changeRole(firestore, user, course, newValue.value as FireCourseRole);
+                        changeRole(firestore, user, course, newValueRole);
                     }
                     return;
                 }
                 if (user.role !== undefined && newValueRole !== user.role) {
-                    changeRole(firestore, user, course, newValue.value as FireCourseRole);
+                    changeRole(firestore, user, course, newValueRole);
                 }
             }}
         />
