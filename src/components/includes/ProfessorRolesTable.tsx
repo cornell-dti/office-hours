@@ -120,7 +120,11 @@ export default ({ courseId }: { courseId: string }) => {
                         <Table.Cell>{u.lastName}</Table.Cell>
                         <Table.Cell>{u.email}</Table.Cell>
                         <Table.Cell textAlign="right" className="dropdownCell">
-                            <RoleDropdown user={u} course={course} isSelf={u.email === self?.email ? true : undefined} />
+                            <RoleDropdown
+                                user={u}
+                                course={course}
+                                isSelf={u.email === self?.email ? true : undefined}
+                            />
                         </Table.Cell>
                     </Table.Row>
                 ))}
