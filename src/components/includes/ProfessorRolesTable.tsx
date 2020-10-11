@@ -5,10 +5,10 @@ import { firestore } from '../../firebase';
 import { useCourse, useCourseUsers, useMyUser } from '../../firehooks';
 import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions';
 
-const RoleDropdown = ({ user, course, isSelf }: {
+const RoleDropdown = ({ user, course, disabled }: {
     readonly user: EnrichedFireUser;
     readonly course: FireCourse;
-    readonly isSelf?: boolean;
+    readonly disabled?: boolean;
 }) => {
     
     return (
@@ -18,13 +18,13 @@ const RoleDropdown = ({ user, course, isSelf }: {
                 { key: 2, text: 'TA', value: 'ta' },
                 { key: 3, text: 'Professor', value: 'professor' },
             ]}
-            disabled={isSelf}
+            disabled={disabled}
             defaultValue={user.role}
             onChange={(e, newValue) => {
                 const newValueRole = newValue.value as FireCourseRole;
                 
                 // prevents profs from unintentionally demoting other users
-                if (user.role !== undefined && newValueRole !== user.role && !isSelf) {
+                if (user.role !== undefined && newValueRole !== user.role) {
                     changeRole(firestore, user, course, newValueRole);
                 }
             }}
@@ -120,7 +120,7 @@ export default ({ courseId }: { courseId: string }) => {
                             <RoleDropdown
                                 user={u}
                                 course={course}
-                                isSelf={u.email === self?.email ? true : undefined}
+                                disabled={u.email === self?.email}
                             />
                         </Table.Cell>
                     </Table.Row>
