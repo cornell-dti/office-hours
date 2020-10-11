@@ -1,0 +1,14 @@
+{
+  "name": "qmi-backend",
+  "version": "0.0.1",
+  "description": "The admin backend for QueueMeIn.",
+  "main": "dist/src/server.js",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "express": "^4.17.1",
+    "firebase-admin": "^9.2.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.8"
+  }
+}
