@@ -5,15 +5,6 @@ import { firestore } from '../../firebase';
 import { useCourse, useCourseUsers, useMyUser } from '../../firehooks';
 import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions';
 
-
-const toDisplayCase = (role: FireCourseRole) => {
-    if (role === 'ta') {
-        return role.toUpperCase();
-    }
-    return (([f, ...rest]) =>
-        rest.reduce((prev, curr) => prev.concat(curr), f.toUpperCase()))(role.split(""));
-}
-
 const RoleDropdown = ({ user, course, isSelf }: {
     readonly user: EnrichedFireUser;
     readonly course: FireCourse;
@@ -22,7 +13,6 @@ const RoleDropdown = ({ user, course, isSelf }: {
     
     return (
         <Dropdown
-            text={toDisplayCase(user.role)}
             options={[
                 { key: 1, text: 'Student', value: 'student' },
                 { key: 2, text: 'TA', value: 'ta' },
@@ -32,13 +22,9 @@ const RoleDropdown = ({ user, course, isSelf }: {
             defaultValue={user.role}
             onChange={(e, newValue) => {
                 const newValueRole = newValue.value as FireCourseRole;
-                if (isSelf) {
-                    if (user.role !== 'professor') {
-                        changeRole(firestore, user, course, newValueRole);
-                    }
-                    return;
-                }
-                if (user.role !== undefined && newValueRole !== user.role) {
+                
+                // prevents profs from unintentionally demoting other users
+                if (user.role !== undefined && newValueRole !== user.role && !isSelf) {
                     changeRole(firestore, user, course, newValueRole);
                 }
             }}
