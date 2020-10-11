@@ -28,6 +28,7 @@ const RoleDropdown = ({ user, course, isSelf }: {
                 { key: 2, text: 'TA', value: 'ta' },
                 { key: 3, text: 'Professor', value: 'professor' },
             ]}
+            disabled={isSelf}
             defaultValue={user.role}
             onChange={(e, newValue) => {
                 const newValueRole = newValue.value as FireCourseRole;
