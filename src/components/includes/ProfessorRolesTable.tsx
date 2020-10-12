@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { firestore } from '../../firebase';
 import { useCourse, useCourseUsers } from '../../firehooks';
-import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions';
+import { importProfessorsOrTAsFromPrompt, changeRole } from '../../../backend/src/firebasefunctions';
 
 const RoleDropdown = ({ user, course }: {
     readonly user: EnrichedFireUser;

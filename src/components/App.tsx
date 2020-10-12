@@ -29,7 +29,7 @@ import ProfessorPeopleView from './pages/ProfessorPeopleView';
 import CourseEditView from './pages/CourseEditView';
 import CourseSelectionView from './pages/CourseSelectionView';
 import { Analytics } from './includes/Analytics';
-import { userUpload } from '../firebasefunctions';
+import { userUpload } from '../../backend/src/firebasefunctions';
 import { useMyUser, useAllCourses } from '../firehooks';
 
 ReactGA.initialize('UA-123790900-1');

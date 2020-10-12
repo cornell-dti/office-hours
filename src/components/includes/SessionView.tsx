@@ -9,7 +9,7 @@ import UpdateProfile from './UpdateProfile';
 
 import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile } from '../../firehooks';
 import { filterUnresolvedQuestions } from '../../utilities/questions';
-import { updateVirtualLocation } from '../../firebasefunctions';
+import { updateVirtualLocation } from '../../../backend/src/firebasefunctions';
 import { firestore } from '../../firebase';
 // import SessionAlertModal from './SessionAlertModal';
 

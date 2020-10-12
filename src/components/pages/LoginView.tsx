@@ -3,7 +3,7 @@ import { Icon } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
 
 import firebase, { app, firestore } from '../../firebase';
-import { userUpload } from '../../firebasefunctions';
+import { userUpload } from '../../../backend/src/firebasefunctions';
 
 import QMeLogo from '../../media/QLogo2.svg';
 import googleLogo from '../../media/googleLogo.svg';

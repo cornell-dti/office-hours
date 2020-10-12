@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Icon } from 'semantic-ui-react';
-import { logOut } from '../../firebasefunctions';
+import { logOut } from '../../../backend/src/firebasefunctions';
 
 const TopBar = (props: {
     courseId: string;
