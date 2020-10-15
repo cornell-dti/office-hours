@@ -24,6 +24,7 @@ type Props = {
     readonly openingTime: Date;
     readonly haveAnotherQuestion: boolean;
     readonly modality: FireSessionModality;
+    readonly user: FireUser;
 };
 
 type StudentMyQuestionProps = {
@@ -35,17 +36,19 @@ type StudentMyQuestionProps = {
     readonly myUserId: string;
     readonly modality: FireSessionModality;
     readonly studentQuestion: FireQuestion | null;
+    readonly user: FireUser;
 };
 
-const StudentMyQuestion = ({ 
-    questionId, 
+const StudentMyQuestion = ({
+    questionId,
     tags,
     index,
     triggerUndo,
     isPast,
     myUserId,
     modality,
-    studentQuestion
+    studentQuestion,
+    user
 }: StudentMyQuestionProps) => {
     if (studentQuestion == null) {
         return <div />;
@@ -59,6 +62,7 @@ const StudentMyQuestion = ({
                 question={studentQuestion}
                 modality={modality}
                 users={{}}
+                user={user}
                 tags={tags}
                 index={index}
                 isTA={false}
@@ -169,6 +173,7 @@ const SessionQuestionsContainer = (props: Props) => {
             }
             {shownQuestions && myQuestion &&
                 <StudentMyQuestion
+                    user={props.user}
                     questionId={myQuestion.questionId}
                     studentQuestion={myQuestion}
                     modality={props.modality}
@@ -194,6 +199,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         triggerUndo={props.triggerUndo}
                         isPast={props.isPast}
                         myUserId={props.myUserId}
+                        user={props.user}
                     />
                 ))
             }
