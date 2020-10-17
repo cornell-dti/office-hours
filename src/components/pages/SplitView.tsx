@@ -5,6 +5,7 @@ import { Loader } from 'semantic-ui-react';
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import AddQuestion from '../includes/AddQuestion';
+import NotificationModal from '../includes/NotificationModal';
 
 import { useCourse, useSession, useMyUser } from '../../firehooks';
 
@@ -113,15 +114,7 @@ const SplitView = (props: {
 
                             {"Notification" in window &&
                             window?.Notification.permission !== "granted" && (
-                                <div className="warningArea">
-
-                                    <div>
-                                    &#9888;
-                                    </div>
-                                    <div>
-                                        {`Enable notifications to know when it's your turn.`}
-                                    </div>
-                                </div>
+                                <NotificationModal show={activeView !== 'session'} />
                             )}
                             <p className="welcomeMessage">
                                     Welcome{user && ', '}
