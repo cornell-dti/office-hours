@@ -204,8 +204,10 @@ const SessionView = (
                                     <img src={NotifBell} alt="Notification Bell" />
                                     <p>Enable browser notifications to know when it's your turn.</p>
                                 </div>
-                                <button type="button" 
-                                onClick={()=> setShowNotifBanner(false)}>
+                                <button
+                                    type="button" 
+                                    onClick={()=> setShowNotifBanner(false)}
+                                >
                                     <Icon name="x" /></button>
                             </div>
             }
