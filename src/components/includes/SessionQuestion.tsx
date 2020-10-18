@@ -141,7 +141,7 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     toggleComment = () => {
-        this.setState(({ enableEditingComment: enableEditingComment }) =>
+        this.setState(({ enableEditingComment }) =>
             ({ enableEditingComment: !enableEditingComment }));
     }
 
@@ -451,9 +451,9 @@ const EditComment = (props: EditCommentProps) => {
             <Linkify tagName="p">
                 {comment !== "" && comment !== undefined ? comment : "Add a comment..."}
             </Linkify>
-            <a
-                href="#"
-                className="commentEdit"
+            <button
+                type="button"
+                className="link-button commentEdit"
                 onClick={(evt) => {
                     evt.preventDefault();
                     setPrevComment(comment);
@@ -461,7 +461,7 @@ const EditComment = (props: EditCommentProps) => {
                 }}
             >
                 edit
-            </a>
+            </button>
         </div>
     );
 
