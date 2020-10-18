@@ -7,6 +7,7 @@ import { useState } from "react";
 import Linkify from 'linkifyjs/react';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
+import addNotification from 'react-push-notification';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -83,6 +84,28 @@ class SessionQuestion extends React.Component<Props, State> {
         }
     };
 
+    componentDidUpdate(prevProps: Props) {
+        const previousState = prevProps.question
+        const currentState = this.props.question
+        if (previousState.taComment !== currentState.taComment && this.props.myUserId === currentState.askerId) {
+            addNotification({
+                title: 'TA comment',
+                subtitle: 'New TA comment',
+                message: `${currentState.taComment}`,
+                theme: "darkblue",
+                native: true
+            });
+        }
+        if (previousState.studentComment !== currentState.studentComment && this.props.myUserId === currentState.answererId) {
+            addNotification({
+                title: 'Student comment',
+                subtitle: 'New student comment',
+                message: `${currentState.studentComment}`,
+                theme: "darkblue",
+                native: true
+            });
+        }
+    }
 
     retractQuestion = (): void => {
         const batch = firestore.batch();
