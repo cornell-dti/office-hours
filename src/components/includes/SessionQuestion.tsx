@@ -452,6 +452,7 @@ const EditComment = (props: EditCommentProps) => {
                 {comment !== "" && comment !== undefined ? comment : "Add a comment..."}
             </Linkify>
             <button
+                type="button"
                 className="link-button commentEdit"
                 onClick={(evt) => {
                     evt.preventDefault();
