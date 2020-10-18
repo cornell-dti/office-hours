@@ -1,0 +1,43 @@
+.SessionNotification {
+    height: 83px;
+    display: flex;
+    background: #F67D7D;
+
+    button {
+        position: absolute;
+        outline: none; 
+        border: none;
+        background-color: transparent;
+        color: white;
+        height: 45px;
+        left: 96.2%;
+        right: 1%;
+        font-family: Ionicons;
+        font-size: 18px;
+        line-height: 48px;
+    }
+}
+
+.NotificationMessage {
+    display: flex;
+    align-items: center;  
+
+    img {
+        position: absolute;
+        left: 28px;
+    }
+    
+    p {
+        position: absolute;
+        left: 92px; 
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 20px;
+        letter-spacing: 0.642857px;
+        margin: 0;
+        color: #FFFFFF;
+    }
+}
+
+

@@ -141,7 +141,7 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     toggleComment = () => {
-        this.setState(({ enableEditingComment: enableEditingComment }) =>
+        this.setState(({ enableEditingComment }) =>
             ({ enableEditingComment: !enableEditingComment }));
     }
 
@@ -359,15 +359,15 @@ class SessionQuestion extends React.Component<Props, State> {
                         </div>
                         <EditComment
                             onValueChange={(newComment: string) => {
-                                //Set a comment
+                                // Set a comment
                                 this.questionComment(newComment, this.props.isTA);
-                                //Disable editing comment
+                                // Disable editing comment
                                 this.setState({
                                     enableEditingComment: false
                                 });
                             }}
                             onCancel={() => {
-                                //Disable editing comment
+                                // Disable editing comment
                                 this.setState({
                                     enableEditingComment: false
                                 });
