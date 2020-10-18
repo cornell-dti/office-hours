@@ -1,5 +1,6 @@
 .googleLogo {
     float: left;
+    height: 34px;
 }
 
 .loginButtonText {
@@ -15,7 +16,6 @@
 
 .loginButton {
     background-image: linear-gradient(-135deg, #6DB9EA 0%, #668AE9 100%);
-    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.24);
     border-radius: 2px;
     padding: 1px;
     width: 247px;
