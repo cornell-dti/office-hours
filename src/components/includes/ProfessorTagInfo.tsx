@@ -135,7 +135,6 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                 this.props.childTags.forEach(childTag => {
                     const childTagDoc = firestore.collection('tags').doc(childTag.tagId);
                     batch.update(childTagDoc, {
-                        name: this.state.tag.name, 
                         active: this.state.tag.active
                     });
                 })
