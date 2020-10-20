@@ -5,9 +5,9 @@ import * as firebase from 'firebase/app';
 import { useState } from "react";
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
+import addNotification from 'react-push-notification';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
-import addNotification from 'react-push-notification';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -51,6 +51,30 @@ class SessionQuestion extends React.Component<Props, State> {
         };
     }
 
+    componentDidUpdate(prevProps: Props) {
+        const previousState = prevProps.question;
+        const currentState = this.props.question;
+        const user = this.props.myUserId;
+        if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
+            addNotification({
+                title: 'TA comment',
+                subtitle: 'New TA comment',
+                message: `${currentState.taComment}`,
+                theme: "darkblue",
+                native: true
+            });
+        }
+        if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
+            addNotification({
+                title: 'Student comment',
+                subtitle: 'New student comment',
+                message: `${currentState.studentComment}`,
+                theme: "darkblue",
+                native: true
+            });
+        }
+    }
+
     // Given an index from [1..n], converts it to text that is displayed on the
     // question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
@@ -83,29 +107,6 @@ class SessionQuestion extends React.Component<Props, State> {
             }, 1000);
         }
     };
-
-    componentDidUpdate(prevProps: Props) {
-        const previousState = prevProps.question
-        const currentState = this.props.question
-        if (previousState.taComment !== currentState.taComment && this.props.myUserId === currentState.askerId) {
-            addNotification({
-                title: 'TA comment',
-                subtitle: 'New TA comment',
-                message: `${currentState.taComment}`,
-                theme: "darkblue",
-                native: true
-            });
-        }
-        if (previousState.studentComment !== currentState.studentComment && this.props.myUserId === currentState.answererId) {
-            addNotification({
-                title: 'Student comment',
-                subtitle: 'New student comment',
-                message: `${currentState.studentComment}`,
-                theme: "darkblue",
-                native: true
-            });
-        }
-    }
 
     retractQuestion = (): void => {
         const batch = firestore.batch();
@@ -165,7 +166,7 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     toggleComment = () => {
-        this.setState(({ enableEditingComment: enableEditingComment }) =>
+        this.setState(({ enableEditingComment }) =>
             ({ enableEditingComment: !enableEditingComment }));
     }
 
@@ -294,13 +295,13 @@ class SessionQuestion extends React.Component<Props, State> {
                                         question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
                                         <a href={question.location} target="_blank" rel="noopener noreferrer">
                                             Zoom Link
-                                </a>
+                                        </a>
                                     }
-                                        {this.props.isTA &&
+                                    {this.props.isTA &&
                                             question.location &&
                                             question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
                                             question.location
-                                        }</>)}
+                                    }</>)}
                         </div>
                         {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
                             <p className={'Question' + studentCSS}>{question.content}</p>}
@@ -383,15 +384,15 @@ class SessionQuestion extends React.Component<Props, State> {
                         </div>
                         <EditComment
                             onValueChange={(newComment: string) => {
-                                //Set a comment
+                                // Set a comment
                                 this.questionComment(newComment, this.props.isTA);
-                                //Disable editing comment
+                                // Disable editing comment
                                 this.setState({
                                     enableEditingComment: false
                                 });
                             }}
                             onCancel={() => {
-                                //Disable editing comment
+                                // Disable editing comment
                                 this.setState({
                                     enableEditingComment: false
                                 });
@@ -413,7 +414,7 @@ class SessionQuestion extends React.Component<Props, State> {
                         <hr />
                         <p className="Remove" onClick={this.retractQuestion}>
                             <Icon name="close" /> Remove
-                            </p>
+                        </p>
                     </div>
                 }
             </div >
@@ -475,9 +476,9 @@ const EditComment = (props: EditCommentProps) => {
             <Linkify tagName="p">
                 {comment !== "" && comment !== undefined ? comment : "Add a comment..."}
             </Linkify>
-            <a
-                href="#"
-                className="commentEdit"
+            <button
+                type="button"
+                className="link-button commentEdit"
                 onClick={(evt) => {
                     evt.preventDefault();
                     setPrevComment(comment);
@@ -485,7 +486,7 @@ const EditComment = (props: EditCommentProps) => {
                 }}
             >
                 edit
-            </a>
+            </button>
         </div>
     );
 
