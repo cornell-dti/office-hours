@@ -5,6 +5,7 @@ import * as firebase from 'firebase/app';
 import { useState } from "react";
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
+import addNotification from 'react-push-notification';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
 
@@ -48,6 +49,30 @@ class SessionQuestion extends React.Component<Props, State> {
             showDotMenu: false,
             enableEditingComment: false
         };
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        const previousState = prevProps.question;
+        const currentState = this.props.question;
+        const user = this.props.myUserId;
+        if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
+            addNotification({
+                title: 'TA comment',
+                subtitle: 'New TA comment',
+                message: `${currentState.taComment}`,
+                theme: "darkblue",
+                native: true
+            });
+        }
+        if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
+            addNotification({
+                title: 'Student comment',
+                subtitle: 'New student comment',
+                message: `${currentState.studentComment}`,
+                theme: "darkblue",
+                native: true
+            });
+        }
     }
 
     // Given an index from [1..n], converts it to text that is displayed on the
@@ -132,7 +157,7 @@ class SessionQuestion extends React.Component<Props, State> {
 
     questionComment = (newComment: string, isTA: boolean) => {
         let update: Partial<FireQuestion>
-        if (isTA){
+        if (isTA) {
             update = { taComment: newComment };
         } else {
             update = { studentComment: newComment };
@@ -266,33 +291,33 @@ class SessionQuestion extends React.Component<Props, State> {
                             {
                                 (
                                     <>{this.props.isTA &&
-                                question.location &&
-                                question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
-                                <a href={question.location} target="_blank" rel="noopener noreferrer">
-                                    Zoom Link
-                                </a>
+                                        question.location &&
+                                        question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
+                                        <a href={question.location} target="_blank" rel="noopener noreferrer">
+                                            Zoom Link
+                                        </a>
                                     }
                                     {this.props.isTA &&
-                                question.location &&
-                                question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
-                                question.location
+                                            question.location &&
+                                            question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
+                                            question.location
                                     }</>)}
                         </div>
                         {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
-                        <p className={'Question' + studentCSS}>{question.content}</p>}
+                            <p className={'Question' + studentCSS}>{question.content}</p>}
                     </div>
                     <div className="RightBar">
                         <button className="commentBtn" onClick={this.toggleComment} type="button">
-                            <Icon className="large" name="comment outline"/>
+                            <Icon className="large" name="comment outline" />
                         </button>
                     </div>
                 </div>
                 {(question.studentComment || question.taComment) &&
-                <CommentBox
-                    studentComment={question.studentComment}
-                    taComment={question.taComment}
-                    studentCSS={studentCSS}
-                />
+                    <CommentBox
+                        studentComment={question.studentComment}
+                        taComment={question.taComment}
+                        studentCSS={studentCSS}
+                    />
                 }
                 <div className="BottomBar">
                     {this.props.isTA && <span className="Spacer" />}
@@ -359,15 +384,15 @@ class SessionQuestion extends React.Component<Props, State> {
                         </div>
                         <EditComment
                             onValueChange={(newComment: string) => {
-                                //Set a comment
+                                // Set a comment
                                 this.questionComment(newComment, this.props.isTA);
-                                //Disable editing comment
+                                // Disable editing comment
                                 this.setState({
                                     enableEditingComment: false
                                 });
                             }}
                             onCancel={() => {
-                                //Disable editing comment
+                                // Disable editing comment
                                 this.setState({
                                     enableEditingComment: false
                                 });
@@ -377,7 +402,7 @@ class SessionQuestion extends React.Component<Props, State> {
                     </div>
                 }
                 {
-                    question.answererLocation  && <>
+                    question.answererLocation && <>
                         <Button className="JoinButton" target="_blank" href={question.answererLocation}>
                             Join Session
                         </Button>
@@ -385,12 +410,12 @@ class SessionQuestion extends React.Component<Props, State> {
                 }
                 {
                     this.props.includeRemove && !this.props.isPast &&
-                        <div className="Buttons">
-                            <hr />
-                            <p className="Remove" onClick={this.retractQuestion}>
-                                <Icon name="close" /> Remove
-                            </p>
-                        </div>
+                    <div className="Buttons">
+                        <hr />
+                        <p className="Remove" onClick={this.retractQuestion}>
+                            <Icon name="close" /> Remove
+                        </p>
+                    </div>
                 }
             </div >
         );
@@ -408,13 +433,13 @@ const EditComment = (props: EditCommentProps) => {
     const [comment, setComment] = useState(props.initComment);
     const [prevComment, setPrevComment] = useState(comment);
 
-    if (editable){
+    if (editable) {
         return (
             <div className="commentBody">
                 <textarea
                     placeholder="Add a comment..."
                     className="commentTextArea"
-                    onChange={(evt) => {setComment(evt.target.value)}}
+                    onChange={(evt) => { setComment(evt.target.value) }}
                     value={comment}
                 />
                 <div className="commentBtnHolder">
