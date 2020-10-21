@@ -91,8 +91,14 @@ const SplitView = (props: {
                     user={user}
                     session={session}
                     sessionCallback={handleSessionClick}
-                />
-            }{(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
+                />}
+                
+            {"Notification" in window &&
+            window?.Notification.permission !== "granted" && (
+                <NotificationModal show={activeView !== 'session'} />
+            )}    
+                
+            {(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
                 ((course && user) ? (
                     session ? (
                         <SessionView
@@ -111,11 +117,6 @@ const SplitView = (props: {
                                 context="student"
                                 courseId={props.match.params.courseId}
                             />
-
-                            {"Notification" in window &&
-                            window?.Notification.permission !== "granted" && (
-                                <NotificationModal show={activeView !== 'session'} />
-                            )}
                             <p className="welcomeMessage">
                                     Welcome{user && ', '}
                                 <span className="welcomeName">

@@ -200,15 +200,13 @@ const SessionView = (
             {"Notification" in window &&
                             window?.Notification.permission !== "granted" && showNotifBanner === true &&
                             <div className="SessionNotification">
-                                <div className="NotificationMessage">
-                                    <img src={NotifBell} alt="Notification Bell" />
-                                    <p>Enable browser notifications to know when it's your turn.</p>
-                                </div>
+                                <img src={NotifBell} alt="Notification Bell" />
+                                <p>Enable browser notifications to know when it's your turn.</p>
                                 <button
                                     type="button" 
                                     onClick={()=> setShowNotifBanner(false)}
                                 >
-                                    <Icon name="x" /></button>
+                                    <Icon name="x" /></button>                                
                             </div>
             }
             <SessionInformationHeader

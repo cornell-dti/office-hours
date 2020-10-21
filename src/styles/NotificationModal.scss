@@ -17,34 +17,35 @@
     width: 687px;
     height: 407px;
     border-radius: 8px;
-    display: block;
+    display: flex;
     position: fixed;
     background-color: white;
     text-align: center;
+    flex-direction: column;
 
     img {
         position: absolute;
         height: 64px;
         width: 64px;
         top: 126px;
+        align-self: center;
     }
 
     p { 
-        position: relative;
+        align-self: center;
+        position: absolute;
         width: 353px;
-        height: 58px;
-        left: 167px;
         top: 224px;
         font-family: Roboto;
         font-style: normal;
         font-weight: 500;
         font-size: 25px;
         line-height: 29px;
-        text-align: center;
         color: #5599DB;
     }
 
     button {
+        align-self: flex-end;
         height: 45px;
         left: 74.14%;
         right: 24.61%;
@@ -57,8 +58,19 @@
         outline: none;
         background-color: transparent;
         border: none;
-
     }
     
+}
+
+
+@media only screen and (max-width: $mobile-breakpoint) {
+    .NotificationModalVisible {
+        width: 80%;
+
+        p {
+            font-size: 22px;
+            width: 80%;
+        }
+    }
 }
 
