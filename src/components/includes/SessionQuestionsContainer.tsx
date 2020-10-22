@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
 import SessionQuestion from './SessionQuestion';
+import addNotification from 'react-push-notification';
 import { useAskerQuestions } from '../../firehooks';
 
 const SHOW_FEEDBACK_QUEUE = 4;
@@ -110,10 +111,11 @@ const SessionQuestionsContainer = (props: Props) => {
 
     // Only display the top 10 questions on the queue
     const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN));
+
     // Make sure that the data has loaded and user has a question
     if (shownQuestions && myQuestion) {
         // Get user's position in queue (0 indexed)
-        const myQuestionIndex = allQuestions.indexOf(myQuestion);
+        const myQuestionIndex = allQuestions.findIndex(elt => elt.questionId === myQuestion.questionId);
         // Update tab with user position
         document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
         // if user is up and we haven't already sent a notification, send one.
@@ -121,8 +123,10 @@ const SessionQuestionsContainer = (props: Props) => {
             window.localStorage.setItem('questionUpNotif', 'sent');
             setSentNotification(true);
             try {
-                const n = new Notification('Your question is up!');
-                setTimeout(n.close.bind(n), 4000);
+                addNotification({
+                    title: 'Your question is up!',
+                    native: true
+                });
             } catch (error) {
                 // Do nothing. iOS crashes because Notification isn't defined
             }
