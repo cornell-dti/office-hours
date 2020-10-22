@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
-import SessionQuestion from './SessionQuestion';
 import addNotification from 'react-push-notification';
+import SessionQuestion from './SessionQuestion';
 import { useAskerQuestions } from '../../firehooks';
 
 const SHOW_FEEDBACK_QUEUE = 4;
