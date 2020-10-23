@@ -28,6 +28,7 @@ $mobile-breakpoint: 920px;
 @import "./session/SessionQuestionsContainer";
 @import "./session/TASessionView";
 @import "./session/SessionAlertModal";
+@import "./session/SessionNotification";
 
 // Login
 @import "./login/LoginView";
@@ -35,6 +36,7 @@ $mobile-breakpoint: 920px;
 
 // Split
 @import "./SplitView";
+@import "./NotificationModal";
 
 // Multiple views
 @import "./TopBar";

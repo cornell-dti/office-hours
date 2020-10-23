@@ -11,6 +11,7 @@ import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfil
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 import { updateVirtualLocation } from '../../firebasefunctions';
 import { firestore } from '../../firebase';
+import NotifBell from '../../media/notifBellWhite.svg';
 // import SessionAlertModal from './SessionAlertModal';
 
 type Props = {
@@ -54,6 +55,7 @@ const SessionView = (
     });
 
     const [prevQuestSet, setPrevQuestSet] = useState(new Set(questions.map(q => q.questionId)));
+    const [showNotifBanner, setShowNotifBanner] = useState(true);
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
 
@@ -194,6 +196,18 @@ const SessionView = (
                     context="session"
                     courseId={course.courseId}
                 />
+            }
+            {"Notification" in window &&
+                            window?.Notification.permission !== "granted" && showNotifBanner === true &&
+                            <div className="SessionNotification">
+                                <img src={NotifBell} alt="Notification Bell" />
+                                <p>Enable browser notifications to know when it's your turn.</p>
+                                <button
+                                    type="button" 
+                                    onClick={()=> setShowNotifBanner(false)}
+                                >
+                                    <Icon name="x" /></button>                                
+                            </div>
             }
             <SessionInformationHeader
                 session={session}
