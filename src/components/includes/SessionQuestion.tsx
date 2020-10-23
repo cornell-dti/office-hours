@@ -230,7 +230,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                 alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
                             />
                             <span className="Name">
-                                {asker.firstName + ' ' + asker.lastName}
+                                {asker.firstName + ' ' + asker.lastName + ' (' + asker.email.slice(0,asker.email.indexOf('@')) + ')'}
                                 {question.status === 'assigned' &&
                                     <>
                                         <span className="assigned"> is assigned
