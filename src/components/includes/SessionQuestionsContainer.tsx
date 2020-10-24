@@ -109,6 +109,8 @@ const SessionQuestionsContainer = (props: Props) => {
         return null;
     }, [myQuestions]);
 
+    const myQuestionIndex = allQuestions.find(question => question.questionId === myQuestion?.questionId)   
+
     // Only display the top 10 questions on the queue
     const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN));
 
@@ -175,14 +177,14 @@ const SessionQuestionsContainer = (props: Props) => {
                     This queue has closed and is no longer accepting new questions.
                 </div>
             }
-            {shownQuestions && myQuestion &&
+            {shownQuestions && myQuestion && myQuestionIndex &&
                 <StudentMyQuestion
                     user={props.user}
                     questionId={myQuestion.questionId}
                     studentQuestion={myQuestion}
                     modality={props.modality}
                     tags={props.tags}
-                    index={allQuestions.indexOf(myQuestion)}
+                    index={allQuestions.indexOf(myQuestionIndex)}
                     triggerUndo={props.triggerUndo}
                     isPast={props.isPast}
                     myUserId={props.myUserId}
