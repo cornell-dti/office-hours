@@ -15,8 +15,11 @@ type Props = {
 };
 
 const getPercentage = (proportion: number, total: number) => {
+    if (total === 0){
+        return "- %";
+    }
     const pct = proportion / total * 100;
-    return pct.toFixed(1) + "%"
+    return pct.toFixed(1) + "%";
 }
 
 const formatAvgTime = (rawTimeSecs: number) => {
@@ -25,7 +28,10 @@ const formatAvgTime = (rawTimeSecs: number) => {
     const timeHours = Math.floor(timeMins / 60);
     const timeDispSecs = timeSecs - timeMins * 60;
     const timeDispMins = timeMins - timeHours * 60;
-    if (timeMins === 0){
+    if (isNaN(timeSecs)){
+        return "No information available";
+    }
+    else if (timeMins === 0){
         return timeDispSecs + " s"
     } else if (timeHours === 0){
         return timeDispMins + " mins " + timeDispSecs + " s"
@@ -75,7 +81,7 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                         Average Wait Time: {avgWaitTime} <br/>
                         Average Resolve Time: {avgResolveTime} <br/>
                     </p>
-                    <p>{session.title || (<>
+                    <p className="Title">{session.title || (<>
                         Held by
                         <span className="black">
                             {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(', ')}

@@ -20,7 +20,7 @@ exports.onQuestionCreate = functions.firestore
         // Increment total number of questions of relevant session
         const increment = admin.firestore.FieldValue.increment(1);
         return db.doc(`sessions/${sessionId}`).update({
-            totalQuestions: increment
+            totalQuestions: increment,
         });
     });
 
@@ -38,19 +38,19 @@ questionStatusNumbers.set("no-show", [0, 0, 0]);
 exports.onQuestionUpdate = functions.firestore
     .document('questions/{questionId}')
     .onUpdate((change) => {
-        const newQuestion: FireQuestion = <FireQuestion> change.after.data()!;
-        const prevQuestion: FireQuestion = <FireQuestion> change.before.data()!;
+        const newQuestion: FireQuestion = change.after.data() as FireQuestion;
+        const prevQuestion: FireQuestion = change.before.data() as FireQuestion;
 
-        //Derive session ID
+        // Derive session ID
         const sessionId = newQuestion.sessionId;
 
-        //Derive changes in counts
+        // Derive changes in counts
         const newStatus = newQuestion.status;
         const prevStatus = prevQuestion.status;
         const newNumbers = questionStatusNumbers.get(newStatus)!;
         const prevNumbers = questionStatusNumbers.get(prevStatus)!;
 
-        //Grab number of changes
+        // Grab number of changes
         const numQuestionChange = newNumbers[0] - prevNumbers[0];
         const numAssignedChange = newNumbers[1] - prevNumbers[1];
         const numResolvedChange = newNumbers[2] - prevNumbers[2];
@@ -59,27 +59,30 @@ exports.onQuestionUpdate = functions.firestore
         let resolveTimeChange = 0;
 
         // Derive timing changes (changes from assigned to unassigned)
-        if (numAssignedChange == 1){
+        if (numAssignedChange === 1 && newQuestion.timeAssigned !== undefined){
             // Add new time addressed
-            waitTimeChange = newQuestion.timeAssigned!.seconds - newQuestion.timeEntered.seconds;
+            waitTimeChange = newQuestion.timeAssigned.seconds - newQuestion.timeEntered.seconds;
         }
-        else if (numAssignedChange == -1){
+        else if (numAssignedChange === -1 && prevQuestion.timeAssigned !== undefined){
             // Subtract previous time addressed
-            waitTimeChange = prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned!.seconds;
+            waitTimeChange = prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds;
         }
 
         // Derive timing changes (changes from assigned to resolved)
-        if (numResolvedChange == 1){
-            resolveTimeChange = newQuestion.timeAddressed!.seconds - newQuestion.timeAssigned!.seconds;
+        if (numResolvedChange === 1  && newQuestion.timeAssigned !== undefined){
+            resolveTimeChange = newQuestion.timeAddressed!.seconds - newQuestion.timeAssigned.seconds;
         }
-        else if (numResolvedChange == -1){
-            resolveTimeChange = prevQuestion.timeAssigned!.seconds - prevQuestion.timeAddressed!.seconds;
+        else if (numResolvedChange === -1
+            && prevQuestion.timeAssigned !== undefined
+            && prevQuestion.timeAddressed !== undefined
+        ){
+            resolveTimeChange = prevQuestion.timeAssigned.seconds - prevQuestion.timeAddressed.seconds;
         }
 
         // Log for debugging
-        /*console.log(`Status change from ${prevStatus} to ${newStatus}. Changes:
+        /* console.log(`Status change from ${prevStatus} to ${newStatus}. Changes:
             ${numQuestionChange} ${numAssignedChange} ${numResolvedChange}
-            ${waitTimeChange} ${resolveTimeChange}`);*/
+            ${waitTimeChange} ${resolveTimeChange}`); */
 
         // Update relevant statistics in database
         return db.doc(`sessions/${sessionId}`).update({
