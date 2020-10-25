@@ -51,8 +51,8 @@ const ProfessorOHInfo = (props: {
                     ? 'This session has already passed!'
                     : '');
             setTitle(session.title);
-            setModality(session.modality === "virtual" ? 
-                Modality.VIRTUAL :session.modality === "hybrid" ? 
+            setModality(session.modality === "virtual" ?
+                Modality.VIRTUAL :session.modality === "hybrid" ?
                     Modality.HYBRID : Modality.INPERSON);
         }
     }, [session]);
@@ -187,7 +187,7 @@ const ProfessorOHInfo = (props: {
         }
 
         const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
-    
+
         const sessionLocation = modality !== Modality.VIRTUAL ? {
             building: locationBuildingSelected || '',
             room: locationRoomNumSelected || '',
@@ -198,6 +198,11 @@ const ProfessorOHInfo = (props: {
             endTime: endTimestamp,
             startTime: startTimestamp,
             tas: taDocuments,
+            totalQuestions: 0,
+            assignedQuestions: 0,
+            resolvedQuestions: 0,
+            totalWaitTime: 0,
+            totalResolveTime: 0,
             title,
             ...sessionLocation
         };
@@ -313,7 +318,7 @@ const ProfessorOHInfo = (props: {
                 <div className="row">
                     <p className="description">
                         {
-                            modality === Modality.VIRTUAL ? 
+                            modality === Modality.VIRTUAL ?
                                 'In a virtual session each TA can provide their own "Virtual Location" '+
                                 '(e.g. Zoom Link, Google Meet Link)' +
                                 ' which is provided to the student when the TA is assigned to them.'
@@ -441,11 +446,11 @@ const ProfessorOHInfo = (props: {
                                     // eslint-disable-next-line no-alert
                                     alert(
                                         'We\'re unable to save your changes at this time, ' +
-                                        'if you reach out to us at queuemein@cornelldti.org ' + 
+                                        'if you reach out to us at queuemein@cornelldti.org ' +
                                         'we\'ll be happy to assist you further.'
                                     );
                                 }
-                                
+
                                 // eslint-disable-next-line no-console
                                 console.error(err);
                             });

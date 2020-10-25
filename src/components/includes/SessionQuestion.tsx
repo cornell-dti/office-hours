@@ -127,6 +127,7 @@ class SessionQuestion extends React.Component<Props, State> {
         const questionUpdate: Partial<FireQuestion> = {
             status: 'assigned',
             answererId: this.props.myUserId,
+            timeAssigned: firebase.firestore.Timestamp.now(),
             ...(this.props.virtualLocation ? { answererLocation: this.props.virtualLocation } : {})
         };
         batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);

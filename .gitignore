@@ -9,15 +9,20 @@ node_modules
 # production
 build
 src/styles/index.min.css
+functions/lib
 
 # misc
 .DS_Store
 .env.local
 .env.test.local
 .env.production.local
+.env.development.local
+.vscode
+.firebase
 
 # all folders and files beginning with a period
-.*
+
+
 ## Exceptions
 !.github/
 !.eslintrc.json

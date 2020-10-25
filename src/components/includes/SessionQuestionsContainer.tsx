@@ -10,6 +10,8 @@ const SHOW_FEEDBACK_QUEUE = 4;
 const NUM_QUESTIONS_SHOWN = 20;
 
 type Props = {
+    //Session used to update TAs on question answering
+    readonly session: FireSession;
     readonly isTA: boolean;
     // Note that these questions are sorted by time asked
     readonly questions: readonly FireQuestion[];
@@ -18,7 +20,6 @@ type Props = {
     readonly myUserId: string;
     readonly myVirtualLocation?: string;
     readonly handleJoinClick: Function;
-    readonly session: FireSession;
     readonly triggerUndo: Function;
     readonly isOpen: boolean;
     readonly isPast: boolean;

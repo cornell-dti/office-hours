@@ -203,10 +203,10 @@ const SessionView = (
                                 <img src={NotifBell} alt="Notification Bell" />
                                 <p>Enable browser notifications to know when it's your turn.</p>
                                 <button
-                                    type="button" 
+                                    type="button"
                                     onClick={()=> setShowNotifBanner(false)}
                                 >
-                                    <Icon name="x" /></button>                                
+                                    <Icon name="x" /></button>
                             </div>
             }
             <SessionInformationHeader
@@ -247,9 +247,9 @@ const SessionView = (
             }
             {/* FUTURE_TODO - Just pass in the session and not a bunch of bools */}
             <SessionQuestionsContainer
+                session={session}
                 isTA={isTa}
                 modality={session.modality}
-                session={session}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
                 questions={questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
                 users={users}

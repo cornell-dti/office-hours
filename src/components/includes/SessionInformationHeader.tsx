@@ -14,11 +14,42 @@ type Props = {
     isDesktop: boolean;
 };
 
+const getPercentage = (proportion: number, total: number) => {
+    if (total === 0){
+        return "- %";
+    }
+    const pct = proportion / total * 100;
+    return pct.toFixed(1) + "%";
+}
+
+const formatAvgTime = (rawTimeSecs: number) => {
+    const timeSecs = Math.floor(rawTimeSecs);
+    const timeMins = Math.floor(timeSecs / 60);
+    const timeHours = Math.floor(timeMins / 60);
+    const timeDispSecs = timeSecs - timeMins * 60;
+    const timeDispMins = timeMins - timeHours * 60;
+    if (isNaN(timeSecs)){
+        return "No information available";
+    }
+    else if (timeMins === 0){
+        return timeDispSecs + " s"
+    } else if (timeHours === 0){
+        return timeDispMins + " mins " + timeDispSecs + " s"
+    } else {
+        return timeHours + " h " + timeDispMins + " mins"
+    }
+}
+
 const SessionInformationHeader = ({ session, course, callback, user, isDesktop }: Props) => {
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined), user.userId
     );
+
+    const pctAssigned = getPercentage(session.assignedQuestions, session.totalQuestions);
+    const pctResolved = getPercentage(session.resolvedQuestions, session.totalQuestions);
+    const avgWaitTime = formatAvgTime(session.totalWaitTime / session.assignedQuestions);
+    const avgResolveTime = formatAvgTime(session.totalResolveTime / session.resolvedQuestions);
 
     if (isDesktop) {
         return (
@@ -44,10 +75,16 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                         <Icon name="calendar alternate outline" />
                         <Moment date={session.startTime.seconds * 1000} interval={0} format={'dddd, MMM D'} />
                     </p>
-                    <p>{session.title || (<>
+                    <p>
+                        {session.assignedQuestions} / {session.totalQuestions} Questions Assigned ({pctAssigned}) <br/>
+                        {session.resolvedQuestions} / {session.totalQuestions} Questions Resolved ({pctResolved}) <br/>
+                        Average Wait Time: {avgWaitTime} <br/>
+                        Average Resolve Time: {avgResolveTime} <br/>
+                    </p>
+                    <p className="Title">{session.title || (<>
                         Held by
                         <span className="black">
-                            {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(' and ')}
+                            {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(', ')}
                         </span>
                     </>)}</p>
                 </div>
