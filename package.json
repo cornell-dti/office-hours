@@ -29,7 +29,9 @@
     "rxjs": "^6.5.3",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.1",
-    "source-map-explorer": "^2.1.2"
+    "source-map-explorer": "^2.1.2",
+    "firebase-admin": "^8.10.0",
+    "firebase-functions": "^3.6.1"
   },
   "scripts": {
     "build": "react-scripts build",
