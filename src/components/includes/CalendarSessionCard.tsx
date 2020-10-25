@@ -46,12 +46,14 @@ const CalendarSessionCard = (props: {
                 <div className="Circle" />
             </div>
             <div className="CalendarCard">
-                <div className="Location">
-                    {session.building + ' ' + session.room}
-                </div>
+                {session.modality !== "virtual" ?
+                    <div className="Location">
+                        {session.building + ' ' + session.room}
+                    </div>
+                    : <>Online</>}
                 <div className="Tas">
                     {session.title ||
-                        (tas.length > 2  ? tas.join(', ') : tas.join(' and '))
+                        (tas.length > 2 ? tas.join(', ') : tas.join(' and '))
                     }
                 </div>
                 <div className="Queue">

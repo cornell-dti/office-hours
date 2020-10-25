@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
+import addNotification from 'react-push-notification';
 import SessionQuestion from './SessionQuestion';
-import { firestore } from '../../firebase';
+import { useAskerQuestions } from '../../firehooks';
 
 const SHOW_FEEDBACK_QUEUE = 4;
 // Maximum number of questions to be shown to user
@@ -17,12 +18,16 @@ type Props = {
     readonly users: { readonly [userId: string]: FireUser };
     readonly tags: { readonly [tagId: string]: FireTag };
     readonly myUserId: string;
+    readonly myVirtualLocation?: string;
     readonly handleJoinClick: Function;
+    readonly session: FireSession;
     readonly triggerUndo: Function;
     readonly isOpen: boolean;
     readonly isPast: boolean;
     readonly openingTime: Date;
     readonly haveAnotherQuestion: boolean;
+    readonly modality: FireSessionModality;
+    readonly user: FireUser;
 };
 
 type StudentMyQuestionProps = {
@@ -32,31 +37,22 @@ type StudentMyQuestionProps = {
     readonly triggerUndo: Function;
     readonly isPast: boolean;
     readonly myUserId: string;
+    readonly modality: FireSessionModality;
+    readonly studentQuestion: FireQuestion | null;
+    readonly user: FireUser;
 };
 
-const StudentMyQuestion = ({ questionId, tags, index, triggerUndo, isPast, myUserId }: StudentMyQuestionProps) => {
-    const [studentQuestion, setStudentQuestion] = React.useState<FireQuestion | undefined>();
-    React.useEffect(
-        () => {
-            return firestore.collection('questions').doc(questionId).onSnapshot(snapshot => {
-                setStudentQuestion({ ...snapshot.data(), questionId: snapshot.id } as FireQuestion);
-            }, () => {
-                // Do nothing when there is an error.
-
-                // Note: there is a race condition going on when adding question happened.
-                // 1. Adding question writes to two collections: questionSlots and questions.
-                // 2. Firebase is smart enough to detect that adding those document will eventually
-                //    succeed, so it adds the document to the local database and triggers a new
-                //    onSnapshot with the new questionSlot data.
-                // 3. This hook is trying the full question from the remote. By the time the local
-                //    snapshot is updated, the remote data might not been written yet, so it will
-                //    fail with an error.
-                // 4. This error will eventually go away, since the full question data will eventually
-                //    be written.
-            });
-        },
-        [questionId]
-    );
+const StudentMyQuestion = ({
+    questionId,
+    tags,
+    index,
+    triggerUndo,
+    isPast,
+    myUserId,
+    modality,
+    studentQuestion,
+    user
+}: StudentMyQuestionProps) => {
     if (studentQuestion == null) {
         return <div />;
     }
@@ -67,7 +63,9 @@ const StudentMyQuestion = ({ questionId, tags, index, triggerUndo, isPast, myUse
             <SessionQuestion
                 key={questionId}
                 question={studentQuestion}
+                modality={modality}
                 users={{}}
+                user={user}
                 tags={tags}
                 index={index}
                 isTA={false}
@@ -97,16 +95,29 @@ const SessionQuestionsContainer = (props: Props) => {
     }, []);
 
     const allQuestions = props.questions;
+    const myUserId = props.myUserId;
+    const sessionId = props.session.sessionId;
+
+    const myQuestions = useAskerQuestions(sessionId, myUserId);
 
     // If the user has questions, store them in myQuestion[]
-    const myQuestion = allQuestions && allQuestions.filter(q => q.askerId === props.myUserId);
+    const myQuestion = React.useMemo(() => {
+        if (myQuestions && myQuestions.length > 0) {
+            return myQuestions
+                .sort((a, b) => a.timeEntered.seconds - b.timeEntered.seconds)
+                .find(q => q.status === 'unresolved' || q.status === 'assigned') || null;
+        }
+
+        return null;
+    }, [myQuestions]);
 
     // Only display the top 10 questions on the queue
     const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN));
+
     // Make sure that the data has loaded and user has a question
-    if (shownQuestions && myQuestion && myQuestion.length > 0) {
+    if (shownQuestions && myQuestion) {
         // Get user's position in queue (0 indexed)
-        const myQuestionIndex = allQuestions.indexOf(myQuestion[0]);
+        const myQuestionIndex = allQuestions.findIndex(elt => elt.questionId === myQuestion.questionId);
         // Update tab with user position
         document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
         // if user is up and we haven't already sent a notification, send one.
@@ -114,8 +125,10 @@ const SessionQuestionsContainer = (props: Props) => {
             window.localStorage.setItem('questionUpNotif', 'sent');
             setSentNotification(true);
             try {
-                const n = new Notification('Your question is up!');
-                setTimeout(n.close.bind(n), 4000);
+                addNotification({
+                    title: 'Your question is up!',
+                    native: true
+                });
             } catch (error) {
                 // Do nothing. iOS crashes because Notification isn't defined
             }
@@ -136,18 +149,18 @@ const SessionQuestionsContainer = (props: Props) => {
 
     return (
         <div className="SessionQuestionsContainer splitQuestions" >
-            {!props.isTA && myQuestion && myQuestion.length === 0 && props.isOpen
+            {!props.isTA && !myQuestion && props.isOpen
                 && !props.haveAnotherQuestion &&
                 <div
                     className="SessionJoinButton"
                     onClick={() =>
                         props.handleJoinClick(shownQuestions && myQuestion
-                            && allQuestions.indexOf(myQuestion[0]) > SHOW_FEEDBACK_QUEUE)}
+                            && allQuestions.indexOf(myQuestion) > SHOW_FEEDBACK_QUEUE)}
                 >
                     <p><Icon name="plus" /> Join the Queue</p>
                 </div>
             }
-            {!props.isTA && myQuestion && myQuestion.length === 0 && props.isOpen
+            {!props.isTA && !myQuestion && props.isOpen
                 && props.haveAnotherQuestion &&
                 <>
                     <div className="SessionClosedMessage">
@@ -164,11 +177,14 @@ const SessionQuestionsContainer = (props: Props) => {
                     This queue has closed and is no longer accepting new questions.
                 </div>
             }
-            {shownQuestions && myQuestion && myQuestion.length > 0 &&
+            {shownQuestions && myQuestion &&
                 <StudentMyQuestion
-                    questionId={myQuestion[0].questionId}
+                    user={props.user}
+                    questionId={myQuestion.questionId}
+                    studentQuestion={myQuestion}
+                    modality={props.modality}
                     tags={props.tags}
-                    index={allQuestions.indexOf(myQuestion[0])}
+                    index={allQuestions.indexOf(myQuestion)}
                     triggerUndo={props.triggerUndo}
                     isPast={props.isPast}
                     myUserId={props.myUserId}
@@ -178,15 +194,18 @@ const SessionQuestionsContainer = (props: Props) => {
                 shownQuestions.map((question, i: number) => (
                     <SessionQuestion
                         key={question.questionId}
+                        modality={props.modality}
                         question={question}
                         users={props.users}
                         tags={props.tags}
                         index={i}
+                        virtualLocation={props.myVirtualLocation}
                         isTA={props.isTA}
                         includeRemove={false}
                         triggerUndo={props.triggerUndo}
                         isPast={props.isPast}
                         myUserId={props.myUserId}
+                        user={props.user}
                     />
                 ))
             }

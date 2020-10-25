@@ -9,6 +9,16 @@ type Props = {
     sessionDict: {
         [key: string]: {
             ta: string;
+            online: true;
+            questions: number;
+            answered: number;
+            startHour: string;
+            endHour: string;
+        };
+    } | {
+        [key: string]: {
+            ta: string;
+            online: false;
             questions: number;
             answered: number;
             startHour: string;
@@ -33,7 +43,7 @@ class QuestionsBarChart extends React.Component<Props> {
                         <Icon name="clock" />
                         {session.startHour} - {session.endHour} <br />
                         <Icon name="map marker alternate" />
-                        {session.building} {session.room} <br />
+                        {!session.online ? <>{session.building} {session.room} <br /></> : <>Online<br /></>}
                     </div>
                     <hr />
                     <div className="tooltip-nums">

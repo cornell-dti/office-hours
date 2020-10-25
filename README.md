@@ -28,13 +28,16 @@ _Screenshots showing major parts of app_
 ## Contributors
 
 ### 2020-21
+* **Nada Attia** - Software Developer
 * **Vanessa Wang** - Software Developer
 * **Connie Lei** - Software Developer
 * **Guanqun Wu** - Software Developer
+* **Jeremy Jung** - Software Developer
 * **Ashley Ticzon** - Designer
 * **Jalil Evans** - Designer
 * **Sophia Wang** - Product Manager
 * **Scott Wang** - Technical Project Manager
+* **Vladia Trinh** - Front-end Software Developer
 
 ### 2019-20
 * **Vanessa Wang** - Software Developer

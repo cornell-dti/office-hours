@@ -21,13 +21,13 @@ const ProfessorCalendarRow = (props: {
     courseId: string;
     taOptions: DropdownItemProps[];
     isExpanded: boolean[];
-    handleEditToggle: Function;
+    handleEditToggle: (day: number, row: number, forceClose?: boolean) => void;
     updateDeleteInfo: Function;
     updateDeleteVisible: Function;
 }) => {
 
-    const toggleEdit = (row: number) => {
-        props.handleEditToggle(props.dayNumber, row);
+    const toggleEdit = (row: number, close?: boolean) => {
+        props.handleEditToggle(props.dayNumber, row, close);
     };
 
     const updateDeleteInfo = (dayIndex: number, rowIndex: number) => {
@@ -60,22 +60,22 @@ const ProfessorCalendarRow = (props: {
     };
 
     const rows = props.sessions.map(
-        (row, i) => {
+        (session, i) => {
             return (
                 <tbody
                     className={'Pair ' + props.isExpanded[i] + ' ' + (i % 2 === 0 ? 'odd' : 'even')}
-                    key={props.sessions[i].sessionId}
+                    key={session.sessionId}
                 >
                     <tr className="Preview">
                         <td>
-                            {moment(props.sessions[i].startTime.seconds * 1000).format('h:mm A')}
+                            {moment(session.startTime.seconds * 1000).format('h:mm A')}
                             {' to '}
-                            {moment(props.sessions[i].endTime.seconds * 1000).format('h:mm A')}
+                            {moment(session.endTime.seconds * 1000).format('h:mm A')}
                         </td>
                         <td>
                             {props.sessions[i].tas.map(taId => nameOfTaId(taId)).join(', ')}
                         </td>
-                        <td>{props.sessions[i].building} {props.sessions[i].room}</td>
+                        {session.modality !== "virtual" ? <td>{session.building} {session.room}</td> : <></>}
                         <td>
                             <button
                                 type="button"
@@ -103,7 +103,7 @@ const ProfessorCalendarRow = (props: {
                                 courseId={props.courseId}
                                 isNewOH={false}
                                 taOptions={props.taOptions}
-                                toggleEdit={() => toggleEdit(i)}
+                                toggleEdit={() => toggleEdit(i, true)}
                             />
                             <button
                                 type="button"

@@ -1,0 +1,51 @@
+.SessionNotification {
+    height: 83px;
+    display: flex;
+    background: #F67D7D;
+    flex-direction: row;
+    // justify-content: center;
+    text-align: left;
+
+    button {
+        position: absolute;
+        outline: none; 
+        border: none;
+        background-color: transparent;
+        color: white;
+        font-family: Ionicons;
+        right: 0;
+        font-size: 18px;
+        line-height: 48px;
+    }
+
+    img {
+        align-self: center;
+        position: absolute;
+        left: 28px;
+    }
+    
+    p {
+        align-self: center;
+        position: absolute;
+        width: 70%;
+        left: 92px; 
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 20px;
+        letter-spacing: 0.642857px;
+        margin: 0;
+        color: #FFFFFF;
+    }
+}
+
+@media only screen and (max-width: $mobile-breakpoint) {
+    .SessionNotification {
+        p {
+            width: 60%;
+            font-size: 16px;
+        }
+    }
+}
+
+

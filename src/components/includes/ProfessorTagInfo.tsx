@@ -123,10 +123,22 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         const batch = firestore.batch();
 
         const parentTag = firestore.collection('tags').doc(this.state.tag.tagId);
+
         // deals w/ case where parent tag name is changed
         // no checking yet, like if A1 is changed to A0 but A0 already exists
-        if (this.props.tag && this.state.tag.name !== this.props.tag.name) {
-            batch.update(parentTag, { name: this.state.tag.name });
+        if (this.props.tag) {
+            if (this.state.tag.name !== this.props.tag.name || this.state.tag.active !== this.props.tag.active) {
+                batch.update(parentTag, {
+                    name: this.state.tag.name, 
+                    active: this.state.tag.active
+                });
+                this.props.childTags.forEach(childTag => {
+                    const childTagDoc = firestore.collection('tags').doc(childTag.tagId);
+                    batch.update(childTagDoc, {
+                        active: this.state.tag.active
+                    });
+                })
+            }
         }
 
         // deleted tags

@@ -34,7 +34,7 @@ export const useDoc = <T>(collection: string, id: string | undefined, idField: s
  * comparisons on the objects in the array for memoization. Without storing
  * the query, we re-render and re-fetch infinitely.
  */
-export const useQueryWithLoading = <T, P=string>(
+export const useQueryWithLoading = <T, P = string>(
     queryParameter: P, getQuery: (parameter: P) => firebase.firestore.Query, idField: string
 ): T[] | null => {
     const [result, setResult] = useState<T[] | null>(null);
@@ -52,7 +52,7 @@ export const useQueryWithLoading = <T, P=string>(
     return result;
 };
 
-export const useBatchQueryWithLoading = <T, P=string>(
+export const useBatchQueryWithLoading = <T, P = string>(
     queryParameter: P, getQueries: (parameter: P) => (firebase.firestore.Query)[], idField: string
 ): T[] | null => {
     const [result, setResult] = useState<T[] | null>(null);
@@ -76,7 +76,7 @@ export const useBatchQueryWithLoading = <T, P=string>(
             return () => {
                 effects.forEach(unsubscription => unsubscription());
             }
-            
+
         },
         [queryParameter, getQueries, idField]
     );
@@ -84,13 +84,13 @@ export const useBatchQueryWithLoading = <T, P=string>(
 };
 
 
-export const useQuery = <T, P=string>(
+export const useQuery = <T, P = string>(
     queryParameter: P,
     getQuery: (parameter: P) => firebase.firestore.Query,
     idField: string
 ): T[] => useQueryWithLoading(queryParameter, getQuery, idField) || [];
 
-export const useBatchQuery = <T, P=string>(
+export const useBatchQuery = <T, P = string>(
     queryParameter: P,
     getQuery: (parameter: P) => firebase.firestore.Query[],
     idField: string
@@ -107,6 +107,21 @@ export const useMyUser: () => FireUser | undefined = createUseSingletonObservabl
 const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
     switchMap(() => collectionData<FireCourse>(firestore.collection('courses'), 'courseId'))
 );
+
+const getAskerQuestionsQuery = (sessionId: string, askerId: string) => {
+    return firestore.collection('questions')
+        .where('sessionId', '==', sessionId)
+        .where('askerId', '==', askerId);
+};
+const useParameterizedAskerQuestions = createUseParamaterizedSingletonObservableHook(parameter => {
+    const [sessionId, askerId] = parameter.split('/');
+
+    const query = getAskerQuestionsQuery(sessionId, askerId);
+    return new SingletonObservable([], collectionData<FireQuestion>(query, 'questionId'));
+});
+export const useAskerQuestions = (sessionId: string, askerId: string): null | FireQuestion[] => {
+    return useParameterizedAskerQuestions(`${sessionId}/${askerId}`);
+}
 
 const allCoursesSingletonObservable = new SingletonObservable([], allCoursesObservable);
 
@@ -166,7 +181,6 @@ const courseProfessorOrTaBatchQuery = (professorsOrTas: readonly string[]) => {
         'in',
         block
     ));
-    
 };
 
 export const blockArray = <T>(arr: readonly T[], blockSize: number) => {
@@ -234,6 +248,12 @@ const useParameterizedSessionQuestions = createUseParamaterizedSingletonObservab
 });
 export const useSessionQuestions = (sessionId: string, isTA: boolean): FireQuestion[] =>
     useParameterizedSessionQuestions(`${sessionId}/${isTA}`);
+
+export const useSessionProfile: (
+    userId: string | undefined,
+    sessionId: string | undefined
+) => FireVirtualSessionProfile | undefined =
+    (userId, sessionId) => useDoc(`/sessions/${sessionId}/profiles`, userId, 'userId');
 
 // Primatives
 // Look up a doc in Firebase by ID

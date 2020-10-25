@@ -10,6 +10,7 @@
     "@types/node": "^12.12.15",
     "firebase": "^7.9.1",
     "history": "^4.10.1",
+    "linkifyjs": "^2.1.9",
     "lodash": "^4.17.15",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.21",

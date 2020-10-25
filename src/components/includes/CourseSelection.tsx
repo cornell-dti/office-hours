@@ -24,18 +24,39 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     // On the contrary, onboarding (isNormalEditingMode=false) has only enroll button.
     const [isNormalEditingMode, setEditingMode] = React.useState<boolean>(user.courses.length > 0);
 
-    const currentlyEnrolledCourseIds = new Set(user.courses);
-    const [selectedCourses, setSelectedCourses] = React.useState<FireCourse[]>(
-        allCourses.filter(
+    const [currentCourses, setCurrentCourses] = React.useState<FireCourse[]>([]);
+    const [formerCourses, setFormerCourses] = React.useState<FireCourse[]>([]);
+
+    React.useEffect(() => {
+        const now = Date.now();
+        setCurrentCourses(allCourses.filter((course) => {
+            return course.endDate.seconds * 1000 >= now;
+        }));
+
+        setFormerCourses(allCourses.filter((course) => {
+            return course.endDate.seconds * 1000 < now;
+        }));
+    }, [allCourses]);
+
+    const [currentlyEnrolledCourseIds, setCurrentlyEnrolledCourseIds] = React.useState(new Set<string>());
+
+    React.useEffect(() => {
+        setCurrentlyEnrolledCourseIds(new Set(user.courses));
+    }, [user.courses]);
+
+    const [selectedCourses, setSelectedCourses] = React.useState<FireCourse[]>([]);
+
+    React.useEffect(() => {
+        setSelectedCourses(currentCourses.filter(
             ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] === undefined
-        )
-    );
+        ));
+    }, [user, currentCourses, currentlyEnrolledCourseIds]);
 
     const [selectedCourseIds, setSelectedCourseIds] = React.useState<string[]>([]);
 
     const coursesToEnroll: string[] = [];
     const coursesToUnenroll: string[] = [];
-    allCourses.forEach(({ courseId }) => {
+    currentCourses.forEach(({ courseId }) => {
         if (selectedCourses.some(selected => selected.courseId === courseId)) {
             // The course is selected.
             if (!currentlyEnrolledCourseIds.has(courseId)) {
@@ -92,7 +113,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         // don't add newly-selected courses... add back the newly-deselected courses
         setSelectedCourses([
             ...(selectedCourses.filter(course => !coursesToEnroll.includes(course.courseId))),
-            ...allCourses.filter(course => coursesToUnenroll.includes(course.courseId))
+            ...currentCourses.filter(course => coursesToUnenroll.includes(course.courseId))
         ]);
 
         history.push('/home');
@@ -115,39 +136,78 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     courseId="DUMMY_COURSE_ID"
                 />
                 <div className="selectionContent">
-                    <div className="description">
-                        <div className="title">
-                            {isEdit ? 'Edit Your Classes' : 'My Classes'}
-                        </div>
-                        <div className="subtitle">
-                            {isEdit ? 'Add or remove classes.' : 'Select the office hours you want to view.'}
-                            <div className="EnrolledCourses mobile">{selectedCoursesString}</div>
-                        </div>
-                    </div>
-                    <div className="CourseCards">
-                        {allCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
+                    {currentCourses.length > 0 || isEdit ?
+                        <>
+                            <div className="description">
+                                <div className="title">
+                                    {isEdit ? 'Edit Your Classes' : 'My Classes'}
+                                </div>
+                                <div className="subtitle">
+                                    {isEdit ? 'Add or remove classes.' : 'Select the office hours you want to view.'}
+                                    <div className="EnrolledCourses mobile">{selectedCoursesString}</div>
+                                </div>
+                            </div>
+                            <div className="CourseCards">
+                                {currentCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
                             currentlyEnrolledCourseIds.has(course.courseId)
                             || isEdit)
-                            .map((course) => {
-                                const role = currentlyEnrolledCourseIds.has(course.courseId)
-                                    ? (user.roles[course.courseId] || 'student')
-                                    : undefined;
-                                const selected = selectedCourseIds.includes(course.courseId)
+                                    .map((course) => {
+                                        const role = currentlyEnrolledCourseIds.has(course.courseId)
+                                            ? (user.roles[course.courseId] || 'student')
+                                            : undefined;
+                                        const selected = selectedCourseIds.includes(course.courseId)
                                     || (role !== undefined && role !== 'student');
-                                return (
-                                    <div>
-                                        <CourseCard
-                                            key={course.courseId}
-                                            course={course}
-                                            role={role}
-                                            onSelectCourse={(addCourse) => onSelectCourse(course, addCourse)}
-                                            editable={isEdit}
-                                            selected={selected}
-                                        />
-                                    </div>
-                                );
-                            })}
-                    </div>
+                                        return (
+                                            <div key={course.courseId}>
+                                                <CourseCard
+                                                    course={course}
+                                                    role={role}
+                                                    onSelectCourse={(addCourse) => onSelectCourse(course, addCourse)}
+                                                    editable={isEdit}
+                                                    selected={selected}
+                                                />
+                                            </div>
+                                        );
+                                    })}
+                            </div>
+                        </>
+                        : <><div className="description">
+                            <div className="title">
+                                {'My Classes'}
+                            </div>
+                            <div className="subtitle">
+                                {"You are not enrolled in any courses. Click 'Edit' to enroll in courses."}
+                            </div>
+                        </div></>}
+                    {!isEdit && formerCourses.length > 0 ? <>
+                        <div className="description">
+                            <div className="subtitle">
+                                Former Classes
+                            </div>
+                        </div>
+                        <div className="CourseCards CourseCardsInactive">
+                            {formerCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
+                                currentlyEnrolledCourseIds.has(course.courseId))
+                                .map((course) => {
+                                    const role = currentlyEnrolledCourseIds.has(course.courseId)
+                                        ? (user.roles[course.courseId] || 'student')
+                                        : undefined;
+                                    return (
+                                        <div>
+                                            <CourseCard
+                                                key={course.courseId}
+                                                course={course}
+                                                role={role}
+                                                inactive={true}
+                                                onSelectCourse={() => { }}
+                                                editable={false}
+                                                selected={false}
+                                            />
+                                        </div>
+                                    );
+                                })}
+                        </div>
+                    </> : <></>}
                 </div>
             </div>
             <div className="EnrollBar">
