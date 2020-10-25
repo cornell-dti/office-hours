@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
+import addNotification from 'react-push-notification';
 import SessionQuestion from './SessionQuestion';
 import { useAskerQuestions } from '../../firehooks';
 
@@ -24,6 +25,7 @@ type Props = {
     readonly openingTime: Date;
     readonly haveAnotherQuestion: boolean;
     readonly modality: FireSessionModality;
+    readonly user: FireUser;
 };
 
 type StudentMyQuestionProps = {
@@ -35,17 +37,19 @@ type StudentMyQuestionProps = {
     readonly myUserId: string;
     readonly modality: FireSessionModality;
     readonly studentQuestion: FireQuestion | null;
+    readonly user: FireUser;
 };
 
-const StudentMyQuestion = ({ 
-    questionId, 
+const StudentMyQuestion = ({
+    questionId,
     tags,
     index,
     triggerUndo,
     isPast,
     myUserId,
     modality,
-    studentQuestion
+    studentQuestion,
+    user
 }: StudentMyQuestionProps) => {
     if (studentQuestion == null) {
         return <div />;
@@ -59,6 +63,7 @@ const StudentMyQuestion = ({
                 question={studentQuestion}
                 modality={modality}
                 users={{}}
+                user={user}
                 tags={tags}
                 index={index}
                 isTA={false}
@@ -106,10 +111,11 @@ const SessionQuestionsContainer = (props: Props) => {
 
     // Only display the top 10 questions on the queue
     const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN));
+
     // Make sure that the data has loaded and user has a question
     if (shownQuestions && myQuestion) {
         // Get user's position in queue (0 indexed)
-        const myQuestionIndex = allQuestions.indexOf(myQuestion);
+        const myQuestionIndex = allQuestions.findIndex(elt => elt.questionId === myQuestion.questionId);
         // Update tab with user position
         document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
         // if user is up and we haven't already sent a notification, send one.
@@ -117,8 +123,10 @@ const SessionQuestionsContainer = (props: Props) => {
             window.localStorage.setItem('questionUpNotif', 'sent');
             setSentNotification(true);
             try {
-                const n = new Notification('Your question is up!');
-                setTimeout(n.close.bind(n), 4000);
+                addNotification({
+                    title: 'Your question is up!',
+                    native: true
+                });
             } catch (error) {
                 // Do nothing. iOS crashes because Notification isn't defined
             }
@@ -169,6 +177,7 @@ const SessionQuestionsContainer = (props: Props) => {
             }
             {shownQuestions && myQuestion &&
                 <StudentMyQuestion
+                    user={props.user}
                     questionId={myQuestion.questionId}
                     studentQuestion={myQuestion}
                     modality={props.modality}
@@ -194,6 +203,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         triggerUndo={props.triggerUndo}
                         isPast={props.isPast}
                         myUserId={props.myUserId}
+                        user={props.user}
                     />
                 ))
             }

@@ -1,0 +1,76 @@
+.NotifModalScreen {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(112, 112, 112,0.8);
+    z-index: 9999;
+}
+
+.NotificationModalVisible {
+    width: 687px;
+    height: 407px;
+    border-radius: 8px;
+    display: flex;
+    position: fixed;
+    background-color: white;
+    text-align: center;
+    flex-direction: column;
+
+    img {
+        position: absolute;
+        height: 64px;
+        width: 64px;
+        top: 126px;
+        align-self: center;
+    }
+
+    p { 
+        align-self: center;
+        position: absolute;
+        width: 353px;
+        top: 224px;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 25px;
+        line-height: 29px;
+        color: #5599DB;
+    }
+
+    button {
+        align-self: flex-end;
+        height: 45px;
+        left: 74.14%;
+        right: 24.61%;
+        top: calc(50% - 45px/2 - 209.5px);
+        font-family: Ionicons;
+        font-size: 20px;
+        line-height: 48px;
+        color: #484848;
+        float: right;
+        outline: none;
+        background-color: transparent;
+        border: none;
+    }
+    
+}
+
+
+@media only screen and (max-width: $mobile-breakpoint) {
+    .NotificationModalVisible {
+        width: 80%;
+
+        p {
+            font-size: 22px;
+            width: 80%;
+        }
+    }
+}
+
