@@ -75,7 +75,7 @@ const ProfessorCalendarRow = (props: {
                         <td>
                             {props.sessions[i].tas.map(taId => nameOfTaId(taId)).join(', ')}
                         </td>
-                        {session.modality !== "virtual" ? <td>{session.building} {session.room}</td> : <></>}
+                        {session.modality !== "virtual" ? <td>{session.building} {session.room}</td> : <td/>}
                         <td>
                             <button
                                 type="button"

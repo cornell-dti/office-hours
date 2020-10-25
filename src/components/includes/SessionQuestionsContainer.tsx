@@ -110,6 +110,8 @@ const SessionQuestionsContainer = (props: Props) => {
         return null;
     }, [myQuestions]);
 
+    const myQuestionIndex = allQuestions.findIndex(question => question.questionId === myQuestion?.questionId)   
+
     // Only display the top 10 questions on the queue
     const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN));
 
@@ -183,7 +185,7 @@ const SessionQuestionsContainer = (props: Props) => {
                     studentQuestion={myQuestion}
                     modality={props.modality}
                     tags={props.tags}
-                    index={allQuestions.indexOf(myQuestion)}
+                    index={myQuestionIndex}
                     triggerUndo={props.triggerUndo}
                     isPast={props.isPast}
                     myUserId={props.myUserId}
