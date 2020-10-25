@@ -1,15 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
-//import '../../src/components/types/fireData';
-
-// // Start writing Firebase Functions
-// // https://firebase.google.com/docs/functions/typescript
-//
-// export const helloWorld = functions.https.onRequest((request, response) => {
-//  response.send("Hello from Firebase!");
-// });
-
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
 admin.initializeApp();
@@ -47,8 +38,8 @@ questionStatusNumbers.set("no-show", [0, 0, 0]);
 exports.onQuestionUpdate = functions.firestore
     .document('questions/{questionId}')
     .onUpdate((change) => {
-        const newQuestion = change.after.data()!;
-        const prevQuestion = change.before.data()!;
+        const newQuestion: FireQuestion = <FireQuestion> change.after.data()!;
+        const prevQuestion: FireQuestion = <FireQuestion> change.before.data()!;
 
         //Derive session ID
         const sessionId = newQuestion.sessionId;
@@ -70,19 +61,19 @@ exports.onQuestionUpdate = functions.firestore
         // Derive timing changes (changes from assigned to unassigned)
         if (numAssignedChange == 1){
             // Add new time addressed
-            waitTimeChange = newQuestion.timeAssigned.seconds - newQuestion.timeEntered.seconds;
+            waitTimeChange = newQuestion.timeAssigned!.seconds - newQuestion.timeEntered.seconds;
         }
         else if (numAssignedChange == -1){
             // Subtract previous time addressed
-            waitTimeChange = prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds;
+            waitTimeChange = prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned!.seconds;
         }
 
         // Derive timing changes (changes from assigned to resolved)
         if (numResolvedChange == 1){
-            resolveTimeChange = newQuestion.timeAddressed.seconds - newQuestion.timeAssigned.seconds;
+            resolveTimeChange = newQuestion.timeAddressed!.seconds - newQuestion.timeAssigned!.seconds;
         }
         else if (numResolvedChange == -1){
-            resolveTimeChange = prevQuestion.timeAssigned.seconds - prevQuestion.timeAddressed.seconds;
+            resolveTimeChange = prevQuestion.timeAssigned!.seconds - prevQuestion.timeAddressed!.seconds;
         }
 
         // Log for debugging

@@ -26,8 +26,9 @@
   },
   "functions": {
     "predeploy": [
-      "yarn run lint",
-      "yarn run build"
-    ]
+      "yarn --prefix \"$RESOURCE_DIR\" lint",
+      "yarn --prefix \"$RESOURCE_DIR\" build"
+    ],
+    "source": "functions"
   }
 }

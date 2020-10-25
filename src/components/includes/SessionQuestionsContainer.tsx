@@ -20,7 +20,6 @@ type Props = {
     readonly myUserId: string;
     readonly myVirtualLocation?: string;
     readonly handleJoinClick: Function;
-    readonly session: FireSession;
     readonly triggerUndo: Function;
     readonly isOpen: boolean;
     readonly isPast: boolean;
