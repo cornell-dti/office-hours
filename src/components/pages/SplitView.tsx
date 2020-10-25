@@ -5,6 +5,7 @@ import { Loader } from 'semantic-ui-react';
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import AddQuestion from '../includes/AddQuestion';
+import NotificationModal from '../includes/NotificationModal';
 
 import { useCourse, useSession, useMyUser } from '../../firehooks';
 
@@ -90,8 +91,14 @@ const SplitView = (props: {
                     user={user}
                     session={session}
                     sessionCallback={handleSessionClick}
-                />
-            }{(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
+                />}
+                
+            {"Notification" in window &&
+            window?.Notification.permission !== "granted" && (
+                <NotificationModal show={activeView !== 'session'} />
+            )}    
+                
+            {(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
                 ((course && user) ? (
                     session ? (
                         <SessionView
@@ -110,19 +117,6 @@ const SplitView = (props: {
                                 context="student"
                                 courseId={props.match.params.courseId}
                             />
-
-                            {"Notification" in window &&
-                            window?.Notification.permission !== "granted" && (
-                                <div className="warningArea">
-
-                                    <div>
-                                    &#9888;
-                                    </div>
-                                    <div>
-                                        {`Enable notifications to know when it's your turn.`}
-                                    </div>
-                                </div>
-                            )}
                             <p className="welcomeMessage">
                                     Welcome{user && ', '}
                                 <span className="welcomeName">
@@ -130,7 +124,21 @@ const SplitView = (props: {
                                 </span>
                             </p>
                             <p className="noSessionSelected">
-                                    Please select an office hour from the calendar.
+                                Please select an office hour from the calendar.
+                                <p> </p>
+                                <p> </p>
+
+                                {(Notification !== undefined) && Notification.permission === "granted" && (
+                                    <div className="warningArea">
+
+                                        <div>
+                                        &#9888;
+                                        </div>
+                                        <div>
+                                        Please make sure to enable browser notifications in your system settings.
+                                        </div>
+                                    </div>
+                                )}
                             </p>
                         </section>
                     )

@@ -13,6 +13,9 @@ enum Modality {
     INPERSON = 'in-person'
 }
 
+class OHMutateError extends Error {
+}
+
 const ProfessorOHInfo = (props: {
     session?: FireSession;
     courseId: string;
@@ -48,8 +51,8 @@ const ProfessorOHInfo = (props: {
                     ? 'This session has already passed!'
                     : '');
             setTitle(session.title);
-            setModality(session.modality === "virtual" ? 
-                Modality.VIRTUAL :session.modality === "hybrid" ? 
+            setModality(session.modality === "virtual" ?
+                Modality.VIRTUAL :session.modality === "hybrid" ?
                     Modality.HYBRID : Modality.INPERSON);
         }
     }, [session]);
@@ -117,12 +120,12 @@ const ProfessorOHInfo = (props: {
     const mutateSessionOrSeries = React.useCallback((): Promise<void> => {
         const startMomentTime = startTime;
         if (startMomentTime === undefined) {
-            return Promise.reject(new Error("No start time."));
+            return Promise.reject(new OHMutateError("No start time selected."));
         }
         const startTimestamp = Timestamp.fromDate(startMomentTime.toDate());
         const endMomentTime = endTime;
         if (endMomentTime === undefined) {
-            return Promise.reject(new Error("No end time."));
+            return Promise.reject(new OHMutateError("No end time selected."));
         }
         const endTimestamp = Timestamp.fromDate(endMomentTime.toDate());
 
@@ -146,8 +149,14 @@ const ProfessorOHInfo = (props: {
                     title,
                 }
             } else {
-                if ((locationBuildingSelected === undefined || locationRoomNumSelected === undefined)) {
-                    return Promise.reject(new Error("No location for non-virtual session."));
+                if (modality === Modality.INPERSON) {
+                    if (!locationBuildingSelected) {
+                        return Promise.reject(new OHMutateError("No building provided!"));
+                    }
+
+                    if (!locationRoomNumSelected) {
+                        return Promise.reject(new OHMutateError("No room provided!"));
+                    }
                 }
 
                 series = {
@@ -157,15 +166,19 @@ const ProfessorOHInfo = (props: {
                     startTime: startTimestamp,
                     tas: taDocuments,
                     title,
-                    building: locationBuildingSelected,
-                    room: locationRoomNumSelected,
+                    building: locationBuildingSelected || '',
+                    room: locationRoomNumSelected || '',
                 };
             }
 
             if (propsSession) {
                 const seriesId = propsSession.sessionSeriesId;
                 if (seriesId === undefined) {
-                    return Promise.reject(new Error("No session id."));
+                    return Promise.reject(
+                        new OHMutateError(
+                            "This is not a repeating office hour, deselect 'Edit all office hours in this series'."
+                        )
+                    );
                 }
                 return updateSeries(firestore, seriesId, series);
             }
@@ -174,7 +187,7 @@ const ProfessorOHInfo = (props: {
         }
 
         const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
-    
+
         const sessionLocation = modality !== Modality.VIRTUAL ? {
             building: locationBuildingSelected || '',
             room: locationRoomNumSelected || '',
@@ -185,6 +198,11 @@ const ProfessorOHInfo = (props: {
             endTime: endTimestamp,
             startTime: startTimestamp,
             tas: taDocuments,
+            totalQuestions: 0,
+            assignedQuestions: 0,
+            resolvedQuestions: 0,
+            totalWaitTime: 0,
+            totalResolveTime: 0,
             title,
             ...sessionLocation
         };
@@ -300,7 +318,7 @@ const ProfessorOHInfo = (props: {
                 <div className="row">
                     <p className="description">
                         {
-                            modality === Modality.VIRTUAL ? 
+                            modality === Modality.VIRTUAL ?
                                 'In a virtual session each TA can provide their own "Virtual Location" '+
                                 '(e.g. Zoom Link, Google Meet Link)' +
                                 ' which is provided to the student when the TA is assigned to them.'
@@ -329,7 +347,7 @@ const ProfessorOHInfo = (props: {
                     <Icon name="marker" />
                     <input
                         className="long"
-                        placeholder="Building/Location"
+                        placeholder={`Building/Location${modality === Modality.HYBRID ? ' (optional)' : ''}`}
                         value={locationBuildingSelected || ''}
                         onChange={(e) => handleTextField(e, setLocationBuildingSelected)}
                     />
@@ -385,13 +403,12 @@ const ProfessorOHInfo = (props: {
                             readOnly={true}
                         />
                     </div >
-                    <Checkbox
+                    {(props.isNewOH || props.session?.sessionSeriesId != null) && <Checkbox
                         className="datePicker shift"
                         label={props.isNewOH ? 'Repeat weekly' : 'Edit all office hours in this series'}
                         checked={isSeriesMutation}
-                        disabled={props.session ? props.session.sessionSeriesId === null : false}
                         onChange={() => setIsSeriesMutation((old) => !old)}
-                    />
+                    />}
                 </div>
             </div>
             <div className="EditButtons">
@@ -414,14 +431,29 @@ const ProfessorOHInfo = (props: {
                             mutateSessionOrSeries().then(() => {
                                 // eslint-disable-next-line no-console
                                 console.log("Success!");
-                            }).catch(err => {
+
+                                if (props.isNewOH) {
+                                    clearFields()
+                                }
+
+                                props.toggleEdit();
+                            }).catch((err: Error) => {
+                                // TODO(ewlsh): Implement better dialogs and error recovery.
+                                if (err instanceof OHMutateError) {
+                                // eslint-disable-next-line no-alert
+                                    alert(err.message);
+                                } else {
+                                    // eslint-disable-next-line no-alert
+                                    alert(
+                                        'We\'re unable to save your changes at this time, ' +
+                                        'if you reach out to us at queuemein@cornelldti.org ' +
+                                        'we\'ll be happy to assist you further.'
+                                    );
+                                }
+
                                 // eslint-disable-next-line no-console
                                 console.error(err);
-                            }).finally(() => {
-                                (props.isNewOH && clearFields());
-                                props.toggleEdit();
                             });
-
                         }
                     }}
                     disabled={disableProps}

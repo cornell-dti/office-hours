@@ -11,7 +11,10 @@ jobs:
         with:
           node-version: 10.x
       - name: Install
-        run: yarn install
+        run: |
+          yarn install
+          cd functions
+          yarn install
       - name: Lint client
         run: yarn lint
       - name: Type Check

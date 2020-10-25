@@ -15,6 +15,11 @@ interface FireBaseSession {
     tas: string[];
     title?: string;
     sessionId: string;
+    totalQuestions: number;
+    assignedQuestions: number;
+    resolvedQuestions: number;
+    totalWaitTime: number;
+    totalResolveTime: number;
 }
 
 interface FireSessionLocation {
@@ -122,18 +127,21 @@ interface FireQuestion {
     answererId: string;
     content: string;
     taComment?: string;
+    studentComment?: string;
     location?: string;
     answererLocation?: string;
     sessionId: string;
     status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
     timeAddressed?: FireTimestamp;
+    timeAssigned?: FireTimestamp;
     timeEntered: FireTimestamp;
     primaryTag: string;
     secondaryTag: string;
     questionId: string;
 }
 
-type FireQuestionSlot = Pick<FireQuestion, 'askerId' | 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
+type FireQuestionSlot = Pick<FireQuestion, 'askerId' 
+| 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
 
 interface FireTag {
     active: boolean;

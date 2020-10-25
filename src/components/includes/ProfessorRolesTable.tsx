@@ -1,24 +1,33 @@
 import React, { useState } from 'react';
 import { Dropdown, Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
-
 import { firestore } from '../../firebase';
-import { useCourse, useCourseUsers } from '../../firehooks';
+import { useCourse, useCourseUsers, useMyUser } from '../../firehooks';
 import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions';
 
-const RoleDropdown = ({ user, course }: {
+const RoleDropdown = ({ user, course, disabled }: {
     readonly user: EnrichedFireUser;
     readonly course: FireCourse;
+    readonly disabled?: boolean;
 }) => {
+    
     return (
         <Dropdown
-            text={user.role}
             options={[
                 { key: 1, text: 'Student', value: 'student' },
                 { key: 2, text: 'TA', value: 'ta' },
                 { key: 3, text: 'Professor', value: 'professor' },
             ]}
-            onChange={(e, newValue) => changeRole(firestore, user, course, newValue.value as FireCourseRole)}
+            disabled={disabled}
+            defaultValue={user.role}
+            onChange={(e, newValue) => {
+                const newValueRole = newValue.value as FireCourseRole;
+                
+                // prevents profs from unintentionally demoting other users
+                if (user.role !== undefined && newValueRole !== user.role) {
+                    changeRole(firestore, user, course, newValueRole);
+                }
+            }}
         />
     );
 };
@@ -31,6 +40,8 @@ export default ({ courseId }: { courseId: string }) => {
     const [direction, setDirection] = useState<'descending' | 'ascending'>('ascending');
     const [column, setColumn] = useState<columnT>('email');
     const course = useCourse(courseId);
+
+    const self = useMyUser();
 
     const courseUsers: readonly EnrichedFireUser[] = useCourseUsers(courseId)
         .map(user => ({ ...user, role: user.roles[courseId] || 'student' }));
@@ -106,7 +117,11 @@ export default ({ courseId }: { courseId: string }) => {
                         <Table.Cell>{u.lastName}</Table.Cell>
                         <Table.Cell>{u.email}</Table.Cell>
                         <Table.Cell textAlign="right" className="dropdownCell">
-                            <RoleDropdown user={u} course={course} />
+                            <RoleDropdown
+                                user={u}
+                                course={course}
+                                disabled={u.email === self?.email}
+                            />
                         </Table.Cell>
                     </Table.Row>
                 ))}
