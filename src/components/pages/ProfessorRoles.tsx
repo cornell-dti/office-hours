@@ -16,7 +16,12 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
             <TopBar courseId={courseId} user={user} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 <div className="main">
-                    <p className="manageRoles">Manage Roles</p>
+                    <div className="rightHeading">
+                        <p className="manageRoles">Manage Roles</p>
+                        <button type="button" id="importProf">
+                            Import Professors
+                        </button>
+                    </div>
                     <ProfessorRolesTable courseId={courseId} />
                 </div>
             </section>
