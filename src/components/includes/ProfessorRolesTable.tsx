@@ -104,12 +104,12 @@ export default ({ courseId }: { courseId: string }) => {
             </Table.Header>
             <Table.Body>
                 <Table.Row>
-                    <Table.Cell>
+                    {/* <Table.Cell>
                         <button type="button" onClick={importProfessorsButtonOnClick}>Import Professors</button>
                     </Table.Cell>
                     <Table.Cell>
                         <button type="button" onClick={importTAButtonOnClick}>Import TAs</button>
-                    </Table.Cell>
+                    </Table.Cell> */}
                 </Table.Row>
                 {course && sortedCourseUsers.map(u => (
                     <Table.Row key={u.userId}>

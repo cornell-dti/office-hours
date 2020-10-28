@@ -10,11 +10,13 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
     const course = useCourse(courseId);
 
     return (
+        
         <div className="ProfessorView">
             <ProfessorSidebar courseId={courseId} code={course ? course.code : 'Loading'} selected={4} />
             <TopBar courseId={courseId} user={user} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 <div className="main">
+                    <p className="manageRoles">Manage Roles</p>
                     <ProfessorRolesTable courseId={courseId} />
                 </div>
             </section>
