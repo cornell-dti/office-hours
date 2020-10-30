@@ -12,15 +12,17 @@ class ProfessorDelete extends React.Component<Props> {
 
     render() {
         return (
-            <div className={'ProfessorDelete ' + this.props.isDeleteVisible}>
-                <div className="content">
-                    <button type="button" className="x" onClick={() => this.updateDeleteVisible(false)}>
-                        <Icon name="x" />
-                    </button>
-                    {this.props.content}
-                    <button type="button" className="Cancel" onClick={() => this.updateDeleteVisible(false)}>
-                        Cancel
-                    </button>
+            <div className={'ProfessorDeleteScreen ' + this.props.isDeleteVisible}>
+                <div className={'ProfessorDelete ' + this.props.isDeleteVisible}>
+                    <div className="content">
+                        <button type="button" className="x" onClick={() => this.updateDeleteVisible(false)}>
+                            <Icon name="x" />
+                        </button>
+                        {this.props.content}
+                        <button type="button" className="Cancel" onClick={() => this.updateDeleteVisible(false)}>
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
         );
