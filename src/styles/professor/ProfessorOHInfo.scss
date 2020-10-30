@@ -3,6 +3,8 @@
 }
 
 .ProfessorOHInfo {
+    height: 330px;
+    overflow: auto;
     margin-left: 40px;
 
     .icon {
@@ -130,4 +132,13 @@
             border: 1px solid gainsboro;
         }
     }
+}
+
+@media only screen and (max-width: $mobile-breakpoint) {
+    .ProfessorOHInfo {
+        height: 90%;
+        margin-left: 25px;
+        overflow-x: hidden;
+    }
+
 }

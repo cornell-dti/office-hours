@@ -7,12 +7,15 @@
         display: none;
     }
 
+    .ExpandedAddScreen.false {
+        display: none;
+    }
+
     .Add {
         .NewOHButton {
             color: $text-grey;
             background-color: white;
             padding: 15px;
-            border-radius: 3px;
             font-size: 14px;
             box-shadow: 2px 2px 4px 0 rgba(158, 158, 158, 0.5);
             margin-top: 30px;
@@ -25,29 +28,40 @@
         }
     }
 
-    .ExpandedAdd {
-        margin-top: 30px;
-        background-color: white;
+    .ExpandedAddScreen {
+        position: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
         width: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(112, 112, 112,0.8);
+        z-index: 9999;
+    }
+
+    .ExpandedAdd {
+        width: 75%;
+        border-radius: 8px;
+        display: flex;
+        position: fixed;
+        background-color: white;
         text-align: left;
-        box-shadow: 2px 2px 4px 0 rgba(158, 158, 158, 0.5);
-        padding-bottom: 80px;
-
-        .NewOHHeader {
-            border-bottom: 1px solid #d9d9d9;
-
-            .ExpandedNewOHButton {
-                background-color: white;
-                padding: 15px;
-                border-radius: 3px;
-                text-align: left;
-                color: $text-grey;
-
-                .plus.icon {
-                    margin-right: 10px;
-                    color: black;
-                }
-            }
-        }
+        flex-direction: column; 
     }
 }
+
+@media only screen and (max-width: $mobile-breakpoint) {
+    .ExpandedAdd.true {
+        width: 90%;
+    }
+
+    .ProfessorOHInfo {
+        margin: 0 10px;
+    }
+
+}
+

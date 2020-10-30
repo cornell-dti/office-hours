@@ -19,29 +19,25 @@ const ProfessorAddNew = (props: {
                     {text}
                 </button>
             </div>
-            <div className={'ExpandedAdd ' + editVisible}>
-                <div className="NewOHHeader">
-                    <button type="button" className="ExpandedNewOHButton" onClick={() => setEditVisible(false)}>
-                        <Icon name="plus" />
-                        {text}
-                    </button>
+            <div className={'ExpandedAddScreen ' + editVisible}>
+                <div className={'ExpandedAdd ' + editVisible}>
+                    {props.taOptions
+                        ? <ProfessorOHInfo
+                            courseId={props.courseId}
+                            isNewOH={true}
+                            taOptions={props.taOptions}
+                            toggleEdit={() => setEditVisible(false)}
+                            taUserIdsDefault={[]}
+                        />
+                        : <ProfessorTagInfo
+                            isNew={true}
+                            cancelCallback={() => setEditVisible(false)}
+                            courseId={props.courseId}
+                            // RYAN_TODO Figure out how to add tags all at once
+                            childTags={[]}
+                        />
+                    }
                 </div>
-                {props.taOptions
-                    ? <ProfessorOHInfo
-                        courseId={props.courseId}
-                        isNewOH={true}
-                        taOptions={props.taOptions}
-                        toggleEdit={() => setEditVisible(false)}
-                        taUserIdsDefault={[]}
-                    />
-                    : <ProfessorTagInfo
-                        isNew={true}
-                        cancelCallback={() => setEditVisible(false)}
-                        courseId={props.courseId}
-                        // RYAN_TODO Figure out how to add tags all at once
-                        childTags={[]}
-                    />
-                }
             </div>
         </div>
     );
