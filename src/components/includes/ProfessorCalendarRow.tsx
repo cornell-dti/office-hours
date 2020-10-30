@@ -97,23 +97,23 @@ const ProfessorCalendarRow = (props: {
                     </tr>
                     <tr>
                         <td className={'ExpandedEditScreen ' + props.isExpanded[i]}>
-                                <div className={'ExpandedEdit ' + props.isExpanded[i]}>
-                                    <ProfessorOHInfo
+                            <div className={'ExpandedEdit ' + props.isExpanded[i]}>
+                                <ProfessorOHInfo
                                     key={props.sessions[i].sessionId}
                                     session={props.sessions[i]}
                                     courseId={props.courseId}
                                     isNewOH={false}
                                     taOptions={props.taOptions}
                                     toggleEdit={() => toggleEdit(i, true)}
-                                    />
-                                    <button
-                                        type="button"
-                                        className="Bottom Delete"
-                                        onClick={() => updateDeleteInfo(props.dayNumber, i)}
-                                    >
+                                />
+                                <button
+                                    type="button"
+                                    className="Bottom Delete"
+                                    onClick={() => updateDeleteInfo(props.dayNumber, i)}
+                                >
                                         Delete
-                                    </button>
-                                </div>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 </tbody >
