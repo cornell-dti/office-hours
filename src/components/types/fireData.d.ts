@@ -4,7 +4,7 @@ interface FireTimestamp {
     toDate(): Date;
 }
 
-type FireSessionModality = 'in-person' | 'hybrid' | 'virtual';
+type FireSessionModality = 'in-person' | 'hybrid' | 'virtual' | 'review';
 
 interface FireBaseSession {
     modality: FireSessionModality;
@@ -27,6 +27,10 @@ interface FireSessionLocation {
     building: string;
 }
 
+interface FireVirtualLocation {
+    link: string;
+}
+
 interface FireVirtualSession extends FireBaseSession {
     modality: 'virtual';
 }
@@ -43,11 +47,16 @@ interface FireHybridSession extends FireBaseSession, FireSessionLocation {
     room: string;
 }
 
+interface FireReviewSession extends FireBaseSession, FireVirtualLocation {
+    modality: 'review';
+    link: string;
+}
+
 interface FireVirtualSessionProfile {
     virtualLocation?: string;
 }
 
-type FireSession = FireHybridSession | FireInPersonSession | FireVirtualSession;
+type FireSession = FireHybridSession | FireInPersonSession | FireVirtualSession | FireReviewSession;
 
 /** This data is never stored in the database. */
 interface FireBaseSessionSeries {
@@ -76,11 +85,17 @@ interface FireInPersonSessionSeries extends FireBaseSessionSeries, FireSessionLo
     room: string;
 }
 
-type FireSessionSeries = FireVirtualSessionSeries | FireHybridSessionSeries | FireInPersonSessionSeries;
+interface FireReviewSeries extends FireBaseSessionSeries, FireVirtualLocation {
+    modality: 'review';
+    link: string;
+}
+
+type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries | 
+FireInPersonSessionSeries | FireReviewSeries);
 type FireSessionSeriesDefinition =
     Omit<FireVirtualSessionSeries, 'sessionSeriesId'>
     | Omit<FireHybridSessionSeries, 'sessionSeriesId'>
-    | Omit<FireInPersonSessionSeries, 'sessionSeriesId'>;
+    | Omit<FireInPersonSessionSeries, 'sessionSeriesId'> | Omit<FireReviewSeries, 'sessionSeriesId'>;
 
 /** @see FireUser for the enrollment invariant. */
 interface FireCourse {

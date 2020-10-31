@@ -125,6 +125,24 @@ export const createSeries = async (
                 };
 
                 batch.set(db.collection('sessions').doc(), derivedSession);
+            } else if (sessionSeries.modality === "review") {
+                const derivedSession: Omit<FireReviewSession, 'sessionId'> = {
+                    modality: sessionSeries.modality,
+                    sessionSeriesId,
+                    courseId: sessionSeries.courseId,
+                    endTime: firestore.Timestamp.fromDate(sessionEnd),
+                    startTime: firestore.Timestamp.fromDate(sessionStart),
+                    tas: sessionSeries.tas,
+                    title: sessionSeries.title,
+                    totalQuestions: 0,
+                    assignedQuestions: 0,
+                    resolvedQuestions: 0,
+                    totalWaitTime: 0,
+                    totalResolveTime: 0,
+                    link: sessionSeries.link
+                };
+
+                batch.set(db.collection('sessions').doc(), derivedSession);
             } else {
                 const derivedSession: Omit<FireInPersonSession | FireHybridSession, 'sessionId'> = {
                     sessionSeriesId,
@@ -186,6 +204,23 @@ export const updateSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
+            };
+            batch.set(db.collection('sessions').doc(sessionId), newSession);
+        } else if (sessionSeries.modality === "review") {
+            const newSession: Omit<FireReviewSession, 'sessionId'> = {
+                sessionSeriesId,
+                courseId: sessionSeries.courseId,
+                modality: sessionSeries.modality,
+                endTime,
+                startTime,
+                tas: sessionSeries.tas,
+                title: sessionSeries.title,
+                totalQuestions: 0,
+                assignedQuestions: 0,
+                resolvedQuestions: 0,
+                totalWaitTime: 0,
+                totalResolveTime: 0,
+                link: sessionSeries.link
             };
             batch.set(db.collection('sessions').doc(sessionId), newSession);
         } else {

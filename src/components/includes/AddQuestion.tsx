@@ -238,7 +238,7 @@ class AddQuestion extends React.Component<Props, State> {
                                     : <p className="placeHolder">Select a category</p>}
                             </div>
                             <hr />
-                            {this.props.session.modality !== 'virtual' && <> <div className="tagsMiniContainer">
+                            {'building' in this.props.session && <> <div className="tagsMiniContainer">
                                 {<p className="header">
                                     Location or Zoom Link &nbsp;{
                                         this.props.session.modality === 'in-person' && <span
