@@ -70,7 +70,7 @@ const ProfessorOHInfoDelete = ({ course, session, toggleDelete, toggleEdit }: Pr
                         <span>
                             {timeStart} to {timeEnd}
                         </span>
-                        {session.modality !== "virtual" ? <span>
+                        {'building' in session ? <span>
                             {session.building} {session.room}
                         </span> : <></>}
                     </div>

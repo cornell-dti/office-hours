@@ -31,13 +31,13 @@ const formatAvgTime = (rawTimeSecs: number) => {
     if (isNaN(timeSecs)){
         return "No information available";
     }
-    else if (timeMins === 0){
+    if (timeMins === 0){
         return timeDispSecs + " s"
-    } else if (timeHours === 0){
+    } if (timeHours === 0){
         return timeDispMins + " mins " + timeDispSecs + " s"
-    } else {
-        return timeHours + " h " + timeDispMins + " mins"
-    }
+    } 
+    return timeHours + " h " + timeDispMins + " mins"
+    
 }
 
 const SessionInformationHeader = ({ session, course, callback, user, isDesktop }: Props) => {
@@ -63,7 +63,7 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                     />
                 </div>
                 <div className="Details">
-                    {session.modality !== "virtual" ?
+                    {'building' in session ?
                         <p className="Location">{
                             [session.building, session.room]
                                 .map(s => s || '')
@@ -87,6 +87,9 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                             {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(', ')}
                         </span>
                     </>)}</p>
+                    {session.modality === "review" ? <div>
+                        <a href={session.link} target="_blank" rel="noopener noreferrer">Review link</a>
+                    </div> : <></>}
                 </div>
                 <div className="QueueWrap">
                     <div className="QueueInfo">
@@ -111,7 +114,7 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                 </p>
                 <div className="CourseInfo">
                     <div className="CourseDetails">
-                        {session.modality !== 'virtual' ? <span>
+                        {'building' in session ? <span>
                             <p className="Location">{`${session.building} ${session.room}`}</p>
                         </span> : <span>Online</span>}
                         <Moment date={session.startTime.toDate()} interval={0} format={'h:mm A'} />

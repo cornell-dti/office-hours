@@ -225,7 +225,7 @@ class SessionQuestion extends React.Component<Props, State> {
                             {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                         </p>
                     </div>
-                    {this.props.includeRemove && this.props.modality !== 'virtual' &&
+                    {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) &&
                         <div className="LocationPin">
                             <Icon
                                 onClick={this.toggleLocationTooltip}

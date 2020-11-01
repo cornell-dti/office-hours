@@ -46,7 +46,7 @@ const CalendarSessionCard = (props: {
                 <div className="Circle" />
             </div>
             <div className="CalendarCard">
-                {session.modality !== "virtual" ?
+                {'building' in session ?
                     <div className="Location">
                         {session.building + ' ' + session.room}
                     </div>
