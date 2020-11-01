@@ -37,14 +37,17 @@ const ProfessorTagsRow = (props: {
                 </td>
             </tr>
             <tr>
-                <td className={'ExpandedEdit ' + showEdit} colSpan={4}>
-                    <ProfessorTagInfo
-                        isNew={false}
-                        cancelCallback={() => setShowEdit(!showEdit)}
-                        tag={props.tag}
-                        courseId={props.courseId}
-                        childTags={props.childTags}
-                    />
+                
+                <td className={'ExpandedEditScreen ' + showEdit}>
+                    <div className={'ExpandedEdit ' + showEdit}>
+                        <ProfessorTagInfo
+                            isNew={false}
+                            cancelCallback={() => setShowEdit(!showEdit)}
+                            tag={props.tag}
+                            courseId={props.courseId}
+                            childTags={props.childTags}
+                        />
+                    </div>
                 </td>
             </tr>
         </tbody>
