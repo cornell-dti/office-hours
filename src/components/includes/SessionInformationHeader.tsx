@@ -88,7 +88,7 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                         </span>
                     </>)}</p>
                     {session.modality === "review" ? <div>
-                        <a href={session.link}>Review link</a>
+                        <a href={session.link} target="_blank" rel="noopener noreferrer">Review link</a>
                     </div> : <></>}
                 </div>
                 <div className="QueueWrap">
