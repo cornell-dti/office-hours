@@ -19,10 +19,10 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
                     <div className="rightHeading">
                         <p className="manageRoles">Manage Roles</p>
                         <button type="button" id="importProf">
-                            Import Professors
+                            Import Professors/TAs
                         </button>
                     </div>
-                    <ProfessorRolesTable courseId={courseId} />
+                    <ProfessorRolesTable courseId={courseId} isAdminView={false}/>
                 </div>
             </section>
         </div>

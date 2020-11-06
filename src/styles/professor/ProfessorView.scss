@@ -49,15 +49,14 @@
         }
 
         .rightHeading{
-
+            margin-left: 10%;
+            margin-right: 10%;
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             align-items: baseline;
     
             .manageRoles{
-                width: 192px;
                 font-family: Roboto;
-                font-style: normal;
                 font-weight: 500;
                 font-size: 30px;
                 margin-top: 1em;
