@@ -322,14 +322,14 @@ const ProfessorOHInfo = (props: {
                     <Button.Group className="ModalitySelector">
                         {props.isOfficeHour && <div>
                             <Button
-                            active={modality === Modality.VIRTUAL}
-                            onClick={() => setModality(Modality.VIRTUAL)}
-                        >
+                                active={modality === Modality.VIRTUAL}
+                                onClick={() => setModality(Modality.VIRTUAL)}
+                            >
                                                         Virtual
-                        </Button><Button
-                            active={modality === Modality.HYBRID}
-                            onClick={() => setModality(Modality.HYBRID)}
-                        >
+                            </Button><Button
+                                active={modality === Modality.HYBRID}
+                                onClick={() => setModality(Modality.HYBRID)}
+                            >
                                 Hybrid
                             </Button>
                             <Button
@@ -338,7 +338,7 @@ const ProfessorOHInfo = (props: {
                             >
                                 In Person
                             </Button>
-                            </div>}
+                        </div>}
                         {!props.isOfficeHour && <Button
                             active={modality === Modality.REVIEW}
                             onClick={() => setModality(Modality.REVIEW)}

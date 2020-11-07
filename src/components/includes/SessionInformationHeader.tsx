@@ -67,16 +67,17 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                         <p className="Location">{
                             [session.building, session.room]
                                 .map(s => s || '')
-                                .join(' ')}</p> : session.modality === "virtual" ? <p className="Location">Online</p> : <p className="Location">Discussion</p>}
+                                .join(' ')}</p> : session.modality === "virtual" ? <p className="Location">Online</p> : 
+                            <p className="Location">Discussion</p>}
                     <Moment date={session.startTime.seconds * 1000} interval={0} format={'h:mm A'} />
                     <Moment date={session.endTime.seconds * 1000} interval={0} format={' - h:mm A'} />
                     <p className="Date">
                         <Icon name="calendar alternate outline" />
                         <Moment date={session.startTime.seconds * 1000} interval={0} format={'dddd, MMM D'} />
                         {session.modality === "review" ? <div>
-                        <Icon name="video"></Icon>
-                        <a href={session.link} target="_blank" rel="noopener noreferrer">Zoom meeting link</a>
-                    </div> : <></>}
+                            <Icon name="video" />
+                            <a href={session.link} target="_blank" rel="noopener noreferrer">Zoom meeting link</a>
+                        </div> : <></>}
                     </p>
                     
                     <p>
