@@ -262,6 +262,7 @@ const SessionView = (
                 isPast={isPast(session)}
                 openingTime={getOpeningTime(session, course.queueOpenInterval)}
                 haveAnotherQuestion={haveAnotherQuestion}
+                course={course}
             />
             {/* {this.state.showAbsent && !this.state.dismissedAbsent && (
                 <SessionAlertModal

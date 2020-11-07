@@ -4,10 +4,13 @@ import moment from 'moment';
 import addNotification from 'react-push-notification';
 import SessionQuestion from './SessionQuestion';
 import { useAskerQuestions } from '../../firehooks';
+import AddQuestion from '../includes/AddQuestion';
+import { Loader } from 'semantic-ui-react';
 
 const SHOW_FEEDBACK_QUEUE = 4;
 // Maximum number of questions to be shown to user
 const NUM_QUESTIONS_SHOWN = 20;
+const MOBILE_BREAKPOINT = 920;
 
 type Props = {
     // Session used to update TAs on question answering
@@ -27,6 +30,7 @@ type Props = {
     readonly haveAnotherQuestion: boolean;
     readonly modality: FireSessionModality;
     readonly user: FireUser;
+    course: FireCourse;
 };
 
 type StudentMyQuestionProps = {
@@ -151,15 +155,10 @@ const SessionQuestionsContainer = (props: Props) => {
     return (
         <div className="SessionQuestionsContainer splitQuestions" >
             {!props.isTA && !myQuestion && props.isOpen
-                && !props.haveAnotherQuestion &&
-                <div
-                    className="SessionJoinButton"
-                    onClick={() =>
-                        props.handleJoinClick(shownQuestions && myQuestion
-                            && allQuestions.indexOf(myQuestion) > SHOW_FEEDBACK_QUEUE)}
-                >
-                    <p><Icon name="plus" /> Join the Queue</p>
-                </div>
+                && !props.haveAnotherQuestion
+                ? (props.course && props.session ? <AddQuestion session={props.session} course={props.course} mobileBreakpoint={MOBILE_BREAKPOINT} />
+                : <Loader active={true} content={'Loading'} />)
+                : null
             }
             {!props.isTA && !myQuestion && props.isOpen
                 && props.haveAnotherQuestion &&
@@ -169,7 +168,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         To join this queue, please retract your question from the other queue!
                     </div>
                     <div className="SessionJoinButton disabled">
-                        <p><Icon name="plus" /> Join the Queue</p>
+                        <p>Join the Queue</p>
                     </div>
                 </>
             }
@@ -212,10 +211,10 @@ const SessionQuestionsContainer = (props: Props) => {
             }
             {shownQuestions && shownQuestions.length === 0 &&
                 <>
-                    <p className="noQuestionsHeading">
+                    {/* <p className="noQuestionsHeading">
                         {props.isOpen ? 'Queue Currently Empty' :
                             props.isPast ? 'Queue Has Closed' : 'Queue Not Open Yet'}
-                    </p>
+                    </p> */}
                     {!props.isOpen ?
                         (
                             props.isPast ?
@@ -228,9 +227,10 @@ const SessionQuestionsContainer = (props: Props) => {
                                     }!
                                 </p>
                         ) :
-                        !props.isTA
-                            ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
-                            : <p className="noQuestionsWarning">No questions in the queue yet. </p>
+                        null
+                        // !props.isTA
+                        //     ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
+                        //     : <p className="noQuestionsWarning">No questions in the queue yet. </p>
                     }
                 </>
             }

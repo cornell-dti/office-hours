@@ -195,13 +195,12 @@ class AddQuestion extends React.Component<Props, State> {
                 {(this.state.stage < 60 || this.state.width < this.props.mobileBreakpoint) &&
                     <div className="AddQuestion">
                         <div className="queueHeader">
-                            <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
                             <p className="title">Join The Queue</p>
                         </div>
                         <div className="tagsContainer">
                             <hr />
                             <div className="tagsMiniContainer">
-                                <p className="header">Categories</p>
+                                <p className="header">Select a Category</p>
                                 <div className="QuestionTags">
                                     {!selectedPrimary ?
                                         this.state.tags
@@ -224,7 +223,7 @@ class AddQuestion extends React.Component<Props, State> {
                             </div>
                             <hr />
                             <div className="tagsMiniContainer">
-                                <p className="header">Tags</p>
+                                <p className="header">Select a Tag</p>
                                 {selectedPrimary ?
                                     this.state.tags
                                         .filter((tag) => tag.active && tag.level === 2)
@@ -235,7 +234,7 @@ class AddQuestion extends React.Component<Props, State> {
                                             isSelected={selectedSecondary === tag}
                                             onClick={() => this.handleSecondarySelected(tag)}
                                         />))
-                                    : <p className="placeHolder">Select a category</p>}
+                                    : <p className="placeHolder">First select a category</p>}
                             </div>
                             <hr />
                             {'building' in this.props.session && <> <div className="tagsMiniContainer">
@@ -270,9 +269,6 @@ class AddQuestion extends React.Component<Props, State> {
                             <div className="tagsMiniContainer">
                                 <p className="header">
                                     {'Question '}
-                                    <span className={'characterCount ' + (questionCharsLeft <= 0 ? 'warn' : '')} >
-                                        ({questionCharsLeft} character{questionCharsLeft !== 1 && 's'} left)
-                                    </span>
                                 </p>
                                 {this.state.stage >= 40 ?
                                     <textarea

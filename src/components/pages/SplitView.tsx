@@ -143,15 +143,7 @@ const SplitView = (props: {
                         </section>
                     )
                 ) : <Loader active={true} content="Loading" />)}
-            {activeView === 'addQuestion' && <>
-                <div className="modal">
-                    {course && session
-                        ? <AddQuestion session={session} course={course} mobileBreakpoint={MOBILE_BREAKPOINT} />
-                        : <Loader active={true} content={'Loading'} />
-                    }
-                </div>
-                <div className="modalShade" onClick={() => setActiveView('session')} />
-            </>}
+           
         </>
     );
 };
