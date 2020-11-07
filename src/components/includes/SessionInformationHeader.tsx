@@ -67,14 +67,18 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                         <p className="Location">{
                             [session.building, session.room]
                                 .map(s => s || '')
-                                .join(' ')}</p> : <></>}
-                    {session.modality === "virtual" ? <p className="Location">Online</p> : <></>}
+                                .join(' ')}</p> : session.modality === "virtual" ? <p className="Location">Online</p> : <p className="Location">Discussion</p>}
                     <Moment date={session.startTime.seconds * 1000} interval={0} format={'h:mm A'} />
                     <Moment date={session.endTime.seconds * 1000} interval={0} format={' - h:mm A'} />
                     <p className="Date">
                         <Icon name="calendar alternate outline" />
                         <Moment date={session.startTime.seconds * 1000} interval={0} format={'dddd, MMM D'} />
+                        {session.modality === "review" ? <div>
+                        <Icon name="video"></Icon>
+                        <a href={session.link} target="_blank" rel="noopener noreferrer">Zoom meeting link</a>
+                    </div> : <></>}
                     </p>
+                    
                     <p>
                         {session.assignedQuestions} / {session.totalQuestions} Questions Assigned ({pctAssigned}) <br/>
                         {session.resolvedQuestions} / {session.totalQuestions} Questions Resolved ({pctResolved}) <br/>
@@ -87,9 +91,6 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop }
                             {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(', ')}
                         </span>
                     </>)}</p>
-                    {session.modality === "review" ? <div>
-                        <a href={session.link} target="_blank" rel="noopener noreferrer">Review link</a>
-                    </div> : <></>}
                 </div>
                 <div className="QueueWrap">
                     <div className="QueueInfo">

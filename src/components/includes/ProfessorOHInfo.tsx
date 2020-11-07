@@ -24,6 +24,7 @@ const ProfessorOHInfo = (props: {
     taOptions: DropdownItemProps[];
     taUserIdsDefault?: number[];
     toggleEdit: Function;
+    isOfficeHour: boolean;
 }) => {
     const session = props.session || undefined;
 
@@ -36,7 +37,7 @@ const ProfessorOHInfo = (props: {
     const [isSeriesMutation, setIsSeriesMutation] = useState(false);
     const [notification, setNotification] = useState<string | undefined>();
     const [title, setTitle] = useState(session && session.title);
-    const [modality, setModality] = useState(Modality.VIRTUAL);
+    const [modality, setModality] = useState(props.isOfficeHour ? Modality.VIRTUAL : Modality.REVIEW);
 
     React.useEffect(() => {
         if (session) {
@@ -317,32 +318,33 @@ const ProfessorOHInfo = (props: {
         <>
             <div className="ProfessorOHInfo">
                 <div className="row">
-                    Modality
+                    {props.isOfficeHour ? 'Modality' : 'Discussion'}
                     <Button.Group className="ModalitySelector">
-                        <Button
+                        {props.isOfficeHour && <div>
+                            <Button
                             active={modality === Modality.VIRTUAL}
                             onClick={() => setModality(Modality.VIRTUAL)}
                         >
-                            Virtual
-                        </Button>
-                        <Button
+                                                        Virtual
+                        </Button><Button
                             active={modality === Modality.HYBRID}
                             onClick={() => setModality(Modality.HYBRID)}
                         >
-                            Hybrid
-                        </Button>
-                        <Button
-                            active={modality === Modality.INPERSON}
-                            onClick={() => setModality(Modality.INPERSON)}
-                        >
-                            In Person
-                        </Button>
-                        <Button
+                                Hybrid
+                            </Button>
+                            <Button
+                                active={modality === Modality.INPERSON}
+                                onClick={() => setModality(Modality.INPERSON)}
+                            >
+                                In Person
+                            </Button>
+                            </div>}
+                        {!props.isOfficeHour && <Button
                             active={modality === Modality.REVIEW}
                             onClick={() => setModality(Modality.REVIEW)}
                         >
                             Review
-                        </Button>
+                        </Button>}
                     </Button.Group>
                 </div>
                 <div className="row">

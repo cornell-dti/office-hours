@@ -41,6 +41,9 @@ const CalendarSessionCard = (props: {
                 <div className="EndTime">
                     <Moment date={session.endTime.seconds * 1000} interval={0} format={'hh:mm A'} />
                 </div>
+                <div className={(session.modality !== "review" && 'Office') + " Type"}>
+                {session.modality !== 'review' ? 'OH' : 'Discussion'}
+            </div>
             </div>
             <div className={'Indicator ' + props.status}>
                 <div className="Circle" />
@@ -50,7 +53,7 @@ const CalendarSessionCard = (props: {
                     <div className="Location">
                         {session.building + ' ' + session.room}
                     </div>
-                    : <>Online</>}
+                    : session.modality === "review" ? <div className="Location"> Zoom Discussion </div> : <div className="Location">Online</div>}
                 <div className="Tas">
                     {session.title ||
                         (tas.length > 2 ? tas.join(', ') : tas.join(' and '))
