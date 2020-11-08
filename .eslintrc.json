@@ -67,7 +67,7 @@
                 "code": 120
             }
         ],
-        "no-console": "error"
+        "no-console": "off"
     },
     "settings": {
         "import/resolver": {
