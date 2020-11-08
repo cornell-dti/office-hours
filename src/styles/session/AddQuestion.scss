@@ -99,6 +99,7 @@
           font-size: 14.625px;
           line-height: 17px;
           color: #696969;
+          margin-bottom: 14px;
 
             .characterCount {
               color: #717171;
@@ -110,10 +111,11 @@
         }
 
         .placeHolder {
-          font-size: 15px;
-          font-weight: normal;
-          color: #C3C2C2;
-          padding-top: 1px;
+          font-family: Roboto;
+          font-style: normal;
+          font-weight: 300;
+          font-size: 12.675px;
+          color: #BBBBBB;
         }
 
         .placeHolder.text {
@@ -131,22 +133,35 @@
             resize: none;
             margin-top: 3px;
             border: 0.65px solid #979797;
-            
+            box-sizing: border-box;
+            border-radius: 3.25px;
+            height: 78px;
+            outline: none;
 
             @media only screen and (min-width: $mobile-breakpoint) {
-                border: solid 0.7px #979797;
+              border: 0.65px solid #979797;
             }
 
             &::placeholder {
-                color: #545454;
-                font-weight: 300;
+              font-family: Roboto;
+              font-style: normal;
+              font-weight: 300;
+              font-size: 12.675px;
+              color: #BBBBBB;
             }
         }
+        .TextInput:disabled {
+          background-color: transparent;
+        }
+
+
         .TextInput.location {
             width: 100%;
+            height: auto;
             @media only screen and (min-width: $mobile-breakpoint) {
               text-indent: 21px;
               width: 60%;
+              height: auto;
             }
         }
 
@@ -195,8 +210,17 @@
     }
 
     .AddButton.active {
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
         background-color: $brand-primary;
     }
+  }
+}
+
+.secondaryTags.false {
+  .header {
+    display: inline;
+    padding-right: 25px;
+  }
+  .placeHolder {
+    display: inline;
   }
 }

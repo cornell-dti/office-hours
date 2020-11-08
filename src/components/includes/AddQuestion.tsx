@@ -80,7 +80,7 @@ class AddQuestion extends React.Component<Props, State> {
     public handlePrimarySelected = (tag: FireTag | undefined): void => {
         if (this.state.selectedPrimary) {
             if (this.state.selectedPrimary.tagId === tag?.tagId) {
-                this.setState({ stage: 10, selectedPrimary: undefined });
+                this.setState({ stage: 10, selectedPrimary: undefined, selectedSecondary: undefined});
             } else {
                 this.setState({ selectedPrimary: tag, 
                     selectedSecondary: undefined });
@@ -243,7 +243,7 @@ class AddQuestion extends React.Component<Props, State> {
                                 </div>
                             </div>
                             <hr />
-                            <div className="tagsMiniContainer">
+                            <div className={'tagsMiniContainer secondaryTags ' + (!!selectedPrimary)}>
                                 <p className="header">Select a Tag</p>
                                 {selectedPrimary ?
                                     this.state.tags
@@ -289,7 +289,7 @@ class AddQuestion extends React.Component<Props, State> {
                                     : <p className="placeHolder text">Finish selecting tags...</p>}
                             </div>
                             <hr /></>}
-                            <div className="tagsMiniContainer">
+                            <div className={'tagsMiniContainer'} >
                                 <p className="header">
                                     {'Question '}
                                 </p>
@@ -300,10 +300,17 @@ class AddQuestion extends React.Component<Props, State> {
                                         onChange={this.handleUpdateQuestion}
                                         placeholder="What's your question about?"
                                     />
-                                    : (<p className="placeHolder text">{
-                                        !('building' in this.props.session)
-                                            ? "Select a tag..." : "Enter your location..."
-                                    }</p>)}
+                                    : <textarea
+                                        disabled
+                                        className="TextInput question"
+                                        value={this.state.question}
+                                        onChange={this.handleUpdateQuestion}
+                                        placeholder={
+                                            !('building' in this.props.session)
+                                                ? "First select a category and a tag" : "Enter your location..."
+                                        }
+                                    />}
+                                    
                             </div>
                             <div className="addButtonWrapper">
                                 {this.state.stage > 40 ?
