@@ -211,11 +211,7 @@ const SessionQuestionsContainer = (props: Props) => {
             }
             {shownQuestions && shownQuestions.length === 0 &&
                 <>
-                    {/* <p className="noQuestionsHeading">
-                        {props.isOpen ? 'Queue Currently Empty' :
-                            props.isPast ? 'Queue Has Closed' : 'Queue Not Open Yet'}
-                    </p> */}
-                    {!props.isOpen ?
+                    {!props.isOpen &&
                         (
                             props.isPast ?
                                 <p className="noQuestionsWarning">This office hour session has ended.</p> :
@@ -226,8 +222,7 @@ const SessionQuestionsContainer = (props: Props) => {
                                             '' : (' on ' + moment(props.openingTime).format('MMM D'))
                                     }!
                                 </p>
-                        ) :
-                        null
+                        ) 
                         // !props.isTA
                         //     ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
                         //     : <p className="noQuestionsWarning">No questions in the queue yet. </p>

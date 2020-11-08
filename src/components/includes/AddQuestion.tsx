@@ -289,7 +289,7 @@ class AddQuestion extends React.Component<Props, State> {
                                     : <p className="placeHolder text">Finish selecting tags...</p>}
                             </div>
                             <hr /></>}
-                            <div className={'tagsMiniContainer'} >
+                            <div className="tagsMiniContainer">
                                 <p className="header">
                                     {'Question '}
                                 </p>
