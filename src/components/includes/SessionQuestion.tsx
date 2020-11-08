@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Icon, Loader, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import { useState } from "react";
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
@@ -273,7 +273,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                     alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
                                 />
                                 <span className="userInformationName">
-                                    {asker.firstName + ' ' + asker.lastName + 
+                                    {asker.firstName + ' ' + asker.lastName +
                                         ' (' + asker.email.slice(0,asker.email.indexOf('@')) + ')'}
                                     {question.status === 'assigned' &&
                                         <>

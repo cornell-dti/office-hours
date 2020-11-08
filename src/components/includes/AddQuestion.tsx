@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Redirect } from 'react-router';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 
 import SelectedTags from './SelectedTags';
 import SessionAlertModal from './SessionAlertModal';

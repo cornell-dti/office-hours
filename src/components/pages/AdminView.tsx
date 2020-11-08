@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 
 import { useAllCourses, useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
 import { firestore } from '../../firebase';

@@ -7,11 +7,19 @@
     "@nivo/bar": "^0.59.2",
     "@nivo/line": "^0.59.3",
     "@nivo/pie": "^0.59.1",
+    "@types/chai": "^4.2.14",
+    "@types/enzyme": "^3.10.8",
+    "@types/enzyme-adapter-react-16": "^1.0.6",
+    "@types/mocha": "^8.0.3",
     "@types/node": "^12.12.15",
-    "firebase": "^7.9.1",
+    "chai": "^4.2.0",
+    "firebase": "^8.0.1",
+    "firebase-admin": "^9.3.0",
+    "firebase-functions": "^3.11.0",
     "history": "^4.10.1",
     "linkifyjs": "^2.1.9",
     "lodash": "^4.17.15",
+    "mocha": "^8.2.1",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.21",
     "react": "^16.8.0",
@@ -30,15 +38,14 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.1",
     "source-map-explorer": "^2.1.2",
-    "firebase-admin": "^8.10.0",
-    "firebase-functions": "^3.6.1"
+    "ts-node": "^9.0.0"
   },
   "scripts": {
     "build": "react-scripts build",
     "build:staging": "REACT_APP_IS_STAGING=true react-scripts build",
     "start": "react-scripts start",
     "s": "yarn start",
-    "test": "react-scripts test",
+    "test": "NODE_ENV=test firebase emulators:exec --only firestore \"./test.sh\"",
     "lint": "eslint . --ext tsx --ext ts",
     "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
@@ -47,6 +54,8 @@
     "@types/react-dom": "^16.8.4"
   },
   "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.12.1",
+    "@babel/register": "^7.12.1",
     "@types/jest": "^24.0.23",
     "@types/lodash.flowright": "^3.5.4",
     "@types/moment-timezone": "^0.5.9",
@@ -58,6 +67,9 @@
     "@types/react-numeric-input": "^2.2.3",
     "@types/react-router": "^5.1.1",
     "@types/react-router-dom": "^5.1.0",
+    "babel-preset-react-app-babel-7": "^4.0.2-0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.5",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-config-react-app": "^5.2.1",
@@ -67,6 +79,7 @@
     "eslint-plugin-react-hooks": "^3.0.0",
     "firebase-tools": "^7.13.1",
     "node-sass": "^4.13.1",
+    "ts-mocha": "^8.0.0",
     "typescript": "^3.7.3"
   },
   "browserslist": {

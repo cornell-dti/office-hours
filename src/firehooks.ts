@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import { collectionData, docData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
