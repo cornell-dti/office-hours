@@ -91,7 +91,7 @@ class AddQuestion extends React.Component<Props, State> {
             } else {
                 this.setState({ selectedSecondary: tag });
             }
-        } else if (this.props.session.modality === 'virtual') {
+        } else if (!('building' in this.props.session)) {
             this.setState({ stage: 40 , selectedSecondary: tag });
         } else {
             this.setState({ stage: 30, selectedSecondary: tag });
@@ -140,7 +140,7 @@ class AddQuestion extends React.Component<Props, State> {
                 timeEntered: firebase.firestore.Timestamp.now()
             };
 
-            const location = this.props.session.modality === 'virtual' ? {} : { location: this.state.location };
+            const location = 'building' in this.props.session ? {} : { location: this.state.location };
 
             const newQuestion: Omit<FireQuestion, 'questionId'> = {
                 ...newQuestionSlot,
@@ -282,7 +282,7 @@ class AddQuestion extends React.Component<Props, State> {
                                         placeholder="What's your question about?"
                                     />
                                     : (<p className="placeHolder text">{
-                                        this.props.session.modality === 'virtual' 
+                                        !('building' in this.props.session)
                                             ? "Select a tag..." : "Enter your location..."
                                     }</p>)}
                             </div>
