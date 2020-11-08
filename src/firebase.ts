@@ -33,6 +33,7 @@ const app = firebase.initializeApp(firebaseConfig);
 
 const firestore = firebase.firestore(app); // Initialize firestore
 // Use emulator for test mode
+console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === 'test') {
     firestore.useEmulator("localhost", 8080);
 }
