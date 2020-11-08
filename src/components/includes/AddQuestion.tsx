@@ -78,10 +78,20 @@ class AddQuestion extends React.Component<Props, State> {
     };
 
     public handlePrimarySelected = (tag: FireTag | undefined): void => {
-        this.setState(({ stage }) => stage <= 10
-            ? { stage: 20, selectedPrimary: tag }
-            : { stage: 10, selectedPrimary: undefined, selectedSecondary: undefined }
-        );
+        if (this.state.selectedPrimary) {
+            if (this.state.selectedPrimary.tagId === tag?.tagId) {
+                this.setState({ stage: 10, selectedPrimary: undefined, selectedSecondary: undefined});
+            } else {
+                this.setState({ selectedPrimary: tag, 
+                    selectedSecondary: undefined });
+            }
+        } else {
+            this.setState(({ stage }) => stage <= 10
+                ? { stage: 20, selectedPrimary: tag }
+                : { stage: 10, selectedPrimary: undefined, selectedSecondary: undefined }
+            );
+        }
+        
     };
 
     public handleSecondarySelected = (tag: FireTag): void => {
@@ -189,19 +199,17 @@ class AddQuestion extends React.Component<Props, State> {
 
         const { selectedPrimary, selectedSecondary } = this.state;
 
-        const questionCharsLeft = this.props.course.charLimit - this.state.question.length;
         return (
             <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e)} >
                 {(this.state.stage < 60 || this.state.width < this.props.mobileBreakpoint) &&
                     <div className="AddQuestion">
                         <div className="queueHeader">
-                            <p className="xbutton" onClick={this.handleXClick}><Icon name="close" /></p>
                             <p className="title">Join The Queue</p>
                         </div>
                         <div className="tagsContainer">
                             <hr />
                             <div className="tagsMiniContainer">
-                                <p className="header">Categories</p>
+                                <p className="header">Select a Category</p>
                                 <div className="QuestionTags">
                                     {!selectedPrimary ?
                                         this.state.tags
@@ -213,18 +221,29 @@ class AddQuestion extends React.Component<Props, State> {
                                                 tag={tag}
                                                 isSelected={this.state.stage > 10}
                                                 onClick={() => this.handlePrimarySelected(tag)}
+                                                check={false}
+                                                isPrimary={true}
+                                                select={true}
                                             />))
-                                        : <SelectedTags
-                                            tag={selectedPrimary}
-                                            isSelected={true}
-                                            onClick={() => this.handlePrimarySelected(undefined)}
-                                        />
+                                        : this.state.tags
+                                        // Only show primary tags
+                                            .filter((tag) => tag.active && tag.level === 1)
+                                        // iff tag is selected, hide other primary tags
+                                            .map((tag) => (<SelectedTags
+                                                key={tag.tagId}
+                                                tag={tag}
+                                                isSelected={this.state.stage > 10}
+                                                onClick={() => this.handlePrimarySelected(tag)}
+                                                check={tag === selectedPrimary}
+                                                isPrimary={true}
+                                                select={true}
+                                            />))
                                     }
                                 </div>
                             </div>
                             <hr />
-                            <div className="tagsMiniContainer">
-                                <p className="header">Tags</p>
+                            <div className={'tagsMiniContainer secondaryTags ' + (!!selectedPrimary)}>
+                                <p className="header">Select a Tag</p>
                                 {selectedPrimary ?
                                     this.state.tags
                                         .filter((tag) => tag.active && tag.level === 2)
@@ -234,8 +253,10 @@ class AddQuestion extends React.Component<Props, State> {
                                             tag={tag}
                                             isSelected={selectedSecondary === tag}
                                             onClick={() => this.handleSecondarySelected(tag)}
+                                            check={tag === selectedSecondary}
+                                            select={true}
                                         />))
-                                    : <p className="placeHolder">Select a category</p>}
+                                    : <p className="placeHolder">First select a category</p>}
                             </div>
                             <hr />
                             {'building' in this.props.session && <> <div className="tagsMiniContainer">
@@ -270,9 +291,6 @@ class AddQuestion extends React.Component<Props, State> {
                             <div className="tagsMiniContainer">
                                 <p className="header">
                                     {'Question '}
-                                    <span className={'characterCount ' + (questionCharsLeft <= 0 ? 'warn' : '')} >
-                                        ({questionCharsLeft} character{questionCharsLeft !== 1 && 's'} left)
-                                    </span>
                                 </p>
                                 {this.state.stage >= 40 ?
                                     <textarea
@@ -281,10 +299,17 @@ class AddQuestion extends React.Component<Props, State> {
                                         onChange={this.handleUpdateQuestion}
                                         placeholder="What's your question about?"
                                     />
-                                    : (<p className="placeHolder text">{
-                                        !('building' in this.props.session)
-                                            ? "Select a tag..." : "Enter your location..."
-                                    }</p>)}
+                                    : <textarea
+                                        disabled
+                                        className="TextInput question"
+                                        value={this.state.question}
+                                        onChange={this.handleUpdateQuestion}
+                                        placeholder={
+                                            !('building' in this.props.session)
+                                                ? "First select a category and a tag" : "Enter your location..."
+                                        }
+                                    />}
+                                    
                             </div>
                             <div className="addButtonWrapper">
                                 {this.state.stage > 40 ?
