@@ -104,6 +104,7 @@ const ProfessorCalendarRow = (props: {
                                 isNewOH={false}
                                 taOptions={props.taOptions}
                                 toggleEdit={() => toggleEdit(i, true)}
+                                isOfficeHour={props.sessions[i].modality !== "review"}
                             />
                             <button
                                 type="button"

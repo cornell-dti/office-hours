@@ -9,16 +9,25 @@ const ProfessorAddNew = (props: {
     taOptions?: DropdownItemProps[];
 }) => {
     const [editVisible, setEditVisible] = useState(false);
+    const [discussVisible, setDiscussVisible] = useState(false);
 
     const text = props.taOptions ? 'Add New Office Hour' : 'Add New Assignment';
     return (
         <div className="ProfessorAddNew">
-            <div className={'Add ' + !editVisible}>
+            <div className={'Add ' + (!editVisible && !discussVisible)}>
                 <button type="button" className="NewOHButton" onClick={() => setEditVisible(true)}>
                     <Icon name="plus" />
                     {text}
                 </button>
             </div>
+            {props.taOptions && <div className={'Add ' + (!editVisible && !discussVisible)}>
+                <button type="button" className="NewOHButton" onClick={() => setDiscussVisible(true)}>
+                    <Icon name="plus" />
+                    Add new discussion
+                </button>
+            </div>}
+
+            
             <div className={'ExpandedAdd ' + editVisible}>
                 <div className="NewOHHeader">
                     <button type="button" className="ExpandedNewOHButton" onClick={() => setEditVisible(false)}>
@@ -33,6 +42,7 @@ const ProfessorAddNew = (props: {
                         taOptions={props.taOptions}
                         toggleEdit={() => setEditVisible(false)}
                         taUserIdsDefault={[]}
+                        isOfficeHour={true}
                     />
                     : <ProfessorTagInfo
                         isNew={true}
@@ -40,6 +50,24 @@ const ProfessorAddNew = (props: {
                         courseId={props.courseId}
                         // RYAN_TODO Figure out how to add tags all at once
                         childTags={[]}
+                    />
+                }
+            </div>
+            <div className={'ExpandedAdd ' + discussVisible}>
+                <div className="NewOHHeader">
+                    <button type="button" className="ExpandedNewOHButton" onClick={() => setDiscussVisible(false)}>
+                        <Icon name="plus" />
+                        Add new discussion
+                    </button>
+                </div>
+                {props.taOptions
+                    && <ProfessorOHInfo
+                        courseId={props.courseId}
+                        isNewOH={true}
+                        taOptions={props.taOptions}
+                        toggleEdit={() => setDiscussVisible(false)}
+                        taUserIdsDefault={[]}
+                        isOfficeHour={false}
                     />
                 }
             </div>
