@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Redirect } from 'react-router';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 
 import SelectedTags from './SelectedTags';
 import SessionAlertModal from './SessionAlertModal';
@@ -282,7 +282,7 @@ class AddQuestion extends React.Component<Props, State> {
                                         placeholder="What's your question about?"
                                     />
                                     : (<p className="placeHolder text">{
-                                        this.props.session.modality === 'virtual' 
+                                        this.props.session.modality === 'virtual'
                                             ? "Select a tag..." : "Enter your location..."
                                     }</p>)}
                             </div>

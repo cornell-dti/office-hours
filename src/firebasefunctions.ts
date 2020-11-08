@@ -1,8 +1,11 @@
-import { firestore, auth } from 'firebase/app';
+import firebase from 'firebase/app';
 import { datePlus, normalizeDateToDateStart, normalizeDateToWeekStart } from './utilities/date';
 import { blockArray } from './firehooks';
 
 /* Basic Functions */
+
+const auth = firebase.auth;
+const firestore = firebase.firestore;
 
 export const userUpload = (user: firebase.User | null, db: firebase.firestore.Firestore) => {
     if (user != null) {
