@@ -19,5 +19,5 @@ describe('Unknown Question', function() {
         const result = await questionOne
 
         expect(result.exists).to.be.false;
-    })
-})
+    });
+});

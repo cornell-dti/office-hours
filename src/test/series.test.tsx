@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import 'mocha';
-import { firestore } from '../firebase';
+// import { firestore } from '../firebase';
 
 describe('Create Non-Recurring Series', function() {
     it('creates a series', async function() {
