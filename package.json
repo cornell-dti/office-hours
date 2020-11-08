@@ -45,7 +45,7 @@
     "build:staging": "REACT_APP_IS_STAGING=true react-scripts build",
     "start": "react-scripts start",
     "s": "yarn start",
-    "test": "firebase emulators:exec --only firestore \"./test.sh\"",
+    "test": "NODE_ENV=test firebase emulators:exec --only firestore \"./test.sh\"",
     "lint": "eslint . --ext tsx --ext ts",
     "analyze": "source-map-explorer 'build/static/js/*.js'"
   },

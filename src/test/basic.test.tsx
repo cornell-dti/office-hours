@@ -14,11 +14,12 @@ describe('Hello function', function() {
 
 describe('Unknown Question', function() {
     it('should not exist', async function() {
+        // Set a long timeout of 5s because it takes quite long on CI server
+        this.timeout(5000);
+
         // Expect question one to not exist
         const questionOne = firestore.collection('questions').doc("1").get();
-        console.log("Retrieving question");
         const result = await questionOne
-        console.log("Retrieved question");
 
         expect(result.exists).to.be.false;
 
