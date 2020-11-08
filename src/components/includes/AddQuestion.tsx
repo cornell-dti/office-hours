@@ -78,10 +78,20 @@ class AddQuestion extends React.Component<Props, State> {
     };
 
     public handlePrimarySelected = (tag: FireTag | undefined): void => {
-        this.setState(({ stage }) => stage <= 10
-            ? { stage: 20, selectedPrimary: tag }
-            : { stage: 10, selectedPrimary: undefined, selectedSecondary: undefined }
-        );
+        if (this.state.selectedPrimary) {
+            if (this.state.selectedPrimary.tagId === tag?.tagId) {
+                this.setState({ stage: 10, selectedPrimary: undefined });
+            } else {
+                this.setState({ selectedPrimary: tag, 
+                    selectedSecondary: undefined });
+            }
+        } else {
+            this.setState(({ stage }) => stage <= 10
+                ? { stage: 20, selectedPrimary: tag }
+                : { stage: 10, selectedPrimary: undefined, selectedSecondary: undefined }
+            );
+        }
+        
     };
 
     public handleSecondarySelected = (tag: FireTag): void => {
@@ -212,12 +222,23 @@ class AddQuestion extends React.Component<Props, State> {
                                                 tag={tag}
                                                 isSelected={this.state.stage > 10}
                                                 onClick={() => this.handlePrimarySelected(tag)}
+                                                check={false}
+                                                isPrimary={true}
+                                                select={true}
                                             />))
-                                        : <SelectedTags
-                                            tag={selectedPrimary}
-                                            isSelected={true}
-                                            onClick={() => this.handlePrimarySelected(undefined)}
-                                        />
+                                        : this.state.tags
+                                        // Only show primary tags
+                                            .filter((tag) => tag.active && tag.level === 1)
+                                        // iff tag is selected, hide other primary tags
+                                            .map((tag) => (<SelectedTags
+                                                key={tag.tagId}
+                                                tag={tag}
+                                                isSelected={this.state.stage > 10}
+                                                onClick={() => this.handlePrimarySelected(tag)}
+                                                check={tag === selectedPrimary}
+                                                isPrimary={true}
+                                                select={true}
+                                            />))
                                     }
                                 </div>
                             </div>
@@ -233,6 +254,8 @@ class AddQuestion extends React.Component<Props, State> {
                                             tag={tag}
                                             isSelected={selectedSecondary === tag}
                                             onClick={() => this.handleSecondarySelected(tag)}
+                                            check={tag === selectedSecondary}
+                                            select={true}
                                         />))
                                     : <p className="placeHolder">First select a category</p>}
                             </div>
