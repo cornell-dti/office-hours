@@ -199,7 +199,6 @@ class AddQuestion extends React.Component<Props, State> {
 
         const { selectedPrimary, selectedSecondary } = this.state;
 
-        const questionCharsLeft = this.props.course.charLimit - this.state.question.length;
         return (
             <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e)} >
                 {(this.state.stage < 60 || this.state.width < this.props.mobileBreakpoint) &&

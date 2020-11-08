@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { Icon } from 'semantic-ui-react';
+import { Loader } from 'semantic-ui-react';
 import moment from 'moment';
 import addNotification from 'react-push-notification';
 import SessionQuestion from './SessionQuestion';
 import { useAskerQuestions } from '../../firehooks';
-import AddQuestion from '../includes/AddQuestion';
-import { Loader } from 'semantic-ui-react';
+import AddQuestion from "./AddQuestion";
 
-const SHOW_FEEDBACK_QUEUE = 4;
+
 // Maximum number of questions to be shown to user
 const NUM_QUESTIONS_SHOWN = 20;
 const MOBILE_BREAKPOINT = 920;
@@ -156,8 +155,13 @@ const SessionQuestionsContainer = (props: Props) => {
         <div className="SessionQuestionsContainer splitQuestions" >
             {!props.isTA && !myQuestion && props.isOpen
                 && !props.haveAnotherQuestion
-                ? (props.course && props.session ? <AddQuestion session={props.session} course={props.course} mobileBreakpoint={MOBILE_BREAKPOINT} />
-                : <Loader active={true} content={'Loading'} />)
+                ? (props.course && props.session ? 
+                    <AddQuestion
+                        session={props.session}
+                        course={props.course} 
+                        mobileBreakpoint={MOBILE_BREAKPOINT}
+                    />
+                    : <Loader active={true} content={'Loading'} />)
                 : null
             }
             {!props.isTA && !myQuestion && props.isOpen

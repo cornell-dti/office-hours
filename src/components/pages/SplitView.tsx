@@ -4,7 +4,6 @@ import { Loader } from 'semantic-ui-react';
 
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
-import AddQuestion from '../includes/AddQuestion';
 import NotificationModal from '../includes/NotificationModal';
 
 import { useCourse, useSession, useMyUser } from '../../firehooks';
