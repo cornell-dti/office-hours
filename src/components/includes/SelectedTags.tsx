@@ -3,7 +3,7 @@ import * as React from 'react';
 type Props = {
     tag: FireTag;
     isSelected: boolean;
-    onClick?: Function;
+    onClick?: (...args: any[]) => any;
 }
 
 class SelectedTags extends React.PureComponent<Props> {

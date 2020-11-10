@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import * as H from 'history';
+
 import { Loader } from 'semantic-ui-react';
 
+import { RouteComponentProps } from 'react-router';
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import AddQuestion from '../includes/AddQuestion';
@@ -28,16 +29,11 @@ const useWindowWidth = () => {
     return width;
 };
 
-const SplitView = (props: {
-    history: H.History;
-    match: {
-        params: {
-            courseId: string;
-            sessionId: string | undefined;
-            page: string | null;
-        };
-    };
-}) => {
+const SplitView: React.FC<RouteComponentProps<{
+    courseId: string;
+    sessionId: string | undefined;
+    page: string | undefined;
+}>> = (props) => {
     const [activeView, setActiveView] = useState(
         props.match.params.page === 'add'
             ? 'addQuestion'
@@ -92,12 +88,14 @@ const SplitView = (props: {
                     session={session}
                     sessionCallback={handleSessionClick}
                 />}
-                
+
             {"Notification" in window &&
-            window?.Notification.permission !== "granted" && (
-                <NotificationModal show={activeView !== 'session'} />
-            )}    
-                
+                window?.Notification.permission !== "granted" &&
+                (
+                    <NotificationModal show={activeView !== 'session'} />
+                )
+            }
+
             {(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
                 ((course && user) ? (
                     session ? (
@@ -109,39 +107,36 @@ const SplitView = (props: {
                             backCallback={handleBackClick}
                             joinCallback={handleJoinClick}
                         />
-                    ) : (
-                        <section className="StudentSessionView">
-                            <TopBar
-                                user={user}
-                                role={(user && course && user.roles[course.courseId]) || 'student'}
-                                context="student"
-                                courseId={props.match.params.courseId}
-                            />
-                            <p className="welcomeMessage">
-                                    Welcome{user && ', '}
-                                <span className="welcomeName">
-                                    {user && user.firstName}
-                                </span>
-                            </p>
-                            <p className="noSessionSelected">
-                                Please select an office hour from the calendar.
-                                <p> </p>
-                                <p> </p>
+                    ) : (<section className="StudentSessionView">
+                        <TopBar
+                            user={user}
+                            role={(user && course && user.roles[course.courseId]) || 'student'}
+                            context="student"
+                            courseId={props.match.params.courseId}
+                        />
+                        <p className="welcomeMessage">
+                            Welcome{user && ', '}
+                            <span className="welcomeName">
+                                {user && user.firstName}
+                            </span>
+                        </p>
+                        <p className="noSessionSelected">
+                            Please select an office hour from the calendar.
+                            <p> </p>
+                            <p> </p>
+                            {(Notification !== undefined) && Notification.permission === "granted" && (
+                                <div className="warningArea">
 
-                                {(Notification !== undefined) && Notification.permission === "granted" && (
-                                    <div className="warningArea">
-
-                                        <div>
+                                    <div>
                                         &#9888;
-                                        </div>
-                                        <div>
-                                        Please make sure to enable browser notifications in your system settings.
-                                        </div>
                                     </div>
-                                )}
-                            </p>
-                        </section>
-                    )
+                                    <div>
+                                        Please make sure to enable browser notifications in your system settings.
+                                    </div>
+                                </div>
+                            )}
+                        </p>
+                    </section>)
                 ) : <Loader active={true} content="Loading" />)}
             {activeView === 'addQuestion' && <>
                 <div className="modal">

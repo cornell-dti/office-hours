@@ -16,7 +16,6 @@ import moment from 'moment';
 import { Loader } from 'semantic-ui-react';
 
 import { Notifications } from 'react-push-notification';
-import { auth, firestore } from '../firebase';
 
 import AdminView from './pages/AdminView';
 import LoginView from './pages/LoginView';
@@ -29,8 +28,7 @@ import ProfessorPeopleView from './pages/ProfessorPeopleView';
 import CourseEditView from './pages/CourseEditView';
 import CourseSelectionView from './pages/CourseSelectionView';
 import { Analytics } from './includes/Analytics';
-import { userUpload } from '../firebasefunctions';
-import { useMyUser, useAllCourses } from '../firehooks';
+import { useMyUser, useAllCourses, useLoginStatus } from '../firehooks';
 
 ReactGA.initialize('UA-123790900-1');
 
@@ -56,28 +54,6 @@ const getDefaultRedirect = (user: FireUser | undefined, courses: readonly FireCo
         return '/course/' + courseId;
     }
     return '/edit';
-};
-
-/**
- * 0: Fetching currently logged in status
- * 1: Not logged in
- * 2: Logged in
- */
-const useLoginStatus = () => {
-    const [isLoggedIn, setIsLoggedIn] = React.useState<0 | 1 | 2>(0);
-
-    React.useEffect(() => {
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                setIsLoggedIn(2);
-                userUpload(user, firestore);
-            } else {
-                setIsLoggedIn(1);
-            }
-        });
-    }, []);
-
-    return isLoggedIn;
 };
 
 const useLoadedData = () => {
@@ -130,7 +106,7 @@ const useRouteActionWithPermissionCheck = (
 };
 
 // Since the type is too polymorphic, we have to use the any type in the next few lines.
-type PrivateRouteProps<P extends {}> = {
+type PrivateRouteProps<P extends Record<string, string | undefined>> = {
     component: React.ComponentType<RouteComponentProps<P>>;
     requireProfessor: boolean;
     path: string;
@@ -139,7 +115,7 @@ type PrivateRouteProps<P extends {}> = {
     [restKey: string]: any;
 };
 
-const PrivateRoute = <P extends {}>(
+const PrivateRoute = <P extends Record<string, string | undefined>>(
     { component, requireProfessor, ...rest }: PrivateRouteProps<P>
 ) => {
     const courseId: string | null | undefined = rest.computedMatch.params.courseId;

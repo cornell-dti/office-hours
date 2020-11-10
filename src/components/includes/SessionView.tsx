@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Icon } from 'semantic-ui-react';
 import addNotification from 'react-push-notification';
 
+import { updateSessionProfile, updateVirtualLocation } from 'lib/ta/location';
 import TopBar from './TopBar';
 import SessionInformationHeader from './SessionInformationHeader';
 import SessionQuestionsContainer from './SessionQuestionsContainer';
@@ -9,18 +10,15 @@ import UpdateProfile from './UpdateProfile';
 
 import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile } from '../../firehooks';
 import { filterUnresolvedQuestions } from '../../utilities/questions';
-import { updateVirtualLocation } from '../../firebasefunctions';
-import { firestore } from '../../firebase';
 import NotifBell from '../../media/notifBellWhite.svg';
-// import SessionAlertModal from './SessionAlertModal';
 
 type Props = {
     course: FireCourse;
     session: FireSession;
     questions: readonly FireQuestion[];
     isDesktop: boolean;
-    backCallback: Function;
-    joinCallback: Function;
+    backCallback: (...args: any[]) => any;
+    joinCallback: (...args: any[]) => any;
     user: FireUser;
 };
 
@@ -58,19 +56,6 @@ const SessionView = (
     const [showNotifBanner, setShowNotifBanner] = useState(true);
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
-
-    const updateSessionProfile = useCallback((virtualLocation: string) => {
-        const batch = firestore.batch();
-
-        const questionUpdate: Partial<FireQuestion> = { answererLocation: virtualLocation };
-        questions.forEach((q) => {
-            if (q.answererId === user.userId && q.status === 'assigned') {
-                batch.update(firestore.doc(`questions/${q.questionId}`), questionUpdate);
-            }
-        });
-
-        batch.commit();
-    }, [questions, user.userId]);
 
     useEffect(() => {
         const questionIds = questions.map(q => q.questionId);
@@ -141,7 +126,8 @@ const SessionView = (
 
     // RYAN_TODO: implement UNDO feature
     /*
-    const handleUndoClick = (undoQuestion: Function, status: string, refetch: Function) => {
+    const handleUndoClick = (undoQuestion: (...args: any[]) => any, status: string, 
+    refetch: (...args: any[]) => any;) => {
         undoQuestion({
             variables: {
                 questionId: undoQuestionId,
@@ -198,16 +184,16 @@ const SessionView = (
                 />
             }
             {"Notification" in window &&
-                            window?.Notification.permission !== "granted" && showNotifBanner === true &&
-                            <div className="SessionNotification">
-                                <img src={NotifBell} alt="Notification Bell" />
-                                <p>Enable browser notifications to know when it's your turn.</p>
-                                <button
-                                    type="button"
-                                    onClick={()=> setShowNotifBanner(false)}
-                                >
-                                    <Icon name="x" /></button>
-                            </div>
+                window?.Notification.permission !== "granted" && showNotifBanner === true &&
+                <div className="SessionNotification">
+                    <img src={NotifBell} alt="Notification Bell" />
+                    <p>Enable browser notifications to know when it's your turn.</p>
+                    <button
+                        type="button"
+                        onClick={() => setShowNotifBanner(false)}
+                    >
+                        <Icon name="x" /></button>
+                </div>
             }
             <SessionInformationHeader
                 session={session}
@@ -220,11 +206,14 @@ const SessionView = (
                 session.modality === 'virtual' && isTa ? <UpdateProfile
                     virtualLocation={sessionProfile?.virtualLocation}
                     onUpdate={(virtualLocation) => {
-                        updateVirtualLocation(firestore, user, session, virtualLocation);
-
-                        if (virtualLocation) {
-                            updateSessionProfile(virtualLocation);
-                        }
+                        updateVirtualLocation(user, session, virtualLocation).then(() => {
+                            if (virtualLocation) {
+                                updateSessionProfile(user.userId, virtualLocation);
+                            }
+                        }).catch(err => {
+                            // eslint-disable-next-line no-console
+                            console.error(err);
+                        });
                     }}
                 /> : <></>
             }

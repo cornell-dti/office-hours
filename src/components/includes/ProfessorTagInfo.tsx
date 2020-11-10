@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
-import { firestore } from '../../firebase';
+import { firestore } from '../../firebaseApp';
 
 type PropTypes = {
     isNew: boolean;
-    cancelCallback: Function;
+    cancelCallback: (...args: any[]) => any;
     tag?: FireTag;
     courseId: string;
     childTags: FireTag[];

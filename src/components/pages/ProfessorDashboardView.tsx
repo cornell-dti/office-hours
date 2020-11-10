@@ -5,8 +5,7 @@ import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import TagsBarChart from '../includes/TagsBarChart';
 
-import { useMyUser, useQuery, useCourse } from '../../firehooks';
-import { firestore } from '../../firebase';
+import { useMyUser, useCourse, useCourseQuestions, useCourseTagList } from '../../firehooks';
 
 interface CategoryTag {
     category: string;
@@ -20,21 +19,11 @@ interface CategoryTag {
     yMax: number;
 }
 
-const getTagsQuery = (courseId: string) => firestore
-    .collection('tags')
-    .where('courseId', '==', courseId);
-
-// Fetching all questions for a course might be expensive/have performance implications
-// This should be rarely done, though.
-const getQuestionsQuery = (courseId: string) => firestore
-    .collection('questions')
-    .where('courseId', '==', courseId);
-
 const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
     const [currentCategory, setCurrentCategory] = useState<CategoryTag | undefined>();
-
-    const tags = useQuery<FireTag>(courseId, getTagsQuery, 'tagId');
-    const questions = useQuery<FireQuestion>(courseId, getQuestionsQuery, 'questionId');
+    
+    const tags = useCourseTagList(courseId);
+    const questions = useCourseQuestions(courseId);
 
     const categories: CategoryTag[] = tags
         .filter((tag) => tag.level === 1)

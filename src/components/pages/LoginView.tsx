@@ -2,11 +2,11 @@ import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { useHistory } from 'react-router-dom';
 
-import firebase, { app, firestore } from '../../firebase';
-import { userUpload } from '../../firebasefunctions';
-
+import firebase from 'firebase';
 import QMeLogo from '../../media/QLogo2.svg';
 import googleLogo from '../../media/googleLogo.svg';
+
+import { userUpload } from '../../firefunctions';
 
 const LoginView: React.FC = () => {
     const [showContact, setShowContact] = React.useState(false);
@@ -20,9 +20,9 @@ const LoginView: React.FC = () => {
         authProvider.addScope('email');
         authProvider.addScope('profile');
 
-        return app.auth().signInWithPopup(authProvider).then((response) => {
+        return firebase.app().auth().signInWithPopup(authProvider).then((response) => {
             const user = response.user;
-            userUpload(user, firestore);
+            userUpload(user);
             history.push('/');
         });
     };

@@ -7,6 +7,7 @@
         "node": true
     },
     "rules": {
+        "import/no-unresolved": "off",
         "class-methods-use-this": "warn",
         "max-classes-per-file": "off",
         "no-else-return": "warn",
@@ -49,7 +50,7 @@
         "react/state-in-constructor": "off",
         "import/extensions": "off",
         "import/prefer-default-export": "off",
-        "@typescript-eslint/ban-ts-ignore": "warn",
+        "@typescript-eslint/ban-ts-comment": "warn",
         "@typescript-eslint/indent": ["error", 4],
         "@typescript-eslint/prefer-interface": "off",
         "@typescript-eslint/explicit-function-return-type": "off",
@@ -68,10 +69,5 @@
         "no-console": "error"
     },
     "settings": {
-        "import/resolver": {
-            "node": {
-                "extensions": [".js", ".json", ".mjs", ".ts", ".tsx"]
-            }
-        }
     }
 }

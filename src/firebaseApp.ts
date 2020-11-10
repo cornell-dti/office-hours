@@ -5,8 +5,9 @@ import * as firebase from 'firebase/app';
 import { authState } from 'rxfire/auth';
 import { collectionData } from 'rxfire/firestore';
 import { filter } from 'rxjs/operators';
+import { initializeApp } from 'lib/firebase';
 
-let firebaseConfig: object;
+let firebaseConfig: { [key: string]: string };
 if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
     firebaseConfig = {
         apiKey: 'AIzaSyBtxSkhR9RcnKP2FSsWtdxlwX4TcIjjm8A',
@@ -29,6 +30,8 @@ if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !=
     };
 }
 const app = firebase.initializeApp(firebaseConfig);
+
+initializeApp(app);
 
 const firestore = firebase.firestore(app); // Initialize firestore
 const auth = firebase.auth(app); // Initialize firebase auth

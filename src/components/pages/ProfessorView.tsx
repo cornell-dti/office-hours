@@ -14,7 +14,7 @@ import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
 import { useCourse, useMyUser } from '../../firehooks';
-import { firestore, collectionData } from '../../firebase';
+import { firestore, collectionData } from '../../firebaseApp';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 

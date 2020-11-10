@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { combineLatest, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 import moment from 'moment';
 import { DateRangePicker } from 'react-dates';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
@@ -12,7 +10,7 @@ import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
 import { useMyUser, useCourse, useCourseUsersMap } from '../../firehooks';
 import TopBar from '../includes/TopBar';
-import { firestore, collectionData } from '../../firebase';
+import { useSessionsAndQuestions } from '../../firefunctions';
 
 const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) => {
     const courseId = props.match.params.courseId;
@@ -25,44 +23,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const course = useCourse(courseId);
     const courseUsers = useCourseUsersMap(courseId, true);
 
-    const [sessions, setSessions] = useState<FireSession[]>([]);
-    const [questions, setQuestions] = useState<FireQuestion[][]>([]);
-
-    // Fetch sessions for course between dates
-    useEffect(
-        () => {
-            const sessions$: Observable<FireSession[]> = collectionData(
-                firestore
-                    .collection('sessions')
-                    .where('startTime', '>=', startDate.toDate())
-                    .where('startTime', '<=', endDate.add(1, 'day').toDate())
-                    .where('courseId', '==', courseId),
-                'sessionId'
-            );
-            const s1 = sessions$.subscribe(newSessions => setSessions(newSessions));
-
-            // Fetch all questions for given sessions
-            const questions$ = sessions$.pipe(
-                switchMap(s =>
-                    combineLatest(...s.map(session =>
-                        collectionData(
-                            firestore
-                                .collection('questions')
-                                .where('sessionId', '==', session.sessionId),
-                            'questionId'
-                        )
-                    ))
-                )
-            );
-
-            const s2 = questions$.subscribe((newQuestions: FireQuestion[][]) => setQuestions(newQuestions));
-            return () => {
-                s1.unsubscribe();
-                s2.unsubscribe();
-            };
-        },
-        [courseId, startDate, endDate]
-    );
+    const [sessions, questions] = useSessionsAndQuestions(courseId, startDate, endDate);
 
     // Compute necessary data
     // Aggregate Stats

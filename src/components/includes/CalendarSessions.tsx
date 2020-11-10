@@ -3,13 +3,13 @@ import { groupBy } from 'lodash';
 
 import CalendarSessionCard from './CalendarSessionCard';
 
-const CalendarSessions = ({ activeSession, user, course, sessions, callback }: {
+const CalendarSessions: React.FC<{
     activeSession?: FireSession;
     user: FireUser;
     course: FireCourse;
-    sessions: FireSession[];
+    sessions: readonly FireSession[];
     callback: (sessionId: string) => void;
-}) => {
+}> = ({ activeSession, user, course, sessions, callback }) => {
     const labelSession = (session: FireSession, intervalMs: number) => {
         if (new Date(session.endTime.toDate()) < new Date()) {
             return 'Past';

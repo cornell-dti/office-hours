@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 
-import { logOut } from '../../firebasefunctions';
+import { logOut } from '../../firefunctions';
 import { useMyCourses } from '../../firehooks';
 
 import { CURRENT_SEMESTER } from '../../constants';

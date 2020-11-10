@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { Icon, Loader, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
-import * as firebase from 'firebase/app';
 import { useState } from "react";
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
 import addNotification from 'react-push-notification';
-import { firestore } from '../../firebase';
+import { assignQuestion, questionDone, studentNoShow } from 'lib/ta/question';
+import { retractQuestion } from 'lib/student/question';
 import SelectedTags from './SelectedTags';
+import { firestore } from '../../firebaseApp';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -22,7 +23,7 @@ type Props = {
     modality: FireSessionModality;
     myUserId: string;
     virtualLocation?: string;
-    triggerUndo: Function;
+    triggerUndo: (...args: any[]) => any;
     isPast: boolean;
     readonly user: FireUser;
 };
@@ -108,52 +109,8 @@ class SessionQuestion extends React.Component<Props, State> {
         }
     };
 
-    retractQuestion = (): void => {
-        const batch = firestore.batch();
-        const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
-        const questionUpdate: Partial<FireQuestion> = slotUpdate;
-        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
-        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
-        batch.commit();
-    };
-
     toggleLocationTooltip = () => {
         this.setState(({ showLocation }) => ({ showLocation: !showLocation }));
-    };
-
-    assignQuestion = () => {
-        const batch = firestore.batch();
-        const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
-        const questionUpdate: Partial<FireQuestion> = {
-            status: 'assigned',
-            answererId: this.props.myUserId,
-            timeAssigned: firebase.firestore.Timestamp.now(),
-            ...(this.props.virtualLocation ? { answererLocation: this.props.virtualLocation } : {})
-        };
-        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
-        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
-        batch.commit();
-    };
-
-    studentNoShow = () => {
-        const batch = firestore.batch();
-        const slotUpdate: Partial<FireQuestionSlot> = { status: 'no-show' };
-        const questionUpdate: Partial<FireQuestion> = slotUpdate;
-        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
-        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
-        batch.commit();
-    };
-
-    questionDone = () => {
-        const batch = firestore.batch();
-        const slotUpdate: Partial<FireQuestionSlot> = { status: 'resolved' };
-        const questionUpdate: Partial<FireQuestion> = {
-            status: 'resolved',
-            timeAddressed: firebase.firestore.Timestamp.now()
-        };
-        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
-        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
-        batch.commit();
     };
 
     questionComment = (newComment: string, isTA: boolean) => {
@@ -171,7 +128,7 @@ class SessionQuestion extends React.Component<Props, State> {
             ({ enableEditingComment: !enableEditingComment }));
     }
 
-    _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
+    _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: (...args: any[]) => any, status: string) => {
         updateQuestion({
             variables: {
                 questionId: this.props.question.questionId,
@@ -198,6 +155,22 @@ class SessionQuestion extends React.Component<Props, State> {
         batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
         batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
         batch.commit();
+    };
+
+    retractQuestion = () => {
+        retractQuestion(this.props.question.questionId);
+    }
+
+    assignQuestion = () => {
+        assignQuestion(this.props.myUserId, this.props.question.questionId, this.props.virtualLocation);
+    }
+
+    studentNoShow = () => {
+        studentNoShow(this.props.question.questionId);
+    };
+
+    questionDone = () => {
+        questionDone(this.props.question.questionId);
     };
 
     render() {
@@ -273,8 +246,8 @@ class SessionQuestion extends React.Component<Props, State> {
                                     alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
                                 />
                                 <span className="userInformationName">
-                                    {asker.firstName + ' ' + asker.lastName + 
-                                        ' (' + asker.email.slice(0,asker.email.indexOf('@')) + ')'}
+                                    {asker.firstName + ' ' + asker.lastName +
+                                        ' (' + asker.email.slice(0, asker.email.indexOf('@')) + ')'}
                                     {question.status === 'assigned' &&
                                         <>
                                             <span className="assigned"> is assigned
@@ -292,18 +265,21 @@ class SessionQuestion extends React.Component<Props, State> {
                         <div className="Location">
                             {
                                 (
-                                    <>{this.props.isTA &&
-                                        question.location &&
-                                        question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
-                                        <a href={question.location} target="_blank" rel="noopener noreferrer">
-                                            Zoom Link
-                                        </a>
-                                    }
-                                    {this.props.isTA &&
+                                    <>
+                                        {
+                                            this.props.isTA &&
+                                            question.location &&
+                                            question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
+                                            <a href={question.location} target="_blank" rel="noopener noreferrer">
+                                                Zoom Link</a>
+                                        }
+                                        {this.props.isTA &&
                                             question.location &&
                                             question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
                                             question.location
-                                    }</>)}
+                                        }
+                                    </>)
+                            }
                         </div>
                         {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
                             <p className={'Question' + studentCSS}>{question.content}</p>}
@@ -426,8 +402,8 @@ class SessionQuestion extends React.Component<Props, State> {
 
 type EditCommentProps = {
     readonly initComment: string;
-    readonly onValueChange: Function;
-    readonly onCancel: Function;
+    readonly onValueChange: (...args: any[]) => any;
+    readonly onCancel: (...args: any[]) => any;
 }
 
 const EditComment = (props: EditCommentProps) => {
@@ -500,7 +476,7 @@ type CommentBoxProps = {
     readonly studentCSS?: string;
 }
 
-const CommentBox = (props: CommentBoxProps) => {
+const CommentBox: React.FC<CommentBoxProps> = (props) => {
     return (
         <div className="CommentBox">
             {props.studentComment && (
