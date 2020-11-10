@@ -9,7 +9,7 @@ const monthNames = [
 ];
 
 type Props = {
-    handleClick?: Function;
+    handleClick?: (...args: any[]) => any;
     selectedWeekEpoch?: number;
 };
 type State = { selectedWeekEpoch: number };

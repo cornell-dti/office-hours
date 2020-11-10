@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import firebase from 'firebase/app';
 
+import { createCourse, editCourse } from 'lib/admin/course';
+import moment from 'moment';
 import { useAllCourses, useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
-import { firestore } from '../../firebase';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
 import { CURRENT_SEMESTER } from '../../constants';
 
@@ -70,7 +70,8 @@ const AdminEditableCourseCard = ({ course }: { readonly course: FireCourse }) =>
 
     const onSave = () => {
         const update: Partial<FireCourse> = { name, code, semester, year, term };
-        firestore.collection('courses').doc(course.courseId).update(update);
+
+        editCourse(course.courseId, update);
     };
 
     return (
@@ -124,8 +125,8 @@ const AdminCourseCard = ({ course }: { readonly course: FireCourse }) => {
     );
 };
 
-const startDate = new Date('2020-09-02');
-const endDate = new Date('2020-12-21');
+const startDate = moment(new Date('2020-09-02'));
+const endDate = moment(new Date('2020-12-21'));
 const currentTerm = CURRENT_SEMESTER.substring(0, 2);
 const currentYear = CURRENT_SEMESTER.substring(2, 4);
 
@@ -145,7 +146,7 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
         || term.trim().length === 0;
 
     const onSave = () => {
-        const course: Omit<FireCourse, 'courseId'> = {
+        createCourse(courseId, {
             name,
             code,
             semester,
@@ -153,12 +154,11 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
             term,
             queueOpenInterval: 30,
             charLimit: 140,
-            startDate: firebase.firestore.Timestamp.fromDate(startDate),
-            endDate: firebase.firestore.Timestamp.fromDate(endDate),
-            professors: [],
-            tas: []
-        };
-        firestore.collection('courses').doc(courseId).set(course).then(onSubmit);
+            startDate,
+            endDate
+        }).then(() => {
+            onSubmit();
+        });
     };
 
     return (
@@ -190,11 +190,11 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
             </div>
             <div className="course-section">
                 <h3>Start Date</h3>
-                <div>{startDate.toLocaleDateString()}</div>
+                <div>{startDate.toDate().toLocaleDateString()}</div>
             </div>
             <div className="course-section">
                 <h3>End Date</h3>
-                <div>{endDate.toLocaleDateString()}</div>
+                <div>{endDate.toDate().toLocaleDateString()}</div>
             </div>
             <button type="button" disabled={disabled} onClick={onSave}>Save</button>
         </div>

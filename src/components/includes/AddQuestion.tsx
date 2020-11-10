@@ -3,12 +3,10 @@ import * as React from 'react';
 import { Redirect } from 'react-router';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
-import firebase from 'firebase/app';
 
+import { addQuestion } from 'lib/student/question';
 import SelectedTags from './SelectedTags';
 import SessionAlertModal from './SessionAlertModal';
-
-import { collectionData, firestore, auth } from '../../firebase';
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
@@ -54,15 +52,6 @@ class AddQuestion extends React.Component<Props, State> {
     // Keep window size in state for conditional rendering
     componentDidMount() {
         window.addEventListener('resize', this.updateWindowDimensions);
-
-        const tags$ = collectionData<FireTag>(
-            firestore
-                .collection('tags')
-                .where('courseId', '==', this.props.course.courseId),
-            'tagId'
-        );
-
-        tags$.subscribe((tags) => this.setState({ tags }));
     }
 
     componentWillUnmount() {
@@ -138,49 +127,34 @@ class AddQuestion extends React.Component<Props, State> {
         }));
     };
 
-    public addQuestion = () => {
-        if (auth.currentUser != null && this.state.selectedPrimary != null &&
-            this.state.selectedSecondary != null) {
-            const batch = firestore.batch();
-            const questionId = firestore.collection('questions').doc().id;
-            const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
-                askerId: auth.currentUser.uid,
-                sessionId: this.props.session.sessionId,
-                status: 'unresolved',
-                timeEntered: firebase.firestore.Timestamp.now()
-            };
 
-            const location = 'building' in this.props.session ? {} : { location: this.state.location };
-
-            const newQuestion: Omit<FireQuestion, 'questionId'> = {
-                ...newQuestionSlot,
-                ...location,
-                answererId: '',
-                content: this.state.question,
-                primaryTag: this.state.selectedPrimary.tagId,
-                secondaryTag: this.state.selectedSecondary.tagId
-            };
-            batch.set(firestore.collection('questionSlots').doc(questionId), newQuestionSlot);
-            batch.set(firestore.collection('questions').doc(questionId), newQuestion);
-            batch.commit();
-
-            this.setState({ redirect: true });
-        }
-    };
 
     public handleJoinClick = (): void => {
         if (this.state.stage !== 60 &&
             (moment().add(WARNING_THRESHOLD, 'minutes')).isAfter(this.props.session.endTime.seconds * 1000)) {
             this.setState({ stage: 60 });
-        } else {
-            this.addQuestion();
+        } else if (this.state.selectedPrimary && this.state.selectedSecondary) {
+            addQuestion(
+                this.props.session.sessionId,
+                this.props.session.modality,
+                this.state.question,
+                this.state.selectedPrimary.tagId,
+                this.state.selectedSecondary.tagId,
+                this.state.location);
         }
     };
 
     public handleKeyPressDown = (event: React.KeyboardEvent<HTMLElement>) => {
         // CTRL + ENTER or CMD + ENTER adds the question ONLY if cursor in Question textbox
         if ((!event.repeat && (event.ctrlKey || event.metaKey) && event.keyCode === 13 && this.state.stage > 40)) {
-            this.addQuestion();
+            if (this.state.selectedPrimary && this.state.selectedSecondary) {
+                addQuestion(this.props.session.sessionId,
+                    this.props.session.modality,
+                    this.state.question,
+                    this.state.selectedPrimary.tagId,
+                    this.state.selectedSecondary.tagId,
+                    this.state.location);
+            }
         } else if (!event.repeat && event.keyCode === 27) {
             this.handleXClick();
         }
@@ -268,7 +242,7 @@ class AddQuestion extends React.Component<Props, State> {
                                                 (this.state.location.length >= LOCATION_CHAR_LIMIT ? 'warn' : '')
                                             }
                                         >
-                                        (
+                                            (
                                             {LOCATION_CHAR_LIMIT - this.state.location.length}
                                             {' '}
                                         character{LOCATION_CHAR_LIMIT - this.state.location.length !== 1 && 's'} left
@@ -286,8 +260,8 @@ class AddQuestion extends React.Component<Props, State> {
                                         />
                                     </div>
                                     : <p className="placeHolder text">Finish selecting tags...</p>}
-                            </div>
-                            <hr /></>}
+                            </div><hr /></>
+                            }
                             <div className="tagsMiniContainer">
                                 <p className="header">
                                     {'Question '}

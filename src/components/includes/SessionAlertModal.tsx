@@ -13,8 +13,8 @@ type Props = {
     readonly course: FireCourse;
     readonly OHSession?: FireSession;
     readonly buttons: string[];
-    readonly cancelAction?: Function;
-    readonly mainAction?: Function;
+    readonly cancelAction?: (...args: any[]) => any;
+    readonly mainAction?: (...args: any[]) => any;
     readonly displayShade: boolean;
 };
 

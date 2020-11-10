@@ -5,7 +5,7 @@ type Props = {
     active: boolean;
     day: string;
     date: number;
-    handleClick: Function;
+    handleClick: (...args: any[]) => any;
 };
 
 class CalendarDateItem extends React.PureComponent<Props> {

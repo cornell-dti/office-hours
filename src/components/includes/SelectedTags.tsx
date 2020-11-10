@@ -8,7 +8,7 @@ import YellowCheck from '../../media/yellowCheck.svg';
 type Props = {
     tag: FireTag;
     isSelected: boolean;
-    onClick?: Function;
+    onClick?: (...args: any[]) => any;
     check?: boolean;
     isPrimary?: boolean;
     select?: boolean;

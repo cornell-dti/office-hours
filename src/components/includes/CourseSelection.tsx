@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { useHistory } from 'react-router';
 
+import { updateCourses } from 'lib/student/profile';
+
 import TopBar from './TopBar';
 import QMeLogo from '../../media/QLogo2.svg';
 import CourseCard from './CourseCard';
-import { firestore } from '../../firebase';
-
 
 type Props = {
     readonly user: FireUser;
@@ -100,9 +100,10 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         const newCourseSet = new Set(currentlyEnrolledCourseIds);
         coursesToEnroll.forEach(courseId => newCourseSet.add(courseId));
         coursesToUnenroll.forEach(courseId => newCourseSet.delete(courseId));
-        const userUpdate: Partial<FireUser> = { courses: Array.from(newCourseSet.values()) };
+
         setIsWritingChanges(true);
-        firestore.collection('users').doc(user.userId).update(userUpdate).then(() => {
+
+        updateCourses(user, Array.from(newCourseSet.values())).then(() => {
             history.push('/home');
             setIsWritingChanges(false);
             setEditingMode(user.courses.length > 0);
@@ -149,14 +150,14 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                             </div>
                             <div className="CourseCards">
                                 {currentCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
-                            currentlyEnrolledCourseIds.has(course.courseId)
-                            || isEdit)
+                                    currentlyEnrolledCourseIds.has(course.courseId)
+                                    || isEdit)
                                     .map((course) => {
                                         const role = currentlyEnrolledCourseIds.has(course.courseId)
                                             ? (user.roles[course.courseId] || 'student')
                                             : undefined;
                                         const selected = selectedCourseIds.includes(course.courseId)
-                                    || (role !== undefined && role !== 'student');
+                                            || (role !== undefined && role !== 'student');
                                         return (
                                             <div key={course.courseId}>
                                                 <CourseCard

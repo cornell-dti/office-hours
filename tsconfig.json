@@ -9,6 +9,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -17,10 +18,12 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react",
-    "moduleResolution": "node"
+    "moduleResolution": "node" ,
+    "baseUrl": "./src",
   },
   "include": [
-    "src",
-    "functions/src"
+      "src",
+      "functions/src",
+      "types"
   ]
 }

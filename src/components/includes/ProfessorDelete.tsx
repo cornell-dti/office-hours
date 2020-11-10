@@ -3,7 +3,7 @@ import { Icon } from 'semantic-ui-react';
 
 type Props = {
     isDeleteVisible: boolean;
-    updateDeleteVisible: Function;
+    updateDeleteVisible: (...args: any[]) => any;
     content: JSX.Element;
 }
 

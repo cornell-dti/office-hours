@@ -21,8 +21,8 @@ type Props = {
     readonly tags: { readonly [tagId: string]: FireTag };
     readonly myUserId: string;
     readonly myVirtualLocation?: string;
-    readonly handleJoinClick: Function;
-    readonly triggerUndo: Function;
+    readonly handleJoinClick: (...args: any[]) => any;
+    readonly triggerUndo: (...args: any[]) => any;
     readonly isOpen: boolean;
     readonly isPast: boolean;
     readonly openingTime: Date;
@@ -36,7 +36,7 @@ type StudentMyQuestionProps = {
     readonly questionId: string;
     readonly tags: { readonly [tagId: string]: FireTag };
     readonly index: number;
-    readonly triggerUndo: Function;
+    readonly triggerUndo: (...args: any[]) => any;
     readonly isPast: boolean;
     readonly myUserId: string;
     readonly modality: FireSessionModality;

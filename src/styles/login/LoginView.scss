@@ -107,7 +107,8 @@
 
     .LoginView::after {
         content: "";
-        background-image: url('/mann.jpg');
+        // TODO
+        // background-image: url('/mann.jpg');
         background-size: cover;
         opacity: 0.5;
         top: 0;

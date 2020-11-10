@@ -4,18 +4,10 @@ import moment from 'moment';
 import { Dropdown, Checkbox, Icon, DropdownItemProps, DropdownProps, Button } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { firestore, Timestamp } from '../../firebase';
-import { createSeries, updateSeries } from '../../firebasefunctions';
 
-enum Modality {
-    VIRTUAL = 'virtual',
-    HYBRID = 'hybrid',
-    INPERSON = 'in-person',
-    REVIEW = 'review'
-}
-
-class OHMutateError extends Error {
-}
+import { OHMutateError } from 'lib/firebasefunctions';
+import { mutateSessionOrSeries } from 'lib/prof/series';
+import { Modality } from '../../common';
 
 const ProfessorOHInfo = (props: {
     session?: FireSession;
@@ -23,7 +15,7 @@ const ProfessorOHInfo = (props: {
     isNewOH: boolean;
     taOptions: DropdownItemProps[];
     taUserIdsDefault?: number[];
-    toggleEdit: Function;
+    toggleEdit: (...args: any[]) => any;
     isOfficeHour: boolean;
 }) => {
     const session = props.session || undefined;
@@ -118,139 +110,6 @@ const ProfessorOHInfo = (props: {
             ...old.slice(index + 1)
         ]);
     };
-
-    /** A do-it-all function that can create/edit sessions/series. */
-    const mutateSessionOrSeries = React.useCallback((): Promise<void> => {
-        const startMomentTime = startTime;
-        if (startMomentTime === undefined) {
-            return Promise.reject(new OHMutateError("No start time selected."));
-        }
-        const startTimestamp = Timestamp.fromDate(startMomentTime.toDate());
-        const endMomentTime = endTime;
-        if (endMomentTime === undefined) {
-            return Promise.reject(new OHMutateError("No end time selected."));
-        }
-        const endTimestamp = Timestamp.fromDate(endMomentTime.toDate());
-
-        if (modality === Modality.REVIEW && (!zoomLink || 
-            (zoomLink.indexOf('http://') === -1 && zoomLink.indexOf('https://') === -1))) {
-            return Promise.reject(new OHMutateError("Not a valid link!"))
-        }
-        const propsSession = props.session;
-        const taDocuments: string[] = [];
-        taSelected.forEach(ta => {
-            if (ta && ta.id) {
-                taDocuments.push(ta.id);
-            }
-        });
-        if (isSeriesMutation) {
-            let series: FireSessionSeriesDefinition;
-
-            if (modality === Modality.VIRTUAL) {
-                series = {
-                    modality,
-                    courseId: props.courseId,
-                    endTime: endTimestamp,
-                    startTime: startTimestamp,
-                    tas: taDocuments,
-                    title,
-                }
-            } else if (modality === Modality.REVIEW) {
-                if (zoomLink === undefined) {
-                    return Promise.reject(new OHMutateError("Not a valid link!"))
-                }
-                series = {
-                    modality,
-                    courseId: props.courseId,
-                    endTime: endTimestamp,
-                    startTime: startTimestamp,
-                    tas: taDocuments,
-                    title,
-                    link: zoomLink,
-                }
-            } else {
-                if (modality === Modality.INPERSON) {
-                    if (!locationBuildingSelected) {
-                        return Promise.reject(new OHMutateError("No building provided!"));
-                    }
-
-                    if (!locationRoomNumSelected) {
-                        return Promise.reject(new OHMutateError("No room provided!"));
-                    }
-                }
-
-                series = {
-                    modality,
-                    courseId: props.courseId,
-                    endTime: endTimestamp,
-                    startTime: startTimestamp,
-                    tas: taDocuments,
-                    title,
-                    building: locationBuildingSelected || '',
-                    room: locationRoomNumSelected || '',
-                };
-            }
-
-            if (propsSession) {
-                const seriesId = propsSession.sessionSeriesId;
-                if (seriesId === undefined) {
-                    return Promise.reject(
-                        new OHMutateError(
-                            "This is not a repeating office hour, deselect 'Edit all office hours in this series'."
-                        )
-                    );
-                }
-                return updateSeries(firestore, seriesId, series);
-            }
-
-            return createSeries(firestore, series);
-        }
-
-        const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
-
-        const sessionLocation = modality === Modality.HYBRID || modality === Modality.INPERSON ? {
-            building: locationBuildingSelected || '',
-            room: locationRoomNumSelected || '',
-        } : {};
-        const sessionLink = modality === Modality.REVIEW ? {
-            link: zoomLink || '',
-        } : {};
-        const sessionWithoutSessionSeriesId = {
-            modality,
-            courseId: props.courseId,
-            endTime: endTimestamp,
-            startTime: startTimestamp,
-            tas: taDocuments,
-            totalQuestions: 0,
-            assignedQuestions: 0,
-            resolvedQuestions: 0,
-            totalWaitTime: 0,
-            totalResolveTime: 0,
-            title,
-            ...sessionLocation,
-            ...sessionLink
-        };
-        const newSession: Omit<FireSession, 'sessionId'> = sessionSeriesId === undefined
-            ? sessionWithoutSessionSeriesId
-            : { ...sessionWithoutSessionSeriesId, ...sessionLocation, ...sessionLink, sessionSeriesId };
-        if (propsSession) {
-            return firestore.collection('sessions').doc(propsSession.sessionId).update(newSession);
-        }
-
-        return firestore.collection('sessions').add(newSession).then(() => { });
-    }, [
-        endTime,
-        isSeriesMutation,
-        locationBuildingSelected,
-        locationRoomNumSelected,
-        zoomLink,
-        modality,
-        props.courseId,
-        props.session,
-        startTime,
-        taSelected,
-        title
-    ]);
 
     let isMaxTA = false;
     // -1 to account for the "TA Name" placeholder
@@ -472,7 +331,19 @@ const ProfessorOHInfo = (props: {
                         } else if (disableState) {
                             updateNotification(stateNotification);
                         } else {
-                            mutateSessionOrSeries().then(() => {
+                            mutateSessionOrSeries({
+                                endTime,
+                                isSeriesMutation,
+                                locationBuildingSelected,
+                                locationRoomNumSelected,
+                                zoomLink,
+                                modality,
+                                courseId: props.courseId,
+                                session,
+                                startTime,
+                                taSelected,
+                                title
+                            }).then(() => {
                                 // eslint-disable-next-line no-console
                                 console.log("Success!");
 

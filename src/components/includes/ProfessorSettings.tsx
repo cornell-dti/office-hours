@@ -1,6 +1,6 @@
+import { updateCourseSettings } from 'lib/prof/course';
 import * as React from 'react';
 import { Icon, Dropdown } from 'semantic-ui-react';
-import { firestore } from '../../firebase';
 
 const OPEN_OPTIONS: { text: string; value: number }[] = [
     { text: '0', value: 0 },
@@ -26,14 +26,6 @@ class ProfessorSettings extends React.Component<Props, State> {
             charLimit: props.charLimitDefault
         };
     }
-
-    updateCourseSettings = (): void => {
-        const courseUpdate: Partial<FireCourse> = {
-            queueOpenInterval: this.state.openInterval,
-            charLimit: this.state.charLimit
-        };
-        firestore.collection('courses').doc(this.props.courseId).update(courseUpdate);
-    };
 
     handleCharLimit = (input: string): void => {
         const parsed = parseInt(input, 10);
@@ -96,7 +88,7 @@ class ProfessorSettings extends React.Component<Props, State> {
                     type="button"
                     className="Action"
                     onClick={() => {
-                        this.updateCourseSettings();
+                        updateCourseSettings(this.props.courseId, this.state.charLimit, this.state.openInterval);
                         this.props.toggleDelete();
                     }}
                 >

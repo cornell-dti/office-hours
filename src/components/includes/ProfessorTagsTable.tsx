@@ -1,14 +1,14 @@
 import * as React from 'react';
 import ProfessorTagsRow from './ProfessorTagsRow';
 
-import { firestore } from '../../firebase';
 import { useQuery } from '../../firehooks';
+import { firestore } from '../../firebaseApp';
 
 const getQuery = (courseId: string) => firestore
     .collection('tags')
     .where('courseId', '==', courseId);
 
-const ProfessorTagsTable = (props: { courseId: string }) => {
+const ProfessorTagsTable: React.FC<{ courseId: string }> = (props) => {
     const tags = useQuery<FireTag>(props.courseId, getQuery, 'tagId');
 
     return (

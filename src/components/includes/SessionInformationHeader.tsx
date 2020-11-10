@@ -9,7 +9,7 @@ import { computeNumberAhead } from '../../utilities/questions';
 type Props = {
     session: FireSession;
     course: FireCourse;
-    callback: Function;
+    callback: (...args: any[]) => any;
     user: FireUser;
     isDesktop: boolean;
 };

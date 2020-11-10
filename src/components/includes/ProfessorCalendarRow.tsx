@@ -2,29 +2,19 @@ import * as React from 'react';
 import moment from 'moment';
 import { Icon, DropdownItemProps } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
+import { getUsers } from 'lib/prof/course';
 import ProfessorOHInfo from './ProfessorOHInfo';
-import { firestore } from '../../firebase';
 
-const getUsers = async (sessions: FireSession[]): Promise<FireUser[]> => {
-    const taSet = new Set<string>();
-    sessions.forEach(session => session.tas.forEach(ta => taSet.add(ta)));
-    const userDocuments = await Promise.all(Array.from(taSet).map(id => firestore.collection('users').doc(id).get()));
-    return userDocuments.map(document => ({
-        userId: document.id,
-        ...(document.data() as Omit<FireUser, 'userId'>)
-    }));
-};
-
-const ProfessorCalendarRow = (props: {
+const ProfessorCalendarRow: React.FC<{
     dayNumber: number;
     sessions: FireSession[];
     courseId: string;
     taOptions: DropdownItemProps[];
     isExpanded: boolean[];
     handleEditToggle: (day: number, row: number, forceClose?: boolean) => void;
-    updateDeleteInfo: Function;
-    updateDeleteVisible: Function;
-}) => {
+    updateDeleteInfo: (...args: any[]) => void;
+    updateDeleteVisible: (...args: any[]) => void;
+}> = (props) => {
 
     const toggleEdit = (row: number, close?: boolean) => {
         props.handleEditToggle(props.dayNumber, row, close);
