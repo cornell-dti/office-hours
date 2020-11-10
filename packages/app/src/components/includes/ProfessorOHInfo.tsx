@@ -5,18 +5,18 @@ import { Dropdown, Checkbox, Icon, DropdownItemProps, DropdownProps, Button } fr
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-import { Modality } from '../../common';
 import { OHMutateError } from 'lib/firebasefunctions';
 import { mutateSessionOrSeries } from 'lib/prof/series';
+import { Modality } from '../../common';
 
-const ProfessorOHInfo = (props: {
+const ProfessorOHInfo: React.FC<{
     session?: FireSession;
     courseId: string;
     isNewOH: boolean;
     taOptions: DropdownItemProps[];
     taUserIdsDefault?: number[];
     toggleEdit: (...args: any[]) => any;
-}) => {
+}> = (props) => {
     const session = props.session || undefined;
 
     const [startTime, setStartTime] = useState<moment.Moment | undefined>();
@@ -208,17 +208,17 @@ const ProfessorOHInfo = (props: {
                     <p className="description">
                         {
                             modality === Modality.VIRTUAL ?
-                                'In a virtual session each TA can provide their own "Virtual Location" '+
+                                'In a virtual session each TA can provide their own "Virtual Location" ' +
                                 '(e.g. Zoom Link, Google Meet Link)' +
                                 ' which is provided to the student when the TA is assigned to them.'
                                 : modality === Modality.HYBRID ?
-                                    'In a hybrid session the student can either provide a Zoom link'+
+                                    'In a hybrid session the student can either provide a Zoom link' +
                                     ' or a physical location.' : modality === Modality.REVIEW ?
-                                        'In a review session a Zoom link for the review is posted ' + 
-                                    ' and students can ask questions to be answered during the session.'
+                                        'In a review session a Zoom link for the review is posted ' +
+                                        ' and students can ask questions to be answered during the session.'
                                         :
                                         'In an in-person session the student can provide their physical'
-                                    + ' location (e.g. by the whiteboard).'
+                                        + ' location (e.g. by the whiteboard).'
                         }
                     </p>
                 </div>
@@ -250,8 +250,8 @@ const ProfessorOHInfo = (props: {
                     />
                 </div> : <></>}
                 {modality === Modality.REVIEW ? <div className="row">
-                    <Icon name="desktop"/>
-                    <input 
+                    <Icon name="desktop" />
+                    <input
                         className="long"
                         placeholder="Zoom link"
                         value={zoomLink || ''}
@@ -353,7 +353,7 @@ const ProfessorOHInfo = (props: {
                             }).catch((err: Error) => {
                                 // TODO(ewlsh): Implement better dialogs and error recovery.
                                 if (err instanceof OHMutateError) {
-                                // eslint-disable-next-line no-alert
+                                    // eslint-disable-next-line no-alert
                                     alert(err.message);
                                 } else {
                                     // eslint-disable-next-line no-alert

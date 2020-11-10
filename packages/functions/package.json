@@ -1,5 +1,6 @@
 {
-  "name": "functions",
+  "name": "@qmi/functions",
+  "version": "0.0.1",
   "scripts": {
     "lint": "eslint 'src/**/*'",
     "build": "tsc",
@@ -10,7 +11,7 @@
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "10"
+    "node": "12"
   },
   "main": "lib/index.js",
   "dependencies": {

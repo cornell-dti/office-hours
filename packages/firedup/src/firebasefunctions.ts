@@ -1,7 +1,9 @@
-import * as Firebase from 'firebase-admin';
-
-import { datePlus, normalizeDateToDateStart, normalizeDateToWeekStart } from '../utilities/date';
-import { blockArray } from '../firehooks';
+const normalizeDateToWeekStart = (date: Date): Date => {
+    const normalized = new Date(date);
+    normalized.setHours(0, 0, 0, 0);
+    normalized.setDate(normalized.getDate() - normalized.getDay());
+    return normalized;
+};
 
 /* Basic Functions */
 

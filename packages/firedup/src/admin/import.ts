@@ -1,8 +1,17 @@
 
-import { getCourseRoleUpdates, getUserRoleUpdate } from 'lib/firebasefunctions';
+import { getCourseRoleUpdates, getUserRoleUpdate } from '../firebasefunctions';
 import collections from '../collections';
-import { blockArray } from '../../firehooks';
 import { firestore as db } from '../firebase';
+
+export const blockArray = <T>(arr: readonly T[], blockSize: number) => {
+    let result: T[][] = [];
+    for (let i = 0; i < arr.length; i += blockSize) {
+        result = [...result, arr.slice(i, Math.min(arr.length, i + blockSize))];
+    }
+
+    return result;
+}
+
 
 export const importProfessorsOrTAs = async (
     course: FireCourse,

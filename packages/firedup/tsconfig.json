@@ -18,12 +18,10 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
-        "jsx": "react",
-        "baseUrl": "./src",
+        "jsx": "react"
     },
     "include": [
         "src",
-        "functions/src",
-        "types", "packages/types/fireData.d.ts"
+        "types"
     ]
 }

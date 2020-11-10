@@ -1,0 +1,73 @@
+{
+    "extends": ["airbnb", "prettier", "plugin:@typescript-eslint/recommended", "react-app"],
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
+    "env": {
+        "browser": true,
+        "node": true
+    },
+    "rules": {
+        "import/no-unresolved": "off",
+        "class-methods-use-this": "warn",
+        "max-classes-per-file": "off",
+        "no-else-return": "warn",
+        "no-param-reassign": "warn",
+        "no-plusplus": "off",
+        "no-nested-ternary": "off",
+        "no-shadow": "warn",
+        "no-underscore-dangle": "off",
+        "indent": "off",
+        "lines-between-class-members": "off",
+        "prefer-destructuring": "off",
+        "prefer-template": "off",
+        "spaced-comment": "warn",
+        "jsx-a11y/click-events-have-key-events": "warn",
+        "jsx-a11y/no-noninteractive-element-interactions": "warn",
+        "jsx-a11y/no-noninteractive-tabindex": "warn",
+        "jsx-a11y/no-static-element-interactions": "warn",
+        "jsx-a11y/tabindex-no-positive": "warn",
+        "react/destructuring-assignment": "off",
+        "react/jsx-boolean-value": "off",
+        "react/jsx-curly-newline": "off",
+        "react/jsx-curly-brace-presence": "off",
+        "react/jsx-closing-tag-location": "off",
+        "react/jsx-filename-extension": "off",
+        "react/jsx-indent": "off",
+        "react/jsx-indent-props": "off",
+        "react/jsx-one-expression-per-line": "off",
+        "react/jsx-props-no-spreading": "off",
+        "react/jsx-tag-spacing": "off",
+        "react/jsx-wrap-multilines": "off",
+        "react/no-array-index-key": "warn",
+        "react/no-access-state-in-setstate": "warn",
+        "react/no-deprecated": "warn",
+        "react/no-did-update-set-state": "warn",
+        "react/no-unescaped-entities": "warn",
+        "react/static-property-placement": "warn",
+        "react/no-unused-state": "warn",
+        "react/prop-types": "off",
+        "react/prefer-stateless-function": "warn",
+        "react/state-in-constructor": "off",
+        "import/extensions": "off",
+        "import/prefer-default-export": "off",
+        "@typescript-eslint/ban-ts-comment": "warn",
+        "@typescript-eslint/indent": ["error", 4],
+        "@typescript-eslint/prefer-interface": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-angle-bracket-type-assertion": "off",
+        "@typescript-eslint/no-unused-vars": [
+            "error",
+            { "vars": "all", "args": "after-used", "ignoreRestSiblings": true }
+        ],
+        "@typescript-eslint/no-empty-function": "off",
+        "max-len": [
+            "error",
+            {
+                "code": 120
+            }
+        ],
+        "no-console": "error"
+    },
+    "settings": {
+    }
+}
