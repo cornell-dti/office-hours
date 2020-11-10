@@ -1,13 +1,12 @@
-import type * as firebase from 'firebase';
+import type firebase from 'firebase';
 
-import { auth } from "firebase";
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { combineLatest, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { importProfessorsOrTAs } from 'lib/admin/import';
 import { hasOverlap } from 'utilities/date';
-import { collectionData, firestore } from "./firebaseApp";
+import { collectionData, firestore, auth } from "./firebaseApp";
 
 export const useSessionsAndQuestions = (
     courseId: string,
@@ -62,7 +61,7 @@ export const useSessions = (
 
     useEffect(() => {
         if (courseId === '') {
-            return () => {};
+            return () => { };
         }
 
         const sessions$: Observable<FireSession[]> = collectionData(
@@ -135,7 +134,7 @@ export const userUpload = (user: firebase.User | null) => {
 };
 
 export const logOut = () => {
-    auth()
+    auth
         .signOut()
         .then(() => {
             // Success

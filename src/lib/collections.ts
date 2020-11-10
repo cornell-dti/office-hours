@@ -1,4 +1,4 @@
-import { firestore } from "firebase";
+import firebase from "firebase";
 
 export enum FireCollection {
     SESSIONS = 'sessions',
@@ -9,48 +9,48 @@ export enum FireCollection {
 }
 
 export class Collections {
-    private db: firestore.Firestore;
+    private db: firebase.firestore.Firestore;
 
-    constructor(db: firestore.Firestore) {
+    constructor(db: firebase.firestore.Firestore) {
         this.db = db;
     }
 
-    tags(): firestore.CollectionReference<Omit<FireTag, 'tagId'>> {
+    tags(): firebase.firestore.CollectionReference<Omit<FireTag, 'tagId'>> {
         const { db } = this;
 
-        return db.collection(FireCollection.TAGS) as firestore.CollectionReference<FireTag>;
+        return db.collection(FireCollection.TAGS) as firebase.firestore.CollectionReference<FireTag>;
     }
 
-    questions(): firestore.CollectionReference<Omit<FireQuestion, 'questionId'>> {
+    questions(): firebase.firestore.CollectionReference<Omit<FireQuestion, 'questionId'>> {
         const { db } = this;
 
-        return db.collection(FireCollection.QUESTION) as firestore.CollectionReference<FireQuestion>;
+        return db.collection(FireCollection.QUESTION) as firebase.firestore.CollectionReference<FireQuestion>;
     }
 
-    sessions(): firestore.CollectionReference<Omit<FireSession, 'sessionId'>> {
+    sessions(): firebase.firestore.CollectionReference<Omit<FireSession, 'sessionId'>> {
         const { db } = this;
 
-        return db.collection(FireCollection.SESSIONS) as firestore.CollectionReference<FireSession>;
+        return db.collection(FireCollection.SESSIONS) as firebase.firestore.CollectionReference<FireSession>;
     }
 
-    courses(): firestore.CollectionReference<Omit<FireCourse, 'courseId'>> {
+    courses(): firebase.firestore.CollectionReference<Omit<FireCourse, 'courseId'>> {
         const { db } = this;
 
-        return db.collection(FireCollection.COURSES) as firestore.CollectionReference<FireCourse>;
+        return db.collection(FireCollection.COURSES) as firebase.firestore.CollectionReference<FireCourse>;
     }
 
-    users(): firestore.CollectionReference<Omit<FireUser, 'userId'>> {
+    users(): firebase.firestore.CollectionReference<Omit<FireUser, 'userId'>> {
         const { db } = this;
 
 
-        return db.collection(FireCollection.USERS) as firestore.CollectionReference<FireUser>;
+        return db.collection(FireCollection.USERS) as firebase.firestore.CollectionReference<FireUser>;
     }
 }
 
 // eslint-disable-next-line import/no-mutable-exports
 let collections!: Collections;
 
-export function initializeCollections(db: firestore.Firestore): void {
+export function initializeCollections(db: firebase.firestore.Firestore): void {
     collections = new Collections(db);
 }
 

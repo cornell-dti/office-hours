@@ -1,6 +1,5 @@
-import * as firebase from 'firebase';
+import firebase from 'firebase';
 
-import { firestore } from 'firebase';
 import { firestore as db } from '../firebase';
 
 export const assignQuestion = (
@@ -13,7 +12,7 @@ export const assignQuestion = (
     const questionUpdate: Partial<FireQuestion> = {
         status: 'assigned',
         answererId: userId,
-        timeAssigned: firestore.Timestamp.now(),
+        timeAssigned: firebase.firestore.Timestamp.now(),
         ...(virtualLocation ? { answererLocation: virtualLocation } : {})
     };
     batch.update(db.doc(`questionSlots/${questionId}`), slotUpdate);

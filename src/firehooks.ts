@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import type firebase from 'firebase/app';
-
-import { firestore } from 'firebase';
+import firebase from 'firebase/app';
 
 import { collectionData, docData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
@@ -225,7 +223,7 @@ const courseProfessorOrTaBatchQuery = (professorsOrTas: readonly string[]) => {
     const blocks = blockArray(professorsOrTas.length === 0 ? dummyProfessorOrTAList : professorsOrTas, 10);
 
     return blocks.map(block => db.collection('users').where(
-        firestore.FieldPath.documentId(),
+        firebase.firestore.FieldPath.documentId(),
         'in',
         block
     ));

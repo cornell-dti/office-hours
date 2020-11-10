@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import * as firebase from 'firebase';
+import firebase from 'firebase';
 
 import collections from '../collections';
 

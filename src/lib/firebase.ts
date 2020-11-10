@@ -1,5 +1,5 @@
 /* eslint-disable import/no-mutable-exports */
-import type * as firebase from 'firebase';
+import type firebase from 'firebase';
 
 import { initializeCollections } from './collections';
 
