@@ -5,6 +5,7 @@ import addNotification from 'react-push-notification';
 import SessionQuestion from './SessionQuestion';
 import { useAskerQuestions } from '../../firehooks';
 import AddQuestion from "./AddQuestion";
+import DiscussionQuestion from "./DiscussionQuestion"
 
 
 // Maximum number of questions to be shown to user
@@ -62,20 +63,33 @@ const StudentMyQuestion = ({
     return (
         <div className="User">
             <p className="QuestionHeader">My Question</p>
-            <SessionQuestion
-                key={questionId}
-                question={studentQuestion}
-                modality={modality}
-                users={{}}
-                user={user}
-                tags={tags}
-                index={index}
-                isTA={false}
-                includeRemove={true}
-                triggerUndo={triggerUndo}
-                isPast={isPast}
-                myUserId={myUserId}
-            />
+            {modality === "review" ? 
+                <DiscussionQuestion 
+                    question={studentQuestion as FireDiscussionQuestion}
+                    user={user}
+                    tags={tags}
+                    isTA={false}
+                    includeRemove={true}
+                    isPast={isPast}
+                    myQuestion={true}
+                />
+                : 
+                <SessionQuestion
+                    key={questionId}
+                    question={studentQuestion}
+                    modality={modality}
+                    users={{}}
+                    user={user}
+                    tags={tags}
+                    index={index}
+                    isTA={false}
+                    includeRemove={true}
+                    triggerUndo={triggerUndo}
+                    isPast={isPast}
+                    myUserId={myUserId}
+                />
+            }
+            
         </div>
     );
 };
@@ -95,7 +109,6 @@ const SessionQuestionsContainer = (props: Props) => {
             // Do nothing. iOS crashes because Notification isn't defined
         }
     }, []);
-
     const allQuestions = props.questions;
     const myUserId = props.myUserId;
     const sessionId = props.session.sessionId;
@@ -194,7 +207,23 @@ const SessionQuestionsContainer = (props: Props) => {
                     myUserId={props.myUserId}
                 />
             }
-            {shownQuestions && shownQuestions.length > 0 && props.isTA &&
+            {shownQuestions && shownQuestions.length > 0 && props.modality === "review" &&
+            <p className="QuestionHeader">All Questions</p>}
+            {shownQuestions &&  shownQuestions.length > 0 && props.modality === "review" &&
+                shownQuestions.map((question) => (
+                    <DiscussionQuestion
+                        key={question.questionId}
+                        question={question as FireDiscussionQuestion}
+                        user={props.user}
+                        tags={props.tags}
+                        isTA={props.isTA}
+                        includeRemove={false}
+                        isPast={props.isPast}
+                        myQuestion={false}
+                    />
+                ))
+            }
+            {shownQuestions && shownQuestions.length > 0 && props.modality !== "review" && props.isTA &&
                 shownQuestions.map((question, i: number) => (
                     <SessionQuestion
                         key={question.questionId}
@@ -211,7 +240,8 @@ const SessionQuestionsContainer = (props: Props) => {
                         myUserId={props.myUserId}
                         user={props.user}
                     />
-                ))
+                    
+                )) 
             }
             {shownQuestions && shownQuestions.length === 0 &&
                 <>

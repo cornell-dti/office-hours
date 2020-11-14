@@ -141,18 +141,21 @@ interface FireQuestion {
     askerId: string;
     answererId: string;
     content: string;
+    sessionId: string;
+    primaryTag: string;
+    secondaryTag: string;
+    questionId: string;
+    status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
+    timeEntered: FireTimestamp;
+    timeAddressed?: FireTimestamp;
+    timeAssigned?: FireTimestamp;
+}
+
+interface FireOHQuestion extends FireQuestion {
     taComment?: string;
     studentComment?: string;
     location?: string;
     answererLocation?: string;
-    sessionId: string;
-    status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
-    timeAddressed?: FireTimestamp;
-    timeAssigned?: FireTimestamp;
-    timeEntered: FireTimestamp;
-    primaryTag: string;
-    secondaryTag: string;
-    questionId: string;
 }
 
 type FireQuestionSlot = Pick<FireQuestion, 'askerId' 
@@ -165,4 +168,8 @@ interface FireTag {
     tagId: string;
     name: string;
     parentTag?: string;
+}
+
+interface FireDiscussionQuestion extends FireQuestion {
+    upvotedUsers: string[];
 }

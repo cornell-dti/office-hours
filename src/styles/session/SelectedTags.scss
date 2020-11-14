@@ -12,6 +12,10 @@ $secondary-tag-selected: #ffdba6;
     border-radius: 12px;
     cursor: pointer;
 
+    &.discussion {
+        font-size: 11px;
+    }
+
     &.primaryTag {
         color: $tag-blue;
         border-color: $tag-blue;

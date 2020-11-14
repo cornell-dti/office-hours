@@ -151,10 +151,12 @@ class AddQuestion extends React.Component<Props, State> {
             };
 
             const location = 'building' in this.props.session ? {} : { location: this.state.location };
+            const upvotedUsers = this.props.session.modality === "review" ? {upvotedUsers: [auth.currentUser.uid]} : {}
 
             const newQuestion: Omit<FireQuestion, 'questionId'> = {
                 ...newQuestionSlot,
                 ...location,
+                ...upvotedUsers,
                 answererId: '',
                 content: this.state.question,
                 primaryTag: this.state.selectedPrimary.tagId,

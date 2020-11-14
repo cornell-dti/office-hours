@@ -13,7 +13,7 @@ import SelectedTags from './SelectedTags';
 const LOCATION_CHAR_LIMIT = 40;
 
 type Props = {
-    question: FireQuestion;
+    question: FireOHQuestion;
     users: { readonly [userId: string]: FireUser };
     tags: { readonly [tagId: string]: FireTag };
     index: number;
@@ -124,7 +124,7 @@ class SessionQuestion extends React.Component<Props, State> {
     assignQuestion = () => {
         const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
-        const questionUpdate: Partial<FireQuestion> = {
+        const questionUpdate: Partial<FireOHQuestion> = {
             status: 'assigned',
             answererId: this.props.myUserId,
             timeAssigned: firebase.firestore.Timestamp.now(),
@@ -147,7 +147,7 @@ class SessionQuestion extends React.Component<Props, State> {
     questionDone = () => {
         const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'resolved' };
-        const questionUpdate: Partial<FireQuestion> = {
+        const questionUpdate: Partial<FireOHQuestion> = {
             status: 'resolved',
             timeAddressed: firebase.firestore.Timestamp.now()
         };
@@ -157,7 +157,7 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     questionComment = (newComment: string, isTA: boolean) => {
-        let update: Partial<FireQuestion>
+        let update: Partial<FireOHQuestion>
         if (isTA) {
             update = { taComment: newComment };
         } else {
