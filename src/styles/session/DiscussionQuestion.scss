@@ -1,0 +1,122 @@
+.DiscussionQuestion {
+    background-color: white;
+    display: block;
+    margin: 12px auto 12px;
+    position: relative;
+    text-align: center;
+    width: 100%;
+    display: inline-block;
+    border-radius: 10px;
+
+    .DiscussionContainer {
+        display: flex;
+        flex-direction: column;
+        flex: 0 1 auto;
+        margin-top: 7px;
+        margin-left: 18px;
+    }
+
+    .Upvote {
+        background: url('../../media/shortup.png') no-repeat top;
+        height: 20px;
+        width: 20px;
+        border: none;
+        float: left;
+    }
+
+    .Upvote:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    .UpvoteContainer {
+        display: flex block;
+        flex-direction: row;
+        flex: 0 1 auto;
+
+        .Upvotes {
+            float: left;
+            font-size: 14px;
+            width: 20px;
+            height: 20px;
+            color: white;
+            background-color: $number-blue;
+            border: solid $number-blue 0px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .QuestionBody {
+            float: left;
+            font-size: 14px;
+            text-align: left;
+            padding: 0px 12px;
+            margin: 0em;
+            color: #595959;
+            font-weight: 300;
+    
+            .studentInformation {
+                display: inline-block;
+                width: 100%;
+                padding-top: 11px;
+                padding-left: 12px;
+                text-align: left;
+            }
+    
+        }
+
+
+    }
+
+    .BottomBarContainer {
+        float: left;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        flex: 1 0 auto;
+        width: 100%;
+    }
+
+    .DiscussionTags {
+        float: left;
+    }
+
+    .Time {
+        float: right;
+        font-weight: 300;
+        color: gray;
+        // margin-right: 40px;
+        font-size: 12px;
+    }
+    .Buttons {
+        
+        margin-top: 10px;
+        margin-bottom: 0px;
+        width: 95%;
+
+        hr {
+            height: 1px;
+            border: 1px;
+            border-top: 1px solid #ebebeb;
+            margin: 0px;
+            padding: 0;
+        }
+    
+        .Remove {
+            color: #595959;
+            // padding: 10px 30px;
+            font-size: 15px;
+            user-select: none;
+            cursor: pointer;
+        }
+    }
+
+    .LowerDiscussionContainer {
+        display: flex;
+        flex: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 15px 18px;
+    }
+
+}

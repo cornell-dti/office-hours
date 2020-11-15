@@ -62,7 +62,7 @@ const SessionView = (
     const updateSessionProfile = useCallback((virtualLocation: string) => {
         const batch = firestore.batch();
 
-        const questionUpdate: Partial<FireQuestion> = { answererLocation: virtualLocation };
+        const questionUpdate: Partial<FireOHQuestion> = { answererLocation: virtualLocation };
         questions.forEach((q) => {
             if (q.answererId === user.userId && q.status === 'assigned') {
                 batch.update(firestore.doc(`questions/${q.questionId}`), questionUpdate);
@@ -281,6 +281,7 @@ const SessionView = (
 
 export default (props: Omit<Props, 'questions'>) => {
     const isTa = props.user.roles[props.course.courseId] !== undefined;
-    const questions = filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));
+    const questions = filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, 
+        props.session.modality === "review" ? true : isTa));
     return <SessionView questions={questions} {...props} />;
 };

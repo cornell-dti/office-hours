@@ -12,6 +12,7 @@ type Props = {
     check?: boolean;
     isPrimary?: boolean;
     select?: boolean;
+    isDiscussion?: boolean;
 }
 
 class SelectedTags extends React.PureComponent<Props> {
@@ -41,6 +42,7 @@ class SelectedTags extends React.PureComponent<Props> {
                     :<p
                         className={['tag',
                             this.props.tag.level === 1 ? 'primaryTag' : 'secondaryTag',
+                            this.props.isDiscussion && 'discussion',
                             this.props.isSelected && 'selectedTag'].join(' ')}
                         onClick={this._onClick}
                     >
