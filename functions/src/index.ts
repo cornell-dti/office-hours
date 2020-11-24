@@ -7,6 +7,96 @@ admin.initializeApp();
 
 const db = admin.firestore();
 
+/** Adds new roles to a user without them being in QMI's system
+ * Not inclusive: Still need to consider users that are
+ * already in the system. (THIS CASE IS HANDLED BY NOT INCLDUING THEM IN THE
+ * pendingUsers COLLECTIONIN THE FIRST PLACE)
+ */
+exports.onUserCreate = functions.firestore
+    .document('users/{userId}')
+    .onCreate(async (snap, context) => {
+        const userId = context.params.userId;
+
+        // get the user doc
+        const userRef = db.collection('users').doc(userId);
+        const userDoc = await userRef.get();
+        const user = userDoc.data() as FireUser;
+
+        const currentRoles = user.roles;
+        const email = user.email;
+
+        // match this email with a user in the pendingUsers collection
+        const pendingUsersSnap = await db.collection('pendingUsers').where('email', '==', email).get();
+
+        pendingUsersSnap.forEach(async doc => {
+
+            // delete the pendingUsers entry because they now exist in QMI...
+            db.collection('pendingUsers').doc(doc.id).delete();
+
+            // get the users's roles map as a Map<string, FireCourseRole>
+            const newRoles = (doc.data() as FirePendingUser).roles;
+
+            const taCourseIds: string[] = [];
+            const profCourseIds: string[] = [];
+
+            for (const [courseId, role] of Object.entries(newRoles)) {
+
+                if (role === 'ta') {
+                    taCourseIds.push(courseId);
+                } else if (role === 'professor') {
+                    profCourseIds.push(courseId);
+                }
+            }
+            
+            const batch = db.batch();
+
+            // and update the newly-created user with their new roles
+            userRef.update({
+                courses: [...taCourseIds, ...profCourseIds],
+                roles: {...currentRoles, ...newRoles}
+            })
+
+            const taCourseDocs = await Promise.all(
+                taCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
+                        
+            const profCourseDocs = await Promise.all(
+                profCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
+
+            taCourseDocs.map(doc => {
+                const course = doc.data() as FireCourse;
+
+                batch.update(
+                    db.collection('courses').doc(course.courseId),
+                    insertTaOrProf(course, userId, 'ta')
+                );
+            });
+
+            profCourseDocs.map(doc => {
+                const course = doc.data() as FireCourse;
+
+                batch.update(
+                    db.collection('courses').doc(course.courseId),
+                    insertTaOrProf(course, userId, 'professor')
+                );
+            });
+
+            batch.commit();
+        });
+
+    });
+
+
+const insertTaOrProf = (course: FireCourse, userId: string, role: string) => {
+    if (role === 'ta') {
+        course.tas = [...course.tas, userId];
+    }
+    if (role === 'professor') {
+        course.professors = [...course.professors, userId];
+    }
+
+    return course;
+}
+
 exports.onQuestionCreate = functions.firestore
     .document('questions/{questionId}')
     .onCreate((snap) => {
