@@ -22,7 +22,6 @@ const CSVUploadView = (
         }
     }
 
-
     const pageInfos: PageInfo[] = [
         { 
             header: "Step 1: Select a Format", 
@@ -51,6 +50,9 @@ const CSVUploadView = (
             </div>
             <div>
                 <button onClick={previous}>{pageInfos[pageIndex].leftButton}</button>
+                <span className={pageIndex === 0 ? "ondot":"offdot"}></span>
+                <span className={pageIndex === 1 ? "ondot":"offdot"}></span>
+                <span className={pageIndex === 2 ? "ondot":"offdot"}></span>
                 <button onClick={next}>{pageInfos[pageIndex].rightButton}</button>
             </div>
         </div>
