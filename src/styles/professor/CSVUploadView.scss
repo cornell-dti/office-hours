@@ -1,19 +1,50 @@
-.ondot {
-    height: 10px;
-    width: 10px;
+.HeadContainer {
     background-color: #5599DB;
-    border-radius: 50%;
-    display: inline-block;
-    margin-left: 10px;
-    margin-right: 10px;
+    color: white;
 }
 
-.offdot {
-    height: 10px;
-    width: 10px;
-    background-color: #C4C4C4;
-    border-radius: 50%;
-    display: inline-block;
-    margin-left: 10px;
-    margin-right: 10px;
+
+.StepControls {
+
+    .dots {
+
+        position: absolute;                  
+        bottom:10%; 
+        right: 38%;
+
+        .ondot {
+            height: 15px;
+            width: 15px;
+            background-color: #5599DB;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .offdot {
+            height: 15px;
+            width: 15px;
+            background-color: #C4C4C4;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+    }
+
+    .leftbutton {
+        position:absolute;                  
+        bottom:10%;                          
+        right:70%; 
+        background-color: blue !important;
+    }
+
+    .rightbutton {
+        position:absolute;                  
+        bottom:10%;                          
+        right: 10%; 
+    }
+
 }
