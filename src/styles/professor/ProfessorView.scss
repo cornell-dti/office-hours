@@ -48,14 +48,23 @@
             padding: 15px 0px;
         }
 
-        .rightHeading{
+        .importProfs {
+            font-family: Roboto;
+            font-weight: 500;
+            font-size: 30px;
+            color: #474747;
+            margin: 1em 0em 30px 20px;
+            text-align: left;
+        }
+
+        .rightHeading {
             margin-left: 10%;
             margin-right: 10%;
             display: flex;
             justify-content: space-between;
             align-items: baseline;
     
-            .manageRoles{
+            .manageRoles {
                 font-family: Roboto;
                 font-weight: 500;
                 font-size: 30px;
@@ -64,7 +73,7 @@
                 color: #474747;
             }
         
-            Button#importProf{
+            Button#importProf {
                 margin-top: 1em;
                 font-family: Roboto;
                 color: white;

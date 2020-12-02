@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
+import { useState } from 'react';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
 import { useMyUser, useCourse } from '../../firehooks';
-import { useState } from 'react';
 import CSVUploadView from '../includes/CSVUploadView';
 
 const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
@@ -27,22 +27,19 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
             <TopBar courseId={courseId} user={user} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 {viewOnlyMode ?
-                <div className="main">
-                    <div className="rightHeading">
-                        <p className="manageRoles">Manage Roles</p>
-                        <button type="button" id="importProf" onClick={hide}>
-                            Import Professors/TAs
-                        </button>
+                    <div className="main">
+                        <div className="rightHeading">
+                            <p className="manageRoles">Manage Roles</p>
+                            <button type="button" id="importProf" onClick={hide}>
+                                Import Professors/TAs
+                            </button>
+                        </div>
+                        <ProfessorRolesTable courseId={courseId} isAdminView={false}/>
                     </div>
-                    <ProfessorRolesTable courseId={courseId} isAdminView={false}/>
-                </div>
-                : <div className="main">
-                    <div className="rightHeading">
-                        <p className="manageRoles">Import Professors/TAs</p>
-                        <CSVUploadView onCancel={cancel}/>
-
+                    : <div className="main">
+                        <div className="importProfs">Import Professors/TAs</div>
+                        <CSVUploadView onReturn={cancel}/>
                     </div>
-                </div>
                 }
                 
             </section>

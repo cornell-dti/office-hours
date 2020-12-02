@@ -7,20 +7,10 @@ type PageInfo = {
 }
 
 const CSVUploadView = (
-    { onCancel } : 
-    { onCancel: () => void }
+    { onReturn }: 
+    { onReturn: () => void }
 ) => {
     const [pageIndex, setPageIndex] = useState(0);
-    const next = () => {
-        setPageIndex(pageIndex + 1);
-    }
-    const previous = () => {
-        if (pageIndex === 0) {
-            onCancel()
-        } else {
-            setPageIndex(pageIndex - 1);
-        }
-    }
 
     const pageInfos: PageInfo[] = [
         { 
@@ -29,7 +19,7 @@ const CSVUploadView = (
             rightButton: "Next"
         },
         {
-            header: "Step 2: Upload a CSV file",
+            header: "Step 2: Upload a CSV File",
             leftButton: "Previous",
             rightButton: "Next"
         },
@@ -38,24 +28,46 @@ const CSVUploadView = (
             leftButton: "Cancel and Re-upload",
             rightButton: "Finish"
         }
-    ] 
+    ]
+
+    const next = () => {
+        if (pageIndex < pageInfos.length - 1) {
+            setPageIndex(pageIndex + 1);
+        } else {
+            Promise.resolve()
+                .then(() => {
+                    onReturn();
+                });
+        }
+    }
+    const previous = () => {
+        if (pageIndex === 0) {
+            onReturn();
+        } else {
+            setPageIndex(pageIndex - 1);
+        }
+    }
+
+
     return (
         <div>
-            <div>
+            <div className="CSVBox">
                 <div className="HeadContainer">
                     <div>
                         {pageInfos[pageIndex].header}
                     </div>
                 </div>
+                <div className="StepBody"> <span> </span> </div>
             </div>
             <div className="StepControls">
-                    <button className="leftbutton" onClick={previous}>{pageInfos[pageIndex].leftButton}</button>
+                <button type="button" className="leftbutton" onClick={previous}>{pageInfos[pageIndex].leftButton}
+                </button>
                 <div className="dots">
-                    <span className={pageIndex === 0 ? "ondot":"offdot"}></span>
-                    <span className={pageIndex === 1 ? "ondot":"offdot"}></span>
-                    <span className={pageIndex === 2 ? "ondot":"offdot"}></span>
+                    <span className={pageIndex === 0 ? "ondot":"offdot"}> </span>
+                    <span className={pageIndex === 1 ? "ondot":"offdot"}> </span>
+                    <span className={pageIndex === 2 ? "ondot":"offdot"}> </span>
                 </div>
-                <button className="rightbutton" onClick={next}>{pageInfos[pageIndex].rightButton}</button>
+                <button type="button" className="rightbutton" onClick={next}>{pageInfos[pageIndex].rightButton}</button>
             </div>
         </div>
     )
