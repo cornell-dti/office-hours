@@ -5,12 +5,13 @@ import addNotification from 'react-push-notification';
 import TopBar from './TopBar';
 import SessionInformationHeader from './SessionInformationHeader';
 import SessionQuestionsContainer from './SessionQuestionsContainer';
-import UpdateProfile from './UpdateProfile';
 
-import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile } from '../../firehooks';
+import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile, 
+    useAskerQuestions } from '../../firehooks';
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 import { updateVirtualLocation } from '../../firebasefunctions';
 import { firestore } from '../../firebase';
+
 import NotifBell from '../../media/notifBellWhite.svg';
 // import SessionAlertModal from './SessionAlertModal';
 
@@ -187,6 +188,9 @@ const SessionView = (
     const haveAnotherQuestion = new Date(session.endTime.toDate()) >= new Date()
         && questions.some(({ askerId, status }) => askerId === user.userId && status === 'unresolved');
 
+    const myQuestions = useAskerQuestions(session.sessionId, user.userId);
+    const assignedQuestion = myQuestions?.filter(q => q.status === 'assigned')[0];
+
     return (
         <section className="StudentSessionView">
             {isDesktop &&
@@ -215,19 +219,18 @@ const SessionView = (
                 user={user}
                 callback={backCallback}
                 isDesktop={isDesktop}
-            />
-            {
-                session.modality === 'virtual' && isTa ? <UpdateProfile
-                    virtualLocation={sessionProfile?.virtualLocation}
-                    onUpdate={(virtualLocation) => {
-                        updateVirtualLocation(firestore, user, session, virtualLocation);
+                isTa={isTa}
+                virtualLocation={sessionProfile?.virtualLocation}
+                assignedQuestion={assignedQuestion}
+                onUpdate={(virtualLocation) => {
+                    updateVirtualLocation(firestore, user, session, virtualLocation);
 
-                        if (virtualLocation) {
-                            updateSessionProfile(virtualLocation);
-                        }
-                    }}
-                /> : <></>
-            }
+                    if (virtualLocation) {
+                        updateSessionProfile(virtualLocation);
+                    }
+                }}
+            />
+
             {undoQuestionId &&
                 <div className="undoContainer">
                     <p className="undoClose" onClick={dismissUndo}>

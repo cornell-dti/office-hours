@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Icon, Loader, Button } from 'semantic-ui-react';
+import { Icon, Loader } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import firebase from 'firebase/app';
 import { useState } from "react";
@@ -403,13 +403,7 @@ class SessionQuestion extends React.Component<Props, State> {
                         />
                     </div>
                 }
-                {
-                    question.answererLocation && <>
-                        <Button className="JoinButton" target="_blank" href={question.answererLocation}>
-                            Join Session
-                        </Button>
-                    </>
-                }
+
                 {
                     this.props.includeRemove && !this.props.isPast &&
                     <div className="Buttons">
