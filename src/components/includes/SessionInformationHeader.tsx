@@ -262,9 +262,10 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                         {showError &&
                         <JoinErrorMessage 
                             message={!myQuestion? 
-                                (isOpen? 'Please fill out the "Join the Queue" form first': 'This queue has closed'): 
-                                'Please wait for your turn to join the Zoom call (estimated wait time: '
-                                + avgWaitTime +')'}
+                                (isOpen? 'Please fill out the "Join the Queue" form first': 'This queue has closed'):
+                                assignedQuestion?.answererLocation? 
+                                    'Please wait for your turn to join the Zoom call (estimated wait time: '
+                                    + avgWaitTime +')': 'Please wait for the TA to update their location'}
                             show={true} 
                             closeModal={()=>{setShowError(false)}}
                         />}
