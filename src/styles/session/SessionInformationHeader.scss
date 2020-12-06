@@ -161,10 +161,14 @@
                     height: 31px;
                     background: #F3F5FC;
                     border-radius: 8px;
-                    padding: 6px;
+                    padding: 6px 8px;
                     font-size: 14px;
                     display: inline-block;
                     margin: 0;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    
                 }
 
                 .CloseZoom {
