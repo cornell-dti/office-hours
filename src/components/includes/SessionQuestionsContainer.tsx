@@ -3,7 +3,6 @@ import { Loader } from 'semantic-ui-react';
 import moment from 'moment';
 import addNotification from 'react-push-notification';
 import SessionQuestion from './SessionQuestion';
-import { useAskerQuestions } from '../../firehooks';
 import AddQuestion from "./AddQuestion";
 import DiscussionQuestion from "./DiscussionQuestion"
 
@@ -31,6 +30,7 @@ type Props = {
     readonly modality: FireSessionModality;
     readonly user: FireUser;
     course: FireCourse;
+    readonly myQuestions: FireQuestion[] | null;
 };
 
 type StudentMyQuestionProps = {
@@ -110,10 +110,8 @@ const SessionQuestionsContainer = (props: Props) => {
         }
     }, []);
     const allQuestions = props.questions;
-    const myUserId = props.myUserId;
-    const sessionId = props.session.sessionId;
 
-    const myQuestions = useAskerQuestions(sessionId, myUserId);
+    const myQuestions = props.myQuestions;
 
     // If the user has questions, store them in myQuestion[]
     const myQuestion = React.useMemo(() => {

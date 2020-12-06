@@ -222,12 +222,11 @@ const SessionView = (
                 isTa={isTa}
                 virtualLocation={sessionProfile?.virtualLocation}
                 assignedQuestion={assignedQuestion}
+                myQuestions={myQuestions}
+                isOpen={isOpen(session, course.queueOpenInterval)}
                 onUpdate={(virtualLocation) => {
                     updateVirtualLocation(firestore, user, session, virtualLocation);
-
-                    if (virtualLocation) {
-                        updateSessionProfile(virtualLocation);
-                    }
+                    updateSessionProfile(virtualLocation);
                 }}
             />
 
@@ -255,6 +254,7 @@ const SessionView = (
                 modality={session.modality}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
                 questions={questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
+                myQuestions={myQuestions}
                 users={users}
                 tags={tags}
                 handleJoinClick={joinCallback}

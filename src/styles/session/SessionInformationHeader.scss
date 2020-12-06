@@ -145,10 +145,11 @@
                 }
                 input {
                     background: #F3F5FC;
-                    border-radius: 8px;
+                    border-top-left-radius: 8px;
+                    border-bottom-left-radius: 8px;
                     outline: none;
                     border: none;
-                    width: 55%;
+                    width: 48%;
                     height: 31px; 
                     padding: 6px;  
                     color: #474747;
@@ -164,6 +165,24 @@
                     font-size: 14px;
                     display: inline-block;
                     margin: 0;
+                }
+
+                .CloseZoom {
+                    margin: 0;
+                    height: 31px; 
+                    background: #F3F5FC;
+                    border-top-right-radius: 8px;
+                    border-bottom-right-radius: 8px;
+                    display: flex;
+                    justify-content: center;
+                    button {
+                        outline: none;
+                        border: none;
+                        background-color: transparent;
+                    }
+                    img {
+                        margin: 0 10px;
+                    }
                 }
 
                 .SaveZoomLink {

@@ -5,11 +5,13 @@ import { Icon } from 'semantic-ui-react';
 import people from '../../media/people.svg';
 import clock from '../../media/clock.svg';
 import zoom from '../../media/zoom.svg';
-// import closeZoom from '../../media/closeZoom.svg';
+import closeZoom from '../../media/closeZoom.svg';
 
 import editZoomLink from '../../media/editZoomLink.svg';
 import { useSessionQuestions, useSessionTAs } from '../../firehooks';
 import { computeNumberAhead } from '../../utilities/questions';
+import JoinErrorMessage from './JoinErrorMessage';
+
 
 type Props = {
     session: FireSession;
@@ -21,6 +23,8 @@ type Props = {
     virtualLocation?: string;
     assignedQuestion?: FireOHQuestion;
     onUpdate: (virtualLocation: string) => void;
+    myQuestions: FireQuestion[] | null;
+    isOpen: boolean;
 };
 
 // const getPercentage = (proportion: number, total: number) => {
@@ -50,7 +54,7 @@ const formatAvgTime = (rawTimeSecs: number) => {
 }
 
 const SessionInformationHeader = ({ session, course, callback, user, isDesktop, isTa, virtualLocation, 
-    assignedQuestion, onUpdate }: Props) => {
+    assignedQuestion, onUpdate, myQuestions, isOpen }: Props) => {
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined), user.userId
@@ -65,18 +69,44 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
     
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState('hide');
     const [zoomLink, setZoomLink] = React.useState('');
+    const [showError, setShowError] = React.useState(false);
 
-    const showZoomLink = () => {
-        setZoomLinkDisplay('show');
-    }
 
     React.useEffect(() => {
-        if (typeof virtualLocation === 'string') {
+        if (typeof virtualLocation === 'string' && virtualLocation.trim() !== '') {
             setZoomLink(virtualLocation);
             setZoomLinkDisplay('saved');
         }
     }, [virtualLocation]);
-    
+
+    const closeZoomLink = () => {        
+        if (typeof virtualLocation === 'string' && virtualLocation.trim() !== '') {
+            setZoomLink(virtualLocation);
+            setZoomLinkDisplay('saved');
+        } else {
+            setZoomLink('');
+            setZoomLinkDisplay('hide');
+        }
+    }
+
+    const saveZoomLink = () => {
+        onUpdate(zoomLink);
+        if (zoomLink === '') {
+            setZoomLinkDisplay('hide');
+        } else {
+            setZoomLinkDisplay('saved');
+        }
+    }
+
+    const myQuestion = React.useMemo(() => {
+        if (myQuestions && myQuestions.length > 0) {
+            return myQuestions
+                .sort((a, b) => a.timeEntered.seconds - b.timeEntered.seconds)
+                .find(q => q.status === 'unresolved' || q.status === 'assigned') || null;
+        }
+
+        return null;
+    }, [myQuestions]);
 
     if (isDesktop) {
         return (
@@ -150,23 +180,35 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                                             type="text" 
                                             id="zoomLinkInput" 
                                             name="zoomLinkInput" 
+                                            autoComplete="off"
                                             value={zoomLink} 
                                             onChange={(e) => setZoomLink(e.target.value)}
                                         /> 
+                                        <div className="CloseZoom">
+                                            <img 
+                                                onClick={closeZoomLink}
+                                                src={closeZoom} 
+                                                alt="close zoom"
+                                            /> 
+                                        </div>
 
                                         <button 
                                             type="button" 
                                             className="SaveZoomLink" 
-                                            onClick={() => {
-                                                onUpdate(zoomLink);
-                                                setZoomLinkDisplay('saved'); 
-                                            }}
+                                            onClick={saveZoomLink}
                                         >
                                             Save</button>
                                     </>}
 
                                 {zoomLinkDisplay === 'hide' && 
-                                <button type="button" onClick={showZoomLink}>update your virtual location</button>}
+                                <button 
+                                    type="button" 
+                                    onClick={()=> {
+                                        setZoomLinkDisplay('show');
+                                    }}
+                                >
+                                    update your virtual location</button>}
+
                                 {zoomLinkDisplay === 'saved' && 
                                     <>
                                         <p>{zoomLink}</p>
@@ -182,14 +224,19 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                         {session.modality === 'virtual' && !isTa && 
                             <div className="StudentZoom">
                                 <img src={zoom} alt="zoom"/> Zoom meeting link 
-                                {assignedQuestion?.answererLocation? 
+                                {assignedQuestion?.answererLocation?
                                     <a 
                                         target="_blank" 
                                         rel="noopener noreferrer" 
                                         href={assignedQuestion.answererLocation}
                                     >
                                         <button type="button" className="JoinButton">Join</button></a> :
-                                    <button type="button" className="DisabledJoinButton">Join</button>  
+                                    <button 
+                                        type="button" 
+                                        className="JoinButton"
+                                        onClick={()=> setShowError(true)}
+                                    >
+                                        Join</button>  
                                 }
                             </div>}
 
@@ -211,6 +258,16 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                                 <img src={zoom} alt="zoom"/> 
                                 No Zoom Link Available
                             </div>}
+
+                        {showError &&
+                        <JoinErrorMessage 
+                            message={!myQuestion? 
+                                (isOpen? 'Please fill out the "Join the Queue" form first': 'This queue has closed'): 
+                                'Please wait for your turn to join the Zoom call (estimated wait time: '
+                                + avgWaitTime +')'}
+                            show={true} 
+                            closeModal={()=>{setShowError(false)}}
+                        />}
                     
                     </div>
                 </div>

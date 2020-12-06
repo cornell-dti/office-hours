@@ -20,7 +20,7 @@ const NotificationModal = ({ show }: Props) => {
             {showNotifModal &&
                 <div className="NotifModalScreen">
                     <div className={'NotificationModal' + isShown}>
-                        <button type="button" onClick={closeModal}><Icon name="x" /> </button>
+                        <button type="button" className="closeButton" onClick={closeModal}><Icon name="x" /> </button>
                         <img src={NotifBell} alt="Notification Bell" />
                         <p>Enable browser notifications to know when it's your turn</p>
                     </div>
