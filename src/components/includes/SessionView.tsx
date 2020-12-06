@@ -83,11 +83,16 @@ const SessionView = (
 
         if ((user.roles[course.courseId] === 'professor' ||
             user.roles[course.courseId] === 'ta') && questions.length > 0) {
-            addNotification({
-                title: 'A new question has been added!',
-                message: 'Check the queue.',
-                native: true
-            })
+            try {
+                addNotification({
+                    title: 'A new question has been added!',
+                    message: 'Check the queue.',
+                    native: true
+                });
+            } catch (error) {
+                // TODO: Handle this better.
+                // Do nothing. iOS crashes because Notification isn't defined
+            }
         }
 
         const myQuestions = questions.filter(q => q.askerId === user.userId);

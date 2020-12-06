@@ -56,22 +56,31 @@ class SessionQuestion extends React.Component<Props, State> {
         const currentState = this.props.question;
         const user = this.props.myUserId;
         if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
-            addNotification({
-                title: 'TA comment',
-                subtitle: 'New TA comment',
-                message: `${currentState.taComment}`,
-                theme: "darkblue",
-                native: true
-            });
+            try {
+                addNotification({
+                    title: 'TA comment',
+                    subtitle: 'New TA comment',
+                    message: `${currentState.taComment}`,
+                    theme: "darkblue",
+                    native: true
+                });
+            } catch (error) {
+                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
+            }
         }
+
         if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
-            addNotification({
-                title: 'Student comment',
-                subtitle: 'New student comment',
-                message: `${currentState.studentComment}`,
-                theme: "darkblue",
-                native: true
-            });
+            try {
+                addNotification({
+                    title: 'Student comment',
+                    subtitle: 'New student comment',
+                    message: `${currentState.studentComment}`,
+                    theme: "darkblue",
+                    native: true
+                });
+            } catch (error) {
+                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
+            }
         }
     }
 
