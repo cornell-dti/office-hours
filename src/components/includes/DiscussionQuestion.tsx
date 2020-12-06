@@ -45,6 +45,9 @@ const DiscussionQuestion = (props: Props) => {
     };
 
     const upvoteQuestion = () => {
+        if (props.isPast) {
+            return
+        }
         const batch = firestore.batch();
         const upvotedUsers = question.upvotedUsers;
         const userIndex = upvotedUsers ? upvotedUsers.findIndex(userId => userId === props.user.userId) : -1;
