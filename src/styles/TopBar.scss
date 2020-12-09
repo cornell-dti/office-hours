@@ -47,7 +47,6 @@
 
     .triggerArea {
         padding: 8px;
-        cursor: pointer;
     }
 
     .userProfile {
@@ -55,6 +54,7 @@
         transition-duration: .2s;
         transition-property: box-shadow, color;
         transition-timing-function: $curve-standard;
+        cursor: pointer;
     }
 
     .userProfile:hover {

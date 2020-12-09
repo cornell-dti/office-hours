@@ -24,8 +24,8 @@ const TopBar = (props: {
     return (
         <div className="MenuBox" tabIndex={1} onBlur={() => setShowMenu(false)}>
             <header className="topBar">
-                <div className="triggerArea" onClick={() => setShowMenu(!showMenu)}>
-                    <div className="userProfile">
+                <div className="triggerArea">
+                    <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
                         <img src={image} onError={() => setImage('/placeholder.png')} alt="User Profile" />
                         <span className="name">
                             {props.user ? props.user.firstName + ' ' + props.user.lastName : 'Loading...'}
