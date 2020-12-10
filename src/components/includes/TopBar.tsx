@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Icon } from 'semantic-ui-react';
 import { logOut } from '../../firebasefunctions';
+import Logo from '../../media/Logo.svg';
 
 const TopBar = (props: {
     courseId: string;
@@ -25,6 +26,7 @@ const TopBar = (props: {
         <div className="MenuBox" tabIndex={1} onBlur={() => setShowMenu(false)}>
             <header className="topBar">
                 <div className="triggerArea">
+                    <img src={Logo} className="QMILogo" alt="Queue Me In Logo" />
                     <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
                         <img src={image} onError={() => setImage('/placeholder.png')} alt="User Profile" />
                         <span className="name">

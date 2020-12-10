@@ -2,7 +2,7 @@
 .topBar:focus,
 .userProfile {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     position: relative;
     outline: none;
@@ -47,40 +47,48 @@
 
     .triggerArea {
         padding: 8px;
-    }
+        display: flex;
 
-    .userProfile {
-        padding-bottom: 10px;
-        transition-duration: .2s;
-        transition-property: box-shadow, color;
-        transition-timing-function: $curve-standard;
-        cursor: pointer;
-    }
+        .QMILogo {
+            margin-bottom: 10px;
+            width: 50px;
+            margin-left: 46px;
+        }
+        
 
-    .userProfile:hover {
-        box-shadow: inset 0 -2px #b7bfc6;
-    }
+        .userProfile {
+            padding-bottom: 10px;
+            transition-duration: .2s;
+            transition-property: box-shadow, color;
+            transition-timing-function: $curve-standard;
+            cursor: pointer;
+        }
 
-    .userProfile:hover .name {
-        color: $text-grey;
-    }
+        .userProfile:hover {
+            box-shadow: inset 0 -2px #b7bfc6;
+        }
 
-    i.icons .corner.icon {
-        top: 0;
-        bottom: auto;
-    }
+        .userProfile:hover .name {
+            color: $text-grey;
+        }
 
-    img {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        margin: 0px 12px 0px 0px;
-    }
+        i.icons .corner.icon {
+            top: 0;
+            bottom: auto;
+        }
 
-    .name {
-        font-size: 15px;
-        font-weight: 500;
-        color: #898989;
+        img:not(.QMILogo) {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            margin: 0px 12px 0px 0px;
+        }
+
+        .name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #898989;
+        }
     }
 }
 
