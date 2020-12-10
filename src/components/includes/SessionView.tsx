@@ -209,15 +209,6 @@ const SessionView = (
 
     return (
         <section className="StudentSessionView">
-            {isDesktop &&
-                <TopBar
-                    user={user}
-                    role={user.roles[course.courseId] || 'student'}
-                    context="session"
-                    courseId={course.courseId}
-                    course={course}
-                />
-            }
             {"Notification" in window &&
                             window?.Notification.permission !== "granted" && showNotifBanner === true &&
                             <div className="SessionNotification">

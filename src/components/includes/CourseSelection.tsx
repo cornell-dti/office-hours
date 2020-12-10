@@ -137,7 +137,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     return (
         <div>
             <div className="CourseSelection">
-                <img src={QMeLogo} className="QMeLogo course" alt="Queue Me In Logo" />
                 <TopBar
                     user={user}
                     // Only used to distinguish between prof and non-prof. Hardcoding student is OK.

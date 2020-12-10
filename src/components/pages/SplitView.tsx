@@ -84,6 +84,13 @@ const SplitView = (props: {
 
     return (
         <>
+            <TopBar
+                user={user}
+                role={(user && course && user.roles[course.courseId]) || 'student'}
+                context="student"
+                courseId={props.match.params.courseId}
+                course={course}
+            />
             {(width > MOBILE_BREAKPOINT || activeView === 'calendar') &&
                 <CalendarView
                     course={course}
@@ -110,13 +117,6 @@ const SplitView = (props: {
                         />
                     ) : (
                         <section className="StudentSessionView">
-                            <TopBar
-                                user={user}
-                                role={(user && course && user.roles[course.courseId]) || 'student'}
-                                context="student"
-                                courseId={props.match.params.courseId}
-                                course={course}
-                            />
                             <p className="welcomeMessage">
                                     Welcome{user && ', '}
                                 <span className="welcomeName">

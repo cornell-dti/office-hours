@@ -17,6 +17,7 @@
     .CalendarHeader>span {
         line-height: 28px;
         padding: 0 10px;
+        height: 28px;
     }
 
     .CalendarHeader {
@@ -75,6 +76,7 @@
              border: solid 1px #E5E5E5;
              border-radius: 5px;
              background-color: white;
+             z-index: 1;
 
             .editClasses {
                 border-top: solid 0.5px #D4D4D4;
