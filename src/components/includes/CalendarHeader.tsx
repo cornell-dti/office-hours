@@ -44,10 +44,11 @@ export default ({ currentCourseCode, role, avatar }: Props): React.ReactElement 
                         {courses.filter((c) => c.semester === CURRENT_SEMESTER).map((course) =>
                             <li key={course.courseId}>
                                 <a
+                                    className={course.code === currentCourseCode ? "thisCourse":""}
                                     href={'/course/' + course.courseId}
                                     onClick={() =>
                                         window.localStorage.setItem('lastid', String(course.courseId))}
-                                > {course.code}
+                                > {course.code} {course.code === currentCourseCode && <>&#10003;</>}
                                 </a>
                             </li>
                         )}

@@ -35,7 +35,12 @@ const TopBar = (props: {
                         avatar={props.user && props.user.photoUrl}
                     />
                     <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
-                        <img src={image} className="profilePic" onError={() => setImage('/placeholder.png')} alt="User Profile" />
+                        <img 
+                            src={image} 
+                            className="profilePic" 
+                            onError={() => setImage('/placeholder.png')} 
+                            alt="User Profile" 
+                        />
                         <span className="name">
                             {props.user ? props.user.firstName + ' ' + props.user.lastName : 'Loading...'}
                         </span>

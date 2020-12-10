@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Loader } from 'semantic-ui-react';
 
-import CalendarHeader from './CalendarHeader';
 import CalendarDaySelect from './CalendarDaySelect';
 import CalendarSessions from './CalendarSessions';
 
