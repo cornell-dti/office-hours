@@ -6,8 +6,7 @@ import { useMyCourses } from '../../firehooks';
 
 import { CURRENT_SEMESTER } from '../../constants';
 
-import QMeLogo from '../../media/QLogo2.svg';
-import Toggle from '../../media/Toggle.svg'; // Replace with dropdown cheveron
+import Toggle from '../../media/Toggle.svg'; 
 
 type Props = {
     readonly currentCourseCode: string;
@@ -24,7 +23,7 @@ export default ({ currentCourseCode, role, avatar }: Props): React.ReactElement 
         <div className="Header">
             <div className="CalendarHeader" onClick={() => setShowCourses(shown => !shown)}>
                 <span>
-                    <span className="courseCode">{currentCourseCode}</span>
+                    <div className="courseCode">{currentCourseCode}</div>
                     {role && role === 'ta' && <span className="TAMarker">TA</span>}
                     {role && role === 'professor' && <span className="TAMarker Professor">PROF</span>}
                     <img src={Toggle} alt="Course Select" className="Toggle" />
