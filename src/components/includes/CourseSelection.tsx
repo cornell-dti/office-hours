@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
 import TopBar from './TopBar';
-import QMeLogo from '../../media/QLogo2.svg';
 import CourseCard from './CourseCard';
 import { firestore } from '../../firebase';
 import { CURRENT_SEMESTER } from '../../constants';

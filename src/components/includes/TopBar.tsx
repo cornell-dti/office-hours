@@ -30,7 +30,7 @@ const TopBar = (props: {
                 <div className="triggerArea">
                     <img src={Logo} className="QMILogo" alt="Queue Me In Logo" />
                     <CalendarHeader
-                        currentCourseCode={(props.course && props.course.code) || ''}
+                        currentCourseCode={(props.course && props.course.code) || 'Courses'}
                         role={(props.user && props.course && (props.user.roles[props.course.courseId] || 'student'))}
                         avatar={props.user && props.user.photoUrl}
                     />

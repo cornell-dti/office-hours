@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from 'semantic-ui-react';
 import addNotification from 'react-push-notification';
 
-import TopBar from './TopBar';
 import SessionInformationHeader from './SessionInformationHeader';
 import SessionQuestionsContainer from './SessionQuestionsContainer';
 

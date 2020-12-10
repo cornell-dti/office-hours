@@ -85,16 +85,25 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
 
     return (
         <div className="ProfessorView">
+<<<<<<< HEAD
             <ProfessorSidebar
                 courseId={courseId}
                 code={course ? course.code : 'Loading'}
                 selected={'hours'}
             />
+=======
+>>>>>>> fixed some styling issues
             <TopBar
                 courseId={courseId}
                 user={me}
                 context="professor"
                 role="professor"
+                course={course}
+            />
+            <ProfessorSidebar
+                courseId={courseId}
+                code={course ? course.code : 'Loading'}
+                selected={0}
             />
             <section className="rightOfSidebar">
                 <div className="main">

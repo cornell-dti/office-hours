@@ -13,9 +13,9 @@
 }
 
 .desktop.logoutMenu {
-    border-radius: 8px;
+    border-radius: 5px;
+    position: absolute;
     width: 300px;
-    position: fixed;
     right: 8px;
     top: 50px;
     left: auto;
@@ -33,6 +33,7 @@
     }
 
     span {
+        width: 100%;
         padding-right: 10px;
     }
 }
