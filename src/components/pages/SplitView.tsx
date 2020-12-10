@@ -115,6 +115,7 @@ const SplitView = (props: {
                                 role={(user && course && user.roles[course.courseId]) || 'student'}
                                 context="student"
                                 courseId={props.match.params.courseId}
+                                course={course}
                             />
                             <p className="welcomeMessage">
                                     Welcome{user && ', '}

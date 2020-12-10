@@ -3,6 +3,7 @@ import { useHistory } from 'react-router';
 import { Icon } from 'semantic-ui-react';
 import { logOut } from '../../firebasefunctions';
 import Logo from '../../media/Logo.svg';
+import CalendarHeader from './CalendarHeader';
 
 const TopBar = (props: {
     courseId: string;
@@ -13,6 +14,7 @@ const TopBar = (props: {
     // Whether we're in a "professor" view or "student" view
     // controls where "switch view" goes
     context: string;
+    course?: FireCourse;
 }) => {
     const history = useHistory();
 
@@ -27,8 +29,13 @@ const TopBar = (props: {
             <header className="topBar">
                 <div className="triggerArea">
                     <img src={Logo} className="QMILogo" alt="Queue Me In Logo" />
+                    <CalendarHeader
+                        currentCourseCode={(props.course && props.course.code) || 'Loading'}
+                        role={(props.user && props.course && (props.user.roles[props.course.courseId] || 'student'))}
+                        avatar={props.user && props.user.photoUrl}
+                    />
                     <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
-                        <img src={image} onError={() => setImage('/placeholder.png')} alt="User Profile" />
+                        <img src={image} className="profilePic" onError={() => setImage('/placeholder.png')} alt="User Profile" />
                         <span className="name">
                             {props.user ? props.user.firstName + ' ' + props.user.lastName : 'Loading...'}
                         </span>

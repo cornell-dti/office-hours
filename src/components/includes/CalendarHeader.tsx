@@ -7,7 +7,7 @@ import { useMyCourses } from '../../firehooks';
 import { CURRENT_SEMESTER } from '../../constants';
 
 import QMeLogo from '../../media/QLogo2.svg';
-import chevron from '../../media/chevron.svg'; // Replace with dropdown cheveron
+import Toggle from '../../media/Toggle.svg'; // Replace with dropdown cheveron
 
 type Props = {
     readonly currentCourseCode: string;
@@ -22,17 +22,12 @@ export default ({ currentCourseCode, role, avatar }: Props): React.ReactElement 
 
     return (
         <div className="Header">
-            <div className="LogoContainer">
-                <img src={QMeLogo} className="QMeLogo" alt="Queue Me In Logo" />
-            </div>
             <div className="CalendarHeader" onClick={() => setShowCourses(shown => !shown)}>
                 <span>
-                    <span>{currentCourseCode}</span>
+                    <span className="courseCode">{currentCourseCode}</span>
                     {role && role === 'ta' && <span className="TAMarker">TA</span>}
                     {role && role === 'professor' && <span className="TAMarker Professor">PROF</span>}
-                    <span className="CourseSelect">
-                        <img src={chevron} alt="Course Select" className="RotateDown" />
-                    </span>
+                    <img src={Toggle} alt="Course Select" className="Toggle" />
                 </span>
                 {avatar &&
                     <img

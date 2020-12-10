@@ -215,6 +215,7 @@ const SessionView = (
                     role={user.roles[course.courseId] || 'student'}
                     context="session"
                     courseId={course.courseId}
+                    course={course}
                 />
             }
             {"Notification" in window &&
