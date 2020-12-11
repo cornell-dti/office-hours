@@ -25,7 +25,6 @@ export default ({ currentCourseCode, role, avatar }: Props): React.ReactElement 
                 <span>
                     <div className="courseCode">{currentCourseCode}</div>
                     {role && role === 'ta' && <span className="TAMarker">TA</span>}
-                    {role && role === 'professor' && <span className="TAMarker Professor">PROF</span>}
                     <img src={Toggle} alt="Course Select" className="Toggle" />
                 </span>
                 {avatar &&
