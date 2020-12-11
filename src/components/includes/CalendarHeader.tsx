@@ -14,7 +14,7 @@ type Props = {
     readonly avatar?: string;
 };
 
-export default ({ currentCourseCode, role, avatar }: Props): React.ReactElement => {
+export default ({ currentCourseCode, role}: Props): React.ReactElement => {
     const [showMenu, setShowMenu] = React.useState(false);
     const [showCourses, setShowCourses] = React.useState(false);
     const courses = useMyCourses();
@@ -27,17 +27,6 @@ export default ({ currentCourseCode, role, avatar }: Props): React.ReactElement 
                     {role && role === 'ta' && <span className="TAMarker">TA</span>}
                     <img src={Toggle} alt="Course Select" className="Toggle" />
                 </span>
-                {avatar &&
-                    <img
-                        className="mobileHeaderFace"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setShowMenu(shown => !shown);
-                        }}
-                        src={avatar}
-                        alt="User avatar"
-                    />
-                }
                 {showCourses &&
                     <ul className="courseMenu" tabIndex={1} onClick={() => setShowCourses(false)} >
                         {courses.filter((c) => c.semester === CURRENT_SEMESTER).map((course) =>

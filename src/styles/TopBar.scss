@@ -4,7 +4,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: relative;
+    // position: relative;
     outline: none;
 }
 
@@ -96,17 +96,3 @@
     }
 }
 
-.menuShadow {
-    position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(112, 112, 112, 0.7);
-}
-
-// .ProfessorHeader.false {
-//     .corner.icon {
-//         display: none;
-//     }
-// }

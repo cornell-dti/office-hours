@@ -1,3 +1,9 @@
+.profTopBar {
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+}
+
 .ProfessorView {
     overflow: auto;
     padding-bottom: 50px;
@@ -150,6 +156,8 @@
 
     .rightOfSidebar {
         min-width: 820px;
+        align-self: center;
+        padding-top: 50px;
     }
 
 }
