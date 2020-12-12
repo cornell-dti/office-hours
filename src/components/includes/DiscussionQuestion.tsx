@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
+import Linkify from 'linkifyjs/react';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
 // @ts-ignore (Note that this library does not provide typescript)
-import Linkify from 'linkifyjs/react';
 
 
 type Props = {
@@ -107,10 +107,10 @@ const DiscussionQuestion = (props: Props) => {
                     <div className="Upvotes">{question.upvotedUsers ? question.upvotedUsers.length : 0}</div>
                     <div className="QuestionBody">{question.content}</div>
                     <div className="RightBar">
-                <button className="commentBtn" onClick={() => setShowCommentBox(!showCommentBox)} type="button">
-                    <Icon className="large" name="comment outline" />
-                </button>
-            </div>
+                        <button className="commentBtn" onClick={() => setShowCommentBox(!showCommentBox)} type="button">
+                            <Icon className="large" name="comment outline" />
+                        </button>
+                    </div>
                 </div>
             </div>
             {(question.studentComment || question.taComment) &&
@@ -141,20 +141,23 @@ const DiscussionQuestion = (props: Props) => {
             </div>
             {showCommentBox && <div className="CommentBox">
                 <div className="commentTopBar">
-                <img
-                    className="userInformationImg"
-                    src={user.photoUrl || '/placeholder.png'}
-                    alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
-                            />
-                <span className="userInformationName">
-                                {user.firstName} {user.lastName}
-                            </span>
+                    <img
+                        className="userInformationImg"
+                        src={user.photoUrl || '/placeholder.png'}
+                        alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
+                    />
+                    <span className="userInformationName">
+                        {user.firstName} {user.lastName}
+                    </span>
                 </div>
-                <EditComment initComment={comment || ""} onValueChange={(newComment: string) => {
-                                questionComment(newComment, props.isTA);
-                                setShowCommentBox(false);}} 
-                onCancel={() => {setShowCommentBox(false);}}/>
-                </div>}
+                <EditComment
+                    initComment={comment || ""}
+                    onValueChange={(newComment: string) => {
+                        questionComment(newComment, props.isTA);
+                        setShowCommentBox(false);}} 
+                    onCancel={() => {setShowCommentBox(false);}}
+                />
+            </div>}
     
         </div>
     )
