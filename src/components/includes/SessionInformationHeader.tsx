@@ -136,30 +136,28 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                 </div>
                 <div className="QueueWrap">
                     <div className="QueueInfo">
-                        <div>
-                            <p>
-                                <img src={people} alt="number of people" />
-                                <span className="red">
-                                    {numAhead + ' '}
-                                </span>
-                                    ahead
-                            </p>
+                        <p>
+                            <img src={people} alt="number of people" />
+                            <span className="red">
+                                {numAhead + ' '}
+                            </span>
+                                ahead
+                        </p>
 
-                            <p>
-                                <img src={clock} alt="time" />
-                                {avgWaitTime !== "No information available"? 
-                                    <>
-                                        <span className="blue">
-                                            {avgWaitTime + ' '}
-                                        </span>
-                                        estimated wait time 
-                                    </>:
+                        <p>
+                            <img src={clock} alt="time" />
+                            {avgWaitTime !== "No information available"? 
+                                <>
                                     <span className="blue">
-                                        {avgWaitTime}
+                                        {avgWaitTime + ' '}
                                     </span>
-                                }
-                            </p>
-                        </div>
+                                    estimated wait time 
+                                </>:
+                                <span className="blue">
+                                    {avgWaitTime}
+                                </span>
+                            }
+                        </p>
                     </div>
 
                     
@@ -259,9 +257,9 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                                 assignedQuestion && !assignedQuestion.answererLocation? 
                                     'Please wait for the TA to update their location' :
                                     (avgWaitTime === 'No information available'? 
-                                    'Please wait for your turn to join the Zoom call':
-                                    'Please wait for your turn to join the Zoom call (estimated wait time: '
-                                    + avgWaitTime +')')}
+                                        'Please wait for your turn to join the Zoom call':
+                                        'Please wait for your turn to join the Zoom call (estimated wait time: '
+                                        + avgWaitTime +')')}
                             show={true} 
                             closeModal={()=>{setShowError(false)}}
                         />}
