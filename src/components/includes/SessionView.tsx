@@ -191,6 +191,17 @@ const SessionView = (
     const myQuestions = useAskerQuestions(session.sessionId, user.userId);
     const assignedQuestion = myQuestions?.filter(q => q.status === 'assigned')[0];
 
+    const myQuestion = React.useMemo(() => {
+        if (myQuestions && myQuestions.length > 0) {
+            return myQuestions
+                .sort((a, b) => a.timeEntered.seconds - b.timeEntered.seconds)
+                .find(q => q.status === 'unresolved' || q.status === 'assigned') || null;
+        }
+
+        return null;
+    }, [myQuestions]);
+
+
     return (
         <section className="StudentSessionView">
             {isDesktop &&
@@ -222,8 +233,8 @@ const SessionView = (
                 isTa={isTa}
                 virtualLocation={sessionProfile?.virtualLocation}
                 assignedQuestion={assignedQuestion}
-                myQuestions={myQuestions}
                 isOpen={isOpen(session, course.queueOpenInterval)}
+                myQuestion={myQuestion}
                 onUpdate={(virtualLocation) => {
                     updateVirtualLocation(firestore, user, session, virtualLocation);
                     updateSessionProfile(virtualLocation);
@@ -254,7 +265,6 @@ const SessionView = (
                 modality={session.modality}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
                 questions={questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
-                myQuestions={myQuestions}
                 users={users}
                 tags={tags}
                 handleJoinClick={joinCallback}
@@ -266,6 +276,7 @@ const SessionView = (
                 openingTime={getOpeningTime(session, course.queueOpenInterval)}
                 haveAnotherQuestion={haveAnotherQuestion}
                 course={course}
+                myQuestion={myQuestion}
             />
             {/* {this.state.showAbsent && !this.state.dismissedAbsent && (
                 <SessionAlertModal

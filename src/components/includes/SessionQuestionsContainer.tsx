@@ -30,7 +30,7 @@ type Props = {
     readonly modality: FireSessionModality;
     readonly user: FireUser;
     course: FireCourse;
-    readonly myQuestions: FireQuestion[] | null;
+    readonly myQuestion: FireQuestion | null;
 };
 
 type StudentMyQuestionProps = {
@@ -111,18 +111,8 @@ const SessionQuestionsContainer = (props: Props) => {
     }, []);
     const allQuestions = props.questions;
 
-    const myQuestions = props.myQuestions;
+    const myQuestion = props.myQuestion;
 
-    // If the user has questions, store them in myQuestion[]
-    const myQuestion = React.useMemo(() => {
-        if (myQuestions && myQuestions.length > 0) {
-            return myQuestions
-                .sort((a, b) => a.timeEntered.seconds - b.timeEntered.seconds)
-                .find(q => q.status === 'unresolved' || q.status === 'assigned') || null;
-        }
-
-        return null;
-    }, [myQuestions]);
 
     const myQuestionIndex = allQuestions.findIndex(question => question.questionId === myQuestion?.questionId)   
 

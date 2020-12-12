@@ -3,9 +3,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 0 48px;
 
     .LeftInformationHeader {
-        width: 49%;
+        width: 55%;
         font-size: 13px;
         background-color: white;
         color: #484848;
@@ -15,6 +16,7 @@
         border-radius: 8px;
         box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
         float: left;
+        height: 100%;
 
         .Picture {
             height: 100%;
@@ -62,10 +64,12 @@
 
     .QueueWrap {
         float: right;
-        width: 40%;
+        width: 45%;
         height: 100%;
         font-size: 14px;
-        margin-left: 15px;   
+        margin-left: 15px;  
+        margin-top: 20px; 
+        margin-bottom: 20px;
 
         .QueueInfo {
             border-radius: 8px;
@@ -80,7 +84,10 @@
                 text-align: left;
                 color: #4D4D4D;
                 font-size: 16px;
-                padding-left: 40px;
+                padding-left: 10%;
+                @media only screen and (max-width : 1280px) {
+                    padding-left: 1%;
+                }
 
                 img  {
                     margin: 0 20px;
@@ -109,10 +116,13 @@
                 font-size: 16px;
                 display: flex; 
                 align-items: center;
-                padding-left: 40px;
+                padding-left: 10%;
+                @media only screen and (max-width : 1280px) {
+                    padding-left: 1%;
+                }
 
                 button {
-                    margin-left: 12px;
+                    margin: 0 12px;
                     width: 84px;
                     height: 29px;
                     background: #FFFFFF;
@@ -338,7 +348,7 @@
 }
 
 
-@media only screen and (max-width : 1024px) {
+@media only screen and (max-width : 1124px) {
     .DesktopSessionInformationHeader {
         display: flex;
         text-align: center;
@@ -348,12 +358,12 @@
 
         .LeftInformationHeader {
             float: none;
-            width: 82%;
+            width: 100%;
         }
 
         .QueueWrap {
             float: none;
-            width: 82%;
+            width: 100%;
             margin: 0;
 
             .ZoomLink {

@@ -23,7 +23,7 @@ type Props = {
     virtualLocation?: string;
     assignedQuestion?: FireOHQuestion;
     onUpdate: (virtualLocation: string) => void;
-    myQuestions: FireQuestion[] | null;
+    myQuestion: FireQuestion | null;
     isOpen: boolean;
 };
 
@@ -42,7 +42,7 @@ const formatAvgTime = (rawTimeSecs: number) => {
     const timeDispSecs = timeSecs - timeMins * 60;
     const timeDispMins = timeMins - timeHours * 60;
     if (isNaN(timeSecs)){
-        return "No information available";
+        return 'No information available';
     }
     if (timeMins === 0){
         return timeDispSecs + " s"
@@ -54,7 +54,7 @@ const formatAvgTime = (rawTimeSecs: number) => {
 }
 
 const SessionInformationHeader = ({ session, course, callback, user, isDesktop, isTa, virtualLocation, 
-    assignedQuestion, onUpdate, myQuestions, isOpen }: Props) => {
+    assignedQuestion, onUpdate, myQuestion, isOpen }: Props) => {
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined), user.userId
@@ -98,15 +98,6 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
         }
     }
 
-    const myQuestion = React.useMemo(() => {
-        if (myQuestions && myQuestions.length > 0) {
-            return myQuestions
-                .sort((a, b) => a.timeEntered.seconds - b.timeEntered.seconds)
-                .find(q => q.status === 'unresolved' || q.status === 'assigned') || null;
-        }
-
-        return null;
-    }, [myQuestions]);
 
     if (isDesktop) {
         return (
@@ -145,28 +136,30 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                 </div>
                 <div className="QueueWrap">
                     <div className="QueueInfo">
-                        <p>
-                            <img src={people} alt="number of people" />
-                            <span className="red">
-                                {numAhead + ' '}
-                            </span>
-                                ahead
-                        </p>
-
-                        <p>
-                            <img src={clock} alt="time" />
-                            {avgWaitTime !== "No information available"? 
-                                <>
-                                    <span className="blue">
-                                        {avgWaitTime + ' '}
-                                    </span>
-                                    estimated wait time 
-                                </>:
-                                <span className="blue">
-                                    {avgWaitTime}
+                        <div>
+                            <p>
+                                <img src={people} alt="number of people" />
+                                <span className="red">
+                                    {numAhead + ' '}
                                 </span>
-                            }
-                        </p>
+                                    ahead
+                            </p>
+
+                            <p>
+                                <img src={clock} alt="time" />
+                                {avgWaitTime !== "No information available"? 
+                                    <>
+                                        <span className="blue">
+                                            {avgWaitTime + ' '}
+                                        </span>
+                                        estimated wait time 
+                                    </>:
+                                    <span className="blue">
+                                        {avgWaitTime}
+                                    </span>
+                                }
+                            </p>
+                        </div>
                     </div>
 
                     
@@ -265,8 +258,10 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                                 (isOpen? 'Please fill out the "Join the Queue" form first': 'This queue has closed'):
                                 assignedQuestion && !assignedQuestion.answererLocation? 
                                     'Please wait for the TA to update their location' :
+                                    (avgWaitTime === 'No information available'? 
+                                    'Please wait for your turn to join the Zoom call':
                                     'Please wait for your turn to join the Zoom call (estimated wait time: '
-                                    + avgWaitTime +')'}
+                                    + avgWaitTime +')')}
                             show={true} 
                             closeModal={()=>{setShowError(false)}}
                         />}
