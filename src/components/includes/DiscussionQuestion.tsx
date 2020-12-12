@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
+// @ts-ignore (Linkify has no typescript)
 import Linkify from 'linkifyjs/react';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
-// @ts-ignore (Note that this library does not provide typescript)
 
 
 type Props = {
