@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
-
 import SelectedTags from './SelectedTags';
+// @ts-ignore (Note that this library does not provide typescript)
+import Linkify from 'linkifyjs/react';
 
 
 type Props = {
@@ -22,6 +23,11 @@ const DiscussionQuestion = (props: Props) => {
         ? props.tags[question.primaryTag] : undefined;
     const secondaryTag = question.secondaryTag 
         ? props.tags[question.secondaryTag] : undefined;
+    const comment = props.isTA ? question.taComment : question.studentComment;
+    const studentCSS = props.isTA ? '' : ' Student';
+    const user = props.user;
+
+    const [showCommentBox, setShowCommentBox] = useState(false);
 
     // const assignQuestion = () => {
     //     const batch = firestore.batch();
@@ -61,6 +67,16 @@ const DiscussionQuestion = (props: Props) => {
         batch.commit();
     }
 
+    const questionComment = (newComment: string, isTA: boolean) => {
+        let update: Partial<FireDiscussionQuestion>
+        if (isTA) {
+            update = { taComment: newComment };
+        } else {
+            update = { studentComment: newComment };
+        }
+        firestore.doc(`questions/${question.questionId}`).update(update);
+    };
+
     // const studentNoShow = () => {
     //     const batch = firestore.batch();
     //     const slotUpdate: Partial<FireQuestionSlot> = { status: 'no-show' };
@@ -83,14 +99,27 @@ const DiscussionQuestion = (props: Props) => {
 
     return (
 
+
         <div className="DiscussionQuestion">
             <div className="DiscussionContainer">
                 <button className="Upvote" type="button" aria-label="upvote" onClick={upvoteQuestion} />
                 <div className="UpvoteContainer">
                     <div className="Upvotes">{question.upvotedUsers ? question.upvotedUsers.length : 0}</div>
                     <div className="QuestionBody">{question.content}</div>
+                    <div className="RightBar">
+                <button className="commentBtn" onClick={() => setShowCommentBox(!showCommentBox)} type="button">
+                    <Icon className="large" name="comment outline" />
+                </button>
+            </div>
                 </div>
             </div>
+            {(question.studentComment || question.taComment) &&
+                    <CommentBox
+                        studentComment={question.studentComment}
+                        taComment={question.taComment}
+                        studentCSS={studentCSS}
+                    />
+            }
             <div className="LowerDiscussionContainer"> 
                 <div className="BottomBarContainer">
                     <div className="DiscussionTags">
@@ -110,7 +139,116 @@ const DiscussionQuestion = (props: Props) => {
 
             </div> }
             </div>
+            {showCommentBox && <div className="CommentBox">
+                <div className="commentTopBar">
+                <img
+                    className="userInformationImg"
+                    src={user.photoUrl || '/placeholder.png'}
+                    alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
+                            />
+                <span className="userInformationName">
+                                {user.firstName} {user.lastName}
+                            </span>
+                </div>
+                <EditComment initComment={comment || ""} onValueChange={(newComment: string) => {
+                                questionComment(newComment, props.isTA);
+                                setShowCommentBox(false);}} 
+                onCancel={() => {setShowCommentBox(false);}}/>
+                </div>}
     
+        </div>
+    )
+}
+
+type EditCommentProps = {
+    readonly initComment: string;
+    readonly onValueChange: Function;
+    readonly onCancel: Function;
+}
+
+const EditComment = (props: EditCommentProps) => {
+    const [editable, setEditable] = useState(false);
+    const [comment, setComment] = useState(props.initComment);
+    const [prevComment, setPrevComment] = useState(comment);
+
+    if (editable) {
+        return (
+            <div className="commentBody">
+                <textarea
+                    placeholder="Add a comment..."
+                    className="commentTextArea"
+                    onChange={(evt) => { setComment(evt.target.value) }}
+                    value={comment}
+                />
+                <div className="commentBtnHolder">
+                    <button
+                        type="button"
+                        className="commentSaveBtn"
+                        onClick={() => {
+                            props.onValueChange(comment);
+                            setPrevComment(comment);
+                            setEditable(false);
+                        }}
+                    >
+                        Save
+                    </button>
+                    <button
+                        type="button"
+                        className="commentCancelBtn"
+                        onClick={() => {
+                            props.onCancel();
+                            setComment(prevComment);
+                            setEditable(false);
+                        }}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // Not editable
+    return (
+        <div className="commentBody">
+            <Linkify tagName="p">
+                {comment !== "" && comment !== undefined ? comment : "Add a comment..."}
+            </Linkify>
+            <button
+                type="button"
+                className="link-button commentEdit"
+                onClick={(evt) => {
+                    evt.preventDefault();
+                    setPrevComment(comment);
+                    setEditable(true);
+                }}
+            >
+                edit
+            </button>
+        </div>
+    );
+
+}
+
+type CommentBoxProps = {
+    readonly studentComment?: string;
+    readonly taComment?: string;
+    readonly studentCSS?: string;
+}
+
+const CommentBox = (props: CommentBoxProps) => {
+    return (
+        <div className="CommentBox">
+            {props.studentComment && (
+                <Linkify className={'Question' + props.studentCSS} tagName="p">
+                    Student Comment: {props.studentComment}
+                </Linkify>
+            )}
+            {props.taComment && (
+                <Linkify className={'Question' + props.studentCSS} tagName="p">
+                    TA Comment: {props.taComment}
+                </Linkify>
+            )}
         </div>
     )
 }
