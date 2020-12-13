@@ -21,10 +21,11 @@ export default ({ currentCourseCode, role}: Props): React.ReactElement => {
 
     return (
         <div className="Header">
-            <div className="CalendarHeader" onClick={() => setShowCourses(shown => !shown)}>
+            <div className="CalendarHeader" onClick={() => setShowCourses(!showCourses)}>
                 <span>
                     <div className="courseCode">{currentCourseCode}</div>
                     {role && role === 'ta' && <span className="TAMarker">TA</span>}
+                    {role && role === 'professor' && <span className="TAMarker Prof">PROF</span>}
                     <img src={Toggle} alt="Course Select" className="Toggle" />
                 </span>
                 {showCourses &&

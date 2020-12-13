@@ -18,18 +18,18 @@ export default ({ courseId, context }: Props): React.ReactElement => {
             <div className="CalendarHeader" onClick={() => setShowMenu(shown => !shown)}>
                 <span>
                     <div className="courseCode">
-                        {isProf ? "PROF" : "STUDENT"}
+                        {isProf ? "DASHBOARD" : "QUEUE"}
                     </div>
                     <img src={Toggle} alt="Course Select" className="Toggle" />
                 </span>
                 {showMenu &&
                     <ul className="courseMenu" tabIndex={1} onClick={() => setShowMenu(false)} >
                         <li onMouseDown={() => history.push('/course/' + courseId)}>
-                            <a className={isProf ? "":"thisCourse"}> STUDENT {!isProf && <>&#10003;</>}
+                            <a className={isProf ? "":"thisCourse"}> QUEUE {!isProf && <>&#10003;</>}
                             </a>
                         </li>
                         <li onMouseDown={() => history.push('/professor/course/' + courseId)}>
-                            <a className={isProf ? "thisCourse":""}> PROF {isProf && <>&#10003;</>}
+                            <a className={isProf ? "thisCourse":""}> DASHBOARD {isProf && <>&#10003;</>}
                             </a>
                         </li>
                     </ul>
