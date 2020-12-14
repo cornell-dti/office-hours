@@ -1,0 +1,74 @@
+.CSVBox {
+
+    .HeadContainer {
+        background-color: #5599DB;
+        color: white;
+        font-size: 25px;
+        margin: 20px 20px 0px 20px;
+        padding: 10px 0px 10px 0px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .StepBody {
+        background-color: white;
+        margin: 0px 20px 0px 20px;
+        height: 400px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+}
+
+.StepControls {
+
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 30px 10px 30px;
+
+    .dots {            
+
+        .ondot {
+            height: 15px;
+            width: 15px;
+            background-color: #5599DB;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .offdot {
+            height: 15px;
+            width: 15px;
+            background-color: #C4C4C4;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+    }
+
+    Button.leftbutton {
+        color: #898989;
+        background-color: white;
+        border: 1px solid #898989;
+        border-radius: 4px;
+        // padding: 6px 15px 5px 15px;
+        width: 135px;
+        height: 25px;
+        font-size: 12px;
+    }
+
+    Button.rightbutton { 
+        color: white;
+        background-color: #979797;
+        border: 1px solid #979797;
+        border-radius: 4px;
+        // padding: 6px 20px 5px 20px;
+        width: 135px;
+        height: 25px;
+        font-size: 12px;
+    }
+
+}
