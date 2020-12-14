@@ -11,6 +11,7 @@ import SelectedTags from './SelectedTags';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
+const MOBILE_BREAKPOINT = 920;
 
 type Props = {
     question: FireOHQuestion;
@@ -35,6 +36,7 @@ type State = {
     undoQuestionIdDontKnow?: number;
     undoName?: string;
     enableEditingComment: boolean;
+    width: number;
 };
 
 class SessionQuestion extends React.Component<Props, State> {
@@ -47,7 +49,8 @@ class SessionQuestion extends React.Component<Props, State> {
             location: props.question.location || '',
             isEditingLocation: false,
             showDotMenu: false,
-            enableEditingComment: false
+            enableEditingComment: false,
+            width: window.innerWidth
         };
     }
 
@@ -412,13 +415,15 @@ class SessionQuestion extends React.Component<Props, State> {
                         />
                     </div>
                 }
+
                 {
-                    question.answererLocation && <>
+                    question.answererLocation && this.state.width < MOBILE_BREAKPOINT && <>
                         <Button className="JoinButton" target="_blank" href={question.answererLocation}>
                             Join Session
                         </Button>
                     </>
                 }
+
                 {
                     this.props.includeRemove && !this.props.isPast &&
                     <div className="Buttons">
