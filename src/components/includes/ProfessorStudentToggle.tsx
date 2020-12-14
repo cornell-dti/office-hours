@@ -25,11 +25,17 @@ export default ({ courseId, context }: Props): React.ReactElement => {
                 {showMenu &&
                     <ul className="courseMenu" tabIndex={1} onClick={() => setShowMenu(false)} >
                         <li onMouseDown={() => history.push('/course/' + courseId)}>
-                            <a className={isProf ? "":"thisCourse"}> QUEUE {!isProf && <>&#10003;</>}
+                            <a 
+                                className={isProf ? "":"thisCourse"}
+                                href={'/course/' + courseId}
+                            > QUEUE {!isProf && <>&#10003;</>}
                             </a>
                         </li>
                         <li onMouseDown={() => history.push('/professor/course/' + courseId)}>
-                            <a className={isProf ? "thisCourse":""}> DASHBOARD {isProf && <>&#10003;</>}
+                            <a 
+                                className={isProf ? "thisCourse":""}
+                                href={'/professor/course/' + courseId}
+                            > DASHBOARD {isProf && <>&#10003;</>}
                             </a>
                         </li>
                     </ul>

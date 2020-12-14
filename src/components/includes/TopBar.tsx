@@ -23,7 +23,7 @@ const TopBar = (props: {
     useEffect(() => setImage(userPhotoUrl), [userPhotoUrl]);
 
     return (
-        <div className="MenuBox" tabIndex={1} onBlur={() => setShowMenu(false)}>
+        <div className="MenuBox" onBlur={() => setShowMenu(false)}>
             <header className="topBar">
                 <div className="triggerArea">
                     <img src={Logo} className="QMILogo" alt="Queue Me In Logo" />
@@ -53,7 +53,7 @@ const TopBar = (props: {
                 </div>
             </header>
             {showMenu && <>
-                <ul className="desktop logoutMenu" tabIndex={1}>
+                <ul className="desktop logoutMenu">
                     <li onMouseDown={() => logOut()}>
                         <span><Icon name="sign out" /></span> Log Out
                     </li>
