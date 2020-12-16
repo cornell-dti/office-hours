@@ -1,15 +1,14 @@
-.topBar .triggerArea,
+.topBar,
 .topBar:focus,
 .userProfile {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     position: relative;
-    outline: none;
+
 }
 
 .MenuBox:focus {
-    outline: none;
 }
 
 .desktop.logoutMenu {
@@ -25,7 +24,11 @@
     padding: 0;
 
     li {
-        padding-top: 16px;
+        padding: 2px;
+    }
+
+    li div {
+        padding-top: 14px;
     }
 
     li:last-child {

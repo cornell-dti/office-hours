@@ -9,11 +9,11 @@ import SessionQuestionsContainer from './SessionQuestionsContainer';
 import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile, 
     useAskerQuestions } from '../../firehooks';
 import { filterUnresolvedQuestions } from '../../utilities/questions';
+import { onEnterOrSpace } from '../../utilities/a11y';
 import { updateVirtualLocation } from '../../firebasefunctions';
 import { firestore } from '../../firebase';
 
 import NotifBell from '../../media/notifBellWhite.svg';
-// import SessionAlertModal from './SessionAlertModal';
 
 type Props = {
     course: FireCourse;
@@ -248,9 +248,15 @@ const SessionView = (
 
             {undoQuestionId &&
                 <div className="undoContainer">
-                    <p className="undoClose" onClick={dismissUndo}>
+                    <div 
+                        role="button"
+                        tabIndex={0}
+                        className="undoClose"
+                        onKeyPress={onEnterOrSpace(dismissUndo)}
+                        onClick={dismissUndo}
+                    >
                         <Icon name="close" />
-                    </p>
+                    </div>
                     <p className="undoText">
                         {undoText}
                         <span

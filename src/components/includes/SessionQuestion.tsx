@@ -1,4 +1,5 @@
 import * as React from 'react';
+import OutsideClickHandler from 'react-outside-click-handler';
 import { Icon, Loader, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import firebase from 'firebase/app';
@@ -7,7 +8,10 @@ import { useState } from "react";
 import Linkify from 'linkifyjs/react';
 import addNotification from 'react-push-notification';
 import { firestore } from '../../firebase';
+import AccessibleButton from './AccessibleButton';
 import SelectedTags from './SelectedTags';
+import { onEnterOrSpace } from '../../utilities/a11y';
+import DropDownEntry from './DropDownEntry';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -38,6 +42,10 @@ type State = {
     enableEditingComment: boolean;
     width: number;
 };
+
+function getDisplayText(index: number): string {
+    return (index + 1).toFixed(0);
+}
 
 class SessionQuestion extends React.Component<Props, State> {
     state: State;
@@ -85,17 +93,6 @@ class SessionQuestion extends React.Component<Props, State> {
                 // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
             }
         }
-    }
-
-    // Given an index from [1..n], converts it to text that is displayed on the
-    // question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
-    getDisplayText(index: number): string {
-        index++;
-        // Disclaimer: none of us wrote this one-line magic :) It is borrowed
-        // from https://stackoverflow.com/revisions/39466341/5 return index +
-        // ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index +
-        // 'th';
-        return String(index);
     }
 
 
@@ -204,6 +201,8 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     questionDontKnow = () => {
+        this.setDotMenu(false);
+
         const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'unresolved' };
         const questionUpdate: Partial<FireQuestion> = { status: 'unresolved', answererId: '' };
@@ -234,7 +233,7 @@ class SessionQuestion extends React.Component<Props, State> {
                     {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
                     <div>
                         <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
-                            {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
+                            {question.status === 'assigned' ? '•••' : getDisplayText(this.props.index)}
                         </p>
                     </div>
                     {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) &&
@@ -242,6 +241,9 @@ class SessionQuestion extends React.Component<Props, State> {
                             <Icon
                                 onClick={this.toggleLocationTooltip}
                                 name="map marker alternate"
+                                role="button"
+                                tabIndex={0}
+                                onKeyPress={onEnterOrSpace(this.toggleLocationTooltip)}
                             />
                             <div
                                 className="LocationTooltip"
@@ -267,12 +269,12 @@ class SessionQuestion extends React.Component<Props, State> {
                                         inline={true}
                                         size={'tiny'}
                                     /> : <Icon name="check" />}
-                                <div
+                                <AccessibleButton
                                     className="DoneButton"
-                                    onClick={this.toggleLocationTooltip}
+                                    onInteract={this.toggleLocationTooltip}
                                 >
                                     Done
-                                </div>
+                                </AccessibleButton>
                             </div>
                         </div>
                     }
@@ -286,7 +288,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                 />
                                 <span className="userInformationName">
                                     {asker.firstName + ' ' + asker.lastName +
-                                        ' (' + asker.email.slice(0,asker.email.indexOf('@')) + ')'}
+                                        ' (' + asker.email.slice(0, asker.email.indexOf('@')) + ')'}
                                     {question.status === 'assigned' &&
                                         <>
                                             <span className="assigned"> is assigned
@@ -311,11 +313,11 @@ class SessionQuestion extends React.Component<Props, State> {
                                             Zoom Link
                                         </a>
                                     }
-                                    {this.props.isTA &&
+                                        {this.props.isTA &&
                                             question.location &&
                                             question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
                                             question.location
-                                    }</>)}
+                                        }</>)}
                         </div>
                         {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
                             <p className={'Question' + studentCSS}>{question.content}</p>}
@@ -351,34 +353,41 @@ class SessionQuestion extends React.Component<Props, State> {
                         <hr />
                         <div className="TAButtons">
                             {question.status === 'unresolved' &&
-                                <p className="Begin" onClick={this.assignQuestion}>
+                                <AccessibleButton className="TAQButton Begin" onInteract={this.assignQuestion}>
                                     Assign to Me
-                                </p>
+                                </AccessibleButton>
                             }
                             {question.status === 'assigned' &&
                                 <>
-                                    <p className="Delete" onClick={this.studentNoShow}>No show</p>
-                                    <p className="Done" onClick={this.questionDone}>Done</p>
-                                    <p
+                                    <AccessibleButton
+                                        className="TAQButton Delete"
+                                        onInteract={this.studentNoShow}
+                                    >
+                                        No show
+                                    </AccessibleButton>
+                                    <AccessibleButton
+                                        className="TAQButton Done"
+                                        onInteract={this.questionDone}
+                                    >
+                                        Done
+                                    </AccessibleButton>
+                                    <AccessibleButton
                                         className="DotMenu"
-                                        onClick={() => this.setDotMenu(!this.state.showDotMenu)}
+                                        onInteract={() => this.setDotMenu(!this.state.showDotMenu)}
                                     >
                                         ...
-                                        {this.state.showDotMenu &&
-                                            <div
-                                                className="IReallyDontKnow"
-                                                tabIndex={1}
-                                                onClick={() => this.setDotMenu(false)}
-                                            >
-                                                <p
-                                                    className="DontKnowButton"
-                                                    onClick={this.questionDontKnow}
+                                    </AccessibleButton>
+                                    {this.state.showDotMenu &&
+                                        <OutsideClickHandler onOutsideClick={() => this.setDotMenu(false)}>
+                                            <ul className="IReallyDontKnow" >
+                                                <DropDownEntry
+                                                    onSelect={this.questionDontKnow}
                                                 >
-                                                    I Really Don't Know
-                                                </p>
-                                            </div>
-                                        }
-                                    </p>
+                                                    {`I Really Don't Know`}
+                                                </DropDownEntry>
+                                            </ul>
+                                        </OutsideClickHandler>
+                                    }
                                 </>
                             }
                         </div>
@@ -428,9 +437,9 @@ class SessionQuestion extends React.Component<Props, State> {
                     this.props.includeRemove && !this.props.isPast &&
                     <div className="Buttons">
                         <hr />
-                        <p className="Remove" onClick={this.retractQuestion}>
+                        <AccessibleButton className="Remove" onInteract={this.retractQuestion}>
                             <Icon name="close" /> Remove
-                        </p>
+                            </AccessibleButton>
                     </div>
                 }
             </div >

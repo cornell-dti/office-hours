@@ -2,6 +2,8 @@ import * as React from 'react';
 import { useHistory } from 'react-router';
 import { Icon } from 'semantic-ui-react';
 
+import AccessibleButton from './AccessibleButton';
+
 type Props = {
     course: FireCourse;
     // If not provided, it means that the student is not enrolled in the class yet.
@@ -15,7 +17,7 @@ type Props = {
 const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive = false }: Props) => {
     const history = useHistory();
 
-    const selectCourse = () => {
+    const selectCourse = React.useCallback(() => {
         if (!editable) {
             if (!inactive) history.push('/course/' + course.courseId);
             return;
@@ -23,7 +25,7 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
         if (role === undefined || role === 'student') {
             onSelectCourse(!selected);
         }
-    };
+    }, [editable, history, role, onSelectCourse, course.courseId, selected, inactive]);
 
     let roleString = '';
     if (role === 'ta') {
@@ -32,9 +34,9 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
         roleString = 'PROF';
     }
     return (
-        <div
+        <AccessibleButton
             className={`CourseCard ${selected && editable ? 'selected' : ''} ${inactive ? 'inactive' : 'active'}`}
-            onClick={selectCourse}
+            onInteract={selectCourse}
         >
             <div className="courseText">
                 <div className="courseCode">
@@ -60,7 +62,7 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
                     </div> :
                     <></>
             }
-        </div>
+        </AccessibleButton>
     );
 };
 

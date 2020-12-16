@@ -1,4 +1,7 @@
 import * as React from 'react';
+
+import AccessibleButton from './AccessibleButton';
+
 import Uncheck from '../../media/uncheck.svg';
 import Check from '../../media/check.svg';
 import YellowUncheck from '../../media/yellowUncheck.svg';
@@ -27,7 +30,7 @@ class SelectedTags extends React.PureComponent<Props> {
         return (
             <>
                 {this.props.select? 
-                    <div className="selectTag" onClick={this._onClick}>
+                    <AccessibleButton className="selectTag" onInteract={this._onClick}>
                         <div className="selectTagContents">
                             {this.props.isPrimary? (this.props.check?
                                 <img src={Check} alt="check"/>
@@ -38,16 +41,16 @@ class SelectedTags extends React.PureComponent<Props> {
                             }
                             {this.props.tag.name}
                         </div>
-                    </div>
-                    :<p
+                    </AccessibleButton>
+                    :<AccessibleButton
                         className={['tag',
                             this.props.tag.level === 1 ? 'primaryTag' : 'secondaryTag',
                             this.props.isDiscussion && 'discussion',
                             this.props.isSelected && 'selectedTag'].join(' ')}
-                        onClick={this._onClick}
+                        onInteract={this._onClick}
                     >
                         {this.props.tag.name}
-                    </p>
+                    </AccessibleButton>
                 }
             </>
         );
