@@ -374,13 +374,14 @@
         }
 
         .TAButtons {
-            display: inline-block;
+            display: flex;
+            justify-content: center;
             padding-top: 10px;
             user-select: none;
 
-            p {
+            .TAQButton {
                 display: inline-block;
-                border-radius: 5px;
+                border-radius: 10px;
                 color: white;
                 padding: 2px 30px;
                 font-size: 15px;
@@ -390,17 +391,17 @@
             }
 
             .Delete {
-                border: 0.5px solid red;
+                border: 2px solid red;
                 color: red;
             }
 
             .Begin {
-                border: 0.5px solid $number-blue;
+                border: 2px solid $number-blue;
                 color: $number-blue;
             }
 
             .Done {
-                border: 0.5px solid $tag-blue;
+                border: 2px solid $tag-blue;
                 color: $tag-blue;
             }
 
@@ -428,8 +429,13 @@
                 right: 0;
                 z-index: 1;
 
-                p {
+                li {
+                    border-bottom: none;
+                }
+
+                div {
                     width: 200px;
+                    cursor: pointer;
                     color: black;
                     size: 13px;
                     font-weight: normal;
