@@ -88,7 +88,7 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
             <ProfessorSidebar
                 courseId={courseId}
                 code={course ? course.code : 'Loading'}
-                selected={0}
+                selected={'hours'}
             />
             <TopBar
                 courseId={courseId}
