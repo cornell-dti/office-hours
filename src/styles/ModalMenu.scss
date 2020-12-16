@@ -10,7 +10,6 @@
     padding-top: 42px;
     user-select: none;
     cursor: pointer;
-    outline: none;
 
     li {
         border: none;
@@ -34,6 +33,6 @@
     }
 }
 
-.logoutMenu li {
-    padding-left: 80px;
+.logoutMenu li div {
+    padding-left: 76px;
 }

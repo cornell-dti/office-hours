@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
 
+import AccessibleButton from './AccessibleButton';
+
 type PropTypes = {
     isNew: boolean;
     cancelCallback: Function;
@@ -190,19 +192,20 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                     </div>
                     <div className="Status InputSection">
                         <div className="InputHeader">Status</div>
-                        <div
+                        <AccessibleButton
                             className={'ActiveButton first ' + (this.state.tag.active ? 'Selected' : '')}
-                            onClick={() => this.handleActiveChange(true)}
+                            onInteract={() => this.handleActiveChange(true)}
                         >
                             Active
-                        </div>
-                        <div
+                        </AccessibleButton>
+                        <AccessibleButton
                             className={'ActiveButton ' + (this.state.tag.active ? '' : 'Selected')}
-                            onClick={() => this.handleActiveChange(false)}
+                            onInteract={() => this.handleActiveChange(false)}
                         >
                             Inactive
-                        </div>
+                        </AccessibleButton>
                     </div>
+                    { /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */ }
                     <div className="ChildTags InputSection" onKeyDown={(e) => this.handleEnterPress(e)}>
                         <div className="InputHeader">Tags</div>
                         {this.state.newTags
@@ -224,12 +227,12 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                             placeholder="Type to add a new tag..."
                             value={this.state.newTagText}
                         />
-                        <div
+                        <AccessibleButton
                             className={'InputChildTagEnter ' + (this.state.newTagText.length > 0 ? '' : 'disabled')}
-                            onClick={this.handleNewTagEnter}
+                            onInteract={this.handleNewTagEnter}
                         >
                             +
-                        </div>
+                        </AccessibleButton>
                     </div>
                 </div>
                 <div className="EditButtons">

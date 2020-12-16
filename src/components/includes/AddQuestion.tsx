@@ -5,6 +5,7 @@ import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
 import firebase from 'firebase/app';
 
+import AccessibleButton from './AccessibleButton';
 import SelectedTags from './SelectedTags';
 import SessionAlertModal from './SessionAlertModal';
 
@@ -22,7 +23,6 @@ type Props = {
 type State = {
     location: string;
     question: string;
-    selectedTags: number[];
     stage: number;
     width: number;
     redirect: boolean;
@@ -46,7 +46,6 @@ class AddQuestion extends React.Component<Props, State> {
         question: '',
         stage: 10,
         width: window.innerWidth,
-        selectedTags: [],
         redirect: false,
         tags: []
     };
@@ -202,7 +201,8 @@ class AddQuestion extends React.Component<Props, State> {
         const { selectedPrimary, selectedSecondary } = this.state;
 
         return (
-            <div className="QuestionView" onKeyDown={(e) => this.handleKeyPressDown(e)} >
+            // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+            <div className="QuestionView" role="group" onKeyDown={(e) => this.handleKeyPressDown(e)} >
                 {(this.state.stage < 60 || this.state.width < this.props.mobileBreakpoint) &&
                     <div className="AddQuestion">
                         <div className="queueHeader">
@@ -315,9 +315,12 @@ class AddQuestion extends React.Component<Props, State> {
                             </div>
                             <div className="addButtonWrapper">
                                 {this.state.stage > 40 ?
-                                    <p className="AddButton active" onClick={() => this.handleJoinClick()} >
+                                    <AccessibleButton 
+                                        className="AddButton active"
+                                        onInteract={() => this.handleJoinClick()}
+                                    >
                                         Add My Question
-                                    </p>
+                                    </AccessibleButton>
                                     : <p className="AddButton"> Add My Question </p>
                                 }
                             </div>

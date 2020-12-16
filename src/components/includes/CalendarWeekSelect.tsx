@@ -1,4 +1,7 @@
 import * as React from 'react';
+
+import AccessibleButton from './AccessibleButton';
+
 import chevron from '../../media/chevron.svg';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
@@ -58,15 +61,15 @@ class CalendarWeekSelect extends React.Component<Props, State> {
     // previousWeek = false means that the next week was clicked in the week selector
     handleWeekClick(previousWeek: boolean) {
         if (previousWeek) {
-            this.setState({
-                selectedWeekEpoch: this.state.selectedWeekEpoch -
+            this.setState((state) => ({
+                selectedWeekEpoch: state.selectedWeekEpoch -
                     7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
-            });
+            }));
         } else {
-            this.setState({
-                selectedWeekEpoch: this.state.selectedWeekEpoch +
+            this.setState((state) => ({
+                selectedWeekEpoch: state.selectedWeekEpoch +
                     7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */
-            });
+            }));
         }
         if (this.props.handleClick !== undefined) {
             this.props.handleClick(previousWeek);
@@ -83,9 +86,9 @@ class CalendarWeekSelect extends React.Component<Props, State> {
 
         return (
             <div className="CalendarWeekSelect">
-                <span className="LastWeek" onClick={() => this.handleWeekClick(true)}>
+                <AccessibleButton className="LastWeek" onInteract={() => this.handleWeekClick(true)}>
                     <img src={chevron} alt="Previous Week" className="flipped" />
-                </span>
+                </AccessibleButton>
                 <div className="CurrentWeek">
                     <span className="Date">
                         <span className="Month">
@@ -101,9 +104,9 @@ class CalendarWeekSelect extends React.Component<Props, State> {
                         {' ' + CalendarWeekSelect.getDay(nextWeekEpoch)}
                     </span>
                 </div>
-                <span className="NextWeek" onClick={() => this.handleWeekClick(false)}>
+                <AccessibleButton className="NextWeek" onInteract={() => this.handleWeekClick(false)}>
                     <img src={chevron} alt="Next Week" />
-                </span>
+                </AccessibleButton>
             </div>
         );
     }

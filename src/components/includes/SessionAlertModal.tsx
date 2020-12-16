@@ -5,6 +5,8 @@ import { Icon } from 'semantic-ui-react';
 import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
 import { useSessionTANames } from '../../firehooks';
 
+import AccessibleButton from './AccessibleButton';
+
 type Props = {
     readonly header?: string;
     readonly icon?: SemanticICONS;
@@ -12,7 +14,7 @@ type Props = {
     readonly description: string;
     readonly course: FireCourse;
     readonly OHSession?: FireSession;
-    readonly buttons: string[];
+    readonly buttons: readonly string[];
     readonly cancelAction?: Function;
     readonly mainAction?: Function;
     readonly displayShade: boolean;
@@ -33,6 +35,8 @@ const SessionAlertModal = (
 
     const buttonsToRender = buttons.map((button, i) => (
         <button
+            // This is a static array so we can use the array index.
+            // eslint-disable-next-line react/no-array-index-key
             key={i}
             type="button"
             className={buttons.length - 1 === i ? 'last' : ''}
@@ -53,7 +57,7 @@ const SessionAlertModal = (
 
     return (
         <div className="SessionAlertModal">
-            <div className={'modalShadeAlert ' + shadeDisplay} onClick={() => cancel()} />
+            <AccessibleButton className={'modalShadeAlert ' + shadeDisplay} onInteract={() => cancel()} />
             <div className={'modalContent ' + shadeDisplay}>
                 <div className={'text ' + color}>
                     {header && <div className="title">{header}</div>}

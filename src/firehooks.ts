@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import firebase from 'firebase/app';
 import { collectionData, docData } from 'rxfire/firestore';
@@ -10,6 +10,8 @@ import {
     createUseSingletonObservableHook,
     createUseParamaterizedSingletonObservableHook
 } from './utilities/singleton-observable-hook';
+
+import { CURRENT_SEMESTER } from './constants';
 
 export const useDoc = <T>(collection: string, id: string | undefined, idField: string) => {
     const [doc, setDoc] = useState<T | undefined>();
@@ -138,6 +140,24 @@ export const useMyCourses = (): readonly FireCourse[] => {
     return allCourses.filter(({ courseId }) => currentlyEnrolledCourseIds.has(courseId));
 };
 
+export const useMyCurrentCourses = (): null | readonly FireCourse[] => {
+    const currentCourses = useCurrentCourses();
+    const user = useMyUser();
+
+    const myCurrentCourses = useMemo<null | readonly FireCourse[]>(() => {
+        if (user === undefined || currentCourses === null) {
+            return null;
+        }
+        
+        const currentlyEnrolledCourseIds = new Set(user.courses);
+    
+        // TODO(ewlsh) these should be filtered server-side.
+        return currentCourses.filter(({ courseId }) => currentlyEnrolledCourseIds.has(courseId));
+    }, [user, currentCourses]);
+
+    return myCurrentCourses;
+};
+
 const courseTagQuery = (courseId: string) => firestore.collection('tags').where('courseId', '==', courseId);
 export const useCourseTags = (courseId: string): { readonly [tagId: string]: FireTag } => {
     const tagsList = useQuery<FireTag>(courseId, courseTagQuery, 'tagId');
@@ -149,6 +169,11 @@ export const useCourseTags = (courseId: string): { readonly [tagId: string]: Fir
 
     return tags;
 };
+
+const currentCoursesQuery = () => firestore.collection('courses').where('semester', '==', CURRENT_SEMESTER);
+export const useCurrentCourses = createUseSingletonObservableHook(
+    new SingletonObservable(null, collectionData<FireCourse>(currentCoursesQuery(), 'courseId'))
+);
 
 const courseUserQuery = (courseId: string) => (
     firestore.collection('users').where('courses', 'array-contains', courseId)

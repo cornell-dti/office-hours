@@ -7,6 +7,8 @@ import {
     computeNumberAheadFromFilterAndpartitionQuestions
 } from '../../utilities/questions';
 
+import AccessibleButton from './AccessibleButton';
+
 const CalendarSessionCard = (props: {
     user: FireUser;
     course: FireCourse;
@@ -32,7 +34,7 @@ const CalendarSessionCard = (props: {
 
     const timeDesc = '';
     return (
-        <div className={(props.active && 'active') + ' CalendarSessionCard'} onClick={handleOnClick}>
+        <AccessibleButton className={(props.active && 'active') + ' CalendarSessionCard'} onInteract={handleOnClick}>
             {includeBookmark && <div className="Bookmark" />}
             <div className="TimeInfo">
                 <div className="StartTime">
@@ -79,7 +81,7 @@ const CalendarSessionCard = (props: {
             <div className="OpenButton">
                 <img src={chevron} alt="Open session dropdown" />
             </div>
-        </div>
+        </AccessibleButton>
     );
 };
 export default CalendarSessionCard;

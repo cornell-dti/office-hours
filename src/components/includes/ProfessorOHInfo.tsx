@@ -275,8 +275,8 @@ const ProfessorOHInfo = (props: {
                     (ta, i) => {
                         // Filter dropdown by checking if TA has not been selected yet
                         // Include currently selected TA, or else dropdown can't prepopulate if option is missing
-                        const dropdownOptions = props.taOptions.filter(ta =>
-                            ta.value === taSelected[i].id || !taSelected.some(s => s.id === ta.value));
+                        const dropdownOptions = props.taOptions.filter(t =>
+                            t.value === taSelected[i].id || !taSelected.some(s => s.id === t.value));
 
                         return (
                             <div className={'AddTA ' + (i === 0 ? 'First' : 'Additional')} key={ta.id || i}>

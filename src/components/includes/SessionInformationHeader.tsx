@@ -10,6 +10,8 @@ import closeZoom from '../../media/closeZoom.svg';
 import editZoomLink from '../../media/editZoomLink.svg';
 import { useSessionQuestions, useSessionTAs } from '../../firehooks';
 import { computeNumberAhead } from '../../utilities/questions';
+
+import AccessibleButton from './AccessibleButton';
 import JoinErrorMessage from './JoinErrorMessage';
 
 
@@ -272,10 +274,10 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
     return (
         <header className="SessionInformationHeader" >
             <div className="header">
-                <p className="BackButton" onClick={() => callback()}>
+                <AccessibleButton className="BackButton" onInteract={() => callback()}>
                     <i className="left" />
                     {course.code}
-                </p>
+                </AccessibleButton>
                 <div className="CourseInfo">
                     <div className="CourseDetails">
                         {'building' in session ? <span>

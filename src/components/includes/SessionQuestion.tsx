@@ -7,7 +7,9 @@ import { useState } from "react";
 import Linkify from 'linkifyjs/react';
 import addNotification from 'react-push-notification';
 import { firestore } from '../../firebase';
+import AccessibleButton from './AccessibleButton';
 import SelectedTags from './SelectedTags';
+import { onEnterOrSpace } from '../../utilities/a11y';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -38,6 +40,10 @@ type State = {
     enableEditingComment: boolean;
     width: number;
 };
+
+function getDisplayText(index: number): string {
+    return (index + 1).toFixed(0);
+}
 
 class SessionQuestion extends React.Component<Props, State> {
     state: State;
@@ -85,17 +91,6 @@ class SessionQuestion extends React.Component<Props, State> {
                 // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
             }
         }
-    }
-
-    // Given an index from [1..n], converts it to text that is displayed on the
-    // question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
-    getDisplayText(index: number): string {
-        index++;
-        // Disclaimer: none of us wrote this one-line magic :) It is borrowed
-        // from https://stackoverflow.com/revisions/39466341/5 return index +
-        // ['st', 'nd', 'rd'][((index + 90) % 100 - 10) % 10 - 1] || index +
-        // 'th';
-        return String(index);
     }
 
 
@@ -234,7 +229,7 @@ class SessionQuestion extends React.Component<Props, State> {
                     {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
                     <div>
                         <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
-                            {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
+                            {question.status === 'assigned' ? '•••' : getDisplayText(this.props.index)}
                         </p>
                     </div>
                     {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) &&
@@ -242,6 +237,9 @@ class SessionQuestion extends React.Component<Props, State> {
                             <Icon
                                 onClick={this.toggleLocationTooltip}
                                 name="map marker alternate"
+                                role="button"
+                                tabIndex={0}
+                                onKeyPress={onEnterOrSpace(this.toggleLocationTooltip)}
                             />
                             <div
                                 className="LocationTooltip"
@@ -351,34 +349,43 @@ class SessionQuestion extends React.Component<Props, State> {
                         <hr />
                         <div className="TAButtons">
                             {question.status === 'unresolved' &&
-                                <p className="Begin" onClick={this.assignQuestion}>
+                                <AccessibleButton className="Begin" onInteract={this.assignQuestion}>
                                     Assign to Me
-                                </p>
+                                </AccessibleButton>
                             }
                             {question.status === 'assigned' &&
                                 <>
-                                    <p className="Delete" onClick={this.studentNoShow}>No show</p>
-                                    <p className="Done" onClick={this.questionDone}>Done</p>
-                                    <p
+                                    <AccessibleButton
+                                        className="Delete"
+                                        onInteract={this.studentNoShow}
+                                    >
+                                        No show
+                                    </AccessibleButton>
+                                    <AccessibleButton 
+                                        className="Done"
+                                        onInteract={this.questionDone}
+                                    >
+                                        Done
+                                    </AccessibleButton>
+                                    <AccessibleButton
                                         className="DotMenu"
-                                        onClick={() => this.setDotMenu(!this.state.showDotMenu)}
+                                        onInteract={() => this.setDotMenu(!this.state.showDotMenu)}
                                     >
                                         ...
                                         {this.state.showDotMenu &&
-                                            <div
+                                            <AccessibleButton
                                                 className="IReallyDontKnow"
-                                                tabIndex={1}
-                                                onClick={() => this.setDotMenu(false)}
+                                                onInteract={() => this.setDotMenu(false)}
                                             >
-                                                <p
+                                                <AccessibleButton
                                                     className="DontKnowButton"
-                                                    onClick={this.questionDontKnow}
+                                                    onInteract={this.questionDontKnow}
                                                 >
-                                                    I Really Don't Know
-                                                </p>
-                                            </div>
+                                                    {`I Really Don't Know`}
+                                                </AccessibleButton>
+                                            </AccessibleButton>
                                         }
-                                    </p>
+                                    </AccessibleButton>
                                 </>
                             }
                         </div>
@@ -426,12 +433,12 @@ class SessionQuestion extends React.Component<Props, State> {
 
                 {
                     this.props.includeRemove && !this.props.isPast &&
-                    <div className="Buttons">
-                        <hr />
-                        <p className="Remove" onClick={this.retractQuestion}>
-                            <Icon name="close" /> Remove
-                        </p>
-                    </div>
+                        <div className="Buttons">
+                            <hr />
+                            <AccessibleButton className="Remove" onInteract={this.retractQuestion}>
+                                <Icon name="close" /> Remove
+                            </AccessibleButton>
+                        </div>
                 }
             </div >
         );
