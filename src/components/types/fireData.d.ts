@@ -90,7 +90,7 @@ interface FireReviewSeries extends FireBaseSessionSeries, FireVirtualLocation {
     link: string;
 }
 
-type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries | 
+type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries |
 FireInPersonSessionSeries | FireReviewSeries);
 type FireSessionSeriesDefinition =
     Omit<FireVirtualSessionSeries, 'sessionSeriesId'>
@@ -155,7 +155,7 @@ interface FireQuestion {
     questionId: string;
 }
 
-type FireQuestionSlot = Pick<FireQuestion, 'askerId' 
+type FireQuestionSlot = Pick<FireQuestion, 'askerId'
 | 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
 
 interface FireTag {
@@ -165,4 +165,12 @@ interface FireTag {
     tagId: string;
     name: string;
     parentTag?: string;
+}
+
+interface FireStats {
+    enteredByHour: number[];
+    numQnsInQueueByHour: number[];
+    numTAsByHour: number[];
+    numQuestions: number;
+    avgWaitTimePerQnOneTA: number;
 }

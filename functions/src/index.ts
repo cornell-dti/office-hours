@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import takeStats from './courseStats';
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
@@ -93,3 +94,5 @@ exports.onQuestionUpdate = functions.firestore
             totalResolveTime: admin.firestore.FieldValue.increment(resolveTimeChange),
         });
     });
+
+exports.takeStats = takeStats(db);
