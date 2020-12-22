@@ -4,8 +4,7 @@ import firebase from 'firebase/app';
 import { useAllCourses, useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
 import { firestore } from '../../firebase';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
-import { CURRENT_SEMESTER } from '../../constants';
-import { START_DATE, END_DATE } from '../../constants';
+import { CURRENT_SEMESTER, START_DATE, END_DATE } from '../../constants';
 
 const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) => {
     const professorMap = useCourseProfessorMap(course);

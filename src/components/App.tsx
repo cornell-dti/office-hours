@@ -155,13 +155,10 @@ const PrivateRoute = <P extends {}>(
     const [user, courses] = routeAction;
 
     if (user.courses.length === 0 && rest.location.pathname !== '/edit') {
-        console.log('redirecting to edit view');
         return <Redirect to={{ pathname: '/edit' }} />;
     }
     if (courseId != null) {
         const course = findValidCourse(courses, courseId);
-        console.log('found valid course');
-        console.log(course);
         if (course === undefined) {
             return <Redirect to={{ pathname: getDefaultRedirect(user, courses) }} />;
         }
