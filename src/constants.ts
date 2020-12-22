@@ -1,1 +1,1 @@
-export const CURRENT_SEMESTER = 'FA20';
+export const CURRENT_SEMESTER = 'SP21';
