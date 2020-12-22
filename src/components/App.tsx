@@ -12,7 +12,6 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import * as ReactGA from 'react-ga';
-import moment from 'moment';
 import { Loader } from 'semantic-ui-react';
 
 import { Notifications } from 'react-push-notification';
@@ -31,12 +30,13 @@ import CourseSelectionView from './pages/CourseSelectionView';
 import { Analytics } from './includes/Analytics';
 import { userUpload } from '../firebasefunctions';
 import { useMyUser, useAllCourses } from '../firehooks';
+import { CURRENT_SEMESTER } from '../constants';
 
 ReactGA.initialize('UA-123790900-1');
 
 const findValidCourse = (courses: readonly FireCourse[], courseId: string) => courses.find(course =>
     courseId === course.courseId
-    && moment().isBetween(moment(course.startDate.toDate()), moment(course.endDate.toDate())));
+    && course.semester === CURRENT_SEMESTER);
 
 const getDefaultRedirectCourseId = (user: FireUser | undefined, courses: readonly FireCourse[]): string | undefined => {
     if (user && user.courses) {
