@@ -5,6 +5,7 @@ import { useAllCourses, useCourseProfessorMap, useCourseTAMap } from '../../fire
 import { firestore } from '../../firebase';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
 import { CURRENT_SEMESTER } from '../../constants';
+import { START_DATE, END_DATE } from '../../constants';
 
 const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) => {
     const professorMap = useCourseProfessorMap(course);
@@ -124,8 +125,8 @@ const AdminCourseCard = ({ course }: { readonly course: FireCourse }) => {
     );
 };
 
-const startDate = new Date('2020-09-02');
-const endDate = new Date('2020-12-21');
+const startDate = new Date(START_DATE);
+const endDate = new Date(END_DATE);
 const currentTerm = CURRENT_SEMESTER.substring(0, 2);
 const currentYear = CURRENT_SEMESTER.substring(2, 4);
 

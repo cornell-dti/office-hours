@@ -5,6 +5,7 @@ import TopBar from './TopBar';
 import QMeLogo from '../../media/QLogo2.svg';
 import CourseCard from './CourseCard';
 import { firestore } from '../../firebase';
+import { CURRENT_SEMESTER } from '../../constants';
 
 
 type Props = {
@@ -28,13 +29,12 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     const [formerCourses, setFormerCourses] = React.useState<FireCourse[]>([]);
 
     React.useEffect(() => {
-        const now = Date.now();
         setCurrentCourses(allCourses.filter((course) => {
-            return course.endDate.seconds * 1000 >= now;
+            return course.semester === CURRENT_SEMESTER;
         }));
 
         setFormerCourses(allCourses.filter((course) => {
-            return course.endDate.seconds * 1000 < now;
+            return course.semester !== CURRENT_SEMESTER;
         }));
     }, [allCourses]);
 
