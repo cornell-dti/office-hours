@@ -5,7 +5,7 @@ export const datePlusWithDST = (date: Date, offsetInSecs: number): Date => {
 
     const futureOffset = utcOffsetOfDate(date, offsetInSecs)
 
-    const offsetDiffSecs = (futureOffset - currentOffset) * 3600;
+    const offsetDiffSecs = (futureOffset - currentOffset) * 60;
     return new Date(date.getTime() + offsetInSecs + offsetDiffSecs);
 };
 
