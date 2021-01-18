@@ -167,7 +167,7 @@ export const createSeries = async (
                 batch.set(db.collection('sessions').doc(), derivedSession);
             }
         }
-        currentDate = datePlusWithDST(currentDate, 7 * 24 * 3600); // move 1 week forward.
+        currentDate = datePlusWithDST(currentDate, 7 * 24 * 3600 * 1000); // move 1 week forward.
     }
     await batch.commit();
 };

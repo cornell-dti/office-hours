@@ -5,13 +5,13 @@ export const datePlusWithDST = (date: Date, offsetInSecs: number): Date => {
 
     const futureOffset = utcOffsetOfDate(date, offsetInSecs)
 
-    const offsetDiffSecs = (futureOffset - currentOffset) * 60;
+    const offsetDiffSecs = (futureOffset - currentOffset);
     return new Date(date.getTime() + offsetInSecs + offsetDiffSecs);
 };
 
 export const utcOffsetOfDate = (date: Date, offset = 0) => {
     const zone = moment.tz.zone('America/New_York')!;
-    return zone.offset((date.getTime() + offset)/1000);
+    return zone.utcOffset((date.getTime() + offset) * 60);
 }
 
 /** Gets time at the beginning of the day */
