@@ -1,16 +1,16 @@
 import moment from 'moment-timezone';
 
 export const datePlusWithDST = (date: Date, offsetInSecs: number): Date => {
-    let currentOffset = utcOffsetOfDate(date);
+    const currentOffset = utcOffsetOfDate(date);
 
-    let futureOffset = utcOffsetOfDate(date, offsetInSecs)
+    const futureOffset = utcOffsetOfDate(date, offsetInSecs)
 
-    let offsetDiffSecs = (futureOffset - currentOffset) * 3600;
+    const offsetDiffSecs = (futureOffset - currentOffset) * 3600;
     return new Date(date.getTime() + offsetInSecs + offsetDiffSecs);
 };
 
-export const utcOffsetOfDate = (date: Date, offset: number = 0) => {
-    let zone = moment.tz.zone('America/New_York')!;
+export const utcOffsetOfDate = (date: Date, offset = 0) => {
+    const zone = moment.tz.zone('America/New_York')!;
     return zone.offset((date.getTime() + offset)/1000);
 }
 
