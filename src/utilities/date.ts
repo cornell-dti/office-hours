@@ -1,6 +1,18 @@
-export const datePlus = (date: Date, offset: number): Date => {
-    return new Date(date.getTime() + offset)
+import moment from 'moment-timezone';
+
+export const datePlusWithDST = (date: Date, offsetInSecs: number): Date => {
+    let currentOffset = utcOffsetOfDate(date);
+
+    let futureOffset = utcOffsetOfDate(date, offsetInSecs)
+
+    let offsetDiffSecs = (futureOffset - currentOffset) * 3600;
+    return new Date(date.getTime() + offsetInSecs + offsetDiffSecs);
 };
+
+export const utcOffsetOfDate = (date: Date, offset: number = 0) => {
+    let zone = moment.tz.zone('America/New_York')!;
+    return zone.offset((date.getTime() + offset)/1000);
+}
 
 /** Gets time at the beginning of the day */
 export const normalizeDateToDateStart = (date: Date): Date => {

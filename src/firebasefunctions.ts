@@ -1,5 +1,5 @@
 import firebase from 'firebase/app';
-import { datePlus, normalizeDateToDateStart, normalizeDateToWeekStart } from './utilities/date';
+import { datePlusWithDST, normalizeDateToDateStart, normalizeDateToWeekStart } from './utilities/date';
 import { blockArray } from './firehooks';
 
 /* Basic Functions */
@@ -96,7 +96,7 @@ export const createSeries = async (
     })();
     const [sessionStartOffset, sessionEndOffset] = getWeekOffsets(sessionSeries);
     const now = new Date();
-    const currentDate = new Date(courseStartWeek);
+    let currentDate = new Date(courseStartWeek);
     const batch = db.batch();
     const sessionSeriesId = db.collection('sessions').doc().id;
     while (currentDate <= courseEndWeek) {
@@ -104,12 +104,12 @@ export const createSeries = async (
         // - the session is not already the past
         // - the session is after course start date
         // - the session is before (course end date + 1 day)
-        const sessionStart = datePlus(currentDate, sessionStartOffset);
-        const sessionEnd = datePlus(currentDate, sessionEndOffset);
+        const sessionStart = datePlusWithDST(currentDate, sessionStartOffset);
+        const sessionEnd = datePlusWithDST(currentDate, sessionEndOffset);
         if (
             sessionEnd > now &&
             sessionStart >= courseStartDate &&
-            sessionStart <= datePlus(courseEndDate, 1000 * 60 * 60 * 24)
+            sessionStart <= datePlusWithDST(courseEndDate, 1000 * 60 * 60 * 24)
         ) {
             if (sessionSeries.modality === 'virtual') {
                 const derivedSession: Omit<FireVirtualSession, 'sessionId'> = {
@@ -167,7 +167,7 @@ export const createSeries = async (
                 batch.set(db.collection('sessions').doc(), derivedSession);
             }
         }
-        currentDate.setDate(currentDate.getDate() + 7); // move 1 week forward.
+        currentDate = datePlusWithDST(currentDate, 7 * 24 * 3600); // move 1 week forward.
     }
     await batch.commit();
 };
@@ -187,10 +187,10 @@ export const updateSeries = async (
         const sessionId = sessionDocument.id;
         const oldSession = sessionDocument.data() as Omit<FireSession, 'sessionId'>;
         const startTime = firestore.Timestamp.fromDate(
-            datePlus(normalizeDateToWeekStart(oldSession.startTime.toDate()), sessionStartOffset)
+            datePlusWithDST(normalizeDateToWeekStart(oldSession.startTime.toDate()), sessionStartOffset)
         );
         const endTime = firestore.Timestamp.fromDate(
-            datePlus(normalizeDateToWeekStart(oldSession.endTime.toDate()), sessionEndOffset)
+            datePlusWithDST(normalizeDateToWeekStart(oldSession.endTime.toDate()), sessionEndOffset)
         );
 
         if (sessionSeries.modality === 'virtual') {
