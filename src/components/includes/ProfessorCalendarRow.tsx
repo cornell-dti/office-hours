@@ -75,7 +75,7 @@ const ProfessorCalendarRow = (props: {
                         <td>
                             {props.sessions[i].tas.map(taId => nameOfTaId(taId)).join(', ')}
                         </td>
-                        {session.modality !== "virtual" ? <td>{session.building} {session.room}</td> : <td/>}
+                        {'building' in session ? <td>{session.building} {session.room}</td> : <td/>}
                         <td>
                             <button
                                 type="button"
@@ -104,6 +104,7 @@ const ProfessorCalendarRow = (props: {
                                 isNewOH={false}
                                 taOptions={props.taOptions}
                                 toggleEdit={() => toggleEdit(i, true)}
+                                isOfficeHour={props.sessions[i].modality !== "review"}
                             />
                             <button
                                 type="button"

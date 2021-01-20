@@ -12,6 +12,10 @@ $secondary-tag-selected: #ffdba6;
     border-radius: 12px;
     cursor: pointer;
 
+    &.discussion {
+        font-size: 11px;
+    }
+
     &.primaryTag {
         color: $tag-blue;
         border-color: $tag-blue;
@@ -28,5 +32,29 @@ $secondary-tag-selected: #ffdba6;
             background: $secondary-tag-selected;
             border-color: $secondary-tag-selected;
         }
+    }
+}
+
+.selectTag {
+    font-weight: normal;
+    display: inline-block;
+    padding: 2px 10px 2px 0;
+    margin: 0 6px 0 0;
+    cursor: pointer;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14.8909px;
+    line-height: 17px;
+    color: #565656;
+
+    img {
+        padding-right: 6px;
+    }
+
+    .selectTagContents {
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 }

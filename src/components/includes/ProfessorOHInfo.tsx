@@ -10,7 +10,8 @@ import { createSeries, updateSeries } from '../../firebasefunctions';
 enum Modality {
     VIRTUAL = 'virtual',
     HYBRID = 'hybrid',
-    INPERSON = 'in-person'
+    INPERSON = 'in-person',
+    REVIEW = 'review'
 }
 
 class OHMutateError extends Error {
@@ -23,6 +24,7 @@ const ProfessorOHInfo = (props: {
     taOptions: DropdownItemProps[];
     taUserIdsDefault?: number[];
     toggleEdit: Function;
+    isOfficeHour: boolean;
 }) => {
     const session = props.session || undefined;
 
@@ -31,17 +33,18 @@ const ProfessorOHInfo = (props: {
     const [taSelected, setTaSelected] = useState<{ id: string | null }[]>([]);
     const [locationBuildingSelected, setLocationBuildingSelected] = useState<string | undefined>();
     const [locationRoomNumSelected, setLocationRoomNumSelected] = useState<string | undefined>();
+    const [zoomLink, setZoomLink] = useState<string | undefined>();
     const [isSeriesMutation, setIsSeriesMutation] = useState(false);
     const [notification, setNotification] = useState<string | undefined>();
     const [title, setTitle] = useState(session && session.title);
-    const [modality, setModality] = useState(Modality.VIRTUAL);
+    const [modality, setModality] = useState(props.isOfficeHour ? Modality.VIRTUAL : Modality.REVIEW);
 
     React.useEffect(() => {
         if (session) {
             setStartTime(moment(session.startTime.seconds * 1000));
             setEndTime(moment(session.endTime.seconds * 1000));
             setTaSelected(session.tas ? session.tas.map(ta => ({ id: ta })) : []);
-            if (session.modality !== "virtual") {
+            if ('building' in session) {
                 setLocationBuildingSelected(session.building);
                 setLocationRoomNumSelected(session.room);
             }
@@ -52,7 +55,7 @@ const ProfessorOHInfo = (props: {
                     : '');
             setTitle(session.title);
             setModality(session.modality === "virtual" ?
-                Modality.VIRTUAL :session.modality === "hybrid" ?
+                Modality.VIRTUAL : session.modality === "review" ? Modality.REVIEW : session.modality === "hybrid" ?
                     Modality.HYBRID : Modality.INPERSON);
         }
     }, [session]);
@@ -129,6 +132,10 @@ const ProfessorOHInfo = (props: {
         }
         const endTimestamp = Timestamp.fromDate(endMomentTime.toDate());
 
+        if (modality === Modality.REVIEW && (!zoomLink || 
+            (zoomLink.indexOf('http://') === -1 && zoomLink.indexOf('https://') === -1))) {
+            return Promise.reject(new OHMutateError("Not a valid link!"))
+        }
         const propsSession = props.session;
         const taDocuments: string[] = [];
         taSelected.forEach(ta => {
@@ -147,6 +154,19 @@ const ProfessorOHInfo = (props: {
                     startTime: startTimestamp,
                     tas: taDocuments,
                     title,
+                }
+            } else if (modality === Modality.REVIEW) {
+                if (zoomLink === undefined) {
+                    return Promise.reject(new OHMutateError("Not a valid link!"))
+                }
+                series = {
+                    modality,
+                    courseId: props.courseId,
+                    endTime: endTimestamp,
+                    startTime: startTimestamp,
+                    tas: taDocuments,
+                    title,
+                    link: zoomLink,
                 }
             } else {
                 if (modality === Modality.INPERSON) {
@@ -188,9 +208,12 @@ const ProfessorOHInfo = (props: {
 
         const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
 
-        const sessionLocation = modality !== Modality.VIRTUAL ? {
+        const sessionLocation = modality === Modality.HYBRID || modality === Modality.INPERSON ? {
             building: locationBuildingSelected || '',
             room: locationRoomNumSelected || '',
+        } : {};
+        const sessionLink = modality === Modality.REVIEW ? {
+            link: zoomLink || '',
         } : {};
         const sessionWithoutSessionSeriesId = {
             modality,
@@ -204,11 +227,12 @@ const ProfessorOHInfo = (props: {
             totalWaitTime: 0,
             totalResolveTime: 0,
             title,
-            ...sessionLocation
+            ...sessionLocation,
+            ...sessionLink
         };
         const newSession: Omit<FireSession, 'sessionId'> = sessionSeriesId === undefined
             ? sessionWithoutSessionSeriesId
-            : { ...sessionWithoutSessionSeriesId, ...sessionLocation, sessionSeriesId };
+            : { ...sessionWithoutSessionSeriesId, ...sessionLocation, ...sessionLink, sessionSeriesId };
         if (propsSession) {
             return firestore.collection('sessions').doc(propsSession.sessionId).update(newSession);
         }
@@ -219,6 +243,7 @@ const ProfessorOHInfo = (props: {
         isSeriesMutation,
         locationBuildingSelected,
         locationRoomNumSelected,
+        zoomLink,
         modality,
         props.courseId,
         props.session,
@@ -293,26 +318,33 @@ const ProfessorOHInfo = (props: {
         <>
             <div className="ProfessorOHInfo">
                 <div className="row">
-                    Modality
+                    {props.isOfficeHour ? 'Modality' : 'Discussion'}
                     <Button.Group className="ModalitySelector">
-                        <Button
-                            active={modality === Modality.VIRTUAL}
-                            onClick={() => setModality(Modality.VIRTUAL)}
+                        {props.isOfficeHour && <div>
+                            <Button
+                                active={modality === Modality.VIRTUAL}
+                                onClick={() => setModality(Modality.VIRTUAL)}
+                            >
+                                                        Virtual
+                            </Button><Button
+                                active={modality === Modality.HYBRID}
+                                onClick={() => setModality(Modality.HYBRID)}
+                            >
+                                Hybrid
+                            </Button>
+                            <Button
+                                active={modality === Modality.INPERSON}
+                                onClick={() => setModality(Modality.INPERSON)}
+                            >
+                                In Person
+                            </Button>
+                        </div>}
+                        {!props.isOfficeHour && <Button
+                            active={modality === Modality.REVIEW}
+                            onClick={() => setModality(Modality.REVIEW)}
                         >
-                            Virtual
-                        </Button>
-                        <Button
-                            active={modality === Modality.HYBRID}
-                            onClick={() => setModality(Modality.HYBRID)}
-                        >
-                            Hybrid
-                        </Button>
-                        <Button
-                            active={modality === Modality.INPERSON}
-                            onClick={() => setModality(Modality.INPERSON)}
-                        >
-                            In Person
-                        </Button>
+                            Review
+                        </Button>}
                     </Button.Group>
                 </div>
                 <div className="row">
@@ -324,9 +356,11 @@ const ProfessorOHInfo = (props: {
                                 ' which is provided to the student when the TA is assigned to them.'
                                 : modality === Modality.HYBRID ?
                                     'In a hybrid session the student can either provide a Zoom link'+
-                                    ' or a physical location.'
-                                    :
-                                    'In an in-person session the student can provide their physical'
+                                    ' or a physical location.' : modality === Modality.REVIEW ?
+                                        'In a review session a Zoom link for the review is posted ' + 
+                                    ' and students can ask questions to be answered during the session.'
+                                        :
+                                        'In an in-person session the student can provide their physical'
                                     + ' location (e.g. by the whiteboard).'
                         }
                     </p>
@@ -343,7 +377,7 @@ const ProfessorOHInfo = (props: {
                 <div className="row TA">
                     {AddTA}
                 </div>
-                {modality !== Modality.VIRTUAL ? <div className="row">
+                {modality === Modality.HYBRID || modality === Modality.INPERSON ? <div className="row">
                     <Icon name="marker" />
                     <input
                         className="long"
@@ -358,6 +392,16 @@ const ProfessorOHInfo = (props: {
                         onChange={(e) => handleTextField(e, setLocationRoomNumSelected)}
                     />
                 </div> : <></>}
+                {modality === Modality.REVIEW ? <div className="row">
+                    <Icon name="desktop"/>
+                    <input 
+                        className="long"
+                        placeholder="Zoom link"
+                        value={zoomLink || ''}
+                        onChange={e => handleTextField(e, setZoomLink)}
+                    />
+                </div> : <></>
+                }
                 <div className="Time">
                     <Icon name="time" />
                     <div className="datePicker">

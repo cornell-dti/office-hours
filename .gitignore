@@ -20,6 +20,9 @@ functions/lib
 .vscode
 .firebase
 
+# log files
+*.log
+
 # all folders and files beginning with a period
 
 

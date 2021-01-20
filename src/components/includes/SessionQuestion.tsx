@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Icon, Loader, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import { useState } from "react";
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
@@ -11,9 +11,10 @@ import SelectedTags from './SelectedTags';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
+const MOBILE_BREAKPOINT = 920;
 
 type Props = {
-    question: FireQuestion;
+    question: FireOHQuestion;
     users: { readonly [userId: string]: FireUser };
     tags: { readonly [tagId: string]: FireTag };
     index: number;
@@ -35,6 +36,7 @@ type State = {
     undoQuestionIdDontKnow?: number;
     undoName?: string;
     enableEditingComment: boolean;
+    width: number;
 };
 
 class SessionQuestion extends React.Component<Props, State> {
@@ -47,7 +49,8 @@ class SessionQuestion extends React.Component<Props, State> {
             location: props.question.location || '',
             isEditingLocation: false,
             showDotMenu: false,
-            enableEditingComment: false
+            enableEditingComment: false,
+            width: window.innerWidth
         };
     }
 
@@ -56,22 +59,31 @@ class SessionQuestion extends React.Component<Props, State> {
         const currentState = this.props.question;
         const user = this.props.myUserId;
         if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
-            addNotification({
-                title: 'TA comment',
-                subtitle: 'New TA comment',
-                message: `${currentState.taComment}`,
-                theme: "darkblue",
-                native: true
-            });
+            try {
+                addNotification({
+                    title: 'TA comment',
+                    subtitle: 'New TA comment',
+                    message: `${currentState.taComment}`,
+                    theme: "darkblue",
+                    native: true
+                });
+            } catch (error) {
+                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
+            }
         }
+
         if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
-            addNotification({
-                title: 'Student comment',
-                subtitle: 'New student comment',
-                message: `${currentState.studentComment}`,
-                theme: "darkblue",
-                native: true
-            });
+            try {
+                addNotification({
+                    title: 'Student comment',
+                    subtitle: 'New student comment',
+                    message: `${currentState.studentComment}`,
+                    theme: "darkblue",
+                    native: true
+                });
+            } catch (error) {
+                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
+            }
         }
     }
 
@@ -124,7 +136,7 @@ class SessionQuestion extends React.Component<Props, State> {
     assignQuestion = () => {
         const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
-        const questionUpdate: Partial<FireQuestion> = {
+        const questionUpdate: Partial<FireOHQuestion> = {
             status: 'assigned',
             answererId: this.props.myUserId,
             timeAssigned: firebase.firestore.Timestamp.now(),
@@ -147,7 +159,7 @@ class SessionQuestion extends React.Component<Props, State> {
     questionDone = () => {
         const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'resolved' };
-        const questionUpdate: Partial<FireQuestion> = {
+        const questionUpdate: Partial<FireOHQuestion> = {
             status: 'resolved',
             timeAddressed: firebase.firestore.Timestamp.now()
         };
@@ -157,7 +169,7 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     questionComment = (newComment: string, isTA: boolean) => {
-        let update: Partial<FireQuestion>
+        let update: Partial<FireOHQuestion>
         if (isTA) {
             update = { taComment: newComment };
         } else {
@@ -225,7 +237,7 @@ class SessionQuestion extends React.Component<Props, State> {
                             {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                         </p>
                     </div>
-                    {this.props.includeRemove && this.props.modality !== 'virtual' &&
+                    {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) &&
                         <div className="LocationPin">
                             <Icon
                                 onClick={this.toggleLocationTooltip}
@@ -273,7 +285,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                     alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
                                 />
                                 <span className="userInformationName">
-                                    {asker.firstName + ' ' + asker.lastName + 
+                                    {asker.firstName + ' ' + asker.lastName +
                                         ' (' + asker.email.slice(0,asker.email.indexOf('@')) + ')'}
                                     {question.status === 'assigned' &&
                                         <>
@@ -403,13 +415,15 @@ class SessionQuestion extends React.Component<Props, State> {
                         />
                     </div>
                 }
+
                 {
-                    question.answererLocation && <>
+                    question.answererLocation && this.state.width < MOBILE_BREAKPOINT && <>
                         <Button className="JoinButton" target="_blank" href={question.answererLocation}>
                             Join Session
                         </Button>
                     </>
                 }
+
                 {
                     this.props.includeRemove && !this.props.isPast &&
                     <div className="Buttons">

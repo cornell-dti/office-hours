@@ -76,7 +76,7 @@ const SessionAlertModal = (
                                 {moment(OHSession.startTime).format('h:mm A')}&nbsp;
                                 to {moment(OHSession.endTime).format('h:mm A')}
                             </span>
-                            {OHSession.modality !== 'virtual' ? <span>
+                            {'building' in OHSession ? <span>
                                 {OHSession.building} {OHSession.room}
                             </span> : <span>Online</span>}
 

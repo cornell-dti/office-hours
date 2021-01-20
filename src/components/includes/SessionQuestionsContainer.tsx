@@ -1,16 +1,18 @@
 import * as React from 'react';
-import { Icon } from 'semantic-ui-react';
+import { Loader } from 'semantic-ui-react';
 import moment from 'moment';
 import addNotification from 'react-push-notification';
 import SessionQuestion from './SessionQuestion';
-import { useAskerQuestions } from '../../firehooks';
+import AddQuestion from "./AddQuestion";
+import DiscussionQuestion from "./DiscussionQuestion"
 
-const SHOW_FEEDBACK_QUEUE = 4;
+
 // Maximum number of questions to be shown to user
 const NUM_QUESTIONS_SHOWN = 20;
+const MOBILE_BREAKPOINT = 920;
 
 type Props = {
-    //Session used to update TAs on question answering
+    // Session used to update TAs on question answering
     readonly session: FireSession;
     readonly isTA: boolean;
     // Note that these questions are sorted by time asked
@@ -27,6 +29,8 @@ type Props = {
     readonly haveAnotherQuestion: boolean;
     readonly modality: FireSessionModality;
     readonly user: FireUser;
+    course: FireCourse;
+    readonly myQuestion: FireQuestion | null;
 };
 
 type StudentMyQuestionProps = {
@@ -59,20 +63,33 @@ const StudentMyQuestion = ({
     return (
         <div className="User">
             <p className="QuestionHeader">My Question</p>
-            <SessionQuestion
-                key={questionId}
-                question={studentQuestion}
-                modality={modality}
-                users={{}}
-                user={user}
-                tags={tags}
-                index={index}
-                isTA={false}
-                includeRemove={true}
-                triggerUndo={triggerUndo}
-                isPast={isPast}
-                myUserId={myUserId}
-            />
+            {modality === "review" ? 
+                <DiscussionQuestion 
+                    question={studentQuestion as FireDiscussionQuestion}
+                    user={user}
+                    tags={tags}
+                    isTA={false}
+                    includeRemove={true}
+                    isPast={isPast}
+                    myQuestion={true}
+                />
+                : 
+                <SessionQuestion
+                    key={questionId}
+                    question={studentQuestion}
+                    modality={modality}
+                    users={{}}
+                    user={user}
+                    tags={tags}
+                    index={index}
+                    isTA={false}
+                    includeRemove={true}
+                    triggerUndo={triggerUndo}
+                    isPast={isPast}
+                    myUserId={myUserId}
+                />
+            }
+            
         </div>
     );
 };
@@ -92,23 +109,10 @@ const SessionQuestionsContainer = (props: Props) => {
             // Do nothing. iOS crashes because Notification isn't defined
         }
     }, []);
-
     const allQuestions = props.questions;
-    const myUserId = props.myUserId;
-    const sessionId = props.session.sessionId;
 
-    const myQuestions = useAskerQuestions(sessionId, myUserId);
+    const myQuestion = props.myQuestion;
 
-    // If the user has questions, store them in myQuestion[]
-    const myQuestion = React.useMemo(() => {
-        if (myQuestions && myQuestions.length > 0) {
-            return myQuestions
-                .sort((a, b) => a.timeEntered.seconds - b.timeEntered.seconds)
-                .find(q => q.status === 'unresolved' || q.status === 'assigned') || null;
-        }
-
-        return null;
-    }, [myQuestions]);
 
     const myQuestionIndex = allQuestions.findIndex(question => question.questionId === myQuestion?.questionId)   
 
@@ -151,15 +155,15 @@ const SessionQuestionsContainer = (props: Props) => {
     return (
         <div className="SessionQuestionsContainer splitQuestions" >
             {!props.isTA && !myQuestion && props.isOpen
-                && !props.haveAnotherQuestion &&
-                <div
-                    className="SessionJoinButton"
-                    onClick={() =>
-                        props.handleJoinClick(shownQuestions && myQuestion
-                            && allQuestions.indexOf(myQuestion) > SHOW_FEEDBACK_QUEUE)}
-                >
-                    <p><Icon name="plus" /> Join the Queue</p>
-                </div>
+                && !props.haveAnotherQuestion
+                ? (props.course && props.session ? 
+                    <AddQuestion
+                        session={props.session}
+                        course={props.course} 
+                        mobileBreakpoint={MOBILE_BREAKPOINT}
+                    />
+                    : <Loader active={true} content={'Loading'} />)
+                : null
             }
             {!props.isTA && !myQuestion && props.isOpen
                 && props.haveAnotherQuestion &&
@@ -169,7 +173,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         To join this queue, please retract your question from the other queue!
                     </div>
                     <div className="SessionJoinButton disabled">
-                        <p><Icon name="plus" /> Join the Queue</p>
+                        <p>Join the Queue</p>
                     </div>
                 </>
             }
@@ -191,7 +195,23 @@ const SessionQuestionsContainer = (props: Props) => {
                     myUserId={props.myUserId}
                 />
             }
-            {shownQuestions && shownQuestions.length > 0 && props.isTA &&
+            {shownQuestions && shownQuestions.length > 0 && props.modality === "review" &&
+            <p className="QuestionHeader">All Questions</p>}
+            {shownQuestions &&  shownQuestions.length > 0 && props.modality === "review" &&
+                shownQuestions.map((question) => (
+                    <DiscussionQuestion
+                        key={question.questionId}
+                        question={question as FireDiscussionQuestion}
+                        user={props.user}
+                        tags={props.tags}
+                        isTA={props.isTA}
+                        includeRemove={false}
+                        isPast={props.isPast}
+                        myQuestion={false}
+                    />
+                ))
+            }
+            {shownQuestions && shownQuestions.length > 0 && props.modality !== "review" && props.isTA &&
                 shownQuestions.map((question, i: number) => (
                     <SessionQuestion
                         key={question.questionId}
@@ -208,15 +228,12 @@ const SessionQuestionsContainer = (props: Props) => {
                         myUserId={props.myUserId}
                         user={props.user}
                     />
-                ))
+                    
+                )) 
             }
             {shownQuestions && shownQuestions.length === 0 &&
                 <>
-                    <p className="noQuestionsHeading">
-                        {props.isOpen ? 'Queue Currently Empty' :
-                            props.isPast ? 'Queue Has Closed' : 'Queue Not Open Yet'}
-                    </p>
-                    {!props.isOpen ?
+                    {!props.isOpen &&
                         (
                             props.isPast ?
                                 <p className="noQuestionsWarning">This office hour session has ended.</p> :
@@ -227,10 +244,10 @@ const SessionQuestionsContainer = (props: Props) => {
                                             '' : (' on ' + moment(props.openingTime).format('MMM D'))
                                     }!
                                 </p>
-                        ) :
-                        !props.isTA
-                            ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
-                            : <p className="noQuestionsWarning">No questions in the queue yet. </p>
+                        ) 
+                        // !props.isTA
+                        //     ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
+                        //     : <p className="noQuestionsWarning">No questions in the queue yet. </p>
                     }
                 </>
             }

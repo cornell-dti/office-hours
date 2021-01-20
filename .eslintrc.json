@@ -49,6 +49,8 @@
         "react/state-in-constructor": "off",
         "import/extensions": "off",
         "import/prefer-default-export": "off",
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+        "@typescript-eslint/no-unused-expressions": "off",
         "@typescript-eslint/ban-ts-ignore": "warn",
         "@typescript-eslint/indent": ["error", 4],
         "@typescript-eslint/prefer-interface": "off",

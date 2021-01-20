@@ -5,12 +5,13 @@ import addNotification from 'react-push-notification';
 import TopBar from './TopBar';
 import SessionInformationHeader from './SessionInformationHeader';
 import SessionQuestionsContainer from './SessionQuestionsContainer';
-import UpdateProfile from './UpdateProfile';
 
-import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile } from '../../firehooks';
+import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile, 
+    useAskerQuestions } from '../../firehooks';
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 import { updateVirtualLocation } from '../../firebasefunctions';
 import { firestore } from '../../firebase';
+
 import NotifBell from '../../media/notifBellWhite.svg';
 // import SessionAlertModal from './SessionAlertModal';
 
@@ -62,7 +63,7 @@ const SessionView = (
     const updateSessionProfile = useCallback((virtualLocation: string) => {
         const batch = firestore.batch();
 
-        const questionUpdate: Partial<FireQuestion> = { answererLocation: virtualLocation };
+        const questionUpdate: Partial<FireOHQuestion> = { answererLocation: virtualLocation };
         questions.forEach((q) => {
             if (q.answererId === user.userId && q.status === 'assigned') {
                 batch.update(firestore.doc(`questions/${q.questionId}`), questionUpdate);
@@ -83,11 +84,16 @@ const SessionView = (
 
         if ((user.roles[course.courseId] === 'professor' ||
             user.roles[course.courseId] === 'ta') && questions.length > 0) {
-            addNotification({
-                title: 'A new question has been added!',
-                message: 'Check the queue.',
-                native: true
-            })
+            try {
+                addNotification({
+                    title: 'A new question has been added!',
+                    message: 'Check the queue.',
+                    native: true
+                });
+            } catch (error) {
+                // TODO: Handle this better.
+                // Do nothing. iOS crashes because Notification isn't defined
+            }
         }
 
         const myQuestions = questions.filter(q => q.askerId === user.userId);
@@ -187,6 +193,20 @@ const SessionView = (
     const haveAnotherQuestion = new Date(session.endTime.toDate()) >= new Date()
         && questions.some(({ askerId, status }) => askerId === user.userId && status === 'unresolved');
 
+    const myQuestions = useAskerQuestions(session.sessionId, user.userId);
+    const assignedQuestion = myQuestions?.filter(q => q.status === 'assigned')[0];
+
+    const myQuestion = React.useMemo(() => {
+        if (myQuestions && myQuestions.length > 0) {
+            return myQuestions
+                .sort((a, b) => a.timeEntered.seconds - b.timeEntered.seconds)
+                .find(q => q.status === 'unresolved' || q.status === 'assigned') || null;
+        }
+
+        return null;
+    }, [myQuestions]);
+
+
     return (
         <section className="StudentSessionView">
             {isDesktop &&
@@ -215,19 +235,17 @@ const SessionView = (
                 user={user}
                 callback={backCallback}
                 isDesktop={isDesktop}
+                isTa={isTa}
+                virtualLocation={sessionProfile?.virtualLocation}
+                assignedQuestion={assignedQuestion}
+                isOpen={isOpen(session, course.queueOpenInterval)}
+                myQuestion={myQuestion}
+                onUpdate={(virtualLocation) => {
+                    updateVirtualLocation(firestore, user, session, virtualLocation);
+                    updateSessionProfile(virtualLocation);
+                }}
             />
-            {
-                session.modality === 'virtual' && isTa ? <UpdateProfile
-                    virtualLocation={sessionProfile?.virtualLocation}
-                    onUpdate={(virtualLocation) => {
-                        updateVirtualLocation(firestore, user, session, virtualLocation);
 
-                        if (virtualLocation) {
-                            updateSessionProfile(virtualLocation);
-                        }
-                    }}
-                /> : <></>
-            }
             {undoQuestionId &&
                 <div className="undoContainer">
                     <p className="undoClose" onClick={dismissUndo}>
@@ -262,6 +280,8 @@ const SessionView = (
                 isPast={isPast(session)}
                 openingTime={getOpeningTime(session, course.queueOpenInterval)}
                 haveAnotherQuestion={haveAnotherQuestion}
+                course={course}
+                myQuestion={myQuestion}
             />
             {/* {this.state.showAbsent && !this.state.dismissedAbsent && (
                 <SessionAlertModal
@@ -280,6 +300,7 @@ const SessionView = (
 
 export default (props: Omit<Props, 'questions'>) => {
     const isTa = props.user.roles[props.course.courseId] !== undefined;
-    const questions = filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));
+    const questions = filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, 
+        props.session.modality === "review" ? true : isTa));
     return <SessionView questions={questions} {...props} />;
 };

@@ -81,7 +81,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
 
     const busiestSession: FireSession | undefined = sessions[busiestSessionIndex];
     const busiestSessionInfo = busiestSession && {
-        ...(busiestSession.modality !== "virtual" ? {
+        ...('building' in busiestSession ? {
             building: busiestSession.building, room: busiestSession.room, online: false as const
         } : { online: true as const }),
         ohDate: moment(busiestSession.startTime.seconds * 1000).format('MMMM Do'),
@@ -145,7 +145,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     } = {};
 
     sessions.forEach((t, i) => {
-        if (t.modality === "virtual") {
+        if (t.modality === "virtual" || t.modality === "review") {
             sessionDict[t.sessionId] = {
                 // Ryan Todo
                 ta: '',

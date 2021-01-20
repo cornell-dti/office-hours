@@ -2,6 +2,11 @@ import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
 
+interface NewTag {
+    id: string;
+    name: string;
+}
+
 type PropTypes = {
     isNew: boolean;
     cancelCallback: Function;
@@ -13,8 +18,18 @@ type PropTypes = {
 type State = {
     tag: FireTag;
     newTagText: string;
-    newTags: string[];
+    newTags: NewTag[];
 };
+
+// This is just a simple way to get unique keys for "new" tags.
+// !&*@ can never occur in a database-generated unique key.
+const newTagTemplate = (id: number) => `!&*@${id}`;
+let newTagId = 0;
+
+function key() {
+    return newTagTemplate(newTagId++);
+}
+
 
 class ProfessorTagInfo extends React.Component<PropTypes, State> {
 
@@ -33,11 +48,11 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         };
     }
 
-    componentWillReceiveProps(props: PropTypes) {
+    UNSAFE_componentWillReceiveProps(props: PropTypes) {
         if (props.tag) {
             this.setState({
                 tag: props.tag,
-                newTags: props.childTags.map(firetag => firetag.name)
+                newTags: props.childTags.map(firetag => ({ id: firetag.tagId, name: firetag.name }))
             });
         }
     }
@@ -61,14 +76,14 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             return;
         }
         this.setState(prevState => ({
-            newTags: [...prevState.newTags, prevState.newTagText],
+            newTags: [...prevState.newTags, { id: key(), name: prevState.newTagText }],
             newTagText: ''
         }));
     };
 
-    handleRemoveChildTag = (name: string): void => {
+    handleRemoveChildTag = (removedTag: NewTag): void => {
         this.setState(prevState => ({
-            newTags: prevState.newTags.filter(tag => tag !== name)
+            newTags: prevState.newTags.filter(tag => tag.id !== removedTag.id)
         }));
     };
 
@@ -93,12 +108,15 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
 
         // need to create this first so the child tags have the doc reference
         const parentTag = firestore.collection('tags').doc();
-        batch.set(parentTag, {
+        
+        const parentDoc: Omit<FireTag, 'tagId'> = {
             active: this.state.tag.active,
             courseId: this.state.tag.courseId,
             level: 1,
             name: this.state.tag.name
-        });
+        };
+
+        batch.set(parentTag, parentDoc);
 
         // converts reference parentTag to the string format stored in state
         this.setState((prevState) => ({ tag: { ...prevState.tag, tagId: parentTag.id } }));
@@ -106,13 +124,16 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         // below is essentially add new child a bunch of times
         this.state.newTags.forEach(tagText => {
             const childTag = firestore.collection('tags').doc();
-            batch.set(childTag, {
+            
+            const doc: Omit<FireTag, 'tagId'> = {
                 active: this.state.tag.active,
                 courseId: this.state.tag.courseId,
                 level: 2,
-                name: tagText,
+                name: tagText.name,
                 parentTag: parentTag.id
-            });
+            };
+            
+            batch.set(childTag, doc);
         });
         batch.commit();
 
@@ -143,25 +164,28 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
 
         // deleted tags
         this.props.childTags
-            .filter(firetag => !this.state.newTags.includes(firetag.name))
+            .filter(firetag => !this.state.newTags.some(t => firetag.name === t.name))
             .forEach(firetag =>
                 batch.delete(firestore.collection('tags').doc(firetag.tagId)));
 
         // new tags
         const preexistingTags = this.props.childTags
-            .filter(firetag => this.state.newTags.includes(firetag.name))
-            .map(firetag => firetag.name);
+            .filter(firetag => this.state.newTags.some(t => firetag.name === t.name));
+
         this.state.newTags
-            .filter(tag => !preexistingTags.includes(tag))
+            .filter(tag => !preexistingTags.some(t => tag.name === t.name))
             .forEach(tagText => {
                 const childTag = firestore.collection('tags').doc();
-                batch.set(childTag, {
+
+                const childTagUpdate: Omit<FireTag, 'tagId'> = {
                     active: this.state.tag.active,
                     courseId: this.state.tag.courseId,
                     level: 2,
-                    name: tagText,
+                    name: tagText.name,
                     parentTag: parentTag.id
-                });
+                };
+
+                batch.set(childTag, childTagUpdate);
             });
 
         batch.commit();
@@ -188,6 +212,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                             />
                         </div>
                     </div>
+                    { /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */ }
                     <div className="Status InputSection">
                         <div className="InputHeader">Status</div>
                         <div
@@ -206,9 +231,9 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                     <div className="ChildTags InputSection" onKeyDown={(e) => this.handleEnterPress(e)}>
                         <div className="InputHeader">Tags</div>
                         {this.state.newTags
-                            .map((childTag, i) => (
-                                <div key={i} className="SelectedChildTag" >
-                                    {childTag}
+                            .map((childTag) => (
+                                <div key={childTag.id} className="SelectedChildTag" >
+                                    {childTag.name}
                                     <Icon
                                         className="Remove"
                                         name="close"
