@@ -38,12 +38,6 @@ exports.onUserCreate = functions.firestore
             const taCourseIds: string[] = [];
             const profCourseIds: string[] = [];
 
-            // eslint-disable-next-line
-            functions.logger.log(`pending user data: (${email})`)
-            // eslint-disable-next-line
-            functions.logger.log(doc.data())
-
-
             for (const [courseId, role] of Object.entries(newRoles)) {
 
                 if (role === 'ta') {
@@ -62,42 +56,40 @@ exports.onUserCreate = functions.firestore
             })
 
             const taCourseDocs = await Promise.all(
-                taCourseIds.map(async courseId => db.collection('courses').doc(courseId).get()));
+                taCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
                         
             const profCourseDocs = await Promise.all(
-                profCourseIds.map(async courseId => db.collection('courses').doc(courseId).get()));
+                profCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
 
-                
-            
-            // eslint-disable-next-line
-            functions.logger.log(`ta docs: ${taCourseIds} (${taCourseIds.length})`);
-            
-            // eslint-disable-next-line
-            functions.logger.log(`prof docs: ${profCourseIds} (${profCourseIds.length})`);
-
-            taCourseDocs.map((doc) => {
+            taCourseDocs.map((doc, index) => {
                 if (!doc.exists) {
                     functions.logger.error('ta course doc does not exist.')
                 }
+
+                const courseId = taCourseIds[index];
+                
                 // const course = doc.data() as FireCourse;
                 batch.update(
-                    db.collection('courses').doc('tc001-sp-21'),
+                    db.collection('courses').doc(courseId),
                     {tas: [userId]}
                 );
             });
 
-            profCourseDocs.map((doc) => {
+            profCourseDocs.map((doc, index) => {
                 if (!doc.exists) {
                     functions.logger.error('prof course doc does not exist.')
                 }
 
+                const courseId = taCourseIds[index];
+                
+                // const course = doc.data() as FireCourse;
                 batch.update(
-                    db.collection('courses').doc(''),
-                    {profs: [userId]}
+                    db.collection('courses').doc(courseId),
+                    {professors: [userId]}
                 );
             });
 
-            batch.commit();
+            await batch.commit();
         });
 
     });
