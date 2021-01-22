@@ -31,7 +31,7 @@ exports.onUserCreate = functions.firestore
         pendingUsersSnap.forEach(async doc => {
 
             // delete the pendingUsers entry because they now exist in QMI...
-            // db.collection('pendingUsers').doc(doc.id).delete();
+            await db.collection('pendingUsers').doc(doc.id).delete();
 
             // get the users's roles map as a Map<string, FireCourseRole>
             const newRoles = (doc.data() as FirePendingUser).roles;
