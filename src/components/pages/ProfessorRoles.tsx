@@ -38,7 +38,7 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
                     </div>
                     : <div className="main">
                         <div className="importProfs">Import Professors/TAs</div>
-                        <CSVUploadView onReturn={cancel}/>
+                        <CSVUploadView onReturn={cancel} course={course}/>
                     </div>
                 }
                 

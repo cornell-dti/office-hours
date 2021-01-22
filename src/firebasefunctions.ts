@@ -361,6 +361,7 @@ const importProfessorsOrTAs = async (
 
         batch.commit();
     }).then(() => {
+        // put the missing set in pending users 
         const message =
             'Successfully\n' +
             `updated: [${updatedUsers.map((user) => user.email).join(', ')}];\n` +
@@ -417,6 +418,24 @@ export const importProfessorsOrTAsFromPrompt = (
             role,
             response.split(',').map((email) => email.trim())
         );
+    }
+};
+
+export const importProfessorsOrTAsFromCSV = (
+    db: firebase.firestore.Firestore,
+    course: FireCourse,
+    role: 'professor' | 'ta', 
+    emailList: string[]
+): void => {
+
+    if (emailList != null) {
+        importProfessorsOrTAs(
+            db,
+            course,
+            role,
+            emailList
+        );
+          
     }
 };
 
