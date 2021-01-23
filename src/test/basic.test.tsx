@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import 'mocha';
-import { firestore } from '../firebase';
+// import { firestore } from '../firebase';
 
 const hello = () => {
     return "Hello World!";
