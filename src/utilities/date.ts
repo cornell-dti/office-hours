@@ -6,7 +6,7 @@ import moment from 'moment-timezone';
  * @param rawStart The date at which the date range begins
  * @param rawEnd The date at which the date range ends
  */
-export const getDateRange = (rawStart : moment.Moment, rawEnd : moment.Moment) : moment.Moment[] => {
+export const getDateRange = (rawStart: moment.Moment, rawEnd: moment.Moment): moment.Moment[] => {
     const start = normalizeSeconds(rawStart);
     start.tz("America/New_York");
     const end = normalizeSeconds(rawEnd);
@@ -23,7 +23,7 @@ export const getDateRange = (rawStart : moment.Moment, rawEnd : moment.Moment) :
     return result;
 }
 
-const normalizeSeconds = (date : moment.Moment) : moment.Moment => {
+const normalizeSeconds = (date: moment.Moment): moment.Moment => {
     const normalized = moment(date);
     normalized.millisecond(0);
     normalized.second(0);
@@ -36,7 +36,7 @@ const normalizeSeconds = (date : moment.Moment) : moment.Moment => {
  * @param destination The date to be synced
  * @param source The date from which syncing values are derived
  */
-export const syncTimes = (destination : moment.Moment, source: moment.Moment) => {
+export const syncTimes = (destination: moment.Moment, source: moment.Moment) => {
     destination.millisecond(0);
     destination.second(0);
     destination.minutes(source.minutes());

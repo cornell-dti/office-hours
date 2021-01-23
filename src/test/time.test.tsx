@@ -4,15 +4,15 @@ import moment from 'moment-timezone';
 import { getDateRange } from '../utilities/date';
 
 
-const assertDateRangeValid = (range : moment.Moment[]) => {
-    if (range.length == 0){
+const assertDateRangeValid = (range: moment.Moment[]) => {
+    if (range.length === 0){
         return;
     }
     const firstDay = range[0].day();
     const firstHour = range[0].hour();
     const firstMinute = range[0].minutes();
 
-    let prevDate : moment.Moment | null = null;
+    let prevDate: moment.Moment | null = null;
     range.forEach( (date) => {
         expect(date.day()).to.equal(firstDay);
         expect(date.hour()).to.equal(firstHour);

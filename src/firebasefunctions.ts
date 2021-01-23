@@ -1,7 +1,7 @@
 import firebase from 'firebase/app';
+import moment from 'moment-timezone';
 import { getDateRange, syncTimes } from './utilities/date';
 import { blockArray } from './firehooks';
-import moment from 'moment-timezone';
 
 /* Basic Functions */
 
