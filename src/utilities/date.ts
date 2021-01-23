@@ -1,11 +1,15 @@
-export const datePlus = (date: Date, offset: number): Date => new Date(date.getTime() + offset);
+export const datePlus = (date: Date, offset: number): Date => {
+    return new Date(date.getTime() + offset)
+};
 
+/** Gets time at the beginning of the day */
 export const normalizeDateToDateStart = (date: Date): Date => {
     const normalized = new Date(date);
     normalized.setHours(0, 0, 0, 0);
     return normalized;
 };
 
+/** Gets time at the beginning of the week */
 export const normalizeDateToWeekStart = (date: Date): Date => {
     const normalized = new Date(date);
     normalized.setHours(0, 0, 0, 0);
