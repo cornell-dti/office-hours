@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { importProfessorsOrTAsFromCSV} from '../../firebasefunctions';
 import { firestore } from '../../firebase';
 import CSVUploadCheck from '../../media/CSVUploadCheck.svg';
@@ -56,10 +56,6 @@ const CSVUploadView = (
             rightButton: "Finish"
         }
     ]
-
-    useEffect(() => {
-        processCSV();
-    }, [selectedFile])
 
     const next = () => {
         if (!canClickNext()) return;
@@ -144,30 +140,7 @@ const CSVUploadView = (
         setNewUsers([...begining, updatedUser, ...end])        
     }
 
-    const isValidCSV = (data: string[]) => {
-        const header = data[0].split(',');
-        if (header.length !== 2) {
-            setCSVErrorMessage('Header contains more than two columns')
-            return;
-        }                    
-
-        data.slice(1).forEach(user => {
-            const userData = user.split(',');
-            const email = userData[0].trim();
-
-            if (userData.length !== 2) {
-                setCSVErrorMessage('Invalid format')
-                return;
-            }
-
-            if (!isValidEmail(email)) {
-                setCSVErrorMessage('Invalid Email Address');
-                
-            } 
-        });
-    }
-
-    const processCSV = async() => {
+    const processCSV = useCallback(() => {
         setCSVErrorMessage('none');
         if (selectedFile) {
             const type = selectedFile.type;
@@ -185,7 +158,26 @@ const CSVUploadView = (
                 const data = csv?.split(/\r\n|\n/);
                 
                 if (data) {
-                    isValidCSV(data);
+                    const header = data[0].split(',');
+                    if (header.length !== 2) {
+                        setCSVErrorMessage('Header contains more than two columns')
+                        return;
+                    }                    
+
+                    data.slice(1).forEach(user => {
+                        const userData = user.split(',');
+                        const email = userData[0].trim();
+
+                        if (userData.length !== 2) {
+                            setCSVErrorMessage('Invalid format')
+                            return;
+                        }
+
+                        if (!isValidEmail(email)) {
+                            setCSVErrorMessage('Invalid Email Address');
+                            
+                        } 
+                    });
 
                     const TAList = data.filter(user => user.split(',')[1] === 'TA');
                     const professorList = data.filter(user => user.split(',')[1] === 'Professor');
@@ -202,7 +194,7 @@ const CSVUploadView = (
                 }                
             }
         }     
-    }
+    }, [selectedFile]);
 
     const processListOfUsers = () => {
         setEnterErrorMessage('none');
@@ -243,6 +235,11 @@ const CSVUploadView = (
         const file = event.dataTransfer.files[0];
         setSelectedFile(file);                            
     }
+
+    useEffect(() => {
+        processCSV();
+    }, [selectedFile, processCSV])
+
 
  
     return (
