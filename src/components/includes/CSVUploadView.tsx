@@ -111,7 +111,9 @@ const CSVUploadView = (
     }
 
     const fileInput = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        event.preventDefault();
         const file = event.target.files?.item(0);
+        event.target.value = '';        
         if (file) setSelectedFile(file);  
         setCSVErrorMessage('none');
     }
@@ -237,7 +239,7 @@ const CSVUploadView = (
     }
 
     useEffect(() => {
-        processCSV();
+        processCSV();      
     }, [selectedFile, processCSV])
 
 
