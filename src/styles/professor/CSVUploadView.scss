@@ -90,7 +90,7 @@
             margin-top: 0;
             margin-left: 0;
             margin-right: 0; 
-            margin-bottom: 40px;
+            // margin-bottom: 40px;
         }
 
         .DragDrop {
@@ -198,6 +198,8 @@
         width: 100%;
         text-align: left;
         width: 60%;
+        padding-top: 25px;
+        padding-bottom: 25px;
 
         p {
             color: #4A4A4A;
@@ -222,6 +224,8 @@
     table {
         border-collapse: collapse;
         width: 100%;
+        margin-top: 7px;
+        margin-bottom: 7px;
 
         th {
             height: 55px;
@@ -329,6 +333,7 @@
     Button.rightbutton { 
         color: white;
         background-color: #979797;
+        cursor: default;
 
     }
     

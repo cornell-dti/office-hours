@@ -57,15 +57,18 @@ const CSVUploadView = (
         }
     ]
 
-    useEffect(()=> {
+    useEffect(() => {
         processCSV();
     }, [selectedFile])
 
     const next = () => {
         if (pageIndex === 0 && uploadType === 'none') return; 
         if (pageIndex === 1 && uploadType === 'csv' && !selectedFile) return;
-        if (pageIndex === 1 && CSVErrorMessage !== 'none') return;
-        if (uploadType === 'enter' && pageIndex === 1) processListOfUsers()
+        if (pageIndex === 1 && CSVErrorMessage !== 'none' && uploadType === 'csv') return;
+        if (pageIndex === 2 && EnterErrorMessage !== 'none' && uploadType === 'enter') return;
+        if (pageIndex === 2 && (TAEmailList?.length === 0 || professorEmailList?.length === 0)) return;
+        
+        if (uploadType === 'enter' && pageIndex === 1) processListOfUsers();
 
         if (pageIndex === 2) {
             if (course) {
@@ -95,6 +98,7 @@ const CSVUploadView = (
     }
 
     const processCSV = async() => {
+        setCSVErrorMessage('none');
         if (selectedFile) {
             const reader = new FileReader(); 
             reader.readAsText(selectedFile);
@@ -111,17 +115,17 @@ const CSVUploadView = (
 
                     data.slice(1).forEach(user => {
                         const userData = user.split(',');
-                        
-                        if (!isValidEmail(userData[0].trim())) {
-                            console.log(userData[0]);
-                            setCSVErrorMessage('Invalid Email Address');
-                            return;
-                        } 
+                        const email = userData[0].trim();
 
                         if (userData.length !== 2) {
                             setCSVErrorMessage('Invalid format')
                             return;
                         }
+
+                        if (!isValidEmail(email)) {
+                            setCSVErrorMessage('Invalid Email Address');
+                            
+                        } 
                     })
 
                     const TAList = data.filter(user => user.split(',')[1] === 'TA');
@@ -180,21 +184,23 @@ const CSVUploadView = (
         const begining = newUsers.slice(0, key); 
         const end = newUsers.slice(key+ 1)
 
-        setNewUsers([...begining, updatedUser, ...end])
-
-        // console.log(newUsers);
-        
+        setNewUsers([...begining, updatedUser, ...end])        
     }
 
     const processListOfUsers = () => {
-        console.log(newUsers);
-        
+        setEnterErrorMessage('none');
         newUsers.forEach(user => {
-            if (user.role === '' && user.email === '') {
-                setNewUsers([...newUsers.slice(0, user.key), ...newUsers.slice(user.key+1)]);
-            } else if (user.email === '') {
+            const role = user.role.trim();
+            const email = user.email.trim();
+            if (role === '' && email === '') {
+                if (user.key !== 0) {
+                    setNewUsers([...newUsers.slice(0, user.key), ...newUsers.slice(user.key+1)]);
+                }
+            } else if (email === '') {
                 setEnterErrorMessage('Enter an email for each role specified');
-            } else if (user.role !== 'Professor' && user.role !== 'TA') {
+            } else if (!isValidEmail(email)) {
+                setEnterErrorMessage('Enter valid email for each role');
+            } else if (role !== 'Professor' && role !== 'TA') {
                 setEnterErrorMessage('Enter valid roles (either "Professor" or "TA")');
             } 
 
@@ -331,7 +337,7 @@ const CSVUploadView = (
                                                     id="email" 
                                                     value={user.email} 
                                                     onChange={(e) => handleUpdateUsers(e, user.key)} 
-                                                    placeholder={newUsers.length === 1? 
+                                                    placeholder={newUsers.length === 1 ? 
                                                         'Enter professor/TA email here': ''} 
                                                     autoComplete="off"
                                                 />
@@ -355,36 +361,40 @@ const CSVUploadView = (
 
                     {pageIndex === 2 && 
                     <div className="FinalStep">
-                        {(TAEmailList?.length !== 0 || professorEmailList?.length !== 0) &&
-                        <>
-                            <p>Newly added Professors and TAs</p> 
-                            <div className="RolesTable">
-                                <table>
-                                    <thead>
-                                        <tr id="TableHeader">
-                                            <th>Email</th>
-                                            <th>Role</th>
-                                        </tr>
-                                    </thead>
+                        {(TAEmailList?.length !== 0 || professorEmailList?.length !== 0) ?
+                            <>
+                                <p>Newly added Professors and TAs</p> 
+                                <div className="RolesTable">
+                                    <table>
+                                        <thead>
+                                            <tr id="TableHeader">
+                                                <th>Email</th>
+                                                <th>Role</th>
+                                            </tr>
+                                        </thead>
 
-                                    <tbody>
-                                        {TAEmailList?.map((email, i) => {
-                                            return (<tr key={i}>
-                                                <th>{email}</th>
-                                                <th>TA</th>
-                                            </tr>)}
+                                        <tbody>
+                                            {TAEmailList?.map((email, i) => {
+                                                return (<tr key={i}>
+                                                    <th>{email}</th>
+                                                    <th>TA</th>
+                                                </tr>)}
                                         )}
 
-                                        {professorEmailList?.map((email, i) => {
-                                            return (<tr key={i}>
-                                                <th>{email}</th>
-                                                <th>Professor</th>
-                                            </tr>)}
+                                            {professorEmailList?.map((email, i) => {
+                                                return (<tr key={i}>
+                                                    <th>{email}</th>
+                                                    <th>Professor</th>
+                                                </tr>)}
                                         )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </>}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </> :
+                            <div className="ErrorMessage">
+                                <img src={WarningIcon} alt="warning"/>
+                            No TAs or professors were entered. Please go back and enter user information.
+                            </div>}
                         {EnterErrorMessage !== 'none' && 
                         <div className="ErrorMessage">
                             <img src={WarningIcon} alt="warning"/>
@@ -404,11 +414,13 @@ const CSVUploadView = (
                     </div>
                     <button 
                         type="button" 
-                        className={(
-                            pageIndex === 0 && uploadType === 'none') || 
+                        className={
+                            (pageIndex === 0 && uploadType === 'none') || 
                             (pageIndex === 1 && !selectedFile && uploadType === 'csv') || 
-                            (pageIndex === 1 && CSVErrorMessage !== 'none')
-                            ? 'rightbutton': 'selectableButton'} 
+                            (pageIndex === 1 && CSVErrorMessage !== 'none') ||
+                            (pageIndex === 2 && EnterErrorMessage !== 'none' && uploadType === 'enter') ||
+                            (pageIndex === 2 && (TAEmailList?.length === 0 || professorEmailList?.length === 0))
+                                ? 'rightbutton': 'selectableButton'} 
                         onClick={next}
                     >
                         {pageInfos[pageIndex].rightButton}</button>

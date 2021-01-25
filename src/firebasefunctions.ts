@@ -345,10 +345,25 @@ const importProfessorsOrTAs = async (
                 missingSet.delete(email);
                 allUpdates.push({ user, roleUpdate });
                 // update user's roles table
-                batch.update(db.collection('users').doc(user.userId), roleUpdate);
+                batch.update(db.collection('users').doc(user.userId), roleUpdate); 
             })
 
         });
+
+        // add missing user to pendingUsers collection
+        missingSet.forEach(email => {
+            const pendingUsersRef = db.collection('pendingUsers').doc(email);
+
+            pendingUsersRef.get()
+                .then((docSnapshot) => {
+                    if (docSnapshot.exists) {
+                        pendingUsersRef.update({[`roles.${course.courseId}`]: role});
+                    } else {
+                        pendingUsersRef.set({email, roles: {[course.courseId]: role}}) 
+                    }
+                });
+        })
+
         // update course's ta/professor roles
         batch.update(
             db.collection('courses').doc(course.courseId),
@@ -361,7 +376,6 @@ const importProfessorsOrTAs = async (
 
         batch.commit();
     }).then(() => {
-        // put the missing set in pending users 
         const message =
             'Successfully\n' +
             `updated: [${updatedUsers.map((user) => user.email).join(', ')}];\n` +
