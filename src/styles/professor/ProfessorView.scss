@@ -47,6 +47,42 @@
             margin-top: 30px;
             padding: 15px 0px;
         }
+
+        .importProfs {
+            font-family: Roboto;
+            font-weight: 500;
+            font-size: 30px;
+            color: #474747;
+            margin: 1em 0em 30px 20px;
+            text-align: left;
+        }
+
+        .rightHeading {
+            margin-left: 10%;
+            margin-right: 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+    
+            .manageRoles {
+                font-family: Roboto;
+                font-weight: 500;
+                font-size: 30px;
+                margin-top: 1em;
+                margin-bottom: 0;
+                color: #474747;
+            }
+        
+            Button#importProf {
+                margin-top: 1em;
+                font-family: Roboto;
+                color: white;
+                background-color: #474747;
+                padding: 10px 15px;
+                border-radius: 5px;
+            }
+    
+        }
     }
 
     // Dropdown CSS
@@ -79,4 +115,5 @@
     .rightOfSidebar {
         min-width: 820px;
     }
+
 }
