@@ -62,12 +62,8 @@ const CSVUploadView = (
     }, [selectedFile])
 
     const next = () => {
-        if (pageIndex === 0 && uploadType === 'none') return; 
-        if (pageIndex === 1 && uploadType === 'csv' && !selectedFile) return;
-        if (pageIndex === 1 && CSVErrorMessage !== 'none' && uploadType === 'csv') return;
-        if (pageIndex === 2 && EnterErrorMessage !== 'none' && uploadType === 'enter') return;
-        if (pageIndex === 2 && (TAEmailList?.length === 0 || professorEmailList?.length === 0)) return;
-        
+        if (!canClickNext()) return;
+
         if (uploadType === 'enter' && pageIndex === 1) processListOfUsers();
 
         if (pageIndex === 2) {
@@ -89,60 +85,16 @@ const CSVUploadView = (
                     onReturn();
                 });
         }
-
     }
 
-    const isValidEmail = (email: string) => {
-        if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)) return true;
-        return false;
-    }
+    const canClickNext = () => {
+        if (pageIndex === 0 && uploadType === 'none') return false;
+        if (pageIndex === 1 && uploadType === 'csv' && !selectedFile) return false; 
+        if (pageIndex === 1 && uploadType === 'csv' && CSVErrorMessage !== 'none') return false; 
+        if (pageIndex === 2 && uploadType === 'enter' && EnterErrorMessage !== 'none') return false; 
+        if (pageIndex === 2 && TAEmailList?.length === 0 && professorEmailList?.length === 0) return false; 
 
-    const processCSV = async() => {
-        setCSVErrorMessage('none');
-        if (selectedFile) {
-            const reader = new FileReader(); 
-            reader.readAsText(selectedFile);
-            reader.onload = (e) => {
-                const csv = e.target?.result?.toString().trim();
-                const data = csv?.split(/\r\n|\n/);
-                
-                if (data) {
-                    const header = data[0].split(',');
-                    if (header.length !== 2) {
-                        setCSVErrorMessage('Header contains more than two columns')
-                        return;
-                    }                    
-
-                    data.slice(1).forEach(user => {
-                        const userData = user.split(',');
-                        const email = userData[0].trim();
-
-                        if (userData.length !== 2) {
-                            setCSVErrorMessage('Invalid format')
-                            return;
-                        }
-
-                        if (!isValidEmail(email)) {
-                            setCSVErrorMessage('Invalid Email Address');
-                            
-                        } 
-                    })
-
-                    const TAList = data.filter(user => user.split(',')[1] === 'TA');
-                    const professorList = data.filter(user => user.split(',')[1] === 'Professor');
-
-                    if (TAList.length + professorList.length !== data.length - 1) {
-                        setCSVErrorMessage('Please enter valid roles only (TA or Professor)');
-                    }
-
-                    const TAEmailList = TAList.map(user => user.split(',')[0].trim());
-                    const professorEmailList = professorList.map(user => user.split(',')[0].trim());
-
-                    setTAEmailList(TAEmailList);
-                    setProfessorEmailList(professorEmailList);
-                }                
-            }
-        }     
+        return true
     }
 
     const previous = () => {
@@ -151,6 +103,11 @@ const CSVUploadView = (
         } else {
             setPageIndex(pageIndex - 1);
         }
+    }
+
+    const isValidEmail = (email: string) => {
+        if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)) return true;
+        return false;
     }
 
     const fileUploadButton = () => {
@@ -187,6 +144,66 @@ const CSVUploadView = (
         setNewUsers([...begining, updatedUser, ...end])        
     }
 
+    const isValidCSV = (data: string[]) => {
+        const header = data[0].split(',');
+        if (header.length !== 2) {
+            setCSVErrorMessage('Header contains more than two columns')
+            return;
+        }                    
+
+        data.slice(1).forEach(user => {
+            const userData = user.split(',');
+            const email = userData[0].trim();
+
+            if (userData.length !== 2) {
+                setCSVErrorMessage('Invalid format')
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                setCSVErrorMessage('Invalid Email Address');
+                
+            } 
+        });
+    }
+
+    const processCSV = async() => {
+        setCSVErrorMessage('none');
+        if (selectedFile) {
+            const type = selectedFile.type;
+            
+            if (type !== 'text/csv' && type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
+            type !== 'application/vnd.ms-excel') {                
+                setCSVErrorMessage('Wrong file type: must be .csv or .xlsx');
+                return;
+            }
+
+            const reader = new FileReader(); 
+            reader.readAsText(selectedFile);
+            reader.onload = (e) => {
+                const csv = e.target?.result?.toString().trim();
+                const data = csv?.split(/\r\n|\n/);
+                
+                if (data) {
+                    isValidCSV(data);
+
+                    const TAList = data.filter(user => user.split(',')[1] === 'TA');
+                    const professorList = data.filter(user => user.split(',')[1] === 'Professor');
+
+                    if (TAList.length + professorList.length !== data.length - 1) {
+                        setCSVErrorMessage('Please enter valid roles only (TA or Professor)');
+                    }
+
+                    const TAEmailList = TAList.map(user => user.split(',')[0].trim());
+                    const professorEmailList = professorList.map(user => user.split(',')[0].trim());
+
+                    setTAEmailList(TAEmailList);
+                    setProfessorEmailList(professorEmailList);
+                }                
+            }
+        }     
+    }
+
     const processListOfUsers = () => {
         setEnterErrorMessage('none');
         newUsers.forEach(user => {
@@ -216,6 +233,18 @@ const CSVUploadView = (
         })
     }
 
+    const fileDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        e.preventDefault();
+    }
+
+    const fileDrop = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        const file = event.dataTransfer.files[0];
+        setSelectedFile(file);                            
+    }
+
+ 
     return (
         <div className="CSVWrap">
             <div className="CSVBox">
@@ -253,7 +282,7 @@ const CSVUploadView = (
                             Your CSV file must contain a header line with at least the Email and Role columns.
                         </div>
                         <img style={{width: "60%"}} src={ExampleTable} alt="table"/>
-                        <div className="DragDrop" onDrop={fileUploadButton}>
+                        <div className="DragDrop" onDrop={(e) => fileDrop(e)} onDragOver={(e) => fileDragOver(e)}>
                             {selectedFile && CSVErrorMessage === 'none'? 
                                 <div>
                                     <img src={FileIcon} alt="file"/>
@@ -414,13 +443,7 @@ const CSVUploadView = (
                     </div>
                     <button 
                         type="button" 
-                        className={
-                            (pageIndex === 0 && uploadType === 'none') || 
-                            (pageIndex === 1 && !selectedFile && uploadType === 'csv') || 
-                            (pageIndex === 1 && CSVErrorMessage !== 'none') ||
-                            (pageIndex === 2 && EnterErrorMessage !== 'none' && uploadType === 'enter') ||
-                            (pageIndex === 2 && (TAEmailList?.length === 0 || professorEmailList?.length === 0))
-                                ? 'rightbutton': 'selectableButton'} 
+                        className={canClickNext() ? 'selectableButton': 'rightbutton'} 
                         onClick={next}
                     >
                         {pageInfos[pageIndex].rightButton}</button>

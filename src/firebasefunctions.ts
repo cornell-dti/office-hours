@@ -345,7 +345,7 @@ const importProfessorsOrTAs = async (
                 missingSet.delete(email);
                 allUpdates.push({ user, roleUpdate });
                 // update user's roles table
-                batch.update(db.collection('users').doc(user.userId), roleUpdate); 
+                batch.update(db.collection('users').doc(user.userId), roleUpdate);
             })
 
         });
@@ -359,7 +359,7 @@ const importProfessorsOrTAs = async (
                     if (docSnapshot.exists) {
                         pendingUsersRef.update({[`roles.${course.courseId}`]: role});
                     } else {
-                        pendingUsersRef.set({email, roles: {[course.courseId]: role}}) 
+                        pendingUsersRef.set({email, roles: {[course.courseId]: role}});
                     }
                 });
         })
