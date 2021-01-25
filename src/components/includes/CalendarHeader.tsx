@@ -14,14 +14,29 @@ type Props = {
     readonly avatar?: string;
 };
 
+
 export default ({ currentCourseCode, role}: Props): React.ReactElement => {
     const [showMenu, setShowMenu] = React.useState(false);
     const [showCourses, setShowCourses] = React.useState(false);
+    const ref = React.useRef<HTMLDivElement>(null);
     const courses = useMyCourses();
+
+    const handleClick = (e: globalThis.MouseEvent) => {
+        if (ref.current && !ref.current.contains(e.target as Node)) {
+            setShowCourses(false);
+        }
+    }
+
+    React.useEffect(() => {
+        document.addEventListener('mousedown', handleClick);
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+        }
+    })
 
     return (
         <div className="Header">
-            <div className="CalendarHeader" onClick={() => setShowCourses(!showCourses)}>
+            <div className="CalendarHeader" onClick={() => setShowCourses(!showCourses)} ref={ref}>
                 <span>
                     <div className="courseCode">{currentCourseCode}</div>
                     {role && role === 'ta' && <span className="TAMarker">TA</span>}
@@ -29,7 +44,7 @@ export default ({ currentCourseCode, role}: Props): React.ReactElement => {
                     <img src={Toggle} alt="Course Select" className="Toggle" />
                 </span>
                 {showCourses &&
-                    <ul className="courseMenu" tabIndex={1} onClick={() => setShowCourses(false)} >
+                    <ul className="courseMenu" tabIndex={1}>
                         {courses.filter((c) => c.semester === CURRENT_SEMESTER).map((course) =>
                             <li key={course.courseId}>
                                 <a
