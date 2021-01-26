@@ -43,7 +43,7 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
     return (
         
         <div className="ProfessorView">
-            <ProfessorSidebar courseId={courseId} code={course ? course.code : 'Loading'} selected={4} />
+            <ProfessorSidebar courseId={courseId} code={course ? course.code : 'Loading'} selected={'roles'} />
             <TopBar courseId={courseId} user={user} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 {viewOnlyMode ?
