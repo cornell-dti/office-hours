@@ -22,8 +22,9 @@ type NewUser = {
 }
 
 const CSVUploadView = (
-    { onReturn, course }: 
-    { onReturn: () => void; course: FireCourse | undefined }
+    { onReturn, course, getAddedUsersList, getMissingUsers }: 
+    { onReturn: () => void; course: FireCourse | undefined; getAddedUsersList: (emails: string[]) => void ; 
+        getMissingUsers: (emails: string[]) => void; }
 ) => {
     const [pageIndex, setPageIndex] = useState(0);
     const [uploadType, setUploadType] = useState('none');
@@ -37,6 +38,7 @@ const CSVUploadView = (
         email: '', 
         role: ''
     }]);
+    
 
 
     const pageInfos: PageInfo[] = [
@@ -57,28 +59,59 @@ const CSVUploadView = (
         }
     ]
 
+    const getProfOrTAEmailList = (role: 'professor' | 'ta') => {
+        const list = role === 'ta'? TAEmailList : professorEmailList;
+        if (course && list) {
+            importProfessorsOrTAsFromCSV(firestore, course, role, list)?.then((users) => {
+                const addedEmails = users.updatedUsers.map(user => user.email);   
+                const missingEmails = Array.from(users.missingSet);  
+                getAddedUsersList(addedEmails);  
+                getMissingUsers(missingEmails);                               
+            });
+        }
+    }
+
+    const addTAandProfessors = () => {
+        if (course) {
+            if (TAEmailList && TAEmailList.length !== 0 && professorEmailList && professorEmailList.length !== 0) {
+                importProfessorsOrTAsFromCSV(firestore, course, 'ta', TAEmailList)?.then((users) => {
+                    const taAddedEmails = users.updatedUsers.map(user => user.email);  
+                    const taMissingEmails = Array.from(users.missingSet);   
+                    return {taAddedEmails, taMissingEmails}
+                }).then((taEmails)=> {
+                    importProfessorsOrTAsFromCSV(firestore, course, 'professor', professorEmailList)?.then((users) => {
+                        const profAddedEmails = users.updatedUsers.map(user => user.email);   
+                        const profMissingEmails = Array.from(users.missingSet);  
+                        getAddedUsersList(taEmails.taAddedEmails.concat(profAddedEmails));  
+                        getMissingUsers(taEmails.taMissingEmails.concat(profMissingEmails));
+                    });
+                });
+            }
+                
+            if (professorEmailList && professorEmailList.length !== 0 && (!TAEmailList || 
+                TAEmailList?.length === 0)) {
+                getProfOrTAEmailList('professor'); 
+            } 
+
+            if (TAEmailList && TAEmailList.length !== 0 && (!professorEmailList || 
+                professorEmailList?.length === 0)) {                
+                getProfOrTAEmailList('ta');
+            }
+        }
+    }
+  
     const next = () => {
         if (!canClickNext()) return;
-
         if (uploadType === 'enter' && pageIndex === 1) processListOfUsers();
+        if (pageIndex === 2) addTAandProfessors();       
 
-        if (pageIndex === 2) {
-            if (course) {
-                if (TAEmailList && TAEmailList?.length !== 0) {
-                    importProfessorsOrTAsFromCSV(firestore, course, 'ta', TAEmailList); 
-                }
-                if (professorEmailList && professorEmailList?.length !== 0) {
-                    importProfessorsOrTAsFromCSV(firestore, course, 'professor', professorEmailList);
-                }
-            }
-        }        
-        
         if (pageIndex < pageInfos.length - 1) {
             setPageIndex(pageIndex + 1);
         } else {
             Promise.resolve()
                 .then(() => {
                     onReturn();
+                    
                 });
         }
     }
@@ -239,7 +272,7 @@ const CSVUploadView = (
     }
 
     useEffect(() => {
-        processCSV();      
+        processCSV();
     }, [selectedFile, processCSV])
 
 
@@ -448,7 +481,6 @@ const CSVUploadView = (
                         {pageInfos[pageIndex].rightButton}</button>
                 </div>
             </div>
-            
         </div>
     )
 }

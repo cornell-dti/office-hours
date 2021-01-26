@@ -2,6 +2,42 @@
     overflow: auto;
     padding-bottom: 50px;
 
+    .UploadPopUpMessageWrap {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+    }
+
+    .UploadPopUpMessage {
+        background-color: #E4EFFF;
+        color: #7C8FBA;
+        font-size: 15px;
+        font-weight: 500;
+        height: 60px;
+        width: 90%;
+        padding: 12px;
+        margin: 21px;
+        margin-bottom: 0;
+        width: 60%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 30px;
+
+
+        #MessageCloseIcon {
+            float: right;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        p {
+            margin: 0;
+            text-align: left;
+            justify-self: flex-start;
+        }
+    }
+
     input:not(.DateInput_input) {
         border:none;
         background-color: #edeff2;

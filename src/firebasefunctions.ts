@@ -310,14 +310,14 @@ const importProfessorsOrTAs = async (
     course: FireCourse,
     role: 'professor' | 'ta',
     emailListTotal: readonly string[]
-): Promise<void> => {
-    const missingSet = new Set(emailListTotal);
+): Promise<{updatedUsers: FireUser[]; missingSet: Set<string>}> => {
+    const missingSet = new Set<string>(emailListTotal);
     const batch = db.batch();
     const updatedUsers: FireUser[] = [];
 
     const emailBlocks = blockArray(emailListTotal, 10);
 
-    Promise.all(emailBlocks.map(emailList => {
+    return Promise.all(emailBlocks.map(emailList => {
         return db.collection('users').where('email', 'in', emailList).get().then(taUserDocuments => {
             // const updatedUsersThisBlock: FireUser[] = [];
             // const userUpdatesThisBlock: Partial<FireUser>[] = [];
@@ -376,14 +376,8 @@ const importProfessorsOrTAs = async (
 
         batch.commit();
     }).then(() => {
-        const message =
-            'Successfully\n' +
-            `updated: [${updatedUsers.map((user) => user.email).join(', ')}];\n` +
-            `[${Array.from(missingSet).join(', ')}] do not exist in our system yet.`;
-        // eslint-disable-next-line no-alert
-        alert(message);
+        return { updatedUsers, missingSet };
     });
-
 
 };
 
@@ -440,17 +434,14 @@ export const importProfessorsOrTAsFromCSV = (
     course: FireCourse,
     role: 'professor' | 'ta', 
     emailList: string[]
-): void => {
+): Promise<{updatedUsers: FireUser[]; missingSet: Set<string>}> | undefined => {
 
-    if (emailList != null) {
-        importProfessorsOrTAs(
-            db,
-            course,
-            role,
-            emailList
-        );
-          
-    }
+    return importProfessorsOrTAs(
+        db,
+        course,
+        role,
+        emailList
+    );      
 };
 
 export const updateVirtualLocation = (
