@@ -44,7 +44,7 @@ export default ({ currentCourseCode, role}: Props): React.ReactElement => {
                     <img src={Toggle} alt="Course Select" className="Toggle" />
                 </span>
                 {showCourses &&
-                    <ul className="courseMenu" tabIndex={1}>
+                    <ul className="courseMenu" tabIndex={1} onClick={() => setShowCourses(false)}>
                         {courses.filter((c) => c.semester === CURRENT_SEMESTER).map((course) =>
                             <li key={course.courseId}>
                                 <a

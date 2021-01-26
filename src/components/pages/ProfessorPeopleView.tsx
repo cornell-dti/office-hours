@@ -176,15 +176,8 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
     return (
         <div className="ProfessorView">
-<<<<<<< HEAD
             <ProfessorSidebar courseId={courseId} code={(course && course.code) || 'Loading'} selected={'people'} />
             <TopBar courseId={courseId} user={user} context="professor" role="professor" />
-=======
-            <ProfessorSidebar courseId={courseId} code={(course && course.code) || 'Loading'} selected={3} />
-            <div className="profTopBar">
-                <TopBar courseId={courseId} user={user} context="professor" role="professor" course={course}/>
-            </div>
->>>>>>> styled professor view
             <section className="rightOfSidebar">
                 <div className="main">
                     <div className="Date-picker-container">

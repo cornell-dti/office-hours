@@ -10,11 +10,24 @@ type Props = {
 export default ({ courseId, context }: Props): React.ReactElement => {
     const history = useHistory();
     const isProf = context === 'professor';
-
     const [showMenu, setShowMenu] = React.useState(false);
+    const ref = React.useRef<HTMLDivElement>(null);
+
+    const handleClick = (e: globalThis.MouseEvent) => {
+        if (ref.current && !ref.current.contains(e.target as Node)) {
+            setShowMenu(false);
+        }
+    }
+
+    React.useEffect(() => {
+        document.addEventListener('mousedown', handleClick);
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+        }
+    })
 
     return (
-        <div className="Header">
+        <div className="Header" ref={ref}>
             <div className="CalendarHeader" onClick={() => setShowMenu(shown => !shown)}>
                 <span>
                     <div className="courseCode">
