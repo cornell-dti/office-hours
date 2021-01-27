@@ -84,27 +84,17 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
     );
 
     return (
-<<<<<<< HEAD
         <div className="ProfessorView">
-<<<<<<< HEAD
             <ProfessorSidebar
                 courseId={courseId}
                 code={course ? course.code : 'Loading'}
                 selected={'hours'}
             />
-=======
->>>>>>> fixed some styling issues
             <TopBar
                 courseId={courseId}
                 user={me}
                 context="professor"
                 role="professor"
-                course={course}
-            />
-            <ProfessorSidebar
-                courseId={courseId}
-                code={course ? course.code : 'Loading'}
-                selected={0}
             />
             <section className="rightOfSidebar">
                 <div className="main">
@@ -140,68 +130,15 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
                     />
                     <div className="Calendar">
                         <ProfessorCalendarTable
-=======
-        <>  
-            <div className="profTopBar">
-                <TopBar
-                    courseId={courseId}
-                    user={me}
-                    context="professor"
-                    role="professor"
-                    course={course}
-                />
-            </div>
-            <div className="ProfessorView">
-                <ProfessorSidebar
-                    courseId={courseId}
-                    code={course ? course.code : 'Loading'}
-                    selected={0}
-                />
-                <section className="rightOfSidebar">
-                    <div className="main">
-                        <ProfessorAddNew
->>>>>>> styled professor view
                             courseId={courseId}
+                            course={course}
+                            sessions={sessions}
                             taOptions={taOptions}
                         />
-                        <button
-                            type="button"
-                            id="profSettings"
-                            onClick={() => setSettingsVisible(visible => !visible)}
-                        >
-                            <Icon name="setting" />
-                            Settings
-                        </button>
-                        {course && (
-                            <ProfessorDelete
-                                isDeleteVisible={isSettingsVisible}
-                                updateDeleteVisible={() => setSettingsVisible(visible => !visible)}
-                                content={
-                                    <ProfessorSettings
-                                        courseId={courseId}
-                                        charLimitDefault={course.charLimit}
-                                        openIntervalDefault={course.queueOpenInterval}
-                                        toggleDelete={() => setSettingsVisible(visible => !visible)}
-                                    />
-                                }
-                            />
-                        )}
-                        <CalendarWeekSelect
-                            handleClick={handleWeekClick}
-                            selectedWeekEpoch={selectedWeekEpoch}
-                        />
-                        <div className="Calendar">
-                            <ProfessorCalendarTable
-                                courseId={courseId}
-                                course={course}
-                                sessions={sessions}
-                                taOptions={taOptions}
-                            />
-                        </div>
                     </div>
-                </section>
-            </div>
-        </>
+                </div>
+            </section>
+        </div>
     );
 };
 
