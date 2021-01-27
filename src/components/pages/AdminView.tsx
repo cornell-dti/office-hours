@@ -119,7 +119,7 @@ const AdminCourseCard = ({ course }: { readonly course: FireCourse }) => {
                     {showRolesTable ? 'Hide' : 'Show'} Roles Table
                 </button>
             </div>
-            {showRolesTable && <ProfessorRolesTable courseId={course.courseId} />}
+            {showRolesTable && <ProfessorRolesTable courseId={course.courseId} isAdminView={true}/>}
         </div>
     );
 };

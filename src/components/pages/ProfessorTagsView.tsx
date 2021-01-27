@@ -16,9 +16,11 @@ const ProfessorTagsView = (
             <ProfessorSidebar
                 courseId={courseId}
                 code={course ? course.code : 'Loading...'}
-                selected={1}
+                selected={'tags'}
             />
-            <TopBar courseId={courseId} user={user} context="professor" role="professor" />
+            <div className="profTopBar">
+                <TopBar courseId={courseId} user={user} context="professor" role="professor" course={course}/>
+            </div>
             <section className="rightOfSidebar">
                 <div className="main">
                     <ProfessorAddNew courseId={courseId} />
