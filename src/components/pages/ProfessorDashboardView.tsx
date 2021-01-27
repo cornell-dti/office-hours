@@ -93,8 +93,12 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
 
     return (
         <div className="ProfessorView">
-            <ProfessorSidebar courseId={courseId} code={course ? course.code : 'Loading'} selected={'dashboard'}></ProfessorSidebar>
-            <TopBar courseId={courseId} user={useMyUser()} context="professor" role="professor"></TopBar>
+            <ProfessorSidebar
+                courseId={courseId}
+                code={course ? course.code : 'Loading'}
+                selected={'dashboard'}
+            />
+            <TopBar courseId={courseId} user={useMyUser()} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 <div className="main">
                     <div className="Category-dropdown-container">
