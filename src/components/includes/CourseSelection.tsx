@@ -130,7 +130,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         history.push('/home');
     };
 
-    const selectedCoursesString = (selectedCourses.length === 0
+    const selectedCoursesString = (selectedCourses.length + numCoursesWithRoles === 0
         ? 'No Classes Chosen'
         : selectedCourses.map(c => c.code).join(', '));
 
