@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Loader } from 'semantic-ui-react';
 
-import CalendarHeader from './CalendarHeader';
 import CalendarDaySelect from './CalendarDaySelect';
 import CalendarSessions from './CalendarSessions';
 
@@ -39,11 +38,6 @@ export default ({ session, sessionCallback, course, user }: Props) => {
 
     return (
         <aside className="CalendarView">
-            <CalendarHeader
-                currentCourseCode={(course && course.code) || 'Loading'}
-                role={(user && course && (user.roles[course.courseId] || 'student'))}
-                avatar={user && user.photoUrl}
-            />
             <CalendarDaySelect callback={setSelectedDate} />
             {course && user && sessions ?
                 <CalendarSessions

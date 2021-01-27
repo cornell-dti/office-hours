@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from 'semantic-ui-react';
 import addNotification from 'react-push-notification';
 
-import TopBar from './TopBar';
 import SessionInformationHeader from './SessionInformationHeader';
 import SessionQuestionsContainer from './SessionQuestionsContainer';
 
@@ -209,14 +208,6 @@ const SessionView = (
 
     return (
         <section className="StudentSessionView">
-            {isDesktop &&
-                <TopBar
-                    user={user}
-                    role={user.roles[course.courseId] || 'student'}
-                    context="session"
-                    courseId={course.courseId}
-                />
-            }
             {"Notification" in window &&
                             window?.Notification.permission !== "granted" && showNotifBanner === true &&
                             <div className="SessionNotification">
