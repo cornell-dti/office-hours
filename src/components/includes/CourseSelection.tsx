@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
 import TopBar from './TopBar';
@@ -18,17 +19,17 @@ export type PageState = 'ready' | 'pending';
 
 function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElement {
     const history = useHistory();
-    const [isWritingChanges, setIsWritingChanges] = React.useState(false);
-    const [, setPageState] = React.useState<PageState>('ready');
+    const [isWritingChanges, setIsWritingChanges] = useState(false);
+    const [, setPageState] = useState<PageState>('ready');
 
     // Normal editing mode (isNormalEditingMode=true) has all the controls.
     // On the contrary, onboarding (isNormalEditingMode=false) has only enroll button.
-    const [isNormalEditingMode, setEditingMode] = React.useState<boolean>(user.courses.length > 0);
+    const [isNormalEditingMode, setEditingMode] = useState<boolean>(user.courses.length > 0);
 
-    const [currentCourses, setCurrentCourses] = React.useState<FireCourse[]>([]);
-    const [formerCourses, setFormerCourses] = React.useState<FireCourse[]>([]);
+    const [currentCourses, setCurrentCourses] = useState<FireCourse[]>([]);
+    const [formerCourses, setFormerCourses] = useState<FireCourse[]>([]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         setCurrentCourses(allCourses.filter((course) => {
             return course.semester === CURRENT_SEMESTER;
         }));
@@ -38,24 +39,25 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         }));
     }, [allCourses]);
 
-    const [currentlyEnrolledCourseIds, setCurrentlyEnrolledCourseIds] = React.useState(new Set<string>());
+    const [currentlyEnrolledCourseIds, setCurrentlyEnrolledCourseIds] = useState(new Set<string>());
 
-    React.useEffect(() => {
+    useEffect(() => {
         setCurrentlyEnrolledCourseIds(new Set(user.courses));
     }, [user.courses]);
 
-    const [selectedCourses, setSelectedCourses] = React.useState<FireCourse[]>([]);
+    const [selectedCourses, setSelectedCourses] = useState<FireCourse[]>([]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         setSelectedCourses(currentCourses.filter(
             ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] === undefined
         ));
     }, [user, currentCourses, currentlyEnrolledCourseIds]);
 
-    const [selectedCourseIds, setSelectedCourseIds] = React.useState<string[]>([]);
+    const [selectedCourseIds, setSelectedCourseIds] = useState<string[]>([]);
 
     const coursesToEnroll: string[] = [];
     const coursesToUnenroll: string[] = [];
+    let numCoursesWithRoles = 0;
     currentCourses.forEach(({ courseId }) => {
         if (selectedCourses.some(selected => selected.courseId === courseId)) {
             // The course is selected.
@@ -69,6 +71,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                 // Either
                 // - Previously not enrolled, still not enrolled.
                 // - Is a professor or a TA of the class. Cannot change by themselves.
+                if (user.roles[courseId] === 'professor' || user.roles[courseId] === 'ta') {
+                    numCoursesWithRoles += 1;
+                }
                 // We Do nothing.
                 return;
             }
@@ -77,14 +82,20 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         }
     });
 
-    const [isSaveDisabled, setIsSaveDisabled] = React.useState(false);
+    const [isSaveDisabled, setIsSaveDisabled] = useState(false);
 
-    React.useEffect(() => {
-        setIsSaveDisabled((coursesToEnroll.length + coursesToUnenroll.length === 0) && !isWritingChanges);
+    useEffect(() => {
+        if (!isNormalEditingMode) {
+            setIsSaveDisabled((
+                coursesToEnroll.length + coursesToUnenroll.length + numCoursesWithRoles === 0)
+                && !isWritingChanges);
+        } else {
+            setIsSaveDisabled((coursesToEnroll.length + coursesToUnenroll.length === 0) && !isWritingChanges);
+        }
         setPageState(isWritingChanges ? 'pending' : 'ready');
-    }, [isWritingChanges, coursesToEnroll, coursesToUnenroll]);
+    }, [isWritingChanges, coursesToEnroll, coursesToUnenroll, isNormalEditingMode, numCoursesWithRoles]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         setSelectedCourseIds(selectedCourses.map(course => course.courseId));
     }, [selectedCourses]);
 
@@ -119,7 +130,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         history.push('/home');
     };
 
-    const selectedCoursesString = (selectedCourses.length === 0
+    const selectedCoursesString = (selectedCourses.length + numCoursesWithRoles === 0
         ? 'No Classes Chosen'
         : selectedCourses.map(c => c.code).join(', '));
 
