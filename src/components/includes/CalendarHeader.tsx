@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useHistory } from 'react-router'
 import { Icon } from 'semantic-ui-react';
 
 import { logOut } from '../../firebasefunctions';
@@ -20,12 +21,18 @@ export default ({ currentCourseCode, role}: Props): React.ReactElement => {
     const [showCourses, setShowCourses] = React.useState(false);
     const ref = React.useRef<HTMLDivElement>(null);
     const courses = useMyCourses();
+    const history = useHistory()
 
     const handleClick = (e: globalThis.MouseEvent) => {
         if (ref.current && !ref.current.contains(e.target as Node)) {
             setShowCourses(false);
         }
     }
+
+    const handleCourseClick = (course: FireCourse) => {
+        window.localStorage.setItem("lastid", String(course.courseId));
+        history.push(`/course/${course.courseId}`);
+    };
 
     React.useEffect(() => {
         document.addEventListener('mousedown', handleClick);
@@ -47,13 +54,11 @@ export default ({ currentCourseCode, role}: Props): React.ReactElement => {
                     <ul className="courseMenu" tabIndex={1} onClick={() => setShowCourses(false)}>
                         {courses.filter((c) => c.semester === CURRENT_SEMESTER).map((course) =>
                             <li key={course.courseId}>
-                                <a
+                                <div
                                     className={course.code === currentCourseCode ? "thisCourse":""}
-                                    href={'/course/' + course.courseId}
-                                    onClick={() =>
-                                        window.localStorage.setItem('lastid', String(course.courseId))}
+                                    onClick={() => handleCourseClick(course)}
                                 > {course.code} {course.code === currentCourseCode && <>&#10003;</>}
-                                </a>
+                                </div>
                             </li>
                         )}
                         {role && (
