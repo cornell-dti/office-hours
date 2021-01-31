@@ -125,8 +125,8 @@ const SplitView = (props: {
                             </p>
                             <p className="noSessionSelected">
                                 Please select an office hour from the calendar.
-                                <p> </p>
-                                <p> </p>
+                                <span> </span>
+                                <span> </span>
 
                                 {(Notification !== undefined) && Notification.permission === "granted" && (
                                     <div className="warningArea">
