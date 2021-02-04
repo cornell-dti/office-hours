@@ -29,18 +29,6 @@ const DiscussionQuestion = (props: Props) => {
 
     const [showCommentBox, setShowCommentBox] = useState(false);
 
-    // const assignQuestion = () => {
-    //     const batch = firestore.batch();
-    //     const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
-    //     const questionUpdate: Partial<FireDiscussionQuestion> = {
-    //         status: 'assigned',
-    //         answererId: props.user.userId
-    //     };
-    //     batch.update(firestore.doc(`questionSlots/${props.question.questionId}`), slotUpdate);
-    //     batch.update(firestore.doc(`questions/${props.question.questionId}`), questionUpdate);
-    //     batch.commit();
-    // };
-
     const retractQuestion = (): void => {
         const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
@@ -67,38 +55,17 @@ const DiscussionQuestion = (props: Props) => {
         batch.commit();
     }
 
-    const questionComment = (newComment: string, isTA: boolean) => {
+    const questionComment = (newComment: string) => {
         let update: Partial<FireDiscussionQuestion>
-        if (isTA) {
+        if (props.isTA) {
             update = { taComment: newComment };
         } else {
             update = { studentComment: newComment };
         }
-        firestore.doc(`questions/${question.questionId}`).update(update);
+        firestore.doc(`questions/${question.questionId}`).update(update).catch(() => {});
     };
 
-    // const studentNoShow = () => {
-    //     const batch = firestore.batch();
-    //     const slotUpdate: Partial<FireQuestionSlot> = { status: 'no-show' };
-    //     const questionUpdate: Partial<FireQuestion> = slotUpdate;
-    //     batch.update(firestore.doc(`questionSlots/${question.questionId}`), slotUpdate);
-    //     batch.update(firestore.doc(`questions/${question.questionId}`), questionUpdate);
-    //     batch.commit();
-    // };
-
-    // const questionDone = () => {
-    //     const batch = firestore.batch();
-    //     const slotUpdate: Partial<FireQuestionSlot> = { status: 'resolved' };
-    //     const questionUpdate: Partial<FireDiscussionQuestion> = {
-    //         status: 'resolved',
-    //     };
-    //     batch.update(firestore.doc(`questionSlots/${question.questionId}`), slotUpdate);
-    //     batch.update(firestore.doc(`questions/${question.questionId}`), questionUpdate);
-    //     batch.commit();
-    // };
-
     return (
-
 
         <div className="DiscussionQuestion">
             <div className="DiscussionContainer">
@@ -144,7 +111,7 @@ const DiscussionQuestion = (props: Props) => {
                     <img
                         className="userInformationImg"
                         src={user.photoUrl || '/placeholder.png'}
-                        alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
+                        alt={user ? `${user.firstName} ${user.lastName}` : 'not logged-in user'}
                     />
                     <span className="userInformationName">
                         {user.firstName} {user.lastName}
@@ -153,7 +120,7 @@ const DiscussionQuestion = (props: Props) => {
                 <EditComment
                     initComment={comment || ""}
                     onValueChange={(newComment: string) => {
-                        questionComment(newComment, props.isTA);
+                        questionComment(newComment);
                         setShowCommentBox(false);}} 
                     onCancel={() => {setShowCommentBox(false);}}
                 />
@@ -211,17 +178,15 @@ const EditComment = (props: EditCommentProps) => {
         );
     }
 
-    // Not editable
     return (
         <div className="commentBody">
             <Linkify tagName="p">
-                {comment !== "" && comment !== undefined ? comment : "Add a comment..."}
+                {comment || "Add a comment..."}
             </Linkify>
             <button
                 type="button"
                 className="link-button commentEdit"
-                onClick={(evt) => {
-                    evt.preventDefault();
+                onClick={() => {
                     setPrevComment(comment);
                     setEditable(true);
                 }}
@@ -243,12 +208,12 @@ const CommentBox = (props: CommentBoxProps) => {
     return (
         <div className="CommentBox">
             {props.studentComment && (
-                <Linkify className={'Question' + props.studentCSS} tagName="p">
+                <Linkify className={`Question ${props.studentCSS || ''}`} tagName="p">
                     Student Comment: {props.studentComment}
                 </Linkify>
             )}
             {props.taComment && (
-                <Linkify className={'Question' + props.studentCSS} tagName="p">
+                <Linkify className={`Question ${props.studentCSS || ''}`} tagName="p">
                     TA Comment: {props.taComment}
                 </Linkify>
             )}

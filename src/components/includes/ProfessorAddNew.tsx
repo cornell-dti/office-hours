@@ -23,7 +23,7 @@ const ProfessorAddNew = (props: {
             {props.taOptions && <div className={'Add ' + (!editVisible && !discussVisible)}>
                 <button type="button" className="NewOHButton" onClick={() => setDiscussVisible(true)}>
                     <Icon name="plus" />
-                    Add new discussion
+                    Add New Discussion
                 </button>
             </div>}
 
@@ -57,7 +57,7 @@ const ProfessorAddNew = (props: {
                 <div className="NewOHHeader">
                     <button type="button" className="ExpandedNewOHButton" onClick={() => setDiscussVisible(false)}>
                         <Icon name="plus" />
-                        Add new discussion
+                        Add New Discussion
                     </button>
                 </div>
                 {props.taOptions
