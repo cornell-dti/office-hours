@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
-import { datePlus, normalizeDateToDateStart, normalizeDateToWeekStart } from './utilities/date';
+import moment from 'moment-timezone';
+import { getDateRange, syncTimes } from './utilities/date';
 import { blockArray } from './firehooks';
 
 /* Basic Functions */
@@ -63,112 +64,94 @@ export const logOut = () => {
 
 /* Series Functions */
 
-const getWeekOffsets = (
-    sessionSeries: Omit<FireSessionSeries, 'sessionSeriesId'>
-): [number, number] => {
-    const { startTime: seriesStartFireTimestamp, endTime: seriesEndFireTimestamp } = sessionSeries;
-    const rawStart = seriesStartFireTimestamp.toDate();
-    const rawEnd = seriesEndFireTimestamp.toDate();
-    return [
-        rawStart.getTime() - normalizeDateToWeekStart(rawStart).getTime(),
-        rawEnd.getTime() - normalizeDateToWeekStart(rawEnd).getTime(),
-    ];
-};
-
 export const createSeries = async (
     db: firebase.firestore.Firestore,
     sessionSeries: FireSessionSeriesDefinition
 ): Promise<void> => {
     const courseDoc = await db.collection('courses').doc(sessionSeries.courseId).get();
-    const [courseStartWeek, courseEndWeek, courseStartDate, courseEndDate] = (() => {
-        const {
-            startDate: courseStartFireTimestamp,
-            endDate: courseEndFireTimestamp,
-        } = courseDoc.data() as FireCourse;
-        const rawStart = courseStartFireTimestamp.toDate();
-        const rawEnd = courseEndFireTimestamp.toDate();
-        return [
-            normalizeDateToWeekStart(rawStart),
-            normalizeDateToWeekStart(rawEnd),
-            normalizeDateToDateStart(rawStart),
-            normalizeDateToDateStart(rawEnd),
-        ];
-    })();
-    const [sessionStartOffset, sessionEndOffset] = getWeekOffsets(sessionSeries);
-    const now = new Date();
-    const currentDate = new Date(courseStartWeek);
-    const batch = db.batch();
+    const courseData = courseDoc.data() as FireCourse;
+
     const sessionSeriesId = db.collection('sessions').doc().id;
-    while (currentDate <= courseEndWeek) {
-        // Create new course only if:
-        // - the session is not already the past
-        // - the session is after course start date
-        // - the session is before (course end date + 1 day)
-        const sessionStart = datePlus(currentDate, sessionStartOffset);
-        const sessionEnd = datePlus(currentDate, sessionEndOffset);
-        if (
-            sessionEnd > now &&
-            sessionStart >= courseStartDate &&
-            sessionStart <= datePlus(courseEndDate, 1000 * 60 * 60 * 24)
-        ) {
-            if (sessionSeries.modality === 'virtual') {
-                const derivedSession: Omit<FireVirtualSession, 'sessionId'> = {
-                    modality: sessionSeries.modality,
-                    sessionSeriesId,
-                    courseId: sessionSeries.courseId,
-                    endTime: firestore.Timestamp.fromDate(sessionEnd),
-                    startTime: firestore.Timestamp.fromDate(sessionStart),
-                    tas: sessionSeries.tas,
-                    title: sessionSeries.title,
-                    totalQuestions: 0,
-                    assignedQuestions: 0,
-                    resolvedQuestions: 0,
-                    totalWaitTime: 0,
-                    totalResolveTime: 0,
-                };
 
-                batch.set(db.collection('sessions').doc(), derivedSession);
-            } else if (sessionSeries.modality === "review") {
-                const derivedSession: Omit<FireReviewSession, 'sessionId'> = {
-                    modality: sessionSeries.modality,
-                    sessionSeriesId,
-                    courseId: sessionSeries.courseId,
-                    endTime: firestore.Timestamp.fromDate(sessionEnd),
-                    startTime: firestore.Timestamp.fromDate(sessionStart),
-                    tas: sessionSeries.tas,
-                    title: sessionSeries.title,
-                    totalQuestions: 0,
-                    assignedQuestions: 0,
-                    resolvedQuestions: 0,
-                    totalWaitTime: 0,
-                    totalResolveTime: 0,
-                    link: sessionSeries.link
-                };
+    const startTime = moment(sessionSeries.startTime.toDate()).tz("America/New_York");
+    const endTime = moment(sessionSeries.endTime.toDate()).tz("America/New_York");
+    const duration = endTime.diff(startTime);
 
-                batch.set(db.collection('sessions').doc(), derivedSession);
-            } else {
-                const derivedSession: Omit<FireInPersonSession | FireHybridSession, 'sessionId'> = {
-                    sessionSeriesId,
-                    modality: sessionSeries.modality,
-                    building: sessionSeries.building,
-                    courseId: sessionSeries.courseId,
-                    endTime: firestore.Timestamp.fromDate(sessionEnd),
-                    room: sessionSeries.room,
-                    startTime: firestore.Timestamp.fromDate(sessionStart),
-                    tas: sessionSeries.tas,
-                    title: sessionSeries.title,
-                    totalQuestions: 0,
-                    assignedQuestions: 0,
-                    resolvedQuestions: 0,
-                    totalWaitTime: 0,
-                    totalResolveTime: 0,
-                };
+    const courseStartTime = moment(courseData.startDate.toDate()).tz("America/New_York");
+    const courseEndTime = moment(courseData.endDate.toDate()).tz("America/New_York");
 
-                batch.set(db.collection('sessions').doc(), derivedSession);
-            }
+    const datesToAdd = getDateRange(startTime, courseEndTime);
+
+    const now = moment();
+
+    const batch = db.batch();
+
+    datesToAdd.forEach( (sessionStart) => {
+        // Do not add sessions before today or course start
+        if (sessionStart.isBefore(now) || sessionStart.isBefore(courseStartTime)){
+            return;
         }
-        currentDate.setDate(currentDate.getDate() + 7); // move 1 week forward.
-    }
+
+        const sessionEnd = moment(sessionStart);
+        sessionEnd.add(duration);
+
+        // Session Add Logic (This is yucky and should be refactored...)
+        if (sessionSeries.modality === 'virtual') {
+            const derivedSession: Omit<FireVirtualSession, 'sessionId'> = {
+                modality: sessionSeries.modality,
+                sessionSeriesId,
+                courseId: sessionSeries.courseId,
+                endTime: firestore.Timestamp.fromDate(sessionEnd.toDate()),
+                startTime: firestore.Timestamp.fromDate(sessionStart.toDate()),
+                tas: sessionSeries.tas,
+                title: sessionSeries.title,
+                totalQuestions: 0,
+                assignedQuestions: 0,
+                resolvedQuestions: 0,
+                totalWaitTime: 0,
+                totalResolveTime: 0,
+            };
+
+            batch.set(db.collection('sessions').doc(), derivedSession);
+        } else if (sessionSeries.modality === "review") {
+            const derivedSession: Omit<FireReviewSession, 'sessionId'> = {
+                modality: sessionSeries.modality,
+                sessionSeriesId,
+                courseId: sessionSeries.courseId,
+                endTime: firestore.Timestamp.fromDate(sessionEnd.toDate()),
+                startTime: firestore.Timestamp.fromDate(sessionStart.toDate()),
+                tas: sessionSeries.tas,
+                title: sessionSeries.title,
+                totalQuestions: 0,
+                assignedQuestions: 0,
+                resolvedQuestions: 0,
+                totalWaitTime: 0,
+                totalResolveTime: 0,
+                link: sessionSeries.link
+            };
+
+            batch.set(db.collection('sessions').doc(), derivedSession);
+        } else {
+            const derivedSession: Omit<FireInPersonSession | FireHybridSession, 'sessionId'> = {
+                sessionSeriesId,
+                modality: sessionSeries.modality,
+                building: sessionSeries.building,
+                courseId: sessionSeries.courseId,
+                endTime: firestore.Timestamp.fromDate(sessionEnd.toDate()),
+                room: sessionSeries.room,
+                startTime: firestore.Timestamp.fromDate(sessionStart.toDate()),
+                tas: sessionSeries.tas,
+                title: sessionSeries.title,
+                totalQuestions: 0,
+                assignedQuestions: 0,
+                resolvedQuestions: 0,
+                totalWaitTime: 0,
+                totalResolveTime: 0,
+            };
+
+            batch.set(db.collection('sessions').doc(), derivedSession);
+        }
+    })
     await batch.commit();
 };
 
@@ -177,7 +160,9 @@ export const updateSeries = async (
     sessionSeriesId: string,
     sessionSeries: FireSessionSeriesDefinition
 ): Promise<void> => {
-    const [sessionStartOffset, sessionEndOffset] = getWeekOffsets(sessionSeries);
+    const adjustedStartTime = moment(sessionSeries.startTime.toDate()).tz("America/New_York");
+    const adjustedEndTime = moment(sessionSeries.endTime.toDate()).tz("America/New_York");
+
     const querySnapshot = await db
         .collection('sessions')
         .where('sessionSeriesId', '==', sessionSeriesId)
@@ -186,11 +171,21 @@ export const updateSeries = async (
     querySnapshot.forEach((sessionDocument) => {
         const sessionId = sessionDocument.id;
         const oldSession = sessionDocument.data() as Omit<FireSession, 'sessionId'>;
+
+        // Uses the same dates as the old session, but sets the minutes, hours and day of week
+        // to the updated session information
+
+        const newStartTime = moment(oldSession.startTime.toDate()).tz("America/New_York");
+        syncTimes(newStartTime, adjustedStartTime);
+
+        const newEndTime = moment(oldSession.endTime.toDate()).tz("America/New_York");
+        syncTimes(newEndTime, adjustedEndTime);
+
         const startTime = firestore.Timestamp.fromDate(
-            datePlus(normalizeDateToWeekStart(oldSession.startTime.toDate()), sessionStartOffset)
+            newStartTime.toDate()
         );
         const endTime = firestore.Timestamp.fromDate(
-            datePlus(normalizeDateToWeekStart(oldSession.endTime.toDate()), sessionEndOffset)
+            newEndTime.toDate()
         );
 
         if (sessionSeries.modality === 'virtual') {
@@ -310,14 +305,14 @@ const importProfessorsOrTAs = async (
     course: FireCourse,
     role: 'professor' | 'ta',
     emailListTotal: readonly string[]
-): Promise<void> => {
-    const missingSet = new Set(emailListTotal);
+): Promise<{updatedUsers: FireUser[]; missingSet: Set<string>}> => {
+    const missingSet = new Set<string>(emailListTotal);
     const batch = db.batch();
     const updatedUsers: FireUser[] = [];
 
     const emailBlocks = blockArray(emailListTotal, 10);
 
-    Promise.all(emailBlocks.map(emailList => {
+    return Promise.all(emailBlocks.map(emailList => {
         return db.collection('users').where('email', 'in', emailList).get().then(taUserDocuments => {
             // const updatedUsersThisBlock: FireUser[] = [];
             // const userUpdatesThisBlock: Partial<FireUser>[] = [];
@@ -349,6 +344,21 @@ const importProfessorsOrTAs = async (
             })
 
         });
+
+        // add missing user to pendingUsers collection
+        missingSet.forEach(email => {
+            const pendingUsersRef = db.collection('pendingUsers').doc(email);
+
+            pendingUsersRef.get()
+                .then((docSnapshot) => {
+                    if (docSnapshot.exists) {
+                        pendingUsersRef.update({[`roles.${course.courseId}`]: role});
+                    } else {
+                        pendingUsersRef.set({email, roles: {[course.courseId]: role}});
+                    }
+                });
+        })
+
         // update course's ta/professor roles
         batch.update(
             db.collection('courses').doc(course.courseId),
@@ -361,14 +371,8 @@ const importProfessorsOrTAs = async (
 
         batch.commit();
     }).then(() => {
-        const message =
-            'Successfully\n' +
-            `updated: [${updatedUsers.map((user) => user.email).join(', ')}];\n` +
-            `[${Array.from(missingSet).join(', ')}] do not exist in our system yet.`;
-        // eslint-disable-next-line no-alert
-        alert(message);
+        return { updatedUsers, missingSet };
     });
-
 
 };
 
@@ -418,6 +422,21 @@ export const importProfessorsOrTAsFromPrompt = (
             response.split(',').map((email) => email.trim())
         );
     }
+};
+
+export const importProfessorsOrTAsFromCSV = (
+    db: firebase.firestore.Firestore,
+    course: FireCourse,
+    role: 'professor' | 'ta', 
+    emailList: string[]
+): Promise<{updatedUsers: FireUser[]; missingSet: Set<string>}> | undefined => {
+
+    return importProfessorsOrTAs(
+        db,
+        course,
+        role,
+        emailList
+    );      
 };
 
 export const updateVirtualLocation = (

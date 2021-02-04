@@ -6,8 +6,7 @@ import { useMyCourses } from '../../firehooks';
 
 import { CURRENT_SEMESTER } from '../../constants';
 
-import QMeLogo from '../../media/QLogo2.svg';
-import chevron from '../../media/chevron.svg'; // Replace with dropdown cheveron
+import Toggle from '../../media/Toggle.svg'; 
 
 type Props = {
     readonly currentCourseCode: string;
@@ -15,45 +14,45 @@ type Props = {
     readonly avatar?: string;
 };
 
-export default ({ currentCourseCode, role, avatar }: Props): React.ReactElement => {
+
+export default ({ currentCourseCode, role}: Props): React.ReactElement => {
     const [showMenu, setShowMenu] = React.useState(false);
     const [showCourses, setShowCourses] = React.useState(false);
+    const ref = React.useRef<HTMLDivElement>(null);
     const courses = useMyCourses();
+
+    const handleClick = (e: globalThis.MouseEvent) => {
+        if (ref.current && !ref.current.contains(e.target as Node)) {
+            setShowCourses(false);
+        }
+    }
+
+    React.useEffect(() => {
+        document.addEventListener('mousedown', handleClick);
+        return () => {
+            document.removeEventListener("mousedown", handleClick);
+        }
+    })
 
     return (
         <div className="Header">
-            <div className="LogoContainer">
-                <img src={QMeLogo} className="QMeLogo" alt="Queue Me In Logo" />
-            </div>
-            <div className="CalendarHeader" onClick={() => setShowCourses(shown => !shown)}>
+            <div className="CalendarHeader" onClick={() => setShowCourses(!showCourses)} ref={ref}>
                 <span>
-                    <span>{currentCourseCode}</span>
+                    <div className="courseCode">{currentCourseCode}</div>
                     {role && role === 'ta' && <span className="TAMarker">TA</span>}
-                    {role && role === 'professor' && <span className="TAMarker Professor">PROF</span>}
-                    <span className="CourseSelect">
-                        <img src={chevron} alt="Course Select" className="RotateDown" />
-                    </span>
+                    {role && role === 'professor' && <span className="TAMarker Prof">PROF</span>}
+                    <img src={Toggle} alt="Course Select" className="Toggle" />
                 </span>
-                {avatar &&
-                    <img
-                        className="mobileHeaderFace"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setShowMenu(shown => !shown);
-                        }}
-                        src={avatar}
-                        alt="User avatar"
-                    />
-                }
                 {showCourses &&
-                    <ul className="courseMenu" tabIndex={1} onClick={() => setShowCourses(false)} >
+                    <ul className="courseMenu" tabIndex={1} onClick={() => setShowCourses(false)}>
                         {courses.filter((c) => c.semester === CURRENT_SEMESTER).map((course) =>
                             <li key={course.courseId}>
                                 <a
+                                    className={course.code === currentCourseCode ? "thisCourse":""}
                                     href={'/course/' + course.courseId}
                                     onClick={() =>
                                         window.localStorage.setItem('lastid', String(course.courseId))}
-                                > {course.code}
+                                > {course.code} {course.code === currentCourseCode && <>&#10003;</>}
                                 </a>
                             </li>
                         )}

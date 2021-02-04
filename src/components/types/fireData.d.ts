@@ -137,6 +137,11 @@ interface FireUser {
     roles: { readonly [courseId: string]: PrivilegedFireCourseRole | undefined };
 }
 
+interface FirePendingUser {
+    email: string;
+    roles: Record<string, role>;
+}
+
 interface FireQuestion {
     askerId: string;
     answererId: string;

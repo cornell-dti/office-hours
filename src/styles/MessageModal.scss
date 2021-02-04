@@ -1,4 +1,4 @@
-.NotifModalScreen {
+.NotifModalScreen, .JoinErrorMessageScreen {
     position: fixed;
     display: flex;
     align-items: center;
@@ -13,7 +13,7 @@
     z-index: 9999;
 }
 
-.NotificationModalVisible {
+.NotificationModalVisible, .JoinErrorMessageVisible {
     width: 687px;
     height: 407px;
     border-radius: 8px;
@@ -44,13 +44,12 @@
         color: #5599DB;
     }
 
-    button {
+    .closeButton {
         align-self: flex-end;
         height: 45px;
         left: 74.14%;
         right: 24.61%;
         top: calc(50% - 45px/2 - 209.5px);
-        font-family: Ionicons;
         font-size: 20px;
         line-height: 48px;
         color: #484848;
@@ -61,6 +60,32 @@
     }
     
 }
+
+.JoinErrorMessageVisible {
+    p {
+        width: 450px;
+        font-size: 23px;
+        color: #DC9C35;
+    }
+
+    .GotItButton {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: #5599DB;
+        height: 70px;
+        border: none; 
+        justify-self: end;
+        font-size: 20px;
+        color: white;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        outline: none;
+
+    }
+ 
+}
+
 
 
 @media only screen and (max-width: $mobile-breakpoint) {

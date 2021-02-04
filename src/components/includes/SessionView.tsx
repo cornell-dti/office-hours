@@ -2,15 +2,15 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from 'semantic-ui-react';
 import addNotification from 'react-push-notification';
 
-import TopBar from './TopBar';
 import SessionInformationHeader from './SessionInformationHeader';
 import SessionQuestionsContainer from './SessionQuestionsContainer';
-import UpdateProfile from './UpdateProfile';
 
-import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile } from '../../firehooks';
+import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile, 
+    useAskerQuestions } from '../../firehooks';
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 import { updateVirtualLocation } from '../../firebasefunctions';
 import { firestore } from '../../firebase';
+
 import NotifBell from '../../media/notifBellWhite.svg';
 // import SessionAlertModal from './SessionAlertModal';
 
@@ -192,16 +192,22 @@ const SessionView = (
     const haveAnotherQuestion = new Date(session.endTime.toDate()) >= new Date()
         && questions.some(({ askerId, status }) => askerId === user.userId && status === 'unresolved');
 
+    const myQuestions = useAskerQuestions(session.sessionId, user.userId);
+    const assignedQuestion = myQuestions?.filter(q => q.status === 'assigned')[0];
+
+    const myQuestion = React.useMemo(() => {
+        if (myQuestions && myQuestions.length > 0) {
+            return myQuestions
+                .sort((a, b) => a.timeEntered.seconds - b.timeEntered.seconds)
+                .find(q => q.status === 'unresolved' || q.status === 'assigned') || null;
+        }
+
+        return null;
+    }, [myQuestions]);
+
+
     return (
         <section className="StudentSessionView">
-            {isDesktop &&
-                <TopBar
-                    user={user}
-                    role={user.roles[course.courseId] || 'student'}
-                    context="session"
-                    courseId={course.courseId}
-                />
-            }
             {"Notification" in window &&
                             window?.Notification.permission !== "granted" && showNotifBanner === true &&
                             <div className="SessionNotification">
@@ -220,19 +226,17 @@ const SessionView = (
                 user={user}
                 callback={backCallback}
                 isDesktop={isDesktop}
+                isTa={isTa}
+                virtualLocation={sessionProfile?.virtualLocation}
+                assignedQuestion={assignedQuestion}
+                isOpen={isOpen(session, course.queueOpenInterval)}
+                myQuestion={myQuestion}
+                onUpdate={(virtualLocation) => {
+                    updateVirtualLocation(firestore, user, session, virtualLocation);
+                    updateSessionProfile(virtualLocation);
+                }}
             />
-            {
-                session.modality === 'virtual' && isTa ? <UpdateProfile
-                    virtualLocation={sessionProfile?.virtualLocation}
-                    onUpdate={(virtualLocation) => {
-                        updateVirtualLocation(firestore, user, session, virtualLocation);
 
-                        if (virtualLocation) {
-                            updateSessionProfile(virtualLocation);
-                        }
-                    }}
-                /> : <></>
-            }
             {undoQuestionId &&
                 <div className="undoContainer">
                     <p className="undoClose" onClick={dismissUndo}>
@@ -268,6 +272,7 @@ const SessionView = (
                 openingTime={getOpeningTime(session, course.queueOpenInterval)}
                 haveAnotherQuestion={haveAnotherQuestion}
                 course={course}
+                myQuestion={myQuestion}
             />
             {/* {this.state.showAbsent && !this.state.dismissedAbsent && (
                 <SessionAlertModal

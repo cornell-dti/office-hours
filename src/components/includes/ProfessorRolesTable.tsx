@@ -36,7 +36,7 @@ type columnT = 'firstName' | 'lastName' | 'email' | 'role';
 
 type EnrichedFireUser = FireUser & { role: FireCourseRole };
 
-export default ({ courseId }: { courseId: string }) => {
+export default ({ courseId, isAdminView }: { courseId: string; isAdminView: boolean }) => {
     const [direction, setDirection] = useState<'descending' | 'ascending'>('ascending');
     const [column, setColumn] = useState<columnT>('email');
     const course = useCourse(courseId);
@@ -72,6 +72,19 @@ export default ({ courseId }: { courseId: string }) => {
         }
     };
 
+    const importButton = () => {
+        return (
+            <Table.Row>
+                <Table.Cell>
+                    <button type="button" onClick={importProfessorsButtonOnClick}>Import Professors</button>
+                </Table.Cell>
+                <Table.Cell>
+                    <button type="button" onClick={importTAButtonOnClick}>Import TAs</button>
+                </Table.Cell> 
+            </Table.Row>
+        )
+    };
+
     return (
         <Table sortable={true} celled={true} fixed={true} className="rolesTable">
             <Table.Header>
@@ -104,12 +117,7 @@ export default ({ courseId }: { courseId: string }) => {
             </Table.Header>
             <Table.Body>
                 <Table.Row>
-                    <Table.Cell>
-                        <button type="button" onClick={importProfessorsButtonOnClick}>Import Professors</button>
-                    </Table.Cell>
-                    <Table.Cell>
-                        <button type="button" onClick={importTAButtonOnClick}>Import TAs</button>
-                    </Table.Cell>
+                    {isAdminView && importButton()}
                 </Table.Row>
                 {course && sortedCourseUsers.map(u => (
                     <Table.Row key={u.userId}>
