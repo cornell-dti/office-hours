@@ -33,6 +33,7 @@ _Screenshots showing major parts of app_
 * **Connie Lei** - Software Developer
 * **Guanqun Wu** - Software Developer
 * **Jeremy Jung** - Software Developer
+* **Alex Nagel** - Software Developer
 * **Ashley Ticzon** - Designer
 * **Jalil Evans** - Designer
 * **Sophia Wang** - Product Manager
