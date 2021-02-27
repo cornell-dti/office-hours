@@ -5,6 +5,7 @@ import { Loader } from 'semantic-ui-react';
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import NotificationModal from '../includes/NotificationModal';
+import LeaveQueue from '../includes/LeaveQueue';
 
 import { useCourse, useSession, useMyUser } from '../../firehooks';
 
@@ -42,6 +43,7 @@ const SplitView = (props: {
             ? 'addQuestion'
             : props.match.params.sessionId ? 'session' : 'calendar'
     );
+    const [showModal, setShowModal] = useState(false);
 
     const user = useMyUser();
     const course = useCourse(props.match.params.courseId);
@@ -84,6 +86,7 @@ const SplitView = (props: {
 
     return (
         <>
+            <LeaveQueue setShowModal={setShowModal} showModal={showModal}/>
             <TopBar
                 user={user}
                 role={(user && course && user.roles[course.courseId]) || 'student'}
@@ -114,6 +117,7 @@ const SplitView = (props: {
                             isDesktop={width > MOBILE_BREAKPOINT}
                             backCallback={handleBackClick}
                             joinCallback={handleJoinClick}
+                            setShowModal={setShowModal}
                         />
                     ) : (
                         <section className="StudentSessionView">

@@ -26,6 +26,7 @@ type Props = {
     triggerUndo: Function;
     isPast: boolean;
     readonly user: FireUser;
+    setShowModal: (show: boolean) => void;
 };
 
 type State = {
@@ -121,6 +122,7 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     retractQuestion = (): void => {
+        this.props.setShowModal(true);
         const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
         const questionUpdate: Partial<FireQuestion> = slotUpdate;

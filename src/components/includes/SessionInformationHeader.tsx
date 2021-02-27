@@ -54,7 +54,7 @@ const formatAvgTime = (rawTimeSecs: number) => {
 }
 
 const SessionInformationHeader = ({ session, course, callback, user, isDesktop, isTa, virtualLocation, 
-    assignedQuestion, onUpdate, myQuestion, isOpen }: Props) => {
+    assignedQuestion, onUpdate, myQuestion, isOpen}: Props) => {
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined), user.userId
@@ -70,7 +70,6 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState('hide');
     const [zoomLink, setZoomLink] = React.useState('');
     const [showError, setShowError] = React.useState(false);
-
 
     React.useEffect(() => {
         if (typeof virtualLocation === 'string' && virtualLocation.trim() !== '') {
