@@ -20,7 +20,8 @@ const useWindowWidth = () => {
         const handleResize = () => setWidth(window.innerWidth);
         const handleCloseWindowAlert = (ev: BeforeUnloadEvent) => {
             ev.preventDefault();
-            return ev.returnValue = 'Are you sure you want to close?';
+            ev.returnValue = 'Are you sure you want to close?';
+            return ev.returnValue
         }
 
         window.addEventListener("beforeunload", handleCloseWindowAlert);
@@ -85,7 +86,6 @@ const SplitView = (props: {
         setActiveView('calendar');
     };
 
-    // Toggle warning
 
     return (
         <>
@@ -103,12 +103,12 @@ const SplitView = (props: {
                     session={session}
                     sessionCallback={handleSessionClick}
                 />}
-
+                
             {"Notification" in window &&
-                window?.Notification.permission !== "granted" && (
-                    <NotificationModal show={activeView !== 'session'} />
-                )}
-
+            window?.Notification.permission !== "granted" && (
+                <NotificationModal show={activeView !== 'session'} />
+            )}    
+                
             {(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
                 ((course && user) ? (
                     session ? (
@@ -121,34 +121,34 @@ const SplitView = (props: {
                             joinCallback={handleJoinClick}
                         />
                     ) : (
-                            <section className="StudentSessionView">
-                                <p className="welcomeMessage">
+                        <section className="StudentSessionView">
+                            <p className="welcomeMessage">
                                     Welcome{user && ', '}
-                                    <span className="welcomeName">
-                                        {user && user.firstName}
-                                    </span>
-                                </p>
-                                <p className="noSessionSelected">
-                                    Please select an office hour from the calendar.
+                                <span className="welcomeName">
+                                    {user && user.firstName}
+                                </span>
+                            </p>
+                            <p className="noSessionSelected">
+                                Please select an office hour from the calendar.
                                 <p> </p>
-                                    <p> </p>
+                                <p> </p>
 
-                                    {(Notification !== undefined) && Notification.permission === "granted" && (
-                                        <div className="warningArea">
+                                {(Notification !== undefined) && Notification.permission === "granted" && (
+                                    <div className="warningArea">
 
-                                            <div>
-                                                &#9888;
+                                        <div>
+                                        &#9888;
                                         </div>
-                                            <div>
-                                                Please make sure to enable browser notifications in your system settings.
+                                        <div>
+                                        Please make sure to enable browser notifications in your system settings.
                                         </div>
-                                        </div>
-                                    )}
-                                </p>
-                            </section>
-                        )
+                                    </div>
+                                )}
+                            </p>
+                        </section>
+                    )
                 ) : <Loader active={true} content="Loading" />)}
-
+           
         </>
     );
 };
