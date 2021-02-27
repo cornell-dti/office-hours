@@ -34,6 +34,7 @@ _Screenshots showing major parts of app_
 * **Guanqun Wu** - Software Developer
 * **Jeremy Jung** - Software Developer
 * **Alex Nagel** - Software Developer
+* **Rose Zhou** - Software Developer
 * **Ashley Ticzon** - Designer
 * **Jalil Evans** - Designer
 * **Sophia Wang** - Product Manager
