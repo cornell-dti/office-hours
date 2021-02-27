@@ -27,13 +27,6 @@ type Props = {
     isOpen: boolean;
 };
 
-// const getPercentage = (proportion: number, total: number) => {
-//     if (total === 0){
-//         return "- %";
-//     }
-//     const pct = proportion / total * 100;
-//     return pct.toFixed(1) + "%";
-// }
 
 const formatAvgTime = (rawTimeSecs: number) => {
     const timeSecs = Math.floor(rawTimeSecs);
@@ -60,10 +53,6 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined), user.userId
     );
 
-    // unused office hour stats
-    // const pctAssigned = getPercentage(session.assignedQuestions, session.totalQuestions);
-    // const pctResolved = getPercentage(session.resolvedQuestions, session.totalQuestions);
-    // const avgResolveTime = formatAvgTime(session.totalResolveTime / session.resolvedQuestions);
 
     const avgWaitTime = formatAvgTime(session.totalWaitTime / session.assignedQuestions);
     
@@ -204,6 +193,7 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                                     <>
                                         <p>{zoomLink}</p>
                                         <img 
+                                            id="EditZoom"
                                             onClick={() => setZoomLinkDisplay('show')} 
                                             src={editZoomLink} 
                                             alt="edit zoom link"

@@ -18,9 +18,18 @@ const useWindowWidth = () => {
 
     useEffect(() => {
         const handleResize = () => setWidth(window.innerWidth);
+        const handleCloseWindowAlert = (ev: BeforeUnloadEvent) => {
+            ev.preventDefault();
+            ev.returnValue = 'Are you sure you want to close?';
+            return ev.returnValue
+        }
+
+        window.addEventListener("beforeunload", handleCloseWindowAlert);
         window.addEventListener('resize', handleResize);
+
         return () => {
             window.removeEventListener('resize', handleResize);
+            window.removeEventListener("beforeunload", handleCloseWindowAlert);
         };
     });
 
@@ -55,13 +64,11 @@ const SplitView = (props: {
                 ? 'addQuestion'
                 : props.match.params.sessionId ? 'session' : 'calendar'
         );
-        // setSessionId(props.match.params.sessionId);
     });
 
     // Keep track of active view for mobile
     const handleSessionClick = (newSessionId: string) => {
         props.history.push('/course/' + props.match.params.courseId + '/session/' + newSessionId);
-        // setSessionId(newSessionId);
         setActiveView('session');
     };
 
@@ -76,11 +83,9 @@ const SplitView = (props: {
 
     const handleBackClick = () => {
         props.history.push('/course/' + props.match.params.courseId);
-        // setSessionId(undefined);
         setActiveView('calendar');
     };
 
-    // Toggle warning
 
     return (
         <>
