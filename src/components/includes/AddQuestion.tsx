@@ -56,7 +56,7 @@ const AddQuestion = (
             'tagId'
         );
 
-        tags$.subscribe((tags) => setTags(tags));
+        tags$.subscribe((newTags) => setTags(newTags));
         return () => {
             window.removeEventListener('resize', updateWindowDimensions);
         };
@@ -107,20 +107,20 @@ const AddQuestion = (
 
     const handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
-        let stage: number;
+        let newStage: number;
         if (target.value.length > 0) {
             if (question.length > 0) {
-                stage = 50;
-            } else { stage = 40; }
-        } else { stage = 30; }
+                newStage = 50;
+            } else { newStage = 40; }
+        } else { newStage = 30; }
 
 
         if (session.modality === 'in-person') {
             setLocation(target.value.length <= LOCATION_CHAR_LIMIT ? target.value : location);
-            setStage(stage)
+            setStage(newStage)
         } else {
             setLocation(target.value)
-            setStage(stage);
+            setStage(newStage);
         }
     };
 
