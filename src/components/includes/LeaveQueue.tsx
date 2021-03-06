@@ -1,14 +1,22 @@
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
 import AlertIcon from '../../media/AlertIcon.png';
+import CloseIcon from '../../media/CloseIcon.svg';
 
 
 type Props = {
     setShowModal: (show: boolean) => void;
     showModal: boolean;
+    removeQuestion: () => void;
 }
 
-const LeaveQueueModal = ({setShowModal, showModal}: Props) => {
+const LeaveQueueModal = ({setShowModal, showModal, removeQuestion}: Props) => {
+
+    const handleYes = () => {
+        removeQuestion();
+        setShowModal(false);
+    }
+
     return (
         <>
             {showModal &&
@@ -20,7 +28,7 @@ const LeaveQueueModal = ({setShowModal, showModal}: Props) => {
                         setShowModal(false)}
                     type="button"
                 >
-                    <Icon name="x" size="large" />
+                    <img src={CloseIcon} alt="Close modal" />
                 </button>
                 <img src={AlertIcon} className="alert-icon" />
                 <h2>Are you sure you want to remove yourself from the queue?
@@ -28,12 +36,14 @@ const LeaveQueueModal = ({setShowModal, showModal}: Props) => {
                 <button
                     className="leave-queue-option yes-queue-button" 
                     type="button"
+                    onClick={handleYes}
                 > 
                     Yes
                 </button>
                 <button
                     className="leave-queue-option cancel-queue-button" 
                     type="button"
+                    onClick={() => setShowModal(false)}
                 >
                     Cancel & Go Back
                 </button>

@@ -27,6 +27,7 @@ type Props = {
     isPast: boolean;
     readonly user: FireUser;
     setShowModal: (show: boolean) => void;
+    setRemoveQuestionId: (newId: string | undefined) => void;
 };
 
 type State = {
@@ -121,8 +122,13 @@ class SessionQuestion extends React.Component<Props, State> {
         }
     };
 
-    retractQuestion = (): void => {
+    onClickRemove = () => {
         this.props.setShowModal(true);
+        this.props.setRemoveQuestionId(this.props.question.questionId);
+    }
+
+    retractQuestion = (): void => {
+        // this.props.setShowModal(true);
         const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
         const questionUpdate: Partial<FireQuestion> = slotUpdate;
@@ -430,7 +436,7 @@ class SessionQuestion extends React.Component<Props, State> {
                     this.props.includeRemove && !this.props.isPast &&
                     <div className="Buttons">
                         <hr />
-                        <p className="Remove" onClick={this.retractQuestion}>
+                        <p className="Remove" onClick={this.onClickRemove}>
                             <Icon name="close" /> Remove
                         </p>
                     </div>

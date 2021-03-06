@@ -8,6 +8,7 @@ import NotificationModal from '../includes/NotificationModal';
 import LeaveQueue from '../includes/LeaveQueue';
 
 import { useCourse, useSession, useMyUser } from '../../firehooks';
+import { firestore } from '../../firebase';
 
 import TopBar from '../includes/TopBar';
 
@@ -44,6 +45,7 @@ const SplitView = (props: {
             : props.match.params.sessionId ? 'session' : 'calendar'
     );
     const [showModal, setShowModal] = useState(false);
+    const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
 
     const user = useMyUser();
     const course = useCourse(props.match.params.courseId);
@@ -82,11 +84,22 @@ const SplitView = (props: {
         setActiveView('calendar');
     };
 
+    const removeQuestion = () => {
+        if (removeQuestionId != undefined) {
+            const batch = firestore.batch();
+            const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
+            const questionUpdate: Partial<FireQuestion> = slotUpdate;
+            batch.update(firestore.doc(`questionSlots/${removeQuestionId}`), slotUpdate);
+            batch.update(firestore.doc(`questions/${removeQuestionId}`), questionUpdate);
+            batch.commit();
+        }    
+    }
+
     // Toggle warning
 
     return (
         <>
-            <LeaveQueue setShowModal={setShowModal} showModal={showModal}/>
+            <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion}/>
             <TopBar
                 user={user}
                 role={(user && course && user.roles[course.courseId]) || 'student'}
@@ -118,6 +131,7 @@ const SplitView = (props: {
                             backCallback={handleBackClick}
                             joinCallback={handleJoinClick}
                             setShowModal={setShowModal}
+                            setRemoveQuestionId={setRemoveQuestionId}
                         />
                     ) : (
                         <section className="StudentSessionView">

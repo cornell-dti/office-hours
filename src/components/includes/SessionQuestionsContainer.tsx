@@ -32,6 +32,7 @@ type Props = {
     course: FireCourse;
     readonly myQuestion: FireQuestion | null;
     setShowModal: (show: boolean) => void;
+    setRemoveQuestionId: (newId: string | undefined) => void;
 };
 
 type StudentMyQuestionProps = {
@@ -45,6 +46,7 @@ type StudentMyQuestionProps = {
     readonly studentQuestion: FireQuestion | null;
     readonly user: FireUser;
     setShowModal: (show: boolean) => void;
+    setRemoveQuestionId: (newId: string | undefined) => void;
 };
 
 const StudentMyQuestion = ({
@@ -57,7 +59,8 @@ const StudentMyQuestion = ({
     modality,
     studentQuestion,
     user,
-    setShowModal
+    setShowModal,
+    setRemoveQuestionId
 }: StudentMyQuestionProps) => {
     if (studentQuestion == null) {
         return <div />;
@@ -91,6 +94,7 @@ const StudentMyQuestion = ({
                     isPast={isPast}
                     myUserId={myUserId}
                     setShowModal={setShowModal}
+                    setRemoveQuestionId={setRemoveQuestionId}
                 />
             }
             
@@ -198,6 +202,7 @@ const SessionQuestionsContainer = (props: Props) => {
                     isPast={props.isPast}
                     myUserId={props.myUserId}
                     setShowModal={props.setShowModal}
+                    setRemoveQuestionId={props.setRemoveQuestionId}
                 />
             }
             {shownQuestions && shownQuestions.length > 0 && props.modality === "review" &&
@@ -233,6 +238,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         myUserId={props.myUserId}
                         user={props.user}
                         setShowModal={props.setShowModal}
+                        setRemoveQuestionId={props.setRemoveQuestionId}
                     />
                     
                 )) 
