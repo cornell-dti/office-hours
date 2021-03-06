@@ -142,10 +142,10 @@ const AddQuestion = (
                 timeEntered: firebase.firestore.Timestamp.now()
             };
 
-            const finalLocation = 'building' in session ? {} : { location };
+            const finalLocation = location.length === 0 ? {} : { location };
             const upvotedUsers = session.modality === "review" ? { upvotedUsers: [auth.currentUser.uid] } : {}
 
-            const newQuestion: Omit<FireQuestion, 'questionId'> = {
+            const newQuestion: Omit<FireOHQuestion, 'questionId'> = {
                 ...newQuestionSlot,
                 ...finalLocation,
                 ...upvotedUsers,
