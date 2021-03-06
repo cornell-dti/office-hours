@@ -31,6 +31,8 @@ type Props = {
     readonly user: FireUser;
     course: FireCourse;
     readonly myQuestion: FireQuestion | null;
+    setShowModal: (show: boolean) => void;
+    setRemoveQuestionId: (newId: string | undefined) => void;
 };
 
 type StudentMyQuestionProps = {
@@ -43,6 +45,8 @@ type StudentMyQuestionProps = {
     readonly modality: FireSessionModality;
     readonly studentQuestion: FireQuestion | null;
     readonly user: FireUser;
+    setShowModal: (show: boolean) => void;
+    setRemoveQuestionId: (newId: string | undefined) => void;
 };
 
 const StudentMyQuestion = ({
@@ -54,7 +58,9 @@ const StudentMyQuestion = ({
     myUserId,
     modality,
     studentQuestion,
-    user
+    user,
+    setShowModal,
+    setRemoveQuestionId
 }: StudentMyQuestionProps) => {
     if (studentQuestion == null) {
         return <div />;
@@ -87,6 +93,8 @@ const StudentMyQuestion = ({
                     triggerUndo={triggerUndo}
                     isPast={isPast}
                     myUserId={myUserId}
+                    setShowModal={setShowModal}
+                    setRemoveQuestionId={setRemoveQuestionId}
                 />
             }
             
@@ -193,6 +201,8 @@ const SessionQuestionsContainer = (props: Props) => {
                     triggerUndo={props.triggerUndo}
                     isPast={props.isPast}
                     myUserId={props.myUserId}
+                    setShowModal={props.setShowModal}
+                    setRemoveQuestionId={props.setRemoveQuestionId}
                 />
             }
             {shownQuestions && shownQuestions.length > 0 && props.modality === "review" &&
@@ -227,6 +237,8 @@ const SessionQuestionsContainer = (props: Props) => {
                         isPast={props.isPast}
                         myUserId={props.myUserId}
                         user={props.user}
+                        setShowModal={props.setShowModal}
+                        setRemoveQuestionId={props.setRemoveQuestionId}
                     />
                     
                 )) 
