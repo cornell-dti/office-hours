@@ -100,6 +100,7 @@ const SplitView = (props: {
             batch.commit();
         }    
     }
+    
 
     // Toggle warning
 
