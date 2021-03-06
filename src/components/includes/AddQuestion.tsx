@@ -150,10 +150,10 @@ class AddQuestion extends React.Component<Props, State> {
                 timeEntered: firebase.firestore.Timestamp.now()
             };
 
-            const location = 'building' in this.props.session ? {} : { location: this.state.location };
+            const location = this.state.location.length === 0 ? {} : { location: this.state.location };
             const upvotedUsers = this.props.session.modality === "review" ? {upvotedUsers: [auth.currentUser.uid]} : {}
 
-            const newQuestion: Omit<FireQuestion, 'questionId'> = {
+            const newQuestion: Omit<FireOHQuestion, 'questionId'> = {
                 ...newQuestionSlot,
                 ...location,
                 ...upvotedUsers,
