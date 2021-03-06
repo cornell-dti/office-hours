@@ -69,11 +69,14 @@ const AddQuestion = (
 
     const handlePrimarySelected = (tag: FireTag | undefined): void => {
         if (selectedPrimary) {
+            setLocation('');
+            setQuestion('');
             if (selectedPrimary.tagId === tag?.tagId) {
                 setStage(10);
                 setSelectedPrimary(undefined);
                 setSelectedSecondary(undefined);
             } else {
+                setStage(20);
                 setSelectedPrimary(tag);
                 setSelectedSecondary(undefined);
             }
@@ -90,10 +93,13 @@ const AddQuestion = (
 
     const handleSecondarySelected = (tag: FireTag): void => {
         if (selectedSecondary) {
+            setLocation('');
+            setQuestion('');
             if (selectedSecondary.tagId === tag.tagId) {
                 setStage(20);
                 setSelectedSecondary(undefined);
             } else {
+                !('building' in session) ? setStage(40) : setStage(30);
                 setSelectedSecondary(tag);
             }
         } else if (!('building' in session)) {
@@ -263,7 +269,7 @@ const AddQuestion = (
                                 </div>
                                 : <p className="placeHolder text">Finish selecting tags...</p>}
                         </div>
-                        <hr /></>}
+                            <hr /></>}
                         <div className="tagsMiniContainer">
                             <p className="header">
                                 {'Question '}
