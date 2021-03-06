@@ -40,7 +40,8 @@ type AbsentState = {
 };
 
 const SessionView = (
-    { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal, setRemoveQuestionId }: Props
+    { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal, 
+        setRemoveQuestionId }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
     const tags = useCourseTags(course.courseId);

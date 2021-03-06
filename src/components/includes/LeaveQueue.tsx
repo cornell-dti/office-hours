@@ -1,5 +1,4 @@
 import React from 'react';
-import { Icon } from 'semantic-ui-react';
 import AlertIcon from '../../media/AlertIcon.png';
 import CloseIcon from '../../media/CloseIcon.svg';
 
