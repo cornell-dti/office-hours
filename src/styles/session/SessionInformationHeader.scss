@@ -1,29 +1,32 @@
 .DesktopSessionInformationHeader {
-    position: relative;
-    display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 48px;
+    margin: 20px 48px;
 
     .LeftInformationHeader {
-        width: 55%;
         font-size: 13px;
         background-color: white;
         color: #484848;
         text-align: left;
         letter-spacing: 0.6px;
-        margin: 20px 0;
         border-radius: 8px;
         box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
         float: left;
+        width: 100%;
         height: 100%;
+        padding-right: 20px;
+        overflow: hidden;
+        display: inline;
 
         .Picture {
-            height: 100%;
             width: 72px;
-            margin: 32px 48px 58px;
+            margin-top: 32px;
+            margin-left: 48px;
             display: inline-block;
             vertical-align: top;
+            @media only screen and (max-width : 1230px) and (min-width: 600px) {
+                display: none;
+            }
 
             img {
                 height: 72px;
@@ -33,8 +36,17 @@
         }
 
         .Details {
+            padding-left: 40px;
             margin-top: 32px;
             display: inline-block;
+            overflow: hidden;
+            width: 70%;
+            
+            p {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
 
             .Location {
                 font-size: 20px;
@@ -62,165 +74,161 @@
 
     }
 
-    .QueueWrap {
-        float: right;
-        width: 45%;
-        height: 100%;
-        font-size: 14px;
-        margin-left: 15px;  
-        margin-top: 20px; 
-        margin-bottom: 20px;
 
-        .QueueInfo {
-            border-radius: 8px;
-            box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
-            border-radius: 8px;
-            background-color: #ffffff;
-            color: $text-grey;
-            text-align: center;
-            padding: 15px 40px;
 
-            p {
-                text-align: left;
-                color: #4D4D4D;
-                font-size: 16px;
-                @media only screen and (max-width : 1280px) {
-                    padding-left: 1%;
-                }
+    .QueueInfo {
+        border-radius: 8px;
+        box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+        border-radius: 8px;
+        background-color: #ffffff;
+        color: $text-grey;
+        text-align: center;
+        padding: 15px 40px;
 
-                img  {
-                    margin-right: 20px;
-                }
-            }
+        p {
+            text-align: left;
+            color: #4D4D4D;
+            font-size: 16px;
 
-            .red {
-                color: #f46565;
-            }
-    
-            .blue {
-                color: #5599DB;
+            img  {
+                margin-right: 20px;
             }
         }
 
-        .ZoomLink {
-            margin-top: 14px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
-            padding: 10px 40px;
+        .red {
+            color: #f46565;
+        }
 
-            .StudentZoom, .TaZoom {
-                text-align: left;
-                color: #4D4D4D;
-                font-size: 16px;
+        .blue {
+            color: #5599DB;
+        }
+    }
+
+    .ZoomLink {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 10px 40px;
+
+        .StudentZoom, .TaZoom {
+            text-align: left;
+            color: #4D4D4D;
+            font-size: 16px;
+            display: flex; 
                 display: flex; 
-                align-items: center;
-                @media only screen and (max-width : 1280px) {
-                    padding-left: 1%;
-                }
+            display: flex; 
+            align-items: center;
 
-                button {
-                    margin: 0 12px;
-                    width: 84px;
-                    height: 29px;
-                    background: #FFFFFF;
-                    border: 1px solid rgba(53, 148, 241, 0.5);
-                    box-sizing: border-box;
-                    border-radius: 5px;
-                    color: rgba(53, 148, 241, 0.5);
-                    font-size: 14px;
-                    outline: none;
-                }
-
-                .JoinButton {
-                    color: #3594F1;
-                    border: 1px solid #3594F1;
-                }
-
-                .DisabledJoinButton {
-                    pointer-events: none;
-                    cursor: not-allowed;
-                }
-
-                img  {
-                    margin-right: 20px;
-                }
+            button {
+                margin: 0 12px;
+                width: 84px;
+                height: 29px;
+                background: #FFFFFF;
+                border: 1px solid rgba(53, 148, 241, 0.5);
+                box-sizing: border-box;
+                border-radius: 5px;
+                color: rgba(53, 148, 241, 0.5);
+                font-size: 14px;
+                outline: none;
             }
 
-            .TaZoom {
+            .JoinButton {
+                color: #3594F1;
+                border: 1px solid #3594F1;
+            }
+
+            .DisabledJoinButton {
+                pointer-events: none;
+                cursor: not-allowed;
+            }
+
+            img  {
+                margin-right: 20px;
+            }
+        }
+
+        .TaZoom {
+            
+            #EditZoom {
+                margin: 0 20px;
+            }
+            
+            button {
+                width: fit-content;
+                margin-left: 0;
+                border: 1px solid #5599DB;
+                color: #5599DB;
+                padding: 0 13px;
+            }
+            input {
+                background: #F3F5FC;
+                border-top-left-radius: 8px;
+                border-bottom-left-radius: 8px;
+                outline: none;
+                border: none;
+                width: 48%;
+                height: 31px; 
+                    height: 31px; 
+                height: 31px; 
+                padding: 6px;  
+                    padding: 6px;  
+                padding: 6px;  
+                color: #474747;
+                font-size: 14px;
+            }
+
+            p {
+                width: 65%;
+                height: 31px;
+                background: #F3F5FC;
+                border-radius: 8px;
+                padding: 6px 8px;
+                font-size: 14px;
+                display: inline-block;
+                margin: 0;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
                 
-                #EditZoom {
-                    margin: 0 20px;
-                }
-                
+            }
+
+            .CloseZoom {
+                margin: 0;
+                height: 31px; 
+                    height: 31px; 
+                height: 31px; 
+                background: #F3F5FC;
+                border-top-right-radius: 8px;
+                border-bottom-right-radius: 8px;
+                display: flex;
+                justify-content: center;
                 button {
-                    width: fit-content;
-                    margin-left: 0;
-                    border: 1px solid #5599DB;
-                    color: #5599DB;
-                    padding: 0 13px;
-                }
-                input {
-                    background: #F3F5FC;
-                    border-top-left-radius: 8px;
-                    border-bottom-left-radius: 8px;
                     outline: none;
                     border: none;
-                    width: 48%;
-                    height: 31px; 
-                    padding: 6px;  
-                    color: #474747;
-                    font-size: 14px;
+                    background-color: transparent;
                 }
-
-                p {
-                    width: 65%;
-                    height: 31px;
-                    background: #F3F5FC;
-                    border-radius: 8px;
-                    padding: 6px 8px;
-                    font-size: 14px;
-                    display: inline-block;
-                    margin: 0;
-                    overflow: hidden;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
-                    
+                img {
+                    margin: 0 10px;
                 }
-
-                .CloseZoom {
-                    margin: 0;
-                    height: 31px; 
-                    background: #F3F5FC;
-                    border-top-right-radius: 8px;
-                    border-bottom-right-radius: 8px;
-                    display: flex;
-                    justify-content: center;
-                    button {
-                        outline: none;
-                        border: none;
-                        background-color: transparent;
-                    }
-                    img {
-                        margin: 0 10px;
-                    }
-                }
-
-                .SaveZoomLink {
-                    width: 66px;
-                    height: 22.79px;      
-                    margin: 5px;
-                    font-size: 14px;
-                    color: #3594F1;
-                    border: 1px solid #3594F1;
-                }
-                
             }
 
+            .SaveZoomLink {
+                width: 66px;
+                height: 22.79px;      
+                    height: 22.79px;      
+                height: 22.79px;      
+                margin: 5px;
+                font-size: 14px;
+                color: #3594F1;
+                border: 1px solid #3594F1;
+            }
+            
         }
 
     }
+
 }
+
 
 .SessionInformationHeader {
     background-color: white;
@@ -350,28 +358,3 @@
     }
 }
 
-
-@media only screen and (max-width : 1124px) {
-    .DesktopSessionInformationHeader {
-        display: flex;
-        text-align: center;
-        align-items: center;
-        flex-direction: column;
-
-
-        .LeftInformationHeader {
-            float: none;
-            width: 100%;
-        }
-
-        .QueueWrap {
-            float: none;
-            width: 100%;
-            margin: 0;
-
-            .ZoomLink {
-                margin-top: 12px;
-            }
-        }
-    }    
-}

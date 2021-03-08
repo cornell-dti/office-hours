@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
+import Grid from "@material-ui/core/Grid";
 
 import people from '../../media/people.svg';
 import clock from '../../media/clock.svg';
@@ -34,20 +35,20 @@ const formatAvgTime = (rawTimeSecs: number) => {
     const timeHours = Math.floor(timeMins / 60);
     const timeDispSecs = timeSecs - timeMins * 60;
     const timeDispMins = timeMins - timeHours * 60;
-    if (isNaN(timeSecs)){
+    if (isNaN(timeSecs)) {
         return 'No information available';
     }
-    if (timeMins === 0){
+    if (timeMins === 0) {
         return timeDispSecs + " s"
-    } if (timeHours === 0){
+    } if (timeHours === 0) {
         return timeDispMins + " mins " + timeDispSecs + " s"
-    } 
+    }
     return timeHours + " h " + timeDispMins + " mins"
-    
+
 }
 
-const SessionInformationHeader = ({ session, course, callback, user, isDesktop, isTa, virtualLocation, 
-    assignedQuestion, onUpdate, myQuestion, isOpen}: Props) => {
+const SessionInformationHeader = ({ session, course, callback, user, isDesktop, isTa, virtualLocation,
+    assignedQuestion, onUpdate, myQuestion, isOpen }: Props) => {
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined), user.userId
@@ -55,7 +56,7 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
 
 
     const avgWaitTime = formatAvgTime(session.totalWaitTime / session.assignedQuestions);
-    
+
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState('hide');
     const [zoomLink, setZoomLink] = React.useState('');
     const [showError, setShowError] = React.useState(false);
@@ -67,7 +68,7 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
         }
     }, [virtualLocation]);
 
-    const closeZoomLink = () => {        
+    const closeZoomLink = () => {
         if (typeof virtualLocation === 'string' && virtualLocation.trim() !== '') {
             setZoomLink(virtualLocation);
             setZoomLinkDisplay('saved');
@@ -90,172 +91,182 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
     if (isDesktop) {
         return (
             <header className="DesktopSessionInformationHeader" >
-                <div className="LeftInformationHeader">
-                    <div className="Picture">
-                        <img
-                            src={tas[0] ? tas[0].photoUrl : '/placeholder.png'}
-                            alt={tas[0]
-                                ? `${tas[0].firstName} ${tas[0].lastName}'s Photo URL`
-                                : 'Placeholder photo url'}
-                        />
-                    </div>
-                    <div className="Details">
-                        {'building' in session ?
-                            <p className="Location">{
-                                [session.building, session.room]
-                                    .map(s => s || '')
-                                    .join(' ')}</p> : session.modality === "virtual" ? 
-                                <p className="Location">Online</p> : 
-                                <p className="Location">Discussion</p>}
-                        <Moment date={session.startTime.seconds * 1000} interval={0} format={'h:mm A'} />
-                        <Moment date={session.endTime.seconds * 1000} interval={0} format={' - h:mm A'} />
-                        <p className="Date">
-                            <Icon name="calendar alternate outline" />
-                            <Moment date={session.startTime.seconds * 1000} interval={0} format={'dddd, MMM D'} />
-                        </p>
-                        
-                        <p className="Title">{session.title || (<>
-                            Held by
+                <Grid container spacing={3} alignItems={"stretch"}>
+                    <Grid item md={7} sm={12} >
+                        <div className="LeftInformationHeader">
+                            <div className="Picture">
+                                <img
+                                    src={tas[0] ? tas[0].photoUrl : '/placeholder.png'}
+                                    alt={tas[0]
+                                        ? `${tas[0].firstName} ${tas[0].lastName}'s Photo URL`
+                                        : 'Placeholder photo url'}
+                                />
+                            </div>
+                            <div className="Details">
+                                {'building' in session ?
+                                    <p className="Location">{
+                                        [session.building, session.room]
+                                            .map(s => s || '')
+                                            .join(' ')}</p> : session.modality === "virtual" ?
+                                        <p className="Location">Online</p> :
+                                        <p className="Location">Discussion</p>}
+                                <Moment date={session.startTime.seconds * 1000} interval={0} format={'h:mm A'} />
+                                <Moment date={session.endTime.seconds * 1000} interval={0} format={' - h:mm A'} />
+                                <p className="Date">
+                                    <Icon name="calendar alternate outline" />
+                                    <Moment date={session.startTime.seconds * 1000} interval={0} format={'dddd, MMM D'} />
+                                </p>
+
+                                <p className="Title">{session.title || (<>
+                                    Held by
                             <span className="black">
-                                {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(', ')}
-                            </span> </>)}  <br/>
-                        </p>
-                    </div>
-                </div>
-                <div className="QueueWrap">
-                    <div className="QueueInfo">
-                        <p>
-                            <img src={people} alt="number of people" />
-                            <span className="red">
-                                {numAhead + ' '}
-                            </span>
+                                        {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(', ')}
+                                    </span> </>)}  <br />
+                                </p>
+                            </div>
+                        </div>
+                    </Grid>
+
+                    <Grid item md={5} sm={12} className="Please">
+                        <Grid container spacing={2} direction={"column"}>
+                            <Grid item md={12}>
+                                <div className="QueueInfo">
+                                    <p>
+                                        <img src={people} alt="number of people" />
+                                        <span className="red">
+                                            {numAhead + ' '}
+                                        </span>
                                 ahead
-                        </p>
+                                </p>
 
-                        <p>
-                            <img src={clock} alt="time" />
-                            {avgWaitTime !== "No information available"? 
-                                <>
-                                    <span className="blue">
-                                        {avgWaitTime + ' '}
-                                    </span>
-                                    estimated wait time 
-                                </>:
-                                <span className="blue">
-                                    {avgWaitTime}
-                                </span>
-                            }
-                        </p>
-                    </div>
+                                    <p>
+                                        <img src={clock} alt="time" />
+                                        {avgWaitTime !== "No information available" ?
+                                            <>
+                                                <span className="blue">
+                                                    {avgWaitTime + ' '}
+                                                </span>
+                                    estimated wait time
+                                </> :
+                                            <span className="blue">
+                                                {avgWaitTime}
+                                            </span>
+                                        }
+                                    </p>
+                                </div>
+                            </Grid>
 
-                    
-                    <div className="ZoomLink">
+                            <Grid item md={12}>
+                                <div className="ZoomLink">
+                                    {session.modality === 'virtual' && isTa &&
+                                        <div className="TaZoom"><img src={zoom} alt="zoom" />
+                                            {zoomLinkDisplay === 'show' &&
+                                                <>
+                                                    <input
+                                                        type="text"
+                                                        id="zoomLinkInput"
+                                                        name="zoomLinkInput"
+                                                        autoComplete="off"
+                                                        value={zoomLink}
+                                                        onChange={(e) => setZoomLink(e.target.value)}
+                                                    />
+                                                    <div className="CloseZoom">
+                                                        <img
+                                                            onClick={closeZoomLink}
+                                                            src={closeZoom}
+                                                            alt="close zoom"
+                                                        />
+                                                    </div>
 
-                        {session.modality === 'virtual' && isTa &&        
-                            <div className="TaZoom"><img src={zoom} alt="zoom"/>
-                                {zoomLinkDisplay === 'show' && 
-                                    <>
-                                        <input  
-                                            type="text" 
-                                            id="zoomLinkInput" 
-                                            name="zoomLinkInput" 
-                                            autoComplete="off"
-                                            value={zoomLink} 
-                                            onChange={(e) => setZoomLink(e.target.value)}
-                                        /> 
-                                        <div className="CloseZoom">
-                                            <img 
-                                                onClick={closeZoomLink}
-                                                src={closeZoom} 
-                                                alt="close zoom"
-                                            /> 
-                                        </div>
+                                                    <button
+                                                        type="button"
+                                                        className="SaveZoomLink"
+                                                        onClick={saveZoomLink}
+                                                    >
+                                                        Save</button>
+                                                </>}
 
-                                        <button 
-                                            type="button" 
-                                            className="SaveZoomLink" 
-                                            onClick={saveZoomLink}
-                                        >
-                                            Save</button>
-                                    </>}
+                                            {zoomLinkDisplay === 'hide' &&
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setZoomLinkDisplay('show');
+                                                    }}
+                                                >
+                                                    update your virtual location</button>}
 
-                                {zoomLinkDisplay === 'hide' && 
-                                <button 
-                                    type="button" 
-                                    onClick={()=> {
-                                        setZoomLinkDisplay('show');
-                                    }}
-                                >
-                                    update your virtual location</button>}
+                                            {zoomLinkDisplay === 'saved' &&
+                                                <>
+                                                    <p>{zoomLink}</p>
+                                                    <img
+                                                        id="EditZoom"
+                                                        onClick={() => setZoomLinkDisplay('show')}
+                                                        src={editZoomLink}
+                                                        alt="edit zoom link"
+                                                    />
+                                                </>}
 
-                                {zoomLinkDisplay === 'saved' && 
-                                    <>
-                                        <p>{zoomLink}</p>
-                                        <img 
-                                            id="EditZoom"
-                                            onClick={() => setZoomLinkDisplay('show')} 
-                                            src={editZoomLink} 
-                                            alt="edit zoom link"
-                                        />
-                                    </>}
+                                        </div>}
 
-                            </div>}
+                                    {session.modality === 'virtual' && !isTa &&
+                                        <div className="StudentZoom">
+                                            <img src={zoom} alt="zoom" /> Zoom meeting link
+                                {assignedQuestion?.answererLocation ?
+                                                <a
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    href={assignedQuestion.answererLocation}
+                                                >
+                                                    <button type="button" className="JoinButton">Join</button></a> :
+                                                <button
+                                                    type="button"
+                                                    className="JoinButton"
+                                                    onClick={() => setShowError(true)}
+                                                >
+                                                    Join</button>
+                                            }
+                                        </div>}
 
-                        {session.modality === 'virtual' && !isTa && 
-                            <div className="StudentZoom">
-                                <img src={zoom} alt="zoom"/> Zoom meeting link 
-                                {assignedQuestion?.answererLocation?
-                                    <a 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        href={assignedQuestion.answererLocation}
-                                    >
-                                        <button type="button" className="JoinButton">Join</button></a> :
-                                    <button 
-                                        type="button" 
-                                        className="JoinButton"
-                                        onClick={()=> setShowError(true)}
-                                    >
-                                        Join</button>  
-                                }
-                            </div>}
-
-                        {session.modality === "review" &&
-                            <div className="StudentZoom">
-                                <img src={zoom} alt="zoom"/> Zoom meeting link 
+                                    {session.modality === "review" &&
+                                        <div className="StudentZoom">
+                                            <img src={zoom} alt="zoom" /> Zoom meeting link
                                 <a target="_blank" rel="noopener noreferrer" href={session.link}>
-                                    <button type="button" className="JoinButton">Join</button></a> 
-                            </div>}
+                                                <button type="button" className="JoinButton">Join</button></a>
+                                        </div>}
 
-                        {session.modality === "hybrid" &&
-                            <div className="StudentZoom">
-                                <img src={zoom} alt="zoom"/> 
+                                    {session.modality === "hybrid" &&
+                                        <div className="StudentZoom">
+                                            <img src={zoom} alt="zoom" />
                                 Use student provided Zoom link
                             </div>}
 
-                        {session.modality === "in-person" &&
-                            <div className="StudentZoom">
-                                <img src={zoom} alt="zoom"/> 
+                                    {session.modality === "in-person" &&
+                                        <div className="StudentZoom">
+                                            <img src={zoom} alt="zoom" />
                                 No Zoom Link Available
                             </div>}
 
-                        {showError &&
-                        <JoinErrorMessage 
-                            message={!myQuestion? 
-                                (isOpen? 'Please fill out the "Join the Queue" form first': 'This queue has closed'):
-                                assignedQuestion && !assignedQuestion.answererLocation? 
-                                    'Please wait for the TA to update their location' :
-                                    (avgWaitTime === 'No information available'? 
-                                        'Please wait for your turn to join the Zoom call':
-                                        'Please wait for your turn to join the Zoom call (estimated wait time: '
-                                        + avgWaitTime +')')}
-                            show={true} 
-                            closeModal={()=>{setShowError(false)}}
-                        />}
-                    
-                    </div>
-                </div>
-            </header>
+                                    {showError &&
+                                        <JoinErrorMessage
+                                            message={!myQuestion ?
+                                                (isOpen ? 'Please fill out the "Join the Queue" form first' : 'This queue has closed') :
+                                                assignedQuestion && !assignedQuestion.answererLocation ?
+                                                    'Please wait for the TA to update their location' :
+                                                    (avgWaitTime === 'No information available' ?
+                                                        'Please wait for your turn to join the Zoom call' :
+                                                        'Please wait for your turn to join the Zoom call (estimated wait time: '
+                                                        + avgWaitTime + ')')}
+                                            show={true}
+                                            closeModal={() => { setShowError(false) }}
+                                        />}
+                                </div>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </header >
+
+
         );
     }
     return (
