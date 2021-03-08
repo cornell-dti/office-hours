@@ -115,11 +115,10 @@ export const getTAsByHour = (yesterday : moment.Moment, questions: FireQuestion[
     // Foreach TA, split availability by hour
 
     const secPerMin = 60;
-    const tolerance = 15 * secPerMin;
+    const tolerance = 15 * secPerMin; // 15 mins merge tolerance
     const yesterdaySecs = yesterday.unix();
 
-    for (const entry of questionsByTA){
-        const taQuestions = entry[1];
+    questionsByTA.forEach((taQuestions) => {
         const taQuestionsByAssigned = [...taQuestions];
         taQuestionsByAssigned.sort( (a, b) => {
             return cmpTimestamps(a.timeAssigned, b.timeAssigned);
@@ -151,14 +150,14 @@ export const getTAsByHour = (yesterday : moment.Moment, questions: FireQuestion[
         }
         // Commit interval
         commitInterval(tasByHour, currStart, currEnd, yesterdaySecs);
-    }
+    });
 
     return tasByHour;
 }
 
 export const getHourFromTimestamp = (yesterday: moment.Moment, timestamp: FireTimestamp) : number => {
     const time = moment.unix(timestamp.seconds);
-    return Math.min(yesterday.diff(time, 'hours'), 23);
+    return Math.max(Math.min(time.diff(yesterday, 'hours'), 23), 0);
 }
 
 export const getQnsInQueueByHour = (yesterday: moment.Moment, questions: FireQuestion[]): number[] => {

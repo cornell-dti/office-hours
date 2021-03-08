@@ -1,5 +1,11 @@
 import { expect } from 'chai';
-import {cmpTimestamps, getCurrDay, getEnteredByHour} from "../../functions/src/courseStats";
+import {
+    cmpTimestamps,
+    commitInterval,
+    getCurrDay,
+    getEnteredByHour, getHourFromTimestamp, getQnsInQueueByHour,
+    getTAsByHour
+} from "../../functions/src/courseStats";
 import 'mocha';
 import moment from "moment-timezone";
 import {timeToFireTimestamp} from "./utils/utils";
@@ -110,3 +116,109 @@ describe('getEnteredByHour', function(){
     });
 });
 
+describe('commitInterval', function(){
+    it('should work correctly', function() {
+        const startTime = moment("2021-01-22T01:30-05:00").unix();
+        const endTime = moment("2021-01-22T03:45-05:00").unix();
+        const initArr = getZeroArray();
+        const expectedArr = getZeroArray();
+        expectedArr[1] = 0.5;
+        expectedArr[2] = 1.0;
+        expectedArr[3] = 0.75;
+        commitInterval(initArr, startTime, endTime, yesterday.unix());
+        expect(initArr).to.eql(expectedArr);
+    });
+    it('should ignore early out of bounds timings', function() {
+        const startTime = moment("2021-01-21T23:30-05:00").unix();
+        const endTime = moment("2021-01-22T01:30-05:00").unix();
+        const initArr = getZeroArray();
+        const expectedArr = getZeroArray();
+        expectedArr[0] = 1.0;
+        expectedArr[1] = 0.5;
+        commitInterval(initArr, startTime, endTime, yesterday.unix());
+        expect(initArr).to.eql(expectedArr);
+    });
+    it('should ignore late out of bounds timings', function(){
+        const startTime = moment("2021-01-22T23:30-05:00").unix();
+        const endTime = moment("2021-01-23T01:30-05:00").unix();
+        const initArr = getZeroArray();
+        const expectedArr = getZeroArray();
+        expectedArr[23] = 0.5;
+        commitInterval(initArr, startTime, endTime, yesterday.unix());
+        expect(initArr).to.eql(expectedArr);
+    })
+});
+
+const generateTAQuestion = (timeAssigned: string,
+                            timeAddressed: string,
+                            answererId : string = "guan",
+                            date : string = "01-22",
+                            ): FireQuestion => {
+    return getDummyFireQuestion(
+        answererId,
+        moment(`2021-${date}T${timeAssigned}-05:00`).unix(),
+        moment(`2021-${date}T${timeAssigned}-05:00`).unix(),
+        moment(`2021-${date}T${timeAddressed}-05:00`).unix()
+    );
+}
+
+describe('getTAsByHour', function(){
+    it('should work correctly with no merges', function() {
+        const tc = [
+            generateTAQuestion("13:00", "13:15"),
+            generateTAQuestion("14:00", "14:30"),
+            generateTAQuestion("15:00", "16:00")
+        ];
+        const expectedArr = getZeroArray();
+        expectedArr[13] = 0.25;
+        expectedArr[14] = 0.5;
+        expectedArr[15] = 1.0;
+        expect(getTAsByHour(yesterday, tc)).to.eql(expectedArr);
+    });
+
+    it('should work correctly with merges', function() {
+        const tc = [
+            generateTAQuestion("13:15", "13:30"),
+            generateTAQuestion("14:15", "14:25"),
+            generateTAQuestion("13:00", "13:10"),
+            generateTAQuestion("13:35", "13:45"),
+            generateTAQuestion("14:30", "14:45")
+        ];
+        const expectedArr = getZeroArray();
+        expectedArr[13] = 0.75;
+        expectedArr[14] = 0.5;
+        expect(getTAsByHour(yesterday, tc)).to.eql(expectedArr);
+    });
+
+    it('should work correctly for multiple TAs', function() {
+        const tc = [
+            generateTAQuestion("13:05", "13:15", "guan"),
+            generateTAQuestion("14:00", "14:10", "scott"),
+            generateTAQuestion("13:20", "13:30", "guan"),
+            generateTAQuestion("13:35", "13:50", "guan"),
+            generateTAQuestion("13:45", "13:55", "scott"),
+            generateTAQuestion("14:15", "14:30", "scott")
+        ];
+        const expectedArr = getZeroArray();
+        expectedArr[13] = 1.0; // 0.75 guan, 0.25 scott
+        expectedArr[14] = 0.5; // 0.5 scott
+        expect(getTAsByHour(yesterday, tc)).to.eql(expectedArr);
+    });
+});
+
+const getHourFromTimestampHelper = (time: string, expectedHour: number) => {
+    const startTime = moment(`2021-01-22T${time}-05:00`).unix();
+    const timestamp = timeToFireTimestamp(startTime);
+    expect(getHourFromTimestamp(yesterday, timestamp)).to.be.equal(expectedHour);
+}
+
+describe('getHourFromTimestamp', function(){
+    it('should work correctly', function() {
+        getHourFromTimestampHelper("05:15", 5);
+        getHourFromTimestampHelper("23:59", 23);
+        getHourFromTimestampHelper("07:23", 7);
+        getHourFromTimestampHelper("00:47", 0);
+    });
+});
+
+// TODO: Test getQnsInQueueByHour and other functions
