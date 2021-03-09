@@ -114,12 +114,16 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                                 <Moment date={session.endTime.seconds * 1000} interval={0} format={' - h:mm A'} />
                                 <p className="Date">
                                     <Icon name="calendar alternate outline" />
-                                    <Moment date={session.startTime.seconds * 1000} interval={0} format={'dddd, MMM D'} />
+                                    <Moment
+                                        date={session.startTime.seconds * 1000}
+                                        interval={0}
+                                        format={'dddd, MMM D'}
+                                    />
                                 </p>
 
                                 <p className="Title">{session.title || (<>
                                     Held by
-                            <span className="black">
+                                    <span className="black">
                                         {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(', ')}
                                     </span> </>)}  <br />
                                 </p>
@@ -137,7 +141,7 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                                             {numAhead + ' '}
                                         </span>
                                 ahead
-                                </p>
+                                    </p>
 
                                     <p>
                                         <img src={clock} alt="time" />
@@ -147,7 +151,7 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                                                     {avgWaitTime + ' '}
                                                 </span>
                                     estimated wait time
-                                </> :
+                                            </> :
                                             <span className="blue">
                                                 {avgWaitTime}
                                             </span>
@@ -211,7 +215,7 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                                     {session.modality === 'virtual' && !isTa &&
                                         <div className="StudentZoom">
                                             <img src={zoom} alt="zoom" /> Zoom meeting link
-                                {assignedQuestion?.answererLocation ?
+                                            {assignedQuestion?.answererLocation ?
                                                 <a
                                                     target="_blank"
                                                     rel="noopener noreferrer"
@@ -230,7 +234,7 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                                     {session.modality === "review" &&
                                         <div className="StudentZoom">
                                             <img src={zoom} alt="zoom" /> Zoom meeting link
-                                <a target="_blank" rel="noopener noreferrer" href={session.link}>
+                                            <a target="_blank" rel="noopener noreferrer" href={session.link}>
                                                 <button type="button" className="JoinButton">Join</button></a>
                                         </div>}
 
@@ -238,23 +242,25 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                                         <div className="StudentZoom">
                                             <img src={zoom} alt="zoom" />
                                 Use student provided Zoom link
-                            </div>}
+                                        </div>}
 
                                     {session.modality === "in-person" &&
                                         <div className="StudentZoom">
                                             <img src={zoom} alt="zoom" />
                                 No Zoom Link Available
-                            </div>}
+                                        </div>}
 
                                     {showError &&
                                         <JoinErrorMessage
                                             message={!myQuestion ?
-                                                (isOpen ? 'Please fill out the "Join the Queue" form first' : 'This queue has closed') :
+                                                (isOpen ? 'Please fill out the "Join the Queue" form first'
+                                                    : 'This queue has closed') :
                                                 assignedQuestion && !assignedQuestion.answererLocation ?
                                                     'Please wait for the TA to update their location' :
                                                     (avgWaitTime === 'No information available' ?
                                                         'Please wait for your turn to join the Zoom call' :
-                                                        'Please wait for your turn to join the Zoom call (estimated wait time: '
+                                                        'Please wait for your turn to join the Zoom call \
+                                                        (estimated wait time: '
                                                         + avgWaitTime + ')')}
                                             show={true}
                                             closeModal={() => { setShowError(false) }}

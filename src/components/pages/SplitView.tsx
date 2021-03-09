@@ -91,7 +91,7 @@ const SplitView = (props: {
     };
 
     const removeQuestion = () => {
-        if (removeQuestionId != undefined) {
+        if (removeQuestionId !== undefined) {
             const batch = firestore.batch();
             const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
             const questionUpdate: Partial<FireQuestion> = slotUpdate;
