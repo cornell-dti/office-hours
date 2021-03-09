@@ -31,21 +31,21 @@ const LeaveQueueModal = ({ setShowModal, showModal, removeQuestion }: Props) => 
                         </button>
                         <img src={AlertIcon} className="alert-icon" alt="Alert" />
                         <h2>Are you sure you want to remove yourself from the queue?
-                </h2>
+                        </h2>
                         <button
                             className="leave-queue-option yes-queue-button"
                             type="button"
                             onClick={handleYes}
                         >
                             Yes
-                </button>
+                        </button>
                         <button
                             className="leave-queue-option cancel-queue-button"
                             type="button"
                             onClick={() => setShowModal(false)}
                         >
                             Cancel & Go Back
-                </button>
+                        </button>
                     </div>
                 </div>
             }
