@@ -154,11 +154,11 @@ interface FireQuestion {
     timeEntered: FireTimestamp;
     timeAddressed?: FireTimestamp;
     timeAssigned?: FireTimestamp;
+    taComment?: string;
+    studentComment?: string;
 }
 
 interface FireOHQuestion extends FireQuestion {
-    taComment?: string;
-    studentComment?: string;
     location?: string;
     answererLocation?: string;
 }

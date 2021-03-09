@@ -22,6 +22,8 @@ type Props = {
     backCallback: Function;
     joinCallback: Function;
     user: FireUser;
+    setShowModal: (show: boolean) => void;
+    setRemoveQuestionId: (newId: string | undefined) => void;
 };
 
 type UndoState = {
@@ -38,7 +40,8 @@ type AbsentState = {
 };
 
 const SessionView = (
-    { course, session, questions, isDesktop, backCallback, joinCallback, user }: Props
+    { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal, 
+        setRemoveQuestionId }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
     const tags = useCourseTags(course.courseId);
@@ -273,6 +276,8 @@ const SessionView = (
                 haveAnotherQuestion={haveAnotherQuestion}
                 course={course}
                 myQuestion={myQuestion}
+                setShowModal={setShowModal}
+                setRemoveQuestionId={setRemoveQuestionId}
             />
             {/* {this.state.showAbsent && !this.state.dismissedAbsent && (
                 <SessionAlertModal

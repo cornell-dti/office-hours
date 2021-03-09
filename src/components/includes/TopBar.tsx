@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from 'semantic-ui-react';
 import { logOut } from '../../firebasefunctions';
-import Logo from '../../media/Logo.svg';
+import Logo from '../../media/QLogo2.svg';
 import CalendarHeader from './CalendarHeader';
 import ProfessorStudentToggle from './ProfessorStudentToggle';
 

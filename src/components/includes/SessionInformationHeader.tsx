@@ -27,13 +27,6 @@ type Props = {
     isOpen: boolean;
 };
 
-// const getPercentage = (proportion: number, total: number) => {
-//     if (total === 0){
-//         return "- %";
-//     }
-//     const pct = proportion / total * 100;
-//     return pct.toFixed(1) + "%";
-// }
 
 const formatAvgTime = (rawTimeSecs: number) => {
     const timeSecs = Math.floor(rawTimeSecs);
@@ -54,23 +47,18 @@ const formatAvgTime = (rawTimeSecs: number) => {
 }
 
 const SessionInformationHeader = ({ session, course, callback, user, isDesktop, isTa, virtualLocation, 
-    assignedQuestion, onUpdate, myQuestion, isOpen }: Props) => {
+    assignedQuestion, onUpdate, myQuestion, isOpen}: Props) => {
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined), user.userId
     );
 
-    // unused office hour stats
-    // const pctAssigned = getPercentage(session.assignedQuestions, session.totalQuestions);
-    // const pctResolved = getPercentage(session.resolvedQuestions, session.totalQuestions);
-    // const avgResolveTime = formatAvgTime(session.totalResolveTime / session.resolvedQuestions);
 
     const avgWaitTime = formatAvgTime(session.totalWaitTime / session.assignedQuestions);
     
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState('hide');
     const [zoomLink, setZoomLink] = React.useState('');
     const [showError, setShowError] = React.useState(false);
-
 
     React.useEffect(() => {
         if (typeof virtualLocation === 'string' && virtualLocation.trim() !== '') {
@@ -204,6 +192,7 @@ const SessionInformationHeader = ({ session, course, callback, user, isDesktop, 
                                     <>
                                         <p>{zoomLink}</p>
                                         <img 
+                                            id="EditZoom"
                                             onClick={() => setZoomLinkDisplay('show')} 
                                             src={editZoomLink} 
                                             alt="edit zoom link"
