@@ -19,6 +19,7 @@
         "lines-between-class-members": "off",
         "prefer-destructuring": "off",
         "prefer-template": "off",
+        "func-names": "off",
         "spaced-comment": "warn",
         "jsx-a11y/click-events-have-key-events": "warn",
         "jsx-a11y/no-noninteractive-element-interactions": "warn",

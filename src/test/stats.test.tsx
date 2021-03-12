@@ -1,3 +1,4 @@
+import moment from "moment-timezone";
 import { expect } from 'chai';
 import {
     cmpTimestamps,
@@ -7,7 +8,6 @@ import {
     getTAsByHour
 } from "../../functions/src/courseStats";
 import 'mocha';
-import moment from "moment-timezone";
 import {timeToFireTimestamp} from "./utils/utils";
 import {getDummyFireQuestion} from "./generators/dummy";
 
@@ -20,9 +20,9 @@ describe('getCurrDay', function(){
 });
 
 describe('cmpTimestamps', function(){
-    let earlierDate = timeToFireTimestamp(moment("2021-01-22T13:00-05:00").unix());
-    let laterDate = timeToFireTimestamp(moment("2021-01-23T09:00-05:00").unix());
-    let sameEarlierDate = timeToFireTimestamp(moment("2021-01-22T13:00-05:00").unix());
+    const earlierDate = timeToFireTimestamp(moment("2021-01-22T13:00-05:00").unix());
+    const laterDate = timeToFireTimestamp(moment("2021-01-23T09:00-05:00").unix());
+    const sameEarlierDate = timeToFireTimestamp(moment("2021-01-22T13:00-05:00").unix());
     it('should compare < correctly', function() {
         expect(cmpTimestamps(earlierDate, laterDate)).to.be.lessThan(0);
     });
@@ -34,7 +34,7 @@ describe('cmpTimestamps', function(){
     })
 })
 
-const getZeroArray = () : number[] => {
+const getZeroArray = (): number[] => {
     const result = [];
     for (let i = 0; i < 24; i++){
         result.push(0);
@@ -42,12 +42,12 @@ const getZeroArray = () : number[] => {
     return result;
 }
 
-const yesterday : moment.Moment = moment("2021-01-22T00:00-05:00");
+const yesterday: moment.Moment = moment("2021-01-22T00:00-05:00");
 
 const generateQuestion = (timeEntered: string,
-                          timeAssigned: string | undefined = undefined,
-                          date : string = "01-22",
-                          answererId : string = "guan"): FireQuestion => {
+    timeAssigned: string | undefined = undefined,
+    date = "01-22",
+    answererId = "guan"): FireQuestion => {
     return getDummyFireQuestion(
         answererId,
         moment(`2021-${date}T${timeEntered}-05:00`).unix(),
@@ -150,10 +150,10 @@ describe('commitInterval', function(){
 });
 
 const generateTAQuestion = (timeAssigned: string,
-                            timeAddressed: string,
-                            answererId : string = "guan",
-                            date : string = "01-22",
-                            ): FireQuestion => {
+    timeAddressed: string,
+    answererId = "guan",
+    date = "01-22",
+): FireQuestion => {
     return getDummyFireQuestion(
         answererId,
         moment(`2021-${date}T${timeAssigned}-05:00`).unix(),
@@ -222,32 +222,32 @@ describe('getHourFromTimestamp', function(){
 });
 
 describe('getQnsInQueueByHour', function(){
-   it('should work correctly', function(){
-       const tc = [
-           generateQuestion("13:00", "13:15"),
-           generateQuestion("14:15", "14:45"),
-           generateQuestion("14:30", "15:30"),
-           generateQuestion("13:45", "14:15"),
-           generateQuestion("17:00", "19:00")
-       ];
-       const expectedArr = getZeroArray();
-       expectedArr[13] = 0.5;
-       expectedArr[14] = 1.25;
-       expectedArr[15] = 0.5;
-       expectedArr[17] = 1.0;
-       expectedArr[18] = 1.0;
-       expect(getQnsInQueueByHour(yesterday, tc)).to.eql(expectedArr);
-   });
-   it('should ignore questions on other dates', function(){
-       const tc = [
-           generateQuestion("23:00", "23:59", "01-21"),
-           generateQuestion("00:00", "00:45"),
-           generateQuestion("00:00", "00:50", "01-23")
-       ]
-       const expectedArr = getZeroArray();
-       expectedArr[0] = 0.75;
-       expect(getQnsInQueueByHour(yesterday, tc)).to.eql(expectedArr);
-   });
+    it('should work correctly', function(){
+        const tc = [
+            generateQuestion("13:00", "13:15"),
+            generateQuestion("14:15", "14:45"),
+            generateQuestion("14:30", "15:30"),
+            generateQuestion("13:45", "14:15"),
+            generateQuestion("17:00", "19:00")
+        ];
+        const expectedArr = getZeroArray();
+        expectedArr[13] = 0.5;
+        expectedArr[14] = 1.25;
+        expectedArr[15] = 0.5;
+        expectedArr[17] = 1.0;
+        expectedArr[18] = 1.0;
+        expect(getQnsInQueueByHour(yesterday, tc)).to.eql(expectedArr);
+    });
+    it('should ignore questions on other dates', function(){
+        const tc = [
+            generateQuestion("23:00", "23:59", "01-21"),
+            generateQuestion("00:00", "00:45"),
+            generateQuestion("00:00", "00:50", "01-23")
+        ]
+        const expectedArr = getZeroArray();
+        expectedArr[0] = 0.75;
+        expect(getQnsInQueueByHour(yesterday, tc)).to.eql(expectedArr);
+    });
 });
 
 describe('getAvgWaitTimeOneTA', function(){

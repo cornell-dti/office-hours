@@ -9,8 +9,8 @@ export const getCurrDay = (): moment.Moment => {
     return moment.tz({hour: 0, minute: 0, second: 0, millisecond: 0}, "America/New_York");
 }
 
-export const getQuestionDuration = (question : FireQuestion): number => {
-    let startTime = question.timeEntered.seconds;
+export const getQuestionDuration = (question: FireQuestion): number => {
+    const startTime = question.timeEntered.seconds;
     let endTime = question.timeAssigned?.seconds;
     if (endTime === undefined){
         endTime = question.timeEntered.seconds;
@@ -32,7 +32,7 @@ export const cmpTimestamps = (a: FireTimestamp | undefined, b: FireTimestamp | u
     return a.seconds - b.seconds;
 }
 
-export const getEnteredByHour = (yesterday : moment.Moment, questions: FireQuestion[]): number[] => {
+export const getEnteredByHour = (yesterday: moment.Moment, questions: FireQuestion[]): number[] => {
     const enteredByHour: number[] = [];
 
     const hoursInDay = 24;
@@ -52,9 +52,6 @@ export const getEnteredByHour = (yesterday : moment.Moment, questions: FireQuest
     let hourCnt = 0;
 
     for (const question of questionsByTimeEntered){
-        if (question.timeEntered.seconds < dayStart.unix()){
-            continue;
-        }
         // currTime.unix gives seconds since unix epoch
         // Eliminate questions that start on a previous day
         if (question.timeEntered.seconds >= dayStart.unix()){
@@ -94,7 +91,7 @@ export const commitInterval = (arr: number[],
     }
 }
 
-export const getTAsByHour = (yesterday : moment.Moment, questions: FireQuestion[]): number[] => {
+export const getTAsByHour = (yesterday: moment.Moment, questions: FireQuestion[]): number[] => {
     // Split questions by TA IDs
     const questionsByTA: Map<string, FireQuestion[]> = new Map();
     for (const question of questions){
@@ -155,7 +152,7 @@ export const getTAsByHour = (yesterday : moment.Moment, questions: FireQuestion[
     return tasByHour;
 }
 
-export const getHourFromTimestamp = (yesterday: moment.Moment, timestamp: FireTimestamp) : number => {
+export const getHourFromTimestamp = (yesterday: moment.Moment, timestamp: FireTimestamp): number => {
     const time = moment.unix(timestamp.seconds);
     return Math.max(Math.min(time.diff(yesterday, 'hours'), 23), 0);
 }
@@ -180,8 +177,8 @@ export const getQnsInQueueByHour = (yesterday: moment.Moment, questions: FireQue
 }
 
 export const getAvgWaitTimeOneTA = (yesterday: moment.Moment,
-                                    questions: FireQuestion[],
-                                    numTAsByHour: number[]): number => {
+    questions: FireQuestion[],
+    numTAsByHour: number[]): number => {
     // Compute this cheaply
 
     // Must not mutate numTAsByHour
@@ -213,23 +210,21 @@ export const getAvgWaitTimeOneTA = (yesterday: moment.Moment,
         } else if (assignedPtr >= questions.length){
             // Advance entered pointer
             enteredPtr += 1;
-        } else {
+        } else if (cmpTimestamps(
+            questionsByTimeEntered[enteredPtr].timeEntered,
+            questionsByTimeAssigned[assignedPtr].timeAssigned
+        ) <= 0){
             // Advance minimum of the two pointers
-            if (cmpTimestamps(
-                    questionsByTimeEntered[enteredPtr].timeEntered,
-                    questionsByTimeAssigned[assignedPtr].timeAssigned
-                ) <= 0){
-                enteredPtr += 1;
-            } else {
-                assignedPtr += 1;
-                updateAssigned = true;
-            }
+            enteredPtr += 1;
+        } else {
+            assignedPtr += 1;
+            updateAssigned = true;
         }
         if (updateAssigned){
             qnsInQueue -= 1;
         } else {
             // Reach an entered question
-            //console.log("Entered");
+            // console.log("Entered");
             qnsInQueue += 1;
             queuePos[enteredPtr - 1] = qnsInQueue;
         }
@@ -239,10 +234,10 @@ export const getAvgWaitTimeOneTA = (yesterday: moment.Moment,
         const question = questionsByTimeEntered[i];
         const questionResponseTime = getQuestionDuration(question);
         const questionHour = getHourFromTimestamp(yesterday, question.timeEntered);
-        //console.log(`Response Time: ${questionResponseTime}, In Queue: ${queuePos[i]}, Hour: ${questionHour}`);
+        // console.log(`Response Time: ${questionResponseTime}, In Queue: ${queuePos[i]}, Hour: ${questionHour}`);
         estimateSumOneTA += questionResponseTime / queuePos[i] * Math.ceil(numTAsByHour[questionHour]);
-        //console.log(`Estimate Sum: ${estimateSumOneTA}`);
-        //console.log("Assigned");
+        // console.log(`Estimate Sum: ${estimateSumOneTA}`);
+        // console.log("Assigned");
     }
     return estimateSumOneTA / questions.length;
 }
