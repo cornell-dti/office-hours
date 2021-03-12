@@ -57,6 +57,22 @@ $open: #ffdba6;
     .TimeInfo {
         display: inline-block;
         color: $time-color;
+        width: 50px;
+    }
+
+    .Type {
+        background-color: #F46565;
+        border-radius: 8px;
+        width: 70px;
+        height: 20px;
+        margin-bottom: 10px;
+        margin-top: 7px;
+        color: white;
+    }
+
+    .Type.Office {
+        background-color: #5599DB;
+        width: 27px;
     }
 
     .Indicator {

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
 import { Icon } from 'semantic-ui-react';
 import { logOut } from '../../firebasefunctions';
+import Logo from '../../media/QLogo2.svg';
+import CalendarHeader from './CalendarHeader';
+import ProfessorStudentToggle from './ProfessorStudentToggle';
 
 const TopBar = (props: {
     courseId: string;
@@ -12,9 +14,8 @@ const TopBar = (props: {
     // Whether we're in a "professor" view or "student" view
     // controls where "switch view" goes
     context: string;
+    course?: FireCourse;
 }) => {
-    const history = useHistory();
-
     const [showMenu, setShowMenu] = useState(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : '/placeholder.png');
 
@@ -22,11 +23,29 @@ const TopBar = (props: {
     useEffect(() => setImage(userPhotoUrl), [userPhotoUrl]);
 
     return (
-        <div className="MenuBox" tabIndex={1} onBlur={() => setShowMenu(false)}>
+        <div className="MenuBox" onBlur={() => setShowMenu(false)}>
             <header className="topBar">
-                <div className="triggerArea" onClick={() => setShowMenu(!showMenu)}>
-                    <div className="userProfile">
-                        <img src={image} onError={() => setImage('/placeholder.png')} alt="User Profile" />
+                <div className="triggerArea">
+                    <img src={Logo} className="QMILogo" alt="Queue Me In Logo" />
+                    <div className="viewToggles">
+                        <CalendarHeader
+                            currentCourseCode={(props.course && props.course.code) || 'Courses'}
+                            role={props.user && props.course && (props.user.roles[props.course.courseId] || 'student')}
+                        />
+                        {props.role === 'professor' && 
+                            <ProfessorStudentToggle
+                                courseId={props.courseId}
+                                context={props.context}
+                            />
+                        }
+                    </div>
+                    <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
+                        <img 
+                            src={image} 
+                            className="profilePic" 
+                            onError={() => setImage('/placeholder.png')} 
+                            alt="User Profile" 
+                        />
                         <span className="name">
                             {props.user ? props.user.firstName + ' ' + props.user.lastName : 'Loading...'}
                         </span>
@@ -34,7 +53,7 @@ const TopBar = (props: {
                 </div>
             </header>
             {showMenu && <>
-                <ul className="desktop logoutMenu" tabIndex={1}>
+                <ul className="desktop logoutMenu">
                     <li onMouseDown={() => logOut()}>
                         <span><Icon name="sign out" /></span> Log Out
                     </li>
@@ -42,19 +61,6 @@ const TopBar = (props: {
                         <span><Icon name="edit" /></span>
                         Send Feedback
                     </li>
-                    {props.role === 'professor' &&
-                        <>
-                            {props.context === 'professor' ?
-                                <li onMouseDown={() => history.push('/course/' + props.courseId)}>
-                                    <span><Icon name="sync alternate" /></span>
-                                    Switch View
-                                </li> : <li onMouseDown={() => history.push('/professor/course/' + props.courseId)}>
-                                    <span><Icon name="sync alternate" /></span>
-                                    Switch View
-                                </li>
-                            }
-                        </>
-                    }
                 </ul>
             </>}
         </div>

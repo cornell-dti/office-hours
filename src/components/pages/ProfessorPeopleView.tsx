@@ -176,7 +176,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
     return (
         <div className="ProfessorView">
-            <ProfessorSidebar courseId={courseId} code={(course && course.code) || 'Loading'} selected={3} />
+            <ProfessorSidebar courseId={courseId} code={(course && course.code) || 'Loading'} selected={'people'} />
             <TopBar courseId={courseId} user={user} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 <div className="main">

@@ -17,7 +17,9 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
 
     const selectCourse = () => {
         if (!editable) {
-            if (!inactive) history.push('/course/' + course.courseId);
+            if (!inactive) {
+                history.push('/course/' + course.courseId);
+            }
             return;
         }
         if (role === undefined || role === 'student') {

@@ -29,6 +29,7 @@ $mobile-breakpoint: 920px;
 @import "./session/TASessionView";
 @import "./session/SessionAlertModal";
 @import "./session/SessionNotification";
+@import "./session/DiscussionQuestion";
 
 // Login
 @import "./login/LoginView";
@@ -36,12 +37,13 @@ $mobile-breakpoint: 920px;
 
 // Split
 @import "./SplitView";
-@import "./NotificationModal";
+@import "./MessageModal";
 
 // Multiple views
 @import "./TopBar";
 @import "./FeedbackPopup";
 @import "./ModalMenu";
+@import "./LeaveQueueModal";
 
 // Professor
 @import "./professor/ProfessorView";
@@ -60,6 +62,7 @@ $mobile-breakpoint: 920px;
 @import "./professor/ProfessorTagsDelete";
 @import "./professor/ProfessorPeopleView";
 @import "./professor/ProfessorRoles";
+@import "./professor/CSVUploadView";
 
 // Admin
 @import "./AdminView";

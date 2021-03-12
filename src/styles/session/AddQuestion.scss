@@ -1,24 +1,42 @@
 .QuestionView {
-  background-color: white;
-  height: 100%;
   color: $text-grey;
   position: relative;
-  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  border-radius: 8px;
 
   .AddQuestion {
+    position: relative;
+    background-color: white; 
+    border-radius: 8px;
+    filter: drop-shadow(-2px 2px 8px rgba(0, 0, 0, 0.08));
+    width: 100%;
+    top: 30px;
+    bottom: 30px;
+    padding-bottom: 5px;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-bottom: 40px;
+    
+
     hr {
       display: block;
       height: 1px;
       border: 0;
-      border-top: 1px solid #ccc;
+      border-top: 0.65px solid #E2E2E2;
       margin: 0;
       padding: 0;
       width: 100%;
+      
     }
 
     .queueHeader {
+      position: relative;
       background-color: white;
-      padding: 15px 15px 0px;
+      padding: 15px 15px 10px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
 
       span {
         display: inline-block;
@@ -27,8 +45,12 @@
       }
 
       .title {
+        position: relative;
+        font-family: Roboto;
+        font-style: normal;
         font-weight: 500;
-        padding-bottom: 8px;
+        font-size: 22px;
+        color: #484848;
       }
 
       .xbutton {
@@ -37,42 +59,16 @@
       }
     }
 
-    // .taHeader { /* Above button */
-    //   background-color: white;
-    //   padding: 10px 0;
-    //   padding-left: 3%;
-
-    //   .QuestionTaInfo {
-    //     font-size: 20px;
-    //     text-align: left;
-
-    //     img {
-    //       display: inline-block;
-    //       margin-right: 10px;
-    //       width: 35px;
-    //       height: 35px;
-    //       border-radius: 35px;
-    //       vertical-align: middle;
-    //       object-fit: cover;
-    //     }
-
-    //     .taName {
-    //       display: inline-block;
-    //       font-size: 20px;
-    //       vertical-align: middle;
-    //       margin-left: 5px;
-    //     }
-    //   }
-    // }
-
     .tagsContainer {
       background-color: white;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
 
       hr {
         display: block;
         height: 1px;
         border: 0;
-        border-top: 1px solid #ccc;
+        border-top: 0.65px solid #E2E2E2;
         margin: 0.5em 0;
         padding: 0;
         clear:both;
@@ -84,6 +80,9 @@
         width: 100%;
         display:inline-block;
         text-align: left;
+        @media only screen and (max-width: $mobile-breakpoint) {
+          padding: 10px;
+        }
 
         p {
           text-align: left;
@@ -91,7 +90,14 @@
         }
 
         .header {
-            font-size: 15px;
+          height: 17px;
+          font-family: Roboto;
+          font-style: normal;
+          font-weight: 500;
+          font-size: 14.625px;
+          line-height: 17px;
+          color: #696969;
+          margin-bottom: 14px;
 
             .characterCount {
               color: #717171;
@@ -103,14 +109,16 @@
         }
 
         .placeHolder {
-          font-size: 15px;
-          font-weight: normal;
-          color: #C3C2C2;
-          padding-top: 1px;
+          font-family: Roboto;
+          font-style: normal;
+          font-weight: 300;
+          font-size: 12.675px;
+          color: #BBBBBB;
         }
 
         .placeHolder.text {
-            height: 72px;
+            box-sizing: border-box;
+            border-radius: 3.25px;
         }
 
         .TextInput {
@@ -122,28 +130,41 @@
             border-radius: 3.3px;
             resize: none;
             margin-top: 3px;
+            border: 0.65px solid #979797;
+            box-sizing: border-box;
+            border-radius: 3.25px;
+            height: 78px;
+            outline: none;
 
             @media only screen and (min-width: $mobile-breakpoint) {
-                border: solid 0.7px #979797;
+              border: 0.65px solid #979797;
             }
 
             &::placeholder {
-                color: #545454;
-                font-weight: 300;
+              font-family: Roboto;
+              font-style: normal;
+              font-weight: 300;
+              font-size: 12.675px;
+              color: #BBBBBB;
             }
         }
+        .TextInput:disabled {
+          background-color: transparent;
+        }
+
+
         .TextInput.location {
             width: 100%;
-            height: 36px;
+            height: auto;
             @media only screen and (min-width: $mobile-breakpoint) {
               text-indent: 21px;
               width: 60%;
+              height: auto;
             }
         }
 
         .TextInput.question {
             width: 100%;
-            height: 72px;
         }
       }
     }
@@ -165,24 +186,39 @@
 
     .addButtonWrapper{
       padding-bottom: 20px;
+      border-bottom-right-radius: 8px;
+      border-bottom-left-radius: 8px;
+      display: flex;
+      justify-content: center;
+      
     }
 
     .AddButton {
-        width: 180px;
-        height: 30px;
+        padding-bottom: 20px;
+        width: 200.61px;
+        height: 29.25px;
         color: white;
         font-size: 13px;
-        border-radius: 4px;
+        border-radius: 3.25px;
         display: block;
-        margin: auto 32px 0px auto;
         padding-top: 6px;
         cursor: pointer;
-        background-color: #d8d8d8;
+        background-color: #E2E2E2;
         transition: all 0.3s ease;
     }
+
     .AddButton.active {
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-        background-color: $brand-primary;
+        background-color: #5599DB;
     }
+  }
+}
+
+.secondaryTags.false {
+  .header {
+    display: inline;
+    padding-right: 25px;
+  }
+  .placeHolder {
+    display: inline;
   }
 }

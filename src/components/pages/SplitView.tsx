@@ -4,10 +4,11 @@ import { Loader } from 'semantic-ui-react';
 
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
-import AddQuestion from '../includes/AddQuestion';
 import NotificationModal from '../includes/NotificationModal';
+import LeaveQueue from '../includes/LeaveQueue';
 
 import { useCourse, useSession, useMyUser } from '../../firehooks';
+import { firestore } from '../../firebase';
 
 import TopBar from '../includes/TopBar';
 
@@ -19,9 +20,18 @@ const useWindowWidth = () => {
 
     useEffect(() => {
         const handleResize = () => setWidth(window.innerWidth);
+        const handleCloseWindowAlert = (ev: BeforeUnloadEvent) => {
+            ev.preventDefault();
+            ev.returnValue = 'Are you sure you want to close?';
+            return ev.returnValue
+        }
+
+        window.addEventListener("beforeunload", handleCloseWindowAlert);
         window.addEventListener('resize', handleResize);
+
         return () => {
             window.removeEventListener('resize', handleResize);
+            window.removeEventListener("beforeunload", handleCloseWindowAlert);
         };
     });
 
@@ -43,6 +53,8 @@ const SplitView = (props: {
             ? 'addQuestion'
             : props.match.params.sessionId ? 'session' : 'calendar'
     );
+    const [showModal, setShowModal] = useState(false);
+    const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
 
     const user = useMyUser();
     const course = useCourse(props.match.params.courseId);
@@ -56,13 +68,11 @@ const SplitView = (props: {
                 ? 'addQuestion'
                 : props.match.params.sessionId ? 'session' : 'calendar'
         );
-        // setSessionId(props.match.params.sessionId);
     });
 
     // Keep track of active view for mobile
     const handleSessionClick = (newSessionId: string) => {
         props.history.push('/course/' + props.match.params.courseId + '/session/' + newSessionId);
-        // setSessionId(newSessionId);
         setActiveView('session');
     };
 
@@ -77,14 +87,33 @@ const SplitView = (props: {
 
     const handleBackClick = () => {
         props.history.push('/course/' + props.match.params.courseId);
-        // setSessionId(undefined);
         setActiveView('calendar');
     };
+
+    const removeQuestion = () => {
+        if (removeQuestionId !== undefined) {
+            const batch = firestore.batch();
+            const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
+            const questionUpdate: Partial<FireQuestion> = slotUpdate;
+            batch.update(firestore.doc(`questionSlots/${removeQuestionId}`), slotUpdate);
+            batch.update(firestore.doc(`questions/${removeQuestionId}`), questionUpdate);
+            batch.commit();
+        }    
+    }
+    
 
     // Toggle warning
 
     return (
         <>
+            <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion}/>
+            <TopBar
+                user={user}
+                role={(user && course && user.roles[course.courseId]) || 'student'}
+                context="student"
+                courseId={props.match.params.courseId}
+                course={course}
+            />
             {(width > MOBILE_BREAKPOINT || activeView === 'calendar') &&
                 <CalendarView
                     course={course}
@@ -108,15 +137,11 @@ const SplitView = (props: {
                             isDesktop={width > MOBILE_BREAKPOINT}
                             backCallback={handleBackClick}
                             joinCallback={handleJoinClick}
+                            setShowModal={setShowModal}
+                            setRemoveQuestionId={setRemoveQuestionId}
                         />
                     ) : (
                         <section className="StudentSessionView">
-                            <TopBar
-                                user={user}
-                                role={(user && course && user.roles[course.courseId]) || 'student'}
-                                context="student"
-                                courseId={props.match.params.courseId}
-                            />
                             <p className="welcomeMessage">
                                     Welcome{user && ', '}
                                 <span className="welcomeName">
@@ -143,15 +168,7 @@ const SplitView = (props: {
                         </section>
                     )
                 ) : <Loader active={true} content="Loading" />)}
-            {activeView === 'addQuestion' && <>
-                <div className="modal">
-                    {course && session
-                        ? <AddQuestion session={session} course={course} mobileBreakpoint={MOBILE_BREAKPOINT} />
-                        : <Loader active={true} content={'Loading'} />
-                    }
-                </div>
-                <div className="modalShade" onClick={() => setActiveView('session')} />
-            </>}
+           
         </>
     );
 };

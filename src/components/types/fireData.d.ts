@@ -137,22 +137,30 @@ interface FireUser {
     roles: { readonly [courseId: string]: PrivilegedFireCourseRole | undefined };
 }
 
+interface FirePendingUser {
+    email: string;
+    roles: Record<string, role>;
+}
+
 interface FireQuestion {
     askerId: string;
     answererId: string;
     content: string;
-    taComment?: string;
-    studentComment?: string;
-    location?: string;
-    answererLocation?: string;
     sessionId: string;
-    status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
-    timeAddressed?: FireTimestamp;
-    timeAssigned?: FireTimestamp;
-    timeEntered: FireTimestamp;
     primaryTag: string;
     secondaryTag: string;
     questionId: string;
+    status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
+    timeEntered: FireTimestamp;
+    timeAddressed?: FireTimestamp;
+    timeAssigned?: FireTimestamp;
+    taComment?: string;
+    studentComment?: string;
+}
+
+interface FireOHQuestion extends FireQuestion {
+    location?: string;
+    answererLocation?: string;
 }
 
 type FireQuestionSlot = Pick<FireQuestion, 'askerId'
@@ -173,4 +181,8 @@ interface FireStats {
     numTAsByHour: number[];
     numQuestions: number;
     avgWaitTimePerQnOneTA: number;
+}
+
+interface FireDiscussionQuestion extends FireQuestion {
+    upvotedUsers: string[];
 }

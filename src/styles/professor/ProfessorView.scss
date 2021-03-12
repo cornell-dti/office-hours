@@ -1,6 +1,48 @@
+.profTopBar {
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+}
+
 .ProfessorView {
     overflow: auto;
     padding-bottom: 50px;
+
+    .UploadPopUpMessageWrap {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+    }
+
+    .UploadPopUpMessage {
+        background-color: #E4EFFF;
+        color: #7C8FBA;
+        font-size: 15px;
+        font-weight: 500;
+        height: 60px;
+        width: 90%;
+        padding: 12px;
+        margin: 21px;
+        margin-bottom: 0;
+        width: 60%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 30px;
+
+
+        #MessageCloseIcon {
+            float: right;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        p {
+            margin: 0;
+            text-align: left;
+            justify-self: flex-start;
+        }
+    }
 
     input:not(.DateInput_input) {
         border:none;
@@ -47,6 +89,42 @@
             margin-top: 30px;
             padding: 15px 0px;
         }
+
+        .importProfs {
+            font-family: Roboto;
+            font-weight: 500;
+            font-size: 30px;
+            color: #474747;
+            margin: 1em 0em 30px 20px;
+            text-align: left;
+        }
+
+        .rightHeading {
+            margin-left: 10%;
+            margin-right: 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+    
+            .manageRoles {
+                font-family: Roboto;
+                font-weight: 500;
+                font-size: 30px;
+                margin-top: 1em;
+                margin-bottom: 0;
+                color: #474747;
+            }
+        
+            Button#importProf {
+                margin-top: 1em;
+                font-family: Roboto;
+                color: white;
+                background-color: #474747;
+                padding: 10px 15px;
+                border-radius: 5px;
+            }
+    
+        }
     }
 
     // Dropdown CSS
@@ -78,5 +156,8 @@
 
     .rightOfSidebar {
         min-width: 820px;
+        align-self: center;
+        padding-top: 50px;
     }
+
 }

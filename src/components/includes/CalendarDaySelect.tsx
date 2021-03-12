@@ -10,65 +10,66 @@ const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
 
 type Props = { callback: (time: number) => void };
-type State = { selectedWeekEpoch: number; active: number };
 
-class CalendarDaySelect extends React.Component<Props, State> {
-    state: State;
+const CalendarDaySelect: React.FC<Props> = (props) => {
+    const { callback } = props;
 
-    constructor(props: Props) {
-        super(props);
+    const [active, setActive] = React.useState(0);
+    
+    const [selectedWeekEpoch, setSelectedWeekEpoch] = React.useState(() => {
         const week = new Date(); // now
         week.setHours(0, 0, 0, 0); // beginning of today (00:00:00.000)
         const daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
         week.setTime(week.getTime() - daysSinceMonday * ONE_DAY); // beginning of this week's Monday
-        this.state = {
-            selectedWeekEpoch: week.getTime(),
-            active: daysSinceMonday   // index of currently selected date
-        };
-    }
 
-    componentDidMount() {
-        // TODO: this is a super hacky way of getting around the bug where the current day's
-        // sessions do not get displayed on load. This simulates a click on the current day
-        // to refetch the query; if you see a way to fix this sustainably, please do so!
-        this.handleDateClick(this.state.active);
-    }
+        // TODO(ewlsh) Check that using state setters within state initializers is allowed.
+        setActive(daysSinceMonday);
 
-    incrementWeek = (forward: boolean) => {
-        const newDate = this.state.selectedWeekEpoch + (forward ? ONE_WEEK : -ONE_WEEK);
-        this.setState({ selectedWeekEpoch: newDate });
-        this.props.callback(newDate + this.state.active * ONE_DAY);
-    };
+        return week.getTime();
+    });
 
-    handleDateClick = (item: number) => {
-        this.setState({ active: item });
-        this.props.callback(this.state.selectedWeekEpoch + item * ONE_DAY);
-    };
+    const incrementWeek = React.useCallback((forward: boolean) => {  
+        const newDate = selectedWeekEpoch + (forward ? ONE_WEEK : -ONE_WEEK);
+            
+        callback(newDate + active * ONE_DAY);
+            
+        setSelectedWeekEpoch(newDate);
+ 
+    }, [callback, selectedWeekEpoch, active]);
 
-    render() {
-        const now = new Date(this.state.selectedWeekEpoch);
-        return (
-            <div className="CalendarDaySelect">
-                <p className="month">{monthNames[now.getMonth()]}</p>
-                <div className="selector">
-                    <button type="button" className="LastWeek" onClick={() => this.incrementWeek(false)}>
-                        <img src={chevron} alt="Previous Week" className="flipped" />
-                    </button>
-                    {dayList.map((day, i) => <CalendarDateItem
-                        key={i}
-                        index={i}
-                        day={day}
-                        date={new Date(now.getTime() + i * ONE_DAY).getDate()}
-                        active={i === this.state.active}
-                        handleClick={this.handleDateClick}
-                    />)}
-                    <button type="button" className="NextWeek" onClick={() => this.incrementWeek(true)}>
-                        <img src={chevron} alt="Next Week" />
-                    </button>
-                </div>
+    const  handleDateClick = React.useCallback((item: number) => {
+        callback(selectedWeekEpoch + item * ONE_DAY);
+
+        setActive(item);
+    }, [callback, selectedWeekEpoch]);
+
+    const now = new Date(selectedWeekEpoch);
+    return (
+        <div className="CalendarDaySelect">
+            <p className="month">{monthNames[now.getMonth()]}</p>
+            <div className="selector">
+                <button 
+                    type="button"
+                    className="LastWeek"
+                    onClick={() => incrementWeek(false)}
+                >
+                    <img src={chevron} alt="Previous Week" className="flipped" />
+                </button>
+                {dayList.map((day, i) => <CalendarDateItem
+                    key={day}
+                    index={i}
+                    day={day}
+                    date={new Date(now.getTime() + i * ONE_DAY).getDate()}
+                    active={i === active}
+                    handleClick={handleDateClick}
+                />)}
+                <button type="button" className="NextWeek" onClick={() => incrementWeek(true)}>
+                    <img src={chevron} alt="Next Week" />
+                </button>
             </div>
-        );
-    }
+        </div>
+    );
+
 }
 
 export default CalendarDaySelect;

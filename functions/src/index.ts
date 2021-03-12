@@ -8,6 +8,108 @@ admin.initializeApp();
 
 const db = admin.firestore();
 
+/** Adds new roles to a user without them being in QMI's system
+ * Not inclusive: Still need to consider users that are
+ * already in the system. (THIS CASE IS HANDLED BY NOT INCLDUING THEM IN THE
+ * pendingUsers COLLECTIONIN THE FIRST PLACE)
+ */
+exports.onUserCreate = functions.firestore
+    .document('users/{userId}')
+    .onCreate(async (snap, context) => {
+        const userId = context.params.userId;
+
+        // get the user doc
+        const userRef = db.collection('users').doc(userId);
+        const userDoc = await userRef.get();
+        const user = userDoc.data() as FireUser;
+
+        const currentRoles = user.roles;
+        const email = user.email;
+
+        // match this email with a user in the pendingUsers collection
+        const pendingUsersSnap = await db.collection('pendingUsers').where('email', '==', email).get();
+
+        pendingUsersSnap.forEach(async doc => {
+
+            // delete the pendingUsers entry because they now exist in QMI...
+            await db.collection('pendingUsers').doc(doc.id).delete();
+
+            // get the users's roles map as a Map<string, FireCourseRole>
+            const newRoles = (doc.data() as FirePendingUser).roles;
+            const taCourseIds: string[] = [];
+            const profCourseIds: string[] = [];
+
+            for (const [courseId, role] of Object.entries(newRoles)) {
+
+                if (role === 'ta') {
+                    taCourseIds.push(courseId);
+                } else if (role === 'professor') {
+                    profCourseIds.push(courseId);
+                }
+            }
+            
+            const batch = db.batch();
+
+            // and update the newly-created user with their new roles
+            userRef.update({
+                courses: [...taCourseIds, ...profCourseIds],
+                roles: {...currentRoles, ...newRoles}
+            })
+
+            const taCourseDocs = await Promise.all(
+                taCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
+                        
+            const profCourseDocs = await Promise.all(
+                profCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
+
+            taCourseDocs.map((doc, index) => {
+                if (!doc.exists) {
+                    functions.logger.error('ta course doc does not exist.')
+                }
+
+                const courseId = taCourseIds[index];
+                
+                // const course = doc.data() as FireCourse;
+                batch.update(
+                    db.collection('courses').doc(courseId),
+                    {tas: [userId]}
+                );
+            });
+
+            profCourseDocs.map((doc, index) => {
+                if (!doc.exists) {
+                    functions.logger.error('prof course doc does not exist.')
+                }
+
+                const courseId = taCourseIds[index];
+                
+                // const course = doc.data() as FireCourse;
+                batch.update(
+                    db.collection('courses').doc(courseId),
+                    {professors: [userId]}
+                );
+            });
+
+            await batch.commit();
+        });
+
+    });
+
+// const insertTaOrProf = (course: FireCourse, userId: string, role: string) => {
+//     // eslint-disable-next-line
+//     functions.logger.log('inserting into course:');
+//     // eslint-disable-next-line
+//     functions.logger.log(course)
+//     if (role === 'ta') {
+//         course.tas = course.tas? [...course.tas, userId] : [userId];
+//     }
+//     if (role === 'professor') {
+//         course.professors = course.tas? [...course.professors, userId] : [userId];
+//     }
+
+//     return course;
+// }
+
 exports.onQuestionCreate = functions.firestore
     .document('questions/{questionId}')
     .onCreate((snap) => {
@@ -16,7 +118,7 @@ exports.onQuestionCreate = functions.firestore
         const sessionId = data!.sessionId;
 
         // Log Session ID for debugging
-        // console.log(`Session ID is: ${sessionId}`);
+        // functions.logger.log(`Session ID is: ${sessionId}`);
 
         // Increment total number of questions of relevant session
         const increment = admin.firestore.FieldValue.increment(1);
@@ -81,7 +183,7 @@ exports.onQuestionUpdate = functions.firestore
         }
 
         // Log for debugging
-        /* console.log(`Status change from ${prevStatus} to ${newStatus}. Changes:
+        /* functions.logger.log(`Status change from ${prevStatus} to ${newStatus}. Changes:
             ${numQuestionChange} ${numAssignedChange} ${numResolvedChange}
             ${waitTimeChange} ${resolveTimeChange}`); */
 

@@ -1,73 +1,225 @@
 .DesktopSessionInformationHeader {
-    width: 100%;
-    background-color: $brand-primary;
-    font-size: 13px;
-    color: white;
-    text-align: left;
-    letter-spacing: 0.6px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 48px;
 
-    .Picture {
+    .LeftInformationHeader {
+        width: 55%;
+        font-size: 13px;
+        background-color: white;
+        color: #484848;
+        text-align: left;
+        letter-spacing: 0.6px;
+        margin: 20px 0;
+        border-radius: 8px;
+        box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+        float: left;
         height: 100%;
-        width: 72px;
-        margin: 32px 48px 58px;
-        display: inline-block;
-        vertical-align: top;
 
-        img {
-            height: 72px;
+        .Picture {
+            height: 100%;
             width: 72px;
-            border-radius: 36px;
+            margin: 32px 48px 58px;
+            display: inline-block;
+            vertical-align: top;
+
+            img {
+                height: 72px;
+                width: 72px;
+                border-radius: 36px;
+            }
         }
-    }
 
-    .Details {
-        margin-top: 32px;
-        display: inline-block;
+        .Details {
+            margin-top: 32px;
+            display: inline-block;
 
-        .Location {
-            font-size: 20px;
-            font-weight: 500;
+            .Location {
+                font-size: 20px;
+                font-weight: 500;
+                margin-bottom: 5px;
+            }
+
+            p time {
+                margin-bottom: 8px;
+            }
+
+            .Date {
+                margin-bottom: 20px;
+            }
+
+            a {
+                color: white;
+                text-decoration: underline;
+            }
+        }
+
+        .Title {
             margin-bottom: 5px;
         }
 
-        p time {
-            margin-bottom: 8px;
-        }
-
-        .Date {
-            margin-bottom: 20px;
-        }
-    }
-
-    .Title {
-        margin-bottom: 5px;
     }
 
     .QueueWrap {
-        height: 100%;
-        vertical-align: top;
-        margin: 40px 48px 0 0;
         float: right;
+        width: 45%;
+        height: 100%;
         font-size: 14px;
+        margin-left: 15px;  
+        margin-top: 20px; 
+        margin-bottom: 20px;
 
         .QueueInfo {
-            width: 84px;
-            height: 84px;
+            border-radius: 8px;
+            box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
             border-radius: 8px;
             background-color: #ffffff;
             color: $text-grey;
             text-align: center;
-            padding-top: 18px;
+            padding: 15px 40px;
+
             p {
-                padding-top: 9px;
+                text-align: left;
+                color: #4D4D4D;
+                font-size: 16px;
+                @media only screen and (max-width : 1280px) {
+                    padding-left: 1%;
+                }
+
+                img  {
+                    margin-right: 20px;
+                }
+            }
+
+            .red {
+                color: #f46565;
+            }
+    
+            .blue {
+                color: #5599DB;
             }
         }
 
-        .red {
-            color: #f46565;
-        }
-    }
+        .ZoomLink {
+            margin-top: 14px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+            padding: 10px 40px;
 
+            .StudentZoom, .TaZoom {
+                text-align: left;
+                color: #4D4D4D;
+                font-size: 16px;
+                display: flex; 
+                align-items: center;
+                @media only screen and (max-width : 1280px) {
+                    padding-left: 1%;
+                }
+
+                button {
+                    margin: 0 12px;
+                    width: 84px;
+                    height: 29px;
+                    background: #FFFFFF;
+                    border: 1px solid rgba(53, 148, 241, 0.5);
+                    box-sizing: border-box;
+                    border-radius: 5px;
+                    color: rgba(53, 148, 241, 0.5);
+                    font-size: 14px;
+                    outline: none;
+                }
+
+                .JoinButton {
+                    color: #3594F1;
+                    border: 1px solid #3594F1;
+                }
+
+                .DisabledJoinButton {
+                    pointer-events: none;
+                    cursor: not-allowed;
+                }
+
+                img  {
+                    margin-right: 20px;
+                }
+            }
+
+            .TaZoom {
+                
+                #EditZoom {
+                    margin: 0 20px;
+                }
+                
+                button {
+                    width: fit-content;
+                    margin-left: 0;
+                    border: 1px solid #5599DB;
+                    color: #5599DB;
+                    padding: 0 13px;
+                }
+                input {
+                    background: #F3F5FC;
+                    border-top-left-radius: 8px;
+                    border-bottom-left-radius: 8px;
+                    outline: none;
+                    border: none;
+                    width: 48%;
+                    height: 31px; 
+                    padding: 6px;  
+                    color: #474747;
+                    font-size: 14px;
+                }
+
+                p {
+                    width: 65%;
+                    height: 31px;
+                    background: #F3F5FC;
+                    border-radius: 8px;
+                    padding: 6px 8px;
+                    font-size: 14px;
+                    display: inline-block;
+                    margin: 0;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    
+                }
+
+                .CloseZoom {
+                    margin: 0;
+                    height: 31px; 
+                    background: #F3F5FC;
+                    border-top-right-radius: 8px;
+                    border-bottom-right-radius: 8px;
+                    display: flex;
+                    justify-content: center;
+                    button {
+                        outline: none;
+                        border: none;
+                        background-color: transparent;
+                    }
+                    img {
+                        margin: 0 10px;
+                    }
+                }
+
+                .SaveZoomLink {
+                    width: 66px;
+                    height: 22.79px;      
+                    margin: 5px;
+                    font-size: 14px;
+                    color: #3594F1;
+                    border: 1px solid #3594F1;
+                }
+                
+            }
+
+        }
+
+    }
 }
 
 .SessionInformationHeader {
@@ -196,4 +348,30 @@
             }
         }
     }
+}
+
+
+@media only screen and (max-width : 1124px) {
+    .DesktopSessionInformationHeader {
+        display: flex;
+        text-align: center;
+        align-items: center;
+        flex-direction: column;
+
+
+        .LeftInformationHeader {
+            float: none;
+            width: 100%;
+        }
+
+        .QueueWrap {
+            float: none;
+            width: 100%;
+            margin: 0;
+
+            .ZoomLink {
+                margin-top: 12px;
+            }
+        }
+    }    
 }

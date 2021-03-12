@@ -11,9 +11,10 @@ import SelectedTags from './SelectedTags';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
+const MOBILE_BREAKPOINT = 920;
 
 type Props = {
-    question: FireQuestion;
+    question: FireOHQuestion;
     users: { readonly [userId: string]: FireUser };
     tags: { readonly [tagId: string]: FireTag };
     index: number;
@@ -25,6 +26,8 @@ type Props = {
     triggerUndo: Function;
     isPast: boolean;
     readonly user: FireUser;
+    setShowModal: (show: boolean) => void;
+    setRemoveQuestionId: (newId: string | undefined) => void;
 };
 
 type State = {
@@ -35,6 +38,7 @@ type State = {
     undoQuestionIdDontKnow?: number;
     undoName?: string;
     enableEditingComment: boolean;
+    width: number;
 };
 
 class SessionQuestion extends React.Component<Props, State> {
@@ -47,7 +51,8 @@ class SessionQuestion extends React.Component<Props, State> {
             location: props.question.location || '',
             isEditingLocation: false,
             showDotMenu: false,
-            enableEditingComment: false
+            enableEditingComment: false,
+            width: window.innerWidth
         };
     }
 
@@ -56,22 +61,31 @@ class SessionQuestion extends React.Component<Props, State> {
         const currentState = this.props.question;
         const user = this.props.myUserId;
         if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
-            addNotification({
-                title: 'TA comment',
-                subtitle: 'New TA comment',
-                message: `${currentState.taComment}`,
-                theme: "darkblue",
-                native: true
-            });
+            try {
+                addNotification({
+                    title: 'TA comment',
+                    subtitle: 'New TA comment',
+                    message: `${currentState.taComment}`,
+                    theme: "darkblue",
+                    native: true
+                });
+            } catch (error) {
+                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
+            }
         }
+
         if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
-            addNotification({
-                title: 'Student comment',
-                subtitle: 'New student comment',
-                message: `${currentState.studentComment}`,
-                theme: "darkblue",
-                native: true
-            });
+            try {
+                addNotification({
+                    title: 'Student comment',
+                    subtitle: 'New student comment',
+                    message: `${currentState.studentComment}`,
+                    theme: "darkblue",
+                    native: true
+                });
+            } catch (error) {
+                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
+            }
         }
     }
 
@@ -108,7 +122,13 @@ class SessionQuestion extends React.Component<Props, State> {
         }
     };
 
+    onClickRemove = () => {
+        this.props.setShowModal(true);
+        this.props.setRemoveQuestionId(this.props.question.questionId);
+    }
+
     retractQuestion = (): void => {
+        // this.props.setShowModal(true);
         const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
         const questionUpdate: Partial<FireQuestion> = slotUpdate;
@@ -124,7 +144,7 @@ class SessionQuestion extends React.Component<Props, State> {
     assignQuestion = () => {
         const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
-        const questionUpdate: Partial<FireQuestion> = {
+        const questionUpdate: Partial<FireOHQuestion> = {
             status: 'assigned',
             answererId: this.props.myUserId,
             timeAssigned: firebase.firestore.Timestamp.now(),
@@ -147,7 +167,7 @@ class SessionQuestion extends React.Component<Props, State> {
     questionDone = () => {
         const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'resolved' };
-        const questionUpdate: Partial<FireQuestion> = {
+        const questionUpdate: Partial<FireOHQuestion> = {
             status: 'resolved',
             timeAddressed: firebase.firestore.Timestamp.now()
         };
@@ -157,7 +177,7 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     questionComment = (newComment: string, isTA: boolean) => {
-        let update: Partial<FireQuestion>
+        let update: Partial<FireOHQuestion>
         if (isTA) {
             update = { taComment: newComment };
         } else {
@@ -403,18 +423,20 @@ class SessionQuestion extends React.Component<Props, State> {
                         />
                     </div>
                 }
+
                 {
-                    question.answererLocation && <>
+                    question.answererLocation && this.state.width < MOBILE_BREAKPOINT && <>
                         <Button className="JoinButton" target="_blank" href={question.answererLocation}>
                             Join Session
                         </Button>
                     </>
                 }
+
                 {
                     this.props.includeRemove && !this.props.isPast &&
                     <div className="Buttons">
                         <hr />
-                        <p className="Remove" onClick={this.retractQuestion}>
+                        <p className="Remove" onClick={this.onClickRemove}>
                             <Icon name="close" /> Remove
                         </p>
                     </div>
