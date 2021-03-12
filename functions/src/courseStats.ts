@@ -199,6 +199,11 @@ export const getAvgWaitTimeOneTA = (yesterday: moment.Moment,
     let estimateSumOneTA = 0;
     let enteredPtr = 0;
     let assignedPtr = 0;
+    // Calculate queue position for each question according to time entered
+    const queuePos = [];
+    for (let i = 0; i < questionsByTimeEntered.length; i++){
+        queuePos.push(0);
+    }
     while (enteredPtr < questions.length || assignedPtr < questions.length){
         let updateAssigned = false;
         if (enteredPtr >= questions.length){
@@ -213,7 +218,7 @@ export const getAvgWaitTimeOneTA = (yesterday: moment.Moment,
             if (cmpTimestamps(
                     questionsByTimeEntered[enteredPtr].timeEntered,
                     questionsByTimeAssigned[assignedPtr].timeAssigned
-                ) >= 0){
+                ) <= 0){
                 enteredPtr += 1;
             } else {
                 assignedPtr += 1;
@@ -221,18 +226,24 @@ export const getAvgWaitTimeOneTA = (yesterday: moment.Moment,
             }
         }
         if (updateAssigned){
-            // Reach an assigned question
-            const question = questionsByTimeAssigned[assignedPtr - 1];
-            const questionResponseTime = getQuestionDuration(question);
-            const questionHour = getHourFromTimestamp(yesterday, question.timeEntered);
-            estimateSumOneTA += questionResponseTime / qnsInQueue * numTAsByHour[questionHour];
             qnsInQueue -= 1;
         } else {
             // Reach an entered question
+            //console.log("Entered");
             qnsInQueue += 1;
+            queuePos[enteredPtr - 1] = qnsInQueue;
         }
     }
 
+    for (let i = 0; i < questionsByTimeEntered.length; i++) {
+        const question = questionsByTimeEntered[i];
+        const questionResponseTime = getQuestionDuration(question);
+        const questionHour = getHourFromTimestamp(yesterday, question.timeEntered);
+        //console.log(`Response Time: ${questionResponseTime}, In Queue: ${queuePos[i]}, Hour: ${questionHour}`);
+        estimateSumOneTA += questionResponseTime / queuePos[i] * Math.ceil(numTAsByHour[questionHour]);
+        //console.log(`Estimate Sum: ${estimateSumOneTA}`);
+        //console.log("Assigned");
+    }
     return estimateSumOneTA / questions.length;
 }
 
@@ -240,6 +251,7 @@ const deriveStats = (yesterday: moment.Moment, questions: FireQuestion[]): FireS
     const enteredByHour = getEnteredByHour(yesterday, questions);
     const tasByHour = getTAsByHour(yesterday, questions);
     return {
+        // In seconds
         avgWaitTimePerQnOneTA: getAvgWaitTimeOneTA(yesterday, questions, tasByHour),
         enteredByHour,
         numQnsInQueueByHour: getQnsInQueueByHour(yesterday, questions),

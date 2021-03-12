@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import {
     cmpTimestamps,
-    commitInterval,
+    commitInterval, getAvgWaitTimeOneTA,
     getCurrDay,
     getEnteredByHour, getHourFromTimestamp, getQnsInQueueByHour,
     getTAsByHour
@@ -221,4 +221,68 @@ describe('getHourFromTimestamp', function(){
     });
 });
 
-// TODO: Test getQnsInQueueByHour and other functions
+describe('getQnsInQueueByHour', function(){
+   it('should work correctly', function(){
+       const tc = [
+           generateQuestion("13:00", "13:15"),
+           generateQuestion("14:15", "14:45"),
+           generateQuestion("14:30", "15:30"),
+           generateQuestion("13:45", "14:15"),
+           generateQuestion("17:00", "19:00")
+       ];
+       const expectedArr = getZeroArray();
+       expectedArr[13] = 0.5;
+       expectedArr[14] = 1.25;
+       expectedArr[15] = 0.5;
+       expectedArr[17] = 1.0;
+       expectedArr[18] = 1.0;
+       expect(getQnsInQueueByHour(yesterday, tc)).to.eql(expectedArr);
+   });
+   it('should ignore questions on other dates', function(){
+       const tc = [
+           generateQuestion("23:00", "23:59", "01-21"),
+           generateQuestion("00:00", "00:45"),
+           generateQuestion("00:00", "00:50", "01-23")
+       ]
+       const expectedArr = getZeroArray();
+       expectedArr[0] = 0.75;
+       expect(getQnsInQueueByHour(yesterday, tc)).to.eql(expectedArr);
+   });
+});
+
+describe('getAvgWaitTimeOneTA', function(){
+    const oneTAArr = getZeroArray();
+    for (let i = 0; i < oneTAArr.length; i++){
+        oneTAArr[i] = 1;
+    }
+    it('should work correctly for one TA on cascading questions', function(){
+        const tc = [
+            generateQuestion("13:00", "13:10"),
+            generateQuestion("13:01", "13:21"),
+            generateQuestion("13:02", "13:32"),
+            generateQuestion("13:03", "13:43"),
+            generateQuestion("13:04", "13:54"),
+            generateQuestion("13:05", "14:05"),
+            generateQuestion("13:06", "14:16")
+        ];
+        expect(getAvgWaitTimeOneTA(yesterday, tc, oneTAArr)).to.be.equal(600.0);
+    });
+    it('should work correctly for one TA on periodic questions', function(){
+        const tc = [
+            generateQuestion("13:09", "13:54"),
+            generateQuestion("13:10", "13:20"),
+            generateQuestion("13:21", "13:31"),
+            generateQuestion("13:32", "13:42")
+        ];
+        expect(getAvgWaitTimeOneTA(yesterday, tc, oneTAArr)).to.be.equal(900.0);
+    });
+    it('should work correctly for one TA on more periodic questions', function(){
+        const tc = [
+            generateQuestion("13:00", "13:10"),
+            generateQuestion("13:11", "13:21"),
+            generateQuestion("13:22", "13:32"),
+            generateQuestion("13:33", "13:43")
+        ];
+        expect(getAvgWaitTimeOneTA(yesterday, tc, oneTAArr)).to.be.equal(600.0);
+    });
+});
