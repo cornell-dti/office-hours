@@ -6,7 +6,18 @@ import { authState } from 'rxfire/auth';
 import { collectionData } from 'rxfire/firestore';
 import { filter } from 'rxjs/operators';
 
-let firebaseConfig: object;
+type FirebaseConfig = {
+    apiKey: string,
+    authDomain: string,
+    databaseURL: string,
+    projectId: string,
+    storageBucket: string,
+    messagingSenderId: string,
+    appId?: string,
+    measurementId?: string
+};
+
+let firebaseConfig: FirebaseConfig;
 if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
     firebaseConfig = {
         apiKey: 'AIzaSyBtxSkhR9RcnKP2FSsWtdxlwX4TcIjjm8A',
@@ -42,6 +53,6 @@ const loggedIn$ = authState(auth).pipe(filter(user => !!user)); // Observable on
 
 const Timestamp = firebase.firestore.Timestamp;
 
-export { app, auth, firestore, collectionData, loggedIn$, Timestamp };
+export { app, auth, firestore, collectionData, loggedIn$, Timestamp, firebaseConfig };
 
 export default firebase;

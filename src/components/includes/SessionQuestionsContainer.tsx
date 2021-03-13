@@ -9,7 +9,7 @@ import DiscussionQuestion from "./DiscussionQuestion"
 
 // Maximum number of questions to be shown to user
 const NUM_QUESTIONS_SHOWN = 20;
-const MOBILE_BREAKPOINT = 920;
+export const MOBILE_BREAKPOINT = 920;
 
 type Props = {
     // Session used to update TAs on question answering
@@ -69,8 +69,8 @@ const StudentMyQuestion = ({
     return (
         <div className="User">
             <p className="QuestionHeader">My Question</p>
-            {modality === "review" ? 
-                <DiscussionQuestion 
+            {modality === "review" ?
+                <DiscussionQuestion
                     question={studentQuestion as FireDiscussionQuestion}
                     user={user}
                     tags={tags}
@@ -79,7 +79,7 @@ const StudentMyQuestion = ({
                     isPast={isPast}
                     myQuestion={true}
                 />
-                : 
+                :
                 <SessionQuestion
                     key={questionId}
                     question={studentQuestion}
@@ -97,7 +97,7 @@ const StudentMyQuestion = ({
                     setRemoveQuestionId={setRemoveQuestionId}
                 />
             }
-            
+
         </div>
     );
 };
@@ -122,7 +122,7 @@ const SessionQuestionsContainer = (props: Props) => {
     const myQuestion = props.myQuestion;
 
 
-    const myQuestionIndex = allQuestions.findIndex(question => question.questionId === myQuestion?.questionId)   
+    const myQuestionIndex = allQuestions.findIndex(question => question.questionId === myQuestion?.questionId)
 
     // Only display the top 10 questions on the queue
     const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN));
@@ -164,10 +164,10 @@ const SessionQuestionsContainer = (props: Props) => {
         <div className="SessionQuestionsContainer splitQuestions" >
             {!props.isTA && !myQuestion && props.isOpen
                 && !props.haveAnotherQuestion
-                ? (props.course && props.session ? 
+                ? (props.course && props.session ?
                     <AddQuestion
                         session={props.session}
-                        course={props.course} 
+                        course={props.course}
                         mobileBreakpoint={MOBILE_BREAKPOINT}
                     />
                     : <Loader active={true} content={'Loading'} />)
@@ -240,8 +240,8 @@ const SessionQuestionsContainer = (props: Props) => {
                         setShowModal={props.setShowModal}
                         setRemoveQuestionId={props.setRemoveQuestionId}
                     />
-                    
-                )) 
+
+                ))
             }
             {shownQuestions && shownQuestions.length === 0 &&
                 <>
@@ -256,7 +256,7 @@ const SessionQuestionsContainer = (props: Props) => {
                                             '' : (' on ' + moment(props.openingTime).format('MMM D'))
                                     }!
                                 </p>
-                        ) 
+                        )
                         // !props.isTA
                         //     ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
                         //     : <p className="noQuestionsWarning">No questions in the queue yet. </p>

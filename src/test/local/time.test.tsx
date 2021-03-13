@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import 'mocha';
 import moment from 'moment-timezone';
-import { getDateRange } from '../utilities/date';
+import { getDateRange } from '../../utilities/date';
 
 
 const assertDateRangeValid = (range: moment.Moment[]) => {

@@ -45,7 +45,8 @@
     "build:staging": "REACT_APP_IS_STAGING=true react-scripts build",
     "start": "react-scripts start",
     "s": "yarn start",
-    "test": "NODE_ENV=test firebase emulators:exec --only firestore \"./test.sh\"",
+    "test": "NODE_ENV=test ./test.sh",
+    "test:emulator": "NODE_ENV=test firebase emulators:exec --only firestore \"./test_emulator.sh\"",
     "lint": "eslint . --ext tsx --ext ts",
     "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
@@ -56,6 +57,7 @@
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.12.1",
     "@babel/register": "^7.12.1",
+    "@firebase/rules-unit-testing": "^1.2.4",
     "@types/jest": "^24.0.23",
     "@types/lodash.flowright": "^3.5.4",
     "@types/moment-timezone": "^0.5.9",

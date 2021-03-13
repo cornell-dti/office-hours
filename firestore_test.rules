@@ -1,0 +1,123 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	function canBeWrittenByProfessorOfCourse(courseId) {
+      return get(
+        /databases/$(database)/documents/courses/$(courseId)
+      ).data.professors.hasAny([request.auth.uid]);
+    }
+  	function getSelfUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function isAdmin() {
+      return request.auth.token.email == 'tz66@cornell.edu'
+            || request.auth.token.email == 'sw754@cornell.edu'
+            || request.auth.token.email == 'jj523@cornell.edu'
+            || request.auth.token.email == 'vt95@cornell.edu'
+            || request.auth.token.email == 'hl2334@cornell.edu'
+            || request.auth.token.email == 'rmz38@cornell.edu'
+            || request.auth.token.email == 'abn53@cornell.edu'
+            || request.auth.token.email == 'ew469@cornell.edu';
+    }
+    function userIsProfessor(u) {
+      return get(/databases/$(database)/documents/users/$(u))
+      	.data.roles.values().hasAny(['professor']);
+    }
+    function userIsTAOrProfessor(u) {
+      return get(/databases/$(database)/documents/users/$(u))
+      	.data.roles.values().hasAny(['professor', 'ta']);
+    }
+    match /pendingUsers/{u} {
+    	allow write: if userIsProfessor(request.auth.uid);
+      allow read: if userIsProfessor(request.auth.uid) || request.auth.token.email == u;
+    }
+    match /courses/{course} {
+      	allow read: if request.auth.token != null;
+        allow create, update: if isAdmin() || canBeWrittenByProfessorOfCourse(course);
+        allow delete: if false;
+    }
+    function isAllowedStatus(status) {
+        return status == "unresolved" || status == "assigned" || status == "no-show" 
+            || status == "retracted"  || status == "resolved";
+    }
+    match /questionSlots/{question} {
+      	allow read: if request.auth.token != null;
+        allow update:
+            if (resource.data.askerId == request.auth.uid || userIsTAOrProfessor(request.auth.uid))
+            && isAllowedStatus(request.resource.data.status);
+        allow create:
+          	if request.resource.data.askerId == request.auth.uid;
+    }
+    match /questions/{question} {
+      	allow read: if request.auth.uid == resource.data.askerId || userIsTAOrProfessor(request.auth.uid);
+        allow update:
+            if (resource.data.askerId == request.auth.uid || userIsTAOrProfessor(request.auth.uid))
+            && exists(/databases/$(database)/documents/sessions/$(request.resource.data.sessionId))
+            && request.resource.data.timeEntered is timestamp
+            && isAllowedStatus(request.resource.data.status);
+        allow create:
+          	if request.resource.data.askerId == request.auth.uid;
+    }
+    function tas() {
+        return request.resource.data.tas;
+    }
+    function is_user(ta) {
+        return (ta is string && exists(/databases/$(database)/documents/users/$(ta)));
+    }
+    function sessionOrSeriesCanBeWritten() {
+    		return canBeWrittenByProfessorOfCourse(request.resource.data.courseId)
+            && exists(/databases/$(database)/documents/courses/$(request.resource.data.courseId))
+            && request.resource.data.endTime is timestamp
+            && request.resource.data.startTime is timestamp
+            && request.resource.data.startTime < request.resource.data.endTime
+            && request.resource.data.tas is list
+            && (tas().size() < 1 || is_user(tas()[0]))
+            && (tas().size() < 2 || is_user(tas()[1]))
+            && (tas().size() < 3 || is_user(tas()[2]))
+            && (tas().size() < 4 || is_user(tas()[3]))
+            && (tas().size() < 5 || is_user(tas()[4]))
+            && (tas().size() < 6);
+    }
+    match /sessions/{session} {
+      	allow read: if request.auth.token != null;
+        allow create, update: if sessionOrSeriesCanBeWritten();
+        allow delete: if canBeWrittenByProfessorOfCourse(resource.data.courseId);
+        
+        match /profiles/{userId} {
+      	    allow read: if request.auth.uid == userId;
+            allow create, update: if request.auth.uid == userId;
+            allow delete: if false;
+        }
+    }
+    match /tags/{tag} {
+      	allow read: if request.auth.token != null;
+        allow create, update:
+            if canBeWrittenByProfessorOfCourse(request.resource.data.courseId)
+            && request.resource.data.active is bool
+            // && request.resource.data.courseId is string
+            // && exists(/databases/$(database)/documents/courses/$(request.resource.data.courseId))
+          	&& request.resource.data.level is number
+            // && (request.resource.data.parentTag == null || request.resource.data.parentTag is number)
+            && request.resource.data.name is string;
+        allow delete:
+        		if canBeWrittenByProfessorOfCourse(resource.data.courseId);
+    }
+    match /users/{user} {
+    		function canUpdateBySelf(u) {
+        		return u == request.auth.uid && !('roles' in request.writeFields)
+        }
+        function canUpdateByProfessor() {
+        		return getSelfUserData().roles.values().hasAny(['professor', 'ta']);
+        }
+
+        allow read: if user == request.auth.uid 
+            || isAdmin() 
+        		|| canUpdateByProfessor() 
+            || resource.data.roles.values().hasAny(['professor', 'ta']);
+        // Newly created user must has empty role map.
+    		allow create: if user == request.auth.uid && request.resource.data.roles.keys().size() == 0;
+        allow update: if canUpdateBySelf(user) || canUpdateByProfessor() || isAdmin();
+        allow delete: if false;
+    }
+  }
+}

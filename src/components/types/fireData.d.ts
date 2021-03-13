@@ -90,7 +90,7 @@ interface FireReviewSeries extends FireBaseSessionSeries, FireVirtualLocation {
     link: string;
 }
 
-type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries | 
+type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries |
 FireInPersonSessionSeries | FireReviewSeries);
 type FireSessionSeriesDefinition =
     Omit<FireVirtualSessionSeries, 'sessionSeriesId'>
@@ -163,7 +163,7 @@ interface FireOHQuestion extends FireQuestion {
     answererLocation?: string;
 }
 
-type FireQuestionSlot = Pick<FireQuestion, 'askerId' 
+type FireQuestionSlot = Pick<FireQuestion, 'askerId'
 | 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
 
 interface FireTag {
@@ -177,4 +177,25 @@ interface FireTag {
 
 interface FireDiscussionQuestion extends FireQuestion {
     upvotedUsers: string[];
+}
+
+// These classes are used to write tests, then converted to their readonly versions
+interface FireEditableUser extends FireUser {
+    courses: string[],
+    roles: { [courseId: string]: PrivilegedFireCourseRole | undefined };
+}
+
+interface FireEditableCourse extends FireCourse {
+    professors: string[];
+    tas: string[];
+}
+
+// An environment that describes the entire QMI App state
+interface FireEnvironment {
+    courses: FireCourse[],
+    pendingUsers: FirePendingUser[],
+    questions: FireQuestion[],
+    sessions: FireSession[],
+    tags: FireTag[],
+    users: FireUser[]
 }
