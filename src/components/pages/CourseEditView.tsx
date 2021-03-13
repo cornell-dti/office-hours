@@ -7,7 +7,6 @@ export default () => {
     const user = useMyUser();
     const allCourses = useAllCourses();
     const pendingUser = usePendingUser();
-    console.log(pendingUser)
     if (user === undefined || allCourses.length === 0 || pendingUser?.email) {
         // Clearly not all data have been loaded.
         return <Loader active={true} content="Loading" />;
