@@ -1,34 +1,53 @@
 .googleLogo {
     float: left;
     height: 34px;
+    margin-left: 5px;
 }
 
 .loginButtonText {
-    color: white;
+    color: gray;
     font-family: Roboto;
     width: 100%;
     display: block;
-    padding-top: 10px;
+    padding: 8px; 
     font-weight: 500;
     letter-spacing: 0.3px;
-
+    font-size: 14px;
 }
 
 .loginButton {
-    background-image: linear-gradient(-135deg, #6DB9EA 0%, #668AE9 100%);
-    border-radius: 2px;
+    background: white;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0px 4px 4px rgba(125, 125, 125, 0.25);
     padding: 1px;
-    width: 247px;
+    width: 180px;
     font-size: 16px;
     outline: none;
     transition: all 0.17s $curve-standard;
     display: block;
     margin: auto;
-    height: 40px
+    height: 45px;
+    cursor: pointer;
 }
 
 .loginButton:not(:active):not(:disabled):hover {
-    background-image: linear-gradient(-135deg, #63b3e9 0%, #6387e9 100%);
     box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.12), 0 3px 3px 0 rgba(0, 0, 0, 0.24);
     transform: translateY(-1px);
+}
+
+@media screen and (max-width: $mobile-breakpoint) {
+    .loginButton {
+        padding: 1px;
+        width: 100px;
+        height: 25px;
+    }
+    .googleLogo {
+        height: 17px;
+        margin-left: 2px;
+    }
+    .loginButtonText {
+        padding: 4px; 
+        font-size: 7px;
+    }
 }
