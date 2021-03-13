@@ -111,7 +111,9 @@ const needsPromotionObservable = loggedIn$.pipe(
 )
 
 export const needsPromotionSingletonObservable = new SingletonObservable(undefined, needsPromotionObservable);
-export const usePendingUser : () => FirePendingUser | undefined  = createUseSingletonObservableHook(needsPromotionSingletonObservable);
+
+export const usePendingUser: () => FirePendingUser | undefined  = 
+    createUseSingletonObservableHook(needsPromotionSingletonObservable);
 
 const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
     switchMap(() => collectionData<FireCourse>(firestore.collection('courses'), 'courseId'))
