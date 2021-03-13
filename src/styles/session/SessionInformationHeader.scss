@@ -3,43 +3,52 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 48px;
+    margin: 25px 48px;
+
+    .OneQueueInfo {
+        padding: 5px 0;
+    }
 
     .LeftInformationHeader {
-        width: 55%;
         font-size: 13px;
         background-color: white;
         color: #484848;
         text-align: left;
         letter-spacing: 0.6px;
-        margin: 20px 0;
         border-radius: 8px;
         box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
-        float: left;
         height: 100%;
+        width: 100%;
+        padding: 6% 10%;
 
         .Picture {
             height: 100%;
-            width: 72px;
-            margin: 32px 48px 58px;
-            display: inline-block;
-            vertical-align: top;
+            // width: 72px;
+            width: 100%;
+            padding-bottom: 16px;
+            // margin-right: 20px;
 
             img {
-                height: 72px;
-                width: 72px;
-                border-radius: 36px;
+                max-width: 60%;
+                height: 60%;
+                max-height: 72px;
+                max-width: 72px;
+                border-radius: 50%;
             }
         }
 
         .Details {
-            margin-top: 32px;
+            // margin-top: 32px;
             display: inline-block;
+
 
             .Location {
                 font-size: 20px;
                 font-weight: 500;
                 margin-bottom: 5px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
 
             p time {
@@ -58,168 +67,156 @@
 
         .Title {
             margin-bottom: 5px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
     }
 
-    .QueueWrap {
-        float: right;
-        width: 45%;
-        height: 100%;
-        font-size: 14px;
-        margin-left: 15px;  
-        margin-top: 20px; 
-        margin-bottom: 20px;
+    .ImgWrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
 
-        .QueueInfo {
-            border-radius: 8px;
-            box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
-            border-radius: 8px;
-            background-color: #ffffff;
-            color: $text-grey;
-            text-align: center;
-            padding: 15px 40px;
+    .QueueInfo {
+        border-radius: 8px;
+        box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+        border-radius: 8px;
+        background-color: #ffffff;
+        color: $text-grey;
+        text-align: center;
+        padding: 4% 10%;
+        width: 100%;
+
+        p {
+            text-align: left;
+            color: #4D4D4D;
+            font-size: 16px;
+            padding-left: 10px;
+        }
+
+        .red {
+            color: #f46565;
+        }
+    
+        .blue {
+            color: #5599DB;
+        }
+
+    }
+
+    .ZoomLink {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 3% 10%;
+        width: 100%;
+
+        .StudentZoom, .TaZoom {
+            text-align: left;
+            color: #4D4D4D;
+            font-size: 16px;
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+            
+            p {
+                padding-left: 10px;
+            }
+
+            button {
+                width: 84px;
+                height: 29px;
+                background: #FFFFFF;
+                border: 1px solid rgba(53, 148, 241, 0.5);
+                box-sizing: border-box;
+                border-radius: 5px;
+                color: rgba(53, 148, 241, 0.5);
+                font-size: 14px;
+                outline: none;
+            }
+
+            .JoinButton {
+                color: #3594F1;
+                border: 1px solid #3594F1;
+            }
+
+            .DisabledJoinButton {
+                pointer-events: none;
+                cursor: not-allowed;
+            }
+
+        }
+
+        .TaZoom {
+            
+            button {
+                width: fit-content;
+                height: fit-content;
+                border: 1px solid #5599DB;
+                color: #5599DB;
+                padding: 4px 13px;
+            }
+            input {
+                background: #F3F5FC;
+                border-top-left-radius: 8px;
+                border-bottom-left-radius: 8px;
+                outline: none;
+                border: none;
+                width: 75%;
+                height: 31px; 
+                padding: 6px;  
+                color: #474747;
+                font-size: 14px;
+            }
 
             p {
-                text-align: left;
-                color: #4D4D4D;
-                font-size: 16px;
-                @media only screen and (max-width : 1280px) {
-                    padding-left: 1%;
-                }
-
-                img  {
-                    margin-right: 20px;
-                }
+                width: 100%;
+                height: 31px;
+                background: #F3F5FC;
+                border-radius: 8px;
+                padding: 6px 8px;
+                font-size: 14px;
+                display: inline-block;
+                margin: 0;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                
             }
 
-            .red {
-                color: #f46565;
-            }
-    
-            .blue {
-                color: #5599DB;
-            }
-        }
-
-        .ZoomLink {
-            margin-top: 14px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
-            padding: 10px 40px;
-
-            .StudentZoom, .TaZoom {
-                text-align: left;
-                color: #4D4D4D;
-                font-size: 16px;
-                display: flex; 
+            .CloseZoom {
+                width: 10px;
+                padding: 0 15px 0 10px;
+                height: 31px; 
+                background: #F3F5FC;
+                border-top-right-radius: 8px;
+                border-bottom-right-radius: 8px;
+                display: flex;
+                justify-content: center;
                 align-items: center;
-                @media only screen and (max-width : 1280px) {
-                    padding-left: 1%;
-                }
-
                 button {
-                    margin: 0 12px;
-                    width: 84px;
-                    height: 29px;
-                    background: #FFFFFF;
-                    border: 1px solid rgba(53, 148, 241, 0.5);
-                    box-sizing: border-box;
-                    border-radius: 5px;
-                    color: rgba(53, 148, 241, 0.5);
-                    font-size: 14px;
-                    outline: none;
-                }
-
-                .JoinButton {
-                    color: #3594F1;
-                    border: 1px solid #3594F1;
-                }
-
-                .DisabledJoinButton {
-                    pointer-events: none;
-                    cursor: not-allowed;
-                }
-
-                img  {
-                    margin-right: 20px;
-                }
-            }
-
-            .TaZoom {
-                
-                #EditZoom {
-                    margin: 0 20px;
-                }
-                
-                button {
-                    width: fit-content;
-                    margin-left: 0;
-                    border: 1px solid #5599DB;
-                    color: #5599DB;
-                    padding: 0 13px;
-                }
-                input {
-                    background: #F3F5FC;
-                    border-top-left-radius: 8px;
-                    border-bottom-left-radius: 8px;
                     outline: none;
                     border: none;
-                    width: 48%;
-                    height: 31px; 
-                    padding: 6px;  
-                    color: #474747;
-                    font-size: 14px;
+                    background-color: transparent;
                 }
-
-                p {
-                    width: 65%;
-                    height: 31px;
-                    background: #F3F5FC;
-                    border-radius: 8px;
-                    padding: 6px 8px;
-                    font-size: 14px;
-                    display: inline-block;
-                    margin: 0;
-                    overflow: hidden;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
-                    
-                }
-
-                .CloseZoom {
-                    margin: 0;
-                    height: 31px; 
-                    background: #F3F5FC;
-                    border-top-right-radius: 8px;
-                    border-bottom-right-radius: 8px;
-                    display: flex;
-                    justify-content: center;
-                    button {
-                        outline: none;
-                        border: none;
-                        background-color: transparent;
-                    }
-                    img {
-                        margin: 0 10px;
-                    }
-                }
-
-                .SaveZoomLink {
-                    width: 66px;
-                    height: 22.79px;      
-                    margin: 5px;
-                    font-size: 14px;
-                    color: #3594F1;
-                    border: 1px solid #3594F1;
-                }
-                
             }
 
+            .SaveZoomLink {
+                width: fit-content;
+                height: fit-content;      
+                font-size: 14px;
+                color: #3594F1;
+                border: 1px solid #3594F1;
+            }
+            
         }
 
     }
+
 }
 
 .SessionInformationHeader {
