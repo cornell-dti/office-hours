@@ -1,0 +1,30 @@
+.footerWrapper {
+    width: 100vw;
+    height: 100px;
+    background: linear-gradient(225deg, #6DB8EA 30%, #668BE9 120%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footerTextWrapper {
+    display: flex;
+    .footerText {
+        color: white;
+        font-family: "Roboto";
+        font-weight: 300;
+        font-size: 14px;
+        white-space: pre-line;
+    }
+
+}
+@media screen and (max-width: $mobile-breakpoint) {
+    .footerWrapper {
+        height: 50px;
+    }
+    .footerTextWrapper {
+        .footerText {
+            font-size: 7px;
+        }
+    }
+}

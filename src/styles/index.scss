@@ -34,6 +34,7 @@ $mobile-breakpoint: 920px;
 // Login
 @import "./login/LoginView";
 @import "./login/LoginButton";
+@import "./Footer.scss";
 
 // Split
 @import "./SplitView";
