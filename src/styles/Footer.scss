@@ -9,19 +9,25 @@
 
 .footerTextWrapper {
     display: flex;
+<<<<<<< HEAD
     align-items: center;
     .footerLogo {
         width: 30px;
         height: 30px;
         margin: 0px 10px;
     }
+=======
+>>>>>>> Update Prod (#515)
     .footerText {
         color: white;
         font-family: "Roboto";
         font-weight: 300;
         font-size: 14px;
         white-space: pre-line;
+<<<<<<< HEAD
         margin: 0;
+=======
+>>>>>>> Update Prod (#515)
     }
 
 }
@@ -30,11 +36,14 @@
         height: 50px;
     }
     .footerTextWrapper {
+<<<<<<< HEAD
         .footerLogo {
             height: 15px;
             width: 15px;
             margin: 0 5px;
         }
+=======
+>>>>>>> Update Prod (#515)
         .footerText {
             font-size: 7px;
         }
