@@ -41,7 +41,10 @@ _Screenshots showing major parts of app_
 * **Scott Wang** - Technical Project Manager
 * **Vladia Trinh** - Front-end Software Developer
 <<<<<<< HEAD
+<<<<<<< HEAD
 * **Pooja Kanumalla** - Software Developer
+=======
+>>>>>>> Update Prod (#515)
 =======
 >>>>>>> Update Prod (#515)
 * **Lucy Beck** - Software Developer

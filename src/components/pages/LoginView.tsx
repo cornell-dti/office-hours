@@ -120,7 +120,11 @@ const LoginView: React.FC = () => {
                         <h2 className="finalText finalTextHead">Simplify office hours.</h2>
                         <h2 className="finalText finalTextBody">{"Manage the wave \nof students."}</h2>
                         <a
+<<<<<<< HEAD
                             className="qmiContact" 
+=======
+                            className="contactButton" 
+>>>>>>> Update Prod (#515)
                             href="mailto:queuemein@cornelldti.org?Subject=Queue%20Me%20In%20For%20Students"
                         >
                         Contact us
