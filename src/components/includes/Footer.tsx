@@ -5,7 +5,7 @@ const Footer = () => {
         <div className="footerWrapper">
             <div className="footerTextWrapper">
                 <p className="footerText">Made by</p>
-                <img className="footerLogo" />
+                <img className="footerLogo" alt="" />
                 <p className="footerText">{"Cornell Design \n& Tech Initiative"}</p>
             </div>
         </div>
