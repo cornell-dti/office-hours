@@ -1,4 +1,4 @@
-import {randArr, randCourseCode, randInt, randStr, timeToFireTimestamp} from "../utils/utils";
+import {randArr, randCourseCode, randInt, randStr, randTag, randTimeMins, timeToFireTimestamp} from "../utils/utils";
 import moment from "moment-timezone";
 
 // Note: Times are in unix seconds
@@ -8,7 +8,7 @@ export const getDummyFireQuestion = (
     timeEntered: number,
     timeAssigned: number | undefined = undefined,
     timeAddressed: number | undefined = undefined,
-    sessionId: string
+    sessionId: string,
 ): FireQuestion => {
     let status: FireQuestion["status"] = "unresolved";
     if (timeAssigned !== undefined){
@@ -34,22 +34,38 @@ export const getDummyFireQuestion = (
 
 // This is to generate actual questions that satisfy constraints
 // Precondition: primaryTag must be the parent of secondaryTag
+// Precondition: students must be non empty
 export const getDummyQuestionForSession = (
     session: FireSession,
-    asker: FireUser | undefined,
-    answerer: FireUser | undefined,
+    tas: FireUser[],
+    students: FireUser[],
     status: FireQuestion["status"],
-    primaryTag: FireTag,
-    secondaryTag: FireTag
+    tagStructure: Map<FireTag, FireTag[]>
 ): FireQuestion => {
-    const question = getDummyFireQuestion(
-        // Note: answererId defaults to "" if no answerer
-        answerer ? answerer.userId : "",
-        moment().subtract(randInt(50, 100), 'minutes').unix(),
-        moment().subtract(randInt(25, 50), 'minutes').unix(),
-        moment().subtract(randInt(0, 25), 'minutes').unix(),
-        session.sessionId
-    );
+    const asker = randArr(students).userId;
+    const answerer = tas === [] ? "" : randArr(tas).userId;
+    const randTags = randTag(tagStructure);
+    // Get a pair of random tags
+    const primaryTag = randTags[0];
+    const secondaryTag = randTags[1];
+    const timeEntered = randTimeMins(session.startTime, session.endTime);
+    const timeEnteredMoment = moment.unix(timeEntered.seconds);
+    const timeAssignedMoment = moment(timeEnteredMoment).add(randInt(0, 60), 'minutes');
+    const timeAddressedMoment = moment(timeAssignedMoment).add(randInt(10, 40), 'minutes');
+    const question: FireQuestion = {
+        answererId: answerer,
+        askerId: asker,
+        content: randStr(100) + "?",
+        primaryTag: primaryTag.tagId,
+        questionId: randStr(15),
+        secondaryTag: secondaryTag.tagId,
+        sessionId: session.sessionId,
+        status: randArr<FireQuestion["status"]>(['assigned', 'resolved', 'retracted', 'unresolved', 'no-show']),
+        timeAddressed: timeToFireTimestamp(timeAddressedMoment.unix()),
+        timeAssigned: timeToFireTimestamp(timeAssignedMoment.unix()),
+        timeEntered: timeEntered
+    };
+
     // Construct state based on status
     if (status === "unresolved"){
         question.timeAssigned = undefined;
@@ -70,8 +86,10 @@ export const getDummyQuestionForSession = (
 export const getDummyCourse = (
     startDate : FireTimestamp = timeToFireTimestamp(moment().subtract(3, 'months').unix()),
     endDate: FireTimestamp = timeToFireTimestamp(moment().add(3, 'months').unix()),
-    name : string = "Functional Programming"
-) : FireCourse => {
+    name : string = randArr(["Functional Programming", "Object Oriented Programming", "Algorithms",
+        "Intro to Python", "Intro to Matlab", "Machine Learning", "Computer Vision", "Compilers",
+        "Software Engineering", "Intro to App Development", "Intro to Web Development"])
+) : FireEditableCourse => {
     return {
         // Not sure what this does
         charLimit: 140,
@@ -125,6 +143,18 @@ export const getDummyTags = (
     return result;
 }
 
+export const getDummyEditableUser = () : FireEditableUser => {
+    return {
+        courses: [],
+        email: `${randStr(15)}@gmail.com`,
+        firstName: randStr(10),
+        lastName: randStr(randInt(2, 5)),
+        photoUrl: `https://placekitten.com/${randInt(100, 200)}/${randInt(100, 200)}`,
+        roles: {},
+        userId: randStr(15)
+    }
+}
+
 export const getDummyUser = (
     firstName: string,
     lastName: string,
@@ -165,4 +195,31 @@ export const addUsersToCourse = (
             user.courses.push(course.courseId);
         }
     }
+}
+
+export const getDummyPendingUserByCourses = (
+    email: string,
+    taCourses: FireCourse[],
+    profCourses: FireCourse[]
+) : FirePendingUser => {
+    const roles: Record<string, PrivilegedFireCourseRole> = {};
+    for (const taCourse of taCourses){
+        roles[taCourse.courseId] = "ta";
+    }
+    for (const profCourse of profCourses){
+        roles[profCourse.courseId] = "professor";
+    }
+    return {
+        email,
+        roles
+    }
+}
+
+// Precondition: layer one and layer two min must be at least 1
+export const getDummyTagStructure = (
+    layerOne: number,
+    layerTwoMin: number,
+    layerTwoMax: number
+): Map<FireTag, FireTag[]> => {
+    // TODO: Implement
 }

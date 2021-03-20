@@ -33,6 +33,29 @@ export const randArr = <T>(arr : T[]): T => {
     return arr[randInt(0, arr.length)];
 }
 
+export const randTimeMins = (start: FireTimestamp, end: FireTimestamp): FireTimestamp => {
+    const secsPerMin = 60;
+    const durationMins = Math.floor((end.seconds - start.seconds) / secsPerMin);
+    const selectedTime = start.seconds + randInt(0, durationMins) * secsPerMin;
+    return {
+        nanoseconds: 0,
+        seconds: selectedTime,
+        toDate(): Date {
+            return new Date(selectedTime * 1000);
+        }
+    }
+}
+
+// Precondition: tagStructure not empty, tagStructure[k] not empty forall k
+// Returns: array of 2 tags containing (primary tag, secondary tag)
+export const randTag = (tagStructure: Map<FireTag, FireTag[]>): FireTag[] => {
+    const primaryTags = Array.from(tagStructure.keys());
+    const selPrimaryTag = primaryTags[randInt(0, primaryTags.length)];
+    const secondaryTags = Array.from(tagStructure.keys());
+    const selSecondaryTag = secondaryTags[randInt(0, secondaryTags.length)];
+    return [selPrimaryTag, selSecondaryTag];
+}
+
 export const timeToFireTimestamp = (timeSecs: number): FireTimestamp => {
     return {
         nanoseconds: 0,

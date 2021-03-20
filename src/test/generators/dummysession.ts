@@ -3,12 +3,11 @@ import moment from "moment-timezone";
 
 // Use these functions to get a dummy session for tests
 
-const getDummyFireBaseSession = (
+const getDummyBaseSession = (
     courseId: string = randStr(15),
+    sessionSeriesId: string = randStr(15),
     startTime: FireTimestamp = timeToFireTimestamp(moment().subtract(1, 'hour').unix()),
     endTime: FireTimestamp = timeToFireTimestamp(moment().add(1, 'hour').unix()),
-    sessionId: string = randStr(15),
-    sessionSeriesId: string = randStr(15)
 ) : FireBaseSession => {
     return {
         assignedQuestions: 0,
@@ -16,10 +15,10 @@ const getDummyFireBaseSession = (
         endTime,
         modality: 'hybrid',
         resolvedQuestions: 0,
-        sessionId,
+        sessionId: randStr(15),
         sessionSeriesId,
         startTime,
-        tas: ["Guan"],
+        tas: [],
         title: randStr(15),
         totalQuestions: 0,
         totalResolveTime: 0,
@@ -27,19 +26,17 @@ const getDummyFireBaseSession = (
     }
 }
 
-export const getDummyFireVirtualSession = (
+export const getDummyVirtualSession = (
     courseId: string = randStr(15),
+    sessionSeriesId: string = randStr(15),
     startTime: FireTimestamp = timeToFireTimestamp(moment().subtract(1, 'hour').unix()),
     endTime: FireTimestamp = timeToFireTimestamp(moment().add(1, 'hour').unix()),
-    sessionId: string = randStr(15),
-    sessionSeriesId: string = randStr(15),
 ): FireVirtualSession => {
-    const underlyingSession = getDummyFireBaseSession(
+    const underlyingSession = getDummyBaseSession(
         courseId,
+        sessionSeriesId,
         startTime,
         endTime,
-        sessionId,
-        sessionSeriesId
     );
     return {
         ...underlyingSession,
@@ -47,19 +44,17 @@ export const getDummyFireVirtualSession = (
     };
 }
 
-export const getDummyFireInPersonSession = (
+export const getDummyInPersonSession = (
     courseId: string = randStr(15),
+    sessionSeriesId: string = randStr(15),
     startTime: FireTimestamp = timeToFireTimestamp(moment().subtract(1, 'hour').unix()),
     endTime: FireTimestamp = timeToFireTimestamp(moment().add(1, 'hour').unix()),
-    sessionId: string = randStr(15),
-    sessionSeriesId: string = randStr(15),
 ): FireInPersonSession => {
-    const underlyingSession = getDummyFireBaseSession(
+    const underlyingSession = getDummyBaseSession(
         courseId,
+        sessionSeriesId,
         startTime,
-        endTime,
-        sessionId,
-        sessionSeriesId
+        endTime
     );
     return {
         ...underlyingSession,
@@ -69,19 +64,17 @@ export const getDummyFireInPersonSession = (
     };
 }
 
-export const getDummyFireHybridSession = (
+export const getDummyHybridSession = (
     courseId: string = randStr(15),
+    sessionSeriesId: string = randStr(15),
     startTime: FireTimestamp = timeToFireTimestamp(moment().subtract(1, 'hour').unix()),
     endTime: FireTimestamp = timeToFireTimestamp(moment().add(1, 'hour').unix()),
-    sessionId: string = randStr(15),
-    sessionSeriesId: string = randStr(15),
 ): FireHybridSession => {
-    const underlyingSession = getDummyFireInPersonSession(
+    const underlyingSession = getDummyInPersonSession(
         courseId,
-        startTime,
-        endTime,
-        sessionId,
         sessionSeriesId,
+        startTime,
+        endTime
     );
     return {
         ...underlyingSession,
@@ -89,19 +82,17 @@ export const getDummyFireHybridSession = (
     };
 }
 
-export const getDummyFireReviewSession = (
+export const getDummyReviewSession = (
     courseId: string = randStr(15),
+    sessionSeriesId: string = randStr(15),
     startTime: FireTimestamp = timeToFireTimestamp(moment().subtract(1, 'hour').unix()),
     endTime: FireTimestamp = timeToFireTimestamp(moment().add(1, 'hour').unix()),
-    sessionId: string = randStr(15),
-    sessionSeriesId: string = randStr(15),
 ): FireReviewSession => {
-    const underlyingSession = getDummyFireInPersonSession(
+    const underlyingSession = getDummyInPersonSession(
         courseId,
-        startTime,
-        endTime,
-        sessionId,
         sessionSeriesId,
+        startTime,
+        endTime
     );
     return {
         ...underlyingSession,
@@ -110,20 +101,55 @@ export const getDummyFireReviewSession = (
     };
 }
 
-export const getDummyFireSession = (
+const getSession = (
+    type: number,
+    courseId: string,
+    sessionSeriesId: string,
+    startTime: FireTimestamp,
+    endTime: FireTimestamp
+) : FireSession => {
+    if (type === 0){
+        return getDummyVirtualSession(courseId, sessionSeriesId, startTime, endTime);
+    } else if (type === 1){
+        return getDummyInPersonSession(courseId, sessionSeriesId, startTime, endTime);
+    } else if (type === 2){
+        return getDummyHybridSession(courseId, sessionSeriesId, startTime, endTime);
+    }
+    return getDummyReviewSession(courseId, sessionSeriesId, startTime, endTime);
+}
+
+export const getDummySession = (
     courseId: string = randStr(15),
-    startTime: FireTimestamp = timeToFireTimestamp(moment().subtract(1, 'hour').unix()),
-    endTime: FireTimestamp = timeToFireTimestamp(moment().add(1, 'hour').unix()),
-    sessionId: string = randStr(15),
     sessionSeriesId: string = randStr(15),
+    startTime: FireTimestamp = timeToFireTimestamp(moment().subtract(1, 'hour').unix()),
+    endTime: FireTimestamp = timeToFireTimestamp(moment().add(1, 'hour').unix())
 ) : FireSession => {
     const rand = randInt(0, 4);
-    if (rand === 0){
-        return getDummyFireVirtualSession(courseId, startTime, endTime, sessionId, sessionSeriesId);
-    } else if (rand === 1){
-        return getDummyFireInPersonSession(courseId, startTime, endTime, sessionId, sessionSeriesId);
-    } else if (rand === 2){
-        return getDummyFireHybridSession(courseId, startTime, endTime, sessionId, sessionSeriesId);
+    return getSession(rand, courseId, sessionSeriesId, startTime, endTime);
+}
+
+export const getDummySessionSeries = (
+    courseId: string = randStr(15),
+    numSessions: number = 5,
+    startTime: moment.Moment = moment().subtract(randInt(0, 720), 'minutes'),
+    endTime: moment.Moment = moment(startTime).add(randInt(60, 300), 'minutes')
+) : FireSession[] => {
+    // Standardize to a particular type
+    const sessionSeriesId = randStr(15);
+    const rand = randInt(0, 4);
+    const result: FireSession[] = [];
+    let currStartTime = moment(startTime);
+    let currEndTime = moment(endTime);
+    for (let i = 0; i < numSessions; i++){
+        currStartTime = currStartTime.add(1, 'week');
+        currEndTime = currEndTime.add(1, 'week');
+        result.push(getSession(
+            rand,
+            courseId,
+            sessionSeriesId,
+            timeToFireTimestamp(currStartTime.unix()),
+            timeToFireTimestamp(currEndTime.unix())
+        ));
     }
-    return getDummyFireReviewSession(courseId, startTime, endTime, sessionId, sessionSeriesId);
+    return result;
 }

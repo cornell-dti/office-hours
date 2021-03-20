@@ -139,7 +139,7 @@ interface FireUser {
 
 interface FirePendingUser {
     email: string;
-    roles: Record<string, role>;
+    roles: Record<string, PrivilegedFireCourseRole>;
 }
 
 interface FireQuestion {

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import 'mocha';
 import {getDummyCourse} from "../../generators/dummy";
-import {getDummyFireSession} from "../../generators/dummysession";
+import {getDummySession} from "../../generators/dummysession";
 import {shallow} from "enzyme";
 import AddQuestion from "../../../components/includes/AddQuestion";
 import React from "react";
@@ -10,7 +10,7 @@ import {MOBILE_BREAKPOINT} from "../../../components/includes/SessionQuestionsCo
 describe('AddQuestion', function(){
     // Perform setup
     const course = getDummyCourse();
-    const session : FireSession = getDummyFireSession(course.courseId);
+    const session : FireSession = getDummySession(course.courseId);
     it('should display correctly', function(){
         const wrapper = shallow(<AddQuestion
             session={session}
