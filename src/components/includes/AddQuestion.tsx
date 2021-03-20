@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-
 import { Redirect } from 'react-router';
 import { Icon } from 'semantic-ui-react';
 import moment from 'moment';
-import firebase from 'firebase/app';
 
 import SelectedTags from './SelectedTags';
 import SessionAlertModal from './SessionAlertModal';
 
 import { collectionData, firestore, auth } from '../../firebase';
+import { addQuestion } from '../../firebasefunctions';
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
@@ -136,36 +135,17 @@ const AddQuestion = (
         setStage(target.value.length > 0 ? 50 : 40);
     };
 
-    const addQuestion = () => {
-        if (auth.currentUser != null && selectedPrimary != null &&
-            selectedSecondary != null) {
-            const batch = firestore.batch();
-            const questionId = firestore.collection('questions').doc().id;
-            const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
-                askerId: auth.currentUser.uid,
-                sessionId: session.sessionId,
-                status: 'unresolved',
-                timeEntered: firebase.firestore.Timestamp.now()
-            };
+    const addNewQuestion = () => {
+        const allowRedirect = addQuestion(
+            auth.currentUser,
+            session,
+            firestore,
+            location,
+            selectedPrimary,
+            selectedSecondary,
+            question)
 
-            const finalLocation = location.length === 0 ? {} : { location };
-            const upvotedUsers = session.modality === "review" ? { upvotedUsers: [auth.currentUser.uid] } : {}
-
-            const newQuestion: Omit<FireOHQuestion, 'questionId'> = {
-                ...newQuestionSlot,
-                ...finalLocation,
-                ...upvotedUsers,
-                answererId: '',
-                content: question,
-                primaryTag: selectedPrimary.tagId,
-                secondaryTag: selectedSecondary.tagId
-            };
-            batch.set(firestore.collection('questionSlots').doc(questionId), newQuestionSlot);
-            batch.set(firestore.collection('questions').doc(questionId), newQuestion);
-            batch.commit();
-
-            setRedirect(true);
-        }
+        setRedirect(allowRedirect)
     };
 
     const handleJoinClick = (): void => {
@@ -173,14 +153,14 @@ const AddQuestion = (
             (moment().add(WARNING_THRESHOLD, 'minutes')).isAfter(session.endTime.seconds * 1000)) {
             setStage(60);
         } else {
-            addQuestion();
+            addNewQuestion();
         }
     };
 
     const handleKeyPressDown = (event: React.KeyboardEvent<HTMLElement>) => {
         // CTRL + ENTER or CMD + ENTER adds the question ONLY if cursor in Question textbox
         if ((!event.repeat && (event.ctrlKey || event.metaKey) && event.keyCode === 13 && stage > 40)) {
-            addQuestion();
+            addNewQuestion();
         } else if (!event.repeat && event.keyCode === 27) {
             handleXClick();
         }
@@ -269,7 +249,7 @@ const AddQuestion = (
                                 </div>
                                 : <p className="placeHolder text">Finish selecting tags...</p>}
                         </div>
-                        <hr /></>}
+                            <hr /></>}
                         <div className="tagsMiniContainer">
                             <p className="header">
                                 {'Question '}

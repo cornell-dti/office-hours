@@ -427,7 +427,7 @@ export const importProfessorsOrTAsFromPrompt = (
 export const importProfessorsOrTAsFromCSV = (
     db: firebase.firestore.Firestore,
     course: FireCourse,
-    role: 'professor' | 'ta', 
+    role: 'professor' | 'ta',
     emailList: string[]
 ): Promise<{updatedUsers: FireUser[]; missingSet: Set<string>}> | undefined => {
 
@@ -436,7 +436,7 @@ export const importProfessorsOrTAsFromCSV = (
         course,
         role,
         emailList
-    );      
+    );
 };
 
 export const updateVirtualLocation = (
@@ -450,3 +450,47 @@ export const updateVirtualLocation = (
         merge: true
     }).then(() => {})
 };
+
+
+export const addQuestion = (
+    user: firebase.User | null,
+    session: FireSession,
+    db: firebase.firestore.Firestore,
+    location: string,
+    selectedPrimary: FireTag | undefined,
+    selectedSecondary: FireTag | undefined,
+    question: string
+): boolean => {
+    if (user != null && selectedPrimary != null &&
+        selectedSecondary != null) {
+        const batch = db.batch();
+        const questionId = db.collection('questions').doc().id;
+        const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
+            askerId: user.uid,
+            sessionId: session.sessionId,
+            status: 'unresolved',
+            timeEntered: firebase.firestore.Timestamp.now()
+        };
+
+        const finalLocation = location.length === 0 ? {} : { location };
+        const upvotedUsers = session.modality === "review" ? { upvotedUsers: [user.uid] } : {}
+
+        const newQuestion: Omit<FireOHQuestion, 'questionId'> = {
+            ...newQuestionSlot,
+            ...finalLocation,
+            ...upvotedUsers,
+            answererId: '',
+            content: question,
+            primaryTag: selectedPrimary.tagId,
+            secondaryTag: selectedSecondary.tagId
+        };
+        batch.set(db.collection('questionSlots').doc(questionId), newQuestionSlot);
+        batch.set(db.collection('questions').doc(questionId), newQuestion);
+        batch.commit();
+
+        return true
+    }
+
+    return false
+
+}
