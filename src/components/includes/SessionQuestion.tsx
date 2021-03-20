@@ -1,13 +1,21 @@
 import * as React from 'react';
 import { Icon, Loader, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
-import firebase from 'firebase/app';
 import { useState } from "react";
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
 import addNotification from 'react-push-notification';
-import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
+
+import { firestore } from '../../firebase';
+import {
+    markStudentNoShow,
+    retractStudentQuestion,
+    assignQuestionToTA,
+    markQuestionDone,
+    markQuestionDontKnow,
+    updateComment
+} from '../../firebasefunctions';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -128,13 +136,7 @@ class SessionQuestion extends React.Component<Props, State> {
     }
 
     retractQuestion = (): void => {
-        // this.props.setShowModal(true);
-        const batch = firestore.batch();
-        const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
-        const questionUpdate: Partial<FireQuestion> = slotUpdate;
-        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
-        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
-        batch.commit();
+        retractStudentQuestion(firestore, this.props.question)
     };
 
     toggleLocationTooltip = () => {
@@ -142,48 +144,27 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     assignQuestion = () => {
-        const batch = firestore.batch();
-        const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
-        const questionUpdate: Partial<FireOHQuestion> = {
-            status: 'assigned',
-            answererId: this.props.myUserId,
-            timeAssigned: firebase.firestore.Timestamp.now(),
-            ...(this.props.virtualLocation ? { answererLocation: this.props.virtualLocation } : {})
-        };
-        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
-        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
-        batch.commit();
+        assignQuestionToTA(
+            firestore,
+            this.props.question,
+            this.props.virtualLocation,
+            this.props.myUserId)
     };
 
     studentNoShow = () => {
-        const batch = firestore.batch();
-        const slotUpdate: Partial<FireQuestionSlot> = { status: 'no-show' };
-        const questionUpdate: Partial<FireQuestion> = slotUpdate;
-        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
-        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
-        batch.commit();
+        markStudentNoShow(firestore, this.props.question)
     };
 
     questionDone = () => {
-        const batch = firestore.batch();
-        const slotUpdate: Partial<FireQuestionSlot> = { status: 'resolved' };
-        const questionUpdate: Partial<FireOHQuestion> = {
-            status: 'resolved',
-            timeAddressed: firebase.firestore.Timestamp.now()
-        };
-        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
-        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
-        batch.commit();
+        markQuestionDone(firestore, this.props.question)
+    };
+
+    questionDontKnow = () => {
+        markQuestionDontKnow(firestore, this.props.question)
     };
 
     questionComment = (newComment: string, isTA: boolean) => {
-        let update: Partial<FireOHQuestion>
-        if (isTA) {
-            update = { taComment: newComment };
-        } else {
-            update = { studentComment: newComment };
-        }
-        firestore.doc(`questions/${this.props.question.questionId}`).update(update);
+        updateComment(firestore, this.props.question, newComment, isTA)
     };
 
     toggleComment = () => {
@@ -211,14 +192,6 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({ showDotMenu: status });
     };
 
-    questionDontKnow = () => {
-        const batch = firestore.batch();
-        const slotUpdate: Partial<FireQuestionSlot> = { status: 'unresolved' };
-        const questionUpdate: Partial<FireQuestion> = { status: 'unresolved', answererId: '' };
-        batch.update(firestore.doc(`questionSlots/${this.props.question.questionId}`), slotUpdate);
-        batch.update(firestore.doc(`questions/${this.props.question.questionId}`), questionUpdate);
-        batch.commit();
-    };
 
     render() {
         const question = this.props.question;
