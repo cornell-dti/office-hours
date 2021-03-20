@@ -31,7 +31,8 @@ const TopBar = (props: {
                     <div className="viewToggles">
                         <CalendarHeader
                             currentCourseCode={(props.course && props.course.code) || 'Courses'}
-                            role={props.user && props.course && (props.user.roles[props.course.courseId] || 'student' || props.admin)}
+                            role={props.user && props.course 
+                                    && (props.user.roles[props.course.courseId] || 'student' || props.admin)}
                         />
                         {props.role === 'professor' && 
                             <ProfessorStudentToggle
