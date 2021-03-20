@@ -59,7 +59,7 @@ const LoginView: React.FC = () => {
                     <h2 className="mainLogoText">Queue Me In</h2>
                     <h3 className="subHeader">Office Hours Simplified</h3>
                     <button type="button" className="loginButton" onClick={auth}>
-                        <img src={googleLogo} className="googleLogo" alt="Google Login Logo" />
+                        <img src={googleLogo} className="googleLogo" alt="Google logo" />
                         <span className="loginButtonText">Sign in with Google</span>
                     </button>
                 </div>
@@ -68,26 +68,26 @@ const LoginView: React.FC = () => {
             <div className="demoWrapper">
                 <img src={Demo} className="demoQMI" alt="Demo of QMI" />
                 <div className="ribbonWrapper">
-                    <img src={WhiteStrip} className="whiteStrip"/>
+                    <img src={WhiteStrip} className="whiteStrip" alt="Curved background strip"/>
                     <div className="tutorialWrapper">
                         <h3 className="tutorialHeader">FOR STUDENTS</h3>
                         <div className="cardWrapper">
                             <div className="infoCard">
-                                <img src={Ask} className="cardImg"/>
+                                <img src={Ask} className="cardImg" alt="Question bubble"/>
                                 <p className="cardDesc">Ask a question</p>
                             </div>
                             <div className="infoCard">
-                                <img src={Reserve} className="cardImg"/>
+                                <img src={Reserve} className="cardImg" alt="Reserved"/>
                                 <p className="cardDesc">Reserve a spot</p>
                             </div>
                             <div className="infoCard">
-                                <img src={Wait} className="cardImg"/>
+                                <img src={Wait} className="cardImg" alt="Waiting in line"/>
                                 <p className="cardDesc">Wait your turn</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <img src={SecondWhiteStrip} className="secondRibbon" />
+                <img src={SecondWhiteStrip} className="secondWhiteStrip" alt="Second curved background strip"/>
             </div>
             
             <div className="whiteSectionWrapper">
@@ -95,21 +95,21 @@ const LoginView: React.FC = () => {
                     <h3 className="tutorialHeader">FOR PROFESSORS</h3>
                     <div className="cardWrapper">
                         <div className="infoCard">
-                            <img src={Schedule} className="cardImg"/>
+                            <img src={Schedule} className="cardImg" alt="Calendar"/>
                             <p className="cardDesc">{"Schedule office \nhours"}</p>
                         </div>
                         <div className="infoCard">
-                            <img src={Review} className="cardImg"/>
+                            <img src={Review} className="cardImg" alt="Asking and answering questions"/>
                             <p className="cardDesc">{"Host review \nsessions"}</p>
                         </div>
                         <div className="infoCard">
-                            <img src={Analytics} className="cardImg"/>
+                            <img src={Analytics} className="cardImg" alt="Bar graph"/>
                             <p className="cardDesc">{"View office hours \nanalytics"}</p>
                         </div>
                     </div>
                 </div>
                 <section className="finalTextSection">
-                    <img className="qmiThreePeople" src={QMIThreePeople}/>
+                    <img className="qmiThreePeople" src={QMIThreePeople} alt="People walking"/>
                     <div className="finalTextWrapper">
                         <h2 className="finalText finalTextHead">Simplify office hours.</h2>
                         <h2 className="finalText finalTextBody">{"Manage the wave \nof students."}</h2>
