@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap');
 
-.LoginView {
+.loginView {
     background: linear-gradient(25deg, #668AE9 0%, #6DB9EA 60%);
     background-size: cover;
     min-height: 100%;
@@ -14,7 +14,7 @@
     }
 }
 
-.contactButton {
+.qmiContact {
     box-shadow: 2px 4px 5px rgba(108, 108, 108, 0.25);
     background: #F67D7D;
     border-radius: 5px;
@@ -42,18 +42,18 @@
         left: 25px;
         display: flex;
         flex-direction: row;
-        .QMINewLogo {
+        .qmiNewLogo {
             height: 75px;
             width: 75px;
         }
-        .QMILogoText {
+        .qmiLogoText {
             font-family: "Roboto";
             font-weight: 300;
             font-size: 22px;
         }
     }
 
-    .contactButton {
+    .qmiContact {
         position: absolute;
         top: 30px;
         right: 30px;
@@ -70,7 +70,6 @@
     .nameAndButtonWrapper {
         color: #FFFFFF;
         text-align: left;
-        animation: moveIntoFrame 4s;
         .mainLogoText {
             font-family: "Roboto";
             font-weight: 500;
@@ -89,7 +88,7 @@
     }
 }
 
-.DemoQMI {
+.demoQMI {
     position: relative;
     z-index: 2;
     height: 625px;
@@ -107,6 +106,12 @@
 
 .whiteStrip {
     width: 100vw;
+}
+
+.secondRibbon {
+    width: 100vw;
+    position: relative;
+    top: 7px;
 }
 
 .tutorialHeader {
@@ -180,14 +185,14 @@
     .finalTextHead {
         color: #5599DB
     }
-    .contactButton {
+    .qmiContact {
         float: left;
         margin-top: 50px;
     }
 }
 
 @media screen and (max-width: $mobile-breakpoint) {
-    .contactButton {
+    .qmiContact {
         padding: 5px 15px;
         font-size: 10px;
     }
@@ -195,16 +200,16 @@
         .logoWrapper {
             top: 7px;
             left: 12px;
-            .QMINewLogo {
+            .qmiNewLogo {
                 height: 30px;
                 width: 30px;
             }
-            .QMILogoText {
+            .qmiLogoText {
                 font-size: 12px;
                 margin-top: 8px;
             }
         }
-        .contactButton {
+        .qmiContact {
             top: 10px;
             right: 15px;            
         }
@@ -226,12 +231,12 @@
                 margin-top: 25px;
             }
         }
-        .QMIPeople {
+        .qmiPeople {
             width: 140px;
             height: 80px;
         }
     }
-    .DemoQMI {
+    .demoQMI {
         height: 170px;
     }
     .ribbonWrapper {
@@ -280,20 +285,9 @@
         .finalText {
             font-size: 13px;
         }
-        .contactButton {
+        .qmiContact {
             margin-top: 15px;
         }
-    }
-}
-
-@keyframes moveIntoFrame {
-    0% {
-        opacity: 0%;
-        transform: translateY(10px);
-    }
-    100% {
-        opacity: 100%;
-        transform: translateY(0px);
     }
 }
 

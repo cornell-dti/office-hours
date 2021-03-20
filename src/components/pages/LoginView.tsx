@@ -7,8 +7,9 @@ import { userUpload } from '../../firebasefunctions';
 import QMILogo2020 from '../../media/QMILogo2020.svg'
 import QMIPeople from '../../media/QMIPeople.gif';
 import googleLogo from '../../media/googleLogo.svg';
-import Demo from '../../media/Demo.png';
+import Demo from '../../media/demo_higher_res.png';
 import WhiteStrip from '../../media/white_strip.svg';
+import SecondWhiteStrip from '../../media/second_white_strip.svg';
 import Footer from '../includes/Footer';
 
 import Ask from '../../media/ask_a_question.svg';
@@ -40,14 +41,14 @@ const LoginView: React.FC = () => {
     };
 
     return (
-        <div className="LoginView">
+        <div className="loginView">
             <section className="header">
                 <div className="logoWrapper">
-                    <img src={QMILogo2020} className="QMINewLogo" alt="New QMI Logo" />
-                    <h2 className="QMILogoText">Queue Me In</h2>
+                    <img src={QMILogo2020} className="qmiNewLogo" alt="New QMI Logo" />
+                    <h2 className="qmiLogoText">Queue Me In</h2>
                 </div>
                 <a
-                    className="contactButton" 
+                    className="qmiContact" 
                     href="mailto:queuemein@cornelldti.org?Subject=Queue%20Me%20In%20For%20Students"
                 >
                     Contact us
@@ -62,10 +63,10 @@ const LoginView: React.FC = () => {
                         <span className="loginButtonText">Sign in with Google</span>
                     </button>
                 </div>
-                <img src={QMIPeople} className="QMIPeople" alt="People lining up" />
+                <img src={QMIPeople} className="qmiPeople" alt="People lining up" />
             </section>
-            <div className="DemoWrapper">
-                <img src={Demo} className="DemoQMI" alt="Demo of QMI" />
+            <div className="demoWrapper">
+                <img src={Demo} className="demoQMI" alt="Demo of QMI" />
                 <div className="ribbonWrapper">
                     <img src={WhiteStrip} className="whiteStrip"/>
                     <div className="tutorialWrapper">
@@ -86,6 +87,7 @@ const LoginView: React.FC = () => {
                         </div>
                     </div>
                 </div>
+                <img src={SecondWhiteStrip} className="secondRibbon" />
             </div>
             
             <div className="whiteSectionWrapper">
@@ -112,7 +114,7 @@ const LoginView: React.FC = () => {
                         <h2 className="finalText finalTextHead">Simplify office hours.</h2>
                         <h2 className="finalText finalTextBody">{"Manage the wave \nof students."}</h2>
                         <a
-                            className="contactButton" 
+                            className="qmiContact" 
                             href="mailto:queuemein@cornelldti.org?Subject=Queue%20Me%20In%20For%20Students"
                         >
                         Contact us
