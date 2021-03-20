@@ -249,7 +249,7 @@ const AddQuestion = (
                                 </div>
                                 : <p className="placeHolder text">Finish selecting tags...</p>}
                         </div>
-                            <hr /></>}
+                        <hr /></>}
                         <div className="tagsMiniContainer">
                             <p className="header">
                                 {'Question '}
