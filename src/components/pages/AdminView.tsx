@@ -38,7 +38,7 @@ const AdminView = () => {
             {!inCreationMode &&
                 <button 
                     type="button" 
-                    className="create-course" 
+                    className="create-course-btn" 
                     onClick={() => setInCreationMode(true)}
                 >Create New Course</button>}
 
