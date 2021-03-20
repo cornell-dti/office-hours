@@ -86,9 +86,9 @@ export const createSeries = async (
 
     const batch = db.batch();
 
-    datesToAdd.forEach( (sessionStart) => {
+    datesToAdd.forEach((sessionStart) => {
         // Do not add sessions before today or course start
-        if (sessionStart.isBefore(now) || sessionStart.isBefore(courseStartTime)){
+        if (sessionStart.isBefore(now) || sessionStart.isBefore(courseStartTime)) {
             return;
         }
 
@@ -305,7 +305,7 @@ const importProfessorsOrTAs = async (
     course: FireCourse,
     role: 'professor' | 'ta',
     emailListTotal: readonly string[]
-): Promise<{updatedUsers: FireUser[]; missingSet: Set<string>}> => {
+): Promise<{ updatedUsers: FireUser[]; missingSet: Set<string> }> => {
     const missingSet = new Set<string>(emailListTotal);
     const batch = db.batch();
     const updatedUsers: FireUser[] = [];
@@ -352,9 +352,9 @@ const importProfessorsOrTAs = async (
             pendingUsersRef.get()
                 .then((docSnapshot) => {
                     if (docSnapshot.exists) {
-                        pendingUsersRef.update({[`roles.${course.courseId}`]: role});
+                        pendingUsersRef.update({ [`roles.${course.courseId}`]: role });
                     } else {
-                        pendingUsersRef.set({email, roles: {[course.courseId]: role}});
+                        pendingUsersRef.set({ email, roles: { [course.courseId]: role } });
                     }
                 });
         })
@@ -427,16 +427,16 @@ export const importProfessorsOrTAsFromPrompt = (
 export const importProfessorsOrTAsFromCSV = (
     db: firebase.firestore.Firestore,
     course: FireCourse,
-    role: 'professor' | 'ta', 
+    role: 'professor' | 'ta',
     emailList: string[]
-): Promise<{updatedUsers: FireUser[]; missingSet: Set<string>}> | undefined => {
+): Promise<{ updatedUsers: FireUser[]; missingSet: Set<string> }> | undefined => {
 
     return importProfessorsOrTAs(
         db,
         course,
         role,
         emailList
-    );      
+    );
 };
 
 export const updateVirtualLocation = (
@@ -448,5 +448,92 @@ export const updateVirtualLocation = (
         virtualLocation
     }, {
         merge: true
-    }).then(() => {})
+    }).then(() => { })
 };
+
+
+export const markStudentNoShow = (
+    db: firebase.firestore.Firestore,
+    question: FireOHQuestion
+) => {
+    const batch = db.batch();
+    const slotUpdate: Partial<FireQuestionSlot> = { status: 'no-show' };
+    const questionUpdate: Partial<FireQuestion> = slotUpdate;
+    batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
+    batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
+    batch.commit();
+}
+
+export const markQuestionDone = (
+    db: firebase.firestore.Firestore,
+    question: FireOHQuestion
+) => {
+    const batch = db.batch();
+    const slotUpdate: Partial<FireQuestionSlot> = { status: 'resolved' };
+    const questionUpdate: Partial<FireOHQuestion> = {
+        status: 'resolved',
+        timeAddressed: firebase.firestore.Timestamp.now()
+    };
+    batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
+    batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
+    batch.commit();
+}
+
+export const markQuestionDontKnow = (
+    db: firebase.firestore.Firestore,
+    question: FireOHQuestion
+) => {
+    const batch = db.batch();
+    const slotUpdate: Partial<FireQuestionSlot> = { status: 'unresolved' };
+    const questionUpdate: Partial<FireQuestion> = { status: 'unresolved', answererId: '' };
+    batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
+    batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
+    batch.commit();
+}
+
+export const retractStudentQuestion = (
+    db: firebase.firestore.Firestore,
+    question: FireOHQuestion
+) => {
+    const batch = db.batch();
+    const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
+    const questionUpdate: Partial<FireQuestion> = slotUpdate;
+    batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
+    batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
+    batch.commit();
+}
+
+export const updateComment = (
+    db: firebase.firestore.Firestore,
+    question: FireOHQuestion,
+    newComment: string,
+    isTA: boolean
+) => {
+    let update: Partial<FireOHQuestion>
+    if (isTA) {
+        update = { taComment: newComment };
+    } else {
+        update = { studentComment: newComment };
+    }
+    db.doc(`questions/${question.questionId}`).update(update);
+}
+
+
+export const assignQuestionToTA = (
+    db: firebase.firestore.Firestore,
+    question: FireOHQuestion,
+    virtualLocation: string | undefined,
+    myUserId: string
+) => {
+    const batch = db.batch();
+    const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
+    const questionUpdate: Partial<FireOHQuestion> = {
+        status: 'assigned',
+        answererId: myUserId,
+        timeAssigned: firebase.firestore.Timestamp.now(),
+        ...(virtualLocation ? { answererLocation: virtualLocation } : {})
+    };
+    batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
+    batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
+    batch.commit();
+}
