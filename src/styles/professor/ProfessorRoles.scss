@@ -5,9 +5,20 @@
 
 .rolesTable {
     max-width: 800px;
-    margin: 40px auto !important;
+    margin-top: 40px !important;
 
     th {
         font-weight: 500;
+    }
+
+    .import-buttons {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+
+        button {
+            margin: .25em;
+        }
     }
 }
