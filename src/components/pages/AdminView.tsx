@@ -36,13 +36,17 @@ const AdminView = () => {
             {inCreationMode && <AdminCourseCreator onSubmit={() => setInCreationMode(false)} />}
 
             {!inCreationMode &&
-                <button type="button" className="create-course" onClick={() => setInCreationMode(true)}>Create New Course</button>}
+                <button 
+                    type="button" 
+                    className="create-course" 
+                    onClick={() => setInCreationMode(true)}
+                >Create New Course</button>}
 
             <h2>Archived Courses</h2>
             <div className="course-container">
                 <Grid container direction="row" alignItems={'stretch'} spacing={3}>
                     {courses.filter(course => course.semester !== CURRENT_SEMESTER).map(course => (
-                        <Grid item xl = {3} lg={4} md={6} xs={12}>
+                        <Grid item xl={3} lg={4} md={6} xs={12}>
                             <AdminCourseCard key={course.courseId} course={course} />
                         </Grid>
                     ))}
@@ -51,7 +55,7 @@ const AdminView = () => {
             {!inCreationMode &&
                 <button 
                     type="button" 
-                    className="create-course" 
+                    className="create-course-btn" 
                     onClick={() => setInCreationMode(true)}
                 >Create New Course</button>}
         </div>
