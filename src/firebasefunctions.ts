@@ -452,6 +452,49 @@ export const updateVirtualLocation = (
 };
 
 
+export const addQuestion = (
+    user: firebase.User | null,
+    session: FireSession,
+    db: firebase.firestore.Firestore,
+    location: string,
+    selectedPrimary: FireTag | undefined,
+    selectedSecondary: FireTag | undefined,
+    question: string
+): boolean => {
+    if (user != null && selectedPrimary != null &&
+        selectedSecondary != null) {
+        const batch = db.batch();
+        const questionId = db.collection('questions').doc().id;
+        const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
+            askerId: user.uid,
+            sessionId: session.sessionId,
+            status: 'unresolved',
+            timeEntered: firebase.firestore.Timestamp.now()
+        };
+
+        const finalLocation = location.length === 0 ? {} : { location };
+        const upvotedUsers = session.modality === "review" ? { upvotedUsers: [user.uid] } : {}
+
+        const newQuestion: Omit<FireOHQuestion, 'questionId'> = {
+            ...newQuestionSlot,
+            ...finalLocation,
+            ...upvotedUsers,
+            answererId: '',
+            content: question,
+            primaryTag: selectedPrimary.tagId,
+            secondaryTag: selectedSecondary.tagId
+        };
+        batch.set(db.collection('questionSlots').doc(questionId), newQuestionSlot);
+        batch.set(db.collection('questions').doc(questionId), newQuestion);
+        batch.commit();
+
+        return true
+    }
+
+    return false
+}
+
+
 export const markStudentNoShow = (
     db: firebase.firestore.Firestore,
     question: FireOHQuestion
@@ -463,6 +506,7 @@ export const markStudentNoShow = (
     batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
     batch.commit();
 }
+
 
 export const markQuestionDone = (
     db: firebase.firestore.Firestore,
@@ -479,6 +523,7 @@ export const markQuestionDone = (
     batch.commit();
 }
 
+
 export const markQuestionDontKnow = (
     db: firebase.firestore.Firestore,
     question: FireOHQuestion
@@ -491,6 +536,7 @@ export const markQuestionDontKnow = (
     batch.commit();
 }
 
+
 export const retractStudentQuestion = (
     db: firebase.firestore.Firestore,
     question: FireOHQuestion
@@ -502,6 +548,7 @@ export const retractStudentQuestion = (
     batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
     batch.commit();
 }
+
 
 export const updateComment = (
     db: firebase.firestore.Firestore,
