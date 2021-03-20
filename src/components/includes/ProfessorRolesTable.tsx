@@ -74,19 +74,17 @@ export default ({ courseId, isAdminView }: { courseId: string; isAdminView: bool
 
     const importButton = () => {
         return (
-            <Table.Row>
-                <Table.Cell>
+            <div className="import-buttons">
                     <button type="button" onClick={importProfessorsButtonOnClick}>Import Professors</button>
-                </Table.Cell>
-                <Table.Cell>
                     <button type="button" onClick={importTAButtonOnClick}>Import TAs</button>
-                </Table.Cell> 
-            </Table.Row>
+            </div>
         )
     };
 
     return (
-        <Table sortable={true} celled={true} fixed={true} className="rolesTable">
+        <div className="rolesTable">
+        {isAdminView && importButton()}
+        <Table sortable={true} celled={true} fixed={true}>
             <Table.Header>
                 <Table.Row>
                     <Table.HeaderCell
@@ -116,9 +114,6 @@ export default ({ courseId, isAdminView }: { courseId: string; isAdminView: bool
                 </Table.Row>
             </Table.Header>
             <Table.Body>
-                <Table.Row>
-                    {isAdminView && importButton()}
-                </Table.Row>
                 {course && sortedCourseUsers.map(u => (
                     <Table.Row key={u.userId}>
                         <Table.Cell>{u.firstName}</Table.Cell>
@@ -135,5 +130,6 @@ export default ({ courseId, isAdminView }: { courseId: string; isAdminView: bool
                 ))}
             </Table.Body>
         </Table>
+        </div>
     );
 };
