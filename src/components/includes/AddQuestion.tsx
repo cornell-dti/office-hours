@@ -7,7 +7,7 @@ import SelectedTags from './SelectedTags';
 import SessionAlertModal from './SessionAlertModal';
 
 import { collectionData, firestore, auth } from '../../firebase';
-import { addQuestion } from '../../firebasefunctions';
+import { addQuestion } from '../../firebasefunctions/sessionQuestion';
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue

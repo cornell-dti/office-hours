@@ -2,24 +2,9 @@ import React, { useState } from 'react';
 import moment from 'moment';
 import { Checkbox } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
-import { deleteSeries } from '../../firebasefunctions';
+import { deleteSeries } from '../../firebasefunctions/series';
 import { useSessionTANames } from '../../firehooks';
 
-// const DELETE_SESSION = gql`
-//     mutation DeleteSession($_sessionId: Int!) {
-//         apiDeleteSession(input: {_sessionId: $_sessionId}) {
-//             clientMutationId
-//         }
-//     }
-// `;
-
-// const DELETE_SERIES = gql`
-//     mutation DeleteSeries($_seriesId: Int!) {
-//         apiDeleteSeries(input: {_seriesId: $_seriesId}) {
-//             clientMutationId
-//         }
-//     }
-// `;
 
 type Props = {
     readonly course: FireCourse;

@@ -28,7 +28,7 @@ import ProfessorPeopleView from './pages/ProfessorPeopleView';
 import CourseEditView from './pages/CourseEditView';
 import CourseSelectionView from './pages/CourseSelectionView';
 import { Analytics } from './includes/Analytics';
-import { userUpload } from '../firebasefunctions';
+import { userUpload } from '../firebasefunctions/user';
 import { useMyUser, useAllCourses } from '../firehooks';
 import { CURRENT_SEMESTER } from '../constants';
 

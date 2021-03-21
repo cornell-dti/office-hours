@@ -15,7 +15,7 @@ import {
     markQuestionDone,
     markQuestionDontKnow,
     updateComment
-} from '../../firebasefunctions';
+} from '../../firebasefunctions/sessionQuestion';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -267,7 +267,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                 />
                                 <span className="userInformationName">
                                     {asker.firstName + ' ' + asker.lastName +
-                                        ' (' + asker.email.slice(0,asker.email.indexOf('@')) + ')'}
+                                        ' (' + asker.email.slice(0, asker.email.indexOf('@')) + ')'}
                                     {question.status === 'assigned' &&
                                         <>
                                             <span className="assigned"> is assigned
