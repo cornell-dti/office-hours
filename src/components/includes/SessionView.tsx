@@ -8,7 +8,7 @@ import SessionQuestionsContainer from './SessionQuestionsContainer';
 import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile, 
     useAskerQuestions } from '../../firehooks';
 import { filterUnresolvedQuestions } from '../../utilities/questions';
-import { updateVirtualLocation } from '../../firebase/sessionQuestion';
+import { updateVirtualLocation } from '../../firebasefunctions/sessionQuestion';
 import { firestore } from '../../firebase';
 
 import NotifBell from '../../media/notifBellWhite.svg';

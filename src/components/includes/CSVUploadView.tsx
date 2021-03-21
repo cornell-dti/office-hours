@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { importProfessorsOrTAsFromCSV} from '../../firebase/importProfessorsOrTAs';
+import { importProfessorsOrTAsFromCSV} from '../../firebasefunctions/importProfessorsOrTAs';
 import { firestore } from '../../firebase';
 import CSVUploadCheck from '../../media/CSVUploadCheck.svg';
 import CSVInfoIcon from '../../media/CSVInfoIcon.svg';

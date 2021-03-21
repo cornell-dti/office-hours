@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from 'semantic-ui-react';
-import { logOut } from '../../firebase/user';
+import { logOut } from '../../firebasefunctions/user';
 import Logo from '../../media/QLogo2.svg';
 import CalendarHeader from './CalendarHeader';
 import ProfessorStudentToggle from './ProfessorStudentToggle';

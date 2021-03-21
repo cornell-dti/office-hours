@@ -5,7 +5,7 @@ import { Dropdown, Checkbox, Icon, DropdownItemProps, DropdownProps, Button } fr
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { firestore, Timestamp } from '../../firebase';
-import { createSeries, updateSeries } from '../../firebase/series';
+import { createSeries, updateSeries } from '../../firebasefunctions/series';
 
 enum Modality {
     VIRTUAL = 'virtual',

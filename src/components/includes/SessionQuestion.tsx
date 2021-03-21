@@ -15,7 +15,7 @@ import {
     markQuestionDone,
     markQuestionDontKnow,
     updateComment
-} from '../../firebase/sessionQuestion';
+} from '../../firebasefunctions/sessionQuestion';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;

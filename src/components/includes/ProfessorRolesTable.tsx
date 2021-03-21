@@ -3,7 +3,7 @@ import { Dropdown, Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
 import { firestore } from '../../firebase';
 import { useCourse, useCourseUsers, useMyUser } from '../../firehooks';
-import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebase/importProfessorsOrTAs';
+import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions/importProfessorsOrTAs';
 
 const RoleDropdown = ({ user, course, disabled }: {
     readonly user: EnrichedFireUser;
