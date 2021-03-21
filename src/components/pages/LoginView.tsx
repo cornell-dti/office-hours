@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import firebase, { app, firestore } from '../../firebase';
-import { userUpload } from '../../firebasefunctions';
+import { userUpload } from '../../firebase/user';
 
 import QMILogo2020 from '../../media/QMILogo2020.svg'
 import QMIPeople from '../../media/QMIPeople.gif';

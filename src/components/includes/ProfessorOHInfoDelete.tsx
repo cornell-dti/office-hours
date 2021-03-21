@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import moment from 'moment';
 import { Checkbox } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
-import { deleteSeries } from '../../firebasefunctions';
+import { deleteSeries } from '../../firebase/series';
 import { useSessionTANames } from '../../firehooks';
 
 // const DELETE_SESSION = gql`
