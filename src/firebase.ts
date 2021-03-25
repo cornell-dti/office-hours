@@ -7,19 +7,19 @@ import { collectionData } from 'rxfire/firestore';
 import { filter } from 'rxjs/operators';
 
 type FirebaseConfig = {
-    apiKey: string,
-    authDomain: string,
-    databaseURL: string,
-    projectId: string,
-    storageBucket: string,
-    messagingSenderId: string,
-    appId?: string,
-    measurementId?: string
+    apiKey: string;
+    authDomain: string;
+    databaseURL: string;
+    projectId: string;
+    storageBucket: string;
+    messagingSenderId: string;
+    appId?: string;
+    measurementId?: string;
 };
 
-let firebaseConfig: FirebaseConfig;
+let currFirebaseConfig: FirebaseConfig;
 if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
-    firebaseConfig = {
+    currFirebaseConfig = {
         apiKey: 'AIzaSyBtxSkhR9RcnKP2FSsWtdxlwX4TcIjjm8A',
         authDomain: 'queue-me-in-prod.firebaseapp.com',
         databaseURL: 'https://queue-me-in-prod.firebaseio.com',
@@ -30,7 +30,7 @@ if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !=
         measurementId: 'G-GHJ0TML275',
     };
 } else {
-    firebaseConfig = {
+    currFirebaseConfig = {
         apiKey: 'AIzaSyDD2hsUMX3qvOEotKBXzc1ehtMyunix_I4',
         authDomain: 'qmi-test.firebaseapp.com',
         databaseURL: 'https://qmi-test.firebaseio.com',
@@ -39,6 +39,7 @@ if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !=
         messagingSenderId: '349252319671',
     };
 }
+const firebaseConfig = currFirebaseConfig;
 
 const app = firebase.initializeApp(firebaseConfig);
 

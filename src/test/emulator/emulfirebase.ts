@@ -3,8 +3,8 @@ import fs from "fs";
 import path from "path";
 
 type User = {
-    uid: string,
-    email: string
+    uid: string;
+    email: string;
 }
 
 
@@ -18,7 +18,7 @@ export const initTestAdminFirebase = () => {
     }).firestore();
 }
 
-export const initTestUserFirebase = (user : User) => {
+export const initTestUserFirebase = (user: User) => {
     return firebase.initializeTestApp({
         projectId: fakeProjectId,
         auth: user

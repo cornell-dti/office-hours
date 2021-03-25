@@ -24,12 +24,7 @@ export const randCourseCode = (): string => {
     return `${selCourseName}${randInt(0, 7000)}`;
 }
 
-export const randModality = (): FireSessionModality => {
-    const modalities : FireSessionModality[] = ['in-person', 'hybrid', 'virtual', 'review'];
-    return randArr(modalities);
-}
-
-export const randArr = <T>(arr : T[]): T => {
+export const randArr = <T>(arr: T[]): T => {
     return arr[randInt(0, arr.length)];
 }
 
@@ -66,7 +61,7 @@ export const timeToFireTimestamp = (timeSecs: number): FireTimestamp => {
     }
 }
 
-export const questionToSlot = (question : FireQuestion): FireQuestionSlot => {
+export const questionToSlot = (question: FireQuestion): FireQuestionSlot => {
     return {
         askerId: question.askerId,
         questionId: question.questionId,

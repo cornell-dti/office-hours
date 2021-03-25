@@ -181,7 +181,7 @@ interface FireDiscussionQuestion extends FireQuestion {
 
 // These classes are used to write tests, then converted to their readonly versions
 interface FireEditableUser extends FireUser {
-    courses: string[],
+    courses: string[];
     roles: { [courseId: string]: PrivilegedFireCourseRole | undefined };
 }
 
@@ -192,10 +192,10 @@ interface FireEditableCourse extends FireCourse {
 
 // An environment that describes the entire QMI App state
 interface FireEnvironment {
-    courses: FireCourse[],
-    pendingUsers: FirePendingUser[],
-    questions: FireQuestion[],
-    sessions: FireSession[],
-    tags: FireTag[],
-    users: FireUser[]
+    courses: FireCourse[];
+    pendingUsers: FirePendingUser[];
+    questions: FireQuestion[];
+    sessions: FireSession[];
+    tags: FireTag[];
+    users: FireUser[];
 }

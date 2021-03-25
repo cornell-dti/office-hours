@@ -1,5 +1,5 @@
-import {randArr, randInt, randModality, randStr, timeToFireTimestamp} from "../utils/utils";
 import moment from "moment-timezone";
+import {randArr, randInt, randStr, timeToFireTimestamp} from "../utils/utils";
 
 // Use these functions to get a dummy session for tests
 
@@ -8,7 +8,7 @@ const getDummyBaseSession = (
     sessionSeriesId: string = randStr(15),
     startTime: FireTimestamp = timeToFireTimestamp(moment().subtract(1, 'hour').unix()),
     endTime: FireTimestamp = timeToFireTimestamp(moment().add(1, 'hour').unix()),
-) : FireBaseSession => {
+): FireBaseSession => {
     return {
         assignedQuestions: 0,
         courseId,
@@ -107,12 +107,12 @@ const getSession = (
     sessionSeriesId: string,
     startTime: FireTimestamp,
     endTime: FireTimestamp
-) : FireSession => {
+): FireSession => {
     if (type === 0){
         return getDummyVirtualSession(courseId, sessionSeriesId, startTime, endTime);
-    } else if (type === 1){
+    } if (type === 1){
         return getDummyInPersonSession(courseId, sessionSeriesId, startTime, endTime);
-    } else if (type === 2){
+    } if (type === 2){
         return getDummyHybridSession(courseId, sessionSeriesId, startTime, endTime);
     }
     return getDummyReviewSession(courseId, sessionSeriesId, startTime, endTime);
@@ -123,17 +123,17 @@ export const getDummySession = (
     sessionSeriesId: string = randStr(15),
     startTime: FireTimestamp = timeToFireTimestamp(moment().subtract(1, 'hour').unix()),
     endTime: FireTimestamp = timeToFireTimestamp(moment().add(1, 'hour').unix())
-) : FireSession => {
+): FireSession => {
     const rand = randInt(0, 4);
     return getSession(rand, courseId, sessionSeriesId, startTime, endTime);
 }
 
 export const getDummySessionSeries = (
     courseId: string = randStr(15),
-    numSessions: number = 5,
+    numSessions = 5,
     startTime: moment.Moment = moment().subtract(randInt(0, 720), 'minutes'),
     endTime: moment.Moment = moment(startTime).add(randInt(60, 300), 'minutes')
-) : FireSession[] => {
+): FireSession[] => {
     // Standardize to a particular type
     const sessionSeriesId = randStr(15);
     const rand = randInt(0, 4);

@@ -1,8 +1,9 @@
-import {randArr, randCourseCode, randInt, randStr, randTag, randTimeMins, timeToFireTimestamp} from "../utils/utils";
 import moment from "moment-timezone";
+import {randArr, randCourseCode, randInt, randStr, randTag, randTimeMins, timeToFireTimestamp} from "../utils/utils";
 
 // Note: Times are in unix seconds
-// This is for testing properties of questions and statistics
+// Note: This is for testing properties of questions and statistics and won't satisfy
+// environment invariants
 export const getDummyFireQuestion = (
     answererId: string,
     timeEntered: number,
@@ -63,7 +64,7 @@ export const getDummyQuestionForSession = (
         status: randArr<FireQuestion["status"]>(['assigned', 'resolved', 'retracted', 'unresolved', 'no-show']),
         timeAddressed: timeToFireTimestamp(timeAddressedMoment.unix()),
         timeAssigned: timeToFireTimestamp(timeAssignedMoment.unix()),
-        timeEntered: timeEntered
+        timeEntered
     };
 
     // Construct state based on status
@@ -84,12 +85,12 @@ export const getDummyQuestionForSession = (
 }
 
 export const getDummyCourse = (
-    startDate : FireTimestamp = timeToFireTimestamp(moment().subtract(3, 'months').unix()),
+    startDate: FireTimestamp = timeToFireTimestamp(moment().subtract(3, 'months').unix()),
     endDate: FireTimestamp = timeToFireTimestamp(moment().add(3, 'months').unix()),
-    name : string = randArr(["Functional Programming", "Object Oriented Programming", "Algorithms",
+    name: string = randArr(["Functional Programming", "Object Oriented Programming", "Algorithms",
         "Intro to Python", "Intro to Matlab", "Machine Learning", "Computer Vision", "Compilers",
         "Software Engineering", "Intro to App Development", "Intro to Web Development"])
-) : FireEditableCourse => {
+): FireEditableCourse => {
     return {
         // Not sure what this does
         charLimit: 140,
@@ -107,43 +108,70 @@ export const getDummyCourse = (
     }
 }
 
+export const getDummyTagName = (isParent: boolean): string => {
+    if (isParent){
+        const prefix = randArr(["General", "Debugging", "Conceptual", "Programming Language", "Clarification"]);
+        return `${prefix} ${randInt(0, 1000)}`;
+    }
+    return `${randArr(["A", "HW", "PA", "Problem Set"])} ${randInt(0, 1000)}`;
+
+}
+
 export const getDummyTag = (
     parentTag: string | null,
     courseId: string,
-    active: boolean = true,
-) : FireTag => {
-    let tagName = `${randArr(["A", "HW", "PA", "Problem Set"])} ${randInt(0, 10)}`;
-    if (parentTag !== null){
-        tagName = randArr(["General", "Debugging", "Conceptual", "Programming Language", "Clarification"]);
-    }
+    active = true,
+    name: string = getDummyTagName(parentTag !== null)
+): FireTag => {
     return {
         active,
         courseId,
         level: parentTag === null ? 1 : 2,
-        name: tagName,
+        name,
         tagId: randStr(15),
         parentTag: parentTag === null ? undefined : parentTag
     };
 }
 
 export const getDummyTags = (
-    course : FireCourse,
-    tagStructure: Map<String, String[]>
-) : FireTag[] => {
-    const result : FireTag[] = [];
+    course: FireCourse,
+    tagStructure: Map<string, string[]> = getDummyTagStructure()
+): Map<FireTag, FireTag[]> => {
+    const result = new Map<FireTag, FireTag[]>();
     const courseId = course.courseId;
     tagStructure.forEach((secondaryTags, primaryTag) => {
         // Generate parent tag
-        const parentTag = getDummyTag(null, courseId);
-        result.push(parentTag);
-        secondaryTags.forEach((secondaryTag) => {
-           result.push(getDummyTag(parentTag.tagId, courseId));
+        const parentTag = getDummyTag(null, courseId, true, primaryTag);
+        const secTagArr = secondaryTags.map((secondaryTag) => {
+            return getDummyTag(parentTag.tagId, courseId, true, secondaryTag);
         });
+        result.set(parentTag, secTagArr);
     });
     return result;
 }
 
-export const getDummyEditableUser = () : FireEditableUser => {
+// Precondition: layer one and layer two min must be at least 1
+export const getDummyTagStructure = (
+    layerOne = 5,
+    layerTwoMin = 2,
+    layerTwoMax = 5 // exclusive
+): Map<string, string[]> => {
+    const result = new Map<string, string[]>();
+    for (let i = 0; i < layerOne; i++){
+        // Generate first layer tag
+        const tagName = getDummyTagName(true);
+        const arr: string[] = [];
+        // Generate second layer tags
+        for (let j = 0; j < randInt(layerTwoMin, layerTwoMax); j++){
+            arr.push(getDummyTagName(false));
+        }
+        result.set(tagName, arr);
+    }
+    return result;
+}
+
+
+export const getDummyEditableUser = (): FireEditableUser => {
     return {
         courses: [],
         email: `${randStr(15)}@gmail.com`,
@@ -160,7 +188,7 @@ export const getDummyUser = (
     lastName: string,
     courses: readonly string[],
     roles: { readonly [courseId: string]: PrivilegedFireCourseRole | undefined }
-) : FireEditableUser => {
+): FireEditableUser => {
     return {
         courses: [],
         email: "hello@cornelldti.org",
@@ -201,7 +229,7 @@ export const getDummyPendingUserByCourses = (
     email: string,
     taCourses: FireCourse[],
     profCourses: FireCourse[]
-) : FirePendingUser => {
+): FirePendingUser => {
     const roles: Record<string, PrivilegedFireCourseRole> = {};
     for (const taCourse of taCourses){
         roles[taCourse.courseId] = "ta";
@@ -213,13 +241,4 @@ export const getDummyPendingUserByCourses = (
         email,
         roles
     }
-}
-
-// Precondition: layer one and layer two min must be at least 1
-export const getDummyTagStructure = (
-    layerOne: number,
-    layerTwoMin: number,
-    layerTwoMax: number
-): Map<FireTag, FireTag[]> => {
-    // TODO: Implement
 }
