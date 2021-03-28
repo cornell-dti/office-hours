@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
+import { createAssignment } from '../../firebasefunctions/tags';
+import { FireTag } from '../types/fireData';
 
 interface NewTag {
     id: string;
@@ -103,39 +105,26 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         );
     };
 
-    handleCreateAssignment = (): void => {
-        const batch = firestore.batch();
+    handleCreateAssignment = async (): Promise<void> => {
+        // const batch = firestore.batch();
 
-        // need to create this first so the child tags have the doc reference
-        const parentTag = firestore.collection('tags').doc();
-        
-        const parentDoc: Omit<FireTag, 'tagId'> = {
-            active: this.state.tag.active,
-            courseId: this.state.tag.courseId,
-            level: 1,
-            name: this.state.tag.name
-        };
+        // // need to create this first so the child tags have the doc reference
+        // const parentTag = createTag(batch, this.state.tag)
 
-        batch.set(parentTag, parentDoc);
+        // // below is essentially add new child a bunch of times
+        // this.state.newTags.map(tagText => 
+        //     createTag(batch, {
+        //         active: this.state.tag.active,
+        //         courseId: this.state.tag.courseId,
+        //         name: tagText.name
+        //     }, parentTag.id)
+
+        // );
+        // batch.commit();
+        const parentTag = createAssignment(this.state.tag, this.state.newTags);
 
         // converts reference parentTag to the string format stored in state
         this.setState((prevState) => ({ tag: { ...prevState.tag, tagId: parentTag.id } }));
-
-        // below is essentially add new child a bunch of times
-        this.state.newTags.forEach(tagText => {
-            const childTag = firestore.collection('tags').doc();
-            
-            const doc: Omit<FireTag, 'tagId'> = {
-                active: this.state.tag.active,
-                courseId: this.state.tag.courseId,
-                level: 2,
-                name: tagText.name,
-                parentTag: parentTag.id
-            };
-            
-            batch.set(childTag, doc);
-        });
-        batch.commit();
 
         this.clearState();
     };

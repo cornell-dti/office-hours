@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Icon } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfessorTagInfo from './ProfessorTagInfo';
+import { FireTag } from '../types/fireData';
 
 const ProfessorTagsRow = (props: {
     tag: FireTag;
