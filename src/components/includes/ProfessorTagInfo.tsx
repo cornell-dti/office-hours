@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
 import { createAssignment } from '../../firebasefunctions/tags';
-import { FireTag } from '../types/fireData';
 
 interface NewTag {
     id: string;

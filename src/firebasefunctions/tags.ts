@@ -1,9 +1,6 @@
 
 import firebase from 'firebase/app';
-import { FireTag, NewTag } from '../components/types/fireData';
 import { firestore } from '../firebase';
-
-
 
 
 const createTag = (

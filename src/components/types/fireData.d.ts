@@ -175,7 +175,7 @@ interface FireTag {
     parentTag?: string;
 }
 
-export interface NewTag {
+interface NewTag {
     id: string;
     name: string;
 }
