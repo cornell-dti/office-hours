@@ -75,7 +75,6 @@ export const createSeries = async (
 
     const startTime = moment(sessionSeries.startTime.toDate()).tz("America/New_York");
     const endTime = moment(sessionSeries.endTime.toDate()).tz("America/New_York");
-    console.log(endTime);
     const duration = endTime.diff(startTime);
 
     const courseStartTime = moment(courseData.startDate.toDate()).tz("America/New_York");
@@ -89,7 +88,7 @@ export const createSeries = async (
 
     datesToAdd.forEach( (sessionStart) => {
         // Do not add sessions before today or course start
-        const checkStart = sessionStart.clone().add(endTime.diff(startTime)).isBefore(now);
+        const checkStart = moment(sessionStart).add(duration).isBefore(now);
         if (checkStart || sessionStart.isBefore(courseStartTime)){ // add to get session end time
             return;
         }
