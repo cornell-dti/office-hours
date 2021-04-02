@@ -143,3 +143,17 @@ export const assignQuestionToTA = (
     batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
     batch.commit();
 }
+
+export const removeStudentQuestion = (
+    db: firebase.firestore.Firestore,
+    removeQuestionId: string | undefined
+) => {
+    if (removeQuestionId !== undefined) {
+        const batch = db.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
+        const questionUpdate: Partial<FireQuestion> = slotUpdate;
+        batch.update(db.doc(`questionSlots/${removeQuestionId}`), slotUpdate);
+        batch.update(db.doc(`questions/${removeQuestionId}`), questionUpdate);
+        batch.commit();
+    }    
+}

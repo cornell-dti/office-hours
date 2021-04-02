@@ -9,7 +9,7 @@ import LeaveQueue from '../includes/LeaveQueue';
 
 import { useCourse, useSession, useMyUser } from '../../firehooks';
 import { firestore } from '../../firebase';
-
+import { removeStudentQuestion } from '../../firebasefunctions/sessionQuestion'
 import TopBar from '../includes/TopBar';
 
 // Also update in the main LESS file
@@ -91,18 +91,9 @@ const SplitView = (props: {
     };
 
     const removeQuestion = () => {
-        if (removeQuestionId !== undefined) {
-            const batch = firestore.batch();
-            const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
-            const questionUpdate: Partial<FireQuestion> = slotUpdate;
-            batch.update(firestore.doc(`questionSlots/${removeQuestionId}`), slotUpdate);
-            batch.update(firestore.doc(`questions/${removeQuestionId}`), questionUpdate);
-            batch.commit();
-        }    
+        removeStudentQuestion(firestore, removeQuestionId);  
     }
-    
 
-    // Toggle warning
 
     return (
         <>
