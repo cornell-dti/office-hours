@@ -157,3 +157,22 @@ export const removeStudentQuestion = (
         batch.commit();
     }    
 }
+
+export const updateQuestion = (
+    db: firebase.firestore.Firestore,
+    virtualLocation: string,
+    questions: readonly FireQuestion[],
+    user: FireUser
+
+) => {
+    const batch = db.batch();
+
+    const questionUpdate: Partial<FireOHQuestion> = { answererLocation: virtualLocation };
+    questions.forEach((q) => {
+        if (q.answererId === user.userId && q.status === 'assigned') {
+            batch.update(db.doc(`questions/${q.questionId}`), questionUpdate);
+        }
+    });
+
+    batch.commit();
+}

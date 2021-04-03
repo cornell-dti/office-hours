@@ -7,12 +7,13 @@ import SessionQuestionsContainer from './SessionQuestionsContainer';
 
 import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile, 
     useAskerQuestions } from '../../firehooks';
+import { updateQuestion , updateVirtualLocation } from '../../firebasefunctions/sessionQuestion' 
 import { filterUnresolvedQuestions } from '../../utilities/questions';
-import { updateVirtualLocation } from '../../firebasefunctions/sessionQuestion';
+
 import { firestore } from '../../firebase';
 
 import NotifBell from '../../media/notifBellWhite.svg';
-// import SessionAlertModal from './SessionAlertModal';
+
 
 type Props = {
     course: FireCourse;
@@ -63,16 +64,7 @@ const SessionView = (
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
 
     const updateSessionProfile = useCallback((virtualLocation: string) => {
-        const batch = firestore.batch();
-
-        const questionUpdate: Partial<FireOHQuestion> = { answererLocation: virtualLocation };
-        questions.forEach((q) => {
-            if (q.answererId === user.userId && q.status === 'assigned') {
-                batch.update(firestore.doc(`questions/${q.questionId}`), questionUpdate);
-            }
-        });
-
-        batch.commit();
+        updateQuestion(firestore, virtualLocation, questions, user)
     }, [questions, user.userId]);
 
     useEffect(() => {
@@ -147,18 +139,6 @@ const SessionView = (
         });
     };
 
-    // RYAN_TODO: implement UNDO feature
-    /*
-    const handleUndoClick = (undoQuestion: Function, status: string, refetch: Function) => {
-        undoQuestion({
-            variables: {
-                questionId: undoQuestionId,
-                status: status
-            }
-        });
-    };
-    */
-
     const isOpen = (s: FireSession, interval: number): boolean => {
         const intervalInMilliseconds = interval * 1000 * 60;
         return s.startTime.toDate().getTime() - intervalInMilliseconds < new Date().getTime()
@@ -172,21 +152,15 @@ const SessionView = (
     );
 
     let undoText = '';
-    // RYAN_TODO: implement UNDO feature
-    // let undoStatus = 'unresolved';
     if (undoAction) {
         if (undoAction === 'resolved') {
             undoText = undoName + ' has been resolved! ';
-            // undoStatus = 'assigned';
         } else if (undoAction === 'no-show') {
             undoText = undoName + ' has been marked as a no-show. ';
-            // undoStatus = 'assigned';
         } else if (undoAction === 'retracted') {
             undoText = 'You have removed your question. ';
-            // undoStatus = 'unresolved';
         } else if (undoAction === 'assigned') {
             undoText = undoName + ' has been assigned to you! ';
-            // undoStatus = 'unresolved';
         }
     }
 
@@ -249,8 +223,6 @@ const SessionView = (
                         {undoText}
                         <span
                             className="undoLink"
-                        // RYAN_TODO
-                        // onClick={() => this._handleUndoClick(undoQuestion, refetch)}
                         >
                             Undo
                         </span>
@@ -279,17 +251,6 @@ const SessionView = (
                 setShowModal={setShowModal}
                 setRemoveQuestionId={setRemoveQuestionId}
             />
-            {/* {this.state.showAbsent && !this.state.dismissedAbsent && (
-                <SessionAlertModal
-                    color={'red'}
-                    description={'A TA has marked you as absent from this office hour ' +
-                        'and removed you from the queue.'}
-                    OHSession={this.props.session}
-                    buttons={['Continue']}
-                    cancelAction={() => this.setState({ dismissedAbsent: true })}
-                    displayShade={true}
-                />
-            )} */}
         </section>
     );
 };
