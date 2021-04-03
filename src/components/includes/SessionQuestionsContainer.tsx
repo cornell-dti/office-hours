@@ -4,8 +4,8 @@ import moment from 'moment';
 import addNotification from 'react-push-notification';
 import SessionQuestion from './SessionQuestion';
 import AddQuestion from "./AddQuestion";
-import DiscussionQuestion from "./DiscussionQuestion"
-
+import DiscussionQuestion from "./DiscussionQuestion";
+import SortArrows from '../../media/sortbyarrows.svg';
 
 // Maximum number of questions to be shown to user
 const NUM_QUESTIONS_SHOWN = 20;
@@ -73,6 +73,7 @@ const StudentMyQuestion = ({
                 <DiscussionQuestion 
                     question={studentQuestion as FireDiscussionQuestion}
                     user={user}
+                    users={{}}
                     tags={tags}
                     isTA={false}
                     includeRemove={true}
@@ -106,6 +107,8 @@ const SessionQuestionsContainer = (props: Props) => {
     const [sentNotification, setSentNotification] = React.useState(
         window.localStorage.getItem('questionUpNotif') === 'sent' || false
     );
+    const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
+    const [sortByUpvotes, setSortByUpvotes] = React.useState(true);
 
     React.useEffect(() => {
         try {
@@ -118,7 +121,7 @@ const SessionQuestionsContainer = (props: Props) => {
         }
     }, []);
     const allQuestions = props.questions;
-
+    
     const myQuestion = props.myQuestion;
 
 
@@ -126,6 +129,21 @@ const SessionQuestionsContainer = (props: Props) => {
 
     // Only display the top 10 questions on the queue
     const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN));
+
+    const filteredQuestions = filterByAnsweredQuestions ? shownQuestions.filter(question => question.status == "resolved") : 
+    shownQuestions.filter(question => question.status != "resolved");
+
+    let filteredSortedQuestions: FireDiscussionQuestion[] = [];
+
+    if (props.modality == "review") {
+        const filteredDiscussionQuestions = filteredQuestions.map(question => question as FireDiscussionQuestion);
+        if (filteredDiscussionQuestions.length < 2) {
+            filteredSortedQuestions = filteredDiscussionQuestions
+        } else {
+            filteredSortedQuestions = sortByUpvotes ? filteredDiscussionQuestions.sort((q1, q2) => q2.upvotedUsers.length - q1.upvotedUsers.length) : 
+            filteredDiscussionQuestions.sort((q1, q2) => q2.timeEntered.seconds - q1.timeEntered.seconds)
+        }
+    }
 
     // Make sure that the data has loaded and user has a question
     if (shownQuestions && myQuestion) {
@@ -206,13 +224,32 @@ const SessionQuestionsContainer = (props: Props) => {
                 />
             }
             {shownQuestions && shownQuestions.length > 0 && props.modality === "review" &&
-            <p className="QuestionHeader">All Questions</p>}
-            {shownQuestions &&  shownQuestions.length > 0 && props.modality === "review" &&
-                shownQuestions.map((question) => (
+            <div className="discussionHeaderWrapper">
+                <div className="discussionQuestionsSlider" onClick={() => setFilterByAnsweredQuestions(!filterByAnsweredQuestions)}>
+                    <div className={"discussionSliderSelector" + (filterByAnsweredQuestions ? " isSlided" : "")}></div>
+                    <div className={"discussionSliderOption" + (filterByAnsweredQuestions ? "" : " isSelected")} onClick={() => setFilterByAnsweredQuestions(!filterByAnsweredQuestions)}>Unanswered Questions</div>
+                    <div className={"discussionSliderOption" + (filterByAnsweredQuestions ? " isSelected" : "")} onClick={() => setFilterByAnsweredQuestions(!filterByAnsweredQuestions)}>Answered Questions</div>
+                </div>
+                <div className="sortDiscussionQuestionsWrapper" onClick={() => setSortByUpvotes(!sortByUpvotes)}>
+                    <div className="discussionArrowsContainer">
+                        <img className="sortDiscussionArrow" src={SortArrows} />
+                    </div>                  
+                    <p className="sortDiscussionQuestionsLabel">sort by</p>
+                    <div className="sortDiscussionQuestionsOptions">
+                        <div className={"sortDiscussionQuestionsOption" + (sortByUpvotes ? " optionChosen" : "")}>Most Upvotes</div>
+                        <div className={"sortDiscussionQuestionsOption" + (sortByUpvotes ? "" : " optionChosen")}>Most Recent</div>
+                    </div>
+                </div>
+            </div>
+
+            }
+            {filteredSortedQuestions &&  shownQuestions.length > 0 && props.modality === "review" &&
+                filteredSortedQuestions.map((question) => (
                     <DiscussionQuestion
                         key={question.questionId}
                         question={question as FireDiscussionQuestion}
                         user={props.user}
+                        users={props.users}
                         tags={props.tags}
                         isTA={props.isTA}
                         includeRemove={false}
