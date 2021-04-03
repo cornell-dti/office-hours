@@ -9,7 +9,7 @@ import LeaveQueue from '../includes/LeaveQueue';
 
 import { useCourse, useSession, useMyUser } from '../../firehooks';
 import { firestore } from '../../firebase';
-import { removeStudentQuestion } from '../../firebasefunctions/sessionQuestion'
+import { removeQuestionbyID } from '../../firebasefunctions/sessionQuestion'
 import TopBar from '../includes/TopBar';
 
 // Also update in the main LESS file
@@ -91,7 +91,7 @@ const SplitView = (props: {
     };
 
     const removeQuestion = () => {
-        removeStudentQuestion(firestore, removeQuestionId);  
+        removeQuestionbyID(firestore, removeQuestionId);  
     }
 
 

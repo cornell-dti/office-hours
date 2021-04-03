@@ -144,7 +144,7 @@ export const assignQuestionToTA = (
     batch.commit();
 }
 
-export const removeStudentQuestion = (
+export const removeQuestionbyID = (
     db: firebase.firestore.Firestore,
     removeQuestionId: string | undefined
 ) => {
