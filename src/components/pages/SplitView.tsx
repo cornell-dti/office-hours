@@ -153,7 +153,7 @@ const SplitView = (props: {
                                 <p> </p>
                                 <p> </p>
 
-                                {(Notification !== undefined) && Notification.permission === "granted" && (
+                                {((typeof Notification) !== "undefined") && Notification.permission === "granted" && (
                                     <div className="warningArea">
 
                                         <div>
