@@ -7,7 +7,6 @@ import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
 import Arrow from '../../media/arrow_discussion.svg';
 import CommentImage from '../../media/comment_discussion.svg';
-import CloseIcon from '../../media/CloseIcon.svg';
 import ResolvedIcon from '../../media/resolvedcheck.svg'
 import { markQuestionDone } from '../../firebasefunctions/sessionQuestion';
 
@@ -15,7 +14,7 @@ import { markQuestionDone } from '../../firebasefunctions/sessionQuestion';
 type Props = {
     question: FireDiscussionQuestion;
     readonly user: FireUser;
-    users: { readonly [userId: string]: FireUser }
+    users: { readonly [userId: string]: FireUser };
     tags: { readonly [tagId: string]: FireTag };
     isTA: boolean;
     includeRemove: boolean;
@@ -81,7 +80,7 @@ const DiscussionQuestion = (props: Props) => {
 
         <div className="discussionQuestion">
             <div className="discussionContainer">
-                { question.status == 'resolved' &&
+                { question.status === 'resolved' &&
                 <div className="resolvedDiscussionBadge">
                     <p className="resolvedDiscussionText">Resolved</p>
                     <img className="resolvedCheckImage" alt="Resolved check" src={ResolvedIcon} />
@@ -93,7 +92,8 @@ const DiscussionQuestion = (props: Props) => {
                             <button className="upvoteButton" type="button" aria-label="upvote" onClick={upvoteQuestion}>
                                 <img className="upvoteArrow" src={Arrow} alt="Upvote arrow" />
                             </button>
-                            <div className="upvoteCount">{question.upvotedUsers ? question.upvotedUsers.length : 0}</div>
+                            <div className="upvoteCount">{question.upvotedUsers ? 
+                                question.upvotedUsers.length : 0}</div>
                         </div>
                         {!props.isTA && 
                             <div className="discussionQuestionBody isStudentUserDiscussion">
@@ -102,12 +102,22 @@ const DiscussionQuestion = (props: Props) => {
                         }
                         {props.isTA && student && 
                             <div className="userPhotoAndNameWrapper">
-                                <img src={student.photoUrl ? student.photoUrl : '/placeholder.png'} className="discussionProfileImage"/>
-                                <p className="discussionProfileUserName">{student.firstName + ' ' + student.lastName}</p>
+                                <img
+                                    src={student.photoUrl ? student.photoUrl : '/placeholder.png'} 
+                                    className="discussionProfileImage"
+                                    alt="Student profile"
+                                />
+                                <p className="discussionProfileUserName">{student.firstName + ' ' + 
+                                student.lastName}</p>
                             </div>
                         }
                     </div>
-                    <button className="discussionCommentButton" onClick={() => setShowDiscComment(!showDiscComment)}>
+                    <button
+                        className="discussionCommentButton"
+                        onClick={() => 
+                            setShowDiscComment(!showDiscComment)}
+                        type="button"
+                    >
                         <img src={CommentImage} className="discussionCommentImage" alt="Discussion comment button"/>
                     </button>
                 </div>
@@ -126,8 +136,16 @@ const DiscussionQuestion = (props: Props) => {
                         }
                         <div className="tagsContainer">
                             <div className="discussionTags">
-                                {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} isDiscussion={true}/>}
-                                {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} isDiscussion={true}/>}
+                                {primaryTag && <SelectedTags
+                                    tag={primaryTag}
+                                    isSelected={false} 
+                                    isDiscussion={true}
+                                />}
+                                {secondaryTag && <SelectedTags
+                                    tag={secondaryTag}
+                                    isSelected={false} 
+                                    isDiscussion={true}
+                                />}
                             </div>
                         </div>
                     </div>
@@ -135,7 +153,8 @@ const DiscussionQuestion = (props: Props) => {
                         {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
                     </p>
                 </div>
-                {showDiscComment && (user.userId === props.question.askerId || props.isTA) && !props.isPast && <div className="CommentBox">
+                {showDiscComment && (user.userId === props.question.askerId || props.isTA) && 
+                !props.isPast && <div className="CommentBox">
                     <div className="commentTopBar">
                         <img
                             className="userInformationImg"
@@ -154,19 +173,19 @@ const DiscussionQuestion = (props: Props) => {
                         onCancel={() => {setShowDiscComment(false);}}
                     />
                 </div>} 
-                    { props.includeRemove && !props.isPast &&
+                { props.includeRemove && !props.isPast &&
                 <div className="discussionButtons">
                     <hr className="discussionDivider"/>
                     <div className="discussionRemoveButtonWrapper">
-                        <button className="discussionRemoveButton" onClick={retractQuestion}>
+                        <button className="discussionRemoveButton" onClick={retractQuestion} type="button">
                             <Icon className="discussionRemoveIcon" name="close"/>Remove
                         </button>
                     </div>
                 </div> }
-                    {!props.isPast && props.isTA && question.status != 'resolved' &&
+                {!props.isPast && props.isTA && question.status !== 'resolved' &&
                 <div className="discussionTAActionsWrapper">
                     <hr className="discussionDivider" />
-                    <button className="discussionDoneButton" onClick={resolveQuestion}>
+                    <button className="discussionDoneButton" onClick={resolveQuestion} type="button">
                         Done
                     </button>
                 </div>

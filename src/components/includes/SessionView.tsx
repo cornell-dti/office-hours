@@ -262,7 +262,8 @@ const SessionView = (
                 isTA={isTa}
                 modality={session.modality}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
-                questions={session.modality == 'review' ? questions.filter(q => q.status !== 'retracted') : questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
+                questions={session.modality === 'review' ? questions.filter(q => q.status !== 'retracted') : 
+                    questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
                 users={users}
                 tags={tags}
                 handleJoinClick={joinCallback}
@@ -296,6 +297,6 @@ const SessionView = (
 export default (props: Omit<Props, 'questions'>) => {
     const isTa = props.user.roles[props.course.courseId] !== undefined;
     const questions = props.session.modality === 'review' ? useSessionQuestions(props.session.sessionId, true) :
-    filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));
+        filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));
     return <SessionView questions={questions} {...props} />;
 };

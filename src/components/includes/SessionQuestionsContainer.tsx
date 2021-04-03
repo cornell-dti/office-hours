@@ -130,18 +130,20 @@ const SessionQuestionsContainer = (props: Props) => {
     // Only display the top 10 questions on the queue
     const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN));
 
-    const filteredQuestions = filterByAnsweredQuestions ? shownQuestions.filter(question => question.status == "resolved") : 
-    shownQuestions.filter(question => question.status != "resolved");
+    const filteredQuestions = filterByAnsweredQuestions ? 
+        shownQuestions.filter(question => question.status === 'resolved') : 
+        shownQuestions.filter(question => question.status !== 'resolved');
 
     let filteredSortedQuestions: FireDiscussionQuestion[] = [];
 
-    if (props.modality == "review") {
+    if (props.modality === 'review') {
         const filteredDiscussionQuestions = filteredQuestions.map(question => question as FireDiscussionQuestion);
         if (filteredDiscussionQuestions.length < 2) {
             filteredSortedQuestions = filteredDiscussionQuestions
         } else {
-            filteredSortedQuestions = sortByUpvotes ? filteredDiscussionQuestions.sort((q1, q2) => q2.upvotedUsers.length - q1.upvotedUsers.length) : 
-            filteredDiscussionQuestions.sort((q1, q2) => q2.timeEntered.seconds - q1.timeEntered.seconds)
+            filteredSortedQuestions = sortByUpvotes ? 
+                filteredDiscussionQuestions.sort((q1, q2) => q2.upvotedUsers.length - q1.upvotedUsers.length) : 
+                filteredDiscussionQuestions.sort((q1, q2) => q2.timeEntered.seconds - q1.timeEntered.seconds)
         }
     }
 
@@ -225,10 +227,20 @@ const SessionQuestionsContainer = (props: Props) => {
             }
             {shownQuestions && shownQuestions.length > 0 && props.modality === "review" &&
             <div className="discussionHeaderWrapper">
-                <div className="discussionQuestionsSlider" onClick={() => setFilterByAnsweredQuestions(!filterByAnsweredQuestions)}>
-                    <div className={"discussionSliderSelector" + (filterByAnsweredQuestions ? " isSlided" : "")}></div>
-                    <div className={"discussionSliderOption" + (filterByAnsweredQuestions ? "" : " isSelected")} onClick={() => setFilterByAnsweredQuestions(!filterByAnsweredQuestions)}>Unanswered Questions</div>
-                    <div className={"discussionSliderOption" + (filterByAnsweredQuestions ? " isSelected" : "")} onClick={() => setFilterByAnsweredQuestions(!filterByAnsweredQuestions)}>Answered Questions</div>
+                <div
+                    className="discussionQuestionsSlider"
+                    onClick={() => 
+                        setFilterByAnsweredQuestions(!filterByAnsweredQuestions)}
+                >
+                    <div className={"discussionSliderSelector" + (filterByAnsweredQuestions ? " isSlided" : "")} />
+                    <div
+                        className={"discussionSliderOption" + (filterByAnsweredQuestions ? "" : " isSelected")} 
+                        onClick={() => setFilterByAnsweredQuestions(!filterByAnsweredQuestions)}
+                    >Unanswered Questions</div>
+                    <div
+                        className={"discussionSliderOption" + (filterByAnsweredQuestions ? " isSelected" : "")} 
+                        onClick={() => setFilterByAnsweredQuestions(!filterByAnsweredQuestions)}
+                    >Answered Questions</div>
                 </div>
                 <div className="sortDiscussionQuestionsWrapper" onClick={() => setSortByUpvotes(!sortByUpvotes)}>
                     <div className="discussionArrowsContainer">
@@ -236,8 +248,10 @@ const SessionQuestionsContainer = (props: Props) => {
                     </div>                  
                     <p className="sortDiscussionQuestionsLabel">sort by</p>
                     <div className="sortDiscussionQuestionsOptions">
-                        <div className={"sortDiscussionQuestionsOption" + (sortByUpvotes ? " optionChosen" : "")}>Most Upvotes</div>
-                        <div className={"sortDiscussionQuestionsOption" + (sortByUpvotes ? "" : " optionChosen")}>Most Recent</div>
+                        <div className={"sortDiscussionQuestionsOption" + (sortByUpvotes ? " optionChosen" : "")}>
+                            Most Upvotes</div>
+                        <div className={"sortDiscussionQuestionsOption" + (sortByUpvotes ? "" : " optionChosen")}>
+                            Most Recent</div>
                     </div>
                 </div>
             </div>
