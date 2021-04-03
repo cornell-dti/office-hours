@@ -257,7 +257,7 @@ const SessionQuestionsContainer = (props: Props) => {
             </div>
 
             }
-            {filteredSortedQuestions &&  shownQuestions.length > 0 && props.modality === "review" &&
+            {filteredSortedQuestions &&  shownQuestions.length > 0 && props.modality === 'review' &&
                 filteredSortedQuestions.map((question) => (
                     <DiscussionQuestion
                         key={question.questionId}
@@ -272,7 +272,7 @@ const SessionQuestionsContainer = (props: Props) => {
                     />
                 ))
             }
-            {shownQuestions && shownQuestions.length > 0 && props.modality !== "review" && props.isTA &&
+            {shownQuestions && shownQuestions.length > 0 && props.modality !== 'review' && props.isTA &&
                 shownQuestions.map((question, i: number) => (
                     <SessionQuestion
                         key={question.questionId}
