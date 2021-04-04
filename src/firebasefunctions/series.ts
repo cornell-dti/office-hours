@@ -29,7 +29,8 @@ export const createSeries = async (
 
     datesToAdd.forEach((sessionStart) => {
         // Do not add sessions before today or course start
-        if (sessionStart.isBefore(now) || sessionStart.isBefore(courseStartTime)) {
+        const checkStart = sessionStart.clone().add(endTime.diff(startTime)).isBefore(now);
+        if (checkStart || sessionStart.isBefore(courseStartTime)){ // add to get session end time
             return;
         }
 
