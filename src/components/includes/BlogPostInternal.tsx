@@ -88,7 +88,10 @@ const BlogPostInternal = ({blogPost}: Props) => {
                             onChange={e => setDescription(e.target.value)}
                         />
                         <div className="blogPost__changeList">
-                            <div className='changeList__add-listItem' onClick={() => addListItem()}>Add a new change</div>
+                            <div 
+                                className='changeList__add-listItem' 
+                                onClick={() => addListItem()}
+                            >Add a new change</div>
                             <ul className="changeList__list">
                                 {changeList.map(bulletPoint => (
                                     <li className="changeList__item">
