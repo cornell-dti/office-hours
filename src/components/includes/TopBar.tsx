@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from 'semantic-ui-react';
-import { logOut } from '../../firebasefunctions';
+import { logOut } from '../../firebasefunctions/user';
 import Logo from '../../media/QLogo2.svg';
 import CalendarHeader from './CalendarHeader';
 import ProfessorStudentToggle from './ProfessorStudentToggle';
@@ -15,6 +15,7 @@ const TopBar = (props: {
     // controls where "switch view" goes
     context: string;
     course?: FireCourse;
+    admin?: boolean;
 }) => {
     const [showMenu, setShowMenu] = useState(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : '/placeholder.png');
@@ -30,7 +31,8 @@ const TopBar = (props: {
                     <div className="viewToggles">
                         <CalendarHeader
                             currentCourseCode={(props.course && props.course.code) || 'Courses'}
-                            role={props.user && props.course && (props.user.roles[props.course.courseId] || 'student')}
+                            role={props.user && props.course 
+                                    && (props.user.roles[props.course.courseId] || 'student' || props.admin)}
                         />
                         {props.role === 'professor' && 
                             <ProfessorStudentToggle

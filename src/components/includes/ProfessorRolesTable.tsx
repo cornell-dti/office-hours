@@ -3,7 +3,7 @@ import { Dropdown, Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
 import { firestore } from '../../firebase';
 import { useCourse, useCourseUsers, useMyUser } from '../../firehooks';
-import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions';
+import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions/importProfessorsOrTAs';
 
 const RoleDropdown = ({ user, course, disabled }: {
     readonly user: EnrichedFireUser;
@@ -74,66 +74,62 @@ export default ({ courseId, isAdminView }: { courseId: string; isAdminView: bool
 
     const importButton = () => {
         return (
-            <Table.Row>
-                <Table.Cell>
-                    <button type="button" onClick={importProfessorsButtonOnClick}>Import Professors</button>
-                </Table.Cell>
-                <Table.Cell>
-                    <button type="button" onClick={importTAButtonOnClick}>Import TAs</button>
-                </Table.Cell> 
-            </Table.Row>
+            <div className="import-buttons">
+                <button type="button" onClick={importProfessorsButtonOnClick}>Import Professors</button>
+                <button type="button" onClick={importTAButtonOnClick}>Import TAs</button>
+            </div>
         )
     };
 
     return (
-        <Table sortable={true} celled={true} fixed={true} className="rolesTable">
-            <Table.Header>
-                <Table.Row>
-                    <Table.HeaderCell
-                        sorted={column === 'firstName' ? direction : undefined}
-                        onClick={handleSort('firstName')}
-                    >
-                        First Name
-                    </Table.HeaderCell>
-                    <Table.HeaderCell
-                        sorted={column === 'lastName' ? direction : undefined}
-                        onClick={handleSort('lastName')}
-                    >
-                        Last Name
-                    </Table.HeaderCell>
-                    <Table.HeaderCell
-                        sorted={column === 'email' ? direction : undefined}
-                        onClick={handleSort('email')}
-                    >
-                        Email
-                    </Table.HeaderCell>
-                    <Table.HeaderCell
-                        sorted={column === 'role' ? direction : undefined}
-                        onClick={handleSort('role')}
-                    >
-                        Role
-                    </Table.HeaderCell>
-                </Table.Row>
-            </Table.Header>
-            <Table.Body>
-                <Table.Row>
-                    {isAdminView && importButton()}
-                </Table.Row>
-                {course && sortedCourseUsers.map(u => (
-                    <Table.Row key={u.userId}>
-                        <Table.Cell>{u.firstName}</Table.Cell>
-                        <Table.Cell>{u.lastName}</Table.Cell>
-                        <Table.Cell>{u.email}</Table.Cell>
-                        <Table.Cell textAlign="right" className="dropdownCell">
-                            <RoleDropdown
-                                user={u}
-                                course={course}
-                                disabled={u.email === self?.email}
-                            />
-                        </Table.Cell>
+        <div className="rolesTable">
+            {isAdminView && importButton()}
+            <Table sortable={true} celled={true} fixed={true}>
+                <Table.Header>
+                    <Table.Row>
+                        <Table.HeaderCell
+                            sorted={column === 'firstName' ? direction : undefined}
+                            onClick={handleSort('firstName')}
+                        >
+                            First Name
+                        </Table.HeaderCell>
+                        <Table.HeaderCell
+                            sorted={column === 'lastName' ? direction : undefined}
+                            onClick={handleSort('lastName')}
+                        >
+                            Last Name
+                        </Table.HeaderCell>
+                        <Table.HeaderCell
+                            sorted={column === 'email' ? direction : undefined}
+                            onClick={handleSort('email')}
+                        >
+                            Email
+                        </Table.HeaderCell>
+                        <Table.HeaderCell
+                            sorted={column === 'role' ? direction : undefined}
+                            onClick={handleSort('role')}
+                        >
+                            Role
+                        </Table.HeaderCell>
                     </Table.Row>
-                ))}
-            </Table.Body>
-        </Table>
+                </Table.Header>
+                <Table.Body>
+                    {course && sortedCourseUsers.map(u => (
+                        <Table.Row key={u.userId}>
+                            <Table.Cell>{u.firstName}</Table.Cell>
+                            <Table.Cell>{u.lastName}</Table.Cell>
+                            <Table.Cell>{u.email}</Table.Cell>
+                            <Table.Cell textAlign="right" className="dropdownCell">
+                                <RoleDropdown
+                                    user={u}
+                                    course={course}
+                                    disabled={u.email === self?.email}
+                                />
+                            </Table.Cell>
+                        </Table.Row>
+                    ))}
+                </Table.Body>
+            </Table>
+        </div>
     );
 };
