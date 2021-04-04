@@ -58,7 +58,8 @@ const AddBlogPost = () => {
                 />
                 <textarea 
                     placeholder='Write a brief summary of the changes' 
-                    value={description} className='addPost__description' 
+                    value={description} 
+                    className='addPost__description' 
                     onChange={e => setDescription(e.target.value)}
                 />
                 <div className="addPost__changeList">
@@ -67,8 +68,8 @@ const AddBlogPost = () => {
                     <ul className="changeList__list">
                         {changeList.map(bulletPoint => (
                             <li className="changeList__item">
-                              <input type="text" value={bulletPoint} onChange={e => editListItem(e, bulletPoint)}/>
-                              <div className="changeList__delete" onClick={e => deleteListItem(e)}>x</div>
+                                <input type="text" value={bulletPoint} onChange={e => editListItem(e, bulletPoint)}/>
+                                <div className="changeList__delete" onClick={e => deleteListItem(e)}>x</div>
                             </li>
                         ))}
                     </ul>

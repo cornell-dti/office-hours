@@ -56,7 +56,7 @@ const BlogPostInternal = ({blogPost}: Props) => {
         <>
             {!editable ? (<Grid item xl={3} lg={4} md={6} xs={12} key={blogPost.postId}>
                 <Card className="blogPost">
-                    <div className="dropdown__top"></div>
+                    <div className="dropdown__top"/>
                     <div className="dropdown__menu">
                         <p className="dropdown__item" onClick={() => setEditable(true)}>Edit</p>
                         <p className="dropdown__item" onClick={() => deletePost()}>Delete</p>
@@ -70,14 +70,15 @@ const BlogPostInternal = ({blogPost}: Props) => {
                     </ul>
                 </Card>
             </Grid>) 
-              : 
+                : 
                 (<Grid item xl={3} lg={4} md={6} xs={12} key={blogPost.postId}>
                     <Card className="blogPost">
                         <div className="dropdown__top" />
                         <div className="dropdown__menu">
                             <p className="dropdown__item" onClick={() => deletePost()}>Delete</p>
                         </div>
-                        <input className="blogPost__title-editable" 
+                        <input 
+                            className="blogPost__title-editable" 
                             value={title} 
                             onChange={e => setTitle(e.target.value)}
                         />
@@ -87,12 +88,12 @@ const BlogPostInternal = ({blogPost}: Props) => {
                             onChange={e => setDescription(e.target.value)}
                         />
                         <div className="blogPost__changeList">
-                        <div className='changeList__add-listItem' onClick={() => addListItem()}>Add a new change</div>
+                            <div className='changeList__add-listItem' onClick={() => addListItem()}>Add a new change</div>
                             <ul className="changeList__list">
                                 {changeList.map(bulletPoint => (
                                     <li className="changeList__item">
-                                      <textarea value={bulletPoint} onChange={e => editListItem(e, bulletPoint)}/>
-                                      <div className="changeList__delete" onClick={e => deleteListItem(e)}>x</div>
+                                        <textarea value={bulletPoint} onChange={e => editListItem(e, bulletPoint)}/>
+                                        <div className="changeList__delete" onClick={e => deleteListItem(e)}>x</div>
                                     </li>
                                 ))}
                             </ul>
