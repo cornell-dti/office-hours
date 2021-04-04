@@ -180,7 +180,7 @@ interface FireDiscussionQuestion extends FireQuestion {
 }
 
 interface BlogPost {
-    postId : string;
+    postId: string;
     title: string;
     description: string;
     listItems: string[];

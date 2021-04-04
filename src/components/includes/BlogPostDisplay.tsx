@@ -6,15 +6,15 @@ import BlogPostInternal from './BlogPostInternal';
 
 
 const BlogPostDisplay = () => {
-  const blogPosts = useAllBlogPosts();
-  return (
+    const blogPosts = useAllBlogPosts();
+    return (
 
-    <Grid container direction="row" alignItems={'stretch'} spacing={3} className="blogPostsWrapper">
-      {blogPosts.map(blogPost => (
-        <BlogPostInternal blogPost={blogPost} />
-      ))}
-    </Grid>
-  )
+      <Grid container direction="row" alignItems={'stretch'} spacing={3} className="blogPostsWrapper">
+        {blogPosts.map(blogPost => (
+          <BlogPostInternal blogPost={blogPost} />
+        ))}
+      </Grid>
+    )
 }
 
 
