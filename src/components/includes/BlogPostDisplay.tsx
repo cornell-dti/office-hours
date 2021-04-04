@@ -11,7 +11,7 @@ const BlogPostDisplay = () => {
 
         <Grid container direction="row" alignItems={'stretch'} spacing={3} className="blogPostsWrapper">
             {blogPosts.map(blogPost => (
-              <BlogPostInternal blogPost={blogPost} />
+                <BlogPostInternal blogPost={blogPost} />
             ))}
         </Grid>
     )

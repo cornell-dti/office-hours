@@ -4,8 +4,6 @@ import {Grid} from '@material-ui/core'
 import TopBar from '../includes/TopBar';
 import AdminCourseCard from '../includes/AdminCourseCard';
 import AdminCourseCreator from '../includes/AdminCourseCreator';
-import AddBlogPost from '../includes/AddBlogPost';
-import BlogPostDisplay from '../includes/BlogPostDisplay';
 import { useAllCourses, useMyUser } from '../../firehooks';
 import { CURRENT_SEMESTER } from '../../constants';
 
