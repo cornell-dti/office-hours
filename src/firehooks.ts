@@ -266,6 +266,15 @@ export const useSessionProfile: (
 ) => FireVirtualSessionProfile | undefined =
     (userId, sessionId) => useDoc(`/sessions/${sessionId}/profiles`, userId, 'userId');
 
+const allBlogPostsObservable: Observable<readonly BlogPost[]> = loggedIn$.pipe(
+    switchMap(() => collectionData<BlogPost>(firestore.collection('blogPosts'), 'postId'))
+);
+
+const allBlogPostsSingletonObservable = new SingletonObservable([], allBlogPostsObservable);
+
+export const useAllBlogPosts: () => readonly BlogPost[] =
+    createUseSingletonObservableHook(allBlogPostsSingletonObservable);
+
 // Primatives
 // Look up a doc in Firebase by ID
 export const useCourse = (courseId: string | undefined): FireCourse | undefined =>

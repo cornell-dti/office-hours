@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState} from 'react';
 import { firestore } from '../../firebase';
 
 const AdminEditableCourseCard = ({ course }: { readonly course: FireCourse }) => {

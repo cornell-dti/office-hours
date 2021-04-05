@@ -72,6 +72,10 @@ $mobile-breakpoint: 920px;
 @import "./courses/CourseCard";
 @import "./courses/CourseSelection";
 
+// Blog Posts
+@import "./blogPosts/AddBlogPost.scss";
+@import "./blogPosts/BlogPostDisplay.scss";
+
 #root {
    height: 100%;
 }

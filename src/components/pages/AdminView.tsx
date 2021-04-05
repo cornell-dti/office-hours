@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import {Grid} from '@material-ui/core'
 
 import TopBar from '../includes/TopBar';
-import AdminCourseCard from "../includes/AdminCourseCard"
-import AdminCourseCreator from "../includes/AdminCourseCreator"
+import AdminCourseCard from '../includes/AdminCourseCard';
+import AdminCourseCreator from '../includes/AdminCourseCreator';
 import { useAllCourses, useMyUser } from '../../firehooks';
 import { CURRENT_SEMESTER } from '../../constants';
 
