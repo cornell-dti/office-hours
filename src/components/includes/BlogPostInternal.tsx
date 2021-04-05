@@ -69,13 +69,15 @@ const BlogPostInternal = ({blogPost}: Props) => {
                         <p className="blogPost__author">QueueMeIn Team</p>
                         <p className="blogPost__separator">&bull;</p>
                         {moment(blogPost.timeEntered.toDate()).isSame(moment(), 'day') ? (<Moment 
-                              className="blogPost__date" 
-                              date={blogPost.timeEntered.toDate()} 
-                              interval={0} format={'hh:mm A on Y'} 
+                            className="blogPost__date" 
+                            date={blogPost.timeEntered.toDate()} 
+                            interval={0} 
+                            format={'hh:mm A on Y'} 
                         />) : (<Moment 
                             className="blogPost__date" 
                             date={blogPost.timeEntered.toDate()} 
-                            interval={0} format={'MMMM D, Y'} 
+                            interval={0} 
+                            format={'MMMM D, Y'} 
                         />)}
                     </div>
                     <p className="blogPost__description">{blogPost.description}</p>
@@ -84,11 +86,12 @@ const BlogPostInternal = ({blogPost}: Props) => {
                             <li>{change}</li>
                         ))}
                     </ul>
-                        <Moment 
-                            className="blogPost__dateEdited" 
-                            date={blogPost.timeEntered.toDate()} 
-                            interval={0} format={'[Edited] MMMM D, Y'} 
-                        />
+                    <Moment 
+                        className="blogPost__dateEdited" 
+                        date={blogPost.timeEntered.toDate()} 
+                        interval={0} 
+                        format={'[Edited] MMMM D, Y'} 
+                    />
                 </Card>
             </Grid>) 
                 : 
