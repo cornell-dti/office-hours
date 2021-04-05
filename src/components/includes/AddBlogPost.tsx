@@ -13,7 +13,7 @@ const AddBlogPost = () => {
     const submitPost = (e: React.FormEvent) => {
         e.preventDefault();
         if(description === '' || title === '') return;
-        setChangeList(changeList.filter(item => item != ''))
+        setChangeList(changeList.filter(item => item !== ''))
         addBlogPost(auth.currentUser, firestore, title, description, [...changeList])
         setTitle('');
         setDescription('');
@@ -41,7 +41,7 @@ const AddBlogPost = () => {
     }
 
     const moveDropdown = () => {
-        if (dropdown == 'dropped') dropdownToggle('closed');
+        if (dropdown === 'dropped') dropdownToggle('closed');
         else dropdownToggle('dropped');
     }
 
