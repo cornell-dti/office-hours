@@ -170,5 +170,35 @@
           outline: none;
         }
     }
+    &__authorDate {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      font-weight: 500;
+      font-style: italic;
+      .blogPost__author {
+        margin: .75rem;
+        padding: 0;
+      }
+      .blogPost__date {
+        margin: .75rem;
+        padding: 0;
+      }
+      .blogPost__separator {
+        padding: 0;
+        margin: 0;
+      }
+    }
+    &__dateEdited {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      font-style: italic;
+      font-size: 9px;
+      margin: 0;
+      padding: 0;
+    }
   }
 }

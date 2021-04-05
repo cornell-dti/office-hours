@@ -1,5 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import {Card, Grid} from '@material-ui/core';
+import 'moment-timezone';
+import Moment from 'react-moment'
+import moment from 'moment'
 
 import {editBlogPost, deleteBlogPost} from '../../firebasefunctions/blogPost';
 import { firestore, auth } from '../../firebase';
@@ -13,21 +16,21 @@ const BlogPostInternal = ({blogPost}: Props) => {
         setDescription(blogPost.description);
     }, [blogPost])
     const [editable, setEditable] = useState(false)
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
     const [changeList, setChangeList] = useState<string[]>(blogPost.listItems);
 
     const addListItem = () => {
-        setChangeList([...changeList, ""])
+        setChangeList([...changeList, '']);
     }
 
     const deleteListItem = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         const delButton = e.target as Element;
         const inputOfDelButton = delButton?.parentNode?.childNodes[0] as HTMLInputElement;
         const remIndex = changeList.indexOf(inputOfDelButton.value);
-        const newChangeList = [...changeList]
+        const newChangeList = [...changeList];
         newChangeList.splice(remIndex, 1);
-        setChangeList(newChangeList)
+        setChangeList(newChangeList);
     }
 
     const editListItem = (e: React.ChangeEvent<HTMLTextAreaElement>, bulletPoint: string) => {
@@ -40,14 +43,14 @@ const BlogPostInternal = ({blogPost}: Props) => {
     const editPost = (e: React.FormEvent) => {
         e.preventDefault();
         editBlogPost(auth.currentUser, firestore, {...blogPost, title, description, listItems : [...changeList]})
-        setTitle("");
-        setDescription("");
-        setChangeList(["", ""])
+        setTitle('');
+        setDescription('');
+        setChangeList(['', ''])
         setEditable(false);
     }
 
     const deletePost = () => {
-        if(window.confirm("Are you sure you want to delete this post?")) {
+        if(window.confirm('Are you sure you want to delete this post?')) {
             deleteBlogPost(auth.currentUser, firestore, blogPost.postId);
         }
     }
@@ -62,12 +65,30 @@ const BlogPostInternal = ({blogPost}: Props) => {
                         <p className="dropdown__item" onClick={() => deletePost()}>Delete</p>
                     </div>
                     <h3 className="blogPost__title">{blogPost.title}</h3>
+                    <div className="blogPost__authorDate">
+                        <p className="blogPost__author">QueueMeIn Team</p>
+                        <p className="blogPost__separator">&bull;</p>
+                        {moment(blogPost.timeEntered.toDate()).isSame(moment(), 'day') ? (<Moment 
+                              className="blogPost__date" 
+                              date={blogPost.timeEntered.toDate()} 
+                              interval={0} format={'hh:mm A on Y'} 
+                        />) : (<Moment 
+                            className="blogPost__date" 
+                            date={blogPost.timeEntered.toDate()} 
+                            interval={0} format={'MMMM D, Y'} 
+                        />)}
+                    </div>
                     <p className="blogPost__description">{blogPost.description}</p>
                     <ul className="blogPost__list">
                         {blogPost.listItems.length > 0 && blogPost.listItems.map(change => (
                             <li>{change}</li>
                         ))}
                     </ul>
+                        <Moment 
+                            className="blogPost__dateEdited" 
+                            date={blogPost.timeEntered.toDate()} 
+                            interval={0} format={'[Edited] MMMM D, Y'} 
+                        />
                 </Card>
             </Grid>) 
                 : 
@@ -89,7 +110,7 @@ const BlogPostInternal = ({blogPost}: Props) => {
                         />
                         <div className="blogPost__changeList">
                             <div 
-                                className='changeList__add-listItem' 
+                                className="changeList__add-listItem"
                                 onClick={() => addListItem()}
                             >Add a new change</div>
                             <ul className="changeList__list">

@@ -42,7 +42,7 @@ export const editBlogPost = (user: firebase.User | null, db: firebase.firestore.
 export const deleteBlogPost = (
     user: firebase.User | null, 
     db: firebase.firestore.Firestore, 
-    postId: BlogPost["postId"]
+    postId: BlogPost['postId']
 ) => {
     if (user != null) {
         const postRef = db.collection('blogPosts').doc(postId);

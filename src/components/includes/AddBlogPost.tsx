@@ -1,27 +1,27 @@
-import React, {useState} from 'react'
+import React, {useState} from 'react';
 
 import {addBlogPost} from '../../firebasefunctions/blogPost';
 import { firestore, auth } from '../../firebase';
 
 
 const AddBlogPost = () => {
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [changeList, setChangeList] = useState<string[]>(["", ""]);
-    const [dropdown, dropdownToggle] = useState("closed")
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [changeList, setChangeList] = useState<string[]>(['', '']);
+    const [dropdown, dropdownToggle] = useState('closed');
 
     const submitPost = (e: React.FormEvent) => {
         e.preventDefault();
-        if(description === "" || title === "") return;
-        setChangeList(changeList.filter(item => item != ""))
+        if(description === '' || title === '') return;
+        setChangeList(changeList.filter(item => item != ''))
         addBlogPost(auth.currentUser, firestore, title, description, [...changeList])
-        setTitle("");
-        setDescription("");
-        setChangeList(["", ""])
+        setTitle('');
+        setDescription('');
+        setChangeList(['', '']);
     }
 
     const addListItem = () => {
-        setChangeList([...changeList, ""])
+        setChangeList([...changeList, '']);
     }
 
     const deleteListItem = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -30,7 +30,7 @@ const AddBlogPost = () => {
         const remIndex = changeList.indexOf(inputOfDelButton.value);
         const newChangeList = [...changeList]
         newChangeList.splice(remIndex, 1);
-        setChangeList(newChangeList)
+        setChangeList(newChangeList);
     }
 
     const editListItem = (e: React.ChangeEvent<HTMLInputElement>, bulletPoint: string) => {
@@ -41,8 +41,8 @@ const AddBlogPost = () => {
     }
 
     const moveDropdown = () => {
-        if (dropdown == "dropped") dropdownToggle("closed")
-        else dropdownToggle("dropped")
+        if (dropdown == 'dropped') dropdownToggle('closed');
+        else dropdownToggle('dropped');
     }
 
     return (
@@ -50,16 +50,16 @@ const AddBlogPost = () => {
             <div className="headerButton" onClick={() => moveDropdown()}>Create Blog Post</div>
             <div className={`addPost ${dropdown}`}>
                 <input 
-                    type='text' 
-                    placeholder='Title' 
-                    className='addPost__title' 
+                    type="text'"
+                    placeholder="Title"
+                    className="addPost__title" 
                     value={title} 
                     onChange={e => setTitle(e.target.value)}
                 />
                 <textarea 
-                    placeholder='Write a brief summary of the changes' 
+                    placeholder="Write a brief summary of the changes"
                     value={description} 
-                    className='addPost__description' 
+                    className="addPost__description"
                     onChange={e => setDescription(e.target.value)}
                 />
                 <div className="addPost__changeList">
@@ -74,7 +74,7 @@ const AddBlogPost = () => {
                         ))}
                     </ul>
                 </div>
-                <button type="button" className='addPost__submit' onClick={e => submitPost(e)}>Submit</button>
+                <button type="button" className="addPost__submit" onClick={e => submitPost(e)}>Submit</button>
             </div>
         </>
     )
