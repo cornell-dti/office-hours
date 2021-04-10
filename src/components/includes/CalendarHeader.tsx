@@ -6,7 +6,7 @@ import { useMyCourses } from '../../firehooks';
 
 import { CURRENT_SEMESTER } from '../../constants';
 
-import Toggle from '../../media/Toggle.svg'; 
+import Toggle from '../../media/Toggle.svg';
 
 type Props = {
     readonly currentCourseCode: string;
@@ -15,13 +15,16 @@ type Props = {
 };
 
 
-export default ({ currentCourseCode, role}: Props): React.ReactElement => {
+export default ({ currentCourseCode, role }: Props): React.ReactElement => {
     const [showMenu, setShowMenu] = React.useState(false);
     const [showCourses, setShowCourses] = React.useState(false);
     const ref = React.useRef<HTMLDivElement>(null);
     const courses = useMyCourses();
 
     const handleClick = (e: globalThis.MouseEvent) => {
+        if (ref.current && !ref.current.contains(e.target as Node)) {
+            setShowMenu(false);
+        }
         if (ref.current && !ref.current.contains(e.target as Node)) {
             setShowCourses(false);
         }
@@ -48,7 +51,7 @@ export default ({ currentCourseCode, role}: Props): React.ReactElement => {
                         {courses.filter((c) => c.semester === CURRENT_SEMESTER).map((course) =>
                             <li key={course.courseId}>
                                 <a
-                                    className={course.code === currentCourseCode ? "thisCourse":""}
+                                    className={course.code === currentCourseCode ? "thisCourse" : ""}
                                     href={'/course/' + course.courseId}
                                     onClick={() =>
                                         window.localStorage.setItem('lastid', String(course.courseId))}
