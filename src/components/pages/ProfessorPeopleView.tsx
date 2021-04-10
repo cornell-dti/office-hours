@@ -8,7 +8,7 @@ import QuestionsLineChart from '../includes/QuestionsLineChart';
 import QuestionsBarChart from '../includes/QuestionsBarChart';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
-import { useMyUser, useCourse, useCourseUsersMap , useCoursesBetweenDates } from '../../firehooks';
+import { useMyUser, useCourse, useCourseUsersMap, useCoursesBetweenDates } from '../../firehooks';
 import TopBar from '../includes/TopBar';
 import { firestore } from '../../firebase';
 
