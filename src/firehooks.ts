@@ -3,13 +3,15 @@ import { useState, useEffect } from 'react';
 import firebase from 'firebase/app';
 import { collectionData, docData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable, of, combineLatest } from 'rxjs';
+import moment from 'moment';
 import { firestore, loggedIn$ } from './firebase';
 import {
     SingletonObservable,
     createUseSingletonObservableHook,
     createUseParamaterizedSingletonObservableHook
 } from './utilities/singleton-observable-hook';
+
 
 export const useDoc = <T>(collection: string, id: string | undefined, idField: string) => {
     const [doc, setDoc] = useState<T | undefined>();
@@ -83,6 +85,76 @@ export const useBatchQueryWithLoading = <T, P = string>(
     return result;
 };
 
+export const useProfessorViewSessions = (
+    db: firebase.firestore.Firestore,
+    courseId: string, 
+    selectedWeekEpoch: number, 
+    ONE_DAY: number
+) => {
+
+    const [result, setResult] = useState<FireSession[]>([]);
+
+    useEffect(
+        () => {
+            const results$: Observable<FireSession[]> = collectionData(
+                db
+                    .collection('sessions')
+                    .where('courseId', '==', courseId)
+                    .where('startTime', '>=', new Date(selectedWeekEpoch))
+                    .where('startTime', '<=', new Date(selectedWeekEpoch + 7 * ONE_DAY)), 'sessionId');
+
+            const subscription = results$.subscribe(results => setResult(results));
+            return () => { subscription.unsubscribe(); };
+        },
+        [courseId, selectedWeekEpoch]
+    );
+    return result;
+};
+
+export const useCoursesBetweenDates = (
+    db: firebase.firestore.Firestore,
+    startDate: moment.Moment, 
+    endDate: moment.Moment, 
+    courseId: string
+) => {
+    const [sessions, setSessions] = useState<FireSession[]>([]);
+    const [questions, setQuestions] = useState<FireQuestion[][]>([]);
+
+    useEffect(
+        () => {
+            const sessions$: Observable<FireSession[]> = collectionData(
+                db
+                    .collection('sessions')
+                    .where('startTime', '>=', startDate.toDate())
+                    .where('startTime', '<=', endDate.add(1, 'day').toDate())
+                    .where('courseId', '==', courseId),
+                'sessionId'
+            );
+            const s1 = sessions$.subscribe(newSessions => setSessions(newSessions));
+
+            // Fetch all questions for given sessions
+            const questions$ = sessions$.pipe(
+                switchMap(s =>
+                    combineLatest(...s.map(session =>
+                        collectionData(
+                            db.collection('questions').where('sessionId', '==', session.sessionId),
+                            'questionId'
+                        )
+                    ))
+                )
+            );
+
+            const s2 = questions$.subscribe((newQuestions: FireQuestion[][]) => setQuestions(newQuestions));
+            return () => {
+                s1.unsubscribe();
+                s2.unsubscribe();
+            };
+        },
+        [courseId, startDate, endDate]
+    );
+
+    return {sessions, questions}
+}
 
 export const useQuery = <T, P = string>(
     queryParameter: P,
@@ -289,3 +361,11 @@ export const useTag = (tagId: string | undefined) =>
     useDoc<FireTag>('tags', tagId, 'tagId');
 export const useUser = (userId: string | undefined) =>
     useDoc<FireUser>('users', userId, 'userId');
+    
+export const getTagsQuery = (courseId: string) => firestore
+    .collection('tags')
+    .where('courseId', '==', courseId);
+
+export const getQuestionsQuery = (courseId: string) => firestore
+    .collection('questions')
+    .where('courseId', '==', courseId);
