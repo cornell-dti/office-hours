@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import {useHistory} from 'react-router'
 import {Grid} from '@material-ui/core'
 
 import TopBar from '../includes/TopBar';
 import AdminCourseCard from '../includes/AdminCourseCard';
 import AdminCourseCreator from '../includes/AdminCourseCreator';
-import { useAllCourses, useMyUser } from '../../firehooks';
+import { useAllCourses, useMyUser, useIsAdmin } from '../../firehooks';
 import { CURRENT_SEMESTER } from '../../constants';
 
 
 const AdminView = () => {
+    const history = useHistory();
     const courses = useAllCourses();
+    const isAdmin = useIsAdmin();
     const [inCreationMode, setInCreationMode] = useState(false);
+    useEffect(() => {
+        if(isAdmin === undefined) {
+            history.push('/')
+        }
+    }, [isAdmin])
 
     return (
         <div className="AdminView">

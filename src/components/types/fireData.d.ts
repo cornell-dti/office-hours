@@ -187,3 +187,5 @@ interface BlogPost {
     timeEntered: FireTimestamp;
     edited? : FireTimestamp;
 }
+
+interface Admin {}
