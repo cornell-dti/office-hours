@@ -44,3 +44,18 @@ export const createAssignment = (currentTag: Omit<FireTag, 'tagId' | 'level'>, n
     
     return parentTag;
 }
+
+export const editParentTag = (batch: firebase.firestore.WriteBatch,
+    thisTag: FireTag, childTags: FireTag[]) => {
+    const parentTag = firestore.collection('tags').doc(thisTag.tagId);
+    batch.update(parentTag, {
+        name: thisTag.name, 
+        active: thisTag.active
+    });
+    childTags.forEach(childTag => {
+        const childTagDoc = firestore.collection('tags').doc(childTag.tagId);
+        batch.update(childTagDoc, {
+            active: thisTag.active
+        });
+    })
+}

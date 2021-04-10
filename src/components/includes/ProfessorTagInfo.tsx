@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
-import { createAssignment } from '../../firebasefunctions/tags';
+import { createAssignment, editAssignment } from '../../firebasefunctions/tags';
 
 interface NewTag {
     id: string;
@@ -131,22 +131,23 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     handleEditAssignment = (): void => {
         const batch = firestore.batch();
 
-        const parentTag = firestore.collection('tags').doc(this.state.tag.tagId);
+        // const parentTag = firestore.collection('tags').doc(this.state.tag.tagId);
 
         // deals w/ case where parent tag name is changed
         // no checking yet, like if A1 is changed to A0 but A0 already exists
         if (this.props.tag) {
             if (this.state.tag.name !== this.props.tag.name || this.state.tag.active !== this.props.tag.active) {
-                batch.update(parentTag, {
-                    name: this.state.tag.name, 
-                    active: this.state.tag.active
-                });
-                this.props.childTags.forEach(childTag => {
-                    const childTagDoc = firestore.collection('tags').doc(childTag.tagId);
-                    batch.update(childTagDoc, {
-                        active: this.state.tag.active
-                    });
-                })
+                // batch.update(parentTag, {
+                //     name: this.state.tag.name, 
+                //     active: this.state.tag.active
+                // });
+                // this.props.childTags.forEach(childTag => {
+                //     const childTagDoc = firestore.collection('tags').doc(childTag.tagId);
+                //     batch.update(childTagDoc, {
+                //         active: this.state.tag.active
+                //     });
+                // })
+                editParentTag(batch, this.state.tag, this.props.childTags);
             }
         }
 
