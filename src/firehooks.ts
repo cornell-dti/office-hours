@@ -356,3 +356,7 @@ export const useUser = (userId: string | undefined) =>
 export const getTagsQuery = (courseId: string) => firestore
     .collection('tags')
     .where('courseId', '==', courseId);
+
+export const getQuestionsQuery = (courseId: string) => firestore
+    .collection('questions')
+    .where('courseId', '==', courseId);
