@@ -65,7 +65,7 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
         })))
     ];
 
-    const sessions = useProfessorViewSessions(firestore, courseId, selectedWeekEpoch, ONE_DAY);
+    const sessions = useProfessorViewSessions(courseId, selectedWeekEpoch);
 
     return (
         <div className="ProfessorView">

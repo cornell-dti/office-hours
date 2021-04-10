@@ -10,7 +10,6 @@ import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
 import { useMyUser, useCourse, useCourseUsersMap, useCoursesBetweenDates } from '../../firehooks';
 import TopBar from '../includes/TopBar';
-import { firestore } from '../../firebase';
 
 const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) => {
     const courseId = props.match.params.courseId;
@@ -23,7 +22,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const course = useCourse(courseId);
     const courseUsers = useCourseUsersMap(courseId, true);
     // Fetch sessions for course between dates
-    const {sessions, questions} = useCoursesBetweenDates(firestore, startDate, endDate, courseId)
+    const {sessions, questions} = useCoursesBetweenDates(startDate, endDate, courseId)
 
     // Compute necessary data
     // Aggregate Stats
