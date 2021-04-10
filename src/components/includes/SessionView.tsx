@@ -65,7 +65,7 @@ const SessionView = (
 
     const updateSessionProfile = useCallback((virtualLocation: string) => {
         updateQuestion(firestore, virtualLocation, questions, user)
-    }, [questions, user.userId]);
+    }, [questions, user]);
 
     useEffect(() => {
         const questionIds = questions.map(q => q.questionId);
