@@ -86,18 +86,16 @@ export const useBatchQueryWithLoading = <T, P = string>(
 };
 
 export const useProfessorViewSessions = (
-    db: firebase.firestore.Firestore,
     courseId: string, 
-    selectedWeekEpoch: number, 
-    ONE_DAY: number
+    selectedWeekEpoch: number 
 ) => {
-
     const [result, setResult] = useState<FireSession[]>([]);
 
     useEffect(
         () => {
+            const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
             const results$: Observable<FireSession[]> = collectionData(
-                db
+                firestore
                     .collection('sessions')
                     .where('courseId', '==', courseId)
                     .where('startTime', '>=', new Date(selectedWeekEpoch))
@@ -112,7 +110,6 @@ export const useProfessorViewSessions = (
 };
 
 export const useCoursesBetweenDates = (
-    db: firebase.firestore.Firestore,
     startDate: moment.Moment, 
     endDate: moment.Moment, 
     courseId: string
@@ -123,7 +120,7 @@ export const useCoursesBetweenDates = (
     useEffect(
         () => {
             const sessions$: Observable<FireSession[]> = collectionData(
-                db
+                firestore
                     .collection('sessions')
                     .where('startTime', '>=', startDate.toDate())
                     .where('startTime', '<=', endDate.add(1, 'day').toDate())
@@ -137,7 +134,7 @@ export const useCoursesBetweenDates = (
                 switchMap(s =>
                     combineLatest(...s.map(session =>
                         collectionData(
-                            db.collection('questions').where('sessionId', '==', session.sessionId),
+                            firestore.collection('questions').where('sessionId', '==', session.sessionId),
                             'questionId'
                         )
                     ))
