@@ -22,7 +22,7 @@ export const addBlogPost = (
         batch.commit();
 
         return true;
-    } else return false;
+    } return false;
 }
 
 export const editBlogPost = (user: firebase.User | null, db: firebase.firestore.Firestore, blogPost: BlogPost) => {

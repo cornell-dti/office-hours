@@ -18,7 +18,7 @@ const AdminView = () => {
         if(isAdmin === undefined) {
             history.push('/')
         }
-    }, [isAdmin])
+    }, [isAdmin, history])
 
     return (
         <div className="AdminView">

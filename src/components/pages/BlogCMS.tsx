@@ -11,10 +11,10 @@ const BlogCMS = () => {
     const history = useHistory();
     const isAdmin = useIsAdmin();
     useEffect(() => {
-      if(isAdmin === undefined) {
-          history.push('/')
-      }
-  }, [isAdmin])
+        if(isAdmin === undefined) {
+            history.push('/')
+        }
+    }, [isAdmin, history])
     return (
         <>
             <TopBar
