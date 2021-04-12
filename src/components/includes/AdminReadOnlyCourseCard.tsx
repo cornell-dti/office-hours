@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import { useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
 
 const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) => {

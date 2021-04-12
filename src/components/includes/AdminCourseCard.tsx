@@ -1,8 +1,8 @@
-import React, {useState} from "react";
-import {Card} from "@material-ui/core";
+import React, {useState} from 'react';
+import {Card} from '@material-ui/core';
 
-import AdminReadOnlyCourseCard from "./AdminReadOnlyCourseCard";
-import AdminEditableCourseCard from "./AdminEditableCourseCard";
+import AdminReadOnlyCourseCard from './AdminReadOnlyCourseCard';
+import AdminEditableCourseCard from './AdminEditableCourseCard';
 import ProfessorRolesTable from './ProfessorRolesTable';
 
 
