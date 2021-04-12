@@ -5,11 +5,16 @@ import { Icon } from 'semantic-ui-react';
 import Linkify from 'linkifyjs/react';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
+import Arrow from '../../media/arrow_discussion.svg';
+import CommentImage from '../../media/comment_discussion.svg';
+import ResolvedIcon from '../../media/resolvedcheck.svg'
+import { markQuestionDone } from '../../firebasefunctions/sessionQuestion';
 
 
 type Props = {
     question: FireDiscussionQuestion;
     readonly user: FireUser;
+    users: { readonly [userId: string]: FireUser };
     tags: { readonly [tagId: string]: FireTag };
     isTA: boolean;
     includeRemove: boolean;
@@ -27,7 +32,7 @@ const DiscussionQuestion = (props: Props) => {
     const studentCSS = props.isTA ? '' : ' Student';
     const user = props.user;
 
-    const [showCommentBox, setShowCommentBox] = useState(false);
+    const [showDiscComment, setShowDiscComment] = useState(false);
 
     const retractQuestion = (): void => {
         const batch = firestore.batch();
@@ -65,67 +70,131 @@ const DiscussionQuestion = (props: Props) => {
         firestore.doc(`questions/${question.questionId}`).update(update).catch(() => {});
     };
 
+    const resolveQuestion = () => {
+        markQuestionDone(firestore, props.question)
+    }
+
+    const student = props.users[question.askerId]
+
     return (
 
-        <div className="DiscussionQuestion">
-            <div className="DiscussionContainer">
-                <button className="Upvote" type="button" aria-label="upvote" onClick={upvoteQuestion} />
-                <div className="UpvoteContainer">
-                    <div className="Upvotes">{question.upvotedUsers ? question.upvotedUsers.length : 0}</div>
-                    <div className="QuestionBody">{question.content}</div>
-                    <div className="RightBar">
-                        <button className="commentBtn" onClick={() => setShowCommentBox(!showCommentBox)} type="button">
-                            <Icon className="large" name="comment outline" />
-                        </button>
-                    </div>
+        <div className="discussionQuestion">
+            <div className="discussionContainer">
+                { question.status === 'resolved' &&
+                <div className="resolvedDiscussionBadge">
+                    <p className="resolvedDiscussionText">Resolved</p>
+                    <img className="resolvedCheckImage" alt="Resolved check" src={ResolvedIcon} />
                 </div>
-            </div>
-            {(question.studentComment || question.taComment) &&
+                }
+                <div className="discussionHeaderWrapper">
+                    <div className="upvoteAndUserInfoContainer">
+                        <div className="upvoteContainer">
+                            <button className="upvoteButton" type="button" aria-label="upvote" onClick={upvoteQuestion}>
+                                <img className="upvoteArrow" src={Arrow} alt="Upvote arrow" />
+                            </button>
+                            <div className="upvoteCount">{question.upvotedUsers ? 
+                                question.upvotedUsers.length : 0}</div>
+                        </div>
+                        {!props.isTA && 
+                            <div className="discussionQuestionBody isStudentUserDiscussion">
+                                <div className="discussionQuestionContent">{question.content}</div>
+                            </div>
+                        }
+                        {props.isTA && student && 
+                            <div className="userPhotoAndNameWrapper">
+                                <img
+                                    src={student.photoUrl ? student.photoUrl : '/placeholder.png'} 
+                                    className="discussionProfileImage"
+                                    alt="Student profile"
+                                />
+                                <p className="discussionProfileUserName">{student.firstName + ' ' + 
+                                student.lastName}</p>
+                            </div>
+                        }
+                    </div>
+                    <button
+                        className="discussionCommentButton"
+                        onClick={() => 
+                            setShowDiscComment(!showDiscComment)}
+                        type="button"
+                    >
+                        <img src={CommentImage} className="discussionCommentImage" alt="Discussion comment button"/>
+                    </button>
+                </div>
+                {(question.studentComment || question.taComment) && 
                     <CommentBox
                         studentComment={question.studentComment}
                         taComment={question.taComment}
                         studentCSS={studentCSS}
-                    />
-            }
-            <div className="LowerDiscussionContainer"> 
-                <div className="BottomBarContainer">
-                    <div className="DiscussionTags">
-                        {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} isDiscussion={true}/>}
-                        {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} isDiscussion={true}/>}
+                    />}
+                <div className="lowerDiscussionContainer">
+                    <div className="questionAndTagsWrapper">
+                        {props.isTA &&
+                            <div className="discussionQuestionBody isTAUserDiscussion">
+                                <div className="discussionQuestionContent">{question.content}</div>
+                            </div>
+                        }
+                        <div className="tagsContainer">
+                            <div className="discussionTags">
+                                {primaryTag && <SelectedTags
+                                    tag={primaryTag}
+                                    isSelected={false} 
+                                    isDiscussion={true}
+                                />}
+                                {secondaryTag && <SelectedTags
+                                    tag={secondaryTag}
+                                    isSelected={false} 
+                                    isDiscussion={true}
+                                />}
+                            </div>
+                        </div>
                     </div>
-                    <p className="Time">
-                    posted at&nbsp;{<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
+                    <p className="discussionQuestionTime">
+                        {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
                     </p>
                 </div>
-                { props.includeRemove && !props.isPast &&
-            <div className="Buttons">
-                <hr />
-                <p className="Remove" onClick={retractQuestion}>
-                    <Icon name="close" /> Remove
-                </p>
-
-            </div> }
-            </div>
-            {showCommentBox && <div className="CommentBox">
-                <div className="commentTopBar">
-                    <img
-                        className="userInformationImg"
-                        src={user.photoUrl || '/placeholder.png'}
-                        alt={user ? `${user.firstName} ${user.lastName}` : 'not logged-in user'}
+                {showDiscComment && (user.userId === props.question.askerId || props.isTA) && 
+                !props.isPast && <div className="CommentBox">
+                    <div className="commentTopBar">
+                        <img
+                            className="userInformationImg"
+                            src={user.photoUrl || '/placeholder.png'}
+                            alt={user ? `${user.firstName} ${user.lastName}` : 'not logged-in user'}
+                        />
+                        <span className="userInformationName">
+                            {user.firstName} {user.lastName}
+                        </span>
+                    </div>
+                    <EditComment
+                        initComment={comment || ""}
+                        onValueChange={(newComment: string) => {
+                            questionComment(newComment);
+                            setShowDiscComment(false);}} 
+                        onCancel={() => {setShowDiscComment(false);}}
                     />
-                    <span className="userInformationName">
-                        {user.firstName} {user.lastName}
-                    </span>
+                </div>} 
+                { props.includeRemove && !props.isPast &&
+                <div className="discussionButtons">
+                    <hr className="discussionDivider"/>
+                    <div className="discussionRemoveButtonWrapper">
+                        <button className="discussionRemoveButton" onClick={retractQuestion} type="button">
+                            <Icon className="discussionRemoveIcon" name="close"/>Remove
+                        </button>
+                    </div>
+                </div> }
+                {!props.isPast && props.isTA && question.status !== 'resolved' &&
+                <div className="discussionTAActionsWrapper">
+                    <hr className="discussionDivider" />
+                    <button className="discussionDoneButton" onClick={resolveQuestion} type="button">
+                        Done
+                    </button>
                 </div>
-                <EditComment
-                    initComment={comment || ""}
-                    onValueChange={(newComment: string) => {
-                        questionComment(newComment);
-                        setShowCommentBox(false);}} 
-                    onCancel={() => {setShowCommentBox(false);}}
-                />
-            </div>}
-    
+                }
+
+
+
+
+            </div>
         </div>
     )
 }
