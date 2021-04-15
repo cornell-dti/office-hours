@@ -1,12 +1,20 @@
-import React from 'react'
+import React, {useEffect} from 'react'
+import {useHistory} from 'react-router'
 
 import AddBlogPost from '../includes/AddBlogPost';
 import BlogPostDisplay from '../includes/BlogPostDisplay';
 import TopBar from '../includes/TopBar';
 
-import { useMyUser } from '../../firehooks';
+import { useMyUser, useIsAdmin } from '../../firehooks';
 
 const BlogCMS = () => {
+    const history = useHistory();
+    const isAdmin = useIsAdmin();
+    useEffect(() => {
+        if(isAdmin === undefined) {
+            history.push('/')
+        }
+    }, [isAdmin, history])
     return (
         <>
             <TopBar

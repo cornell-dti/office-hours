@@ -184,6 +184,17 @@ export const needsPromotionSingletonObservable = new SingletonObservable(undefin
 export const usePendingUser: () => FirePendingUser | undefined  = 
     createUseSingletonObservableHook(needsPromotionSingletonObservable);
 
+const isAdminObservable = loggedIn$.pipe(
+    switchMap(u => 
+        docData(firestore.doc('admins/' + u.email)) as Observable<{}>
+    )
+)
+
+export const isAdminSingletonObservable = new SingletonObservable(undefined, isAdminObservable);
+
+export const useIsAdmin: () => {} | undefined = 
+    createUseSingletonObservableHook(isAdminSingletonObservable);
+
 const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
     switchMap(() => collectionData<FireCourse>(firestore.collection('courses'), 'courseId'))
 );
