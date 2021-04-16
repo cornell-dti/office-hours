@@ -45,7 +45,7 @@ export const createAssignment = (currentTag: Omit<FireTag, 'tagId' | 'level'>, n
     return parentTag;
 }
 
-export const editParentTag = (batch: firebase.firestore.WriteBatch,
+const editParentTag = (batch: firebase.firestore.WriteBatch,
     thisTag: FireTag, childTags: FireTag[]) => {
     const parentTag = firestore.collection('tags').doc(thisTag.tagId);
     batch.update(parentTag, {
@@ -58,4 +58,37 @@ export const editParentTag = (batch: firebase.firestore.WriteBatch,
             active: thisTag.active
         });
     })
+}
+
+export const editAssignment = (cond: boolean, tag: FireTag,
+    childTags: FireTag[], deletedTags: FireTag[], newTags: NewTag[]) => {
+    const batch = firestore.batch();
+
+    const parentTag = firestore.collection('tags').doc(tag.tagId);
+
+    if (cond) {
+        editParentTag(batch, tag, childTags)
+    }
+
+    deletedTags
+        .forEach(firetag =>
+            batch.delete(firestore.collection('tags').doc(firetag.tagId)));
+
+    newTags.forEach(tagText => {
+        const childTag = firestore.collection('tags').doc();
+
+        const childTagUpdate: Omit<FireTag, 'tagId'> = {
+            active: tag.active,
+            courseId: tag.courseId,
+            level: 2,
+            name: tagText.name,
+            parentTag: parentTag.id
+        };
+
+        batch.set(childTag, childTagUpdate);
+    });
+
+    
+    batch.commit();
+
 }

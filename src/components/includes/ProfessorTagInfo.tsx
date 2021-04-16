@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Icon } from 'semantic-ui-react';
-import { firestore } from '../../firebase';
 import { createAssignment, editAssignment } from '../../firebasefunctions/tags';
 
 interface NewTag {
@@ -129,55 +128,26 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     };
 
     handleEditAssignment = (): void => {
-        const batch = firestore.batch();
 
-        // const parentTag = firestore.collection('tags').doc(this.state.tag.tagId);
+        const parentTagChanged = this.props.tag ?
+            this.state.tag.name !== this.props.tag.name || this.state.tag.active !== this.props.tag.active
+            : false;
 
         // deals w/ case where parent tag name is changed
         // no checking yet, like if A1 is changed to A0 but A0 already exists
-        if (this.props.tag) {
-            if (this.state.tag.name !== this.props.tag.name || this.state.tag.active !== this.props.tag.active) {
-                // batch.update(parentTag, {
-                //     name: this.state.tag.name, 
-                //     active: this.state.tag.active
-                // });
-                // this.props.childTags.forEach(childTag => {
-                //     const childTagDoc = firestore.collection('tags').doc(childTag.tagId);
-                //     batch.update(childTagDoc, {
-                //         active: this.state.tag.active
-                //     });
-                // })
-                editParentTag(batch, this.state.tag, this.props.childTags);
-            }
-        }
 
         // deleted tags
-        this.props.childTags
+        const deletedTags =this.props.childTags
             .filter(firetag => !this.state.newTags.some(t => firetag.name === t.name))
-            .forEach(firetag =>
-                batch.delete(firestore.collection('tags').doc(firetag.tagId)));
-
         // new tags
         const preexistingTags = this.props.childTags
             .filter(firetag => this.state.newTags.some(t => firetag.name === t.name));
 
-        this.state.newTags
+        const newTags = this.state.newTags
             .filter(tag => !preexistingTags.some(t => tag.name === t.name))
-            .forEach(tagText => {
-                const childTag = firestore.collection('tags').doc();
 
-                const childTagUpdate: Omit<FireTag, 'tagId'> = {
-                    active: this.state.tag.active,
-                    courseId: this.state.tag.courseId,
-                    level: 2,
-                    name: tagText.name,
-                    parentTag: parentTag.id
-                };
-
-                batch.set(childTag, childTagUpdate);
-            });
-
-        batch.commit();
+        
+        editAssignment(parentTagChanged, this.state.tag, this.props.childTags, deletedTags, newTags)
     };
 
     handleEnterPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
