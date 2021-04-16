@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Dropdown, Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
-import { firestore } from '../../firebase';
 import { useCourse, useCourseUsers, useMyUser } from '../../firehooks';
 import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions/importProfessorsOrTAs';
 
@@ -25,7 +24,7 @@ const RoleDropdown = ({ user, course, disabled }: {
                 
                 // prevents profs from unintentionally demoting other users
                 if (user.role !== undefined && newValueRole !== user.role) {
-                    changeRole(firestore, user, course, newValueRole);
+                    changeRole(user, course, newValueRole);
                 }
             }}
         />
@@ -53,13 +52,13 @@ export default ({ courseId, isAdminView }: { courseId: string; isAdminView: bool
 
     const importProfessorsButtonOnClick = (): void => {
         if (course != null) {
-            importProfessorsOrTAsFromPrompt(firestore, course, 'professor');
+            importProfessorsOrTAsFromPrompt(course, 'professor');
         }
     };
 
     const importTAButtonOnClick = (): void => {
         if (course != null) {
-            importProfessorsOrTAsFromPrompt(firestore, course, 'ta');
+            importProfessorsOrTAsFromPrompt(course, 'ta');
         }
     };
 
