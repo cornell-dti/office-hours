@@ -6,7 +6,7 @@ import TopBar from './TopBar';
 import CourseCard from './CourseCard';
 import { firestore } from '../../firebase';
 import { CURRENT_SEMESTER } from '../../constants';
-
+import { updateCourses } from '../../firebasefunctions/courses';
 
 type Props = {
     readonly user: FireUser;
@@ -112,7 +112,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         coursesToUnenroll.forEach(courseId => newCourseSet.delete(courseId));
         const userUpdate: Partial<FireUser> = { courses: Array.from(newCourseSet.values()) };
         setIsWritingChanges(true);
-        firestore.collection('users').doc(user.userId).update(userUpdate).then(() => {
+        updateCourses(user.userId, userUpdate).then(() => {
             history.push('/home');
             setIsWritingChanges(false);
             setEditingMode(user.courses.length > 0);
