@@ -3,6 +3,7 @@ import ProfessorTagsRow from './ProfessorTagsRow';
 
 import { getTagsQuery, useQuery } from '../../firehooks';
 
+
 const ProfessorTagsTable = (props: { courseId: string }) => {
     const tags = useQuery<FireTag>(props.courseId, getTagsQuery, 'tagId');
 
