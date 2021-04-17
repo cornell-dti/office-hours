@@ -4,7 +4,6 @@ import { useHistory } from 'react-router';
 
 import TopBar from './TopBar';
 import CourseCard from './CourseCard';
-import { firestore } from '../../firebase';
 import { CURRENT_SEMESTER } from '../../constants';
 import { updateCourses } from '../../firebasefunctions/courses';
 
