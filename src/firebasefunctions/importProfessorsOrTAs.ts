@@ -1,5 +1,7 @@
-import firebase from 'firebase/app';
+import { firestore } from '../firebase';
 import { blockArray } from '../firehooks';
+
+const db = firestore;
 
 const getUserRoleUpdate = (
     user: FireUser,
@@ -46,7 +48,6 @@ const getCourseRoleUpdates = (
 };
 
 const importProfessorsOrTAs = async (
-    db: firebase.firestore.Firestore,
     course: FireCourse,
     role: 'professor' | 'ta',
     emailListTotal: readonly string[]
@@ -133,7 +134,6 @@ const addOrRemoveFromRoleIdList = (
 };
 
 export const changeRole = (
-    db: firebase.firestore.Firestore,
     user: FireUser,
     course: FireCourse,
     newRole: FireCourseRole
@@ -151,7 +151,6 @@ export const changeRole = (
 };
 
 export const importProfessorsOrTAsFromPrompt = (
-    db: firebase.firestore.Firestore,
     course: FireCourse,
     role: 'professor' | 'ta'
 ): void => {
@@ -161,7 +160,6 @@ export const importProfessorsOrTAsFromPrompt = (
     );
     if (response != null) {
         importProfessorsOrTAs(
-            db,
             course,
             role,
             response.split(',').map((email) => email.trim())
@@ -170,14 +168,12 @@ export const importProfessorsOrTAsFromPrompt = (
 };
 
 export const importProfessorsOrTAsFromCSV = (
-    db: firebase.firestore.Firestore,
     course: FireCourse,
     role: 'professor' | 'ta',
     emailList: string[]
 ): Promise<{ updatedUsers: FireUser[]; missingSet: Set<string> }> | undefined => {
 
     return importProfessorsOrTAs(
-        db,
         course,
         role,
         emailList

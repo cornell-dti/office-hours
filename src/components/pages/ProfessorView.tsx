@@ -13,8 +13,8 @@ import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
-import { useCourse, useMyUser } from '../../firehooks';
-import { firestore, collectionData } from '../../firebase';
+import {useProfessorViewSessions, useCourse, useMyUser } from '../../firehooks';
+import { firestore } from '../../firebase';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 
@@ -38,7 +38,6 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
     const me = useMyUser();
 
     const [staff, setStaff] = useState<FireUser[]>([]);
-    const [sessions, setSessions] = useState<FireSession[]>([]);
 
     // Keep a list of TAs & Professors to assign to sessions
     useEffect(
@@ -66,22 +65,7 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
         })))
     ];
 
-    useEffect(
-        () => {
-            const sessions$: Observable<FireSession[]> = collectionData(
-                firestore
-                    .collection('sessions')
-                    .where('courseId', '==', courseId)
-                    .where('startTime', '>=', new Date(selectedWeekEpoch))
-                    .where('startTime', '<=', new Date(selectedWeekEpoch + 7 * ONE_DAY)),
-                'sessionId'
-            );
-
-            const subscription = sessions$.subscribe(s => setSessions(s));
-            return () => subscription.unsubscribe();
-        },
-        [courseId, selectedWeekEpoch]
-    );
+    const sessions = useProfessorViewSessions(courseId, selectedWeekEpoch);
 
     return (
         <div className="ProfessorView">

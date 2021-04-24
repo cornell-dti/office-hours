@@ -1,7 +1,4 @@
 import * as React from 'react';
-import { Icon } from 'semantic-ui-react';
-
-import { logOut } from '../../firebasefunctions/user';
 import { useMyCourses } from '../../firehooks';
 
 import { CURRENT_SEMESTER } from '../../constants';
@@ -16,7 +13,6 @@ type Props = {
 
 
 export default ({ currentCourseCode, role}: Props): React.ReactElement => {
-    const [showMenu, setShowMenu] = React.useState(false);
     const [showCourses, setShowCourses] = React.useState(false);
     const ref = React.useRef<HTMLDivElement>(null);
     const courses = useMyCourses();
@@ -66,22 +62,6 @@ export default ({ currentCourseCode, role}: Props): React.ReactElement => {
                     </ul>
                 }
             </div>
-            {showMenu && (
-                <ul className="desktop logoutMenu" onClick={() => setShowMenu(false)} >
-                    {/* RYAN_TODO: figure out what's the purpose of this code. */}
-                    {/* {this.props.isTa &&
-                            <React.Fragment>
-                                <li>Cancel Session</li>
-                                <li>Change Session</li>
-                            </React.Fragment>
-                        } */}
-                    <li onClick={() => logOut()}> <span><Icon name="sign out" /></span>Log Out</li>
-                    <li onMouseDown={() => window.open('https://goo.gl/forms/7ozmsHfXYWNs8Y2i1', '_blank')}>
-                        <span><Icon name="edit" /></span>
-                        Send Feedback
-                    </li>
-                </ul>
-            )}
         </div>
     );
 };

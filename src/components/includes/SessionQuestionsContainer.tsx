@@ -120,6 +120,17 @@ const SessionQuestionsContainer = (props: Props) => {
             // Do nothing. iOS crashes because Notification isn't defined
         }
     }, []);
+
+    const compareUpvotes = (q1: FireDiscussionQuestion, q2: FireDiscussionQuestion) => {
+        const upvoteDifference = q2.upvotedUsers.length - q1.upvotedUsers.length;
+        if (upvoteDifference !== 0) return upvoteDifference;
+        return q2.timeEntered.seconds - q1.timeEntered.seconds;
+    }
+
+    const compareTimeEntered = (q1: FireDiscussionQuestion, q2: FireDiscussionQuestion) => {
+        return q2.timeEntered.seconds - q1.timeEntered.seconds;   
+    }
+
     const allQuestions = props.questions;
     
     const myQuestion = props.myQuestion;
@@ -142,8 +153,8 @@ const SessionQuestionsContainer = (props: Props) => {
             filteredSortedQuestions = filteredDiscussionQuestions
         } else {
             filteredSortedQuestions = sortByUpvotes ? 
-                filteredDiscussionQuestions.sort((q1, q2) => q2.upvotedUsers.length - q1.upvotedUsers.length) : 
-                filteredDiscussionQuestions.sort((q1, q2) => q2.timeEntered.seconds - q1.timeEntered.seconds)
+                filteredDiscussionQuestions.sort(compareUpvotes) : 
+                filteredDiscussionQuestions.sort(compareTimeEntered)
         }
     }
 
@@ -229,28 +240,33 @@ const SessionQuestionsContainer = (props: Props) => {
             <div className="discussionHeaderWrapper">
                 <div
                     className="discussionQuestionsSlider"
-                    onClick={() => 
-                        setFilterByAnsweredQuestions(!filterByAnsweredQuestions)}
                 >
-                    <div className={"discussionSliderSelector" + (filterByAnsweredQuestions ? " isSlided" : "")} />
+                    <div className={"discussionSliderSelector" + (filterByAnsweredQuestions ? " isSlidedRight" : "")} />
                     <div
                         className={"discussionSliderOption" + (filterByAnsweredQuestions ? "" : " isSelected")} 
-                        onClick={() => setFilterByAnsweredQuestions(!filterByAnsweredQuestions)}
+                        onClick={() => setFilterByAnsweredQuestions(false)}
                     >Unanswered Questions</div>
                     <div
                         className={"discussionSliderOption" + (filterByAnsweredQuestions ? " isSelected" : "")} 
-                        onClick={() => setFilterByAnsweredQuestions(!filterByAnsweredQuestions)}
+                        onClick={() => setFilterByAnsweredQuestions(true)}
                     >Answered Questions</div>
                 </div>
-                <div className="sortDiscussionQuestionsWrapper" onClick={() => setSortByUpvotes(!sortByUpvotes)}>
+                <div className="sortDiscussionQuestionsWrapper">
                     <div className="discussionArrowsContainer">
-                        <img className="sortDiscussionArrow" src={SortArrows} />
+                        <img className="sortDiscussionArrow" src={SortArrows} alt="Sort by arrows"/>
                     </div>                  
                     <p className="sortDiscussionQuestionsLabel">sort by</p>
                     <div className="sortDiscussionQuestionsOptions">
-                        <div className={"sortDiscussionQuestionsOption" + (sortByUpvotes ? " optionChosen" : "")}>
+                        <div className={"sortDiscussionsSlider" + (sortByUpvotes ? "" : " slidedRight")} />
+                        <div
+                            className={"sortDiscussionQuestionsOption" + (sortByUpvotes ? " optionChosen" : "")}
+                            onClick={() => setSortByUpvotes(true)}
+                        >
                             Most Upvotes</div>
-                        <div className={"sortDiscussionQuestionsOption" + (sortByUpvotes ? "" : " optionChosen")}>
+                        <div
+                            className={"sortDiscussionQuestionsOption" + (sortByUpvotes ? "" : " optionChosen")}
+                            onClick={() => setSortByUpvotes(false)}
+                        >
                             Most Recent</div>
                     </div>
                 </div>

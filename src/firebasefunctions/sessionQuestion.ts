@@ -143,3 +143,36 @@ export const assignQuestionToTA = (
     batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
     batch.commit();
 }
+
+export const removeQuestionbyID = (
+    db: firebase.firestore.Firestore,
+    removeQuestionId: string | undefined
+) => {
+    if (removeQuestionId !== undefined) {
+        const batch = db.batch();
+        const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
+        const questionUpdate: Partial<FireQuestion> = slotUpdate;
+        batch.update(db.doc(`questionSlots/${removeQuestionId}`), slotUpdate);
+        batch.update(db.doc(`questions/${removeQuestionId}`), questionUpdate);
+        batch.commit();
+    }    
+}
+
+export const updateQuestion = (
+    db: firebase.firestore.Firestore,
+    virtualLocation: string,
+    questions: readonly FireQuestion[],
+    user: FireUser
+
+) => {
+    const batch = db.batch();
+
+    const questionUpdate: Partial<FireOHQuestion> = { answererLocation: virtualLocation };
+    questions.forEach((q) => {
+        if (q.answererId === user.userId && q.status === 'assigned') {
+            batch.update(db.doc(`questions/${q.questionId}`), questionUpdate);
+        }
+    });
+
+    batch.commit();
+}

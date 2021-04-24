@@ -1,0 +1,154 @@
+
+.headerButton {
+  border-radius: 4px;
+  width: 10em;
+  margin: 0 auto;
+  margin-top: 2em;
+      border: none;
+      background-color: white;
+      border: 1px solid black;
+      padding: .5em;
+      cursor: pointer;
+      &:hover {
+        box-shadow: 0 1px 6px rgba(32, 33, 36, .28);
+      }
+      &:focus {
+        outline: none;
+      }
+}
+
+.dropped {
+  visibility: visible!important;
+  max-height: 50em!important;
+}
+
+.addPost {
+  overflow-y: hidden;
+  visibility: hidden;
+  max-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  padding: 3em;
+  transition: max-height .5s ease-out;
+
+  &__title {
+    margin: 2em;
+    padding: 1em;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px 1px rgba(64,60,67,.16);
+    &:hover {
+      box-shadow: 0 1px 6px rgba(32, 33, 36, .28);
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &__description {
+    margin: 2em;
+    padding: 1em;
+    width: 40%;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px 1px rgba(64,60,67,.16);
+    &:hover {
+      box-shadow: 0 1px 6px rgba(32, 33, 36, .28);
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+  &__changeList {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .changeList {
+    &__list {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      list-style-type: circle;
+      width: 50%;
+      border: none;
+      padding: 1em;
+    }
+    &__item {
+      width: 100%;
+      border: none;
+      margin: 1em;
+      position: relative;
+      input {
+        width: 100%;
+        height: 100%;
+        padding: 1em;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px 1px rgba(64,60,67,.16);
+        &:hover {
+          box-shadow: 0 1px 6px rgba(32, 33, 36, .28);
+        }
+        &:focus {
+          outline: none;
+        }
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+
+    &__delete {
+      position: absolute;
+      right: 10px;
+      top:50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.3em;
+      transition: font-size .2s ease;
+      &:hover {
+        font-size: 1.5em;
+      }
+    }
+
+    &__add-listItem {
+      border-radius: 4px;
+      border: none;
+      background-color: white;
+      border: 1px solid black;
+      padding: .5em;
+      cursor: pointer;
+      &:hover {
+        box-shadow: 0 1px 6px rgba(32, 33, 36, .28);
+      }
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+  
+
+  &__submit {
+    display: inline-block;
+    background-color: white;
+    border: solid 1px #484848;
+    margin: 5px;
+    width: 150px;
+    height: 40px;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    &:focus {
+      outline: none;
+    }
+    box-shadow: 0 2px 5px 1px rgba(64,60,67,.16);
+  }
+}

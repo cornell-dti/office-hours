@@ -18,6 +18,7 @@ import { Notifications } from 'react-push-notification';
 import { auth, firestore } from '../firebase';
 
 import AdminView from './pages/AdminView';
+import BlogCMS from './pages/BlogCMS';
 import LoginView from './pages/LoginView';
 import ProfessorView from './pages/ProfessorView';
 import SplitView from './pages/SplitView';
@@ -188,6 +189,7 @@ export default () => {
                 <Switch>
                     <Route path="/login" component={LoginView} />
                     <PrivateRoute path="/admin" component={AdminView} requireProfessor={false} />
+                    <PrivateRoute path="/blog" component={BlogCMS} requireProfessor={false} />
                     <PrivateRoute path="/edit" component={CourseEditView} requireProfessor={false} />
                     <PrivateRoute path="/home" component={CourseSelectionView} requireProfessor={false} />
                     <PrivateRoute
