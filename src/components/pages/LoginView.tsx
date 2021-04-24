@@ -69,45 +69,51 @@ const LoginView: React.FC = () => {
                 <img src={Demo} className="demoQMI" alt="Demo of QMI" />
                 <div className="ribbonWrapper">
                     <img src={WhiteStrip} className="whiteStrip" alt="Curved background strip"/>
-                    <div className="tutorialWrapper">
-                        <h3 className="tutorialHeader">FOR STUDENTS</h3>
-                        <div className="cardWrapper">
-                            <div className="infoCard">
-                                <img src={Ask} className="cardImg" alt="Question bubble"/>
-                                <p className="cardDesc">Ask a question</p>
+                    <h2 className="sloganText">{"Say goodbye to crowded and \nunorganized office hours."}</h2>
+                    <div className="bothTutorialsWrapper">
+                        <div className="tutorialWrapper">
+                            <h3 className="tutorialHeader">{"For students who need \none-on-one support"}</h3>
+                            <div className="cardWrapper">
+                                <div className="infoCard">
+                                    <img src={Ask} className="cardImg" alt="Question bubble"/>
+                                    <p className="cardDesc">{"Ask questions in a \ndiscussion or queue"}</p>
+                                </div>
+                                <div className="infoCard">
+                                    <img src={Reserve} className="cardImg" alt="Reserved"/>
+                                    <p className="cardDesc">{"Reserve time to speak \nwith a TA"}</p>
+                                </div>
+                                <div className="infoCard">
+                                    <img src={Wait} className="cardImg" alt="Waiting in line"/>
+                                    <p className="cardDesc">{"Get your questions \nanswered by course staff"}</p>
+                                </div>
                             </div>
-                            <div className="infoCard">
-                                <img src={Reserve} className="cardImg" alt="Reserved"/>
-                                <p className="cardDesc">Reserve a spot</p>
-                            </div>
-                            <div className="infoCard">
-                                <img src={Wait} className="cardImg" alt="Waiting in line"/>
-                                <p className="cardDesc">Wait your turn</p>
+                        </div>
+                        <div className="tutorialWrapper professorsTutorialWrapper">
+                            <h3 className="tutorialHeader">
+                                {"For professors looking to shape \ntheir teaching experience"}
+                            </h3>
+                            <div className="cardWrapper">
+                                <div className="infoCard">
+                                    <img src={Schedule} className="cardImg" alt="Calendar"/>
+                                    <p className="cardDesc">{"Schedule your office \nhours easily"}</p>
+                                </div>
+                                <div className="infoCard">
+                                    <img src={Review} className="cardImg" alt="Asking and answering questions"/>
+                                    <p className="cardDesc">{"Assign TAs to discussions \nor host yourself"}</p>
+                                </div>
+                                <div className="infoCard">
+                                    <img src={Analytics} className="cardImg" alt="Bar graph"/>
+                                    <p className="cardDesc">{"View office hour and \ndiscussion analytics"}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    
                 </div>
                 <img src={SecondWhiteStrip} className="secondWhiteStrip" alt="Second curved background strip"/>
             </div>
             
             <div className="whiteSectionWrapper">
-                <div className="tutorialWrapper professorsTutorialWrapper">
-                    <h3 className="tutorialHeader">FOR PROFESSORS</h3>
-                    <div className="cardWrapper">
-                        <div className="infoCard">
-                            <img src={Schedule} className="cardImg" alt="Calendar"/>
-                            <p className="cardDesc">{"Schedule office \nhours"}</p>
-                        </div>
-                        <div className="infoCard">
-                            <img src={Review} className="cardImg" alt="Asking and answering questions"/>
-                            <p className="cardDesc">{"Host review \nsessions"}</p>
-                        </div>
-                        <div className="infoCard">
-                            <img src={Analytics} className="cardImg" alt="Bar graph"/>
-                            <p className="cardDesc">{"View office hours \nanalytics"}</p>
-                        </div>
-                    </div>
-                </div>
                 <section className="finalTextSection">
                     <img className="qmiThreePeople" src={QMIThreePeople} alt="People walking"/>
                     <div className="finalTextWrapper">
