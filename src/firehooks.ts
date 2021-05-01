@@ -355,6 +355,8 @@ const allBlogPostsSingletonObservable = new SingletonObservable([], allBlogPosts
 export const useAllBlogPosts: () => readonly BlogPost[] =
     createUseSingletonObservableHook(allBlogPostsSingletonObservable);
 
+export const useProductUpdate= (): BlogPost | undefined => useAllBlogPosts()[0]
+
 // Primatives
 // Look up a doc in Firebase by ID
 export const useCourse = (courseId: string | undefined): FireCourse | undefined =>
