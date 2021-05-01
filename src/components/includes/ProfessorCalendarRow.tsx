@@ -3,17 +3,7 @@ import moment from 'moment';
 import { Icon, DropdownItemProps } from 'semantic-ui-react';
 import 'react-datepicker/dist/react-datepicker.css';
 import ProfessorOHInfo from './ProfessorOHInfo';
-import { firestore } from '../../firebase';
-
-const getUsers = async (sessions: FireSession[]): Promise<FireUser[]> => {
-    const taSet = new Set<string>();
-    sessions.forEach(session => session.tas.forEach(ta => taSet.add(ta)));
-    const userDocuments = await Promise.all(Array.from(taSet).map(id => firestore.collection('users').doc(id).get()));
-    return userDocuments.map(document => ({
-        userId: document.id,
-        ...(document.data() as Omit<FireUser, 'userId'>)
-    }));
-};
+import { getUsersFromSessions } from '../../firebasefunctions/session'
 
 const ProfessorCalendarRow = (props: {
     dayNumber: number;
@@ -37,7 +27,7 @@ const ProfessorCalendarRow = (props: {
 
     const [users, setUsers] = React.useState<FireUser[]>([]);
     React.useEffect(() => {
-        getUsers(props.sessions).then(latestUsers => setUsers(latestUsers));
+        getUsersFromSessions(props.sessions).then(latestUsers => setUsers(latestUsers));
     }, [props.sessions]);
 
     if (props.sessions.length === 0) {
