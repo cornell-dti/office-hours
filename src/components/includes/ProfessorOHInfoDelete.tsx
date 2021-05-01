@@ -3,6 +3,7 @@ import moment from 'moment';
 import { Checkbox } from 'semantic-ui-react';
 import { firestore } from '../../firebase';
 import { deleteSeries } from '../../firebasefunctions/series';
+import { deleteSession } from '../../firebasefunctions/session';
 import { useSessionTANames } from '../../firehooks';
 
 
@@ -25,7 +26,7 @@ const ProfessorOHInfoDelete = ({ course, session, toggleDelete, toggleEdit }: Pr
                 deleteSeries(firestore, sessionSeriesId);
             }
         } else {
-            firestore.collection('sessions').doc(session.sessionId).delete();
+            deleteSession(session.sessionId);
         }
     };
 
