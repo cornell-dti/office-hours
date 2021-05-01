@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Icon, Dropdown } from 'semantic-ui-react';
-import { firestore } from '../../firebase';
+import { updateSettingsInCourse } from '../../firebasefunctions/courseSettings';
 
 const OPEN_OPTIONS: { text: string; value: number }[] = [
     { text: '0', value: 0 },
@@ -32,7 +32,8 @@ class ProfessorSettings extends React.Component<Props, State> {
             queueOpenInterval: this.state.openInterval,
             charLimit: this.state.charLimit
         };
-        firestore.collection('courses').doc(this.props.courseId).update(courseUpdate);
+
+        updateSettingsInCourse(this.props.courseId, courseUpdate)
     };
 
     handleCharLimit = (input: string): void => {
