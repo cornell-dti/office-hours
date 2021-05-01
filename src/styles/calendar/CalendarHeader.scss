@@ -1,10 +1,8 @@
 .Header {
-
     .LogoContainer {
         float: left;
         width: 90px;
         height: 100%;
-        // padding-top: 9px; // Manual vertical align
 
         .QMeLogo {
             display: block;
@@ -14,7 +12,7 @@
         }
     }
 
-    .CalendarHeader>span {
+    .CalendarHeader > span {
         line-height: 28px;
         padding: 0 10px;
         height: 28px;
@@ -33,7 +31,7 @@
         align-items: center;
         border-radius: 5px;
         width: fit-content;
-        padding: 2px 8px 2px 8px;
+        padding: 2px 8px;
         margin: 0px 10px 10px 10px;
         position: relative;
         min-width: 150px;
@@ -47,7 +45,7 @@
         .TAMarker {
             justify-content: center;
             border-radius: 3px;
-            color: #69A2E9;
+            color: #69a2e9;
             background-color: white;
             margin: 5px 5px 5px 5px;
             width: 30px;
@@ -70,17 +68,17 @@
             }
         }
 
-         .courseMenu {
-             width: 100%;
-             position: absolute;
-             top: 36px;
-             border: solid 1px #E5E5E5;
-             border-radius: 5px;
-             background-color: white;
-             z-index: 1;
+        .courseMenu {
+            width: 100%;
+            position: absolute;
+            top: 36px;
+            border: solid 1px #e5e5e5;
+            border-radius: 5px;
+            background-color: white;
+            z-index: 1;
 
             .editClasses {
-                border-top: solid 0.5px #D4D4D4;
+                border-top: solid 0.5px #d4d4d4;
             }
 
             li {
@@ -91,7 +89,7 @@
                 font-size: 15px;
                 font-weight: 300;
                 display: block;
-        
+
                 a {
                     color: #494949;
                     width: 100%;
@@ -102,7 +100,7 @@
                 }
 
                 .thisCourse {
-                    color: #699CE9;
+                    color: #699ce9;
                     font-weight: 500;
                 }
             }
@@ -114,6 +112,7 @@
 
         span {
             display: flex;
+            white-space: nowrap;
         }
 
         @media only screen and (max-width: $mobile-breakpoint) {
