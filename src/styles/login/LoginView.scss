@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap');
-<<<<<<< HEAD
 
 .loginView {
     background: linear-gradient(270deg, #6AAFDC 19%, #668BE9 66%);
@@ -37,75 +36,24 @@
     height: 10vh;
     color: #FFFFFF;
 
-=======
-
-.LoginView {
-    background: linear-gradient(25deg, #668AE9 0%, #6DB9EA 60%);
-    background-size: cover;
-    min-height: 100%;
-    top: 20vh;
-}
-
-.whiteSectionWrapper {
-    background-color: white;
-    .tutorialHeader {
-        color: #5599DB;
-    }
-}
-
-.contactButton {
-    box-shadow: 2px 4px 5px rgba(108, 108, 108, 0.25);
-    background: #F67D7D;
-    border-radius: 5px;
-    font-family: "Roboto";
-    font-weight: 300;
-    padding: 10px 30px;
-    color: #FFFFFF;
-    transition: transform 0.3s;
-    transform: translateY(0px);
-    &:hover {
-        background: #fa8181;
-        color: white;
-        transform: translateY(-2px);
-    }
-}
-
-.header {
-    position: relative;
-    height: 10vh;
-    color: #FFFFFF;
-
->>>>>>> Update Prod (#515)
     .logoWrapper {
         position: absolute;
         top: 15px;
         left: 25px;
         display: flex;
         flex-direction: row;
-<<<<<<< HEAD
         .qmiNewLogo {
             height: 75px;
             width: 75px;
         }
         .qmiLogoText {
-=======
-        .QMINewLogo {
-            height: 75px;
-            width: 75px;
-        }
-        .QMILogoText {
->>>>>>> Update Prod (#515)
             font-family: "Roboto";
             font-weight: 300;
             font-size: 22px;
         }
     }
 
-<<<<<<< HEAD
     .qmiContact {
-=======
-    .contactButton {
->>>>>>> Update Prod (#515)
         position: absolute;
         top: 30px;
         right: 30px;
@@ -122,10 +70,6 @@
     .nameAndButtonWrapper {
         color: #FFFFFF;
         text-align: left;
-<<<<<<< HEAD
-=======
-        animation: moveIntoFrame 4s;
->>>>>>> Update Prod (#515)
         .mainLogoText {
             font-family: "Roboto";
             font-weight: 500;
@@ -144,11 +88,7 @@
     }
 }
 
-<<<<<<< HEAD
 .demoQMI {
-=======
-.DemoQMI {
->>>>>>> Update Prod (#515)
     position: relative;
     z-index: 2;
     height: 625px;
@@ -168,7 +108,6 @@
     width: 100vw;
 }
 
-<<<<<<< HEAD
 .secondWhiteStrip {
     width: 100vw;
     position: relative;
@@ -372,196 +311,6 @@
     }
 }
 
-=======
-.tutorialHeader {
-    color: white;
-    font-size: 30px;
-    font-family: "Roboto";
-    font-weight: 500;
-    margin-bottom: 70px;
-}
-
-.tutorialWrapper {
-    padding-top: 50px;
-    &.professorsTutorialWrapper {
-        padding-bottom: 100px;
-    }
-}
-
-.cardWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .infoCard {
-        background-color: rgba(255, 255, 255, 0.9);
-        border-radius: 15px;
-        width: 240px;
-        height: 300px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        margin: 0 100px;
-        box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.15);
-        position: relative;
-        transition: transform 0.3s;
-        transform: translateY(0px);
-        &:hover {
-            transform: translateY(-2px);
-        }
-        .cardImg {
-            margin-bottom: 30px;
-        }
-        .cardDesc {
-            font-family: "Roboto";
-            font-weight: 400;
-            font-size: 15px;
-            position: absolute;
-            bottom: 30px;
-            white-space: pre-line;
-        }
-    }
-}
-
-.finalTextSection {
-    display: flex;
-    margin-bottom: 80px;
-    .qmiThreePeople {
-        width: 500px;
-        height: 300px;
-    }
-    .finalTextWrapper {
-        margin-left: 150px;
-    }
-    .finalText {
-        font-family: "Roboto";
-        font-weight: 500;
-        font-size: 50px;
-        text-align: left;
-        margin: 0;
-        white-space: pre-line;
-    }
-    .finalTextHead {
-        color: #5599DB
-    }
-    .contactButton {
-        float: left;
-        margin-top: 50px;
-    }
-}
-
-@media screen and (max-width: $mobile-breakpoint) {
-    .contactButton {
-        padding: 5px 15px;
-        font-size: 10px;
-    }
-    .header {
-        .logoWrapper {
-            top: 7px;
-            left: 12px;
-            .QMINewLogo {
-                height: 30px;
-                width: 30px;
-            }
-            .QMILogoText {
-                font-size: 12px;
-                margin-top: 8px;
-            }
-        }
-        .contactButton {
-            top: 10px;
-            right: 15px;            
-        }
-    }
-    .mainInfo {
-        .nameAndButtonWrapper {
-            .mainLogoText {
-                font-family: "Roboto";
-                font-weight: 500;
-                font-size: 25px;
-            }
-            .subHeader {
-                font-family: "Roboto";
-                font-weight: 100;
-                font-size: 10px;
-                margin: 0;
-            }
-            .loginButton {
-                margin-top: 25px;
-            }
-        }
-        .QMIPeople {
-            width: 140px;
-            height: 80px;
-        }
-    }
-    .DemoQMI {
-        height: 170px;
-    }
-    .ribbonWrapper {
-        top: -100px;
-    }
-    .tutorialHeader {
-        font-size: 13px;
-        margin-bottom: 30px;
-    }
-    .tutorialWrapper {
-        padding-top: 20px;
-        &.professorsTutorialWrapper {
-            padding-bottom: 40px;
-        }
-    }
-    .cardWrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        .infoCard {
-            width: 70px;
-            height: 90px;
-            margin: 0 10px;
-            box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.15);
-            .cardImg {
-                height: 35px;
-                width: 35px;
-                margin-bottom: 30px;
-            }
-            .cardDesc {
-                font-weight: 400;
-                font-size: 8px;
-                bottom: 15px;
-            }
-        }
-    }
-    .finalTextSection {
-        margin-bottom: 30px;
-        .qmiThreePeople {
-            width: 110px;
-            height: 65px;
-        }
-        .finalTextWrapper {
-            margin-left: 35px;
-        }
-        .finalText {
-            font-size: 13px;
-        }
-        .contactButton {
-            margin-top: 15px;
-        }
-    }
-}
-
-@keyframes moveIntoFrame {
-    0% {
-        opacity: 0%;
-        transform: translateY(10px);
-    }
-    100% {
-        opacity: 100%;
-        transform: translateY(0px);
-    }
-}
-
->>>>>>> Update Prod (#515)
 @keyframes float {
     0% {
         transform: translateY(-10px);
