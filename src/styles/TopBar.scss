@@ -4,7 +4,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    // position: relative;
     outline: none;
 }
 
@@ -47,22 +46,28 @@
     user-select: none;
 
     .triggerArea {
+        width: 100%;
         padding: 8px;
         display: flex;
 
         .viewToggles {
             display: flex;
+            flex-wrap: wrap;
+            align-self: center;
+            justify-content: center;
         }
 
         .QMILogo {
+            align-self: right;
             margin-bottom: 10px;
             width: 30px;
             margin-left: 46px;
         }
 
         .userProfile {
+            align-self: right;
             padding-bottom: 10px;
-            transition-duration: .2s;
+            transition-duration: 0.2s;
             transition-property: box-shadow, color;
             transition-timing-function: $curve-standard;
             cursor: pointer;
@@ -96,3 +101,22 @@
     }
 }
 
+@media only screen and (max-width: $mobile-breakpoint) {
+    .userProfile {
+        padding-right: 15px;
+    }
+
+    .topBar {
+        height: fit-content;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-right: 0;
+
+        .triggerArea {
+            .QMILogo {
+                margin-left: 15px;
+            }
+        }
+    }
+}
