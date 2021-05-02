@@ -59,10 +59,16 @@
             width: 30px;
             margin-left: 46px;
         }
+        .rightContentWrapper {
+            width: 20%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
         .userProfile {
             padding-bottom: 10px;
-            transition-duration: .2s;
+            transition-duration: 0.2s;
             transition-property: box-shadow, color;
             transition-timing-function: $curve-standard;
             cursor: pointer;
@@ -95,4 +101,3 @@
         }
     }
 }
-

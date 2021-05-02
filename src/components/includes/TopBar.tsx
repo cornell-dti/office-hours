@@ -4,6 +4,7 @@ import { logOut } from '../../firebasefunctions/user';
 import Logo from '../../media/QLogo2.svg';
 import CalendarHeader from './CalendarHeader';
 import ProfessorStudentToggle from './ProfessorStudentToggle';
+// import TopBarNotifications from './TopBarNotifications'
 
 const TopBar = (props: {
     courseId: string;
@@ -55,16 +56,19 @@ const TopBar = (props: {
                             />
                         }
                     </div>
-                    <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
-                        <img
-                            src={image}
-                            className="profilePic"
-                            onError={() => setImage('/placeholder.png')}
-                            alt="User Profile"
-                        />
-                        <span className="name">
-                            {props.user ? props.user.firstName + ' ' + props.user.lastName : 'Loading...'}
-                        </span>
+                    <div className="rightContentWrapper" >
+                        {/* <TopBarNotifications /> */}
+                        <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
+                            <img
+                                src={image}
+                                className="profilePic"
+                                onError={() => setImage('/placeholder.png')}
+                                alt="User Profile"
+                            />
+                            <span className="name">
+                                {props.user ? props.user.firstName + ' ' + props.user.lastName : 'Loading...'}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </header>

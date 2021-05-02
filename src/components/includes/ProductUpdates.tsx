@@ -2,57 +2,98 @@ import React, {useState, useRef, useEffect} from 'react';
 
 import ProductUpdate from './ProductUpdate'
 import ProductUpdatesModal from './ProductUpdatesModal'
-import bug_fix from '../../media/bug_fix.svg';
+import bugFix from '../../media/bugFix.svg';
 import notif from '../../media/notif.svg'
-import {useProductUpdate} from '../../firehooks'
+import {viewedTrackable} from '../../firebasefunctions/blogPost'
+import {useMyUser, useNotificationTracker, useProductUpdate} from '../../firehooks';
 
 
 const ProductUpdates = () => {
-  const [singleUpdate, toggleSingleUpdate] = useState(false);
-  const [seeAll, toggleSeeAll] = useState(false);
-  const [hasViewed, toggleHasViewed] = useState(false);
+    const [singleUpdate, toggleSingleUpdate] = useState(false);
+    const [seeAll, toggleSeeAll] = useState(false);
 
-  const singleRef = useRef<HTMLDivElement>(null);
-  const seeAllRef = useRef<HTMLDivElement>(null);
+    const user = useMyUser();
+    const email: string | undefined = user?.email
+    const notificationTracker = useNotificationTracker(email);
 
-  const onClickOff = (e : MouseEvent) => {
-    if (singleRef.current && !singleRef.current.contains(e.target as Node)) {
-      toggleSingleUpdate(false);
-    } else if (seeAllRef.current && !seeAllRef.current.contains(e.target as Node)) {
-      toggleSeeAll(false);
+    const productUpdate = useProductUpdate();
+
+    useEffect(() => {
+        toggleHasViewed(notificationTracker === undefined || 
+        productUpdate === undefined || 
+        notificationTracker.productUpdates.toDate() >= productUpdate.timeEntered.toDate())
+    }, [notificationTracker, productUpdate])
+
+    const [hasViewed, toggleHasViewed] = useState(notificationTracker === undefined || 
+      productUpdate === undefined || 
+      notificationTracker.productUpdates.toDate() >= productUpdate.timeEntered.toDate());
+
+    const singleRef = useRef<HTMLDivElement>(null);
+    const seeAllRef = useRef<HTMLDivElement>(null);
+
+    const updateTrackable = () => {
+        viewedTrackable(user, notificationTracker, false)
+        toggleHasViewed(true)
     }
-  }
 
-  useEffect(() => {
-    document.addEventListener('mousedown', onClickOff);
-    return () => {
-      document.removeEventListener('mousedown', onClickOff);
+    const onClickOff = (e: MouseEvent) => {
+        if (singleRef.current && !singleRef.current.contains(e.target as Node)) {
+            toggleSingleUpdate(false);
+        } else if (seeAllRef.current && !seeAllRef.current.contains(e.target as Node)) {
+            toggleSeeAll(false);
+            if(seeAll) {
+                toggleSingleUpdate(false); 
+                updateTrackable();
+            };
+        }
     }
-  })
 
-  const productUpdate = useProductUpdate();
+    useEffect(() => {
+        document.addEventListener('mousedown', onClickOff);
+        return () => {
+            document.removeEventListener('mousedown', onClickOff);
+        }
+    })
 
-  const iconClicked = () => {
-    toggleSingleUpdate(!singleUpdate)
-    toggleHasViewed(true);
-  }
+    const iconClicked = () => {
+        toggleSingleUpdate(!singleUpdate)
+    }
 
-  return (
-      <>
-          <div className="productUpdates__singleToggler" onClick={() => iconClicked()}>
-              <img className="productUpdates__bugIcon" src={bug_fix} alt="Bug fix icon" />
-              {!hasViewed && <img className="productUpdates__notification" src={notif} alt = "Notification indicator" />}
-          </div>
-          <div ref={singleRef} className={`productUpdates__singleDisplay productUpdates__${singleUpdate ? "visible" : "hidden"}`} onClick={e => e.stopPropagation()}>
-              <div className="singleDisplay__header">
-                <div className="singleDisplay__title">Product updates</div>
-                <div className="singleDisplay__see-all" onClick={() => toggleSeeAll(!seeAll)}>See all</div>
-              </div>
-              <ProductUpdate blogPost={productUpdate} />
-              <ProductUpdatesModal seeAll={seeAll} toggleSeeAll={toggleSeeAll} seeAllRef={seeAllRef} />
-          </div>
-      </>
-  )
+    const seeAllClicked = () => {
+        toggleSeeAll(true)
+    }
+
+    return (
+        <>
+            <div className="productUpdates__singleToggler" onClick={() => iconClicked()}>
+                <img className="productUpdates__bugIcon" src={bugFix} alt="Bug fix icon" />
+                {!hasViewed && <img 
+                    className="productUpdates__notification" 
+                    src={notif} 
+                    alt="Notification indicator" 
+                />}
+            </div>
+            <div 
+                ref={singleRef} 
+                className={`productUpdates__singleDisplay productUpdates__${singleUpdate ? "visible" : "hidden"}`} 
+                onClick={e => e.stopPropagation()}
+            >
+                <div className="singleDisplay__header">
+                    <div className="singleDisplay__title">Product updates</div>
+                    <div className="singleDisplay__see-all" onClick={() => seeAllClicked()}>See all</div>
+                </div>
+                <ProductUpdate blogPost={productUpdate} notificationTracker={notificationTracker}/>
+                <ProductUpdatesModal 
+                    seeAll={seeAll} 
+                    toggleSeeAll={toggleSeeAll} 
+                    seeAllRef={seeAllRef} 
+                    toggleSingle={toggleSingleUpdate} 
+                    notificationTracker={notificationTracker} 
+                    updateTrackable={updateTrackable}
+                />
+            </div>
+        </>
+    )
 }
 
 

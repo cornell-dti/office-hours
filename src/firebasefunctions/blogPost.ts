@@ -47,3 +47,25 @@ export const deleteBlogPost = (
         postRef.delete();
     }
 }
+
+export const viewedTrackable = 
+(user: FireUser | undefined, 
+    notificationTracker: NotificationTracker | undefined, 
+    viewedNotifs: boolean) => {
+    if (user !== undefined) {
+        const email = user.email;
+        const updatedTracker: NotificationTracker = {
+            notifications: firebase.firestore.Timestamp.now(),
+            productUpdates: firebase.firestore.Timestamp.now()
+        }
+        if (email !== null) {
+            const trackerRef = firestore.collection('notificationTrackers').doc(email);
+            if (notificationTracker !== undefined && viewedNotifs) {
+                updatedTracker.productUpdates = notificationTracker.productUpdates
+            } else if (notificationTracker !== undefined) {
+                updatedTracker.notifications = notificationTracker.notifications
+            }
+            trackerRef.update(updatedTracker)
+        }
+    }
+}

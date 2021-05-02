@@ -161,7 +161,7 @@ const SplitView = (props: {
                         </section>
                     )
                 ) : <Loader active={true} content="Loading" />)}
-                <ProductUpdates />
+            <ProductUpdates />
            
         </>
     );

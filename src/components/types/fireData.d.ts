@@ -192,3 +192,8 @@ interface BlogPost {
     timeEntered: FireTimestamp;
     edited? : FireTimestamp;
 }
+
+interface NotificationTracker {
+    notifications: FireTimestamp;
+    productUpdates: FireTimestamp;
+}
