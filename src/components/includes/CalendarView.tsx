@@ -4,9 +4,9 @@ import { Loader } from 'semantic-ui-react';
 import CalendarDaySelect from './CalendarDaySelect';
 import CalendarSessions from './CalendarSessions';
 
-import { firestore } from '../../firebase';
 import { useQueryWithLoading } from '../../firehooks';
 import { hasOverlap } from '../../utilities/date';
+import { getQuery } from '../../firebasefunctions/calendar';
 
 type Props = {
     session?: FireSession;
@@ -15,7 +15,6 @@ type Props = {
     user?: FireUser;
 };
 
-const getQuery = (courseId: string) => firestore.collection('sessions').where('courseId', '==', courseId);
 
 export default ({ session, sessionCallback, course, user }: Props) => {
     const [selectedDateEpoch, setSelectedDate] = React.useState(new Date().setHours(0, 0, 0, 0));

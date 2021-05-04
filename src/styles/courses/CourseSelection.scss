@@ -1,5 +1,3 @@
-
-
 .CourseSelection {
     .QMeLogo.course {
         position: absolute;
@@ -13,7 +11,7 @@
 
     .selectionContent {
         margin-top: 46px;
-        padding: 20px 50px 100px;
+        padding: 20px 0 100px;
         box-sizing: border-box;
 
         .description {
@@ -37,7 +35,7 @@
             padding: 10px;
             flex-shrink: 1;
             flex-wrap: wrap;
-            justify-content: flex-start;
+            justify-content: center;
         }
     }
 }
@@ -55,7 +53,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
+    // flex-wrap: wrap;
 
     .EnrolledCourses.web {
         display: block;
@@ -124,6 +122,10 @@
 
         .selectionContent {
             margin-top: 0px;
+
+            .CourseCards {
+                width: 100%;
+            }
 
             .description {
                 padding-bottom: 25px;

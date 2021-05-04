@@ -10,9 +10,8 @@ aside.CalendarView {
     left: 0;
     width: 390px;
     box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
-    // z-index: 1;
-    overflow-y:scroll;
-    overflow-x:hidden;
+    overflow-y: scroll;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     user-select: none;
 }
@@ -23,12 +22,13 @@ section.StudentSessionView {
     bottom: 0;
     right: 0;
     left: 390px;
-    overflow-y:scroll;
-    overflow-x:hidden;
+    overflow-y: scroll;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
 }
 
-section.StudentSessionView::-webkit-scrollbar , aside.CalendarView::-webkit-scrollbar {
+section.StudentSessionView::-webkit-scrollbar,
+aside.CalendarView::-webkit-scrollbar {
     display: none;
 }
 
@@ -48,8 +48,6 @@ section .SessionJoinButton {
     padding-top: 25vh;
 }
 
-
-
 .welcomeMessage {
     padding-top: 100px;
     font-family: Roboto;
@@ -63,7 +61,7 @@ section .SessionJoinButton {
 }
 
 .undoContainer {
-    width:100%;
+    width: 100%;
     background-color: #b0b0b0;
     color: #ffffff;
     height: 56px;
@@ -75,8 +73,8 @@ section .SessionJoinButton {
 
     .undoClose {
         position: absolute;
-        top:2px;
-        left:4px;
+        top: 2px;
+        left: 4px;
         cursor: pointer;
     }
 
@@ -100,11 +98,13 @@ section .SessionJoinButton {
 }
 
 @media only screen and (max-width: $mobile-breakpoint) {
-    aside.CalendarView, section.StudentSessionView {
+    aside.CalendarView,
+    section.StudentSessionView {
         width: 100%;
         position: relative;
         height: 100%;
         left: 0;
+        top: 0;
     }
 
     .splitQuestions {
@@ -122,7 +122,6 @@ section .SessionJoinButton {
         width: 100%;
     }
 
-
     section .SessionJoinButton {
         margin: 15px auto 0;
         width: 90%;
@@ -134,20 +133,20 @@ section .SessionJoinButton {
     }
 }
 
-  .feedbackModal {
+.feedbackModal {
     .Feedback {
-      position: fixed;
-      z-index: 4;
-      top: 0;
-      left: 0;
-      @media only screen and (min-width: $mobile-breakpoint) {
-        top: 15%;
-        left: 15%;
-      }
+        position: fixed;
+        z-index: 4;
+        top: 0;
+        left: 0;
+        @media only screen and (min-width: $mobile-breakpoint) {
+            top: 15%;
+            left: 15%;
+        }
     }
-  }
+}
 
-  .feedbackShade {
+.feedbackShade {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -155,4 +154,4 @@ section .SessionJoinButton {
     right: 0;
     z-index: 3;
     background-color: hsla(0, 0%, 44%, 0.8);
-  }
+}

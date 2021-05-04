@@ -9,7 +9,7 @@ import LeaveQueue from '../includes/LeaveQueue';
 
 import { useCourse, useSession, useMyUser } from '../../firehooks';
 import { firestore } from '../../firebase';
-
+import { removeQuestionbyID } from '../../firebasefunctions/sessionQuestion'
 import TopBar from '../includes/TopBar';
 
 // Also update in the main LESS file
@@ -91,18 +91,9 @@ const SplitView = (props: {
     };
 
     const removeQuestion = () => {
-        if (removeQuestionId !== undefined) {
-            const batch = firestore.batch();
-            const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
-            const questionUpdate: Partial<FireQuestion> = slotUpdate;
-            batch.update(firestore.doc(`questionSlots/${removeQuestionId}`), slotUpdate);
-            batch.update(firestore.doc(`questions/${removeQuestionId}`), questionUpdate);
-            batch.commit();
-        }    
+        removeQuestionbyID(firestore, removeQuestionId);  
     }
-    
 
-    // Toggle warning
 
     return (
         <>
@@ -152,8 +143,9 @@ const SplitView = (props: {
                                 Please select an office hour from the calendar.
                                 <p> </p>
                                 <p> </p>
-
-                                {(Notification !== undefined) && Notification.permission === "granted" && (
+                                {("Notification" in window &&
+                                window?.Notification !== undefined) && 
+                                window?.Notification.permission === "granted" && (
                                     <div className="warningArea">
 
                                         <div>

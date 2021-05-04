@@ -1,81 +1,163 @@
-.DiscussionQuestion {
+.discussionQuestion {
     background-color: white;
-    display: block;
-    margin: 12px auto 12px;
-    position: relative;
-    text-align: center;
     width: 100%;
-    display: inline-block;
     border-radius: 10px;
-
-    .DiscussionContainer {
-        display: flex;
-        flex-direction: column;
-        flex: 0 1 auto;
-        margin-top: 7px;
-        margin-left: 18px;
-    }
-
-    .Upvote {
-        background: url('../../media/shortup.png') no-repeat top;
-        height: 20px;
-        width: 20px;
-        border: none;
-        float: left;
-        cursor: pointer;
-    }
-
-    .Upvote:focus {
-        outline: none;
-        box-shadow: none;
-    }
-
-    .UpvoteContainer {
-        display: flex block;
-        flex-direction: row;
-        flex: 0 1 auto;
-
-        .Upvotes {
-            float: left;
-            font-size: 1.2rem;
-            width: 20px;
-            height: 20px;
-            color: $number-blue;
-            background-color: white;
-            border: solid $number-blue 0px;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        .QuestionBody {
-            float: left;
-            font-size: 14px;
-            text-align: left;
-            padding: 0px 12px;
-            margin: 0em;
-            color: #595959;
-            font-weight: 300;
-        }
-
-
-    }
-
-    .RightBar {
-        float: right;
-        font-weight: 300;
-        margin-right: 16px;
-
-        .commentBtn {
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-
-            &:hover {
-                background-color: lightgray;
-                border-radius: 30px;
+    font-family: "Roboto", arial;
+    margin-top: 20px;
+    .discussionContainer {
+        padding: 7px 0;
+        .resolvedDiscussionBadge {
+            background-color: #70D59D;
+            border-radius: 8px;
+            padding: 3px 5px;
+            width: 75px;
+            margin-left: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .resolvedDiscussionText {
+                color: white;
+                font-size: 12px;
+                font-weight: 400;
+                margin: 0;
+            }
+            .resolvedCheckImage {
+                margin-left: 3px;
             }
         }
+        .discussionHeaderWrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-left: 16px;
+            margin-right: 20px;
+            padding-top: 5px;
+            .upvoteAndUserInfoContainer {
+                display: flex;
+                .upvoteContainer {
+                    .upvoteButton {
+                        border: none;
+                        background-color: transparent;
+                        &:hover {
+                            cursor: pointer;
+                        }
+                        .upvoteArrow {
+                            width: 12px;
+                            height: 12px;
+                        }
+                    }
+                    .upvoteCount {
+                        color: #7C8FBA;
+                        font-size: 16px;
+                    }
+                }
+                .userPhotoAndNameWrapper {
+                    margin-left: 10px;
+                    display: flex;
+                    align-items: center;
+                    .discussionProfileImage {
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 50%;
+                    }
+                    .discussionProfileUserName {
+                        font-weight: 500px;
+                        font-size: 14px;
+                        margin-left: 8px;
+                    }
+                }
+            }
+
+            .discussionCommentButton {
+                border: none;
+                background-color: transparent;
+                float: right;
+                transform: translateY(0px);
+                transition: transform 0.3s;
+                &:hover {
+                    cursor: pointer;
+                    transform: translateY(-1px);
+                }
+            }
+        }
+        .lowerDiscussionContainer {
+            display: flex;
+            justify-content: space-between;
+            margin-left: 50px;
+            margin-right: 30px;
+            .questionAndTagsWrapper {
+                .tagsContainer {
+                    margin: 12px 0px;
+                }
+            }
+            .discussionQuestionTime {
+                color: #6F6F6F;
+                font-size: 13px;
+            }
+        }
+        .discussionButtons{
+            .discussionRemoveButtonWrapper {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                .discussionRemoveButton {
+                    border: none;
+                    background-color: transparent;
+                    margin-top: 6px;
+                    margin-bottom: 8px;
+                    &:hover {
+                        cursor: pointer;
+                    }
+                    .discussionRemoveIcon {
+                        width: 14px;
+                        height: 14px;
+                    }
+                }
+            }
+
+        }
+        .discussionTAActionsWrapper {
+            .discussionDoneButton {
+                border: 1px solid #3594F1;
+                border-radius: 4px;
+                background-color: transparent;
+                color:#3594F1;
+                padding: 4px 30px;
+                font-size: 14px;
+                margin-top: 15px;
+                margin-bottom: 10px;
+                &:hover {
+                    cursor: pointer;
+                }
+            }
+        }
+        .discussionQuestionBody {
+            font-weight: 300;
+            font-size: 14px;
+            color: #484848;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            .discussionQuestionContent {
+                text-align: left;
+            }
+            &.isStudentUserDiscussion {
+                .discussionQuestionContent {
+                    margin-left: 10px;
+                }
+            }
+            &.isTAUserDiscussion {
+                display: block;
+            }                
+        }
+        .discussionDivider {
+            width: 95%;
+            border: 1px solid #EBEBEB;
+        }
     }
+}
+
+.discussionQuestion {
 
     .CommentBox {
         margin-top: 12px;
@@ -139,55 +221,6 @@
                 }
             }
         }
-    }
-
-    .BottomBarContainer {
-        float: left;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        flex: 1 0 auto;
-        width: 100%;
-    }
-
-    .DiscussionTags {
-        float: left;
-    }
-
-    .Time {
-        float: right;
-        font-weight: 300;
-        color: gray;
-        font-size: 12px;
-    }
-    .Buttons {
-        
-        margin-top: 10px;
-        margin-bottom: 0px;
-        width: 95%;
-
-        hr {
-            height: 1px;
-            border: 1px;
-            border-top: 1px solid #ebebeb;
-            margin: 0px;
-            padding: 0;
-        }
-    
-        .Remove {
-            color: #595959;
-            font-size: 15px;
-            user-select: none;
-            cursor: pointer;
-        }
-    }
-
-    .LowerDiscussionContainer {
-        display: flex;
-        flex: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin: 15px 18px;
     }
 
     .userInformationImg {
