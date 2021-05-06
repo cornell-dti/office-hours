@@ -38,3 +38,7 @@ yarn-error.log*
 
 .idea
 .DS_Store
+
+# NYC
+
+.nyc_output

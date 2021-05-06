@@ -90,7 +90,7 @@ interface FireReviewSeries extends FireBaseSessionSeries, FireVirtualLocation {
     link: string;
 }
 
-type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries | 
+type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries |
 FireInPersonSessionSeries | FireReviewSeries);
 type FireSessionSeriesDefinition =
     Omit<FireVirtualSessionSeries, 'sessionSeriesId'>
@@ -139,7 +139,7 @@ interface FireUser {
 
 interface FirePendingUser {
     email: string;
-    roles: Record<string, role>;
+    roles: Record<string, PrivilegedFireCourseRole>;
 }
 
 interface FireQuestion {
@@ -163,7 +163,7 @@ interface FireOHQuestion extends FireQuestion {
     answererLocation?: string;
 }
 
-type FireQuestionSlot = Pick<FireQuestion, 'askerId' 
+type FireQuestionSlot = Pick<FireQuestion, 'askerId'
 | 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
 
 interface FireTag {
@@ -191,4 +191,25 @@ interface BlogPost {
     listItems: string[];
     timeEntered: FireTimestamp;
     edited? : FireTimestamp;
+}
+
+// These classes are used to write tests, then converted to their readonly versions
+interface FireEditableUser extends FireUser {
+    courses: string[];
+    roles: { [courseId: string]: PrivilegedFireCourseRole | undefined };
+}
+
+interface FireEditableCourse extends FireCourse {
+    professors: string[];
+    tas: string[];
+}
+
+// An environment that describes the entire QMI App state
+interface FireEnvironment {
+    courses: FireCourse[];
+    pendingUsers: FirePendingUser[];
+    questions: FireQuestion[];
+    sessions: FireSession[];
+    tags: FireTag[];
+    users: FireUser[];
 }
