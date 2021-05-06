@@ -1,170 +1,321 @@
-.LoginView.contact {
-    flex-direction: column;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap');
+
+.loginView {
+    background: linear-gradient(270deg, #6AAFDC 19%, #668BE9 66%);
+    background-size: cover;
+    min-height: 100%;
+    top: 20vh;
 }
 
-.QMeLogo {
-    display: block;
-    width: 83px;
-    padding-bottom: 40px;
-    margin-top: 70px;
+.whiteSectionWrapper {
+    background-color: white;
+    .tutorialHeader {
+        color: #5599DB;
+    }
 }
 
-.topPanel {
-    height: 45vh;
-    background-image: linear-gradient(#155693 0%, #6db9ea 100%);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    line-height: 1.4;
-    font-size: 18px;
-    margin-bottom: 40px;
-    position: relative;
-
-    .contactText {
-        background-color: transparent;
+.qmiContact {
+    box-shadow: 2px 4px 5px rgba(108, 108, 108, 0.25);
+    background: #F67D7D;
+    border-radius: 5px;
+    font-family: "Roboto";
+    font-weight: 300;
+    padding: 10px 30px;
+    color: #FFFFFF;
+    transition: transform 0.3s;
+    transform: translateY(0px);
+    &:hover {
+        background: #fa8181;
         color: white;
-        border: none;
-        text-decoration: underline;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: bold;
+        transform: translateY(-2px);
+    }
+}
+
+.header {
+    position: relative;
+    height: 10vh;
+    color: #FFFFFF;
+
+    .logoWrapper {
         position: absolute;
-        bottom: 30px;
-        left: calc(50% - 125px);
-    }
-
-    &.contact {
-        background-image: none;
-        background-color: white;
-        color: $number-blue;
-        justify-content: center;
-        font-size: 19px;
-        margin-bottom: 0;
-        padding: 0 40px;
-        position: relative;
-
-        h2 {
-            font-size: 22px;
-            margin: 12% 0 30px;
-        }
-
-        .x {
-            position: absolute;
-            background-color: transparent;
-            border: none;
-            color: black;
-            top: 5px;
-            right: 5px;
-            cursor: pointer;
-        }
-
-        .QMeLogo {
-            float: left;
-            padding-bottom: 0;
-            margin-top: 0;
-        }
-    }
-}
-
-.bottomPanel {
-    height: 55vh;
-
-    &.contact {
-        background-color: $brand-primary;
-        padding-top: 80px;
-
-        .contactButton {
-            background-color: $button-blue;
-            box-shadow: 2px 4px 4px 0 rgba(0, 0, 0, 0.5);
-            border-radius: 4px;
-            padding: 15px 50px;
-            width: 247px;
-            font-size: 20px;
-            height: 40px;
-            color: white;
-        }
-    }
-
-}
-
-.hintText {
-    color: grey;
-}
-
-@media only screen and (min-width: $mobile-breakpoint) { // Desktop View
-    .LoginView {
+        top: 15px;
+        left: 25px;
         display: flex;
-        align-content: center;
-        justify-content: center;
+        flex-direction: row;
+        .qmiNewLogo {
+            height: 75px;
+            width: 75px;
+        }
+        .qmiLogoText {
+            font-family: "Roboto";
+            font-weight: 300;
+            font-size: 22px;
+        }
+    }
+
+    .qmiContact {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        border: none;
+        
+    }
+}
+
+.mainInfo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    .nameAndButtonWrapper {
+        color: #FFFFFF;
+        text-align: left;
+        .mainLogoText {
+            font-family: "Roboto";
+            font-weight: 500;
+            font-size: 80px;
+        }
+        .subHeader {
+            font-family: "Roboto";
+            font-weight: 100;
+            font-size: 30px;
+            margin: 0;
+        }
+        .loginButton {
+            float: left;
+            margin-top: 50px;
+        }
+    }
+}
+
+.demoQMI {
+    position: relative;
+    z-index: 2;
+    height: 625px;
+    animation: float 2s;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+
+}
+
+.ribbonWrapper {
+    position: relative;
+    top: -300px;
+    z-index: 1;
+}
+
+.whiteStrip {
+    width: 100vw;
+}
+
+.secondWhiteStrip {
+    width: 100vw;
+    position: relative;
+    top: 7px;
+}
+
+.sloganText {
+    color: #5599DB;
+    font-weight: 600;
+    font-size: 40px;
+    white-space: pre-line;
+    position: relative;
+    top: -210px;
+}
+
+.tutorialHeader {
+    color: white;
+    font-size: 30px;
+    font-family: "Roboto";
+    font-weight: 500;
+    margin-bottom: 70px;
+    text-align: left;
+    white-space: pre-line;
+}
+
+.bothTutorialsWrapper {
+    display: flex;
+    margin-top: 50px;
+    justify-content: space-evenly;
+    .tutorialWrapper {
+        padding-top: 50px;
+    }
+}
+
+
+
+.cardWrapper {
+    display: flex column;
+    align-items: center;
+    justify-content: center;
+    .infoCard {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 6px;
+        width: 490px;
+        height: 130px;
+        display: flex;
+        justify-content: flex-start;
         align-items: center;
-        background-color: rgba(51, 73, 94, 0.725);
-        min-height: 100%;
-        top: 20vh;
-        padding: 10vh 0;
+        margin-bottom: 40px;
+        box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.15);
+        position: relative;
+        transition: transform 0.3s;
+        transform: translateY(0px);
+        &:hover {
+            transform: translateY(-2px);
+        }
+        .cardImg {
+            margin-left: 30px;
+            width: 80px;
+            height: 80px;
+        }
+        .cardDesc {
+            margin-left: 30px;
+            font-family: "Roboto";
+            font-weight: 500;
+            font-size: 19px;
+            bottom: 30px;
+            text-align: left;
+            white-space: pre-line;
+            line-height: 120%;
+        }
     }
+}
 
-    .LoginView::after {
-        content: "";
-        background-image: url('/mann.jpg');
-        background-size: cover;
-        opacity: 0.5;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        position: fixed;
-        z-index: -1;
+.finalTextSection {
+    display: flex;
+    margin-bottom: 80px;
+    .qmiThreePeople {
+        width: 500px;
+        height: 300px;
     }
-
-    .topPanel,
-    .bottomPanel {
-        height: 500px;
-        font-size: 20px;
-        box-shadow: 10px 10px 111px 0px rgba(0, 0, 0, 0.65);
-        min-width: 400px;
-        max-width: 475px;
+    .finalTextWrapper {
+        margin-left: 150px;
     }
-
-    .topPanel {
+    .finalText {
+        font-family: "Roboto";
+        font-weight: 500;
+        font-size: 50px;
+        text-align: left;
         margin: 0;
-        border-radius: 15px 0 0 15px;
+        white-space: pre-line;
+    }
+    .finalTextHead {
+        color: #5599DB
+    }
+    .qmiContact {
+        float: left;
+        margin-top: 50px;
+    }
+}
 
-        &.contact {
-            height: 300px;
-            min-width: 800px;
-            border-radius: 15px 15px 0 0;
-            display: block;
+@media screen and (max-width: $mobile-breakpoint) {
+    .qmiContact {
+        padding: 5px 15px;
+        font-size: 10px;
+    }
+    .header {
+        .logoWrapper {
+            top: 7px;
+            left: 12px;
+            .qmiNewLogo {
+                height: 30px;
+                width: 30px;
+            }
+            .qmiLogoText {
+                font-size: 12px;
+                margin-top: 8px;
+            }
+        }
+        .qmiContact {
+            top: 10px;
+            right: 15px;            
+        }
+    }
+    .mainInfo {
+        .nameAndButtonWrapper {
+            .mainLogoText {
+                font-family: "Roboto";
+                font-weight: 500;
+                font-size: 25px;
+            }
+            .subHeader {
+                font-family: "Roboto";
+                font-weight: 100;
+                font-size: 10px;
+                margin: 0;
+            }
+            .loginButton {
+                margin-top: 25px;
+            }
+        }
+        .qmiPeople {
+            width: 140px;
+            height: 80px;
+        }
+    }
+    .demoQMI {
+        height: 150px;
+    }
+    .ribbonWrapper {
+        top: -50px;
+    }
+    .sloganText {
+        font-size: 11px;
+        top: -80px;
+    }
+    .tutorialHeader {
+        font-size: 8px;
+        margin-bottom: 30px;
+    }
+    .bothTutorialsWrapper {
+        margin-top: 25px;
+        .tutorialWrapper {
+            padding-top: 20px;
+        }
+    }
 
-            .QMeLogo {
-                margin: 70px 30px;
+    .cardWrapper {
+        .infoCard {
+            width: 120px;
+            height: 40px;
+            margin-bottom: 20px;
+            box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.15);
+            .cardImg {
+                margin-left: 10px;
+                height: 25px;
+                width: 25px;
+            }
+            .cardDesc {
+                margin-left: 10px;
+                font-size: 5px;
+                bottom: 15px;
             }
         }
     }
-
-    .bottomPanel {
-        color: #8d8d8d;
-        border-radius: 0 15px 15px 0;
-        background-color: white;
-        position: relative;
-
-        &.contact {
-            height: 200px;
-            min-width: 800px;
-            border-radius: 0 0 15px 15px;
+    .finalTextSection {
+        margin-bottom: 30px;
+        .qmiThreePeople {
+            width: 110px;
+            height: 65px;
+        }
+        .finalTextWrapper {
+            margin-left: 35px;
+        }
+        .finalText {
+            font-size: 13px;
+        }
+        .qmiContact {
+            margin-top: 15px;
         }
     }
-
-    .QMeLogo {
-        width: 118px;
-        margin-top: 100px;
-    }
-
-    .hintText {
-        padding-top: 50%;
-    }
-
 }
 
-
+@keyframes float {
+    0% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(10px);
+    }
+}

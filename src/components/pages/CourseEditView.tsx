@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { Loader } from 'semantic-ui-react';
 import CourseSelection from '../includes/CourseSelection';
-import { useMyUser, useAllCourses } from '../../firehooks';
+import { useMyUser, useAllCourses, usePendingUser } from '../../firehooks';
 
 export default () => {
     const user = useMyUser();
     const allCourses = useAllCourses();
-    if (user === undefined || allCourses.length === 0) {
+    const pendingUser = usePendingUser();
+    if (user === undefined || allCourses.length === 0 || pendingUser?.email) {
         // Clearly not all data have been loaded.
         return <Loader active={true} content="Loading" />;
     }

@@ -175,8 +175,22 @@ interface FireTag {
     parentTag?: string;
 }
 
+interface NewTag {
+    id: string;
+    name: string;
+}
+
 interface FireDiscussionQuestion extends FireQuestion {
     upvotedUsers: string[];
+}
+
+interface BlogPost {
+    postId: string;
+    title: string;
+    description: string;
+    listItems: string[];
+    timeEntered: FireTimestamp;
+    edited? : FireTimestamp;
 }
 
 // These classes are used to write tests, then converted to their readonly versions

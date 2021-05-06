@@ -1,4 +1,4 @@
-import firebase from "firebase";
+import firebase from 'firebase';
 import {initTestAdminFirebase} from "./emulfirebase";
 import {questionToSlot, randArr} from "../utils/utils";
 import {
@@ -14,7 +14,7 @@ import {
     getQuestionSlotsOnce,
     getQuestionsOnce, getSessionsOnce, getTagsOnce,
     getUsersOnce
-} from "../../firebasefunctions";
+} from "../../firebasefunctions/test";
 
 // Helper methods for regulating QMI environments
 
@@ -157,7 +157,7 @@ export const satisfiesEnvironmentInvariants = (environment: FireEnvironment): In
                 return {
                     satisfied: false,
                     failureReason:
-                        `Question ${question.questionId} is associated with tag ${tagId}, but it did not` +
+                        `Question ${question.questionId} is associated with tag ${tagId}, but it did not ` +
                         `exist / is not associated with the question's course / is not a` +
                         ` ${isPrimary ? "primary" : "secondary"} tag as expected`
                 };
@@ -284,7 +284,7 @@ const getDummyUsers = (numUsers: number): FireEditableUser[] => {
     return result;
 }
 
-export const generateDummyEnvironment = (options: EnvironmentConfig): FireEnvironment => {
+export const generateDummyEnvironment = (options: EnvironmentConfig = {}): FireEnvironment => {
     const envCourses: FireCourse[] = [];
     const envUsers: FireUser[] = [];
     const envTags: FireTag[] = [];
@@ -320,7 +320,6 @@ export const generateDummyEnvironment = (options: EnvironmentConfig): FireEnviro
         for (let seriesNum = 0; seriesNum < config.sessionSeriesPerCourse; seriesNum++){
             const series = getDummySessionSeries(course.courseId, config.sessionsPerSeries);
             for (const session of series){
-                const questions = [];
                 // Assign TAs
                 session.tas.push(...tas.map(ta => ta.userId));
                 // Assign questions with random statuses
@@ -331,10 +330,18 @@ export const generateDummyEnvironment = (options: EnvironmentConfig): FireEnviro
                             ['assigned', 'resolved', 'retracted', 'unresolved', 'no-show']
                         );
                     }
-                    questions.push(getDummyQuestionForSession(session, tas, students, questionStatus, tagStructure))
+                    envQuestions.push(getDummyQuestionForSession(session, tas, students, questionStatus, tagStructure))
                 }
+                envSessions.push(session);
             }
         }
+        // Push everything into the environment
+        envCourses.push(course);
+        envUsers.push(...students, ...tas, ...profs);
+        tagStructure.forEach((secondaryTags, primaryTag) => {
+            envTags.push(primaryTag);
+            envTags.push(...secondaryTags);
+        });
     }
     return {
         courses: envCourses,
@@ -399,7 +406,9 @@ type Result<T> = {
 
 // Reads the current firebase environment, asserts invariants, then returns the corresponding environment
 // This is an expensive operation. If testing single objects, always prefer asserting object directly
-export const firebaseToEnvironment = async (db: firebase.firestore.Firestore): Promise<Result<FireEnvironment>> => {
+export const firebaseToEnvironment = async (): Promise<Result<FireEnvironment>> => {
+    // Note: this might be unsafe, but we need to try it
+    const db = initTestAdminFirebase() as firebase.firestore.Firestore;
     const courses = await getCoursesOnce(db);
     const pendingUsers = await getPendingUsersOnce(db);
     const questions = await getQuestionsOnce(db);

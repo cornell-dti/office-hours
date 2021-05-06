@@ -1,6 +1,8 @@
-import firebase from "@firebase/rules-unit-testing";
 import fs from "fs";
 import path from "path";
+
+// I have no idea why import doesn't work here but require does :O
+const firebase = require('@firebase/rules-unit-testing');
 
 type User = {
     uid: string;

@@ -5,7 +5,8 @@ import { Dropdown, Checkbox, Icon, DropdownItemProps, DropdownProps, Button } fr
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { firestore, Timestamp } from '../../firebase';
-import { createSeries, updateSeries } from '../../firebasefunctions';
+import { createSeries, updateSeries } from '../../firebasefunctions/series';
+import { addSession, updateSession } from '../../firebasefunctions/session';
 
 enum Modality {
     VIRTUAL = 'virtual',
@@ -202,7 +203,6 @@ const ProfessorOHInfo = (props: {
                 }
                 return updateSeries(firestore, seriesId, series);
             }
-
             return createSeries(firestore, series);
         }
 
@@ -234,10 +234,9 @@ const ProfessorOHInfo = (props: {
             ? sessionWithoutSessionSeriesId
             : { ...sessionWithoutSessionSeriesId, ...sessionLocation, ...sessionLink, sessionSeriesId };
         if (propsSession) {
-            return firestore.collection('sessions').doc(propsSession.sessionId).update(newSession);
+            return updateSession(propsSession, newSession);
         }
-
-        return firestore.collection('sessions').add(newSession).then(() => { });
+        return addSession(newSession);
     }, [
         endTime,
         isSeriesMutation,

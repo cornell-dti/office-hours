@@ -40,6 +40,11 @@ _Screenshots showing major parts of app_
 * **Sophia Wang** - Product Manager
 * **Scott Wang** - Technical Project Manager
 * **Vladia Trinh** - Front-end Software Developer
+<<<<<<< HEAD
+* **Pooja Kanumalla** - Software Developer
+=======
+>>>>>>> Update Prod (#515)
+* **Lucy Beck** - Software Developer
 
 ### 2019-20
 * **Vanessa Wang** - Software Developer

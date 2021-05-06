@@ -1,231 +1,71 @@
-import React, { useState } from 'react';
-import firebase from 'firebase/app';
+import React, { useState, useEffect } from 'react';
+import {useHistory} from 'react-router'
+import {Grid} from '@material-ui/core'
 
-import { useAllCourses, useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
-import { firestore } from '../../firebase';
-import ProfessorRolesTable from '../includes/ProfessorRolesTable';
-import { CURRENT_SEMESTER, START_DATE, END_DATE } from '../../constants';
+import TopBar from '../includes/TopBar';
+import AdminCourseCard from '../includes/AdminCourseCard';
+import AdminCourseCreator from '../includes/AdminCourseCreator';
+import { useAllCourses, useMyUser, useIsAdmin } from '../../firehooks';
+import { CURRENT_SEMESTER } from '../../constants';
 
-const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) => {
-    const professorMap = useCourseProfessorMap(course);
-    const taMap = useCourseTAMap(course);
-
-    return (
-        <div>
-            <div className="course-section">
-                <h3>{course.courseId} ({course.code}: {course.name})</h3>
-                <div>Semester: {course.semester}, year: {course.year}, term: {course.term}</div>
-            </div>
-            <div className="course-section">
-                <h3>Settings: </h3>
-                <div>Queue Open Interval{course.queueOpenInterval}</div>
-                <div>Char Limit: {course.charLimit}</div>
-                <div>Start Date: {course.startDate.toDate().toLocaleDateString()}</div>
-                <div>End Date: {course.endDate.toDate().toLocaleDateString()}</div>
-            </div>
-            <div className="course-section">
-                <h3>Professors</h3>
-                {course.professors.length === 0 && <div>None</div>}
-                <ul>
-                    {course.professors.map(id => {
-                        const professor = professorMap[id];
-                        if (professor == null) {
-                            return null;
-                        }
-                        return (
-                            <li key={id}>
-                                {professor.firstName} {professor.lastName} ({professor.email})
-                            </li>
-                        );
-                    })}
-                </ul>
-            </div>
-            <div className="course-section">
-                <h3>TAs</h3>
-                {course.tas.length === 0 && <div>None</div>}
-                <ul>
-                    {course.tas.map(id => {
-                        const ta = taMap[id];
-                        if (ta == null) {
-                            return null;
-                        }
-                        return (
-                            <li key={id}>
-                                {ta.firstName} {ta.lastName} ({ta.email})
-                            </li>
-                        );
-                    })}
-                </ul>
-            </div>
-        </div>
-    );
-};
-
-const AdminEditableCourseCard = ({ course }: { readonly course: FireCourse }) => {
-    const [name, setName] = useState(course.name);
-    const [code, setCode] = useState(course.code);
-    const [semester, setSemester] = useState(course.semester);
-    const [year, setYear] = useState(course.year);
-    const [term, setTerm] = useState(course.term);
-
-    const onSave = () => {
-        const update: Partial<FireCourse> = { name, code, semester, year, term };
-        firestore.collection('courses').doc(course.courseId).update(update);
-    };
-
-    return (
-        <div>
-            <div className="course-section">
-                <h3>Course ID</h3>
-                <div>{course.courseId}</div>
-            </div>
-            <div className="course-section">
-                <h3>Course Name</h3>
-                <input type="text" value={name} onChange={e => setName(e.currentTarget.value)} />
-            </div>
-            <div className="course-section">
-                <h3>Course Code</h3>
-                <input type="text" value={code} onChange={e => setCode(e.currentTarget.value)} />
-            </div>
-            <div className="course-section">
-                <h3>Semester</h3>
-                <input type="text" value={semester} onChange={e => setSemester(e.currentTarget.value)} />
-            </div>
-            <div className="course-section">
-                <h3>Year</h3>
-                <input type="text" value={year} onChange={e => setYear(e.currentTarget.value)} />
-            </div>
-            <div className="course-section">
-                <h3>Term</h3>
-                <input type="text" value={term} onChange={e => setTerm(e.currentTarget.value)} />
-            </div>
-            <button type="button" onClick={onSave}>Save</button>
-        </div>
-    );
-};
-
-const AdminCourseCard = ({ course }: { readonly course: FireCourse }) => {
-    const [isEditingMode, setIsEditingMode] = useState(false);
-    const [showRolesTable, setShowRolesTable] = useState(false);
-    return (
-        <div className="course">
-            {!isEditingMode && <AdminReadOnlyCourseCard course={course} />}
-            {isEditingMode && <AdminEditableCourseCard course={course} />}
-            <div>
-                <button type="button" onClick={() => setIsEditingMode(prev => !prev)}>
-                    To {isEditingMode ? 'Read Only' : 'Editing'} Mode
-                </button>
-                <button type="button" onClick={() => setShowRolesTable(prev => !prev)}>
-                    {showRolesTable ? 'Hide' : 'Show'} Roles Table
-                </button>
-            </div>
-            {showRolesTable && <ProfessorRolesTable courseId={course.courseId} isAdminView={true}/>}
-        </div>
-    );
-};
-
-const startDate = new Date(START_DATE);
-const endDate = new Date(END_DATE);
-const currentTerm = CURRENT_SEMESTER.substring(0, 2);
-const currentYear = CURRENT_SEMESTER.substring(2, 4);
-
-const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => {
-    const [courseId, setCourseId] = useState('');
-    const [name, setName] = useState('');
-    const [code, setCode] = useState('');
-    const [semester, setSemester] = useState(CURRENT_SEMESTER);
-    const [year, setYear] = useState(currentTerm);
-    const [term, setTerm] = useState(currentYear);
-
-    const disabled = courseId.trim().length === 0
-        || name.trim().length === 0
-        || code.trim().length === 0
-        || semester.trim().length === 0
-        || year.trim().length === 0
-        || term.trim().length === 0;
-
-    const onSave = () => {
-        const course: Omit<FireCourse, 'courseId'> = {
-            name,
-            code,
-            semester,
-            year,
-            term,
-            queueOpenInterval: 30,
-            charLimit: 140,
-            startDate: firebase.firestore.Timestamp.fromDate(startDate),
-            endDate: firebase.firestore.Timestamp.fromDate(endDate),
-            professors: [],
-            tas: []
-        };
-        firestore.collection('courses').doc(courseId).set(course).then(onSubmit);
-    };
-
-    return (
-        <div className="course">
-            <h2>Create New Course</h2>
-            <div className="course-section">
-                <h3>Course Id</h3>
-                <input type="text" value={courseId} onChange={e => setCourseId(e.currentTarget.value)} />
-            </div>
-            <div className="course-section">
-                <h3>Course Name</h3>
-                <input type="text" value={name} onChange={e => setName(e.currentTarget.value)} />
-            </div>
-            <div className="course-section">
-                <h3>Course Code</h3>
-                <input type="text" value={code} onChange={e => setCode(e.currentTarget.value)} />
-            </div>
-            <div className="course-section">
-                <h3>Semester</h3>
-                <input type="text" value={semester} onChange={e => setSemester(e.currentTarget.value)} />
-            </div>
-            <div className="course-section">
-                <h3>Year</h3>
-                <input type="text" value={year} onChange={e => setYear(e.currentTarget.value)} />
-            </div>
-            <div className="course-section">
-                <h3>Term</h3>
-                <input type="text" value={term} onChange={e => setTerm(e.currentTarget.value)} />
-            </div>
-            <div className="course-section">
-                <h3>Start Date</h3>
-                <div>{startDate.toLocaleDateString()}</div>
-            </div>
-            <div className="course-section">
-                <h3>End Date</h3>
-                <div>{endDate.toLocaleDateString()}</div>
-            </div>
-            <button type="button" disabled={disabled} onClick={onSave}>Save</button>
-        </div>
-    );
-};
 
 const AdminView = () => {
+    const history = useHistory();
     const courses = useAllCourses();
+    const isAdmin = useIsAdmin();
     const [inCreationMode, setInCreationMode] = useState(false);
+    useEffect(() => {
+        if(isAdmin === undefined) {
+            history.push('/')
+        }
+    }, [isAdmin, history])
 
     return (
         <div className="AdminView">
+            <TopBar
+                user={useMyUser()}
+                // In admin view, it is never the case that the Dashboard section should be shown.
+                role="student"
+                context="professor"
+                // This field is only necessary for professors, but we are always student/TA here.
+                courseId="DUMMY_COURSE_ID"
+            />
             <h2>Courses</h2>
-            <div className="course-container">
-                {courses.filter(course => course.semester === CURRENT_SEMESTER).map(course => (
-                    <AdminCourseCard key={course.courseId} course={course} />
-                ))}
-                {inCreationMode && <AdminCourseCreator onSubmit={() => setInCreationMode(false)} />}
+            <div className="course-container" >
+                <Grid container direction="row" alignItems={'stretch'} spacing={3}>
+                    {courses.filter(course => course.semester === CURRENT_SEMESTER).map(course => (
+                        <Grid item xl={3} lg={4} md={6} xs={12}>
+                            <AdminCourseCard key={course.courseId} course={course} />
+                        </Grid>
+                    ))}
+                </Grid>
             </div>
 
+            {inCreationMode && <AdminCourseCreator onSubmit={() => setInCreationMode(false)} />}
+
             {!inCreationMode &&
-                <button type="button" onClick={() => setInCreationMode(true)}>Create New Course</button>}
+                <button 
+                    type="button" 
+                    className="create-course-btn" 
+                    onClick={() => setInCreationMode(true)}
+                >Create New Course</button>}
 
             <h2>Archived Courses</h2>
             <div className="course-container">
-                {courses.filter(course => course.semester !== CURRENT_SEMESTER).map(course => (
-                    <AdminCourseCard key={course.courseId} course={course} />
-                ))}
+                <Grid container direction="row" alignItems={'stretch'} spacing={3}>
+                    {courses.filter(course => course.semester !== CURRENT_SEMESTER).map(course => (
+                        <Grid item xl={3} lg={4} md={6} xs={12}>
+                            <AdminCourseCard key={course.courseId} course={course} />
+                        </Grid>
+                    ))}
+                </Grid>
             </div>
             {!inCreationMode &&
-                <button type="button" onClick={() => setInCreationMode(true)}>Create New Course</button>}
+                <button 
+                    type="button" 
+                    className="create-course-btn" 
+                    onClick={() => setInCreationMode(true)}
+                >Create New Course</button>}
         </div>
     );
 };

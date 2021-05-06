@@ -1,0 +1,42 @@
+.footerWrapper {
+    width: 100vw;
+    height: 100px;
+    background: linear-gradient(225deg, #6DB8EA 30%, #668BE9 120%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footerTextWrapper {
+    display: flex;
+    align-items: center;
+    .footerLogo {
+        width: 30px;
+        height: 30px;
+        margin: 0px 10px;
+    }
+    .footerText {
+        color: white;
+        font-family: "Roboto";
+        font-weight: 300;
+        font-size: 14px;
+        white-space: pre-line;
+        margin: 0;
+    }
+
+}
+@media screen and (max-width: $mobile-breakpoint) {
+    .footerWrapper {
+        height: 50px;
+    }
+    .footerTextWrapper {
+        .footerLogo {
+            height: 15px;
+            width: 15px;
+            margin: 0 5px;
+        }
+        .footerText {
+            font-size: 7px;
+        }
+    }
+}

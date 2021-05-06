@@ -123,14 +123,17 @@ export const getDummyTag = (
     active = true,
     name: string = getDummyTagName(parentTag !== null)
 ): FireTag => {
-    return {
+    const result: FireTag = {
         active,
         courseId,
         level: parentTag === null ? 1 : 2,
         name,
-        tagId: randStr(15),
-        parentTag: parentTag === null ? undefined : parentTag
+        tagId: randStr(15)
     };
+    if (parentTag){
+        result.parentTag = parentTag;
+    }
+    return result;
 }
 
 export const getDummyTags = (

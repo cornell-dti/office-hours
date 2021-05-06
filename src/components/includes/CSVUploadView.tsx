@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { importProfessorsOrTAsFromCSV} from '../../firebasefunctions';
-import { firestore } from '../../firebase';
+import { importProfessorsOrTAsFromCSV} from '../../firebasefunctions/importProfessorsOrTAs';
 import CSVUploadCheck from '../../media/CSVUploadCheck.svg';
 import CSVInfoIcon from '../../media/CSVInfoIcon.svg';
 import ExampleTable from '../../media/ExampleTable.svg';
@@ -62,7 +61,7 @@ const CSVUploadView = (
     const getProfOrTAEmailList = (role: 'professor' | 'ta') => {
         const list = role === 'ta'? TAEmailList : professorEmailList;
         if (course && list) {
-            importProfessorsOrTAsFromCSV(firestore, course, role, list)?.then((users) => {
+            importProfessorsOrTAsFromCSV(course, role, list)?.then((users) => {
                 const addedEmails = users.updatedUsers.map(user => user.email);   
                 const missingEmails = Array.from(users.missingSet);  
                 getAddedUsersList(addedEmails);  
@@ -74,12 +73,12 @@ const CSVUploadView = (
     const addTAandProfessors = () => {
         if (course) {
             if (TAEmailList && TAEmailList.length !== 0 && professorEmailList && professorEmailList.length !== 0) {
-                importProfessorsOrTAsFromCSV(firestore, course, 'ta', TAEmailList)?.then((users) => {
+                importProfessorsOrTAsFromCSV(course, 'ta', TAEmailList)?.then((users) => {
                     const taAddedEmails = users.updatedUsers.map(user => user.email);  
                     const taMissingEmails = Array.from(users.missingSet);   
                     return {taAddedEmails, taMissingEmails}
                 }).then((taEmails)=> {
-                    importProfessorsOrTAsFromCSV(firestore, course, 'professor', professorEmailList)?.then((users) => {
+                    importProfessorsOrTAsFromCSV(course, 'professor', professorEmailList)?.then((users) => {
                         const profAddedEmails = users.updatedUsers.map(user => user.email);   
                         const profMissingEmails = Array.from(users.missingSet);  
                         getAddedUsersList(taEmails.taAddedEmails.concat(profAddedEmails));  

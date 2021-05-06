@@ -34,6 +34,7 @@ $mobile-breakpoint: 920px;
 // Login
 @import "./login/LoginView";
 @import "./login/LoginButton";
+@import "./Footer.scss";
 
 // Split
 @import "./SplitView";
@@ -70,6 +71,10 @@ $mobile-breakpoint: 920px;
 // Courses
 @import "./courses/CourseCard";
 @import "./courses/CourseSelection";
+
+// Blog Posts
+@import "./blogPosts/AddBlogPost.scss";
+@import "./blogPosts/BlogPostDisplay.scss";
 
 #root {
    height: 100%;

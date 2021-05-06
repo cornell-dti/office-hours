@@ -1,3 +1,4 @@
+import * as admin from 'firebase-admin';
 /**
  * randint generates a random integer between lower inclusive and upper exclusive
  * @param lower The lower range of the random number generated, inclusive
@@ -32,13 +33,7 @@ export const randTimeMins = (start: FireTimestamp, end: FireTimestamp): FireTime
     const secsPerMin = 60;
     const durationMins = Math.floor((end.seconds - start.seconds) / secsPerMin);
     const selectedTime = start.seconds + randInt(0, durationMins) * secsPerMin;
-    return {
-        nanoseconds: 0,
-        seconds: selectedTime,
-        toDate(): Date {
-            return new Date(selectedTime * 1000);
-        }
-    }
+    return new admin.firestore.Timestamp(selectedTime, 0);
 }
 
 // Precondition: tagStructure not empty, tagStructure[k] not empty forall k
@@ -46,19 +41,13 @@ export const randTimeMins = (start: FireTimestamp, end: FireTimestamp): FireTime
 export const randTag = (tagStructure: Map<FireTag, FireTag[]>): FireTag[] => {
     const primaryTags = Array.from(tagStructure.keys());
     const selPrimaryTag = primaryTags[randInt(0, primaryTags.length)];
-    const secondaryTags = Array.from(tagStructure.keys());
+    const secondaryTags = tagStructure.get(selPrimaryTag)!;
     const selSecondaryTag = secondaryTags[randInt(0, secondaryTags.length)];
     return [selPrimaryTag, selSecondaryTag];
 }
 
 export const timeToFireTimestamp = (timeSecs: number): FireTimestamp => {
-    return {
-        nanoseconds: 0,
-        seconds: timeSecs,
-        toDate(): Date {
-            return new Date(timeSecs * 1000);
-        }
-    }
+    return new admin.firestore.Timestamp(timeSecs, 0);
 }
 
 export const questionToSlot = (question: FireQuestion): FireQuestionSlot => {
