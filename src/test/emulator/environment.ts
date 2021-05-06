@@ -8,6 +8,13 @@ import {
     getDummyQuestionForSession, getDummyTags
 } from "../generators/dummy";
 import {getDummySessionSeries} from "../generators/dummysession";
+import {
+    getCoursesOnce,
+    getPendingUsersOnce,
+    getQuestionSlotsOnce,
+    getQuestionsOnce, getSessionsOnce, getTagsOnce,
+    getUsersOnce
+} from "../../firebasefunctions";
 
 // Helper methods for regulating QMI environments
 
@@ -384,10 +391,52 @@ export const setupQMIEnvironment = async (env: FireEnvironment) => {
     await Promise.all(promises);
 }
 
+type Result<T> = {
+    success: boolean,
+    error?: string,
+    data?: T
+}
+
 // Reads the current firebase environment, asserts invariants, then returns the corresponding environment
 // This is an expensive operation. If testing single objects, always prefer asserting object directly
-export const firebaseToEnvironment = async (db: firebase.firestore.Firestore): Promise<FireEnvironment> => {
-    // TODO: Implement
-    // TODO: Assert Question Slot invariants
-    return Promise.reject(new Error("Not implemented"));
+export const firebaseToEnvironment = async (db: firebase.firestore.Firestore): Promise<Result<FireEnvironment>> => {
+    const courses = await getCoursesOnce(db);
+    const pendingUsers = await getPendingUsersOnce(db);
+    const questions = await getQuestionsOnce(db);
+    const questionSlots = await getQuestionSlotsOnce(db);
+    const sessions = await getSessionsOnce(db);
+    const tags = await getTagsOnce(db);
+    const users = await getUsersOnce(db);
+    // Assert Question Slot invariants
+    const questionsByIds = new Map(questions.map(question => [question.questionId, question]));
+    for (const slot of questionSlots){
+        const question = questionsByIds.get(slot.questionId);
+        if (question === undefined){
+            return {
+                success: false,
+                error: `Question slot with ID ${slot.questionId} does not have a corresponding question`
+            }
+        }
+        if (slot.sessionId !== question.sessionId || slot.timeEntered.seconds !== question.timeEntered.seconds
+        || slot.askerId !== question.askerId || slot.status !== question.status){
+            return {
+                success: false,
+                error: `Question slot with ID ${slot.questionId} has parameters {sessionId: ${slot.sessionId},
+                timeEntered: ${slot.timeEntered.seconds}, askerId: ${slot.askerId}, status: ${slot.status}}, but
+                matching question has parameters {sessionId: ${question.sessionId},
+                timeEntered: ${question.timeEntered.seconds}, askerId: ${question.askerId}, status: ${question.status}`
+            }
+        }
+    }
+    return {
+        success: true,
+        data: {
+            courses,
+            pendingUsers,
+            questions,
+            sessions,
+            tags,
+            users
+        }
+    }
 }
