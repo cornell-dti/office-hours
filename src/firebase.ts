@@ -5,6 +5,7 @@ import firebase from 'firebase/app';
 import { authState } from 'rxfire/auth';
 import { collectionData } from 'rxfire/firestore';
 import { filter } from 'rxjs/operators';
+import {initTestAdminFirebase} from "./test/emulator/emulfirebase";
 
 type FirebaseConfig = {
     apiKey: string;
@@ -43,16 +44,25 @@ const firebaseConfig = currFirebaseConfig;
 
 const app = firebase.initializeApp(firebaseConfig);
 
-const firestore = firebase.firestore(app); // Initialize firestore
-// Use emulator for test mode
-if (process.env.NODE_ENV === 'test') {
-    firestore.useEmulator("localhost", 8080);
-}
+let tmpFirestore = firebase.firestore(app); // Initialize firestore
 
 const auth = firebase.auth(app); // Initialize firebase auth
 const loggedIn$ = authState(auth).pipe(filter(user => !!user)); // Observable only return when user is logged in.
 
 const Timestamp = firebase.firestore.Timestamp;
+
+if (process.env.NODE_ENV === 'test') {
+    // Use fake admin app
+    // Note: We want to do this for some user under test, but there's
+    // no good way to dependency inject this user :(
+    // Someone else can figure out how to deal with this. I'm graduating.
+    tmpFirestore = initTestAdminFirebase();
+    // Use emulator for test mode
+    // firestore.useEmulator("localhost", 8080);
+    // TODO: Find some way to emulate auth and loggedIn$ in test mode
+}
+
+const firestore = tmpFirestore;
 
 export { app, auth, firestore, collectionData, loggedIn$, Timestamp, firebaseConfig };
 

@@ -2,7 +2,9 @@ import fs from "fs";
 import path from "path";
 
 // I have no idea why import doesn't work here but require does :O
+/* eslint-disable */
 const firebase = require('@firebase/rules-unit-testing');
+/* eslint-enable */
 
 type User = {
     uid: string;
@@ -33,4 +35,8 @@ export const loadRules = async () => {
         projectId: fakeProjectId,
         rules: fs.readFileSync(path.resolve(__dirname, '../../../firestore_test.rules'), "utf-8")
     });
+}
+
+export const clearEnvironment = async () => {
+    await firebase.clearFirestoreData();
 }

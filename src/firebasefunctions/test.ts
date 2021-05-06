@@ -4,10 +4,10 @@ export const getObjectsOnce = async <T> (
     query: firebase.firestore.Query,
     idField: string | null = null
 ): Promise<T[]> => {
-    const result : T[] = [];
+    const result: T[] = [];
     const querySnapshots = await query.get();
     querySnapshots.forEach((snapshot) => {
-        let data = { ...snapshot.data()};
+        const data = { ...snapshot.data()};
         if (idField !== null){
             data[idField] = snapshot.id;
         }

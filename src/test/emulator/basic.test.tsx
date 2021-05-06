@@ -1,8 +1,7 @@
 import { expect } from 'chai';
 import 'mocha';
 import firebase from "firebase/app";
-import {initTestAdminFirebase, initTestUserFirebase, loadRules} from "./emulfirebase";
-import {firestore} from "../../firebase";
+import {loadRules} from "./emulfirebase";
 import {
     firebaseToEnvironment,
     generateDummyEnvironment,
@@ -23,13 +22,13 @@ after(function() {
 });
 
 describe('Test Database Structure', function(){
-    let environment: FireEnvironment = generateDummyEnvironment();
-    let user: FireUser = environment.users[0];
-    let adminDb = initTestAdminFirebase();
-    let userDb = initTestUserFirebase({
+    const environment: FireEnvironment = generateDummyEnvironment();
+    // const user: FireUser = environment.users[0];
+    /* const adminDb = initTestAdminFirebase();
+    const userDb = initTestUserFirebase({
         uid: user.userId,
         email: user.email
-    });
+    }); */
     before(async () => {
         // Generate initial database configuration
         await setupQMIEnvironment(environment);

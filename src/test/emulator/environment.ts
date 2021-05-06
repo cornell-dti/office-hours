@@ -399,9 +399,9 @@ export const setupQMIEnvironment = async (env: FireEnvironment) => {
 }
 
 type Result<T> = {
-    success: boolean,
-    error?: string,
-    data?: T
+    success: boolean;
+    error?: string;
+    data?: T;
 }
 
 // Reads the current firebase environment, asserts invariants, then returns the corresponding environment
