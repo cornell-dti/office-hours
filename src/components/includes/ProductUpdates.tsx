@@ -4,7 +4,7 @@ import ProductUpdate from './ProductUpdate'
 import ProductUpdatesModal from './ProductUpdatesModal'
 import bugFix from '../../media/bugFix.svg';
 import notif from '../../media/notif.svg'
-import {viewedTrackable} from '../../firebasefunctions/blogPost'
+import {viewedTrackable} from '../../firebasefunctions/notifications'
 import {useMyUser, useNotificationTracker, useProductUpdate} from '../../firehooks';
 
 
@@ -37,15 +37,15 @@ const ProductUpdates = () => {
     }
 
     const onClickOff = (e: MouseEvent) => {
-        if (singleRef.current && !singleRef.current.contains(e.target as Node)) {
-            toggleSingleUpdate(false);
-        } else if (seeAllRef.current && !seeAllRef.current.contains(e.target as Node)) {
-            toggleSeeAll(false);
-            if(seeAll) {
-                toggleSingleUpdate(false); 
-                updateTrackable();
-            };
-        }
+            if (singleRef.current && !singleRef.current.contains(e.target as Node)) {
+                toggleSingleUpdate(false);
+            } else if (seeAllRef.current && !seeAllRef.current.contains(e.target as Node)) {
+                toggleSeeAll(false);
+                    if(seeAll) {
+                    toggleSingleUpdate(false); 
+                    updateTrackable();
+                };
+            }
     }
 
     useEffect(() => {

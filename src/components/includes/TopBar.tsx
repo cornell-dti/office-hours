@@ -4,7 +4,8 @@ import { logOut } from '../../firebasefunctions/user';
 import Logo from '../../media/QLogo2.svg';
 import CalendarHeader from './CalendarHeader';
 import ProfessorStudentToggle from './ProfessorStudentToggle';
-// import TopBarNotifications from './TopBarNotifications'
+import TopBarNotifications from './TopBarNotifications'
+import {useNotificationTracker, useMyUser} from '../../firehooks';
 
 const TopBar = (props: {
     courseId: string;
@@ -24,6 +25,10 @@ const TopBar = (props: {
 
     const userPhotoUrl = props.user ? props.user.photoUrl : '/placeholder.png';
     useEffect(() => setImage(userPhotoUrl), [userPhotoUrl]);
+
+    const user = useMyUser();
+    const email: string | undefined = user?.email
+    const notificationTracker = useNotificationTracker(email);
 
     const handleClick = (e: globalThis.MouseEvent) => {
         if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -57,7 +62,7 @@ const TopBar = (props: {
                         }
                     </div>
                     <div className="rightContentWrapper" >
-                        {/* <TopBarNotifications /> */}
+                        <TopBarNotifications notificationTracker={notificationTracker} user={user} />
                         <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
                             <img
                                 src={image}

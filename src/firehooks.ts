@@ -363,6 +363,10 @@ export const useNotificationTracker =
 (trackerId: string | undefined): NotificationTracker | undefined =>
     useDoc<NotificationTracker>('notificationTrackers', trackerId, 'trackerId')
 
+export const useNotifications = 
+(trackerId : string | undefined) : SessionNotification[] | undefined => 
+    useNotificationTracker(trackerId)?.notificationList
+
 // Primatives
 // Look up a doc in Firebase by ID
 export const useCourse = (courseId: string | undefined): FireCourse | undefined =>

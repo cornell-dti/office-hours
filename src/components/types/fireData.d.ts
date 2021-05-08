@@ -193,7 +193,15 @@ interface BlogPost {
     edited? : FireTimestamp;
 }
 
+interface SessionNotification {
+    title : string;
+    subtitle : string;
+    message: string;
+    createdAt: FireTimestamp;
+}
+
 interface NotificationTracker {
     notifications: FireTimestamp;
     productUpdates: FireTimestamp;
+    notificationList : SessionNotification[];
 }

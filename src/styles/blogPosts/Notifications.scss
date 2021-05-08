@@ -70,7 +70,7 @@
   }
   &__notification {
     position: relative;
-    height: 18em;
+    max-height: 18em;
     background: #ffffff;
     box-shadow: 0px 7px 40px rgba(196, 196, 196, 0.3);
     border-radius: 8px;
