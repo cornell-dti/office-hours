@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, Fragment} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import Moment from 'react-moment'
 import moment from 'moment-timezone';
 
@@ -33,7 +33,7 @@ const TopBarNotifications = () => {
     }
 
     return (
-        <Fragment>
+        <>
             <div className="notifications__top" onClick={() => iconClicked()}>
                 <img className="notifications__icon" src={notification} alt="Bug fix icon" />
                 {!hasViewed && <img className="notifications__indicator" src={notif} alt="Notification indicator" />}
@@ -58,7 +58,7 @@ const TopBarNotifications = () => {
                     </div>
                 </div>))}
             </div>
-        </Fragment>
+        </>
     )
 }
 
