@@ -23,6 +23,7 @@ $viewedColor: #d6eafe;
   left: 39px;
   width: 20%;
   max-height: 32%;
+  max-width: 23rem;
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -56,6 +57,15 @@ $viewedColor: #d6eafe;
       text-decoration-line: underline;
       color: #2f80ed;
       cursor: pointer;
+      width: 3em;
+    }
+    @media (max-width: 1150px) {
+      &__see-all {
+        font-size: 9px;
+      }
+      &__title {
+        font-size: 15px;
+      }
     }
   }
   .productUpdate {

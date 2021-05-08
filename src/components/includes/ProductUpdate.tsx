@@ -11,11 +11,6 @@ type Props = {
 }
 
 const ProductUpdate = ({blogPost, seeAll, notificationTracker}: Props) => {
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        setIsLoading(blogPost === undefined);
-    }, [blogPost])
 
     let productUpdateElem: JSX.Element | null = null;
 
@@ -56,7 +51,7 @@ const ProductUpdate = ({blogPost, seeAll, notificationTracker}: Props) => {
         </p>
         <ul className="productUpdate__list">
             {blogPost.listItems.map((change, index) => (
-                <li key={index}>{seeAll ? change : change.substring(0, 50) + "..."}</li>
+                <li key={index}>{seeAll ? change : `${change.substring(0, 50)}...`}</li>
             ))}
         </ul>
     </div>;
