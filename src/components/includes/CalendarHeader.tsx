@@ -1,9 +1,10 @@
 import * as React from 'react';
+import { useHistory } from 'react-router';
 import { useMyCourses } from '../../firehooks';
 
 import { CURRENT_SEMESTER } from '../../constants';
 
-import Toggle from '../../media/Toggle.svg'; 
+import Toggle from '../../media/Toggle.svg';
 
 type Props = {
     readonly currentCourseCode: string;
@@ -12,15 +13,25 @@ type Props = {
 };
 
 
-export default ({ currentCourseCode, role}: Props): React.ReactElement => {
+export default ({ currentCourseCode, role }: Props): React.ReactElement => {
     const [showCourses, setShowCourses] = React.useState(false);
     const ref = React.useRef<HTMLDivElement>(null);
     const courses = useMyCourses();
+    const history = useHistory();
 
     const handleClick = (e: globalThis.MouseEvent) => {
         if (ref.current && !ref.current.contains(e.target as Node)) {
             setShowCourses(false);
         }
+    }
+
+    const courseClicked = (course: FireCourse) => {
+        history.push('/course/' + course.courseId);
+        window.localStorage.setItem('lastid', String(course.courseId));
+    }
+
+    const editClicked = () => {
+        history.push('/edit');
     }
 
     React.useEffect(() => {
@@ -43,25 +54,23 @@ export default ({ currentCourseCode, role}: Props): React.ReactElement => {
                     <ul className="courseMenu" tabIndex={1} onClick={() => setShowCourses(false)}>
                         {courses.filter((c) => c.semester === CURRENT_SEMESTER).map((course) =>
                             <li key={course.courseId}>
-                                <a
-                                    className={course.code === currentCourseCode ? "thisCourse":""}
-                                    href={'/course/' + course.courseId}
-                                    onClick={() =>
-                                        window.localStorage.setItem('lastid', String(course.courseId))}
+                                <div
+                                    className={course.code === currentCourseCode ? "thisCourse" : ""}
+                                    onClick={() => courseClicked(course)}
                                 > {course.code} {course.code === currentCourseCode && <>&#10003;</>}
-                                </a>
+                                </div>
                             </li>
                         )}
                         {role && (
                             <li>
-                                <a className="editClasses" href={'/edit'}>
+                                <div className="editClasses" onClick={() => editClicked()}>
                                     Edit Classes
-                                </a>
+                                </div>
                             </li>
                         )}
                     </ul>
                 }
             </div>
-        </div>
+        </div >
     );
 };
