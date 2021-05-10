@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useHistory } from 'react-router';
-import Toggle from '../../media/Toggle.svg';
 
 type Props = {
     courseId: string;
