@@ -1,6 +1,7 @@
 .notifications {
   &__top {
     position: relative;
+    width: 28px;
     margin-right: 1em;
     padding-bottom: 10px;
   }
@@ -12,7 +13,9 @@
   &__dropdown {
     position: absolute;
     z-index: 100;
-    width: 23em;
+    width: 15%;
+    min-width: 23em;
+    max-width: 30em;
     max-height: 45%;
     overflow-y: auto;
     right: 0;
@@ -57,6 +60,16 @@
         bottom: 0.5em;
         right: 1em;
       }
+    }
+  }
+  @media (min-width: 1800px) {
+    &__dropdown {
+      width: 18%;
+    }
+  }
+  @media (min-width: 2100px) {
+    &__dropdown {
+      width: 16%;
     }
   }
   &__visible {

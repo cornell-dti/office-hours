@@ -201,6 +201,7 @@ interface SessionNotification {
 }
 
 interface NotificationTracker {
+    id : string;
     notifications: FireTimestamp;
     productUpdates: FireTimestamp;
     notificationList : SessionNotification[];

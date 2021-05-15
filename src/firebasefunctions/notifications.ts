@@ -1,21 +1,32 @@
 import firebase from 'firebase/app';
 import { firestore } from '../firebase';
 
-export const addNotification = (user : FireUser, notification : Omit<SessionNotification, "notificationId" | "createdAt">, notifList : SessionNotification[]) => {
+export const addDBNotification = async (user : FireUser, notification : Omit<SessionNotification, "notificationId" | "createdAt">) => {
     if (user !== undefined) {
         const email = user.email;
         if (email !== null) {
             const trackerRef = firestore.collection('notificationTrackers').doc(email);
+            const prevTracker = (await trackerRef.get()).data();
+            const notifList : SessionNotification[] = prevTracker !== undefined ? prevTracker.notificationList : []
             const newNotification: SessionNotification = {
                 title: notification.title,
                 subtitle: notification.subtitle,
                 message: notification.message,
                 createdAt : firebase.firestore.Timestamp.now()
             }
-            let updatedTracker : Partial<NotificationTracker> = {
+            if (prevTracker !== undefined) {let updatedTracker : Partial<NotificationTracker> = {
                 notificationList : [newNotification, ...notifList]
             }
             trackerRef.update(updatedTracker);
+        } else {
+            let newTracker : NotificationTracker = {
+                id: email,
+                notificationList : [newNotification],
+                notifications: firebase.firestore.Timestamp.now(),
+                productUpdates : firebase.firestore.Timestamp.now(),
+            }
+            trackerRef.set(newTracker)
+        }
         }
     }
 }
@@ -34,7 +45,7 @@ export const clearNotifications = (user : FireUser) => {
 }
 
 export const viewedTrackable = 
-(user: FireUser | undefined, 
+async (user: FireUser | undefined, 
     notificationTracker: NotificationTracker | undefined, 
     viewedNotifs: boolean) => {
     if (user !== undefined) {
@@ -45,12 +56,21 @@ export const viewedTrackable =
         };
         if (email !== null) {
             const trackerRef = firestore.collection('notificationTrackers').doc(email);
-            if (notificationTracker !== undefined && viewedNotifs ) {
-                updatedTracker.productUpdates = notificationTracker.productUpdates; 
-            } else if (notificationTracker !== undefined) {
-                updatedTracker.notifications = notificationTracker.notifications;
-            }
-            trackerRef.update(updatedTracker);
+            trackerRef.get().then(doc => {
+                if(notificationTracker !== undefined && doc.exists) {
+                    if (viewedNotifs) {
+                        updatedTracker.productUpdates = notificationTracker.productUpdates; 
+                    } else {
+                        updatedTracker.notifications = notificationTracker.notifications;
+                    }
+                    trackerRef.update(updatedTracker);
+                } else {
+                    updatedTracker.id= email;
+                    updatedTracker.notificationList = [];
+                    trackerRef.set(updatedTracker);
+                }
+            }).catch(err=> console.log(err.message))
+
         }
     }
 }

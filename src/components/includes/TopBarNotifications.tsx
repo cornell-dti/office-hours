@@ -5,6 +5,7 @@ import moment from 'moment-timezone';
 import notif from '../../media/notif.svg'
 import notification from '../../media/notification.svg'
 import {viewedTrackable} from '../../firebasefunctions/notifications'
+import { useNotifications } from '../../firehooks';
 
 type Props = {
     notificationTracker : NotificationTracker | undefined;
@@ -17,7 +18,7 @@ const TopBarNotifications = ({notificationTracker, user} : Props) => {
     const notifications = notificationTracker?.notificationList
 
     const [hasViewed, toggleHasViewed] = useState(notificationTracker === undefined || 
-        notifications === undefined || 
+        notifications === undefined || notifications.length === 0 ||
         notificationTracker!.notifications.toDate() >= notifications[0].createdAt.toDate());
 
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -28,7 +29,7 @@ const TopBarNotifications = ({notificationTracker, user} : Props) => {
 
     useEffect(() => {
         toggleHasViewed(notificationTracker === undefined || 
-        notifications === undefined || 
+        notifications === undefined || notifications.length === 0 ||
         notificationTracker!.notifications.toDate() >= notifications[0].createdAt.toDate())
     }, [notificationTracker])
 
@@ -92,6 +93,7 @@ const TopBarNotifications = ({notificationTracker, user} : Props) => {
                             {notification.message}
                         </div>
                     </div>)))}
+                    {notifications === undefined && <div className="notification__placeholder">You do not have any notifications</div>}
                 </div>
         </div>
     )

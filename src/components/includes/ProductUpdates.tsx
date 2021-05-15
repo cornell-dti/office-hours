@@ -19,13 +19,13 @@ const ProductUpdates = () => {
     const productUpdate = useProductUpdate();
 
     useEffect(() => {
-        toggleHasViewed(notificationTracker === undefined || 
-        productUpdate === undefined || 
+        toggleHasViewed(notificationTracker === undefined ||
+        productUpdate === undefined || notificationTracker.productUpdates === undefined ||
         notificationTracker.productUpdates.toDate() >= productUpdate.timeEntered.toDate())
     }, [notificationTracker, productUpdate])
 
     const [hasViewed, toggleHasViewed] = useState(notificationTracker === undefined || 
-      productUpdate === undefined || 
+      productUpdate === undefined || notificationTracker.productUpdates === undefined || 
       notificationTracker.productUpdates.toDate() >= productUpdate.timeEntered.toDate());
 
     const singleRef = useRef<HTMLDivElement>(null);
@@ -41,7 +41,7 @@ const ProductUpdates = () => {
                 toggleSingleUpdate(false);
             } else if (seeAllRef.current && !seeAllRef.current.contains(e.target as Node)) {
                 toggleSeeAll(false);
-                    if(seeAll) {
+                if(seeAll) {
                     toggleSingleUpdate(false); 
                     updateTrackable();
                 };
@@ -64,7 +64,7 @@ const ProductUpdates = () => {
     }
 
     return (
-        <>
+        <div className="pruductUpdate__wrapper" ref={singleRef}>
             <div className="productUpdates__singleToggler" onClick={() => iconClicked()}>
                 <img className="productUpdates__bugIcon" src={bugFix} alt="Bug fix icon" />
                 {!hasViewed && <img 
@@ -73,8 +73,7 @@ const ProductUpdates = () => {
                     alt="Notification indicator" 
                 />}
             </div>
-            <div 
-                ref={singleRef} 
+            <div  
                 className={`productUpdates__singleDisplay productUpdates__${singleUpdate ? "visible" : "hidden"}`} 
                 onClick={e => e.stopPropagation()}
             >
@@ -92,7 +91,7 @@ const ProductUpdates = () => {
                     updateTrackable={updateTrackable}
                 />
             </div>
-        </>
+        </div>
     )
 }
 
