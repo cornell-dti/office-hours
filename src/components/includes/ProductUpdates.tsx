@@ -37,15 +37,15 @@ const ProductUpdates = () => {
     }
 
     const onClickOff = (e: MouseEvent) => {
-            if (singleRef.current && !singleRef.current.contains(e.target as Node)) {
-                toggleSingleUpdate(false);
-            } else if (seeAllRef.current && !seeAllRef.current.contains(e.target as Node)) {
-                toggleSeeAll(false);
-                if(seeAll) {
-                    toggleSingleUpdate(false); 
-                    updateTrackable();
-                };
-            }
+        if (singleRef.current && !singleRef.current.contains(e.target as Node)) {
+            toggleSingleUpdate(false);
+        } else if (seeAllRef.current && !seeAllRef.current.contains(e.target as Node)) {
+            toggleSeeAll(false);
+            if(seeAll) {
+                toggleSingleUpdate(false); 
+                updateTrackable();
+            };
+        }
     }
 
     useEffect(() => {

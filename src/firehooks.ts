@@ -364,7 +364,7 @@ export const useNotificationTracker =
     useDoc<NotificationTracker>('notificationTrackers', trackerId, 'trackerId')
 
 export const useNotifications = 
-(trackerId : string | undefined) : SessionNotification[] | undefined => 
+(trackerId: string | undefined): SessionNotification[] | undefined => 
     useNotificationTracker(trackerId)?.notificationList
 
 // Primatives

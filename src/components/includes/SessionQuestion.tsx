@@ -69,12 +69,12 @@ class SessionQuestion extends React.Component<Props, State> {
         const previousState = prevProps.question;
         const currentState = this.props.question;
         const user = this.props.myUserId;
-        const addNotificationWrapper = (title : string, subtitle: string, message : string | undefined) => {
-            addDBNotification(this.props.user, {title : title, subtitle : subtitle, message : `${message}`})
+        const addNotificationWrapper = (title: string, subtitle: string, message: string | undefined) => {
+            addDBNotification(this.props.user, {title, subtitle, message: `${message}`})
             try {
                 addNotification({
-                    title: title,
-                    subtitle: subtitle,
+                    title,
+                    subtitle,
                     message: `${message}`,
                     theme: "darkblue",
                     native: true

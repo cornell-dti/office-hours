@@ -4,22 +4,21 @@ import moment from 'moment-timezone';
 
 import notif from '../../media/notif.svg'
 import notification from '../../media/notification.svg'
-import {viewedTrackable} from '../../firebasefunctions/notifications'
-import { useNotifications } from '../../firehooks';
+import {viewedTrackable, clearNotifications} from '../../firebasefunctions/notifications'
 
 type Props = {
-    notificationTracker : NotificationTracker | undefined;
-    user : FireUser | undefined
+    notificationTracker: NotificationTracker | undefined;
+    user: FireUser | undefined;
 }
 
-const TopBarNotifications = ({notificationTracker, user} : Props) => {
+const TopBarNotifications = ({notificationTracker, user}: Props) => {
     const [dropped, toggleDropped] = useState(false);
 
     const notifications = notificationTracker?.notificationList
 
     const [hasViewed, toggleHasViewed] = useState(notificationTracker === undefined || 
         notifications === undefined || notifications.length === 0 ||
-        notificationTracker!.notifications.toDate() >= notifications[0].createdAt.toDate());
+        notificationTracker.notifications.toDate() >= notifications[0].createdAt.toDate());
 
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -30,13 +29,13 @@ const TopBarNotifications = ({notificationTracker, user} : Props) => {
     useEffect(() => {
         toggleHasViewed(notificationTracker === undefined || 
         notifications === undefined || notifications.length === 0 ||
-        notificationTracker!.notifications.toDate() >= notifications[0].createdAt.toDate())
-    }, [notificationTracker])
+        notificationTracker.notifications.toDate() >= notifications[0].createdAt.toDate())
+    }, [notificationTracker, notifications])
 
-    const getColor = (notification : SessionNotification) => {
+    const getColor = (currNotif: SessionNotification) => {
         if (
             notificationTracker !== undefined 
-            && notificationTracker.notifications < notification!.createdAt
+            && notificationTracker.notifications < currNotif.createdAt
         ) {
             return "#d6eafe"
         }
@@ -48,6 +47,7 @@ const TopBarNotifications = ({notificationTracker, user} : Props) => {
             toggleDropped(false);
             if(dropped) {
                 updateTrackable();
+                clearNotifications(user)
             }
         }
     }
@@ -70,18 +70,18 @@ const TopBarNotifications = ({notificationTracker, user} : Props) => {
                 {!hasViewed && <img className="notifications__indicator" src={notif} alt="Notification indicator" />}
             </div>
             <div  
-                className={`notifications__dropdown notifications__${dropped ? "visible" : "hidden"}`} 
+                className={`notifications__dropdown notifications__${dropped ? "visible": "hidden"}`} 
                 onClick={e => e.stopPropagation()}
             >
-                {notifications !== undefined && (notifications.length === 0 ? 
-                    (<div className="notification__placeholder">You do not have any notifications</div> ) : 
-                    notifications.map((notification, index) => (<div 
+                {notifications == undefined || notifications.length === 0 ? 
+                    (<div className="notification__placeholder">You do not have any notifications</div> ):
+                    notifications.map((notif, index) => (<div 
                         className="notifications__notification" 
-                        style={{background : getColor(notification)}} 
+                        style={{background: getColor(notif)}} 
                         key={index}
                     >
                         <div className="notification__header">
-                            <div className="notification__title">{notification.subtitle}</div>
+                            <div className="notification__title">{notif.subtitle}</div>
                             <Moment 
                                 className="notification__date" 
                                 date={moment.now()} 
@@ -90,11 +90,10 @@ const TopBarNotifications = ({notificationTracker, user} : Props) => {
                             />
                         </div>
                         <div className="notification__content">
-                            {notification.message}
+                            {notif.message}
                         </div>
-                    </div>)))}
-                    {notifications === undefined && <div className="notification__placeholder">You do not have any notifications</div>}
-                </div>
+                    </div>))}
+            </div>
         </div>
     )
 }

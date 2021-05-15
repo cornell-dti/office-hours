@@ -1,47 +1,50 @@
 import firebase from 'firebase/app';
 import { firestore } from '../firebase';
 
-export const addDBNotification = async (user : FireUser, notification : Omit<SessionNotification, "notificationId" | "createdAt">) => {
+export const addDBNotification = 
+async (user: FireUser, notification: Omit<SessionNotification, "notificationId" | "createdAt">) => {
     if (user !== undefined) {
         const email = user.email;
         if (email !== null) {
             const trackerRef = firestore.collection('notificationTrackers').doc(email);
             const prevTracker = (await trackerRef.get()).data();
-            const notifList : SessionNotification[] = prevTracker !== undefined ? prevTracker.notificationList : []
+            const notifList: SessionNotification[] = prevTracker !== undefined ? prevTracker.notificationList : []
             const newNotification: SessionNotification = {
                 title: notification.title,
                 subtitle: notification.subtitle,
                 message: notification.message,
-                createdAt : firebase.firestore.Timestamp.now()
+                createdAt: firebase.firestore.Timestamp.now()
             }
-            if (prevTracker !== undefined) {let updatedTracker : Partial<NotificationTracker> = {
-                notificationList : [newNotification, ...notifList]
+            if (prevTracker !== undefined) {
+                const updatedTracker: Partial<NotificationTracker> = {
+                    notificationList: [newNotification, ...notifList]
+                }
+            
+                trackerRef.update(updatedTracker);
+            } else {
+                const newTracker: NotificationTracker = {
+                    id: email,
+                    notificationList: [newNotification],
+                    notifications: firebase.firestore.Timestamp.now(),
+                    productUpdates: firebase.firestore.Timestamp.now(),
+                }
+                trackerRef.set(newTracker)
             }
-            trackerRef.update(updatedTracker);
-        } else {
-            let newTracker : NotificationTracker = {
-                id: email,
-                notificationList : [newNotification],
-                notifications: firebase.firestore.Timestamp.now(),
-                productUpdates : firebase.firestore.Timestamp.now(),
-            }
-            trackerRef.set(newTracker)
-        }
         }
     }
 }
 
-export const clearNotifications = (user : FireUser) => {
-  if (user !== undefined) {
-    const email = user.email;
-    if (email !== null) {
-        const trackerRef = firestore.collection('notificationTrackers').doc(email);
-        let updatedTracker : Partial<NotificationTracker> = {
-            notificationList : []
+export const clearNotifications = (user: FireUser | undefined) => {
+    if (user !== undefined) {
+        const email = user.email;
+        if (email !== null) {
+            const trackerRef = firestore.collection('notificationTrackers').doc(email);
+            const updatedTracker: Partial<NotificationTracker> = {
+                notificationList: []
+            }
+            trackerRef.update(updatedTracker);
         }
-        trackerRef.update(updatedTracker);
     }
-}
 }
 
 export const viewedTrackable = 
@@ -69,8 +72,7 @@ async (user: FireUser | undefined,
                     updatedTracker.notificationList = [];
                     trackerRef.set(updatedTracker);
                 }
-            }).catch(err=> console.log(err.message))
-
+            })
         }
     }
 }

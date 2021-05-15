@@ -79,7 +79,14 @@ const SessionView = (
 
         if ((user.roles[course.courseId] === 'professor' ||
             user.roles[course.courseId] === 'ta') && questions.length > 0) {
-            addDBNotification(user, {title : 'A new question has been added!', subtitle : 'Check the queue.', message: ""})
+            addDBNotification(
+                user, 
+                {
+                    title : 'A new question has been added!', 
+                    subtitle : 'Check the queue.', 
+                    message: ""
+                }
+            )
             try {
                 addNotification({
                     title: 'A new question has been added!',

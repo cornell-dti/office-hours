@@ -190,19 +190,19 @@ interface BlogPost {
     description: string;
     listItems: string[];
     timeEntered: FireTimestamp;
-    edited? : FireTimestamp;
+    edited?: FireTimestamp;
 }
 
 interface SessionNotification {
-    title : string;
-    subtitle : string;
+    title: string;
+    subtitle: string;
     message: string;
     createdAt: FireTimestamp;
 }
 
 interface NotificationTracker {
-    id : string;
+    id: string;
     notifications: FireTimestamp;
     productUpdates: FireTimestamp;
-    notificationList : SessionNotification[];
+    notificationList: SessionNotification[];
 }
