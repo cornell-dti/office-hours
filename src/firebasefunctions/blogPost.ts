@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
-import { firestore } from '../firebase';
+
+const firestore = firebase.firestore();
 
 export const addBlogPost = (
     user: firebase.User | null, 
@@ -46,4 +47,3 @@ export const deleteBlogPost = (
         postRef.delete();
     }
 }
-

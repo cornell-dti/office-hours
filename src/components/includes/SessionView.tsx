@@ -8,7 +8,6 @@ import SessionQuestionsContainer from './SessionQuestionsContainer';
 import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile, 
     useAskerQuestions } from '../../firehooks';
 import { updateQuestion , updateVirtualLocation } from '../../firebasefunctions/sessionQuestion' 
-import {addDBNotification} from '../../firebasefunctions/notifications'
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 import { firestore } from '../../firebase';
@@ -79,14 +78,6 @@ const SessionView = (
 
         if ((user.roles[course.courseId] === 'professor' ||
             user.roles[course.courseId] === 'ta') && questions.length > 0) {
-            addDBNotification(
-                user, 
-                {
-                    title : 'A new question has been added!', 
-                    subtitle : 'Check the queue.', 
-                    message: ""
-                }
-            )
             try {
                 addNotification({
                     title: 'A new question has been added!',

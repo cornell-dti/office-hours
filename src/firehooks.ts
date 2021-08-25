@@ -347,25 +347,13 @@ export const useSessionProfile: (
     (userId, sessionId) => useDoc(`/sessions/${sessionId}/profiles`, userId, 'userId');
 
 const allBlogPostsObservable: Observable<readonly BlogPost[]> = loggedIn$.pipe(
-    switchMap(() => 
-        collectionData<BlogPost>(firestore.collection('blogPosts').orderBy("timeEntered", "desc"), 'postId'))
+    switchMap(() => collectionData<BlogPost>(firestore.collection('blogPosts'), 'postId'))
 );
 
 const allBlogPostsSingletonObservable = new SingletonObservable([], allBlogPostsObservable);
 
 export const useAllBlogPosts: () => readonly BlogPost[] =
     createUseSingletonObservableHook(allBlogPostsSingletonObservable);
-
-
-export const useProductUpdate= (): BlogPost | undefined => useAllBlogPosts()[0]
-
-export const useNotificationTracker = 
-(trackerId: string | undefined): NotificationTracker | undefined =>
-    useDoc<NotificationTracker>('notificationTrackers', trackerId, 'trackerId')
-
-export const useNotifications = 
-(trackerId: string | undefined): SessionNotification[] | undefined => 
-    useNotificationTracker(trackerId)?.notificationList
 
 // Primatives
 // Look up a doc in Firebase by ID
