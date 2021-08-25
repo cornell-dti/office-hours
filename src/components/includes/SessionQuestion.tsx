@@ -5,7 +5,6 @@ import { useState } from "react";
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
 import addNotification from 'react-push-notification';
-import {addDBNotification} from '../../firebasefunctions/notifications'
 import SelectedTags from './SelectedTags';
 
 import { firestore } from '../../firebase';
@@ -69,13 +68,12 @@ class SessionQuestion extends React.Component<Props, State> {
         const previousState = prevProps.question;
         const currentState = this.props.question;
         const user = this.props.myUserId;
-        const addNotificationWrapper = (title: string, subtitle: string, message: string | undefined) => {
-            addDBNotification(this.props.user, {title, subtitle, message: `${message}`})
+        if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
             try {
                 addNotification({
-                    title,
-                    subtitle,
-                    message: `${message}`,
+                    title: 'TA comment',
+                    subtitle: 'New TA comment',
+                    message: `${currentState.taComment}`,
                     theme: "darkblue",
                     native: true
                 });
@@ -83,12 +81,19 @@ class SessionQuestion extends React.Component<Props, State> {
                 // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
             }
         }
-        if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
-            addNotificationWrapper('TA comment', 'New TA comment', currentState.taComment);
-        }
 
         if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
-            addNotificationWrapper('Student comment', 'New student comment', currentState.studentComment);
+            try {
+                addNotification({
+                    title: 'Student comment',
+                    subtitle: 'New student comment',
+                    message: `${currentState.studentComment}`,
+                    theme: "darkblue",
+                    native: true
+                });
+            } catch (error) {
+                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
+            }
         }
     }
 

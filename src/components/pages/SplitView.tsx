@@ -6,7 +6,6 @@ import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import NotificationModal from '../includes/NotificationModal';
 import LeaveQueue from '../includes/LeaveQueue';
-import ProductUpdates from "../includes/ProductUpdates"
 
 import { useCourse, useSession, useMyUser } from '../../firehooks';
 import { firestore } from '../../firebase';
@@ -161,7 +160,6 @@ const SplitView = (props: {
                         </section>
                     )
                 ) : <Loader active={true} content="Loading" />)}
-            <ProductUpdates />
            
         </>
     );

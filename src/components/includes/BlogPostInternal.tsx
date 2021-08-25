@@ -72,7 +72,7 @@ const BlogPostInternal = ({blogPost}: Props) => {
                             className="blogPost__date" 
                             date={blogPost.timeEntered.toDate()} 
                             interval={0} 
-                            format={'hh:mm A on MMMM D'} 
+                            format={'hh:mm A on Y'} 
                         />) : (<Moment 
                             className="blogPost__date" 
                             date={blogPost.timeEntered.toDate()} 
