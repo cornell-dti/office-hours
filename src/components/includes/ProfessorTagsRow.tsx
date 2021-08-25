@@ -11,7 +11,6 @@ const ProfessorTagsRow = (props: {
 }) => {
     const [showEdit, setShowEdit] = useState(false);
 
-    console.log(props.tag);
 
 
     return (

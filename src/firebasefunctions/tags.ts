@@ -11,7 +11,7 @@ const createTag = (
     // need to create this first so the child tags have the doc reference
     const tag = firestore.collection('tags').doc();
     
-    let tagDocInfo: Omit<FireTag, 'tagId'> = {
+    const tagDocInfo: Omit<FireTag, 'tagId'> = {
         active: tagInfo.active,
         courseId: tagInfo.courseId,
         level: parentTagDocId ? 2 : 1,
