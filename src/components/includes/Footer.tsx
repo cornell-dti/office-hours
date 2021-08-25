@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from 'react';
 import DTILogo from '../../media/dti_logo.svg';
 
 const Footer = () => {
