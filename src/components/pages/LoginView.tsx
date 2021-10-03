@@ -1,26 +1,26 @@
-import * as React from "react";
-import { useHistory } from "react-router-dom";
+import * as React from 'react';
+import { useHistory } from 'react-router-dom';
 
-import firebase, { app, firestore } from "../../firebase";
-import { userUpload } from "../../firebasefunctions/user";
+import firebase, { app, firestore } from '../../firebase';
+import { userUpload } from '../../firebasefunctions/user';
 
-import QMILogo2020 from "../../media/QMILogo2020.svg";
-import QMIPeople from "../../media/QMIPeople.gif";
-import googleLogo from "../../media/googleLogo.svg";
-import Demo from "../../media/demo_higher_res.png";
-import WhiteStrip from "../../media/white_strip.svg";
-import SecondWhiteStrip from "../../media/second_white_strip.svg";
-import Footer from "../includes/Footer";
+import QMILogo2020 from '../../media/QMILogo2020.svg';
+import QMIPeople from '../../media/QMIPeople.gif';
+import googleLogo from '../../media/googleLogo.svg';
+import Demo from '../../media/demo_higher_res.png';
+import WhiteStrip from '../../media/white_strip.svg';
+import SecondWhiteStrip from '../../media/second_white_strip.svg';
+import Footer from '../includes/Footer';
 
-import Ask from "../../media/ask_a_question.svg";
-import Reserve from "../../media/reserve.svg";
-import Wait from "../../media/wait_turn.svg";
+import Ask from '../../media/ask_a_question.svg';
+import Reserve from '../../media/reserve.svg';
+import Wait from '../../media/wait_turn.svg';
 
-import Schedule from "../../media/schedule_hours.svg";
-import Review from "../../media/host_review.svg";
-import Analytics from "../../media/analytics.svg";
+import Schedule from '../../media/schedule_hours.svg';
+import Review from '../../media/host_review.svg';
+import Analytics from '../../media/analytics.svg';
 
-import QMIThreePeople from "../../media/ppl_illustration.svg";
+import QMIThreePeople from '../../media/ppl_illustration.svg';
 
 const LoginView: React.FC = () => {
     const history = useHistory();
@@ -28,15 +28,15 @@ const LoginView: React.FC = () => {
     const auth = () => {
         const authProvider = new firebase.auth.GoogleAuthProvider();
         if (
-            process.env.NODE_ENV === "production" &&
-            process.env.REACT_APP_IS_STAGING !== "true"
+            process.env.NODE_ENV === 'production' &&
+            process.env.REACT_APP_IS_STAGING !== 'true'
         ) {
             authProvider.setCustomParameters({
-                hd: "cornell.edu",
+                hd: 'cornell.edu',
             });
         }
-        authProvider.addScope("email");
-        authProvider.addScope("profile");
+        authProvider.addScope('email');
+        authProvider.addScope('profile');
 
         return app
             .auth()
@@ -44,7 +44,7 @@ const LoginView: React.FC = () => {
             .then((response) => {
                 const user = response.user;
                 userUpload(user, firestore);
-                history.push("/");
+                history.push('/');
             });
     };
 
@@ -103,13 +103,13 @@ const LoginView: React.FC = () => {
                     />
                     <h2 className="sloganText">
                         {
-                            "Say goodbye to crowded and \nunorganized office hours."
+                            'Say goodbye to crowded and \nunorganized office hours.'
                         }
                     </h2>
                     <div className="bothTutorialsWrapper">
                         <div className="tutorialWrapper">
                             <h3 className="tutorialHeader">
-                                {"For students who need \none-on-one support"}
+                                {'For students who need \none-on-one support'}
                             </h3>
                             <div className="cardWrapper">
                                 <div className="infoCard">
@@ -120,7 +120,7 @@ const LoginView: React.FC = () => {
                                     />
                                     <p className="cardDesc">
                                         {
-                                            "Ask questions in a \ndiscussion or queue"
+                                            'Ask questions in a \ndiscussion or queue'
                                         }
                                     </p>
                                 </div>
@@ -131,7 +131,7 @@ const LoginView: React.FC = () => {
                                         alt="Reserved"
                                     />
                                     <p className="cardDesc">
-                                        {"Reserve time to speak \nwith a TA"}
+                                        {'Reserve time to speak \nwith a TA'}
                                     </p>
                                 </div>
                                 <div className="infoCard">
@@ -142,7 +142,7 @@ const LoginView: React.FC = () => {
                                     />
                                     <p className="cardDesc">
                                         {
-                                            "Get your questions \nanswered by course staff"
+                                            'Get your questions \nanswered by course staff'
                                         }
                                     </p>
                                 </div>
@@ -151,7 +151,7 @@ const LoginView: React.FC = () => {
                         <div className="tutorialWrapper professorsTutorialWrapper">
                             <h3 className="tutorialHeader">
                                 {
-                                    "For professors looking to shape \ntheir teaching experience"
+                                    'For professors looking to shape \ntheir teaching experience'
                                 }
                             </h3>
                             <div className="cardWrapper">
@@ -162,7 +162,7 @@ const LoginView: React.FC = () => {
                                         alt="Calendar"
                                     />
                                     <p className="cardDesc">
-                                        {"Schedule your office \nhours easily"}
+                                        {'Schedule your office \nhours easily'}
                                     </p>
                                 </div>
                                 <div className="infoCard">
@@ -173,7 +173,7 @@ const LoginView: React.FC = () => {
                                     />
                                     <p className="cardDesc">
                                         {
-                                            "Assign TAs to discussions \nor host yourself"
+                                            'Assign TAs to discussions \nor host yourself'
                                         }
                                     </p>
                                 </div>
@@ -185,7 +185,7 @@ const LoginView: React.FC = () => {
                                     />
                                     <p className="cardDesc">
                                         {
-                                            "View office hour and \ndiscussion analytics"
+                                            'View office hour and \ndiscussion analytics'
                                         }
                                     </p>
                                 </div>
@@ -212,7 +212,7 @@ const LoginView: React.FC = () => {
                             Simplify office hours.
                         </h2>
                         <h2 className="finalText finalTextBody">
-                            {"Manage the wave \nof students."}
+                            {'Manage the wave \nof students.'}
                         </h2>
                         <a
                             className="qmiContact"
