@@ -7,10 +7,7 @@ import { collectionData } from 'rxfire/firestore';
 import { filter } from 'rxjs/operators';
 
 let firebaseConfig: object;
-if (
-    process.env.NODE_ENV === 'production' &&
-    process.env.REACT_APP_IS_STAGING !== 'true'
-) {
+if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
     firebaseConfig = {
         apiKey: 'AIzaSyBtxSkhR9RcnKP2FSsWtdxlwX4TcIjjm8A',
         authDomain: 'queue-me-in-prod.firebaseapp.com',
