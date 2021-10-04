@@ -35,7 +35,9 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
     }
     return (
         <div
-            className={`CourseCard ${selected && editable ? 'selected' : ''} ${inactive ? 'inactive' : 'active'}`}
+            className={`CourseCard ${selected && editable ? 'selected' : ''} ${
+                inactive ? 'inactive' : 'active'
+            }`}
             onClick={selectCourse}
         >
             <div className="courseText">
@@ -43,27 +45,30 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
                     {course.code}
                     {roleString && <span className="role">{roleString}</span>}
                 </div>
-                <div className="courseName">
-                    {course.name}
-                </div>
+                <div className="courseName">{course.name}</div>
             </div>
-            {
-                !inactive ?
-
-                    <div className="courseColor">
-                        {editable ? (
-                            selected
-                                ? <Icon className="icon" name="check" />
-                                : <Icon className="icon" name="plus" />
-                        ) : (<div>
-                            Go to course
-                        </div>)
-                        }
-                    </div> :
-                    <></>
-            }
+            {!inactive ? (
+                <div className="courseColor">
+                    {editable ? (
+                        selected ? (
+                            <Icon className="icon" name="check" />
+                        ) : (
+                            <Icon className="icon" name="plus" />
+                        )
+                    ) : (
+                        <div>Go to course</div>
+                    )}
+                </div>
+            ) : (
+                <></>
+            )}
         </div>
     );
+};
+
+CourseCard.defaultProps = {
+    role: null,
+    inactive: false,
 };
 
 export default CourseCard;

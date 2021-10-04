@@ -45,8 +45,6 @@ const LoginView: React.FC = () => {
             });
     };
 
-    const passAuth = () => {};
-
     return (
         <div className="loginView">
             <section className="header">

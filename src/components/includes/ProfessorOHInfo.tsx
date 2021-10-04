@@ -12,18 +12,17 @@ enum Modality {
     VIRTUAL = 'virtual',
     HYBRID = 'hybrid',
     INPERSON = 'in-person',
-    REVIEW = 'review'
+    REVIEW = 'review',
 }
 
-class OHMutateError extends Error {
-}
+class OHMutateError extends Error {}
 
 const ProfessorOHInfo = (props: {
     session?: FireSession;
     courseId: string;
     isNewOH: boolean;
     taOptions: DropdownItemProps[];
-    taUserIdsDefault?: number[];
+    // taUserIdsDefault?: number[];
     toggleEdit: Function;
     isOfficeHour: boolean;
 }) => {
@@ -49,15 +48,18 @@ const ProfessorOHInfo = (props: {
                 setLocationBuildingSelected(session.building);
                 setLocationRoomNumSelected(session.room);
             }
-            setIsSeriesMutation(!!(session.sessionSeriesId));
-            setNotification(
-                moment(session.endTime).isBefore()
-                    ? 'This session has already passed!'
-                    : '');
+            setIsSeriesMutation(!!session.sessionSeriesId);
+            setNotification(moment(session.endTime).isBefore() ? 'This session has already passed!' : '');
             setTitle(session.title);
-            setModality(session.modality === "virtual" ?
-                Modality.VIRTUAL : session.modality === "review" ? Modality.REVIEW : session.modality === "hybrid" ?
-                    Modality.HYBRID : Modality.INPERSON);
+            setModality(
+                session.modality === 'virtual'
+                    ? Modality.VIRTUAL
+                    : session.modality === 'review'
+                        ? Modality.REVIEW
+                        : session.modality === 'hybrid'
+                            ? Modality.HYBRID
+                            : Modality.INPERSON
+            );
         }
     }, [session]);
 
@@ -110,32 +112,31 @@ const ProfessorOHInfo = (props: {
     };
 
     const incAddTA = () => {
-        setTaSelected((old) => [...old, { id: null }]);
+        setTaSelected(old => [...old, { id: null }]);
     };
 
     const decAddTA = (index: number) => {
-        setTaSelected((old) => [
-            ...old.slice(0, index),
-            ...old.slice(index + 1)
-        ]);
+        setTaSelected(old => [...old.slice(0, index), ...old.slice(index + 1)]);
     };
 
     /** A do-it-all function that can create/edit sessions/series. */
     const mutateSessionOrSeries = React.useCallback((): Promise<void> => {
         const startMomentTime = startTime;
         if (startMomentTime === undefined) {
-            return Promise.reject(new OHMutateError("No start time selected."));
+            return Promise.reject(new OHMutateError('No start time selected.'));
         }
         const startTimestamp = Timestamp.fromDate(startMomentTime.toDate());
         const endMomentTime = endTime;
         if (endMomentTime === undefined) {
-            return Promise.reject(new OHMutateError("No end time selected."));
+            return Promise.reject(new OHMutateError('No end time selected.'));
         }
         const endTimestamp = Timestamp.fromDate(endMomentTime.toDate());
 
-        if (modality === Modality.REVIEW && (!zoomLink || 
-            (zoomLink.indexOf('http://') === -1 && zoomLink.indexOf('https://') === -1))) {
-            return Promise.reject(new OHMutateError("Not a valid link!"))
+        if (
+            modality === Modality.REVIEW &&
+            (!zoomLink || (zoomLink.indexOf('http://') === -1 && zoomLink.indexOf('https://') === -1))
+        ) {
+            return Promise.reject(new OHMutateError('Not a valid link!'));
         }
         const propsSession = props.session;
         const taDocuments: string[] = [];
@@ -155,10 +156,10 @@ const ProfessorOHInfo = (props: {
                     startTime: startTimestamp,
                     tas: taDocuments,
                     title,
-                }
+                };
             } else if (modality === Modality.REVIEW) {
                 if (zoomLink === undefined) {
-                    return Promise.reject(new OHMutateError("Not a valid link!"))
+                    return Promise.reject(new OHMutateError('Not a valid link!'));
                 }
                 series = {
                     modality,
@@ -168,15 +169,15 @@ const ProfessorOHInfo = (props: {
                     tas: taDocuments,
                     title,
                     link: zoomLink,
-                }
+                };
             } else {
                 if (modality === Modality.INPERSON) {
                     if (!locationBuildingSelected) {
-                        return Promise.reject(new OHMutateError("No building provided!"));
+                        return Promise.reject(new OHMutateError('No building provided!'));
                     }
 
                     if (!locationRoomNumSelected) {
-                        return Promise.reject(new OHMutateError("No room provided!"));
+                        return Promise.reject(new OHMutateError('No room provided!'));
                     }
                 }
 
@@ -208,13 +209,19 @@ const ProfessorOHInfo = (props: {
 
         const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
 
-        const sessionLocation = modality === Modality.HYBRID || modality === Modality.INPERSON ? {
-            building: locationBuildingSelected || '',
-            room: locationRoomNumSelected || '',
-        } : {};
-        const sessionLink = modality === Modality.REVIEW ? {
-            link: zoomLink || '',
-        } : {};
+        const sessionLocation =
+            modality === Modality.HYBRID || modality === Modality.INPERSON
+                ? {
+                    building: locationBuildingSelected || '',
+                    room: locationRoomNumSelected || '',
+                }
+                : {};
+        const sessionLink =
+            modality === Modality.REVIEW
+                ? {
+                    link: zoomLink || '',
+                }
+                : {};
         const sessionWithoutSessionSeriesId = {
             modality,
             courseId: props.courseId,
@@ -228,11 +235,12 @@ const ProfessorOHInfo = (props: {
             totalResolveTime: 0,
             title,
             ...sessionLocation,
-            ...sessionLink
+            ...sessionLink,
         };
-        const newSession: Omit<FireSession, 'sessionId'> = sessionSeriesId === undefined
-            ? sessionWithoutSessionSeriesId
-            : { ...sessionWithoutSessionSeriesId, ...sessionLocation, ...sessionLink, sessionSeriesId };
+        const newSession: Omit<FireSession, 'sessionId'> =
+            sessionSeriesId === undefined
+                ? sessionWithoutSessionSeriesId
+                : { ...sessionWithoutSessionSeriesId, ...sessionLocation, ...sessionLink, sessionSeriesId };
         if (propsSession) {
             return updateSession(propsSession, newSession);
         }
@@ -248,7 +256,7 @@ const ProfessorOHInfo = (props: {
         props.session,
         startTime,
         taSelected,
-        title
+        title,
     ]);
 
     let isMaxTA = false;
@@ -267,39 +275,33 @@ const ProfessorOHInfo = (props: {
     const emptyNotification = 'Please fill in valid times';
     const stateNotification = 'End time has already passed!';
 
-    const AddTA =
-        (<div>
+    const AddTA = (
+        <div>
             <div>
-                {taSelected.map(
-                    (ta, i) => {
-                        // Filter dropdown by checking if TA has not been selected yet
-                        // Include currently selected TA, or else dropdown can't prepopulate if option is missing
-                        const dropdownOptions = props.taOptions.filter(ta =>
-                            ta.value === taSelected[i].id || !taSelected.some(s => s.id === ta.value));
+                {taSelected.map((ta, i) => {
+                    // Filter dropdown by checking if TA has not been selected yet
+                    // Include currently selected TA, or else dropdown can't prepopulate if option is missing
+                    const dropdownOptions = props.taOptions.filter(
+                        ta => ta.value === taSelected[i].id || !taSelected.some(s => s.id === ta.value)
+                    );
 
-                        return (
-                            <div className={'AddTA ' + (i === 0 ? 'First' : 'Additional')} key={ta.id || i}>
-                                <Icon name="user" />
-                                <Dropdown
-                                    className="dropdown"
-                                    placeholder="TA Name"
-                                    selection={true}
-                                    options={dropdownOptions}
-                                    value={ta.id === null ? undefined : ta.id}
-                                    onChange={(event, data) => handleTaList(event, data, i)}
-                                />
-                                <button
-                                    type="button"
-                                    className="AddTAButton"
-                                    onClick={() => decAddTA(i)}
-                                >
-                                    <Icon name="x" />
-                                </button>
-
-                            </div>
-                        );
-                    }
-                )}
+                    return (
+                        <div className={'AddTA ' + (i === 0 ? 'First' : 'Additional')} key={ta.id || i}>
+                            <Icon name="user" />
+                            <Dropdown
+                                className="dropdown"
+                                placeholder="TA Name"
+                                selection={true}
+                                options={dropdownOptions}
+                                value={ta.id === null ? undefined : ta.id}
+                                onChange={(event, data) => handleTaList(event, data, i)}
+                            />
+                            <button type="button" className="AddTAButton" onClick={() => decAddTA(i)}>
+                                <Icon name="x" />
+                            </button>
+                        </div>
+                    );
+                })}
             </div>
             <button
                 type="button"
@@ -311,7 +313,7 @@ const ProfessorOHInfo = (props: {
                 Add TA
             </button>
         </div>
-        );
+    );
 
     return (
         <>
@@ -319,49 +321,52 @@ const ProfessorOHInfo = (props: {
                 <div className="row">
                     {props.isOfficeHour ? 'Modality' : 'Discussion'}
                     <Button.Group className="ModalitySelector">
-                        {props.isOfficeHour && <div>
+                        {props.isOfficeHour && (
+                            <div>
+                                <Button
+                                    active={modality === Modality.VIRTUAL}
+                                    onClick={() => setModality(Modality.VIRTUAL)}
+                                >
+                                    Virtual
+                                </Button>
+                                <Button
+                                    active={modality === Modality.HYBRID}
+                                    onClick={() => setModality(Modality.HYBRID)}
+                                >
+                                    Hybrid
+                                </Button>
+                                <Button
+                                    active={modality === Modality.INPERSON}
+                                    onClick={() => setModality(Modality.INPERSON)}
+                                >
+                                    In Person
+                                </Button>
+                            </div>
+                        )}
+                        {!props.isOfficeHour && (
                             <Button
-                                active={modality === Modality.VIRTUAL}
-                                onClick={() => setModality(Modality.VIRTUAL)}
+                                active={modality === Modality.REVIEW}
+                                onClick={() => setModality(Modality.REVIEW)}
                             >
-                                                        Virtual
-                            </Button><Button
-                                active={modality === Modality.HYBRID}
-                                onClick={() => setModality(Modality.HYBRID)}
-                            >
-                                Hybrid
+                                Review
                             </Button>
-                            <Button
-                                active={modality === Modality.INPERSON}
-                                onClick={() => setModality(Modality.INPERSON)}
-                            >
-                                In Person
-                            </Button>
-                        </div>}
-                        {!props.isOfficeHour && <Button
-                            active={modality === Modality.REVIEW}
-                            onClick={() => setModality(Modality.REVIEW)}
-                        >
-                            Review
-                        </Button>}
+                        )}
                     </Button.Group>
                 </div>
                 <div className="row">
                     <p className="description">
-                        {
-                            modality === Modality.VIRTUAL ?
-                                'In a virtual session each TA can provide their own "Virtual Location" '+
-                                '(e.g. Zoom Link, Google Meet Link)' +
-                                ' which is provided to the student when the TA is assigned to them.'
-                                : modality === Modality.HYBRID ?
-                                    'In a hybrid session the student can either provide a Zoom link'+
-                                    ' or a physical location.' : modality === Modality.REVIEW ?
-                                        'In a review session a Zoom link for the review is posted ' + 
-                                    ' and students can ask questions to be answered during the session.'
-                                        :
-                                        'In an in-person session the student can provide their physical'
-                                    + ' location (e.g. by the whiteboard).'
-                        }
+                        {modality === Modality.VIRTUAL
+                            ? 'In a virtual session each TA can provide their own "Virtual Location" ' +
+                              '(e.g. Zoom Link, Google Meet Link)' +
+                              ' which is provided to the student when the TA is assigned to them.'
+                            : modality === Modality.HYBRID
+                                ? 'In a hybrid session the student can either provide a Zoom link' +
+                              ' or a physical location.'
+                                : modality === Modality.REVIEW
+                                    ? 'In a review session a Zoom link for the review is posted ' +
+                              ' and students can ask questions to be answered during the session.'
+                                    : 'In an in-person session the student can provide their physical' +
+                              ' location (e.g. by the whiteboard).'}
                     </p>
                 </div>
                 <div className="row">
@@ -370,37 +375,44 @@ const ProfessorOHInfo = (props: {
                         className="long"
                         placeholder="Name"
                         value={title || ''}
-                        onChange={(e) => handleTextField(e, setTitle)}
+                        onChange={e => handleTextField(e, setTitle)}
                     />
                 </div>
-                <div className="row TA">
-                    {AddTA}
-                </div>
-                {modality === Modality.HYBRID || modality === Modality.INPERSON ? <div className="row">
-                    <Icon name="marker" />
-                    <input
-                        className="long"
-                        placeholder={`Building/Location${modality === Modality.HYBRID ? ' (optional)' : ''}`}
-                        value={locationBuildingSelected || ''}
-                        onChange={(e) => handleTextField(e, setLocationBuildingSelected)}
-                    />
-                    <input
-                        className="shift"
-                        placeholder="Room Number"
-                        value={locationRoomNumSelected || ''}
-                        onChange={(e) => handleTextField(e, setLocationRoomNumSelected)}
-                    />
-                </div> : <></>}
-                {modality === Modality.REVIEW ? <div className="row">
-                    <Icon name="desktop"/>
-                    <input 
-                        className="long"
-                        placeholder="Zoom link"
-                        value={zoomLink || ''}
-                        onChange={e => handleTextField(e, setZoomLink)}
-                    />
-                </div> : <></>
-                }
+                <div className="row TA">{AddTA}</div>
+                {modality === Modality.HYBRID || modality === Modality.INPERSON ? (
+                    <div className="row">
+                        <Icon name="marker" />
+                        <input
+                            className="long"
+                            placeholder={`Building/Location${
+                                modality === Modality.HYBRID ? ' (optional)' : ''
+                            }`}
+                            value={locationBuildingSelected || ''}
+                            onChange={e => handleTextField(e, setLocationBuildingSelected)}
+                        />
+                        <input
+                            className="shift"
+                            placeholder="Room Number"
+                            value={locationRoomNumSelected || ''}
+                            onChange={e => handleTextField(e, setLocationRoomNumSelected)}
+                        />
+                    </div>
+                ) : (
+                    <></>
+                )}
+                {modality === Modality.REVIEW ? (
+                    <div className="row">
+                        <Icon name="desktop" />
+                        <input
+                            className="long"
+                            placeholder="Zoom link"
+                            value={zoomLink || ''}
+                            onChange={e => handleTextField(e, setZoomLink)}
+                        />
+                    </div>
+                ) : (
+                    <></>
+                )}
                 <div className="Time">
                     <Icon name="time" />
                     <div className="datePicker">
@@ -412,7 +424,7 @@ const ProfessorOHInfo = (props: {
                             placeholderText={moment().format('dddd MM/DD/YY')}
                             readOnly={true}
                         />
-                    </div >
+                    </div>
                     <div className="datePicker timePicker shift">
                         <DatePicker
                             selected={startTime}
@@ -426,10 +438,8 @@ const ProfessorOHInfo = (props: {
                             placeholderText="12:00 PM"
                             readOnly={true}
                         />
-                    </div >
-                    <span className="shift">
-                        To
-                    </span>
+                    </div>
+                    <span className="shift">To</span>
                     <div className="datePicker timePicker shift">
                         <DatePicker
                             selected={endTime}
@@ -445,21 +455,19 @@ const ProfessorOHInfo = (props: {
                             placeholderText="2:00 PM"
                             readOnly={true}
                         />
-                    </div >
-                    {(props.isNewOH || props.session?.sessionSeriesId != null) && <Checkbox
-                        className="datePicker shift"
-                        label={props.isNewOH ? 'Repeat weekly' : 'Edit all office hours in this series'}
-                        checked={isSeriesMutation}
-                        onChange={() => setIsSeriesMutation((old) => !old)}
-                    />}
+                    </div>
+                    {(props.isNewOH || props.session?.sessionSeriesId != null) && (
+                        <Checkbox
+                            className="datePicker shift"
+                            label={props.isNewOH ? 'Repeat weekly' : 'Edit all office hours in this series'}
+                            checked={isSeriesMutation}
+                            onChange={() => setIsSeriesMutation(old => !old)}
+                        />
+                    )}
                 </div>
             </div>
             <div className="EditButtons">
-                <button
-                    type="button"
-                    className="Bottom Cancel"
-                    onClick={() => props.toggleEdit()}
-                >
+                <button type="button" className="Bottom Cancel" onClick={() => props.toggleEdit()}>
                     Cancel
                 </button>
                 <button
@@ -471,44 +479,48 @@ const ProfessorOHInfo = (props: {
                         } else if (disableState) {
                             updateNotification(stateNotification);
                         } else {
-                            mutateSessionOrSeries().then(() => {
-                                // eslint-disable-next-line no-console
-                                console.log("Success!");
+                            mutateSessionOrSeries()
+                                .then(() => {
+                                    // eslint-disable-next-line no-console
+                                    console.log('Success!');
 
-                                if (props.isNewOH) {
-                                    clearFields()
-                                }
+                                    if (props.isNewOH) {
+                                        clearFields();
+                                    }
 
-                                props.toggleEdit();
-                            }).catch((err: Error) => {
-                                // TODO(ewlsh): Implement better dialogs and error recovery.
-                                if (err instanceof OHMutateError) {
-                                // eslint-disable-next-line no-alert
-                                    alert(err.message);
-                                } else {
-                                    // eslint-disable-next-line no-alert
-                                    alert(
-                                        'We\'re unable to save your changes at this time, ' +
-                                        'if you reach out to us at queuemein@cornelldti.org ' +
-                                        'we\'ll be happy to assist you further.'
-                                    );
-                                }
+                                    props.toggleEdit();
+                                })
+                                .catch((err: Error) => {
+                                    // TODO(ewlsh): Implement better dialogs and error recovery.
+                                    if (err instanceof OHMutateError) {
+                                        // eslint-disable-next-line no-alert
+                                        alert(err.message);
+                                    } else {
+                                        // eslint-disable-next-line no-alert
+                                        alert(
+                                            "We're unable to save your changes at this time, " +
+                                                'if you reach out to us at queuemein@cornelldti.org ' +
+                                                "we'll be happy to assist you further."
+                                        );
+                                    }
 
-                                // eslint-disable-next-line no-console
-                                console.error(err);
-                            });
+                                    // eslint-disable-next-line no-console
+                                    console.error(err);
+                                });
                         }
                     }}
                     disabled={disableProps}
                 >
                     {props.isNewOH ? 'Create' : 'Save Changes'}
                 </button>
-                <span className="EditNotification">
-                    {notification}
-                </span>
+                <span className="EditNotification">{notification}</span>
             </div>
         </>
     );
+};
+
+ProfessorOHInfo.defaultProps = {
+    session: null,
 };
 
 export default ProfessorOHInfo;

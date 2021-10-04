@@ -18,9 +18,18 @@ type Props = {
     readonly displayShade: boolean;
 };
 
-const SessionAlertModal = (
-    { header, icon, color, description, course, OHSession, buttons, cancelAction, mainAction, displayShade }: Props
-) => {
+const SessionAlertModal = ({
+    header,
+    icon,
+    color,
+    description,
+    course,
+    OHSession,
+    buttons,
+    cancelAction,
+    mainAction,
+    displayShade,
+}: Props) => {
     const tas = useSessionTANames(course, OHSession);
     const [displayModal, setDisplayModal] = useState(true);
 
@@ -36,7 +45,7 @@ const SessionAlertModal = (
             key={i}
             type="button"
             className={buttons.length - 1 === i ? 'last' : ''}
-            onClick={() => buttons.length - 1 === i ? main() : cancel()}
+            onClick={() => (buttons.length - 1 === i ? main() : cancel())}
         >
             {button}
         </button>
@@ -73,13 +82,16 @@ const SessionAlertModal = (
                         </div>
                         <div>
                             <span>
-                                {moment(OHSession.startTime).format('h:mm A')}&nbsp;
-                                to {moment(OHSession.endTime).format('h:mm A')}
+                                {moment(OHSession.startTime).format('h:mm A')}&nbsp; to{' '}
+                                {moment(OHSession.endTime).format('h:mm A')}
                             </span>
-                            {'building' in OHSession ? <span>
-                                {OHSession.building} {OHSession.room}
-                            </span> : <span>Online</span>}
-
+                            {'building' in OHSession ? (
+                                <span>
+                                    {OHSession.building} {OHSession.room}
+                                </span>
+                            ) : (
+                                <span>Online</span>
+                            )}
                         </div>
                     </div>
                 )}
@@ -87,6 +99,14 @@ const SessionAlertModal = (
             </div>
         </div>
     );
+};
+
+SessionAlertModal.defaultProps = {
+    header: null,
+    icon: null,
+    OHSession: null,
+    cancelAction: null,
+    mainAction: null,
 };
 
 export default SessionAlertModal;
