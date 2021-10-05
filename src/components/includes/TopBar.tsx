@@ -95,8 +95,8 @@ const TopBar = (props: {
 };
 
 TopBar.defaultProps = {
-    user: null,
-    course: null,
+    user: undefined,
+    course: undefined,
     admin: false,
 };
 

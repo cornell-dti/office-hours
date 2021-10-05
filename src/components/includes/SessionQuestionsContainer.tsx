@@ -358,7 +358,7 @@ const SessionQuestionsContainer = (props: Props) => {
 };
 
 SessionQuestionsContainer.defaultProps = {
-    myVirtualLocation: null,
+    myVirtualLocation: undefined,
 };
 
 export default SessionQuestionsContainer;

@@ -57,9 +57,9 @@ const CalenderView = ({ session, sessionCallback, course, user }: Props) => {
 };
 
 CalenderView.defaultProps = {
-    session: null,
-    course: null,
-    user: null
+    session: undefined,
+    course: undefined,
+    user: undefined
 }
 
 export default CalenderView;

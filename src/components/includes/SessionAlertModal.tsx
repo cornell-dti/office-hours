@@ -102,11 +102,11 @@ const SessionAlertModal = ({
 };
 
 SessionAlertModal.defaultProps = {
-    header: null,
-    icon: null,
-    OHSession: null,
-    cancelAction: null,
-    mainAction: null,
+    header: undefined,
+    icon: undefined,
+    OHSession: undefined,
+    cancelAction: undefined,
+    mainAction: undefined,
 };
 
 export default SessionAlertModal;

@@ -302,9 +302,9 @@ const CommentBox = (props: CommentBoxProps) => {
 };
 
 CommentBox.defaultProps = {
-    studentComment: null,
-    taComment: null,
-    studentCSS: null,
+    studentComment: undefined,
+    taComment: undefined,
+    studentCSS: undefined,
 };
 
 export default DiscussionQuestion;

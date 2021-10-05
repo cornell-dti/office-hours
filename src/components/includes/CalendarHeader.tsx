@@ -78,8 +78,8 @@ const CalendarHeader = ({ currentCourseCode, role }: Props): React.ReactElement 
 };
 
 CalendarHeader.defaultProps = {
-    role: null,
-    // avatar: null
+    role: undefined,
+    // avatar: undefined
 }
 
 export default CalendarHeader;

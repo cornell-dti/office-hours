@@ -83,7 +83,7 @@ const ProfessorAddNew = (props: { courseId: string; taOptions?: DropdownItemProp
 };
 
 ProfessorAddNew.defaultProps = {
-    taOptions: null,
+    taOptions: undefined,
 };
 
 export default ProfessorAddNew;

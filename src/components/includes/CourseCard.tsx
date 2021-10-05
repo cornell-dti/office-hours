@@ -67,7 +67,7 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
 };
 
 CourseCard.defaultProps = {
-    role: null,
+    role: undefined,
     inactive: false,
 };
 

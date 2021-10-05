@@ -487,7 +487,7 @@ const SessionInformationHeader = ({
 };
 
 SessionInformationHeader.defaultProps = {
-    virtualLocation: null,
-    assignedQuestion: null,
+    virtualLocation: undefined,
+    assignedQuestion: undefined,
 };
 export default SessionInformationHeader;

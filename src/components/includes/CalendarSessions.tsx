@@ -86,7 +86,7 @@ const CalendarSessions = ({
 };
 
 CalendarSessions.defaultProps = {
-    activeSession: null,
+    activeSession: undefined,
 };
 
 export default CalendarSessions;

@@ -520,7 +520,7 @@ const ProfessorOHInfo = (props: {
 };
 
 ProfessorOHInfo.defaultProps = {
-    session: null,
+    session: undefined,
 };
 
 export default ProfessorOHInfo;
