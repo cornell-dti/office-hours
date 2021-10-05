@@ -21,7 +21,8 @@ type Props = {
     readonly tags: { readonly [tagId: string]: FireTag };
     readonly myUserId: string;
     readonly myVirtualLocation?: string;
-    // readonly handleJoinClick: Function;
+    // eslint-disable-next-line react/no-unused-prop-types
+    readonly handleJoinClick: Function;
     readonly triggerUndo: Function;
     readonly isOpen: boolean;
     readonly isPast: boolean;

@@ -21,7 +21,7 @@ type Props = {
     questions: readonly FireQuestion[];
     isDesktop: boolean;
     backCallback: Function;
-    // joinCallback: Function;
+    joinCallback: Function;
     user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
@@ -41,7 +41,7 @@ type AbsentState = {
 };
 
 const SessionView = (
-    { course, session, questions, isDesktop, backCallback/* , joinCallback */, user, setShowModal, 
+    { course, session, questions, isDesktop, backCallback , joinCallback , user, setShowModal, 
         setRemoveQuestionId }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
@@ -238,7 +238,7 @@ const SessionView = (
                     questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
                 users={users}
                 tags={tags}
-                // handleJoinClick={joinCallback}
+                handleJoinClick={joinCallback}
                 myUserId={user.userId}
                 user={user}
                 triggerUndo={triggerUndo}
