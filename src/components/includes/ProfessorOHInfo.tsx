@@ -23,7 +23,7 @@ const ProfessorOHInfo = (props: {
     courseId: string;
     isNewOH: boolean;
     taOptions: DropdownItemProps[];
-    taUserIdsDefault?: number[];
+    // taUserIdsDefault?: number[];
     toggleEdit: Function;
     isOfficeHour: boolean;
 }) => {
@@ -509,6 +509,10 @@ const ProfessorOHInfo = (props: {
             </div>
         </>
     );
+};
+
+ProfessorOHInfo.defaultProps = {
+    session: undefined,
 };
 
 export default ProfessorOHInfo;

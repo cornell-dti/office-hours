@@ -11,14 +11,14 @@ type Props = {
     taOptions: DropdownItemProps[];
 };
 
-const ProfessorCalendarTable: React.FC<Props> = (props) => {
+const ProfessorCalendarTable: React.FC<Props> = props => {
     const [isDeleteVisible, setIsDeleteVisible] = React.useState(false);
     const [currentDay, setCurrentDay] = React.useState(0);
     const [currentRow, setCurrentRow] = React.useState(0);
     const [dayIndex, setDayIndex] = React.useState(0);
     const [rowIndex, setRowIndex] = React.useState(0);
     const [isExpanded, setIsExpanded] = React.useState([] as boolean[][]);
-    
+
     const { sessions } = props;
 
     React.useEffect(() => {
@@ -31,12 +31,11 @@ const ProfessorCalendarTable: React.FC<Props> = (props) => {
         }
 
         setIsExpanded(expanded);
-    }, [sessions])
+    }, [sessions]);
 
     const toggleEdit = (day: number, row: number, forceClose?: boolean) => {
         const cDay = currentDay;
         const cRow = currentRow;
-
 
         if (!(cDay === day && cRow === row)) {
             isExpanded[cDay][cRow] = false;
@@ -83,53 +82,59 @@ const ProfessorCalendarTable: React.FC<Props> = (props) => {
         );
     }
 
-    const rows = days.map(
-        (dayName, i) => {
-            return (
-                <React.Fragment key={dayName}>
-                    <tbody>
-                        <tr>
-                            <th colSpan={5}>{dayName}</th>
-                        </tr>
-                    </tbody>
-                    <ProfessorCalendarRow
-                        key={dayName}
-                        dayNumber={i}
-                        sessions={memoSessions[i]}
-                        courseId={props.courseId}
-                        taOptions={props.taOptions}
-                        isExpanded={isExpanded[i]}
-                        handleEditToggle={toggleEdit}
-                        updateDeleteInfo={updateDeleteInfo}
-                        updateDeleteVisible={setIsDeleteVisible}
-                    />
-                </React.Fragment>
-            );
-        }
-    );
+    const rows = days.map((dayName, i) => {
+        return (
+            <React.Fragment key={dayName}>
+                <tbody>
+                    <tr>
+                        <th colSpan={5}>{dayName}</th>
+                    </tr>
+                </tbody>
+                <ProfessorCalendarRow
+                    key={dayName}
+                    dayNumber={i}
+                    sessions={memoSessions[i]}
+                    courseId={props.courseId}
+                    taOptions={props.taOptions}
+                    isExpanded={isExpanded[i]}
+                    handleEditToggle={toggleEdit}
+                    updateDeleteInfo={updateDeleteInfo}
+                    updateDeleteVisible={setIsDeleteVisible}
+                />
+            </React.Fragment>
+        );
+    });
 
     return (
         <div className="ProfessorCalendarTable">
-            {memoSessions[dayIndex][rowIndex] &&
+            {memoSessions[dayIndex][rowIndex] && (
                 <ProfessorDelete
                     isDeleteVisible={isDeleteVisible}
                     updateDeleteVisible={setIsDeleteVisible}
                     content={
-                        props.course ? <ProfessorOHInfoDelete
-                            course={props.course}
-                            session={memoSessions[dayIndex][rowIndex]}
-                            toggleDelete={() => setIsDeleteVisible(false)}
-                            toggleEdit={() => toggleEdit(currentDay, currentRow, true)}
-                        /> : <div />
+                        props.course ? (
+                            <ProfessorOHInfoDelete
+                                course={props.course}
+                                session={memoSessions[dayIndex][rowIndex]}
+                                toggleDelete={() => setIsDeleteVisible(false)}
+                                toggleEdit={() => toggleEdit(currentDay, currentRow, true)}
+                            />
+                        ) : (
+                            <div />
+                        )
                     }
-                />}
+                />
+            )}
             <table className="Calendar">
                 {isExpanded[0]}
                 {rows}
             </table>
         </div>
     );
-}
+};
 
+ProfessorCalendarTable.defaultProps = {
+    course: undefined,
+};
 
 export default ProfessorCalendarTable;
