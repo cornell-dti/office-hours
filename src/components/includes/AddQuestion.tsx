@@ -162,7 +162,10 @@ const AddQuestion = (
 
     const handleKeyPressDown = (event: React.KeyboardEvent<HTMLElement>) => {
         // CTRL + ENTER or CMD + ENTER adds the question ONLY if cursor in Question textbox
-        if ((!event.repeat && (event.ctrlKey || event.metaKey) && event.keyCode === 13 && (stage > 40 || primaryTags.length === 0 || secondaryTags.length === 0))) {
+        if ((!event.repeat && 
+            (event.ctrlKey || event.metaKey) && 
+            event.keyCode === 13 && 
+            (stage > 40 || primaryTags.length === 0 || secondaryTags.length === 0))) {
             addNewQuestion();
         } else if (!event.repeat && event.keyCode === 27) {
             handleXClick();
