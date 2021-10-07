@@ -187,47 +187,47 @@ const AddQuestion = (
                         <p className="title">Join The Queue</p>
                     </div>
                     <div className="tagsContainer">
-                    {primaryTags.length !== 0 &&
+                        {primaryTags.length !== 0 &&
                         <>
-                        <hr />
-                        <div className="tagsMiniContainer">
-                            <p className="header">Select a Category</p>
-                            <div className="QuestionTags">
-                                {tags
-                                    .filter((tag) => tag.active && tag.level === 1)
-                                    .map((tag) => (<SelectedTags
-                                        key={tag.tagId}
-                                        tag={tag}
-                                        isSelected={stage > 10}
-                                        onClick={() => handlePrimarySelected(tag)}
-                                        check={tag.name === selectedPrimary?.name}
-                                        isPrimary={true}
-                                        select={true}
-                                    />)
-                                    )
-                                }
+                            <hr />
+                            <div className="tagsMiniContainer">
+                                <p className="header">Select a Category</p>
+                                <div className="QuestionTags">
+                                    {tags
+                                        .filter((tag) => tag.active && tag.level === 1)
+                                        .map((tag) => (<SelectedTags
+                                            key={tag.tagId}
+                                            tag={tag}
+                                            isSelected={stage > 10}
+                                            onClick={() => handlePrimarySelected(tag)}
+                                            check={tag.name === selectedPrimary?.name}
+                                            isPrimary={true}
+                                            select={true}
+                                        />)
+                                        )
+                                    }
+                                </div>
                             </div>
-                        </div>
                         </>}
                         {secondaryTags.length !== 0 && 
                         <>
-                        <hr />
-                        <div className={'tagsMiniContainer secondaryTags ' + (!!selectedPrimary)}>
-                            <p className="header">Select a Tag</p>
-                            {selectedPrimary ?
-                                tags
-                                    .filter((tag) => tag.active && tag.level === 2)
-                                    .filter((tag) => (tag.parentTag === selectedPrimary.tagId))
-                                    .map((tag) => (<SelectedTags
-                                        key={tag.tagId}
-                                        tag={tag}
-                                        isSelected={selectedSecondary === tag}
-                                        onClick={() => handleSecondarySelected(tag)}
-                                        check={tag.name === selectedSecondary?.name}
-                                        select={true}
-                                    />))
-                                : <p className="placeHolder">First select a category</p>}
-                        </div>
+                            <hr />
+                            <div className={'tagsMiniContainer secondaryTags ' + (!!selectedPrimary)}>
+                                <p className="header">Select a Tag</p>
+                                {selectedPrimary ?
+                                    tags
+                                        .filter((tag) => tag.active && tag.level === 2)
+                                        .filter((tag) => (tag.parentTag === selectedPrimary.tagId))
+                                        .map((tag) => (<SelectedTags
+                                            key={tag.tagId}
+                                            tag={tag}
+                                            isSelected={selectedSecondary === tag}
+                                            onClick={() => handleSecondarySelected(tag)}
+                                            check={tag.name === selectedSecondary?.name}
+                                            select={true}
+                                        />))
+                                    : <p className="placeHolder">First select a category</p>}
+                            </div>
                         </>}
                         <hr />
                         {'building' in session && <> <div className="tagsMiniContainer">
