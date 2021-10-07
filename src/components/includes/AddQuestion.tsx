@@ -41,6 +41,9 @@ const AddQuestion = (
     const [redirect, setRedirect] = useState<boolean>(false);
     const [tags, setTags] = useState<FireTag[]>([]);
 
+    const primaryTags = tags.filter(tag => tag.level === 1);
+    const secondaryTags = tags.filter(tag => tag.level === 2);
+
     useEffect(() => {
         const updateWindowDimensions = () => {
             setWidth(window.innerWidth);
@@ -144,7 +147,7 @@ const AddQuestion = (
             selectedPrimary,
             selectedSecondary,
             question)
-
+        
         setRedirect(allowRedirect)
     };
 
@@ -152,14 +155,14 @@ const AddQuestion = (
         if (stage !== 60 &&
             (moment().add(WARNING_THRESHOLD, 'minutes')).isAfter(session.endTime.seconds * 1000)) {
             setStage(60);
-        } else {
+        } else {       
             addNewQuestion();
         }
     };
 
     const handleKeyPressDown = (event: React.KeyboardEvent<HTMLElement>) => {
         // CTRL + ENTER or CMD + ENTER adds the question ONLY if cursor in Question textbox
-        if ((!event.repeat && (event.ctrlKey || event.metaKey) && event.keyCode === 13 && stage > 40)) {
+        if ((!event.repeat && (event.ctrlKey || event.metaKey) && event.keyCode === 13 && (stage > 40 || primaryTags.length === 0 || secondaryTags.length === 0))) {
             addNewQuestion();
         } else if (!event.repeat && event.keyCode === 27) {
             handleXClick();
@@ -184,6 +187,8 @@ const AddQuestion = (
                         <p className="title">Join The Queue</p>
                     </div>
                     <div className="tagsContainer">
+                    {primaryTags.length !== 0 &&
+                        <>
                         <hr />
                         <div className="tagsMiniContainer">
                             <p className="header">Select a Category</p>
@@ -203,6 +208,9 @@ const AddQuestion = (
                                 }
                             </div>
                         </div>
+                        </>}
+                        {secondaryTags.length !== 0 && 
+                        <>
                         <hr />
                         <div className={'tagsMiniContainer secondaryTags ' + (!!selectedPrimary)}>
                             <p className="header">Select a Tag</p>
@@ -220,6 +228,7 @@ const AddQuestion = (
                                     />))
                                 : <p className="placeHolder">First select a category</p>}
                         </div>
+                        </>}
                         <hr />
                         {'building' in session && <> <div className="tagsMiniContainer">
                             {<p className="header">
@@ -237,7 +246,7 @@ const AddQuestion = (
                                     )
                                     </span>}
                             </p>}
-                            {stage >= 30 ?
+                            {stage >= 30?
                                 <div className="locationInput">
                                     <Icon name="map marker alternate" />
                                     <textarea
@@ -254,7 +263,7 @@ const AddQuestion = (
                             <p className="header">
                                 {'Question '}
                             </p>
-                            {stage >= 40 ?
+                            {stage >= 40 || primaryTags.length === 0 || secondaryTags.length === 0?
                                 <textarea
                                     className="TextInput question"
                                     value={question}
@@ -274,7 +283,7 @@ const AddQuestion = (
 
                         </div>
                         <div className="addButtonWrapper">
-                            {stage > 40 ?
+                            {stage > 40 || primaryTags.length === 0 || secondaryTags.length === 0?
                                 <p className="AddButton active" onClick={() => handleJoinClick()} >
                                     Add My Question
                                 </p>
