@@ -262,10 +262,12 @@ const ProfessorOHInfo = (props: {
     // Disable save button if default start time (prop) is in the past
     const disableEmpty = startTime == null || endTime == null;
     const disableState = endTime !== null && moment(endTime).isBefore();
+    const nameEmpty = title == null;
     const disableProps = !(props.session == null) && moment(props.session.endTime).isBefore();
 
     const emptyNotification = 'Please fill in valid times';
     const stateNotification = 'End time has already passed!';
+    const titleEmptyNotification = 'Please fill in a name';
 
     const AddTA =
         (<div>
@@ -466,7 +468,9 @@ const ProfessorOHInfo = (props: {
                     type="button"
                     className="Bottom Edit"
                     onClick={() => {
-                        if (disableEmpty) {
+                        if(nameEmpty) {
+                            updateNotification(titleEmptyNotification);
+                        } else if (disableEmpty) {
                             updateNotification(emptyNotification);
                         } else if (disableState) {
                             updateNotification(stateNotification);
