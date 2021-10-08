@@ -8,6 +8,14 @@
     display: inline-block;
     border-radius: 10px;
 
+    .Popup {
+        width: 100%;
+        opacity: 50%;
+    //div around text and image, use display flex
+    //within backgroun, text align as center
+    //flex container, center stuff w justify content, align items, display flex absolutley positioned w width 100% of parent right below parent question component
+    }
+    
     .Bookmark {
         right: 20px;
     }
