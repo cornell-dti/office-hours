@@ -21,8 +21,7 @@ export const addQuestion = (
     selectedSecondary: FireTag | undefined,
     question: string
 ): boolean => {
-    if (user != null && selectedPrimary != null &&
-        selectedSecondary != null) {
+    if (user != null) {
         const batch = db.batch();
         const questionId = db.collection('questions').doc().id;
         const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
@@ -41,8 +40,8 @@ export const addQuestion = (
             ...upvotedUsers,
             answererId: '',
             content: question,
-            primaryTag: selectedPrimary.tagId,
-            secondaryTag: selectedSecondary.tagId
+            primaryTag: selectedPrimary != null ? selectedPrimary.tagId: '',
+            secondaryTag: selectedSecondary != null ? selectedSecondary.tagId : ''
         };
         batch.set(db.collection('questionSlots').doc(questionId), newQuestionSlot);
         batch.set(db.collection('questions').doc(questionId), newQuestion);
