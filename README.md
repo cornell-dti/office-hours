@@ -31,6 +31,7 @@ _Screenshots showing major parts of app_
 * **Nada Attia** - Software Developer
 * **Pooja Kanumalla** - Software Developer
 * **Alex Nagel** - Software Developer
+* **Dana Kim** - Software Developer
 * **Jeremy Jung** - Technical Project Manager
 * **Hank Lin** - Product Manager / Designer
 * **Chenchen Lu** - Product Manager / Designer
