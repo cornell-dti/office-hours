@@ -27,6 +27,14 @@ _Screenshots showing major parts of app_
 
 ## Contributors
 
+### 2021-22
+* **Nada Attia** - Software Developer
+* **Pooja Kanumalla** - Software Developer
+* **Alex Nagel** - Software Developer
+* **Jeremy Jung** - Technical Project Manager
+* **Hank Lin** - Product Manager / Designer
+* **Chenchen Lu** - Product Manager / Designer
+
 ### 2020-21
 * **Nada Attia** - Software Developer
 * **Vanessa Wang** - Software Developer
