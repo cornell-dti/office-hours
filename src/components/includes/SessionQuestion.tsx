@@ -6,7 +6,7 @@ import { useState } from 'react';
 import Linkify from 'linkifyjs/react';
 import addNotification from 'react-push-notification';
 import SelectedTags from './SelectedTags';
-import ResolvedIcon from '../../media/resolvedcheck.svg';
+import GreenCheck from '../../media/greenCheck.svg';
 
 import { firestore } from '../../firebase';
 import {
@@ -45,6 +45,7 @@ type State = {
     isEditingLocation: boolean;
     showDotMenu: boolean;
     showUndoPopup: boolean;
+    timeoutID: any;
     undoQuestionIdDontKnow?: number;
     undoName?: string;
     enableEditingComment: boolean;
@@ -62,6 +63,7 @@ class SessionQuestion extends React.Component<Props, State> {
             isEditingLocation: false,
             showDotMenu: false,
             showUndoPopup: false,
+            timeoutID: 0,
             enableEditingComment: false,
             width: window.innerWidth,
         };
@@ -161,19 +163,24 @@ class SessionQuestion extends React.Component<Props, State> {
             showUndoPopup: true,
         });
 
-        markQuestionDone(firestore, this.props.question);
-
-        setTimeout(() => {
+        var id = setTimeout(() => {
             this.setState({
                 showUndoPopup: false,
             });
+            markQuestionDone(firestore, this.props.question);
         }, 3000);
+
+        this.setState({
+            timeoutID: id,
+        });
+
     };
 
     undo = () => {
-        clearTimeout();
+        clearTimeout(this.state.timeoutID);
         this.setState({
             showUndoPopup: false,
+            timeoutID: 0,
         });
         this.questionDontKnow();
     }
@@ -374,18 +381,19 @@ class SessionQuestion extends React.Component<Props, State> {
                                     <p className="Done" onClick={this.questionDone}>
                                         Done
                                     </p>
-                                    {/* {this.state.showUndoPopup && ( */}
-                                    <div id="popup">
-                                        <div id="popupText">
-                                            <img className="resolvedCheckImage" alt="Resolved check" src={ResolvedIcon} />
-                                            <p>Question Marked as Done</p>
+                                    {this.state.showUndoPopup && (
+                                        <div id="popup">
+                                            <div id="popupContainer">
+                                                <div className="resolvedQuestionBadge">
+                                                    <img className="resolvedCheckImage" alt="Green check" src={GreenCheck} />
+                                                    <p className="resolvedQuestionText">Question Marked as Done</p>
+                                                </div>
+                                            </div>
+                                            <p className="Undo" onClick={this.undo}>
+                                                Undo
+                                            </p>
                                         </div>
-                                        <p className="Begin" onClick={this.undo}>
-                                            Undo
-                                        </p>
-                                    </div>
-                                    {/* )} */}
-
+                                    )}
                                     <p
                                         className="DotMenu"
                                         onClick={() => this.setDotMenu(!this.state.showDotMenu)}
