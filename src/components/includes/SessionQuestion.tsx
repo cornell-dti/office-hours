@@ -163,7 +163,7 @@ class SessionQuestion extends React.Component<Props, State> {
             showUndoPopup: true,
         });
 
-        var id = setTimeout(() => {
+        const id = setTimeout(() => {
             this.setState({
                 showUndoPopup: false,
             });
@@ -385,8 +385,14 @@ class SessionQuestion extends React.Component<Props, State> {
                                         <div id="popup">
                                             <div id="popupContainer">
                                                 <div className="resolvedQuestionBadge">
-                                                    <img className="resolvedCheckImage" alt="Green check" src={GreenCheck} />
-                                                    <p className="resolvedQuestionText">Question Marked as Done</p>
+                                                    <img
+                                                        className="resolvedCheckImage"
+                                                        alt="Green check"
+                                                        src={GreenCheck}
+                                                    />
+                                                    <p className="resolvedQuestionText">
+                                                        Question Marked as Done
+                                                    </p>
                                                 </div>
                                             </div>
                                             <p className="Undo" onClick={this.undo}>
