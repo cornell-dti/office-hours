@@ -319,14 +319,14 @@ class SessionQuestion extends React.Component<Props, State> {
                                     {this.props.isTA &&
                                         question.location &&
                                         question.location.substr(0, 25) === 'https://cornell.zoom.us/j' && (
-                                        <a
-                                            href={question.location}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
+                                            <a
+                                                href={question.location}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
                                                 Zoom Link
-                                        </a>
-                                    )}
+                                            </a>
+                                        )}
                                     {this.props.isTA &&
                                         question.location &&
                                         question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
@@ -382,8 +382,8 @@ class SessionQuestion extends React.Component<Props, State> {
                                         Done
                                     </p>
                                     {this.state.showUndoPopup && (
-                                        <div id="popup">
-                                            <div id="popupContainer">
+                                        <div className="popup">
+                                            <div className="popupContainer">
                                                 <div className="resolvedQuestionBadge">
                                                     <img
                                                         className="resolvedCheckImage"
