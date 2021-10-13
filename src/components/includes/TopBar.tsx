@@ -28,14 +28,14 @@ const TopBar = (props: {
         if (ref.current && !ref.current.contains(e.target as Node)) {
             setShowMenu(false);
         }
-    }
+    };
 
     React.useEffect(() => {
         document.addEventListener('mousedown', handleClick);
         return () => {
-            document.removeEventListener("mousedown", handleClick);
-        }
-    })
+            document.removeEventListener('mousedown', handleClick);
+        };
+    });
 
     return (
         <div className="MenuBox" onBlur={() => setShowMenu(false)} ref={ref}>
@@ -45,15 +45,15 @@ const TopBar = (props: {
                     <div className="viewToggles">
                         <CalendarHeader
                             currentCourseCode={(props.course && props.course.code) || 'Courses'}
-                            role={props.user && props.course
-                                && (props.user.roles[props.course.courseId] || 'student' || props.admin)}
+                            role={
+                                props.user &&
+                                props.course &&
+                                (props.user.roles[props.course.courseId] || 'student' || props.admin)
+                            }
                         />
-                        {props.role === 'professor' &&
-                            <ProfessorStudentToggle
-                                courseId={props.courseId}
-                                context={props.context}
-                            />
-                        }
+                        {props.role === 'professor' && (
+                            <ProfessorStudentToggle courseId={props.courseId} context={props.context} />
+                        )}
                     </div>
                     <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
                         <img
@@ -68,19 +68,36 @@ const TopBar = (props: {
                     </div>
                 </div>
             </header>
-            {showMenu && <>
-                <ul className="desktop logoutMenu">
-                    <li onMouseDown={() => logOut()}>
-                        <span><Icon name="sign out" /></span> Log Out
-                    </li>
-                    <li onMouseDown={() => window.open('https://goo.gl/forms/7ozmsHfXYWNs8Y2i1', '_blank')}>
-                        <span><Icon name="edit" /></span>
-                        Send Feedback
-                    </li>
-                </ul>
-            </>}
+            {showMenu && (
+                <>
+                    <ul className="desktop logoutMenu">
+                        <li onMouseDown={() => logOut()}>
+                            <span>
+                                <Icon name="sign out" />
+                            </span>{' '}
+                            Log Out
+                        </li>
+                        <li
+                            onMouseDown={() =>
+                                window.open('https://goo.gl/forms/7ozmsHfXYWNs8Y2i1', '_blank')
+                            }
+                        >
+                            <span>
+                                <Icon name="edit" />
+                            </span>
+                            Send Feedback
+                        </li>
+                    </ul>
+                </>
+            )}
         </div>
     );
+};
+
+TopBar.defaultProps = {
+    user: undefined,
+    course: undefined,
+    admin: false,
 };
 
 export default TopBar;

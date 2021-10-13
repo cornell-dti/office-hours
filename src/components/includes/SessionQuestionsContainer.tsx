@@ -3,8 +3,8 @@ import { Loader } from 'semantic-ui-react';
 import moment from 'moment';
 import addNotification from 'react-push-notification';
 import SessionQuestion from './SessionQuestion';
-import AddQuestion from "./AddQuestion";
-import DiscussionQuestion from "./DiscussionQuestion";
+import AddQuestion from './AddQuestion';
+import DiscussionQuestion from './DiscussionQuestion';
 import SortArrows from '../../media/sortbyarrows.svg';
 
 // Maximum number of questions to be shown to user
@@ -21,6 +21,7 @@ type Props = {
     readonly tags: { readonly [tagId: string]: FireTag };
     readonly myUserId: string;
     readonly myVirtualLocation?: string;
+    // eslint-disable-next-line react/no-unused-prop-types
     readonly handleJoinClick: Function;
     readonly triggerUndo: Function;
     readonly isOpen: boolean;
@@ -60,7 +61,7 @@ const StudentMyQuestion = ({
     studentQuestion,
     user,
     setShowModal,
-    setRemoveQuestionId
+    setRemoveQuestionId,
 }: StudentMyQuestionProps) => {
     if (studentQuestion == null) {
         return <div />;
@@ -69,8 +70,8 @@ const StudentMyQuestion = ({
     return (
         <div className="User">
             <p className="QuestionHeader">My Question</p>
-            {modality === "review" ? 
-                <DiscussionQuestion 
+            {modality === 'review' ? (
+                <DiscussionQuestion
                     question={studentQuestion as FireDiscussionQuestion}
                     user={user}
                     users={{}}
@@ -78,9 +79,9 @@ const StudentMyQuestion = ({
                     isTA={false}
                     includeRemove={true}
                     isPast={isPast}
-                    myQuestion={true}
+                    // myQuestion={true}
                 />
-                : 
+            ) : (
                 <SessionQuestion
                     key={questionId}
                     question={studentQuestion}
@@ -97,8 +98,7 @@ const StudentMyQuestion = ({
                     setShowModal={setShowModal}
                     setRemoveQuestionId={setRemoveQuestionId}
                 />
-            }
-            
+            )}
         </div>
     );
 };
@@ -125,36 +125,39 @@ const SessionQuestionsContainer = (props: Props) => {
         const upvoteDifference = q2.upvotedUsers.length - q1.upvotedUsers.length;
         if (upvoteDifference !== 0) return upvoteDifference;
         return q2.timeEntered.seconds - q1.timeEntered.seconds;
-    }
+    };
 
     const compareTimeEntered = (q1: FireDiscussionQuestion, q2: FireDiscussionQuestion) => {
-        return q2.timeEntered.seconds - q1.timeEntered.seconds;   
-    }
+        return q2.timeEntered.seconds - q1.timeEntered.seconds;
+    };
 
     const allQuestions = props.questions;
-    
+
     const myQuestion = props.myQuestion;
 
-
-    const myQuestionIndex = allQuestions.findIndex(question => question.questionId === myQuestion?.questionId)   
+    const myQuestionIndex = allQuestions.findIndex(
+        question => question.questionId === myQuestion?.questionId
+    );
 
     // Only display the top 10 questions on the queue
     const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN));
 
-    const filteredQuestions = filterByAnsweredQuestions ? 
-        shownQuestions.filter(question => question.status === 'resolved') : 
-        shownQuestions.filter(question => question.status !== 'resolved');
+    const filteredQuestions = filterByAnsweredQuestions
+        ? shownQuestions.filter(question => question.status === 'resolved')
+        : shownQuestions.filter(question => question.status !== 'resolved');
 
     let filteredSortedQuestions: FireDiscussionQuestion[] = [];
 
     if (props.modality === 'review') {
-        const filteredDiscussionQuestions = filteredQuestions.map(question => question as FireDiscussionQuestion);
+        const filteredDiscussionQuestions = filteredQuestions.map(
+            question => question as FireDiscussionQuestion
+        );
         if (filteredDiscussionQuestions.length < 2) {
-            filteredSortedQuestions = filteredDiscussionQuestions
+            filteredSortedQuestions = filteredDiscussionQuestions;
         } else {
-            filteredSortedQuestions = sortByUpvotes ? 
-                filteredDiscussionQuestions.sort(compareUpvotes) : 
-                filteredDiscussionQuestions.sort(compareTimeEntered)
+            filteredSortedQuestions = sortByUpvotes
+                ? filteredDiscussionQuestions.sort(compareUpvotes)
+                : filteredDiscussionQuestions.sort(compareTimeEntered);
         }
     }
 
@@ -171,7 +174,7 @@ const SessionQuestionsContainer = (props: Props) => {
             try {
                 addNotification({
                     title: 'Your question is up!',
-                    native: true
+                    native: true,
                 });
             } catch (error) {
                 // Do nothing. iOS crashes because Notification isn't defined
@@ -192,36 +195,35 @@ const SessionQuestionsContainer = (props: Props) => {
     }
 
     return (
-        <div className="SessionQuestionsContainer splitQuestions" >
-            {!props.isTA && !myQuestion && props.isOpen
-                && !props.haveAnotherQuestion
-                ? (props.course && props.session ? 
+        <div className="SessionQuestionsContainer splitQuestions">
+            {!props.isTA && !myQuestion && props.isOpen && !props.haveAnotherQuestion ? (
+                props.course && props.session ? (
                     <AddQuestion
                         session={props.session}
-                        course={props.course} 
+                        course={props.course}
                         mobileBreakpoint={MOBILE_BREAKPOINT}
                     />
-                    : <Loader active={true} content={'Loading'} />)
-                : null
-            }
-            {!props.isTA && !myQuestion && props.isOpen
-                && props.haveAnotherQuestion &&
+                ) : (
+                    <Loader active={true} content={'Loading'} />
+                )
+            ) : null}
+            {!props.isTA && !myQuestion && props.isOpen && props.haveAnotherQuestion && (
                 <>
                     <div className="SessionClosedMessage">
-                        You are holding a spot in another active queue.
-                        To join this queue, please retract your question from the other queue!
+                        You are holding a spot in another active queue. To join this queue, please retract
+                        your question from the other queue!
                     </div>
                     <div className="SessionJoinButton disabled">
                         <p>Join the Queue</p>
                     </div>
                 </>
-            }
-            {shownQuestions && shownQuestions.length > 0 && props.isPast &&
+            )}
+            {shownQuestions && shownQuestions.length > 0 && props.isPast && (
                 <div className="SessionClosedMessage">
                     This queue has closed and is no longer accepting new questions.
                 </div>
-            }
-            {shownQuestions && myQuestion &&
+            )}
+            {shownQuestions && myQuestion && (
                 <StudentMyQuestion
                     user={props.user}
                     questionId={myQuestion.questionId}
@@ -235,46 +237,66 @@ const SessionQuestionsContainer = (props: Props) => {
                     setShowModal={props.setShowModal}
                     setRemoveQuestionId={props.setRemoveQuestionId}
                 />
-            }
-            {shownQuestions && shownQuestions.length > 0 && props.modality === "review" &&
-            <div className="discussionHeaderWrapper">
-                <div
-                    className="discussionQuestionsSlider"
-                >
-                    <div className={"discussionSliderSelector" + (filterByAnsweredQuestions ? " isSlidedRight" : "")} />
-                    <div
-                        className={"discussionSliderOption" + (filterByAnsweredQuestions ? "" : " isSelected")} 
-                        onClick={() => setFilterByAnsweredQuestions(false)}
-                    >Unanswered Questions</div>
-                    <div
-                        className={"discussionSliderOption" + (filterByAnsweredQuestions ? " isSelected" : "")} 
-                        onClick={() => setFilterByAnsweredQuestions(true)}
-                    >Answered Questions</div>
-                </div>
-                <div className="sortDiscussionQuestionsWrapper">
-                    <div className="discussionArrowsContainer">
-                        <img className="sortDiscussionArrow" src={SortArrows} alt="Sort by arrows"/>
-                    </div>                  
-                    <p className="sortDiscussionQuestionsLabel">sort by</p>
-                    <div className="sortDiscussionQuestionsOptions">
-                        <div className={"sortDiscussionsSlider" + (sortByUpvotes ? "" : " slidedRight")} />
+            )}
+            {shownQuestions && shownQuestions.length > 0 && props.modality === 'review' && (
+                <div className="discussionHeaderWrapper">
+                    <div className="discussionQuestionsSlider">
                         <div
-                            className={"sortDiscussionQuestionsOption" + (sortByUpvotes ? " optionChosen" : "")}
-                            onClick={() => setSortByUpvotes(true)}
-                        >
-                            Most Upvotes</div>
+                            className={
+                                'discussionSliderSelector' +
+                                (filterByAnsweredQuestions ? ' isSlidedRight' : '')
+                            }
+                        />
                         <div
-                            className={"sortDiscussionQuestionsOption" + (sortByUpvotes ? "" : " optionChosen")}
-                            onClick={() => setSortByUpvotes(false)}
+                            className={
+                                'discussionSliderOption' + (filterByAnsweredQuestions ? '' : ' isSelected')
+                            }
+                            onClick={() => setFilterByAnsweredQuestions(false)}
                         >
-                            Most Recent</div>
+                            Unanswered Questions
+                        </div>
+                        <div
+                            className={
+                                'discussionSliderOption' + (filterByAnsweredQuestions ? ' isSelected' : '')
+                            }
+                            onClick={() => setFilterByAnsweredQuestions(true)}
+                        >
+                            Answered Questions
+                        </div>
+                    </div>
+                    <div className="sortDiscussionQuestionsWrapper">
+                        <div className="discussionArrowsContainer">
+                            <img className="sortDiscussionArrow" src={SortArrows} alt="Sort by arrows" />
+                        </div>
+                        <p className="sortDiscussionQuestionsLabel">sort by</p>
+                        <div className="sortDiscussionQuestionsOptions">
+                            <div
+                                className={'sortDiscussionsSlider' + (sortByUpvotes ? '' : ' slidedRight')}
+                            />
+                            <div
+                                className={
+                                    'sortDiscussionQuestionsOption' + (sortByUpvotes ? ' optionChosen' : '')
+                                }
+                                onClick={() => setSortByUpvotes(true)}
+                            >
+                                Most Upvotes
+                            </div>
+                            <div
+                                className={
+                                    'sortDiscussionQuestionsOption' + (sortByUpvotes ? '' : ' optionChosen')
+                                }
+                                onClick={() => setSortByUpvotes(false)}
+                            >
+                                Most Recent
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            }
-            {filteredSortedQuestions &&  shownQuestions.length > 0 && props.modality === 'review' &&
-                filteredSortedQuestions.map((question) => (
+            )}
+            {filteredSortedQuestions &&
+                shownQuestions.length > 0 &&
+                props.modality === 'review' &&
+                filteredSortedQuestions.map(question => (
                     <DiscussionQuestion
                         key={question.questionId}
                         question={question as FireDiscussionQuestion}
@@ -284,11 +306,13 @@ const SessionQuestionsContainer = (props: Props) => {
                         isTA={props.isTA}
                         includeRemove={false}
                         isPast={props.isPast}
-                        myQuestion={false}
+                        // myQuestion={false}
                     />
-                ))
-            }
-            {shownQuestions && shownQuestions.length > 0 && props.modality !== 'review' && props.isTA &&
+                ))}
+            {shownQuestions &&
+                shownQuestions.length > 0 &&
+                props.modality !== 'review' &&
+                props.isTA &&
                 shownQuestions.map((question, i: number) => (
                     <SessionQuestion
                         key={question.questionId}
@@ -307,31 +331,34 @@ const SessionQuestionsContainer = (props: Props) => {
                         setShowModal={props.setShowModal}
                         setRemoveQuestionId={props.setRemoveQuestionId}
                     />
-                    
-                )) 
-            }
-            {shownQuestions && shownQuestions.length === 0 &&
+                ))}
+            {shownQuestions && shownQuestions.length === 0 && (
                 <>
-                    {!props.isOpen &&
-                        (
-                            props.isPast ?
-                                <p className="noQuestionsWarning">This office hour session has ended.</p> :
+                    {
+                        !props.isOpen &&
+                            (props.isPast ? (
+                                <p className="noQuestionsWarning">This office hour session has ended.</p>
+                            ) : (
                                 <p className="noQuestionsWarning">
                                     Please check back at {moment(props.openingTime).format('h:mm A')}
-                                    {
-                                        moment().startOf('day') === moment(props.openingTime).startOf('day') ?
-                                            '' : (' on ' + moment(props.openingTime).format('MMM D'))
-                                    }!
+                                    {moment().startOf('day') === moment(props.openingTime).startOf('day')
+                                        ? ''
+                                        : ' on ' + moment(props.openingTime).format('MMM D')}
+                                    !
                                 </p>
-                        ) 
+                            ))
                         // !props.isTA
                         //     ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
                         //     : <p className="noQuestionsWarning">No questions in the queue yet. </p>
                     }
                 </>
-            }
+            )}
         </div>
     );
+};
+
+SessionQuestionsContainer.defaultProps = {
+    myVirtualLocation: undefined,
 };
 
 export default SessionQuestionsContainer;
