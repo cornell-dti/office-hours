@@ -6,7 +6,7 @@ import { useState } from 'react';
 import Linkify from 'linkifyjs/react';
 import addNotification from 'react-push-notification';
 import SelectedTags from './SelectedTags';
-import { Card } from '@material-ui/core';
+import ResolvedIcon from '../../media/resolvedcheck.svg';
 
 import { firestore } from '../../firebase';
 import {
@@ -160,8 +160,23 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({
             showUndoPopup: true,
         });
+
         markQuestionDone(firestore, this.props.question);
+
+        setTimeout(() => {
+            this.setState({
+                showUndoPopup: false,
+            });
+        }, 3000);
     };
+
+    undo = () => {
+        clearTimeout();
+        this.setState({
+            showUndoPopup: false,
+        });
+        this.questionDontKnow();
+    }
 
     questionDontKnow = () => {
         markQuestionDontKnow(firestore, this.props.question);
@@ -359,14 +374,17 @@ class SessionQuestion extends React.Component<Props, State> {
                                     <p className="Done" onClick={this.questionDone}>
                                         Done
                                     </p>
-                                    {this.state.showUndoPopup && (
-                                        <div className="Popup">
-                                            Question Marked as Done
-                                            <p className="Begin">
-                                                Undo
-                                            </p>
+                                    {/* {this.state.showUndoPopup && ( */}
+                                    <div id="popup">
+                                        <div id="popupText">
+                                            <img className="resolvedCheckImage" alt="Resolved check" src={ResolvedIcon} />
+                                            <p>Question Marked as Done</p>
                                         </div>
-                                    )}
+                                        <p className="Begin" onClick={this.undo}>
+                                            Undo
+                                        </p>
+                                    </div>
+                                    {/* )} */}
 
                                     <p
                                         className="DotMenu"

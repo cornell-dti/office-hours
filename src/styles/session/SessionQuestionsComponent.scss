@@ -8,9 +8,26 @@
     display: inline-block;
     border-radius: 10px;
 
-    .Popup {
+    #popup {
         width: 100%;
-        opacity: 50%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        // flex-wrap: wrap;
+        background-color:rgba(255, 255, 255, 0.5);
+        text-align: center;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        #popupText {
+            background-color: lightgrey;
+            white-space: nowrap;
+            text-overflow: clip;
+            color: black;
+            display: inline-block;
+        }
     //div around text and image, use display flex
     //within backgroun, text align as center
     //flex container, center stuff w justify content, align items, display flex absolutley positioned w width 100% of parent right below parent question component
