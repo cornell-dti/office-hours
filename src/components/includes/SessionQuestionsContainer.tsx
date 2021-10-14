@@ -79,7 +79,7 @@ const StudentMyQuestion = ({
                     isTA={false}
                     includeRemove={true}
                     isPast={isPast}
-                    // myQuestion={true}
+                // myQuestion={true}
                 />
             ) : (
                 <SessionQuestion
@@ -306,7 +306,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         isTA={props.isTA}
                         includeRemove={false}
                         isPast={props.isPast}
-                        // myQuestion={false}
+                    // myQuestion={false}
                     />
                 ))}
             {shownQuestions &&
@@ -336,17 +336,17 @@ const SessionQuestionsContainer = (props: Props) => {
                 <>
                     {
                         !props.isOpen &&
-                            (props.isPast ? (
-                                <p className="noQuestionsWarning">This office hour session has ended.</p>
-                            ) : (
-                                <p className="noQuestionsWarning">
-                                    Please check back at {moment(props.openingTime).format('h:mm A')}
-                                    {moment().startOf('day') === moment(props.openingTime).startOf('day')
-                                        ? ''
-                                        : ' on ' + moment(props.openingTime).format('MMM D')}
-                                    !
-                                </p>
-                            ))
+                        (props.isPast ? (
+                            <p className="noQuestionsWarning">This office hour session has ended.</p>
+                        ) : (
+                            <p className="noQuestionsWarning">
+                                Please check back at {moment(props.openingTime).format('h:mm A')}
+                                {moment().startOf('day') === moment(props.openingTime).startOf('day')
+                                    ? ''
+                                    : ' on ' + moment(props.openingTime).format('MMM D')}
+                                !
+                            </p>
+                        ))
                         // !props.isTA
                         //     ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
                         //     : <p className="noQuestionsWarning">No questions in the queue yet. </p>

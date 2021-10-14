@@ -67,7 +67,7 @@ const DiscussionQuestion = (props: Props) => {
         firestore
             .doc(`questions/${question.questionId}`)
             .update(update)
-            .catch(() => {});
+            .catch(() => { });
     };
 
     const resolveQuestion = () => {
