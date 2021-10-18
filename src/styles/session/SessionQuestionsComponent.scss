@@ -374,67 +374,87 @@
             cursor: pointer;
         }
 
-        .TAButtons {
-            display: inline-block;
-            padding-top: 10px;
-            user-select: none;
-
-            p {
-                display: inline-block;
-                border-radius: 5px;
-                color: white;
-                padding: 2px 30px;
-                font-size: 15px;
+        .buttonsWrapper {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            .replyButton {
+                display: flex;
                 cursor: pointer;
-                margin: 0 3px 10px;
-                width: 166px;
+                align-items: flex-start;
+                margin: auto;
+                .replyText {
+                    margin-left: 5px;
+                    color: #5599DB;
+                    text-decoration: underline;
+                    font-size: 15px;
+                }
             }
-
-            .Delete {
-                border: 0.5px solid red;
-                color: red;
-            }
-
-            .Begin {
-                border: 0.5px solid $number-blue;
-                color: $number-blue;
-            }
-
-            .Done {
-                border: 0.5px solid $tag-blue;
-                color: $tag-blue;
-            }
-
-            .DotMenu {
-                color: black;
-                padding: 2px 15px;
-                width: auto;
-                position: absolute;
-                right: 0;
-                size: 50px;
-                font-weight: 800;
-            }
-
-            .IReallyDontKnow {
-                border-radius: 8px;
-                width: 220px;
-                height: 45px;
-                position: absolute;
-                overflow: hidden;
-                box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
-                padding: 10px;
-                background-color: #f2f1f1;
-                text-align: center;
-                margin-top: 15px;
-                right: 0;
-                z-index: 1;
-
+    
+            .TAButtons {
+                display: inline-block;
+                padding-top: 10px;
+                user-select: none;
                 p {
-                    width: 200px;
-                    color: black;
-                    size: 13px;
+                    display: inline-block;
+                    border-radius: 5px;
+                    color: white;
+                    // padding: 2px 30px;
+                    font-size: 15px;
+                    cursor: pointer;
+                    margin: 0px 0px 10px 0px;
+                    width: 100px;
+                }
+    
+                .Delete {
+                    border: 0.5px solid red;
+                    color: red;
+                }
+    
+                .Begin {
+                    border: none;
+                    text-decoration: underline;
+                    color: #5599DB;
                     font-weight: normal;
-                    text-decoration: normal;
+                    font-size: 12px;
+                }
+    
+                .Done {
+                    border: 0.5px solid $tag-blue;
+                    color: $tag-blue;
+                }
+    
+                .DotMenu {
+                    color: black;
+                    padding: 2px 15px;
+                    width: auto;
+                    position: absolute;
+                    right: 0;
+                    size: 50px;
+                    font-weight: 800;
+                }
+    
+                .IReallyDontKnow {
+                    border-radius: 8px;
+                    width: 220px;
+                    height: 45px;
+                    position: absolute;
+                    overflow: hidden;
+                    box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
+                    padding: 10px;
+                    background-color: #f2f1f1;
+                    text-align: center;
+                    margin-top: 15px;
+                    right: 0;
+                    z-index: 1;
+    
+                    p {
+                        width: 200px;
+                        color: black;
+                        size: 13px;
+                        font-weight: normal;
+                        text-decoration: normal;
+                    }
                 }
             }
         }

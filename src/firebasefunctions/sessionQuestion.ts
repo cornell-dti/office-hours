@@ -1,4 +1,5 @@
 import firebase from 'firebase/app';
+import { firestore } from '../firebase';
 
 export const updateVirtualLocation = (
     db: firebase.firestore.Firestore,
@@ -175,4 +176,27 @@ export const updateQuestion = (
     });
 
     batch.commit();
+}
+
+export const addComment = (content: string, commenterId: string, questionId: string, isTA: boolean) => {
+    const timePosted = firebase.firestore.Timestamp.now();
+    const newComment: FireComment = {
+        content: content,
+        commenterId: commenterId,
+        timePosted: timePosted,
+        isTA: isTA
+    }
+    const batch = firestore.batch();
+    batch.set(firestore.doc(`questions/${questionId}`).collection('comments').doc(), newComment);
+    batch.commit();
+}
+
+export const getComments = async (questionId: string): Promise<FireComment[]> => {
+    return firestore.doc(`questions/${questionId}`).collection('comments').get().then((commentData) => {
+        let comments: FireComment[] = []
+        commentData.forEach((comment) => {
+            comments.push(comment.data() as FireComment);
+        });
+        return comments; 
+    });
 }

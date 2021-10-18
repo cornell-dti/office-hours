@@ -30,6 +30,9 @@ $mobile-breakpoint: 920px;
 @import "./session/SessionAlertModal";
 @import "./session/SessionNotification";
 @import "./session/DiscussionQuestion";
+@import "./session/UserComment";
+@import "./session/CommentsContainer";
+@import "./session/NewComment";
 
 // Login
 @import "./login/LoginView";

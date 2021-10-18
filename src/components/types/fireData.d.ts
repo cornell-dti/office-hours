@@ -142,6 +142,13 @@ interface FirePendingUser {
     roles: Record<string, role>;
 }
 
+interface FireComment {
+    content: string;
+    commenterId: string;
+    timePosted: FireTimeStamp;
+    isTA: boolean;
+}
+
 interface FireQuestion {
     askerId: string;
     answererId: string;
