@@ -181,13 +181,13 @@ export const updateQuestion = (
 
 export const addComment = (content: string, commenterId: string, questionId: string, isTA: boolean) => {
     const timePosted = firebase.firestore.Timestamp.now();
-    let commentId = firestore.doc(`questions/${questionId}`).collection('comments').doc().id;
+    const commentId = firestore.doc(`questions/${questionId}`).collection('comments').doc().id;
     const newComment: FireComment = {
-        content: content,
-        commenterId: commenterId,
-        timePosted: timePosted,
-        isTA: isTA,
-        commentId: commentId
+        content,
+        commenterId,
+        timePosted,
+        isTA,
+        commentId
     }
     const batch = firestore.batch();
     batch.set(firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId), newComment);
@@ -210,7 +210,7 @@ export const updateCurrentComment = (commentId: string, questionId: string, newC
 
 export const getComments = async (questionId: string): Promise<FireComment[]> => {
     return firestore.doc(`questions/${questionId}`).collection('comments').get().then((commentData) => {
-        let comments: FireComment[] = []
+        const comments: FireComment[] = []
         commentData.forEach((comment) => {
             comments.push(comment.data() as FireComment);
         });

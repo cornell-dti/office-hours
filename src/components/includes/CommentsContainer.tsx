@@ -4,7 +4,7 @@ import NewComment from './NewComment'
 
 type Props = {
     comments: FireComment[];
-    users: { readonly [userId: string] : FireUser};
+    users: { readonly [userId: string]: FireUser};
     currentUser: FireUser;
     addCommentsHelper: (newComment: string) => void;
     questionId: string;
@@ -13,18 +13,25 @@ type Props = {
     showNewComment: boolean;
 }
 
-const CommentsContainer = ({ comments, users, currentUser, addCommentsHelper, questionId, switchCommentsVisible, deleteCommentsHelper, showNewComment } : Props) => {
+const CommentsContainer = ({ comments, users, currentUser, addCommentsHelper, questionId, 
+    switchCommentsVisible, deleteCommentsHelper, showNewComment }: Props) => {
 
-    let sortedComments = comments.sort((c1, c2) => c2.timePosted.seconds - c1.timePosted.seconds);
-    console.log(users);
+    const sortedComments = comments.sort((c1, c2) => c2.timePosted.seconds - c1.timePosted.seconds);
     return (
         <div className="commentsContainer">
-            <div className="commentsLine" onClick={switchCommentsVisible}></div>
+            <div className="commentsLine" onClick={switchCommentsVisible} />
             <div className="allCommentsWrapper">
                 {showNewComment && <NewComment currentUser={currentUser} addCommentsHelper={addCommentsHelper}/>}
-                {sortedComments.map((comment, i) => {
-                    let poster = users[comment.commenterId];
-                    return <UserComment {...comment} poster={poster} questionId={questionId} deleteCommentsHelper={deleteCommentsHelper} currentUser={currentUser} key={comment.commentId}/>
+                {sortedComments.map((comment) => {
+                    const poster = users[comment.commenterId];
+                    return <UserComment
+                        {...comment}
+                        poster={poster}
+                        questionId={questionId} 
+                        deleteCommentsHelper={deleteCommentsHelper}
+                        currentUser={currentUser}
+                        key={comment.commentId}
+                    />
                 })}
             </div>
         </div>

@@ -228,9 +228,9 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     retrieveComments = async (questionId: string) => {
-        let comments = await getComments(questionId);
+        const comments = await getComments(questionId);
         if (comments.length !== this.state.comments.length) {
-            this.setState({comments: comments});
+            this.setState({comments});
         }
     }
 
@@ -278,7 +278,6 @@ class SessionQuestion extends React.Component<Props, State> {
         const comment = this.props.isTA ? question.taComment : question.studentComment;
 
         this.retrieveComments(question.questionId);
-        console.log("Rendered");
         return (
             <div className="questionWrapper">
                 <div className="QueueQuestions">
@@ -419,8 +418,16 @@ class SessionQuestion extends React.Component<Props, State> {
                                 <div className="assignedButtons">
                                     {question.status === 'assigned' &&
                                         <>
-                                            <button className="Delete" onClick={this.studentNoShow}>No show</button>
-                                            <button className="Done" onClick={this.questionDone}>Done</button>
+                                            <button
+                                                className="Delete"
+                                                onClick={this.studentNoShow} 
+                                                type="button"
+                                            >No show</button>
+                                            <button
+                                                className="Done"
+                                                onClick={this.questionDone} 
+                                                type="button"
+                                            >Done</button>
                                         </>
                                     }
                                 </div>
@@ -482,30 +489,38 @@ class SessionQuestion extends React.Component<Props, State> {
 
                         </div>
                     }
-                {this.state.showUndoPopup && (
-                    <div className="popup">
-                        <div className="popupContainer">
-                            <div className="resolvedQuestionBadge">
-                                <img
-                                    className="resolvedCheckImage"
-                                    alt="Green check"
-                                    src={GreenCheck}
-                                />
-                                <p className="resolvedQuestionText">
+                    {this.state.showUndoPopup && (
+                        <div className="popup">
+                            <div className="popupContainer">
+                                <div className="resolvedQuestionBadge">
+                                    <img
+                                        className="resolvedCheckImage"
+                                        alt="Green check"
+                                        src={GreenCheck}
+                                    />
+                                    <p className="resolvedQuestionText">
                                     Question Marked as Done
-                                </p>
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                        <p className="Undo" onClick={this.undo}>
+                            <p className="Undo" onClick={this.undo}>
                             Undo
-                        </p>
-                    </div>
-                )}
+                            </p>
+                        </div>
+                    )}
                 </div >
                 {
                     this.state.areCommentsVisible &&
-                    < CommentsContainer comments={this.state.comments} users={this.props.commentUsers} currentUser={this.props.user} addCommentsHelper={this.addCommentsHelper} questionId={question.questionId}
-                    switchCommentsVisible={this.switchCommentsVisible} deleteCommentsHelper={this.deleteCommentsHelper} showNewComment={this.state.showNewComment}/>
+                    < CommentsContainer
+                        comments={this.state.comments}
+                        users={this.props.commentUsers}
+                        currentUser={this.props.user}
+                        addCommentsHelper={this.addCommentsHelper}
+                        questionId={question.questionId}
+                        switchCommentsVisible={this.switchCommentsVisible}
+                        deleteCommentsHelper={this.deleteCommentsHelper}
+                        showNewComment={this.state.showNewComment}
+                    />
                 }
             </div>
         );
