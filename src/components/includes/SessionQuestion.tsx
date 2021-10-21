@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Icon, Loader, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
-import { useState } from "react";
+import { useState } from 'react';
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
 import addNotification from 'react-push-notification';
 import SelectedTags from './SelectedTags';
+import GreenCheck from '../../media/greenCheck.svg';
 
 import { firestore } from '../../firebase';
 import {
@@ -16,7 +17,8 @@ import {
     markQuestionDontKnow,
     updateComment,
     addComment,
-    getComments
+    getComments,
+    deleteComment
 } from '../../firebasefunctions/sessionQuestion';
 import CommentsContainer from './CommentsContainer';
 import CommentBubble from '../../media/chat_bubble.svg';
@@ -28,6 +30,7 @@ const MOBILE_BREAKPOINT = 920;
 type Props = {
     question: FireOHQuestion;
     users: { readonly [userId: string]: FireUser };
+    commentUsers: { readonly [userId: string]: FireUser };
     tags: { readonly [tagId: string]: FireTag };
     index: number;
     isTA: boolean;
@@ -47,12 +50,15 @@ type State = {
     location: string;
     isEditingLocation: boolean;
     showDotMenu: boolean;
+    showUndoPopup: boolean;
+    timeoutID: any;
     undoQuestionIdDontKnow?: number;
     undoName?: string;
     enableEditingComment: boolean;
     width: number;
     comments: FireComment[];
     areCommentsVisible: boolean;
+    showNewComment: boolean;
 };
 
 class SessionQuestion extends React.Component<Props, State> {
@@ -65,10 +71,13 @@ class SessionQuestion extends React.Component<Props, State> {
             location: props.question.location || '',
             isEditingLocation: false,
             showDotMenu: false,
+            showUndoPopup: false,
+            timeoutID: 0,
             enableEditingComment: false,
             width: window.innerWidth,
             comments: [],
-            areCommentsVisible: false
+            areCommentsVisible: false,
+            showNewComment: true
         };
     }
 
@@ -82,22 +91,25 @@ class SessionQuestion extends React.Component<Props, State> {
                     title: 'TA comment',
                     subtitle: 'New TA comment',
                     message: `${currentState.taComment}`,
-                    theme: "darkblue",
-                    native: true
+                    theme: 'darkblue',
+                    native: true,
                 });
             } catch (error) {
                 // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
             }
         }
 
-        if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
+        if (
+            previousState.studentComment !== currentState.studentComment &&
+            user === currentState.answererId
+        ) {
             try {
                 addNotification({
                     title: 'Student comment',
                     subtitle: 'New student comment',
                     message: `${currentState.studentComment}`,
-                    theme: "darkblue",
-                    native: true
+                    theme: 'darkblue',
+                    native: true,
                 });
             } catch (error) {
                 // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
@@ -116,23 +128,22 @@ class SessionQuestion extends React.Component<Props, State> {
         return String(index);
     }
 
-
     public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         this.setState({ isEditingLocation: true });
         const target = event.target as HTMLTextAreaElement;
         if (target.value.length <= LOCATION_CHAR_LIMIT) {
             this.setState({
-                location: target.value
+                location: target.value,
             });
 
             const question = firestore.collection('questions').doc(this.props.question.questionId);
             question.update({
-                location: target.value
+                location: target.value,
             });
 
             setTimeout(() => {
                 this.setState({
-                    isEditingLocation: false
+                    isEditingLocation: false,
                 });
             }, 1000);
         }
@@ -141,10 +152,10 @@ class SessionQuestion extends React.Component<Props, State> {
     onClickRemove = () => {
         this.props.setShowModal(true);
         this.props.setRemoveQuestionId(this.props.question.questionId);
-    }
+    };
 
     retractQuestion = (): void => {
-        retractStudentQuestion(firestore, this.props.question)
+        retractStudentQuestion(firestore, this.props.question);
     };
 
     toggleLocationTooltip = () => {
@@ -152,48 +163,64 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     assignQuestion = () => {
-        assignQuestionToTA(
-            firestore,
-            this.props.question,
-            this.props.virtualLocation,
-            this.props.myUserId)
+        assignQuestionToTA(firestore, this.props.question, this.props.virtualLocation, this.props.myUserId);
     };
 
     studentNoShow = () => {
-        markStudentNoShow(firestore, this.props.question)
+        markStudentNoShow(firestore, this.props.question);
     };
 
     questionDone = () => {
-        markQuestionDone(firestore, this.props.question)
+        this.setState({
+            showUndoPopup: true,
+        });
+
+        const id = setTimeout(() => {
+            this.setState({
+                showUndoPopup: false,
+            });
+            markQuestionDone(firestore, this.props.question);
+        }, 3000);
+
+        this.setState({
+            timeoutID: id,
+        });
+
     };
 
+    undo = () => {
+        clearTimeout(this.state.timeoutID);
+        this.setState({
+            showUndoPopup: false,
+            timeoutID: 0,
+        });
+        this.questionDontKnow();
+    }
+
     questionDontKnow = () => {
-        markQuestionDontKnow(firestore, this.props.question)
+        markQuestionDontKnow(firestore, this.props.question);
     };
 
     questionComment = (newComment: string, isTA: boolean) => {
-        updateComment(firestore, this.props.question, newComment, isTA)
+        updateComment(firestore, this.props.question, newComment, isTA);
     };
 
     toggleComment = () => {
-        this.setState(({ enableEditingComment }) =>
-            ({ enableEditingComment: !enableEditingComment }));
-    }
+        this.setState(({ enableEditingComment }) => ({
+            enableEditingComment: !enableEditingComment,
+        }));
+    };
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
             variables: {
                 questionId: this.props.question.questionId,
                 status,
-            }
+            },
         });
         const question = this.props.question;
         const asker = this.props.users[question.askerId];
-        this.props.triggerUndo(
-            question.questionId,
-            status,
-            asker.firstName + ' ' + asker.lastName
-        );
+        this.props.triggerUndo(question.questionId, status, asker.firstName + ' ' + asker.lastName);
     };
 
     setDotMenu = (status: boolean) => {
@@ -207,6 +234,11 @@ class SessionQuestion extends React.Component<Props, State> {
         }
     }
 
+    deleteCommentsHelper = (commentId: string, questionId: string) => {
+        deleteComment(commentId, questionId);
+        this.retrieveComments(this.props.question.questionId);
+    }
+
     addCommentsHelper = (content: string) => {
         addComment(content, this.props.myUserId, this.props.question.questionId, this.props.isTA);
         this.retrieveComments(this.props.question.questionId);
@@ -216,25 +248,37 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({areCommentsVisible: !this.state.areCommentsVisible});
     }
 
+    handleReplyButton = () => {
+        if (this.state.areCommentsVisible) {
+            this.setState({
+                showNewComment: !this.state.showNewComment
+            });
+        } else {
+            this.setState({
+                areCommentsVisible: true
+            })
+        }
+    }
+
     render() {
         const question = this.props.question;
         const studentCSS = this.props.isTA ? '' : ' Student';
         const includeBookmark = this.props.question.askerId === this.props.myUserId;
 
         const asker = this.props.users[question.askerId];
-        const answerer = question.answererId
-            ? this.props.users[question.answererId] : undefined;
+        const answerer = question.answererId ? this.props.users[question.answererId] : undefined;
         const user = this.props.user;
         const primaryTag = this.props.question.primaryTag
-            ? this.props.tags[this.props.question.primaryTag] : undefined;
+            ? this.props.tags[this.props.question.primaryTag]
+            : undefined;
         const secondaryTag = this.props.question.secondaryTag
-            ? this.props.tags[this.props.question.secondaryTag] : undefined;
+            ? this.props.tags[this.props.question.secondaryTag]
+            : undefined;
 
         const comment = this.props.isTA ? question.taComment : question.studentComment;
 
         this.retrieveComments(question.questionId);
         console.log("Rendered");
-
         return (
             <div className="questionWrapper">
                 <div className="QueueQuestions">
@@ -359,41 +403,26 @@ class SessionQuestion extends React.Component<Props, State> {
                             <hr />
                             <div className="buttonsWrapper">
                                 <div className="TAButtons">
-                                    {question.status === 'unresolved' &&
+                                    {question.status === 'unresolved' ?
                                         <p className="Begin" onClick={this.assignQuestion}>
-                                            Assign to Me
+                                            Assign to me
+                                        </p>
+                                        :
+                                        <p className="Begin" onClick={this.questionDontKnow}>
+                                            Unassign from me
                                         </p>
                                     }
+                                </div>
+                                <div className="replyButton" onClick={this.handleReplyButton}>
+                                    <img src={CommentBubble} alt="Reply icon"/>
+                                </div>
+                                <div className="assignedButtons">
                                     {question.status === 'assigned' &&
                                         <>
-                                            <p className="Delete" onClick={this.studentNoShow}>No show</p>
-                                            <p className="Done" onClick={this.questionDone}>Done</p>
-                                            <p
-                                                className="DotMenu"
-                                                onClick={() => this.setDotMenu(!this.state.showDotMenu)}
-                                            >
-                                                ...
-                                                {this.state.showDotMenu &&
-                                                    <div
-                                                        className="IReallyDontKnow"
-                                                        tabIndex={1}
-                                                        onClick={() => this.setDotMenu(false)}
-                                                    >
-                                                        <p
-                                                            className="DontKnowButton"
-                                                            onClick={this.questionDontKnow}
-                                                        >
-                                                            I Really Don't Know
-                                                        </p>
-                                                    </div>
-                                                }
-                                            </p>
+                                            <button className="Delete" onClick={this.studentNoShow}>No show</button>
+                                            <button className="Done" onClick={this.questionDone}>Done</button>
                                         </>
                                     }
-                                </div>
-                                <div className="replyButton" onClick={this.switchCommentsVisible}>
-                                    <img src={CommentBubble} alt="Reply icon"/>
-                                    <p className="replyText">Reply</p>
                                 </div>
                             </div>
                         </div>
@@ -442,19 +471,41 @@ class SessionQuestion extends React.Component<Props, State> {
                         this.props.includeRemove && !this.props.isPast &&
                         <div className="Buttons">
                             <hr />
-                            <p className="Remove" onClick={this.onClickRemove}>
-                                <Icon name="close" /> Remove
-                            </p>
-                            <div className="replyButton">
-                                <img src={CommentBubble} alt="Reply icon" onClick={this.switchCommentsVisible}/>
-                                <p className="replyText">Reply</p>
+                            <div className="studentButtons">
+                                <p className="Remove" onClick={this.onClickRemove}>
+                                    Remove
+                                </p>
+                                <div className="replyButton">
+                                    <img src={CommentBubble} alt="Reply icon" onClick={this.handleReplyButton}/>
+                                </div>
                             </div>
+
                         </div>
                     }
+                {this.state.showUndoPopup && (
+                    <div className="popup">
+                        <div className="popupContainer">
+                            <div className="resolvedQuestionBadge">
+                                <img
+                                    className="resolvedCheckImage"
+                                    alt="Green check"
+                                    src={GreenCheck}
+                                />
+                                <p className="resolvedQuestionText">
+                                    Question Marked as Done
+                                </p>
+                            </div>
+                        </div>
+                        <p className="Undo" onClick={this.undo}>
+                            Undo
+                        </p>
+                    </div>
+                )}
                 </div >
                 {
                     this.state.areCommentsVisible &&
-                    < CommentsContainer comments={this.state.comments} users={this.props.users} currentUser={this.props.user} addCommentsHelper={this.addCommentsHelper}/>
+                    < CommentsContainer comments={this.state.comments} users={this.props.commentUsers} currentUser={this.props.user} addCommentsHelper={this.addCommentsHelper} questionId={question.questionId}
+                    switchCommentsVisible={this.switchCommentsVisible} deleteCommentsHelper={this.deleteCommentsHelper} showNewComment={this.state.showNewComment}/>
                 }
             </div>
         );
@@ -465,7 +516,7 @@ type EditCommentProps = {
     readonly initComment: string;
     readonly onValueChange: Function;
     readonly onCancel: Function;
-}
+};
 
 const EditComment = (props: EditCommentProps) => {
     const [editable, setEditable] = useState(false);
@@ -478,7 +529,9 @@ const EditComment = (props: EditCommentProps) => {
                 <textarea
                     placeholder="Add a comment..."
                     className="commentTextArea"
-                    onChange={(evt) => { setComment(evt.target.value) }}
+                    onChange={evt => {
+                        setComment(evt.target.value);
+                    }}
                     value={comment}
                 />
                 <div className="commentBtnHolder">
@@ -513,12 +566,12 @@ const EditComment = (props: EditCommentProps) => {
     return (
         <div className="commentBody">
             <Linkify tagName="p">
-                {comment !== "" && comment !== undefined ? comment : "Add a comment..."}
+                {comment !== '' && comment !== undefined ? comment : 'Add a comment...'}
             </Linkify>
             <button
                 type="button"
                 className="link-button commentEdit"
-                onClick={(evt) => {
+                onClick={evt => {
                     evt.preventDefault();
                     setPrevComment(comment);
                     setEditable(true);
@@ -528,14 +581,13 @@ const EditComment = (props: EditCommentProps) => {
             </button>
         </div>
     );
-
-}
+};
 
 type CommentBoxProps = {
     readonly studentComment?: string;
     readonly taComment?: string;
     readonly studentCSS?: string;
-}
+};
 
 const CommentBox = (props: CommentBoxProps) => {
     return (
@@ -551,7 +603,13 @@ const CommentBox = (props: CommentBoxProps) => {
                 </Linkify>
             )}
         </div>
-    )
-}
+    );
+};
+
+CommentBox.defaultProps = {
+    studentComment: undefined,
+    taComment: undefined,
+    studentCSS: undefined,
+};
 
 export default SessionQuestion;

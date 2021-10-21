@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 
 import {addBlogPost} from '../../firebasefunctions/blogPost';
-import { firestore, auth } from '../../firebase';
+import { auth } from '../../firebase';
 
 
 const AddBlogPost = () => {
@@ -14,7 +14,7 @@ const AddBlogPost = () => {
         e.preventDefault();
         if(description === '' || title === '') return;
         setChangeList(changeList.filter(item => item !== ''))
-        addBlogPost(auth.currentUser, firestore, title, description, [...changeList])
+        addBlogPost(auth.currentUser, title, description, [...changeList])
         setTitle('');
         setDescription('');
         setChangeList(['', '']);

@@ -4,12 +4,15 @@ import * as _ from 'lodash';
 import { useCourse, useCourseUsers, useMyUser } from '../../firehooks';
 import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions/importProfessorsOrTAs';
 
-const RoleDropdown = ({ user, course, disabled }: {
+const RoleDropdown = ({
+    user,
+    course,
+    disabled,
+}: {
     readonly user: EnrichedFireUser;
     readonly course: FireCourse;
     readonly disabled?: boolean;
 }) => {
-    
     return (
         <Dropdown
             options={[
@@ -21,7 +24,7 @@ const RoleDropdown = ({ user, course, disabled }: {
             defaultValue={user.role}
             onChange={(e, newValue) => {
                 const newValueRole = newValue.value as FireCourseRole;
-                
+
                 // prevents profs from unintentionally demoting other users
                 if (user.role !== undefined && newValueRole !== user.role) {
                     changeRole(user, course, newValueRole);
@@ -29,6 +32,10 @@ const RoleDropdown = ({ user, course, disabled }: {
             }}
         />
     );
+};
+
+RoleDropdown.defaultProps = {
+    disabled: false,
 };
 
 type columnT = 'firstName' | 'lastName' | 'email' | 'role';
@@ -42,8 +49,10 @@ export default ({ courseId, isAdminView }: { courseId: string; isAdminView: bool
 
     const self = useMyUser();
 
-    const courseUsers: readonly EnrichedFireUser[] = useCourseUsers(courseId)
-        .map(user => ({ ...user, role: user.roles[courseId] || 'student' }));
+    const courseUsers: readonly EnrichedFireUser[] = useCourseUsers(courseId).map(user => ({
+        ...user,
+        role: user.roles[courseId] || 'student',
+    }));
 
     const sortedCourseUsers: readonly EnrichedFireUser[] = (() => {
         const sorted = _.sortBy(courseUsers, [column]);
@@ -67,17 +76,23 @@ export default ({ courseId, isAdminView }: { courseId: string; isAdminView: bool
             setDirection('ascending');
             setColumn(clickedColumn);
         } else {
-            setDirection(previousDirection => previousDirection === 'ascending' ? 'descending' : 'ascending');
+            setDirection(previousDirection =>
+                previousDirection === 'ascending' ? 'descending' : 'ascending'
+            );
         }
     };
 
     const importButton = () => {
         return (
             <div className="import-buttons">
-                <button type="button" onClick={importProfessorsButtonOnClick}>Import Professors</button>
-                <button type="button" onClick={importTAButtonOnClick}>Import TAs</button>
+                <button type="button" onClick={importProfessorsButtonOnClick}>
+                    Import Professors
+                </button>
+                <button type="button" onClick={importTAButtonOnClick}>
+                    Import TAs
+                </button>
             </div>
-        )
+        );
     };
 
     return (
@@ -113,20 +128,21 @@ export default ({ courseId, isAdminView }: { courseId: string; isAdminView: bool
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                    {course && sortedCourseUsers.map(u => (
-                        <Table.Row key={u.userId}>
-                            <Table.Cell>{u.firstName}</Table.Cell>
-                            <Table.Cell>{u.lastName}</Table.Cell>
-                            <Table.Cell>{u.email}</Table.Cell>
-                            <Table.Cell textAlign="right" className="dropdownCell">
-                                <RoleDropdown
-                                    user={u}
-                                    course={course}
-                                    disabled={u.email === self?.email}
-                                />
-                            </Table.Cell>
-                        </Table.Row>
-                    ))}
+                    {course &&
+                        sortedCourseUsers.map(u => (
+                            <Table.Row key={u.userId}>
+                                <Table.Cell>{u.firstName}</Table.Cell>
+                                <Table.Cell>{u.lastName}</Table.Cell>
+                                <Table.Cell>{u.email}</Table.Cell>
+                                <Table.Cell textAlign="right" className="dropdownCell">
+                                    <RoleDropdown
+                                        user={u}
+                                        course={course}
+                                        disabled={u.email === self?.email}
+                                    />
+                                </Table.Cell>
+                            </Table.Row>
+                        ))}
                 </Table.Body>
             </Table>
         </div>

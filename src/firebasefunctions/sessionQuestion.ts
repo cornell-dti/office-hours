@@ -22,8 +22,7 @@ export const addQuestion = (
     selectedSecondary: FireTag | undefined,
     question: string
 ): boolean => {
-    if (user != null && selectedPrimary != null &&
-        selectedSecondary != null) {
+    if (user != null) {
         const batch = db.batch();
         const questionId = db.collection('questions').doc().id;
         const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
@@ -42,8 +41,8 @@ export const addQuestion = (
             ...upvotedUsers,
             answererId: '',
             content: question,
-            primaryTag: selectedPrimary.tagId,
-            secondaryTag: selectedSecondary.tagId
+            primaryTag: selectedPrimary != null ? selectedPrimary.tagId: '',
+            secondaryTag: selectedSecondary != null ? selectedSecondary.tagId : ''
         };
         batch.set(db.collection('questionSlots').doc(questionId), newQuestionSlot);
         batch.set(db.collection('questions').doc(questionId), newQuestion);
@@ -132,6 +131,8 @@ export const assignQuestionToTA = (
     virtualLocation: string | undefined,
     myUserId: string
 ) => {
+
+
     const batch = db.batch();
     const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
     const questionUpdate: Partial<FireOHQuestion> = {
@@ -156,7 +157,7 @@ export const removeQuestionbyID = (
         batch.update(db.doc(`questionSlots/${removeQuestionId}`), slotUpdate);
         batch.update(db.doc(`questions/${removeQuestionId}`), questionUpdate);
         batch.commit();
-    }    
+    }
 }
 
 export const updateQuestion = (
@@ -180,14 +181,30 @@ export const updateQuestion = (
 
 export const addComment = (content: string, commenterId: string, questionId: string, isTA: boolean) => {
     const timePosted = firebase.firestore.Timestamp.now();
+    let commentId = firestore.doc(`questions/${questionId}`).collection('comments').doc().id;
     const newComment: FireComment = {
         content: content,
         commenterId: commenterId,
         timePosted: timePosted,
-        isTA: isTA
+        isTA: isTA,
+        commentId: commentId
     }
     const batch = firestore.batch();
-    batch.set(firestore.doc(`questions/${questionId}`).collection('comments').doc(), newComment);
+    batch.set(firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId), newComment);
+    batch.commit();
+}
+
+export const deleteComment = (commentId: string, questionId: string) => {
+    const batch = firestore.batch();
+    const delCommentRef = firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId);
+    batch.delete(delCommentRef);
+    batch.commit();
+}
+
+export const updateCurrentComment = (commentId: string, questionId: string, newContent: string) => {
+    const batch = firestore.batch();
+    const curCommentRef = firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId);
+    batch.update(curCommentRef, { content: newContent});
     batch.commit();
 }
 

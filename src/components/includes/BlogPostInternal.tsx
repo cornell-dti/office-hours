@@ -5,7 +5,7 @@ import Moment from 'react-moment'
 import moment from 'moment'
 
 import {editBlogPost, deleteBlogPost} from '../../firebasefunctions/blogPost';
-import { firestore, auth } from '../../firebase';
+import { auth } from '../../firebase';
 
 type Props = {blogPost: BlogPost}
 
@@ -42,7 +42,7 @@ const BlogPostInternal = ({blogPost}: Props) => {
 
     const editPost = (e: React.FormEvent) => {
         e.preventDefault();
-        editBlogPost(auth.currentUser, firestore, {...blogPost, title, description, listItems : [...changeList]})
+        editBlogPost(auth.currentUser, {...blogPost, title, description, listItems : [...changeList]})
         setTitle('');
         setDescription('');
         setChangeList(['', ''])
@@ -51,7 +51,7 @@ const BlogPostInternal = ({blogPost}: Props) => {
 
     const deletePost = () => {
         if(window.confirm('Are you sure you want to delete this post?')) {
-            deleteBlogPost(auth.currentUser, firestore, blogPost.postId);
+            deleteBlogPost(auth.currentUser, blogPost.postId);
         }
     }
 

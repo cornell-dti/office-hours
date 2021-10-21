@@ -14,10 +14,12 @@ const createTag = (
     const tagDocInfo: Omit<FireTag, 'tagId'> = {
         active: tagInfo.active,
         courseId: tagInfo.courseId,
-        level: parentTagDocId ? 1 : 2,
-        name: tagInfo.name,
-        parentTag: parentTagDocId
+        level: parentTagDocId ? 2 : 1,
+        name: tagInfo.name
     };
+    if (parentTagDocId) {
+        tagDocInfo.parentTag = parentTagDocId;
+    }
     batch.set(tag, tagDocInfo);
 
     return tag;

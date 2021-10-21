@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Card} from '@material-ui/core';
+import React, { useState } from 'react';
+import { Card } from '@material-ui/core';
 
 import AdminReadOnlyCourseCard from './AdminReadOnlyCourseCard';
 import AdminEditableCourseCard from './AdminEditableCourseCard';
@@ -21,7 +21,7 @@ const AdminCourseCard = ({ course }: { readonly course: FireCourse }) => {
                     {showRolesTable ? 'Hide' : 'Show'} Roles Table
                 </button>
             </div>
-            {showRolesTable && <ProfessorRolesTable courseId={course.courseId} isAdminView={true}/>}
+            {showRolesTable && <ProfessorRolesTable courseId={course.courseId} isAdminView={true} />}
         </Card>
     );
 };

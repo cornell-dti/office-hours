@@ -143,6 +143,7 @@ interface FirePendingUser {
 }
 
 interface FireComment {
+    commentId: string;
     content: string;
     commenterId: string;
     timePosted: FireTimeStamp;
