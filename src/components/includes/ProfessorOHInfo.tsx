@@ -39,10 +39,10 @@ const ProfessorOHInfo = (props: {
     const [endTime, setEndTime] = useState<moment.Moment | undefined>();
     const [taSelected, setTaSelected] = useState<{ id: string | null }[]>([]);
     const [locationBuildingSelected, setLocationBuildingSelected] = useState<
-        string | undefined
+    string | undefined
     >();
     const [locationRoomNumSelected, setLocationRoomNumSelected] = useState<
-        string | undefined
+    string | undefined
     >();
     const [zoomLink, setZoomLink] = useState<string | undefined>();
     const [isSeriesMutation, setIsSeriesMutation] = useState(false);
@@ -74,10 +74,10 @@ const ProfessorOHInfo = (props: {
                 session.modality === 'virtual'
                     ? Modality.VIRTUAL
                     : session.modality === 'review'
-                    ? Modality.REVIEW
-                    : session.modality === 'hybrid'
-                    ? Modality.HYBRID
-                    : Modality.INPERSON
+                        ? Modality.REVIEW
+                        : session.modality === 'hybrid'
+                            ? Modality.HYBRID
+                            : Modality.INPERSON
             );
         }
     }, [session]);
@@ -104,7 +104,7 @@ const ProfessorOHInfo = (props: {
     const handleTextField = (
         event: React.ChangeEvent<HTMLElement>,
         setStateFunction: React.Dispatch<
-            React.SetStateAction<string | undefined>
+        React.SetStateAction<string | undefined>
         >
     ) => {
         const target = event.target as HTMLTextAreaElement;
@@ -248,15 +248,15 @@ const ProfessorOHInfo = (props: {
         const sessionLocation =
             modality === Modality.HYBRID || modality === Modality.INPERSON
                 ? {
-                      building: locationBuildingSelected || '',
-                      room: locationRoomNumSelected || '',
-                  }
+                    building: locationBuildingSelected || '',
+                    room: locationRoomNumSelected || '',
+                }
                 : {};
         const sessionLink =
             modality === Modality.REVIEW
                 ? {
-                      link: zoomLink || '',
-                  }
+                    link: zoomLink || '',
+                }
                 : {};
         const sessionWithoutSessionSeriesId = {
             modality,
@@ -277,11 +277,11 @@ const ProfessorOHInfo = (props: {
             sessionSeriesId === undefined
                 ? sessionWithoutSessionSeriesId
                 : {
-                      ...sessionWithoutSessionSeriesId,
-                      ...sessionLocation,
-                      ...sessionLink,
-                      sessionSeriesId,
-                  };
+                    ...sessionWithoutSessionSeriesId,
+                    ...sessionLocation,
+                    ...sessionLink,
+                    sessionSeriesId,
+                };
         if (propsSession) {
             return updateSession(propsSession, newSession);
         }
@@ -334,7 +334,8 @@ const ProfessorOHInfo = (props: {
                             className={
                                 'AddTA ' + (i === 0 ? 'First' : 'Additional')
                             }
-                            key={ta.id || i}>
+                            key={ta.id || i}
+                        >
                             <Icon name='user' />
                             <Dropdown
                                 className='dropdown'
@@ -349,7 +350,8 @@ const ProfessorOHInfo = (props: {
                             <button
                                 type='button'
                                 className='AddTAButton'
-                                onClick={() => decAddTA(i)}>
+                                onClick={() => decAddTA(i)}
+                            >
                                 <Icon name='x' />
                             </button>
                         </div>
@@ -360,7 +362,8 @@ const ProfessorOHInfo = (props: {
                 type='button'
                 className={'AddTAButton ' + isMaxTA}
                 disabled={isMaxTA}
-                onClick={() => incAddTA()}>
+                onClick={() => incAddTA()}
+            >
                 <Icon name='plus' />
                 Add another TA
             </button>
@@ -379,21 +382,24 @@ const ProfessorOHInfo = (props: {
                                     active={modality === Modality.VIRTUAL}
                                     onClick={() =>
                                         setModality(Modality.VIRTUAL)
-                                    }>
+                                    }
+                                >
                                     Virtual
                                 </Button>
                                 <Button
                                     active={modality === Modality.HYBRID}
                                     onClick={() =>
                                         setModality(Modality.HYBRID)
-                                    }>
+                                    }
+                                >
                                     Hybrid
                                 </Button>
                                 <Button
                                     active={modality === Modality.INPERSON}
                                     onClick={() =>
                                         setModality(Modality.INPERSON)
-                                    }>
+                                    }
+                                >
                                     In Person
                                 </Button>
                             </div>
@@ -401,7 +407,8 @@ const ProfessorOHInfo = (props: {
                         {!props.isOfficeHour && (
                             <Button
                                 active={modality === Modality.REVIEW}
-                                onClick={() => setModality(Modality.REVIEW)}>
+                                onClick={() => setModality(Modality.REVIEW)}
+                            >
                                 Review
                             </Button>
                         )}
@@ -414,12 +421,12 @@ const ProfessorOHInfo = (props: {
                               '(e.g. Zoom Link, Google Meet Link)' +
                               ' which is provided to the student when the TA is assigned to them.'
                             : modality === Modality.HYBRID
-                            ? 'In a hybrid session the student can either provide a Zoom link' +
+                                ? 'In a hybrid session the student can either provide a Zoom link' +
                               ' or a physical location.'
-                            : modality === Modality.REVIEW
-                            ? 'In a review session a Zoom link for the review is posted ' +
+                                : modality === Modality.REVIEW
+                                    ? 'In a review session a Zoom link for the review is posted ' +
                               ' and students can ask questions to be answered during the session.'
-                            : 'In an in-person session the student can provide their physical' +
+                                    : 'In an in-person session the student can provide their physical' +
                               ' location (e.g. by the whiteboard).'}
                     </p>
                 </div>
@@ -433,32 +440,32 @@ const ProfessorOHInfo = (props: {
                 </div>
                 {modality === Modality.HYBRID ||
                 modality === Modality.INPERSON ? (
-                    <div className='row'>
-                        <Icon name='marker' />
-                        <input
-                            className='long'
-                            placeholder={`Building/Location${
-                                modality === Modality.HYBRID
-                                    ? ' (optional)'
-                                    : ''
-                            }`}
-                            value={locationBuildingSelected || ''}
-                            onChange={(e) =>
-                                handleTextField(e, setLocationBuildingSelected)
-                            }
-                        />
-                        <input
-                            className='shift'
-                            placeholder='Room Number'
-                            value={locationRoomNumSelected || ''}
-                            onChange={(e) =>
-                                handleTextField(e, setLocationRoomNumSelected)
-                            }
-                        />
-                    </div>
-                ) : (
-                    <></>
-                )}
+                        <div className='row'>
+                            <Icon name='marker' />
+                            <input
+                                className='long'
+                                placeholder={`Building/Location${
+                                    modality === Modality.HYBRID
+                                        ? ' (optional)'
+                                        : ''
+                                }`}
+                                value={locationBuildingSelected || ''}
+                                onChange={(e) =>
+                                    handleTextField(e, setLocationBuildingSelected)
+                                }
+                            />
+                            <input
+                                className='shift'
+                                placeholder='Room Number'
+                                value={locationRoomNumSelected || ''}
+                                onChange={(e) =>
+                                    handleTextField(e, setLocationRoomNumSelected)
+                                }
+                            />
+                        </div>
+                    ) : (
+                        <></>
+                    )}
                 {modality === Modality.REVIEW ? (
                     <div className='row'>
                         <Icon name='desktop' />
@@ -571,13 +578,15 @@ const ProfessorOHInfo = (props: {
                                 });
                         }
                     }}
-                    disabled={disableProps}>
+                    disabled={disableProps}
+                >
                     {props.isNewOH ? 'Create' : 'Save Changes'}
                 </button>
                 <button
                     type='button'
                     className='Bottom Cancel'
-                    onClick={() => props.toggleEdit()}>
+                    onClick={() => props.toggleEdit()}
+                >
                     Cancel
                 </button>
                 <span className='EditNotification'>{notification}</span>
