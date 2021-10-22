@@ -433,7 +433,7 @@ const ProfessorOHInfo = (props: {
                 <div className='row'>
                     <input
                         className='long'
-                        placeholder='Enter name of discussion'
+                        placeholder='Enter name of office hour'
                         value={title || ''}
                         onChange={(e) => handleTextField(e, setTitle)}
                     />
