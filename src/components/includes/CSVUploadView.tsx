@@ -75,7 +75,7 @@ const CSVUploadView = (
             if (TAEmailList && TAEmailList.length !== 0 && professorEmailList && professorEmailList.length !== 0) {
                 importProfessorsOrTAsFromCSV(course, 'ta', TAEmailList)?.then((users) => {
                     const taAddedEmails = users.updatedUsers.map(user => user.email);  
-                    const taMissingEmails = Array.from(users.missingSet);   
+                    const taMissingEmails = Array.from(users.missingSet);  
                     return {taAddedEmails, taMissingEmails}
                 }).then((taEmails)=> {
                     importProfessorsOrTAsFromCSV(course, 'professor', professorEmailList)?.then((users) => {
@@ -220,8 +220,8 @@ const CSVUploadView = (
                         setCSVErrorMessage('Please enter valid roles only (TA or Professor)');
                     }
 
-                    const TAEmailList = TAList.map(user => user.split(',')[0].trim());
-                    const professorEmailList = professorList.map(user => user.split(',')[0].trim());
+                    const TAEmailList = TAList.map(user => user.split(',')[0].trim().toLowerCase());
+                    const professorEmailList = professorList.map(user => user.split(',')[0].trim().toLowerCase());
 
                     setTAEmailList(TAEmailList);
                     setProfessorEmailList(professorEmailList);
@@ -250,8 +250,8 @@ const CSVUploadView = (
             const TAList = newUsers.filter(user => user.role === 'TA'); 
             const professorList = newUsers.filter(user => user.role === 'Professor')
 
-            const TAEmailList = TAList.map(user => user.email);
-            const professorEmailList = professorList.map(user => user.email);
+            const TAEmailList = TAList.map(user => user.email.toLowerCase());
+            const professorEmailList = professorList.map(user => user.email.toLowerCase());
 
             setTAEmailList(TAEmailList);
             setProfessorEmailList(professorEmailList);

@@ -10,6 +10,9 @@ const ProfessorTagsRow = (props: {
     courseId: string;
 }) => {
     const [showEdit, setShowEdit] = useState(false);
+
+
+
     return (
         <tbody className={'Pair ' + showEdit + ' ' + (props.index % 2 === 0 ? 'odd' : 'even')} key={props.tag.tagId}>
             <tr className="Preview">

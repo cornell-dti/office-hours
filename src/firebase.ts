@@ -45,9 +45,13 @@ const firebaseConfig = currFirebaseConfig;
 const app = firebase.initializeApp(firebaseConfig);
 
 let tmpFirestore = firebase.firestore(app); // Initialize firestore
+// Use emulator for test mode
+if (process.env.NODE_ENV === 'test') {
+    tmpFirestore.useEmulator('localhost', 8080);
+}
 
 const auth = firebase.auth(app); // Initialize firebase auth
-const loggedIn$ = authState(auth).pipe(filter(user => !!user)); // Observable only return when user is logged in.
+const loggedIn$ = authState(auth).pipe(filter((user) => !!user)); // Observable only return when user is logged in.
 
 const Timestamp = firebase.firestore.Timestamp;
 

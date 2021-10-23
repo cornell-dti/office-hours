@@ -35,11 +35,13 @@ import { CURRENT_SEMESTER } from '../constants';
 
 ReactGA.initialize('UA-123790900-1');
 
-const findValidCourse = (courses: readonly FireCourse[], courseId: string) => courses.find(course =>
-    courseId === course.courseId
-    && course.semester === CURRENT_SEMESTER);
+const findValidCourse = (courses: readonly FireCourse[], courseId: string) =>
+    courses.find((course) => courseId === course.courseId && course.semester === CURRENT_SEMESTER);
 
-const getDefaultRedirectCourseId = (user: FireUser | undefined, courses: readonly FireCourse[]): string | undefined => {
+const getDefaultRedirectCourseId = (
+    user: FireUser | undefined,
+    courses: readonly FireCourse[]
+): string | undefined => {
     if (user && user.courses) {
         for (let i = 0; i < user.courses.length; i += 1) {
             const courseId = user.courses[i];
@@ -140,9 +142,11 @@ type PrivateRouteProps<P extends {}> = {
     [restKey: string]: any;
 };
 
-const PrivateRoute = <P extends {}>(
-    { component, requireProfessor, ...rest }: PrivateRouteProps<P>
-) => {
+const PrivateRoute = <P extends {}>({
+    component,
+    requireProfessor,
+    ...rest
+}: PrivateRouteProps<P>) => {
     const courseId: string | null | undefined = rest.computedMatch.params.courseId;
     const routeAction = useRouteActionWithPermissionCheck(requireProfessor, courseId);
 
@@ -167,6 +171,10 @@ const PrivateRoute = <P extends {}>(
     return <Route {...rest} component={component} />;
 };
 
+PrivateRoute.defaultProps = {
+    exact: false
+}
+
 const DefaultRoute = () => {
     const routeAction = useBaseRouteAction();
 
@@ -190,8 +198,16 @@ export default () => {
                     <Route path="/login" component={LoginView} />
                     <PrivateRoute path="/admin" component={AdminView} requireProfessor={false} />
                     <PrivateRoute path="/blog" component={BlogCMS} requireProfessor={false} />
-                    <PrivateRoute path="/edit" component={CourseEditView} requireProfessor={false} />
-                    <PrivateRoute path="/home" component={CourseSelectionView} requireProfessor={false} />
+                    <PrivateRoute
+                        path="/edit"
+                        component={CourseEditView}
+                        requireProfessor={false}
+                    />
+                    <PrivateRoute
+                        path="/home"
+                        component={CourseSelectionView}
+                        requireProfessor={false}
+                    />
                     <PrivateRoute
                         path="/professor-tags/course/:courseId"
                         component={ProfessorTagsView}
