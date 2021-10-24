@@ -60,13 +60,17 @@ const TopBarNotifications = ({notificationTracker, user}: Props) => {
     })
 
     const iconClicked = () => {
+        if(dropped) {
+            updateTrackable();
+            clearNotifications(user)
+        }
         toggleDropped(!dropped);
     }
 
     return (
         <div ref={dropdownRef}>
             <div className="notifications__top" onClick={() => iconClicked()}>
-                <img className="notifications__icon" src={notification} alt="Bug fix icon" />
+                <img className="notifications__icon" src={notification} alt="Notification icon" />
                 {!hasViewed && <img className="notifications__indicator" src={notif} alt="Notification indicator" />}
             </div>
             <div  

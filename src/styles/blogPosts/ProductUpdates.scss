@@ -169,3 +169,29 @@ $viewedColor: #d6eafe;
         margin-top: 5em;
     }
 }
+
+@media screen and (max-width: 1000px) {
+    .productUpdates__singleDisplay {
+        width: 35%;
+    }
+}
+
+@media screen and (max-width: 750px) {
+    .allUpdates__contentWrapper {
+        width: 95%;
+    }
+    .productUpdate {
+        width: 90% !important;
+        &__date {
+            width: 50px;
+            text-align: right;
+        }
+        &__title {
+            width: 80%;
+        }
+    }
+    .productUpdates__singleDisplay {
+        width: 60%;
+        max-height: 50%;
+    }
+}

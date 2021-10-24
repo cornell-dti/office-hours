@@ -83,13 +83,14 @@ const SessionView = (
                 user, 
                 {
                     title : 'A new question has been added!', 
-                    subtitle : 'Check the queue.', 
-                    message: ""
+                    subtitle : 'A new question was added', 
+                    message: "Check the queue."
                 }
             )
             try {
                 addNotification({
                     title: 'A new question has been added!',
+                    subtitle : 'A new question was added', 
                     message: 'Check the queue.',
                     native: true
                 });
