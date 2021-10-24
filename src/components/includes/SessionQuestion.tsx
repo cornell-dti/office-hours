@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { Icon, Loader, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
-import { useState } from 'react';
+import { useState } from "react";
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
 import addNotification from 'react-push-notification';
+import {addDBNotification} from '../../firebasefunctions/notifications'
 import SelectedTags from './SelectedTags';
-import GreenCheck from '../../media/greenCheck.svg';
+import GreenCheck from '../../media/greenCheck.svg'
 
 import { firestore } from '../../firebase';
 import {
@@ -15,7 +16,7 @@ import {
     assignQuestionToTA,
     markQuestionDone,
     markQuestionDontKnow,
-    updateComment,
+    updateComment
 } from '../../firebasefunctions/sessionQuestion';
 
 // TODO_ADD_SERVER_CHECK
@@ -63,9 +64,9 @@ class SessionQuestion extends React.Component<Props, State> {
             isEditingLocation: false,
             showDotMenu: false,
             showUndoPopup: false,
-            timeoutID: 0,
+            timeoutID:0,
             enableEditingComment: false,
-            width: window.innerWidth,
+            width: window.innerWidth
         };
     }
 
@@ -73,35 +74,26 @@ class SessionQuestion extends React.Component<Props, State> {
         const previousState = prevProps.question;
         const currentState = this.props.question;
         const user = this.props.myUserId;
-        if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
+        const addNotificationWrapper = (title: string, subtitle: string, message: string | undefined) => {
+            addDBNotification(this.props.user, {title, subtitle, message: `${message}`})
             try {
                 addNotification({
-                    title: 'TA comment',
-                    subtitle: 'New TA comment',
-                    message: `${currentState.taComment}`,
-                    theme: 'darkblue',
-                    native: true,
+                    title,
+                    subtitle,
+                    message: `${message}`,
+                    theme: "darkblue",
+                    native: true
                 });
             } catch (error) {
                 // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
             }
         }
+        if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
+            addNotificationWrapper('TA comment', 'New TA comment', currentState.taComment);
+        }
 
-        if (
-            previousState.studentComment !== currentState.studentComment &&
-            user === currentState.answererId
-        ) {
-            try {
-                addNotification({
-                    title: 'Student comment',
-                    subtitle: 'New student comment',
-                    message: `${currentState.studentComment}`,
-                    theme: 'darkblue',
-                    native: true,
-                });
-            } catch (error) {
-                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
-            }
+        if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
+            addNotificationWrapper('Student comment', 'New student comment', currentState.studentComment);
         }
     }
 
@@ -116,22 +108,23 @@ class SessionQuestion extends React.Component<Props, State> {
         return String(index);
     }
 
+
     public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         this.setState({ isEditingLocation: true });
         const target = event.target as HTMLTextAreaElement;
         if (target.value.length <= LOCATION_CHAR_LIMIT) {
             this.setState({
-                location: target.value,
+                location: target.value
             });
 
             const question = firestore.collection('questions').doc(this.props.question.questionId);
             question.update({
-                location: target.value,
+                location: target.value
             });
 
             setTimeout(() => {
                 this.setState({
-                    isEditingLocation: false,
+                    isEditingLocation: false
                 });
             }, 1000);
         }
@@ -140,10 +133,10 @@ class SessionQuestion extends React.Component<Props, State> {
     onClickRemove = () => {
         this.props.setShowModal(true);
         this.props.setRemoveQuestionId(this.props.question.questionId);
-    };
+    }
 
     retractQuestion = (): void => {
-        retractStudentQuestion(firestore, this.props.question);
+        retractStudentQuestion(firestore, this.props.question)
     };
 
     toggleLocationTooltip = () => {
@@ -151,11 +144,15 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     assignQuestion = () => {
-        assignQuestionToTA(firestore, this.props.question, this.props.virtualLocation, this.props.myUserId);
+        assignQuestionToTA(
+            firestore,
+            this.props.question,
+            this.props.virtualLocation,
+            this.props.myUserId)
     };
 
     studentNoShow = () => {
-        markStudentNoShow(firestore, this.props.question);
+        markStudentNoShow(firestore, this.props.question)
     };
 
     questionDone = () => {
@@ -165,15 +162,13 @@ class SessionQuestion extends React.Component<Props, State> {
 
         const id = setTimeout(() => {
             this.setState({
-                showUndoPopup: false,
+                showUndoPopup:false,
             });
             markQuestionDone(firestore, this.props.question);
         }, 3000);
-
         this.setState({
             timeoutID: id,
         });
-
     };
 
     undo = () => {
@@ -194,26 +189,31 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     toggleComment = () => {
-        this.setState(({ enableEditingComment }) => ({
-            enableEditingComment: !enableEditingComment,
+        this.setState(({ enableEditingComment }) => ({ 
+            enableEditingComment: !enableEditingComment 
         }));
-    };
+    }
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
             variables: {
                 questionId: this.props.question.questionId,
                 status,
-            },
+            }
         });
         const question = this.props.question;
         const asker = this.props.users[question.askerId];
-        this.props.triggerUndo(question.questionId, status, asker.firstName + ' ' + asker.lastName);
+        this.props.triggerUndo(
+            question.questionId,
+            status,
+            asker.firstName + ' ' + asker.lastName
+        );
     };
 
     setDotMenu = (status: boolean) => {
         this.setState({ showDotMenu: status });
     };
+
 
     render() {
         const question = this.props.question;

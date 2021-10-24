@@ -1,0 +1,171 @@
+$viewedColor: #d6eafe;
+.productUpdates {
+    &__singleToggler {
+        cursor: pointer;
+        position: absolute;
+        bottom: 7px;
+        left: 8px;
+    }
+    &__notification {
+        position: absolute;
+        top: -3px;
+        left: 16px;
+    }
+    &__hidden {
+        visibility: hidden;
+        opacity: 0;
+    }
+}
+
+.productUpdates__singleDisplay {
+    position: absolute;
+    bottom: 39px;
+    left: 39px;
+    width: 20%;
+    max-height: 32%;
+    max-width: 23rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: -5px 13px 20px rgba(0, 0, 0, 0.25);
+    border-radius: 0px 0px 6px 6px;
+    text-align: left;
+    transition-property: visibility opacity;
+    transition-duration: 0.2s;
+    background-color: #f5f5f5;
+    .singleDisplay {
+        &__header {
+            width: 110%;
+            padding-left: 2em;
+            padding-right: 2em;
+            font-family: Roboto;
+            font-style: normal;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 19px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1em;
+        }
+        &__see-all {
+            font-weight: normal;
+            font-size: 10px;
+            line-height: 12px;
+            text-decoration-line: underline;
+            color: #2f80ed;
+            cursor: pointer;
+            width: 3em;
+        }
+        @media (max-width: 1150px) {
+            &__see-all {
+                font-size: 9px;
+            }
+            &__title {
+                font-size: 15px;
+            }
+        }
+    }
+    .productUpdate {
+        width: 80%;
+        height: 80%;
+        position: relative;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 0.75em;
+        overflow: hidden;
+        font-family: Roboto;
+        line-height: 12px;
+        color: #484848;
+        box-shadow: -0.5px 0.5px 7px rgba(0, 0, 0, 0.1);
+        &__header {
+            margin-bottom: 1em;
+        }
+        &__title {
+            height: fit-content;
+            margin-bottom: 0.5em;
+            font-weight: 900;
+            font-size: 16px;
+        }
+        &__date {
+            font-weight: 300;
+            color: lighten(#484848, 0.2);
+        }
+        &__description {
+            font-size: 14px;
+            font-weight: normal;
+        }
+        .productUpdate__list {
+            margin-left: 1em;
+            padding: 1em;
+            line-height: 1.4285em;
+            padding-top: 0;
+            list-style-type: disc;
+            li {
+                border-bottom: none;
+                padding: none;
+            }
+        }
+    }
+}
+
+.allUpdates {
+    &__hidden {
+        visibility: hidden;
+        opacity: 0;
+    }
+    &__wrapper {
+        width: 100vw;
+        position: fixed;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        transition-property: visibility opacity;
+        transition-duration: 0.2s;
+    }
+    &__close {
+        position: absolute;
+        right: 1em;
+        cursor: pointer;
+    }
+    &__contentWrapper {
+        position: absolute;
+        width: 75%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        height: 80%;
+        overflow: hidden;
+    }
+    &__content {
+        overflow-y: scroll;
+        height: 100%;
+        position: relative;
+        .productUpdate {
+            margin: 1em;
+        }
+    }
+    &__title {
+        position: absolute;
+        top: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 29px;
+        width: 186px;
+        font-family: Roboto;
+        font-size: 25px;
+        line-height: 29px;
+    }
+    &__posts {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 5em;
+    }
+}
