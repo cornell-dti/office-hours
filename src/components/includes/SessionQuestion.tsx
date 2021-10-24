@@ -346,14 +346,14 @@ class SessionQuestion extends React.Component<Props, State> {
                                     {this.props.isTA &&
                                         question.location &&
                                         question.location.substr(0, 25) === 'https://cornell.zoom.us/j' && (
-                                            <a
-                                                href={question.location}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
+                                        <a
+                                            href={question.location}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
                                                 Zoom Link
-                                            </a>
-                                        )}
+                                        </a>
+                                    )}
                                     {this.props.isTA &&
                                         question.location &&
                                         question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
