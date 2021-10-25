@@ -32,7 +32,7 @@ const UserComment = ({content, poster, timePosted, isTA, commenterId, commentId,
                                 className="commenterProfile"
                                 src={typeof poster.photoUrl !== 'undefined' 
                                     ? poster.photoUrl : '/placeholder.png'}
-                                alt="Profile image"
+                                alt="Profile"
                             />
                             <h3 className="commenterName">{poster.firstName + ' ' + poster.lastName}</h3>
                         </div>
@@ -40,7 +40,7 @@ const UserComment = ({content, poster, timePosted, isTA, commenterId, commentId,
                     </div> :
                     <div className="commentHeader">
                         <div className="commentNameAndProfile">
-                            <img className="commenterProfile" alt="Anonymous profile image" src={'/placeholder.png'} />
+                            <img className="commenterProfile" alt="Anonymous profile" src={'/placeholder.png'} />
                             <h3 className="commenterName">{isTA ? 'TA' : 'You'}</h3>
                         </div>
                         <Moment date={timePosted.toDate()} format="hh:mm A" className="commentTime"/>
