@@ -45,7 +45,9 @@ type State = {
     isEditingLocation: boolean;
     showDotMenu: boolean;
     showUndoPopup: boolean;
+    showNoShowPopup: boolean;
     timeoutID: any;
+    timeoutID2: any;
     undoQuestionIdDontKnow?: number;
     undoName?: string;
     enableEditingComment: boolean;
@@ -63,7 +65,9 @@ class SessionQuestion extends React.Component<Props, State> {
             isEditingLocation: false,
             showDotMenu: false,
             showUndoPopup: false,
+            showNoShowPopup: false,
             timeoutID: 0,
+            timeoutID2: 0,
             enableEditingComment: false,
             width: window.innerWidth,
         };
@@ -155,7 +159,21 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     studentNoShow = () => {
-        markStudentNoShow(firestore, this.props.question);
+        this.setState({
+            showNoShowPopup: true,
+        });
+
+        const id = setTimeout(() => {
+            this.setState({
+                showNoShowPopup: false,
+            });
+            markStudentNoShow(firestore, this.props.question);
+        }, 3000);
+
+        this.setState({
+            timeoutID2: id,
+        });
+
     };
 
     questionDone = () => {
@@ -176,11 +194,20 @@ class SessionQuestion extends React.Component<Props, State> {
 
     };
 
-    undo = () => {
+    undoDone = () => {
         clearTimeout(this.state.timeoutID);
         this.setState({
             showUndoPopup: false,
             timeoutID: 0,
+        });
+        this.questionDontKnow();
+    }
+
+    undoNoShow = () => {
+        clearTimeout(this.state.timeoutID2);
+        this.setState({
+            showNoShowPopup: false,
+            timeoutID2: 0,
         });
         this.questionDontKnow();
     }
@@ -378,6 +405,25 @@ class SessionQuestion extends React.Component<Props, State> {
                                     <p className="Delete" onClick={this.studentNoShow}>
                                         No show
                                     </p>
+                                    {this.state.showNoShowPopup && (
+                                        <div className="popup">
+                                            <div className="popupContainer">
+                                                <div className="resolvedQuestionBadge">
+                                                    <img
+                                                        className="resolvedCheckImage"
+                                                        alt="Green check"
+                                                        src={GreenCheck}
+                                                    />
+                                                    <p className="resolvedQuestionText">
+                                                        Student Marked as No Show
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <p className="Undo" onClick={this.undoNoShow}>
+                                                Undo
+                                            </p>
+                                        </div>
+                                    )}
                                     <p className="Done" onClick={this.questionDone}>
                                         Done
                                     </p>
@@ -395,7 +441,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                                     </p>
                                                 </div>
                                             </div>
-                                            <p className="Undo" onClick={this.undo}>
+                                            <p className="Undo" onClick={this.undoDone}>
                                                 Undo
                                             </p>
                                         </div>
