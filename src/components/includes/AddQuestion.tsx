@@ -253,7 +253,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                                     className={
                                         'tagsMiniContainer secondaryTags ' +
                                         !!selectedPrimary
-                                    }>
+                                    }
+                                >
                                     <p className='header'>Select a Tag</p>
                                     {selectedPrimary ? (
                                         tags
@@ -312,7 +313,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                                                         LOCATION_CHAR_LIMIT
                                                             ? 'warn'
                                                             : '')
-                                                    }>
+                                                    }
+                                                >
                                                     (
                                                     {LOCATION_CHAR_LIMIT -
                                                         location.length}{' '}
@@ -350,38 +352,39 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                             primaryTags.length === 0 ||
                             secondaryTags.length === 0 ||
                             activeTags.length === 0 ? (
-                                <textarea
-                                    className='TextInput question'
-                                    value={question}
-                                    onChange={handleUpdateQuestion}
-                                    placeholder="What's your question about?"
-                                />
-                            ) : (
-                                <textarea
-                                    disabled
-                                    className='TextInput question'
-                                    value={question}
-                                    onChange={handleUpdateQuestion}
-                                    placeholder={
-                                        !('building' in session)
-                                            ? 'First select a category and a tag'
-                                            : 'Enter your location...'
-                                    }
-                                />
-                            )}
+                                    <textarea
+                                        className='TextInput question'
+                                        value={question}
+                                        onChange={handleUpdateQuestion}
+                                        placeholder="What's your question about?"
+                                    />
+                                ) : (
+                                    <textarea
+                                        disabled
+                                        className='TextInput question'
+                                        value={question}
+                                        onChange={handleUpdateQuestion}
+                                        placeholder={
+                                            !('building' in session)
+                                                ? 'First select a category and a tag'
+                                                : 'Enter your location...'
+                                        }
+                                    />
+                                )}
                         </div>
                         <div className='addButtonWrapper'>
                             {stage > 40 ||
                             primaryTags.length === 0 ||
                             secondaryTags.length === 0 ? (
-                                <p
-                                    className='AddButton active'
-                                    onClick={() => handleJoinClick()}>
+                                    <p
+                                        className='AddButton active'
+                                        onClick={() => handleJoinClick()}
+                                    >
                                     Add My Question
-                                </p>
-                            ) : (
-                                <p className='AddButton'> Add My Question </p>
-                            )}
+                                    </p>
+                                ) : (
+                                    <p className='AddButton'> Add My Question </p>
+                                )}
                         </div>
                     </div>
                 </div>
