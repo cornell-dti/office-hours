@@ -7,7 +7,7 @@ import Linkify from 'linkifyjs/react';
 import addNotification from 'react-push-notification';
 import {addDBNotification} from '../../firebasefunctions/notifications'
 import SelectedTags from './SelectedTags';
-import GreenCheck from '../../media/greenCheck.svg'
+import GreenCheck from '../../media/greenCheck.svg';
 
 import { firestore } from '../../firebase';
 import {
@@ -140,7 +140,7 @@ class SessionQuestion extends React.Component<Props, State> {
     }
 
     retractQuestion = (): void => {
-        retractStudentQuestion(firestore, this.props.question)
+        retractStudentQuestion(firestore, this.props.question);
     };
 
     toggleLocationTooltip = () => {
@@ -180,7 +180,7 @@ class SessionQuestion extends React.Component<Props, State> {
 
         const id = setTimeout(() => {
             this.setState({
-                showUndoPopup:false,
+                showUndoPopup: false,
             });
             markQuestionDone(firestore, this.props.question);
         }, 3000);
