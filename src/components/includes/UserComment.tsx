@@ -32,6 +32,7 @@ const UserComment = ({content, poster, timePosted, isTA, commenterId, commentId,
                                 className="commenterProfile"
                                 src={typeof poster.photoUrl !== 'undefined' 
                                     ? poster.photoUrl : '/placeholder.png'}
+                                alt="Profile image"
                             />
                             <h3 className="commenterName">{poster.firstName + ' ' + poster.lastName}</h3>
                         </div>
@@ -39,7 +40,7 @@ const UserComment = ({content, poster, timePosted, isTA, commenterId, commentId,
                     </div> :
                     <div className="commentHeader">
                         <div className="commentNameAndProfile">
-                            <img className="commenterProfile" src={'/placeholder.png'} />
+                            <img className="commenterProfile" alt="Anonymous profile image" src={'/placeholder.png'} />
                             <h3 className="commenterName">{isTA ? 'TA' : 'You'}</h3>
                         </div>
                         <Moment date={timePosted.toDate()} format="hh:mm A" className="commentTime"/>
@@ -74,7 +75,12 @@ const UserComment = ({content, poster, timePosted, isTA, commenterId, commentId,
                                     type="button"
                                 >Edit</button>
                                 <div className="showDeleteMenu" >
-                                    <img className="deleteDots" src={Dots} onClick={() => setDeleteShow(!deleteShow)}/>
+                                    <img
+                                        className="deleteDots"
+                                        src={Dots} 
+                                        alt="Hide or show delete"
+                                        onClick={() => setDeleteShow(!deleteShow)}
+                                    />
                                     {deleteShow && 
                                     <button
                                         className="commentButton commentDelete" 

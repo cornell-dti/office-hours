@@ -51,7 +51,9 @@ type State = {
     isEditingLocation: boolean;
     showDotMenu: boolean;
     showUndoPopup: boolean;
+    showNoShowPopup: boolean;
     timeoutID: any;
+    timeoutID2: any;
     undoQuestionIdDontKnow?: number;
     undoName?: string;
     enableEditingComment: boolean;
@@ -72,7 +74,9 @@ class SessionQuestion extends React.Component<Props, State> {
             isEditingLocation: false,
             showDotMenu: false,
             showUndoPopup: false,
+            showNoShowPopup: false,
             timeoutID: 0,
+            timeoutID2: 0,
             enableEditingComment: false,
             width: window.innerWidth,
             comments: [],
@@ -167,7 +171,21 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     studentNoShow = () => {
-        markStudentNoShow(firestore, this.props.question);
+        this.setState({
+            showNoShowPopup: true,
+        });
+
+        const id = setTimeout(() => {
+            this.setState({
+                showNoShowPopup: false,
+            });
+            markStudentNoShow(firestore, this.props.question);
+        }, 3000);
+
+        this.setState({
+            timeoutID2: id,
+        });
+
     };
 
     questionDone = () => {
@@ -188,11 +206,20 @@ class SessionQuestion extends React.Component<Props, State> {
 
     };
 
-    undo = () => {
+    undoDone = () => {
         clearTimeout(this.state.timeoutID);
         this.setState({
             showUndoPopup: false,
             timeoutID: 0,
+        });
+        this.questionDontKnow();
+    }
+
+    undoNoShow = () => {
+        clearTimeout(this.state.timeoutID2);
+        this.setState({
+            showNoShowPopup: false,
+            timeoutID2: 0,
         });
         this.questionDontKnow();
     }
@@ -240,7 +267,8 @@ class SessionQuestion extends React.Component<Props, State> {
     }
 
     addCommentsHelper = (content: string) => {
-        addComment(content, this.props.myUserId, this.props.question.questionId, this.props.isTA);
+        addComment(content, this.props.myUserId, this.props.question.questionId, 
+            this.props.isTA, this.props.question.askerId);
         this.retrieveComments(this.props.question.questionId);
     }
 
@@ -489,6 +517,25 @@ class SessionQuestion extends React.Component<Props, State> {
 
                         </div>
                     }
+                    {this.state.showNoShowPopup && (
+                        <div className="popup">
+                            <div className="popupContainer">
+                                <div className="resolvedQuestionBadge">
+                                    <img
+                                        className="resolvedCheckImage"
+                                        alt="Green check"
+                                        src={GreenCheck}
+                                    />
+                                    <p className="resolvedQuestionText">
+                                        Student Marked as No Show
+                                    </p>
+                                </div>
+                            </div>
+                            <p className="Undo" onClick={this.undoNoShow}>
+                                Undo
+                            </p>
+                        </div>
+                    )}
                     {this.state.showUndoPopup && (
                         <div className="popup">
                             <div className="popupContainer">
@@ -503,7 +550,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                     </p>
                                 </div>
                             </div>
-                            <p className="Undo" onClick={this.undo}>
+                            <p className="Undo" onClick={this.undoDone}>
                             Undo
                             </p>
                         </div>

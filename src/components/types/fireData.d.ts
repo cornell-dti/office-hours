@@ -148,6 +148,7 @@ interface FireComment {
     commenterId: string;
     timePosted: FireTimeStamp;
     isTA: boolean;
+    askerId: string;
 }
 
 interface FireQuestion {

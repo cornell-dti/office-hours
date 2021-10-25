@@ -21,6 +21,7 @@ const NewComment = ({currentUser, addCommentsHelper}: Props) => {
                     <img
                         src={typeof currentUser.photoUrl !== 'undefined' ? currentUser.photoUrl : '/placeholder.png'} 
                         className="newCommenterProfile"
+                        alt="Profile image"
                     />
                     <h3 className="newCommenterName">{`${currentUser.firstName} ${currentUser.lastName} (You)`}</h3>
                 </div>
