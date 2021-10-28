@@ -18,10 +18,7 @@ type Props = {
     mobileBreakpoint: number;
 };
 
-
-const AddQuestion = (
-    { course, session, mobileBreakpoint }: Props
-) => {
+const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
     /*
      * State machine states
      * 10 - initial state - nothing selected, secondary & text fields locked
@@ -41,8 +38,9 @@ const AddQuestion = (
     const [redirect, setRedirect] = useState<boolean>(false);
     const [tags, setTags] = useState<FireTag[]>([]);
 
-    const primaryTags = tags.filter(tag => tag.level === 1);
-    const secondaryTags = tags.filter(tag => tag.level === 2);
+    const primaryTags = tags.filter((tag) => tag.level === 1);
+    const secondaryTags = tags.filter((tag) => tag.level === 2);
+    const activeTags = tags.filter((tag) => tag.active);
 
     useEffect(() => {
         const updateWindowDimensions = () => {
@@ -63,7 +61,6 @@ const AddQuestion = (
             window.removeEventListener('resize', updateWindowDimensions);
         };
     });
-
 
     const handleXClick = () => {
         setRedirect(true);
@@ -90,7 +87,6 @@ const AddQuestion = (
             setSelectedPrimary(undefined);
             setSelectedSecondary(undefined);
         }
-
     };
 
     const handleSecondarySelected = (tag: FireTag): void => {
@@ -113,28 +109,41 @@ const AddQuestion = (
         }
     };
 
-    const handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    const handleUpdateLocation = (
+        event: React.ChangeEvent<HTMLTextAreaElement>
+    ): void => {
         const target = event.target as HTMLTextAreaElement;
         let newStage: number;
         if (target.value.length > 0) {
             if (question.length > 0) {
                 newStage = 50;
-            } else { newStage = 40; }
-        } else { newStage = 30; }
-
+            } else {
+                newStage = 40;
+            }
+        } else {
+            newStage = 30;
+        }
 
         if (session.modality === 'in-person') {
-            setLocation(target.value.length <= LOCATION_CHAR_LIMIT ? target.value : location);
-            setStage(newStage)
+            setLocation(
+                target.value.length <= LOCATION_CHAR_LIMIT
+                    ? target.value
+                    : location
+            );
+            setStage(newStage);
         } else {
-            setLocation(target.value)
+            setLocation(target.value);
             setStage(newStage);
         }
     };
 
-    const handleUpdateQuestion = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    const handleUpdateQuestion = (
+        event: React.ChangeEvent<HTMLTextAreaElement>
+    ): void => {
         const target = event.target as HTMLTextAreaElement;
-        setQuestion(target.value.length <= course.charLimit ? target.value : question)
+        setQuestion(
+            target.value.length <= course.charLimit ? target.value : question
+        );
         setStage(target.value.length > 0 ? 50 : 40);
     };
 
@@ -146,173 +155,261 @@ const AddQuestion = (
             location,
             selectedPrimary,
             selectedSecondary,
-            question)
-        
-        setRedirect(allowRedirect)
+            question
+        );
+
+        setRedirect(allowRedirect);
     };
 
     const handleJoinClick = (): void => {
-        if (stage !== 60 &&
-            (moment().add(WARNING_THRESHOLD, 'minutes')).isAfter(session.endTime.seconds * 1000)) {
+        if (
+            stage !== 60 &&
+            moment()
+                .add(WARNING_THRESHOLD, 'minutes')
+                .isAfter(session.endTime.seconds * 1000)
+        ) {
             setStage(60);
-        } else {       
+        } else {
             addNewQuestion();
         }
     };
 
     const handleKeyPressDown = (event: React.KeyboardEvent<HTMLElement>) => {
         // CTRL + ENTER or CMD + ENTER adds the question ONLY if cursor in Question textbox
-        if ((!event.repeat && 
-            (event.ctrlKey || event.metaKey) && 
-            event.keyCode === 13 && 
-            (stage > 40 || primaryTags.length === 0 || secondaryTags.length === 0))) {
+        if (
+            !event.repeat &&
+            (event.ctrlKey || event.metaKey) &&
+            event.keyCode === 13 &&
+            (stage > 40 ||
+                primaryTags.length === 0 ||
+                secondaryTags.length === 0)
+        ) {
             addNewQuestion();
         } else if (!event.repeat && event.keyCode === 27) {
             handleXClick();
         }
     };
 
-
     if (redirect) {
         return (
             <Redirect
                 push={true}
-                to={'/course/' + course.courseId + '/session/' + session.sessionId}
+                to={
+                    '/course/' +
+                    course.courseId +
+                    '/session/' +
+                    session.sessionId
+                }
             />
         );
     }
 
     return (
-        <div className="QuestionView" onKeyDown={(e) => handleKeyPressDown(e)} >
-            {(stage < 60 || width < mobileBreakpoint) &&
-                <div className="AddQuestion">
-                    <div className="queueHeader">
-                        <p className="title">Join The Queue</p>
+        <div className='QuestionView' onKeyDown={(e) => handleKeyPressDown(e)}>
+            {(stage < 60 || width < mobileBreakpoint) && (
+                <div className='AddQuestion'>
+                    <div className='queueHeader'>
+                        <p className='title'>Join The Queue</p>
                     </div>
-                    <div className="tagsContainer">
-                        {primaryTags.length !== 0 &&
-                        <>
-                            <hr />
-                            <div className="tagsMiniContainer">
-                                <p className="header">Select a Category</p>
-                                <div className="QuestionTags">
-                                    {tags
-                                        .filter((tag) => tag.active && tag.level === 1)
-                                        .map((tag) => (<SelectedTags
-                                            key={tag.tagId}
-                                            tag={tag}
-                                            isSelected={stage > 10}
-                                            onClick={() => handlePrimarySelected(tag)}
-                                            check={tag.name === selectedPrimary?.name}
-                                            isPrimary={true}
-                                            select={true}
-                                        />)
-                                        )
-                                    }
+                    <div className='tagsContainer'>
+                        {primaryTags.length !== 0 && (
+                            <>
+                                <hr />
+                                <div className='tagsMiniContainer'>
+                                    <p className='header'>Select a Category</p>
+                                    <div className='QuestionTags'>
+                                        {tags
+                                            .filter(
+                                                (tag) =>
+                                                    tag.active &&
+                                                    tag.level === 1
+                                            )
+                                            .map((tag) => (
+                                                <SelectedTags
+                                                    key={tag.tagId}
+                                                    tag={tag}
+                                                    isSelected={stage > 10}
+                                                    onClick={() =>
+                                                        handlePrimarySelected(
+                                                            tag
+                                                        )
+                                                    }
+                                                    check={
+                                                        tag.name ===
+                                                        selectedPrimary?.name
+                                                    }
+                                                    isPrimary={true}
+                                                    select={true}
+                                                />
+                                            ))}
+                                    </div>
                                 </div>
-                            </div>
-                        </>}
-                        {secondaryTags.length !== 0 && 
-                        <>
-                            <hr />
-                            <div className={'tagsMiniContainer secondaryTags ' + (!!selectedPrimary)}>
-                                <p className="header">Select a Tag</p>
-                                {selectedPrimary ?
-                                    tags
-                                        .filter((tag) => tag.active && tag.level === 2)
-                                        .filter((tag) => (tag.parentTag === selectedPrimary.tagId))
-                                        .map((tag) => (<SelectedTags
-                                            key={tag.tagId}
-                                            tag={tag}
-                                            isSelected={selectedSecondary === tag}
-                                            onClick={() => handleSecondarySelected(tag)}
-                                            check={tag.name === selectedSecondary?.name}
-                                            select={true}
-                                        />))
-                                    : <p className="placeHolder">First select a category</p>}
-                            </div>
-                        </>}
+                            </>
+                        )}
+                        {secondaryTags.length !== 0 && (
+                            <>
+                                <hr />
+                                <div
+                                    className={
+                                        'tagsMiniContainer secondaryTags ' +
+                                        !!selectedPrimary
+                                    }
+                                >
+                                    <p className='header'>Select a Tag</p>
+                                    {selectedPrimary ? (
+                                        tags
+                                            .filter(
+                                                (tag) =>
+                                                    tag.active &&
+                                                    tag.level === 2
+                                            )
+                                            .filter(
+                                                (tag) =>
+                                                    tag.parentTag ===
+                                                    selectedPrimary.tagId
+                                            )
+                                            .map((tag) => (
+                                                <SelectedTags
+                                                    key={tag.tagId}
+                                                    tag={tag}
+                                                    isSelected={
+                                                        selectedSecondary ===
+                                                        tag
+                                                    }
+                                                    onClick={() =>
+                                                        handleSecondarySelected(
+                                                            tag
+                                                        )
+                                                    }
+                                                    check={
+                                                        tag.name ===
+                                                        selectedSecondary?.name
+                                                    }
+                                                    select={true}
+                                                />
+                                            ))
+                                    ) : (
+                                        <p className='placeHolder'>
+                                            First select a category
+                                        </p>
+                                    )}
+                                </div>
+                            </>
+                        )}
                         <hr />
-                        {'building' in session && <> <div className="tagsMiniContainer">
-                            {<p className="header">
-                                Location or Zoom Link &nbsp;{
-                                    session.modality === 'in-person' && <span
-                                        className={
-                                            'characterCount ' +
-                                            (location.length >= LOCATION_CHAR_LIMIT ? 'warn' : '')
-                                        }
-                                    >
-                                        (
-                                        {LOCATION_CHAR_LIMIT - location.length}
-                                        {' '}
-                                    character{LOCATION_CHAR_LIMIT - location.length !== 1 && 's'} left
-                                    )
-                                    </span>}
-                            </p>}
-                            {stage >= 30?
-                                <div className="locationInput">
-                                    <Icon name="map marker alternate" />
-                                    <textarea
-                                        className="TextInput location"
-                                        value={location}
-                                        onChange={handleUpdateLocation}
-                                        placeholder="What is your zoom link?"
-                                    />
-                                </div>
-                                : <p className="placeHolder text">Finish selecting tags...</p>}
-                        </div>
-                        <hr /></>}
-                        <div className="tagsMiniContainer">
-                            <p className="header">
-                                {'Question '}
-                            </p>
-                            {stage >= 40 || primaryTags.length === 0 || secondaryTags.length === 0?
-                                <textarea
-                                    className="TextInput question"
-                                    value={question}
-                                    onChange={handleUpdateQuestion}
-                                    placeholder="What's your question about?"
-                                />
-                                : <textarea
-                                    disabled
-                                    className="TextInput question"
-                                    value={question}
-                                    onChange={handleUpdateQuestion}
-                                    placeholder={
-                                        !('building' in session)
-                                            ? "First select a category and a tag" : "Enter your location..."
+                        {'building' in session && (
+                            <>
+                                {' '}
+                                <div className='tagsMiniContainer'>
+                                    {
+                                        <p className='header'>
+                                            Location or Zoom Link &nbsp;
+                                            {session.modality ===
+                                                'in-person' && (
+                                                <span
+                                                    className={
+                                                        'characterCount ' +
+                                                        (location.length >=
+                                                        LOCATION_CHAR_LIMIT
+                                                            ? 'warn'
+                                                            : '')
+                                                    }
+                                                >
+                                                    (
+                                                    {LOCATION_CHAR_LIMIT -
+                                                        location.length}{' '}
+                                                    character
+                                                    {LOCATION_CHAR_LIMIT -
+                                                        location.length !==
+                                                        1 && 's'}{' '}
+                                                    left )
+                                                </span>
+                                            )}
+                                        </p>
                                     }
-                                />}
-
+                                    {stage >= 30 ? (
+                                        <div className='locationInput'>
+                                            <Icon name='map marker alternate' />
+                                            <textarea
+                                                className='TextInput location'
+                                                value={location}
+                                                onChange={handleUpdateLocation}
+                                                placeholder='What is your zoom link?'
+                                            />
+                                        </div>
+                                    ) : (
+                                        <p className='placeHolder text'>
+                                            Finish selecting tags...
+                                        </p>
+                                    )}
+                                </div>
+                                <hr />
+                            </>
+                        )}
+                        <div className='tagsMiniContainer'>
+                            <p className='header'>{'Question '}</p>
+                            {stage >= 40 ||
+                            primaryTags.length === 0 ||
+                            secondaryTags.length === 0 ||
+                            activeTags.length === 0 ? (
+                                    <textarea
+                                        className='TextInput question'
+                                        value={question}
+                                        onChange={handleUpdateQuestion}
+                                        placeholder="What's your question about?"
+                                    />
+                                ) : (
+                                    <textarea
+                                        disabled
+                                        className='TextInput question'
+                                        value={question}
+                                        onChange={handleUpdateQuestion}
+                                        placeholder={
+                                            !('building' in session)
+                                                ? 'First select a category and a tag'
+                                                : 'Enter your location...'
+                                        }
+                                    />
+                                )}
                         </div>
-                        <div className="addButtonWrapper">
-                            {stage > 40 || primaryTags.length === 0 || secondaryTags.length === 0?
-                                <p className="AddButton active" onClick={() => handleJoinClick()} >
+                        <div className='addButtonWrapper'>
+                            {stage > 40 ||
+                            primaryTags.length === 0 ||
+                            secondaryTags.length === 0 ? (
+                                    <p
+                                        className='AddButton active'
+                                        onClick={() => handleJoinClick()}
+                                    >
                                     Add My Question
-                                </p>
-                                : <p className="AddButton"> Add My Question </p>
-                            }
+                                    </p>
+                                ) : (
+                                    <p className='AddButton'> Add My Question </p>
+                                )}
                         </div>
                     </div>
-                </div>}
-            {stage === 60 &&
+                </div>
+            )}
+            {stage === 60 && (
                 <SessionAlertModal
                     header={'Warning'}
                     icon={'exclamation'}
                     color={'yellow'}
-                    description={'This session ends at '
-                        + moment(session.endTime.seconds * 1000).format('h:mm A')
-                        + '. Consider adding yourself to a later queue.'}
+                    description={
+                        'This session ends at ' +
+                        moment(session.endTime.seconds * 1000).format(
+                            'h:mm A'
+                        ) +
+                        '. Consider adding yourself to a later queue.'
+                    }
                     buttons={['Cancel Question', 'Add Anyway']}
                     cancelAction={handleXClick}
                     course={course}
                     mainAction={() => handleJoinClick()}
                     displayShade={width < mobileBreakpoint}
                 />
-            }
+            )}
         </div>
     );
-
 };
 
 export default AddQuestion;
