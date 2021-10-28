@@ -32,8 +32,8 @@ const ProductUpdates = () => {
     const seeAllRef = useRef<HTMLDivElement>(null);
 
     const updateTrackable = () => {
-        viewedTrackable(user, notificationTracker, false)
-        toggleHasViewed(true)
+        viewedTrackable(user, notificationTracker, false);
+        toggleHasViewed(true);
     }
 
     const onClickOff = (e: MouseEvent) => {
