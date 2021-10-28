@@ -122,7 +122,7 @@ const SessionView = (
             return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
         setPrevQuestSet(new Set(questions.map(q => q.questionId)));
-    }, [prevQuestSet, questions, user.userId, course.courseId, user.roles]);
+    }, [prevQuestSet, questions, user.userId, course.courseId, user.roles, user]);
 
 
     const dismissUndo = () => {

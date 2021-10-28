@@ -2,7 +2,7 @@ import firebase from 'firebase/app';
 import { firestore } from '../firebase';
 
 export const addDBNotification = 
-async (user: FireUser, notification: Omit<SessionNotification, "notificationId" | "createdAt">) => {
+async (user: FireUser, notification: Omit<SessionNotification, 'notificationId' | 'createdAt'>) => {
     if (user !== undefined) {
         const email = user.email;
         if (email !== null) {
@@ -76,3 +76,4 @@ async (user: FireUser | undefined,
         }
     }
 }
+

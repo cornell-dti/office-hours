@@ -77,7 +77,7 @@ const TopBarNotifications = ({notificationTracker, user}: Props) => {
                 className={`notifications__dropdown notifications__${dropped ? "visible": "hidden"}`} 
                 onClick={e => e.stopPropagation()}
             >
-                {notifications == undefined || notifications.length === 0 ? 
+                {notifications === undefined || notifications.length === 0 ? 
                     (<div className="notification__placeholder">You do not have any notifications</div> ):
                     notifications.map((notif, index) => (<div 
                         className="notifications__notification" 

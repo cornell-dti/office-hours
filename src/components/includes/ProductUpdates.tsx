@@ -39,6 +39,7 @@ const ProductUpdates = () => {
     const onClickOff = (e: MouseEvent) => {
         if (singleRef.current && !singleRef.current.contains(e.target as Node)) {
             toggleSingleUpdate(false);
+            updateTrackable();
         } else if (seeAllRef.current && !seeAllRef.current.contains(e.target as Node)) {
             toggleSeeAll(false);
             if(seeAll) {

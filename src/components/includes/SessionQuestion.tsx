@@ -4,8 +4,7 @@ import Moment from 'react-moment';
 import { useState } from "react";
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
-import addNotification from 'react-push-notification';
-import {addDBNotification} from '../../firebasefunctions/notifications'
+import {addNotificationWrapper} from '../../utilities/notifications'
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
 
@@ -55,6 +54,7 @@ type State = {
     width: number;
 };
 
+
 class SessionQuestion extends React.Component<Props, State> {
     state: State;
 
@@ -78,27 +78,39 @@ class SessionQuestion extends React.Component<Props, State> {
         const previousState = prevProps.question;
         const currentState = this.props.question;
         const user = this.props.myUserId;
-        const addNotificationWrapper = (title: string, subtitle: string, message: string | undefined) => {
-            addDBNotification(this.props.user, {title, subtitle, message: `${message}`})
-            try {
-                addNotification({
-                    title,
-                    subtitle,
-                    message: `${message}`,
-                    theme: "darkblue",
-                    native: true
-                });
-            } catch (error) {
-                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
-            }
-        }
+
+
         if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
-            addNotificationWrapper('TA comment', 'New TA comment', currentState.taComment);
+            addNotificationWrapper(this.props.user, 'TA comment', 'New TA comment', currentState.taComment);
         }
 
         if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
-            addNotificationWrapper('Student comment', 'New student comment', currentState.studentComment);
+            addNotificationWrapper(
+                this.props.user, 
+                'Student comment', 
+                'New student comment', 
+                currentState.studentComment
+            );
         }
+
+        if (previousState.answererId !== currentState.answererId && user === currentState.askerId) {
+            addNotificationWrapper(
+                this.props.user, 
+                'TA Assigned', 
+                'TA Assigned', 
+                'A TA has been assigned to your question'
+            );
+        }
+    }
+
+    componentWillUnmount() {
+        if(this.props.myUserId === this.props.question.askerId) {
+            addNotificationWrapper(
+                this.props.user, 
+                'Question Marked as Complete', 
+                'Question marked as complete', 
+                'A TA has marked your question as either done or no show.');
+        } 
     }
 
     // Given an index from [1..n], converts it to text that is displayed on the
@@ -133,6 +145,7 @@ class SessionQuestion extends React.Component<Props, State> {
             }, 1000);
         }
     };
+
 
     onClickRemove = () => {
         this.props.setShowModal(true);
@@ -184,6 +197,7 @@ class SessionQuestion extends React.Component<Props, State> {
             });
             markQuestionDone(firestore, this.props.question);
         }, 3000);
+
         this.setState({
             timeoutID: id,
         });
