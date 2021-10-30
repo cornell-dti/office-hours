@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { updateCourses } from '../../firebasefunctions/courses'
@@ -9,6 +11,7 @@ describe('updateCourses', () => {
     it('is called successfully given a dummy user', () => {
 
         const dummyUser = getDummyUser('first', 'last', [], {});
+
         const stubCollection = sinon.stub(firestore, 'collection');
         stubCollection.withArgs('users').returns({ 
             doc: () => {} 
@@ -21,6 +24,6 @@ describe('updateCourses', () => {
         sinon.stub(firestore.collection('users').doc('userId'), 'update').returns(true);
     
         expect(updateCourses('userId', dummyUser)).to.be.true;
-
+        
     })
 })
