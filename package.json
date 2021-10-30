@@ -38,7 +38,6 @@
     "rxjs": "^6.5.3",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.1",
-    "sinon": "^11.1.2",
     "source-map-explorer": "^2.1.2",
     "ts-node": "^9.1.1"
   },
