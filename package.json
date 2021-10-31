@@ -13,6 +13,7 @@
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/mocha": "^8.0.3",
     "@types/node": "^12.12.15",
+    "@types/sinon": "^10.0.6",
     "chai": "^4.2.0",
     "firebase": "^8.0.1",
     "firebase-admin": "^9.3.0",
@@ -38,6 +39,7 @@
     "rxjs": "^6.5.3",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.1",
+    "sinon": "^11.1.2",
     "source-map-explorer": "^2.1.2",
     "ts-node": "^9.1.1"
   },
