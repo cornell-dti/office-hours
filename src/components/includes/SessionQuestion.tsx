@@ -93,7 +93,11 @@ class SessionQuestion extends React.Component<Props, State> {
             );
         }
 
-        if (previousState.answererId !== currentState.answererId && currentState.answererId !== '' && user === currentState.askerId) {
+        if (
+            previousState.answererId !== currentState.answererId && 
+            currentState.answererId !== '' && 
+            user === currentState.askerId
+        ) {
             addNotificationWrapper(
                 this.props.user, 
                 'TA Assigned', 
