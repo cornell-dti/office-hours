@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { Dispatch, SetStateAction, ReactElement } from 'react';
 import { groupBy } from 'lodash';
 
 import CalendarSessionCard from './CalendarSessionCard';
@@ -16,7 +16,7 @@ const CalendarSessions = ({
     course: FireCourse;
     sessions: FireSession[];
     callback: (sessionId: string) => void;
-    setShowCalendarModal: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowCalendarModal: Dispatch<SetStateAction<boolean>>;
 }) => {
     const labelSession = (session: FireSession, intervalMs: number) => {
         if (new Date(session.endTime.toDate()) < new Date()) {
@@ -55,7 +55,7 @@ const CalendarSessions = ({
     });
     const groupedCards =
         sessionCards &&
-        groupBy(sessionCards, (card: React.ReactElement) => card.props.status);
+        groupBy(sessionCards, (card: ReactElement) => card.props.status);
     return (
         <div className='CalendarSessions'>
             {sessions.length === 0 && (

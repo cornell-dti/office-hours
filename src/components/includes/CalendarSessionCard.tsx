@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Moment from 'react-moment';
 import chevron from '../../media/chevron.svg';
 import { useSessionQuestions, useSessionTANames } from '../../firehooks';
@@ -7,7 +7,6 @@ import {
     computeNumberAheadFromFilterAndpartitionQuestions,
 } from '../../utilities/questions';
 import CalendarExport from '../../media/calendar_export.svg';
-import CalendarExportModal from './CalendarExportModal';
 
 const CalendarSessionCard = (props: {
     user: FireUser;
@@ -51,7 +50,8 @@ const CalendarSessionCard = (props: {
     return (
         <div
             className={(props.active && 'active') + ' CalendarSessionCard'}
-            onClick={handleOnClick}>
+            onClick={handleOnClick}
+        >
             {includeBookmark && <div className='Bookmark' />}
             <div className='TimeInfo'>
                 <div className='StartTime'>
@@ -73,7 +73,8 @@ const CalendarSessionCard = (props: {
                         className={
                             (session.modality !== 'review' && 'Office') +
                             ' Type'
-                        }>
+                        }
+                    >
                         {session.modality !== 'review' ? 'OH' : 'Discussion'}
                     </div>
                     <div className={'Indicator ' + props.status}>
@@ -110,7 +111,8 @@ const CalendarSessionCard = (props: {
                         <span
                             className={
                                 'AheadNum ' + (numAhead === 0 && 'zero')
-                            }>
+                            }
+                        >
                             {numAhead}
                         </span>
                     </span>

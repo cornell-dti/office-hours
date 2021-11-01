@@ -1,4 +1,4 @@
-import React, { useState, Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { Icon } from 'semantic-ui-react';
 import GoogleIcon from '../../media/google_icon.svg';
 import AppleIcon from '../../media/apple_icon.svg';
@@ -26,7 +26,8 @@ const CalendarExportModal = ({
                         <button
                             type='button'
                             className='closeButton'
-                            onClick={closeModal}>
+                            onClick={closeModal}
+                        >
                             <Icon name='x' />
                         </button>
                         <div className='Title'>Choose Calendar</div>
@@ -40,7 +41,7 @@ const CalendarExportModal = ({
                                     Export to Google Calendar
                                 </div>
                             </div>
-                            <div className='Line'></div>
+                            <div className='Line' />
                             <div className='CalendarItem'>
                                 <img
                                     src={AppleIcon}

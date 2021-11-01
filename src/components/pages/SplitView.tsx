@@ -53,12 +53,12 @@ const SplitView = (props: {
         props.match.params.page === 'add'
             ? 'addQuestion'
             : props.match.params.sessionId
-            ? 'session'
-            : 'calendar'
+                ? 'session'
+                : 'calendar'
     );
     const [showModal, setShowModal] = useState(false);
     const [removeQuestionId, setRemoveQuestionId] = useState<
-        string | undefined
+    string | undefined
     >(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState(false);
 
@@ -73,8 +73,8 @@ const SplitView = (props: {
             location.pathname.indexOf('add') !== -1
                 ? 'addQuestion'
                 : props.match.params.sessionId
-                ? 'session'
-                : 'calendar'
+                    ? 'session'
+                    : 'calendar'
         );
     });
 
@@ -139,8 +139,8 @@ const SplitView = (props: {
 
             {'Notification' in window &&
                 window?.Notification.permission !== 'granted' && (
-                    <NotificationModal show={activeView !== 'session'} />
-                )}
+                <NotificationModal show={activeView !== 'session'} />
+            )}
 
             <CalendarExportModal
                 showCalendarModal={showCalendarModal}
@@ -176,15 +176,15 @@ const SplitView = (props: {
                                     window?.Notification !== undefined &&
                                     window?.Notification.permission ===
                                         'granted' && (
-                                        <div className='warningArea'>
-                                            <div>&#9888;</div>
-                                            <div>
+                                    <div className='warningArea'>
+                                        <div>&#9888;</div>
+                                        <div>
                                                 Please make sure to enable
                                                 browser notifications in your
                                                 system settings.
-                                            </div>
                                         </div>
-                                    )}
+                                    </div>
+                                )}
                             </p>
                         </section>
                     )
