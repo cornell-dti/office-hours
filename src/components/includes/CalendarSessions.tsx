@@ -3,7 +3,13 @@ import { groupBy } from 'lodash';
 
 import CalendarSessionCard from './CalendarSessionCard';
 
-const CalendarSessions = ({ activeSession, user, course, sessions, callback }: {
+const CalendarSessions = ({
+    activeSession,
+    user,
+    course,
+    sessions,
+    callback,
+}: {
     activeSession?: FireSession;
     user: FireUser;
     course: FireCourse;
@@ -37,32 +43,50 @@ const CalendarSessions = ({ activeSession, user, course, sessions, callback }: {
             />
         );
     });
-    const groupedCards = sessionCards && groupBy(sessionCards, (card: React.ReactElement) => card.props.status);
+    const groupedCards =
+        sessionCards && groupBy(sessionCards, (card: React.ReactElement) => card.props.status);
     return (
         <div className="CalendarSessions">
-            {sessions.length === 0 && <>
-                <p className="noHoursHeading">No Office Hours</p>
-                <p className="noHoursBody">No office hours are scheduled for today.</p>
-            </>}
-            {groupedCards && <>
-                {'Past' in groupedCards && <>
-                    <h6>Past</h6>
-                    {groupedCards.Past}
-                </>}
-                {'Open' in groupedCards && <>
-                    <h6>Open</h6>
-                    {groupedCards.Open}
-                </>}
-                {'Ongoing' in groupedCards && <>
-                    <h6>Ongoing</h6>
-                    {groupedCards.Ongoing}
-                </>}
-                {'Upcoming' in groupedCards && <>
-                    <h6>Upcoming</h6>
-                    {groupedCards.Upcoming}
-                </>}
-            </>}
+            {sessions.length === 0 && (
+                <>
+                    <p className="noHoursHeading">No Office Hours</p>
+                    <p className="noHoursBody">No office hours are scheduled for today.</p>
+                </>
+            )}
+            {groupedCards && (
+                <>
+                    {'Past' in groupedCards && (
+                        <>
+                            <h6>Past</h6>
+                            {groupedCards.Past}
+                        </>
+                    )}
+                    {'Open' in groupedCards && (
+                        <>
+                            <h6>Open</h6>
+                            {groupedCards.Open}
+                        </>
+                    )}
+                    {'Ongoing' in groupedCards && (
+                        <>
+                            <h6>Ongoing</h6>
+                            {groupedCards.Ongoing}
+                        </>
+                    )}
+                    {'Upcoming' in groupedCards && (
+                        <>
+                            <h6>Upcoming</h6>
+                            {groupedCards.Upcoming}
+                        </>
+                    )}
+                </>
+            )}
         </div>
     );
 };
+
+CalendarSessions.defaultProps = {
+    activeSession: undefined,
+};
+
 export default CalendarSessions;

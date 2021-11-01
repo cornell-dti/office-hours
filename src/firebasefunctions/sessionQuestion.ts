@@ -21,8 +21,7 @@ export const addQuestion = (
     selectedSecondary: FireTag | undefined,
     question: string
 ): boolean => {
-    if (user != null && selectedPrimary != null &&
-        selectedSecondary != null) {
+    if (user != null) {
         const batch = db.batch();
         const questionId = db.collection('questions').doc().id;
         const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
@@ -41,8 +40,8 @@ export const addQuestion = (
             ...upvotedUsers,
             answererId: '',
             content: question,
-            primaryTag: selectedPrimary.tagId,
-            secondaryTag: selectedSecondary.tagId
+            primaryTag: selectedPrimary != null ? selectedPrimary.tagId: '',
+            secondaryTag: selectedSecondary != null ? selectedSecondary.tagId : ''
         };
         batch.set(db.collection('questionSlots').doc(questionId), newQuestionSlot);
         batch.set(db.collection('questions').doc(questionId), newQuestion);
@@ -131,6 +130,8 @@ export const assignQuestionToTA = (
     virtualLocation: string | undefined,
     myUserId: string
 ) => {
+
+
     const batch = db.batch();
     const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
     const questionUpdate: Partial<FireOHQuestion> = {
@@ -155,7 +156,7 @@ export const removeQuestionbyID = (
         batch.update(db.doc(`questionSlots/${removeQuestionId}`), slotUpdate);
         batch.update(db.doc(`questions/${removeQuestionId}`), questionUpdate);
         batch.commit();
-    }    
+    }
 }
 
 export const updateQuestion = (
