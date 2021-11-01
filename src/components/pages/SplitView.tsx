@@ -133,30 +133,22 @@ const SplitView = (props: {
                         />
                     ) : (
                         <section className="StudentSessionView">
-                            <p className="welcomeMessage">
-                                    Welcome{user && ', '}
-                                <span className="welcomeName">
-                                    {user && user.firstName}
-                                </span>
-                            </p>
-                            <p className="noSessionSelected">
-                                Please select an office hour from the calendar.
-                                <p> </p>
-                                <p> </p>
-                                {("Notification" in window &&
-                                window?.Notification !== undefined) && 
-                                window?.Notification.permission === "granted" && (
+                            <div className="welcomeMessage">
+                                <span>Welcome, </span>
+                                <span className="welcomeName">{user.firstName}</span>
+                            </div>
+                            <div className="noSessionSelected">
+                                <p>Please select an office hour from the calendar.</p>
+                                {window?.Notification?.permission === "granted" && (
                                     <div className="warningArea">
-
-                                        <div>
-                                        &#9888;
-                                        </div>
-                                        <div>
-                                        Please make sure to enable browser notifications in your system settings.
-                                        </div>
+                                        <span role="img" aria-label="Warning Sign">⚠️</span>
+                                        <p>
+                                            Please make sure to enable browser notifications in your system
+                                            settings.
+                                        </p>
                                     </div>
                                 )}
-                            </p>
+                            </div>
                         </section>
                     )
                 ) : <Loader active={true} content="Loading" />)}
