@@ -211,11 +211,9 @@ export const updateCurrentComment = (commentId: string, questionId: string, newC
 }
 
 export const getComments = async (questionId: string): Promise<FireComment[]> => {
-    return firestore.doc(`questions/${questionId}`).collection('comments').get().then((commentData) => {
-        const comments: FireComment[] = []
-        commentData.forEach((comment) => {
-            comments.push(comment.data() as FireComment);
-        });
-        return comments; 
-    });
+    return firestore
+        .doc(`questions/${questionId}`)
+        .collection("comments")
+        .get()
+        .then((commentData) => commentData.docs.map((comment) => comment.data() as FireComment));
 }
