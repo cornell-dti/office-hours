@@ -106,7 +106,7 @@ const StudentMyQuestion = ({
 
 const SessionQuestionsContainer = (props: Props) => {
     const [sentNotification, setSentNotification] = React.useState(
-        window.localStorage.getItem('questionUpNotif') === 'sent' || false
+        window.localStorage.getItem('questionUpNotif') === 'sent'
     );
     const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
     const [sortByUpvotes, setSortByUpvotes] = React.useState(true);
