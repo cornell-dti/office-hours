@@ -43,11 +43,13 @@ export const clearNotifications =
             const trackerRef = firestore.collection('notificationTrackers').doc(email);
             const day = 1000 * 60 * 60 * 24;
             const dayPast = Date.now() - day;
+
             const updatedTracker: Partial<NotificationTracker> = {
                 notificationList: notificationTracker?.notificationList.filter(notification => {
                     return notification.createdAt.toDate().getTime() > dayPast;
                 })
             }
+
             trackerRef.update(updatedTracker);
         }
     }
