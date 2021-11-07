@@ -1,131 +1,4 @@
-.SessionQuestionsContainer {
-
-    // .QueueQuestions {
-    //     &.MyQuestion {
-    //         border: solid 3px #ffdba6;
-    //     }
-    // }]
-
-    .User {
-        margin-bottom: 16px;
-    }
-
-    .Queue, .QuestionHeader {
-        text-align: left;
-        font-size: 16px;
-        color: $text-grey;
-        margin: 0;
-        font-weight: 500;
-        margin-top: 12px;
-    }
-    .discussionHeaderWrapper {
-        position: relative;
-        .discussionQuestionsSlider {
-            width: 100%;
-            border-radius: 8px;
-            border: 3px solid #5599DB;
-            display: flex;
-            position: relative;
-            align-items: center;
-            &:hover {
-                cursor: pointer;
-            }
-            .discussionSliderSelector {
-                background: linear-gradient(45deg, #668AE9 0%, #6DB9EA 100%);
-                position: absolute;
-                left: 2px;
-                width: calc(50% - 2px);
-                height: 55px;
-                border-radius: 6px;
-                transition: left 0.4s ease-in-out;
-                z-index: -1;
-                &.isSlidedRight {
-                    left: 50%;
-                }
-            }
-            .discussionSliderOption {
-                width: 50%;
-                font-size: 20px;
-                font-weight: 500;
-                color: #979797;
-                padding: 20px;
-                transition: color 0.4s ease-in-out;
-                &.isSelected {
-                    color: white;
-                }
-            }
-    
-        }
-        .sortDiscussionQuestionsWrapper {
-            display: flex;
-            margin: 20px 0px;
-            align-items: center;
-            justify-content: flex-end;
-            .discussionArrowsContainer {
-                display: flex;
-                align-items: center;
-                margin-right: 5px;
-                .sortDiscussionArrow {
-                    width: 20px;
-                    height: 13px;
-                }
-            }
-            .sortDiscussionQuestionsLabel {
-                margin: 0px 5px 0px 0px;
-            }
-            .sortDiscussionQuestionsOptions {
-                display: flex;
-                border: 1px solid #3594F1;
-                border-radius: 5px;
-                width: 200px;
-                align-items: center;
-                position: relative;
-                &:hover {
-                    cursor: pointer;
-                }
-                .sortDiscussionsSlider {
-                    position: absolute;
-                    left: 1px;
-                    z-index: -1;
-                    height: 27px;
-                    width: calc(50% - 1px);
-                    background-color: #5599DB;
-                    border-radius: 3px;
-                    transition: left 0.4s ease-in-out;
-                    &.slidedRight {
-                        left: 50%;
-                    }
-                }
-                .sortDiscussionQuestionsOption {
-                    color: #3594F1;
-                    font-weight: 300;
-                    font-size: 14px;
-                    width: 50%;
-                    padding: 5px 0px;
-                    transition: color 0.4s ease-in-out;
-                    &.optionChosen {
-                        color: white;
-                    }
-                }
-            }
-        }
-    }
-
-
-
-    .noQuestionsHeading {
-        margin-top: 140px;
-        font-size: 24px;
-        font-weight: 500;
-        letter-spacing: 0.3px;
-        color: $text-grey;
-    }
-
-    .noQuestionsWarning {
-        font-size: 19.2px;
-        color: $text-grey;
-    }
-
+.sessionQuestionsWrapper {
     .SessionClosedMessage {
         margin: 20px auto;
         padding: 0 10px;
@@ -134,26 +7,168 @@
         letter-spacing: 0.3px;
         color: $text-grey;
     }
+    
+    .SessionQuestionsContainer {
+    
+        // .QueueQuestions {
+        //     &.MyQuestion {
+        //         border: solid 3px #ffdba6;
+        //     }
+        // }]
+        &.whiteBackground {
+            background-color: white;
+            border-radius: 10.6px;
+        }
+    
+        .User {
+            margin-bottom: 16px;
+        }
+    
+        .Queue, .QuestionHeader {
+            text-align: left;
+            font-size: 16px;
+            color: $text-grey;
+            margin: 0;
+            font-weight: 400;
+            padding: 20px 0px;
+            margin-left: 12px;
+        }
+        .discussionHeaderWrapper {
+            position: relative;
+            .discussionQuestionsSlider {
+                width: 100%;
+                border-radius: 8px;
+                border: 3px solid #5599DB;
+                display: flex;
+                position: relative;
+                align-items: center;
+                &:hover {
+                    cursor: pointer;
+                }
+                .discussionSliderSelector {
+                    background: linear-gradient(45deg, #668AE9 0%, #6DB9EA 100%);
+                    position: absolute;
+                    left: 2px;
+                    width: calc(50% - 2px);
+                    height: 55px;
+                    border-radius: 6px;
+                    transition: left 0.4s ease-in-out;
+                    z-index: -1;
+                    &.isSlidedRight {
+                        left: 50%;
+                    }
+                }
+                .discussionSliderOption {
+                    width: 50%;
+                    font-size: 20px;
+                    font-weight: 500;
+                    color: #979797;
+                    padding: 20px;
+                    transition: color 0.4s ease-in-out;
+                    &.isSelected {
+                        color: white;
+                    }
+                }
+        
+            }
+            .sortDiscussionQuestionsWrapper {
+                display: flex;
+                margin: 20px 0px;
+                align-items: center;
+                justify-content: flex-end;
+                .discussionArrowsContainer {
+                    display: flex;
+                    align-items: center;
+                    margin-right: 5px;
+                    .sortDiscussionArrow {
+                        width: 20px;
+                        height: 13px;
+                    }
+                }
+                .sortDiscussionQuestionsLabel {
+                    margin: 0px 5px 0px 0px;
+                }
+                .sortDiscussionQuestionsOptions {
+                    display: flex;
+                    border: 1px solid #3594F1;
+                    border-radius: 5px;
+                    width: 200px;
+                    align-items: center;
+                    position: relative;
+                    &:hover {
+                        cursor: pointer;
+                    }
+                    .sortDiscussionsSlider {
+                        position: absolute;
+                        left: 1px;
+                        z-index: -1;
+                        height: 27px;
+                        width: calc(50% - 1px);
+                        background-color: #5599DB;
+                        border-radius: 3px;
+                        transition: left 0.4s ease-in-out;
+                        &.slidedRight {
+                            left: 50%;
+                        }
+                    }
+                    .sortDiscussionQuestionsOption {
+                        color: #3594F1;
+                        font-weight: 300;
+                        font-size: 14px;
+                        width: 50%;
+                        padding: 5px 0px;
+                        transition: color 0.4s ease-in-out;
+                        &.optionChosen {
+                            color: white;
+                        }
+                    }
+                }
+            }
+        }
+    
+    
+    
+        .noQuestionsHeading {
+            margin-top: 140px;
+            font-size: 24px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            color: $text-grey;
+        }
+    
+        .noQuestionsWarning {
+            font-size: 19.2px;
+            color: $text-grey;
+        }
+    }
 }
 
 
+
+
 @media only screen and (max-width: $mobile-breakpoint) {
-    .SessionQuestionsContainer {
-        .noQuestionsHeading {
-            margin-top: 40px;
-        }
-
-        .noQuestionsWarning, .noQuestionsHeading {
-            font-size: 15px;
-        }
-
-        .Queue, .QuestionHeader {
-            margin-left:12px;
-        }
-
+    
+    .sessionQuestionsWrapper {
         .SessionClosedMessage {
             margin: 20px auto;
             font-size: 16px;
         }
+    
+        .SessionQuestionsContainer {
+            .noQuestionsHeading {
+                margin-top: 40px;
+            }
+    
+            .noQuestionsWarning, .noQuestionsHeading {
+                font-size: 15px;
+            }
+    
+            .Queue, .QuestionHeader {
+                margin-left:12px;
+            }
+    
+    
+        }
     }
+
 }

@@ -83,7 +83,7 @@ const UserComment = ({content, poster, timePosted, isTA, commenterId, commentId,
                                     />
                                     {deleteShow && 
                                     <button
-                                        className="commentButton commentDelete" 
+                                        className={`commentButton commentDelete${isTA ? ' TADeleteOpt' : ''}`}
                                         onClick={() => deleteCommentsHelper(commentId, questionId)}
                                         type="button"
                                     >Delete</button>

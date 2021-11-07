@@ -7,7 +7,7 @@ import Linkify from 'linkifyjs/react';
 import addNotification from 'react-push-notification';
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
-
+import Expand from '../../media/expand.png';
 import { firestore } from '../../firebase';
 import {
     markStudentNoShow,
@@ -557,7 +557,7 @@ class SessionQuestion extends React.Component<Props, State> {
                     )}
                 </div >
                 {
-                    this.state.areCommentsVisible &&
+                    this.state.areCommentsVisible ?
                     < CommentsContainer
                         comments={this.state.comments}
                         users={this.props.commentUsers}
@@ -567,7 +567,17 @@ class SessionQuestion extends React.Component<Props, State> {
                         switchCommentsVisible={this.switchCommentsVisible}
                         deleteCommentsHelper={this.deleteCommentsHelper}
                         showNewComment={this.state.showNewComment}
-                    />
+                    /> :
+                    <div className="expandContainer">
+                        <img src={Expand} alt="Plus icon" className="expandImage"
+                        onClick={this.switchCommentsVisible} />
+                        <img src={user.photoUrl || '/placeholder.png'}
+                            alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
+                            className="expandProfile" />
+                        <h3 className="expandName">
+                            {`${user.firstName} ${user.lastName}`}
+                        </h3>
+                    </div>
                 }
             </div>
         );

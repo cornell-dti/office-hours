@@ -19,7 +19,9 @@ const CommentsContainer = ({ comments, users, currentUser, addCommentsHelper, qu
     const sortedComments = comments.sort((c1, c2) => c2.timePosted.seconds - c1.timePosted.seconds);
     return (
         <div className="commentsContainer">
-            <div className="commentsLine" onClick={switchCommentsVisible} />
+            {(showNewComment || comments.length > 0) && 
+                <div className="commentsLine" onClick={switchCommentsVisible} />
+            }
             <div className="allCommentsWrapper">
                 {showNewComment && <NewComment currentUser={currentUser} addCommentsHelper={addCommentsHelper}/>}
                 {sortedComments.map((comment) => {
