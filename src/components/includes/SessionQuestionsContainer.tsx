@@ -210,7 +210,8 @@ const SessionQuestionsContainer = (props: Props) => {
                 </div>
             )}
             <div className={"SessionQuestionsContainer splitQuestions" + 
-            ((shownQuestions && shownQuestions.length > 0 && (props.isTA || myQuestion)) ? ' whiteBackground' : '')} >
+            ((shownQuestions && shownQuestions.length > 0 && (props.isTA || myQuestion)) ? ' whiteBackground' : '')}
+            >
 
                 {assignedQuestions && assignedQuestions.length > 0 && props.isTA && 
                     <p className="QuestionHeader">Assigned Questions</p>
@@ -220,25 +221,25 @@ const SessionQuestionsContainer = (props: Props) => {
                 props.modality !== 'review' &&
                 props.isTA &&
                 assignedQuestions.map((question, i: number) => (
-                        <SessionQuestion
-                            key={question.questionId}
-                            modality={props.modality}
-                            question={question}
-                            users={props.users}
-                            commentUsers={props.users}
-                            tags={props.tags}
-                            index={i}
-                            virtualLocation={props.myVirtualLocation}
-                            isTA={props.isTA}
-                            includeRemove={false}
-                            triggerUndo={props.triggerUndo}
-                            isPast={props.isPast}
-                            myUserId={props.myUserId}
-                            user={props.user}
-                            setShowModal={props.setShowModal}
-                            setRemoveQuestionId={props.setRemoveQuestionId}
-                        />
-                        ))}
+                    <SessionQuestion
+                        key={question.questionId}
+                        modality={props.modality}
+                        question={question}
+                        users={props.users}
+                        commentUsers={props.users}
+                        tags={props.tags}
+                        index={i}
+                        virtualLocation={props.myVirtualLocation}
+                        isTA={props.isTA}
+                        includeRemove={false}
+                        triggerUndo={props.triggerUndo}
+                        isPast={props.isPast}
+                        myUserId={props.myUserId}
+                        user={props.user}
+                        setShowModal={props.setShowModal}
+                        setRemoveQuestionId={props.setRemoveQuestionId}
+                    />
+                ))}
                 {otherQuestions && otherQuestions.length > 0 && props.isTA && 
                     <p className="QuestionHeader">Unassigned Queue Questions</p>
                 }

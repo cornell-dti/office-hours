@@ -558,26 +558,32 @@ class SessionQuestion extends React.Component<Props, State> {
                 </div >
                 {
                     this.state.areCommentsVisible ?
-                    < CommentsContainer
-                        comments={this.state.comments}
-                        users={this.props.commentUsers}
-                        currentUser={this.props.user}
-                        addCommentsHelper={this.addCommentsHelper}
-                        questionId={question.questionId}
-                        switchCommentsVisible={this.switchCommentsVisible}
-                        deleteCommentsHelper={this.deleteCommentsHelper}
-                        showNewComment={this.state.showNewComment}
-                    /> :
-                    <div className="expandContainer">
-                        <img src={Expand} alt="Plus icon" className="expandImage"
-                        onClick={this.switchCommentsVisible} />
-                        <img src={user.photoUrl || '/placeholder.png'}
-                            alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
-                            className="expandProfile" />
-                        <h3 className="expandName">
-                            {`${user.firstName} ${user.lastName}`}
-                        </h3>
-                    </div>
+                        < CommentsContainer
+                            comments={this.state.comments}
+                            users={this.props.commentUsers}
+                            currentUser={this.props.user}
+                            addCommentsHelper={this.addCommentsHelper}
+                            questionId={question.questionId}
+                            switchCommentsVisible={this.switchCommentsVisible}
+                            deleteCommentsHelper={this.deleteCommentsHelper}
+                            showNewComment={this.state.showNewComment}
+                        /> :
+                        <div className="expandContainer">
+                            <img
+                                src={Expand}
+                                alt="Plus icon"
+                                className="expandImage"
+                                onClick={this.switchCommentsVisible}
+                            />
+                            <img
+                                src={user.photoUrl || '/placeholder.png'}
+                                alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
+                                className="expandProfile"
+                            />
+                            <h3 className="expandName">
+                                {`${user.firstName} ${user.lastName}`}
+                            </h3>
+                        </div>
                 }
             </div>
         );
