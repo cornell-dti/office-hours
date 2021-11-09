@@ -14,8 +14,8 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
     const [name, setName] = useState('');
     const [code, setCode] = useState('');
     const [semester, setSemester] = useState(CURRENT_SEMESTER);
-    const [year, setYear] = useState(currentTerm);
-    const [term, setTerm] = useState(currentYear);
+    const [year, setYear] = useState(currentYear);
+    const [term, setTerm] = useState(currentTerm);
 
     const disabled = courseId.trim().length === 0
         || name.trim().length === 0
@@ -25,6 +25,19 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
         || term.trim().length === 0;
 
     const onSave = () => {
+        if (isNaN(Number(courseId)) || Number(courseId) < 0) {
+            alert("Invalid course id format, enter a nonnegative integer");
+            return;
+        }
+        if (term !== 'FA' && term !== 'SP') {
+            alert("Incorrect term format, enter FA or SP");
+            return;
+        }
+        const codeRegex = /([A-z]{4}|[A-z]{5}) [1-9]{1}[0-9]{3}/;
+        if (!codeRegex.test(code)) {
+            alert("Incorrect course code: format course codes with 4-5 letters followed by a space a 4 digit number");
+            return;
+        }
         const course: Omit<FireCourse, 'courseId'> = {
             name,
             code,
@@ -57,16 +70,24 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
                 <input type="text" value={code} onChange={e => setCode(e.currentTarget.value)} />
             </div>
             <div className="course-section">
-                <h3>Semester</h3>
-                <input type="text" value={semester} onChange={e => setSemester(e.currentTarget.value)} />
-            </div>
-            <div className="course-section">
                 <h3>Year</h3>
-                <input type="text" value={year} onChange={e => setYear(e.currentTarget.value)} />
+                <input type="text" value={year} onChange={e => {
+                        setYear(e.currentTarget.value); 
+                        setSemester(term + e.currentTarget.value);
+                    }} 
+                />
             </div>
             <div className="course-section">
                 <h3>Term</h3>
-                <input type="text" value={term} onChange={e => setTerm(e.currentTarget.value)} />
+                <input type="text" value={term} onChange={e => {
+                        setTerm(e.currentTarget.value);
+                        setSemester(e.currentTarget.value + year);
+                    }} 
+                />
+            </div>
+            <div className="course-section">
+                <h3>Semester</h3>
+                <div>{semester}</div>
             </div>
             <div className="course-section">
                 <h3>Start Date</h3>
