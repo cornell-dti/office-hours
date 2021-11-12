@@ -59,19 +59,34 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
             <h2>Create New Course</h2>
             <div className="course-section">
                 <h3>Course Id</h3>
-                <input type="text" value={courseId} onChange={e => setCourseId(e.currentTarget.value)} />
+                <input 
+                    type="text" 
+                    value={courseId} 
+                    onChange={e => setCourseId(e.currentTarget.value)} 
+                />
             </div>
             <div className="course-section">
                 <h3>Course Name</h3>
-                <input type="text" value={name} onChange={e => setName(e.currentTarget.value)} />
+                <input 
+                    type="text" 
+                    value={name} 
+                    onChange={e => setName(e.currentTarget.value)} 
+                />
             </div>
             <div className="course-section">
                 <h3>Course Code</h3>
-                <input type="text" value={code} onChange={e => setCode(e.currentTarget.value)} />
+                <input 
+                    type="text" 
+                    value={code} 
+                    onChange={e => setCode(e.currentTarget.value)} 
+                />
             </div>
             <div className="course-section">
                 <h3>Year</h3>
-                <input type="text" value={year} onChange={e => {
+                <input 
+                    type="text" 
+                    value={year} 
+                    onChange={e => {
                         setYear(e.currentTarget.value); 
                         setSemester(term + e.currentTarget.value);
                     }} 
@@ -79,7 +94,10 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
             </div>
             <div className="course-section">
                 <h3>Term</h3>
-                <input type="text" value={term} onChange={e => {
+                <input 
+                    type="text" 
+                    value={term} 
+                    onChange={e => {
                         setTerm(e.currentTarget.value);
                         setSemester(e.currentTarget.value + year);
                     }} 
