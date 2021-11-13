@@ -134,6 +134,7 @@ class SessionQuestion extends React.Component<Props, State> {
                 'Question Marked as Complete', 
                 'Question marked as complete', 
                 'Your question has been marked as complete/no-show.');
+            window.localStorage.setItem('questionUpNotif', '');
         } 
     }
 

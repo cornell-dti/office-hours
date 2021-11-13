@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Loader } from 'semantic-ui-react';
 import moment from 'moment';
-// import addNotification from 'react-push-notification';
-// import {addDBNotification} from '../../firebasefunctions/notifications';
+import addNotification from 'react-push-notification';
+import {addDBNotification} from '../../firebasefunctions/notifications';
 import SessionQuestion from './SessionQuestion';
 import AddQuestion from './AddQuestion';
 import DiscussionQuestion from './DiscussionQuestion';
@@ -106,7 +106,7 @@ const StudentMyQuestion = ({
 
 const SessionQuestionsContainer = (props: Props) => {
     const [sentNotification, setSentNotification] = React.useState(
-        window.localStorage.getItem('questionUpNotif') === 'sent' || false
+        window.localStorage.getItem('questionUpNotif') === 'sent'
     );
     const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
     const [sortByUpvotes, setSortByUpvotes] = React.useState(true);
@@ -169,27 +169,27 @@ const SessionQuestionsContainer = (props: Props) => {
         // Update tab with user position
         document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
         // if user is up and we haven't already sent a notification, send one.
-        if (myQuestionIndex === 0 && !sentNotification) {
-            // window.localStorage.setItem('questionUpNotif', 'sent');
-            // setSentNotification(true);
-            // addDBNotification(
-            //     props.user, 
-            //     {
-            //         title : 'Your question is up!', 
-            //         subtitle : 'Your question is up!', 
-            //         message: "Your question has reached the top of the queue."
-            //     }
-            // )
-            // try {
-            //     addNotification({
-            //         title: 'Your question is up!',
-            //         native: true,
-            //     });
+        if (myQuestionIndex === 0 && window.localStorage.getItem('questionUpNotif') !== 'sent') {
+            window.localStorage.setItem('questionUpNotif', 'sent');
+            setSentNotification(true);
+            addDBNotification(
+                props.user, 
+                {
+                    title : 'Your question is up!', 
+                    subtitle : 'Your question is up!', 
+                    message: "Your question has reached the top of the queue."
+                }
+            )
+            try {
+                addNotification({
+                    title: 'Your question is up!',
+                    native: true,
+                });
                 
-            // } catch (error) {
-            //     // Do nothing. iOS crashes because Notification isn't defined
-            // }
-            // // If next render, the user isn't at 0 anymore, reset state
+            } catch (error) {
+                // Do nothing. iOS crashes because Notification isn't defined
+            }
+            // If next render, the user isn't at 0 anymore, reset state
         } else if (myQuestionIndex !== 0 && sentNotification) {
             window.localStorage.setItem('questionUpNotif', '');
             setSentNotification(false);
