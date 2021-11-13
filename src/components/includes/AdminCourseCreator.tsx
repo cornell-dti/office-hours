@@ -34,8 +34,8 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
             alert('Incorrect term format: enter FA or SP');
             return;
         }
-        if (isNaN(year as unknown as number)) {
-            alert('Please ensure the year is a number!');
+        if (isNaN(year as unknown as number) || year as unknown as number < 0) {
+            alert('Please ensure the year is a positive integer!');
             return;
         }
         const course: Omit<FireCourse, 'courseId'> = {
