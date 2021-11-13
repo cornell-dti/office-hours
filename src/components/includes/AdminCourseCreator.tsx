@@ -25,17 +25,17 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
         || term.trim().length === 0;
 
     const onSave = () => {
-        if (isNaN(Number(courseId)) || Number(courseId) < 0) {
-            alert("Invalid course id format, enter a nonnegative integer");
+        const codeRegex = /([A-z]{4}|[A-z]{5}) [1-9]{1}[0-9]{3}/;
+        if (!codeRegex.test(code)) {
+            alert('Incorrect course code format: enter 4-5 letter department followed by 4 digit number');
             return;
         }
         if (term !== 'FA' && term !== 'SP') {
-            alert("Incorrect term format, enter FA or SP");
+            alert('Incorrect term format: enter FA or SP');
             return;
         }
-        const codeRegex = /([A-z]{4}|[A-z]{5}) [1-9]{1}[0-9]{3}/;
-        if (!codeRegex.test(code)) {
-            alert("Incorrect course code: format course codes with 4-5 letters followed by a space a 4 digit number");
+        if (isNaN(year as unknown as number)) {
+            alert('Please ensure the year is a number!');
             return;
         }
         const course: Omit<FireCourse, 'courseId'> = {
