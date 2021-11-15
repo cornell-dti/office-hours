@@ -162,6 +162,7 @@ const SplitView = (props: {
                 showCalendarModal={showCalendarModal}
                 setShowCalendarModal={setShowCalendarModal}
                 currentExportSession={currentExportSession}
+                course={course}
             />
 
             {(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&

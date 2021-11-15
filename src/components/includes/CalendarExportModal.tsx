@@ -8,12 +8,14 @@ type Props = {
     showCalendarModal: boolean;
     setShowCalendarModal: Dispatch<SetStateAction<boolean>>;
     currentExportSession: FireSession;
+    course: FireCourse | undefined;
 };
 
 const CalendarExportModal = ({
     showCalendarModal,
     setShowCalendarModal,
     currentExportSession,
+    course,
 }: Props) => {
     const isShown = showCalendarModal ? 'Visible' : '';
 
@@ -54,14 +56,29 @@ const CalendarExportModal = ({
             .split('T')[0]
             .split('-')
             .join('');
+
+        const startTime = currentExportSession.startTime
+            .toDate()
+            .toString()
+            .substring(16, 22)
+            .split(':')
+            .join('');
+
+        const endTime = currentExportSession.endTime
+            .toDate()
+            .toString()
+            .substring(16, 22)
+            .split(':')
+            .join('');
+
         icsRows.push('BEGIN:VCALENDAR');
         icsRows.push('VERSION:2.0');
         icsRows.push('PRODID:-//ZContent.net//Zap Calendar 1.0//EN');
         icsRows.push('CALSCALE:GREGORIAN');
         icsRows.push('BEGIN:VEVENT');
-        icsRows.push(`SUMMARY:${currentExportSession.title}`);
-        icsRows.push(`DTSTART:${date}`);
-        icsRows.push(`DTEND:${date}`);
+        icsRows.push(`SUMMARY:${course?.code} ${currentExportSession.title}`);
+        icsRows.push(`DTSTART:${date}T${startTime}00`);
+        icsRows.push(`DTEND:${date}T${endTime}00`);
         icsRows.push(
             `LOCATION:${
                 'building' in currentExportSession
