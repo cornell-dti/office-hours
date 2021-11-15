@@ -8,22 +8,24 @@ type Props = FireComment & {
     questionId: string;
     currentUser: FireUser;
     deleteCommentsHelper: (commentId: string, questionId: string) => void;
+    isPast: boolean;
 }
 
 const UserComment = ({content, poster, timePosted, isTA, commenterId, commentId, 
-    questionId, deleteCommentsHelper, currentUser}: Props) => {
+    questionId, deleteCommentsHelper, currentUser, isPast}: Props) => {
 
     const [commentContent, setCommentContent] = useState(content);
     const [isCommentEditable, setCommentEditable] = useState(false);
     const [deleteShow, setDeleteShow] = useState(false);
 
     const handleEditCommentPost = () => {
+        if (isPast) return;
         updateCurrentComment(commentId, questionId, commentContent);
         setCommentEditable(false);
     }
 
     return (
-        <div className={"userComment " + ((currentUser && (commenterId === currentUser.userId)) ? "taComment": "")}>
+        <div className={"userComment " + ((currentUser && (commenterId === currentUser.userId)) ? "yourComment": "")}>
             <div className="commentInnerWrapper">
                 {poster ?
                     <div className="commentHeader">
@@ -71,7 +73,9 @@ const UserComment = ({content, poster, timePosted, isTA, commenterId, commentId,
                             <div className="notEditableButtonsWrapper">
                                 <button
                                     className="commentButton commentEdit"
-                                    onClick={() => setCommentEditable(true)} 
+                                    onClick={() => {
+                                        if (!isPast) setCommentEditable(true)
+                                    }} 
                                     type="button"
                                 >Edit</button>
                                 <div className="showDeleteMenu" >
@@ -79,12 +83,17 @@ const UserComment = ({content, poster, timePosted, isTA, commenterId, commentId,
                                         className="deleteDots"
                                         src={Dots} 
                                         alt="Hide or show delete"
-                                        onClick={() => setDeleteShow(!deleteShow)}
+                                        onClick={() => {
+                                            if (!isPast) setDeleteShow(!deleteShow);
+                                        }}
                                     />
                                     {deleteShow && 
                                     <button
-                                        className={`commentButton commentDelete${isTA ? ' TADeleteOpt' : ''}`}
-                                        onClick={() => deleteCommentsHelper(commentId, questionId)}
+                                        className={`commentButton commentDelete
+                                        ${(currentUser && (commenterId === currentUser.userId)) ? ' myDelete' : ''}`}
+                                        onClick={() => {
+                                            if (!isPast) deleteCommentsHelper(commentId, questionId);
+                                        }}
                                         type="button"
                                     >Delete</button>
                                     }

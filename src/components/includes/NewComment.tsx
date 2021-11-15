@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 type Props = {
     currentUser: FireUser;
     addCommentsHelper: (newComment: string) => void;
+    switchNewComment: () => void;
 }
 
-const NewComment = ({currentUser, addCommentsHelper}: Props) => {
+const NewComment = ({currentUser, addCommentsHelper, switchNewComment}: Props) => {
     const [currentComment, setCurrentComment] = useState('');
 
     const newCommentHandler = () => {
+        switchNewComment();
         addCommentsHelper(currentComment);
         setCurrentComment('');
     }

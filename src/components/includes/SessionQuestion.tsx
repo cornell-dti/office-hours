@@ -167,6 +167,7 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     assignQuestion = () => {
+        if (this.props.isPast) return;
         assignQuestionToTA(firestore, this.props.question, this.props.virtualLocation, this.props.myUserId);
     };
 
@@ -277,15 +278,23 @@ class SessionQuestion extends React.Component<Props, State> {
     }
 
     handleReplyButton = () => {
+        if (this.props.isPast) return;
         if (this.state.areCommentsVisible) {
             this.setState({
                 showNewComment: !this.state.showNewComment
             });
         } else {
             this.setState({
-                areCommentsVisible: true
+                areCommentsVisible: true,
+                showNewComment: true
             })
         }
+    }
+
+    switchNewComment = () => {
+        this.setState({
+            showNewComment: !this.state.showNewComment
+        });
     }
 
     render() {
@@ -566,6 +575,8 @@ class SessionQuestion extends React.Component<Props, State> {
                             switchCommentsVisible={this.switchCommentsVisible}
                             deleteCommentsHelper={this.deleteCommentsHelper}
                             showNewComment={this.state.showNewComment}
+                            switchNewComment={this.switchNewComment}
+                            isPast={this.props.isPast}
                         /> :
                         <div className="expandContainer">
                             <img

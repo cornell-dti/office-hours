@@ -11,10 +11,12 @@ type Props = {
     switchCommentsVisible: () => void;
     deleteCommentsHelper: (commentId: string, questionId: string) => void;
     showNewComment: boolean;
+    switchNewComment: () => void;
+    isPast: boolean;
 }
 
 const CommentsContainer = ({ comments, users, currentUser, addCommentsHelper, questionId, 
-    switchCommentsVisible, deleteCommentsHelper, showNewComment }: Props) => {
+    switchCommentsVisible, deleteCommentsHelper, showNewComment, switchNewComment, isPast }: Props) => {
 
     const sortedComments = comments.sort((c1, c2) => c2.timePosted.seconds - c1.timePosted.seconds);
     return (
@@ -23,7 +25,11 @@ const CommentsContainer = ({ comments, users, currentUser, addCommentsHelper, qu
                 <div className="commentsLine" onClick={switchCommentsVisible} />
             }
             <div className="allCommentsWrapper">
-                {showNewComment && <NewComment currentUser={currentUser} addCommentsHelper={addCommentsHelper}/>}
+                {showNewComment && !isPast && <NewComment
+                    currentUser={currentUser} 
+                    addCommentsHelper={addCommentsHelper}
+                    switchNewComment={switchNewComment}
+                />}
                 {sortedComments.map((comment) => {
                     const poster = users[comment.commenterId];
                     return <UserComment
@@ -33,6 +39,7 @@ const CommentsContainer = ({ comments, users, currentUser, addCommentsHelper, qu
                         deleteCommentsHelper={deleteCommentsHelper}
                         currentUser={currentUser}
                         key={comment.commentId}
+                        isPast={isPast}
                     />
                 })}
             </div>
