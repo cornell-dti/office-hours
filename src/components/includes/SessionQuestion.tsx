@@ -105,6 +105,26 @@ class SessionQuestion extends React.Component<Props, State> {
                 'A TA has been assigned to your question'
             );
         }
+
+        if (
+            previousState.answererId !== currentState.answererId && 
+            currentState.answererId === '' && 
+            user === currentState.askerId
+        ) {
+            addNotificationWrapper(
+                this.props.user, 
+                'TA Unassigned', 
+                'TA Unassigned', 
+                'A TA has been unassigned from your question and you\'ve been readded to the top of the queue.'
+            );
+        }
+        if(currentState.askerId === user && this.props.index === 0 && prevProps.index !== 0) {
+            addNotificationWrapper(
+                this.props.user, 
+                'Your question is up!', 
+                'Your question is up!', 
+                'Your question has reached the top of the queue.');
+        }
     }
 
     componentWillUnmount() {
@@ -113,7 +133,8 @@ class SessionQuestion extends React.Component<Props, State> {
                 this.props.user, 
                 'Question Marked as Complete', 
                 'Question marked as complete', 
-                'A TA has marked your question as either done or no show.');
+                'Your question has been marked as complete/no-show.');
+            window.localStorage.setItem('questionUpNotif', '');
         } 
     }
 
