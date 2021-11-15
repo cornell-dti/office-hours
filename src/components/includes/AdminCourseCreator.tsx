@@ -25,11 +25,6 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
         || term.trim().length === 0;
 
     const onSave = () => {
-        const codeRegex = /([A-z]{4}|[A-z]{5}) [1-9]{1}[0-9]{3}/;
-        if (!codeRegex.test(code)) {
-            alert('Incorrect course code format: enter 4-5 letter department followed by 4 digit number');
-            return;
-        }
         if (term !== 'FA' && term !== 'SP') {
             alert('Incorrect term format: enter FA or SP');
             return;
