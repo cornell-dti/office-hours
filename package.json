@@ -37,6 +37,7 @@
     "react-scripts": "^3.4.0",
     "redux": "^4.1.2",
     "redux-devtools-extension": "^2.13.9",
+    "redux-thunk": "^2.4.0",
     "rxfire": "^3.9.4",
     "rxjs": "^6.5.3",
     "semantic-ui-css": "^2.4.1",

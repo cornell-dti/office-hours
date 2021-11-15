@@ -15,10 +15,10 @@ import * as ReactGA from 'react-ga';
 import { Loader } from 'semantic-ui-react';
 
 import { Notifications } from 'react-push-notification';
+import { Provider } from 'react-redux'
 import { auth, firestore } from '../firebase';
 
-import { Provider } from 'react-redux'
-import store from "../redux/store"
+import {store} from "../redux/store"
 
 import AdminView from './pages/AdminView';
 import BlogCMS from './pages/BlogCMS';
