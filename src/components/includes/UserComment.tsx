@@ -23,7 +23,7 @@ const UserComment = ({content, poster, timePosted, isTA, commenterId, commentId,
     }
 
     return (
-        <div className={"userComment " + (isTA ? "taComment": "")}>
+        <div className={"userComment " + ((currentUser && (commenterId === currentUser.userId)) ? "taComment": "")}>
             <div className="commentInnerWrapper">
                 {poster ?
                     <div className="commentHeader">

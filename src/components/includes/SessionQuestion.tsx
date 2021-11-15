@@ -380,6 +380,19 @@ class SessionQuestion extends React.Component<Props, State> {
                                     </span>
                                 </div>
                             }
+                            {!this.props.isTA && user &&
+                                <div className="studentInformation">
+                                    <img
+                                        className="userInformationImg"
+                                        src={user.photoUrl || '/placeholder.png'}
+                                        alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
+                                    />
+                                    <span className="userInformationName">
+                                        {user.firstName + ' ' + user.lastName +
+                                        ' (You)'}
+                                    </span>
+                                </div>
+                            }
                             <div className="Location">
                                 {
                                     (
@@ -396,34 +409,20 @@ class SessionQuestion extends React.Component<Props, State> {
                                                 question.location
                                         }</>)}
                             </div>
-                            {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
-                                <p className={'Question' + studentCSS}>{question.content}</p>}
                         </div>
                         <div className="RightBar">
-                            {/* <button className="commentBtn" onClick={this.toggleComment} type="button">
-                                <Icon className="large" name="comment outline" />
-                            </button> */}
+                            <div className="Tags">
+                                {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} />}
+                                {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} />}
+                            </div>
+                            {question.timeEntered != null &&
+                                <p className="Time">
+                                    {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
+                                </p>}
                         </div>
                     </div>
-                    {(question.studentComment || question.taComment) &&
-                        <CommentBox
-                            studentComment={question.studentComment}
-                            taComment={question.taComment}
-                            studentCSS={studentCSS}
-                        />
-                    }
-                    <div className="BottomBar">
-                        {this.props.isTA && <span className="Spacer" />}
-                        <div className="Tags">
-                            {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} />}
-                            {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} />}
-                        </div>
-                        {question.timeEntered != null &&
-                            <p className="Time">
-                                posted at&nbsp;
-                                {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
-                            </p>}
-                    </div>
+                    {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
+                                <p className={'Question' + studentCSS}>{question.content}</p>}
                     {
                         this.props.isTA &&
                         <div className="Buttons">

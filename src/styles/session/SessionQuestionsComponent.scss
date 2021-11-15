@@ -121,18 +121,6 @@
             // padding: 11px 0px 0px 12px;
             text-align: left;
         }
-
-        .Question {
-            text-align: left;
-            padding: 8px 12px;
-            margin: 0em;
-            color: #595959;
-            font-weight: 300;
-        }
-
-        .Question.Student {
-            padding-top: 16px;
-        }
     }
 
     .TopBar {
@@ -144,8 +132,28 @@
         text-align: right;
         flex-grow: 1;
         font-weight: 300;
-        margin-top: 16px;
-        margin-right: 16px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        p {
+            font-size: 12px;
+        }
+
+        .Tags {
+            float: left;
+            text-align: left;
+
+            .tag {
+                cursor: default;
+            }
+        }
+
+        .Time {
+            float: right;
+            font-weight: 300;
+            color: black;
+            padding-right: 25px;
+        }
 
         .commentBtn {
             background-color: Transparent;
@@ -158,6 +166,18 @@
             background-color: lightgray;
             border-radius: 30px;
         }
+    }
+
+    .Question {
+        text-align: left;
+        padding: 8px 12px;
+        margin: 0em;
+        color: #595959;
+        font-weight: 300;
+    }
+
+    .Question.Student {
+        padding-top: 16px;
     }
 
     .CommentBox {
@@ -372,41 +392,6 @@
         }
     }
 
-
-    .BottomBar {
-        width: 100%;
-        overflow: hidden;
-
-        p {
-            font-size: 12px;
-        }
-
-        .Spacer {
-            float: left;
-            width: 40px;
-            height: 23px;
-        }
-
-        .Tags {
-            float: left;
-            margin-left: 0px;
-            margin-bottom: 5px;
-            padding: 1px 0px 8px 13px;
-            text-align: left;
-
-            .tag {
-                cursor: default;
-            }
-        }
-
-        .Time {
-            float: right;
-            font-weight: 300;
-            color: gray;
-            padding-right: 25px;
-        }
-    }
-
     .ui.button.JoinButton {
         margin: 10px;
     }
@@ -426,6 +411,11 @@
             justify-content: flex-end;
             position: relative;
             padding: 12px 12px 12px 0px;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            &:hover {
+                opacity: 1;
+            }
             .Remove {
                 margin-left: 5px;
                 color: #5599DB;
@@ -450,6 +440,11 @@
             justify-content: space-between;
             padding: 0px 12px;
             position: relative;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            &:hover {
+                opacity: 1;
+            }
             .replyButton {
                 display: flex;
                 cursor: pointer;

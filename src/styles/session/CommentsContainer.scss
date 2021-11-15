@@ -9,5 +9,9 @@
         height: 100%;
         width: 0px;
         cursor: pointer;
+        transition: border 0.2s ease-in-out;
+        &:hover {
+            border: 3px solid #474747;
+        }
     }
 }
