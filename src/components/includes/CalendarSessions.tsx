@@ -10,6 +10,7 @@ const CalendarSessions = ({
     sessions,
     callback,
     setShowCalendarModal,
+    setCurrentExportSession,
 }: {
     activeSession?: FireSession;
     user: FireUser;
@@ -17,6 +18,7 @@ const CalendarSessions = ({
     sessions: FireSession[];
     callback: (sessionId: string) => void;
     setShowCalendarModal: Dispatch<SetStateAction<boolean>>;
+    setCurrentExportSession: Dispatch<SetStateAction<FireSession>>;
 }) => {
     const labelSession = (session: FireSession, intervalMs: number) => {
         if (new Date(session.endTime.toDate()) < new Date()) {
@@ -50,6 +52,7 @@ const CalendarSessions = ({
                 }
                 status={labelSession(session, course.queueOpenInterval * 1000)}
                 setShowCalendarModal={setShowCalendarModal}
+                setCurrentExportSession={setCurrentExportSession}
             />
         );
     });

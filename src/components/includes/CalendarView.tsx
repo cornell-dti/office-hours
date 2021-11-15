@@ -14,6 +14,7 @@ type Props = {
     course?: FireCourse;
     user?: FireUser;
     setShowCalendarModal: React.Dispatch<React.SetStateAction<boolean>>;
+    setCurrentExportSession: React.Dispatch<React.SetStateAction<FireSession>>;
 };
 
 const CalenderView = ({
@@ -22,6 +23,7 @@ const CalenderView = ({
     course,
     user,
     setShowCalendarModal,
+    setCurrentExportSession,
 }: Props) => {
     const [selectedDateEpoch, setSelectedDate] = React.useState(
         new Date().setHours(0, 0, 0, 0)
@@ -61,6 +63,7 @@ const CalenderView = ({
                     course={course}
                     sessions={filteredSessions || []}
                     setShowCalendarModal={setShowCalendarModal}
+                    setCurrentExportSession={setCurrentExportSession}
                 />
             ) : (
                 <div className='CalendarSessions'>

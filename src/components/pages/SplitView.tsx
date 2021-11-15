@@ -60,7 +60,22 @@ const SplitView = (props: {
     const [removeQuestionId, setRemoveQuestionId] = useState<
     string | undefined
     >(undefined);
-    const [showCalendarModal, setShowCalendarModal] = useState(false);
+    const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
+    const [currentExportSession, setCurrentExportSession] =
+        useState<FireSession>({
+            modality: 'virtual',
+            courseId: '',
+            endTime: { seconds: 0, nanoseconds: 0, toDate: () => new Date() },
+            startTime: { seconds: 0, nanoseconds: 0, toDate: () => new Date() },
+            tas: [],
+            title: '',
+            sessionId: '',
+            totalQuestions: 0,
+            assignedQuestions: 0,
+            resolvedQuestions: 0,
+            totalWaitTime: 0,
+            totalResolveTime: 0,
+        });
 
     const user = useMyUser();
     const course = useCourse(props.match.params.courseId);
@@ -134,6 +149,7 @@ const SplitView = (props: {
                     session={session}
                     sessionCallback={handleSessionClick}
                     setShowCalendarModal={setShowCalendarModal}
+                    setCurrentExportSession={setCurrentExportSession}
                 />
             )}
 
@@ -145,6 +161,7 @@ const SplitView = (props: {
             <CalendarExportModal
                 showCalendarModal={showCalendarModal}
                 setShowCalendarModal={setShowCalendarModal}
+                currentExportSession={currentExportSession}
             />
 
             {(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
