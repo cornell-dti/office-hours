@@ -8,6 +8,7 @@ import SessionQuestionsContainer from './SessionQuestionsContainer';
 import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile, 
     useAskerQuestions } from '../../firehooks';
 import { updateQuestion , updateVirtualLocation } from '../../firebasefunctions/sessionQuestion' 
+import {addDBNotification} from '../../firebasefunctions/notifications'
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 import { firestore } from '../../firebase';
@@ -75,19 +76,34 @@ const SessionView = (
         if (newQuestions.size <= 0) {
             return;
         }
-
         if ((user.roles[course.courseId] === 'professor' ||
-            user.roles[course.courseId] === 'ta') && questions.length > 0) {
-            try {
-                addNotification({
-                    title: 'A new question has been added!',
-                    message: 'Check the queue.',
-                    native: true
-                });
-            } catch (error) {
-                // TODO: Handle this better.
-                // Do nothing. iOS crashes because Notification isn't defined
+            user.roles[course.courseId] === 'ta')) {
+            const prevQString = window.localStorage.getItem("prevQuestions");
+            const prevQArr = JSON.parse(prevQString || "{}");
+            const prevQSet = new Set(Array.from(prevQArr))
+            const newQuestionsPessimistic = new Set(questionIds.filter(q => !prevQSet.has(q)))
+            if(newQuestionsPessimistic.size > 0) {
+                addDBNotification(
+                    user, 
+                    {
+                        title : 'A new question has been added!', 
+                        subtitle : 'A new question was added', 
+                        message: "Check the queue."
+                    }
+                )
+                try {
+                    addNotification({
+                        title: 'A new question has been added!',
+                        subtitle : 'A new question was added', 
+                        message: 'Check the queue.',
+                        native: true
+                    });
+                } catch (error) {
+                    // TODO: Handle this better.
+                    // Do nothing. iOS crashes because Notification isn't defined
+                }
             }
+            window.localStorage.setItem("prevQuestions", JSON.stringify(questionIds));
         }
 
         const myQuestions = questions.filter(q => q.askerId === user.userId);
@@ -112,7 +128,7 @@ const SessionView = (
             return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
         setPrevQuestSet(new Set(questions.map(q => q.questionId)));
-    }, [prevQuestSet, questions, user.userId, course.courseId, user.roles]);
+    }, [prevQuestSet, questions, user.userId, course.courseId, user.roles, user]);
 
 
     const dismissUndo = () => {
