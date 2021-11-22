@@ -30,7 +30,7 @@ const TopBarNotifications = ({notificationTracker, user}: Props) => {
 
     useEffect(() => {
         if(notificationTracker !== undefined) {
-            clearNotifications(user);
+            clearNotifications(user, notificationTracker);
         }
         toggleHasViewed(notificationTracker === undefined || 
         notifications === undefined || notifications.length === 0 ||
