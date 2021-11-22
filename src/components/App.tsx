@@ -15,10 +15,11 @@ import * as ReactGA from 'react-ga';
 import { Loader } from 'semantic-ui-react';
 
 import { Notifications } from 'react-push-notification';
-import { Provider } from 'react-redux'
+import { Provider ,connect} from 'react-redux'
 import { auth, firestore } from '../firebase';
 
-import {store} from "../redux/store"
+import {updateAuthStatus, updateUser} from '../redux/actions/auth'
+import {store} from '../redux/store'
 
 import AdminView from './pages/AdminView';
 import BlogCMS from './pages/BlogCMS';
@@ -191,7 +192,21 @@ const DefaultRoute = () => {
     return <Redirect from="/" to={getDefaultRedirect(user, courses)} />;
 };
 
-export default () => {
+type AppProps = {
+    updateUser: (user: FireUser | undefined) => Promise<void>;
+    updateAuthStatus: (authStatus: boolean) => Promise<void>;
+}
+
+export default connect(null, {updateUser, updateAuthStatus})( ({updateUser, updateAuthStatus}: AppProps) => {
+    const user = useMyUser();
+    React.useEffect(() => {
+        updateUser(user);
+    }, [user, updateUser])
+    React.useEffect(() => {
+        auth.onAuthStateChanged((user) => {
+            updateAuthStatus(!!user)
+        });
+    }, [updateAuthStatus])
     return (
         <Provider store={store} >
             <Router>
@@ -258,4 +273,4 @@ export default () => {
             </Router>
         </Provider>
     );
-};
+});

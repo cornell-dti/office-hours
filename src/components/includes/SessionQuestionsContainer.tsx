@@ -2,11 +2,13 @@ import * as React from 'react';
 import { Loader } from 'semantic-ui-react';
 import moment from 'moment';
 import addNotification from 'react-push-notification';
+import { connect } from 'react-redux';
 import {addDBNotification} from '../../firebasefunctions/notifications';
 import SessionQuestion from './SessionQuestion';
 import AddQuestion from './AddQuestion';
 import DiscussionQuestion from './DiscussionQuestion';
 import SortArrows from '../../media/sortbyarrows.svg';
+import { RootState } from '../../redux/store';
 
 // Maximum number of questions to be shown to user
 const NUM_QUESTIONS_SHOWN = 20;
@@ -46,7 +48,6 @@ type StudentMyQuestionProps = {
     readonly myUserId: string;
     readonly modality: FireSessionModality;
     readonly studentQuestion: FireQuestion | null;
-    readonly user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
 };
@@ -60,7 +61,6 @@ const StudentMyQuestion = ({
     myUserId,
     modality,
     studentQuestion,
-    user,
     setShowModal,
     setRemoveQuestionId,
 }: StudentMyQuestionProps) => {
@@ -74,7 +74,6 @@ const StudentMyQuestion = ({
             {modality === 'review' ? (
                 <DiscussionQuestion
                     question={studentQuestion as FireDiscussionQuestion}
-                    user={user}
                     users={{}}
                     tags={tags}
                     isTA={false}
@@ -88,7 +87,6 @@ const StudentMyQuestion = ({
                     question={studentQuestion}
                     modality={modality}
                     users={{}}
-                    user={user}
                     tags={tags}
                     index={index}
                     isTA={false}
@@ -235,7 +233,6 @@ const SessionQuestionsContainer = (props: Props) => {
             )}
             {shownQuestions && myQuestion && (
                 <StudentMyQuestion
-                    user={props.user}
                     questionId={myQuestion.questionId}
                     studentQuestion={myQuestion}
                     modality={props.modality}
@@ -310,7 +307,6 @@ const SessionQuestionsContainer = (props: Props) => {
                     <DiscussionQuestion
                         key={question.questionId}
                         question={question as FireDiscussionQuestion}
-                        user={props.user}
                         users={props.users}
                         tags={props.tags}
                         isTA={props.isTA}
@@ -337,7 +333,6 @@ const SessionQuestionsContainer = (props: Props) => {
                         triggerUndo={props.triggerUndo}
                         isPast={props.isPast}
                         myUserId={props.myUserId}
-                        user={props.user}
                         setShowModal={props.setShowModal}
                         setRemoveQuestionId={props.setRemoveQuestionId}
                     />
@@ -371,4 +366,9 @@ SessionQuestionsContainer.defaultProps = {
     myVirtualLocation: undefined,
 };
 
-export default SessionQuestionsContainer;
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+
+export default connect(mapStateToProps, {})(SessionQuestionsContainer);

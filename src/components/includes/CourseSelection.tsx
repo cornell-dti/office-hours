@@ -2,10 +2,12 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
+import { connect } from 'react-redux';
 import TopBar from './TopBar';
 import CourseCard from './CourseCard';
 import { CURRENT_SEMESTER } from '../../constants';
 import { updateCourses } from '../../firebasefunctions/courses';
+import { RootState } from '../../redux/store';
 
 type Props = {
     readonly user: FireUser;
@@ -136,7 +138,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         <div>
             <div className="CourseSelection">
                 <TopBar
-                    user={user}
                     // Only used to distinguish between prof and non-prof. Hardcoding student is OK.
                     role="student"
                     context="session"
@@ -248,5 +249,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         </div>
     );
 }
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
 
-export default CourseSelection;
+
+export default connect(mapStateToProps, {})(CourseSelection);

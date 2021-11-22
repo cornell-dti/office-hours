@@ -8,7 +8,7 @@ import QuestionsLineChart from '../includes/QuestionsLineChart';
 import QuestionsBarChart from '../includes/QuestionsBarChart';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
-import { useMyUser, useCourse, useCourseUsersMap, useCoursesBetweenDates } from '../../firehooks';
+import { useCourse, useCourseUsersMap, useCoursesBetweenDates } from '../../firehooks';
 import TopBar from '../includes/TopBar';
 
 const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) => {
@@ -18,7 +18,6 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const [endDate, setEndDate] = useState(moment(new Date()));
     const [focusedInput, setFocusedInput] = useState<'endDate' | 'startDate' | null>(null);
 
-    const user = useMyUser();
     const course = useCourse(courseId);
     const courseUsers = useCourseUsersMap(courseId, true);
     // Fetch sessions for course between dates
@@ -137,7 +136,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     return (
         <div className="ProfessorView">
             <ProfessorSidebar courseId={courseId} code={(course && course.code) || 'Loading'} selected={'people'} />
-            <TopBar courseId={courseId} user={user} context="professor" role="professor" />
+            <TopBar courseId={courseId} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 <div className="main">
                     <div className="Date-picker-container">

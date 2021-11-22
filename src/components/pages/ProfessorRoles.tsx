@@ -4,12 +4,11 @@ import { useState } from 'react';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
-import { useMyUser, useCourse } from '../../firehooks';
+import { useCourse } from '../../firehooks';
 import CSVUploadView from '../includes/CSVUploadView';
 import CloseIcon from '../../media/CloseIcon.svg';
 
 const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
-    const user = useMyUser();
     const course = useCourse(courseId);
     const [viewOnlyMode, setViewOnlyMode] = useState(true);
     const [addedUsers, setAddedUsers] = useState<string[]>([]);
@@ -44,7 +43,7 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
         
         <div className="ProfessorView">
             <ProfessorSidebar courseId={courseId} code={course ? course.code : 'Loading'} selected={'roles'} />
-            <TopBar courseId={courseId} user={user} context="professor" role="professor" />
+            <TopBar courseId={courseId} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 {viewOnlyMode ?
                     <div className="main">

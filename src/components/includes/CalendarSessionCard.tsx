@@ -1,11 +1,13 @@
 import * as React from 'react';
 import Moment from 'react-moment';
+import { connect } from 'react-redux';
 import chevron from '../../media/chevron.svg';
 import { useSessionQuestions, useSessionTANames } from '../../firehooks';
 import {
     filterAndpartitionQuestions,
     computeNumberAheadFromFilterAndpartitionQuestions
 } from '../../utilities/questions';
+import { RootState } from '../../redux/store';
 
 const CalendarSessionCard = (props: {
     user: FireUser;
@@ -82,4 +84,10 @@ const CalendarSessionCard = (props: {
         </div>
     );
 };
-export default CalendarSessionCard;
+
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+
+export default connect(mapStateToProps, {})(CalendarSessionCard);
