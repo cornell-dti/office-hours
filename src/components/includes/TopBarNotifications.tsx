@@ -29,10 +29,13 @@ const TopBarNotifications = ({notificationTracker, user}: Props) => {
     }
 
     useEffect(() => {
+        if(notificationTracker !== undefined) {
+            clearNotifications(user);
+        }
         toggleHasViewed(notificationTracker === undefined || 
         notifications === undefined || notifications.length === 0 ||
         notificationTracker.notifications.toDate() >= notifications[0].createdAt.toDate())
-    }, [notificationTracker, notifications])
+    }, [notificationTracker, notifications, user])
 
     const getColor = (currNotif: SessionNotification) => {
         if (
@@ -49,7 +52,6 @@ const TopBarNotifications = ({notificationTracker, user}: Props) => {
             toggleDropped(false);
             if(dropped) {
                 updateTrackable();
-                clearNotifications(user)
             }
         }
     }
@@ -64,7 +66,6 @@ const TopBarNotifications = ({notificationTracker, user}: Props) => {
     const iconClicked = () => {
         if(dropped) {
             updateTrackable();
-            clearNotifications(user)
         }
         toggleDropped(!dropped);
     }

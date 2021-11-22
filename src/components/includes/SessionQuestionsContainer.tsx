@@ -104,7 +104,7 @@ const StudentMyQuestion = ({
 
 const SessionQuestionsContainer = (props: Props) => {
     const [sentNotification, setSentNotification] = React.useState(
-        window.localStorage.getItem('questionUpNotif') === 'sent' || false
+        window.localStorage.getItem('questionUpNotif') === 'sent'
     );
     const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
     const [sortByUpvotes, setSortByUpvotes] = React.useState(true);
@@ -167,7 +167,7 @@ const SessionQuestionsContainer = (props: Props) => {
         // Update tab with user position
         document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
         // if user is up and we haven't already sent a notification, send one.
-        if (myQuestionIndex === 0 && !sentNotification) {
+        if (myQuestionIndex === 0 && window.localStorage.getItem('questionUpNotif') !== 'sent') {
             window.localStorage.setItem('questionUpNotif', 'sent');
             setSentNotification(true);
             addDBNotification(
