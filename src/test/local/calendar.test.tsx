@@ -8,7 +8,7 @@ import { firestore } from '../../firebase'
 
 describe('getQuery', () => {
     afterEach(() => {
-      sinon.restore();
+        sinon.restore();
     }); 
 
     it('is called successfully', () => {

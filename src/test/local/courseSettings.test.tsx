@@ -1,6 +1,5 @@
 // @ts-nocheck
 
-import { expect } from 'chai';
 import sinon from 'sinon';
 import { updateSettingsInCourse } from '../../firebasefunctions/courseSettings'
 import { getDummyCourse } from '../generators/dummy'
@@ -9,7 +8,7 @@ import { firestore } from '../../firebase'
 
 describe('updateSettingsInCourse', () => {
     afterEach(() => {
-      sinon.restore();
+        sinon.restore();
     });
     
     it('is called successfully', () => {

@@ -9,7 +9,7 @@ import { firestore } from '../../firebase'
 
 describe('updateCourses', () => {
     afterEach(() => {
-      sinon.restore();
+        sinon.restore();
     });
 
     it('is called successfully given a dummy user', () => {

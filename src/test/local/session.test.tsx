@@ -1,6 +1,5 @@
 // @ts-nocheck
 
-import { expect } from 'chai';
 import sinon from 'sinon';
 import { deleteSession } from '../../firebasefunctions/session'
 import { firestore } from '../../firebase'
@@ -8,7 +7,7 @@ import { firestore } from '../../firebase'
 
 describe('deleteSession', () => { 
     afterEach(() => {
-      sinon.restore();
+        sinon.restore();
     });
 
     it('is called successfully', () => {
