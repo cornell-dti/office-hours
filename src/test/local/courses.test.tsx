@@ -8,6 +8,10 @@ import { firestore } from '../../firebase'
 
 
 describe('updateCourses', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
     it('is called successfully given a dummy user', () => {
 
         const dummyUser = getDummyUser('first', 'last', [], {});
