@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Loader } from 'semantic-ui-react';
 import moment from 'moment';
 import addNotification from 'react-push-notification';
-import {addDBNotification} from '../../firebasefunctions/notifications';
+import { addDBNotification } from '../../firebasefunctions/notifications';
 import SessionQuestion from './SessionQuestion';
 import AddQuestion from './AddQuestion';
 import DiscussionQuestion from './DiscussionQuestion';
@@ -173,10 +173,10 @@ const SessionQuestionsContainer = (props: Props) => {
             window.localStorage.setItem('questionUpNotif', 'sent');
             setSentNotification(true);
             addDBNotification(
-                props.user, 
+                props.user,
                 {
-                    title : 'Your question is up!', 
-                    subtitle : 'Your question is up!', 
+                    title: 'Your question is up!',
+                    subtitle: 'Your question is up!',
                     message: "Your question has reached the top of the queue."
                 }
             )
@@ -185,7 +185,7 @@ const SessionQuestionsContainer = (props: Props) => {
                     title: 'Your question is up!',
                     native: true,
                 });
-                
+
             } catch (error) {
                 // Do nothing. iOS crashes because Notification isn't defined
             }
