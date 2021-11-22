@@ -2,9 +2,11 @@ import React, {useState, useRef, useEffect} from 'react';
 import Moment from 'react-moment'
 import moment from 'moment-timezone';
 
+import { connect } from 'react-redux';
 import notif from '../../media/notif.svg'
 import notification from '../../media/notification.svg'
 import {viewedTrackable, clearNotifications} from '../../firebasefunctions/notifications'
+import { RootState } from '../../redux/store';
 
 type Props = {
     notificationTracker: NotificationTracker | undefined;
@@ -103,6 +105,9 @@ const TopBarNotifications = ({notificationTracker, user}: Props) => {
     )
 }
 
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
 
 
-export default TopBarNotifications
+export default connect(mapStateToProps, {})(TopBarNotifications);

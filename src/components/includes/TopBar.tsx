@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from 'semantic-ui-react';
+import {connect} from 'react-redux'
 import { logOut } from '../../firebasefunctions/user';
 import Logo from '../../media/QLogo2.svg';
 import CalendarHeader from './CalendarHeader';
 import ProfessorStudentToggle from './ProfessorStudentToggle';
 import TopBarNotifications from './TopBarNotifications'
-import {useNotificationTracker, useMyUser} from '../../firehooks';
+import {useNotificationTracker} from '../../firehooks';
+import { RootState } from '../../redux/store';
 
-const TopBar = (props: {
+type Props = {
     courseId: string;
-    user?: FireUser;
+    user: FireUser | undefined;
     // A user's role: student, ta, or professor
     // We show TA's and Profs extra links
     role: FireCourseRole;
@@ -18,7 +20,9 @@ const TopBar = (props: {
     context: string;
     course?: FireCourse;
     admin?: boolean;
-}) => {
+}
+
+const TopBar = (props: Props) => {
     const [showMenu, setShowMenu] = useState(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : '/placeholder.png');
     const ref = React.useRef<HTMLDivElement>(null);
@@ -26,7 +30,7 @@ const TopBar = (props: {
     const userPhotoUrl = props.user ? props.user.photoUrl : '/placeholder.png';
     useEffect(() => setImage(userPhotoUrl), [userPhotoUrl]);
 
-    const user = useMyUser();
+    const user = props.user;
     const email: string | undefined = user?.email
     const notificationTracker = useNotificationTracker(email);
 
@@ -62,7 +66,7 @@ const TopBar = (props: {
                         )}
                     </div>
                     <div className="rightContentWrapper" >
-                        <TopBarNotifications notificationTracker={notificationTracker} user={user} />
+                        <TopBarNotifications notificationTracker={notificationTracker} />
                         <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
                             <img
                                 src={image}
@@ -104,9 +108,13 @@ const TopBar = (props: {
 };
 
 TopBar.defaultProps = {
-    user: undefined,
     course: undefined,
     admin: false,
 };
 
-export default TopBar;
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+
+export default connect(mapStateToProps, {})(TopBar);

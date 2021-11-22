@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Dropdown, Table } from 'semantic-ui-react';
 import * as _ from 'lodash';
-import { useCourse, useCourseUsers, useMyUser } from '../../firehooks';
+import {connect} from 'react-redux'
+import { useCourse, useCourseUsers } from '../../firehooks';
 import { importProfessorsOrTAsFromPrompt, changeRole } from '../../firebasefunctions/importProfessorsOrTAs';
+import { RootState } from '../../redux/store';
 
 const RoleDropdown = ({
     user,
@@ -42,12 +44,18 @@ type columnT = 'firstName' | 'lastName' | 'email' | 'role';
 
 type EnrichedFireUser = FireUser & { role: FireCourseRole };
 
-export default ({ courseId, isAdminView }: { courseId: string; isAdminView: boolean }) => {
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+type Props = {
+    user: FireUser | undefined; courseId: string; isAdminView: boolean; 
+}
+
+export default connect(mapStateToProps, {})(({ user, courseId, isAdminView }: Props) => {
     const [direction, setDirection] = useState<'descending' | 'ascending'>('ascending');
     const [column, setColumn] = useState<columnT>('email');
     const course = useCourse(courseId);
-
-    const self = useMyUser();
 
     const courseUsers: readonly EnrichedFireUser[] = useCourseUsers(courseId).map(user => ({
         ...user,
@@ -138,7 +146,7 @@ export default ({ courseId, isAdminView }: { courseId: string; isAdminView: bool
                                     <RoleDropdown
                                         user={u}
                                         course={course}
-                                        disabled={u.email === self?.email}
+                                        disabled={u.email === user?.email}
                                     />
                                 </Table.Cell>
                             </Table.Row>
@@ -147,4 +155,4 @@ export default ({ courseId, isAdminView }: { courseId: string; isAdminView: bool
             </Table>
         </div>
     );
-};
+});

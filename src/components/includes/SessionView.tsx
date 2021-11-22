@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from 'semantic-ui-react';
 import addNotification from 'react-push-notification';
 
+import { connect } from 'react-redux';
 import SessionInformationHeader from './SessionInformationHeader';
 import SessionQuestionsContainer from './SessionQuestionsContainer';
 
@@ -14,6 +15,7 @@ import { filterUnresolvedQuestions } from '../../utilities/questions';
 import { firestore } from '../../firebase';
 
 import NotifBell from '../../media/notifBellWhite.svg';
+import { RootState } from '../../redux/store';
 
 
 type Props = {
@@ -215,7 +217,6 @@ const SessionView = (
             <SessionInformationHeader
                 session={session}
                 course={course}
-                user={user}
                 callback={backCallback}
                 isDesktop={isDesktop}
                 isTa={isTa}
@@ -256,7 +257,6 @@ const SessionView = (
                 tags={tags}
                 handleJoinClick={joinCallback}
                 myUserId={user.userId}
-                user={user}
                 triggerUndo={triggerUndo}
                 isOpen={isOpen(session, course.queueOpenInterval)}
                 isPast={isPast(session)}
@@ -271,9 +271,13 @@ const SessionView = (
     );
 };
 
-export default (props: Omit<Props, 'questions'>) => {
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+export default connect(mapStateToProps, {})( (props: Omit<Props, 'questions'>) => {
     const isTa = props.user.roles[props.course.courseId] !== undefined;
     const questions = props.session.modality === 'review' ? useSessionQuestions(props.session.sessionId, true) :
         filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));
     return <SessionView questions={questions} {...props} />;
-};
+});

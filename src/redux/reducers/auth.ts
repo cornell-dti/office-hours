@@ -1,5 +1,5 @@
 import {AnyAction} from 'redux'
-import {UPDATE_USER} from "../actions/Types"
+import {UPDATE_USER, UPDATE_AUTH} from "../actions/Types"
 
 const initialState = {
     user : undefined
@@ -13,6 +13,19 @@ export default function(state = initialState, action: AnyAction) {
                 ...state,
                 user : payload.user
             }
+        case UPDATE_AUTH: 
+            if(payload.authState) {
+                return {
+                    ...state,
+                    isAuthenticated : payload.authState
+                }
+            } 
+            return {
+                ...state,
+                user : undefined,
+                isAuthenticated : payload.authState
+            }
+            
         default:
             return state;
 
