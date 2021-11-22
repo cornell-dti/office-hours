@@ -96,6 +96,12 @@ const TopBar = (props: {
                             </span>
                             Send Feedback
                         </li>
+                        <li>
+                            <span>
+                                <Icon name="settings" />
+                            </span>
+                            SMS Settings
+                        </li>
                     </ul>
                 </>
             )}

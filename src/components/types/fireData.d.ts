@@ -135,6 +135,7 @@ interface FireUser {
     email: string;
     courses: readonly string[];
     roles: { readonly [courseId: string]: PrivilegedFireCourseRole | undefined };
+    phoneNumber?: string;
 }
 
 interface FirePendingUser {
