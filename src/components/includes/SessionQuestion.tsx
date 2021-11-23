@@ -61,6 +61,7 @@ type State = {
     comments: FireComment[];
     areCommentsVisible: boolean;
     showNewComment: boolean;
+    retrieveCalled: boolean;
 };
 
 class SessionQuestion extends React.Component<Props, State> {
@@ -81,7 +82,8 @@ class SessionQuestion extends React.Component<Props, State> {
             width: window.innerWidth,
             comments: [],
             areCommentsVisible: false,
-            showNewComment: true
+            showNewComment: true,
+            retrieveCalled: false
         };
     }
 
@@ -255,22 +257,22 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({ showDotMenu: status });
     };
 
+    setComments = (comments: FireComment[]) => {
+        this.setState({comments});
+    }
+
     retrieveComments = async (questionId: string) => {
-        const comments = await getComments(questionId);
-        if (comments.length !== this.state.comments.length) {
-            this.setState({comments});
-        }
+        getComments(questionId, this.setComments);
+        this.setState({retrieveCalled: true});
     }
 
     deleteCommentsHelper = (commentId: string, questionId: string) => {
         deleteComment(commentId, questionId);
-        this.retrieveComments(this.props.question.questionId);
     }
 
     addCommentsHelper = (content: string) => {
         addComment(content, this.props.myUserId, this.props.question.questionId, 
             this.props.isTA, this.props.question.askerId);
-        this.retrieveComments(this.props.question.questionId);
     }
 
     switchCommentsVisible = () => {
@@ -313,8 +315,9 @@ class SessionQuestion extends React.Component<Props, State> {
             : undefined;
 
         const comment = this.props.isTA ? question.taComment : question.studentComment;
-
-        this.retrieveComments(question.questionId);
+        if (this.state.retrieveCalled === false) {
+            this.retrieveComments(question.questionId);
+        }
         return (
             <div className="questionWrapper">
                 <div className="QueueQuestions">

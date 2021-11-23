@@ -210,12 +210,13 @@ export const updateCurrentComment = (commentId: string, questionId: string, newC
     batch.commit();
 }
 
-export const getComments = async (questionId: string): Promise<FireComment[]> => {
-    return firestore.doc(`questions/${questionId}`).collection('comments').get().then((commentData) => {
-        const comments: FireComment[] = []
+export const getComments = (questionId: string, setComments: ((comments: FireComment[]) => void)): (() => void) => {
+    const unsubscribe = firestore.doc(`questions/${questionId}`).collection('comments').onSnapshot((commentData) => {
+        const comments: FireComment[] = [];
         commentData.forEach((comment) => {
             comments.push(comment.data() as FireComment);
         });
-        return comments; 
+        setComments(comments);
     });
+    return unsubscribe;
 }
