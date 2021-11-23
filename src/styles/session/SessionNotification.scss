@@ -1,18 +1,30 @@
 .SessionNotification {
-    height: 83px;
-    display: flex;
-    background: #F67D7D;
-    flex-direction: row;
+    // height: 83px;
+    // display: flex;
+    // background: #F67D7D;
+    // flex-direction: row;
     // justify-content: center;
+    // text-align: left;
+
+    height: 40px;
+    display: flex;
+    background: #F2F9FF;
+    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.1));
+    flex-direction: row;
     text-align: left;
+    position: absolute;
+    margin: auto;
+    width: 60%;
+    top: 900px;
+    bottom: 0;
 
     button {
         position: absolute;
         outline: none; 
         border: none;
         background-color: transparent;
-        color: white;
-        font-family: Ionicons;
+        color: #5599DB;
+        font-family: Roboto;
         right: 0;
         font-size: 18px;
         line-height: 48px;
@@ -21,6 +33,7 @@
     img {
         align-self: center;
         position: absolute;
+        size: 80%;
         left: 28px;
     }
     
@@ -32,10 +45,10 @@
         font-family: Roboto;
         font-style: normal;
         font-weight: 500;
-        font-size: 20px;
+        font-size: 16px;
         letter-spacing: 0.642857px;
         margin: 0;
-        color: #FFFFFF;
+        color: #484848;
     }
 }
 

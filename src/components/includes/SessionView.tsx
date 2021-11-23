@@ -207,11 +207,9 @@ const SessionView = (
                 <div className="SessionNotification">
                     <img src={NotifBell} alt="Notification Bell" />
                     <p>Enable browser notifications to know when it's your turn.</p>
-                    <button
-                        type="button"
-                        onClick={() => setShowNotifBanner(false)}
-                    >
-                        <Icon name="x" /></button>
+                    <p className="button" onClick={() => setShowNotifBanner(false)}>
+                        GOT IT
+                    </p>
                 </div>
             }
             <SessionInformationHeader
@@ -231,7 +229,8 @@ const SessionView = (
                 }}
             />
 
-            {undoQuestionId &&
+            {
+                undoQuestionId &&
                 <div className="undoContainer">
                     <p className="undoClose" onClick={dismissUndo}>
                         <Icon name="close" />
@@ -269,7 +268,7 @@ const SessionView = (
                 setShowModal={setShowModal}
                 setRemoveQuestionId={setRemoveQuestionId}
             />
-        </section>
+        </section >
     );
 };
 
