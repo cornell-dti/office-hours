@@ -8,7 +8,8 @@
 
     height: 40px;
     background: #F2F9FF;
-    //ADD OUTLINE
+    //FIX OUTLINE
+    border: 0.1px solid #5599DB;
     filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.1));
     display: flex;
     flex-direction: row;
@@ -21,6 +22,8 @@
  
     .label {
         align-self: center;
+        justify-self: flex-start;
+        // flex: left;
         color: #484848;
         font-family: Roboto;
         font-style: normal;
@@ -31,7 +34,7 @@
     }
     .button {
         align-self: center;
-        right: 0px;
+        margin-left: auto;
         outline: none; 
         border: none;
         background-color: transparent;
