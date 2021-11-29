@@ -7,27 +7,40 @@
     // text-align: left;
 
     height: 40px;
-    display: flex;
     background: #F2F9FF;
+    //ADD OUTLINE
     filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.1));
+    display: flex;
     flex-direction: row;
     text-align: left;
     position: absolute;
     margin: auto;
     width: 60%;
-    top: 900px;
+    top: 700px;
     bottom: 0;
-
-    button {
-        position: absolute;
+ 
+    .label {
+        align-self: center;
+        color: #484848;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 250px;
+        font-size: 14px;
+        letter-spacing: 0.642857px;
+        padding: 20px;
+    }
+    .button {
+        align-self: center;
+        right: 0px;
         outline: none; 
         border: none;
         background-color: transparent;
         color: #5599DB;
         font-family: Roboto;
-        right: 0;
-        font-size: 18px;
-        line-height: 48px;
+        font-size: 14px;
+        font-weight: 500px;
+        line-height: 48px;   
+        padding: 20px;    
     }
 
     img {
@@ -38,10 +51,10 @@
     }
     
     p {
-        align-self: center;
-        position: absolute;
+        // align-self: center;
+        // position: absolute;
         width: 70%;
-        left: 92px; 
+        float: left;
         font-family: Roboto;
         font-style: normal;
         font-weight: 500;
