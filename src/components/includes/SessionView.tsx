@@ -15,7 +15,8 @@ import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 import { firestore } from '../../firebase';
 
-import NotifBell from '../../media/notifBellWhite.svg';
+import Browser from '../../media/browser.svg';
+
 
 
 type Props = {
@@ -205,7 +206,7 @@ const SessionView = (
             {"Notification" in window &&
                 window?.Notification.permission !== "granted" && showNotifBanner === true &&
                 <div className="SessionNotification">
-                    <img src={NotifBell} alt="Notification Bell" />
+                    <img src={Browser} alt="Browser" />
                     <div className="label">Enable browser notifications to know when it's your turn.</div>
                     <div className="button" onClick={() => setShowNotifBanner(false)}>
                         GOT IT
