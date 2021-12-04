@@ -1,18 +1,22 @@
 import React, {useState, useRef, useEffect} from 'react';
 
+import {connect} from 'react-redux';
 import ProductUpdate from './ProductUpdate'
 import ProductUpdatesModal from './ProductUpdatesModal'
 import bugFix from '../../media/bugFix.svg';
 import notif from '../../media/notif.svg'
 import {viewedTrackable} from '../../firebasefunctions/notifications'
-import {useMyUser, useNotificationTracker, useProductUpdate} from '../../firehooks';
+import {useNotificationTracker, useProductUpdate} from '../../firehooks';
+import { RootState } from '../../redux/store';
 
+type ProductProps = {
+    user: FireUser | undefined;
+}
 
-const ProductUpdates = () => {
+const ProductUpdates = ({user}: ProductProps) => {
     const [singleUpdate, toggleSingleUpdate] = useState(false);
     const [seeAll, toggleSeeAll] = useState(false);
 
-    const user = useMyUser();
     const email: string | undefined = user?.email
     const notificationTracker = useNotificationTracker(email);
 
@@ -96,6 +100,9 @@ const ProductUpdates = () => {
     )
 }
 
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
 
 
-export default ProductUpdates
+export default connect(mapStateToProps, {})(ProductUpdates)

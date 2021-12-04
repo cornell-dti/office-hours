@@ -5,13 +5,11 @@ import CalendarSessionCard from './CalendarSessionCard';
 
 const CalendarSessions = ({
     activeSession,
-    user,
     course,
     sessions,
     callback,
 }: {
     activeSession?: FireSession;
-    user: FireUser;
     course: FireCourse;
     sessions: FireSession[];
     callback: (sessionId: string) => void;
@@ -33,7 +31,6 @@ const CalendarSessions = ({
     const sessionCards = sessions.map(session => {
         return (
             <CalendarSessionCard
-                user={user}
                 course={course}
                 session={session}
                 key={session.sessionId}

@@ -4,12 +4,11 @@ import ProfessorTagsTable from '../includes/ProfessorTagsTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
-import { useMyUser, useCourse } from '../../firehooks';
+import { useCourse } from '../../firehooks';
 
 const ProfessorTagsView = (
     { match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>
 ) => {
-    const user = useMyUser();
     const course = useCourse(courseId);
     return (
         <div className="ProfessorView">
@@ -19,7 +18,7 @@ const ProfessorTagsView = (
                 selected={'tags'}
             />
             <div className="profTopBar">
-                <TopBar courseId={courseId} user={user} context="professor" role="professor" course={course}/>
+                <TopBar courseId={courseId} context="professor" role="professor" course={course}/>
             </div>
             <section className="rightOfSidebar">
                 <div className="main">

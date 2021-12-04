@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { Loader } from 'semantic-ui-react';
 
+import { connect } from 'react-redux';
 import CalendarDaySelect from './CalendarDaySelect';
 import CalendarSessions from './CalendarSessions';
 
 import { useQueryWithLoading } from '../../firehooks';
 import { hasOverlap } from '../../utilities/date';
 import { getQuery } from '../../firebasefunctions/calendar';
+import { RootState } from '../../redux/store';
 
 type Props = {
     session?: FireSession;
@@ -41,7 +43,6 @@ const CalenderView = ({ session, sessionCallback, course, user }: Props) => {
             <CalendarDaySelect callback={setSelectedDate} />
             {course && user && sessions ? (
                 <CalendarSessions
-                    user={user}
                     activeSession={session}
                     callback={sessionCallback}
                     course={course}
@@ -62,4 +63,8 @@ CalenderView.defaultProps = {
     user: undefined
 }
 
-export default CalenderView;
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+export default connect(mapStateToProps, {})(CalenderView);

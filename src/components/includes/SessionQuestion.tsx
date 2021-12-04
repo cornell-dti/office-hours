@@ -4,6 +4,7 @@ import Moment from 'react-moment';
 import { useState } from "react";
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
+import { connect } from 'react-redux';
 import {addNotificationWrapper} from '../../utilities/notifications'
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
@@ -17,6 +18,7 @@ import {
     markQuestionDontKnow,
     updateComment
 } from '../../firebasefunctions/sessionQuestion';
+import { RootState } from '../../redux/store';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -667,4 +669,9 @@ CommentBox.defaultProps = {
     studentCSS: undefined,
 };
 
-export default SessionQuestion;
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+
+export default connect(mapStateToProps, {})(SessionQuestion);
