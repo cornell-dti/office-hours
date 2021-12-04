@@ -16,8 +16,6 @@ import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 import { firestore } from '../../firebase';
 
-
-import NotifBell from '../../media/notifBellWhite.svg';
 import { RootState } from '../../redux/store';
 import Browser from '../../media/browser.svg';
 
