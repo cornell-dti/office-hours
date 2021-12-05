@@ -64,7 +64,7 @@ const SplitView = (props: {
     const course = useCourse(props.match.params.courseId);
     const session = useSession(props.match.params.sessionId);
     const width = useWindowWidth();
-
+    
     // Handle browser back button
     props.history.listen((location) => {
         setActiveView(
@@ -113,6 +113,7 @@ const SplitView = (props: {
                     course={course}
                     session={session}
                     sessionCallback={handleSessionClick}
+                    isActiveSession={props.match.params.sessionId === session?.sessionId}
                 />}
                 
             {"Notification" in window &&
@@ -122,7 +123,7 @@ const SplitView = (props: {
                 
             {(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
                 ((course && user) ? (
-                    session ? (
+                    (session && props.match.params.sessionId === session.sessionId) ? (
                         <SessionView
                             course={course}
                             session={session}

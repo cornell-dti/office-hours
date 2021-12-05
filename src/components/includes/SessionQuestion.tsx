@@ -131,12 +131,21 @@ class SessionQuestion extends React.Component<Props, State> {
 
     componentWillUnmount() {
         if(this.props.myUserId === this.props.question.askerId) {
-            addNotificationWrapper(
-                this.props.user, 
-                'Question Marked as Complete', 
-                'Question marked as complete', 
-                'Your question has been marked as complete/no-show.');
-            window.localStorage.setItem('questionUpNotif', '');
+            if(this.props.question.status !== 'unresolved') {
+                addNotificationWrapper(
+                    this.props.user, 
+                    'Question Marked as Complete', 
+                    'Question marked as complete', 
+                    'Your question has been marked as complete/no-show.');
+                window.localStorage.setItem('questionUpNotif', '');
+            } else if (this.props.index === -1){
+                addNotificationWrapper(
+                    this.props.user, 
+                    'Question Removed', 
+                    'Question removed', 
+                    'Your question has been removed from the queue.');
+                window.localStorage.setItem('questionUpNotif', '');
+            }
         } 
     }
 
