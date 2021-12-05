@@ -130,8 +130,9 @@ class SessionQuestion extends React.Component<Props, State> {
     }
 
     componentWillUnmount() {
+
         if(this.props.myUserId === this.props.question.askerId) {
-            if(this.props.question.status !== 'unresolved') {
+            if(this.props.question.status !== 'unresolved' && this.props.index === -1) {
                 addNotificationWrapper(
                     this.props.user, 
                     'Question Marked as Complete', 
