@@ -1,4 +1,4 @@
-import {UPDATE_USER, UPDATE_AUTH} from "./Types"
+import {UPDATE_USER, UPDATE_AUTH, LOGOUT_CLEAR} from "./Types"
 import type {AppDispatch} from "../store"
 
 export const updateUser = (user: FireUser | undefined) =>  async (dispatch: AppDispatch) => {
@@ -19,4 +19,5 @@ export const updateAuthStatus = (authState: boolean) => async (dispatch: AppDisp
         type : UPDATE_AUTH,
         payload
     })
+    dispatch({type: LOGOUT_CLEAR})
 }

@@ -14,6 +14,7 @@ import { firestore } from '../../firebase';
 import { removeQuestionbyID } from '../../firebasefunctions/sessionQuestion'
 import TopBar from '../includes/TopBar';
 import { RootState } from '../../redux/store';
+import {updateCourse, updateSession} from "../../redux/actions/course";
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -41,7 +42,7 @@ const useWindowWidth = () => {
     return width;
 };
 
-const SplitView = (props: {
+type SplitViewProps = {
     history: H.History;
     match: {
         params: {
@@ -51,46 +52,58 @@ const SplitView = (props: {
         };
     };
     user: FireUser | undefined;
-}) => {
+    course: FireCourse;
+    session: FireSession;
+    updateCourse: (user: FireCourse | undefined) => Promise<void>;
+    updateSession: (user: FireSession | undefined) => Promise<void>;
+}
+
+const SplitView = ({history, match, user, course, session, updateCourse, updateSession}: SplitViewProps) => {
     const [activeView, setActiveView] = useState(
-        props.match.params.page === 'add'
+        match.params.page === 'add'
             ? 'addQuestion'
-            : props.match.params.sessionId ? 'session' : 'calendar'
+            : match.params.sessionId ? 'session' : 'calendar'
     );
     const [showModal, setShowModal] = useState(false);
     const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
 
-    const user = props.user;
-    const course = useCourse(props.match.params.courseId);
-    const session = useSession(props.match.params.sessionId);
+    const courseHook = useCourse(match.params.courseId);
+    const sessionHook = useSession(match.params.sessionId);
     const width = useWindowWidth();
+
+    useEffect(() => {
+        updateCourse(courseHook);
+    }, [courseHook, updateCourse])
+    useEffect(() => {
+        updateSession(sessionHook);
+    }, [sessionHook, updateSession])
     
     // Handle browser back button
-    props.history.listen((location) => {
+    history.listen((location) => {
         setActiveView(
             location.pathname.indexOf('add') !== -1
                 ? 'addQuestion'
-                : props.match.params.sessionId ? 'session' : 'calendar'
+                : match.params.sessionId ? 'session' : 'calendar'
         );
     });
 
     // Keep track of active view for mobile
     const handleSessionClick = (newSessionId: string) => {
-        props.history.push('/course/' + props.match.params.courseId + '/session/' + newSessionId);
+        history.push('/course/' + match.params.courseId + '/session/' + newSessionId);
         setActiveView('session');
     };
 
     const handleJoinClick = () => {
         if (session) {
-            props.history.push(
-                '/course/' + props.match.params.courseId + '/session/' + session.sessionId + '/add'
+            history.push(
+                '/course/' + match.params.courseId + '/session/' + session.sessionId + '/add'
             );
             setActiveView('addQuestion');
         }
     };
 
     const handleBackClick = () => {
-        props.history.push('/course/' + props.match.params.courseId);
+        history.push('/course/' + match.params.courseId);
         setActiveView('calendar');
     };
 
@@ -105,7 +118,7 @@ const SplitView = (props: {
             <TopBar
                 role={(user && course && user.roles[course.courseId]) || 'student'}
                 context="student"
-                courseId={props.match.params.courseId}
+                courseId={match.params.courseId}
                 course={course}
             />
             {(width > MOBILE_BREAKPOINT || activeView === 'calendar') &&
@@ -113,7 +126,7 @@ const SplitView = (props: {
                     course={course}
                     session={session}
                     sessionCallback={handleSessionClick}
-                    isActiveSession={props.match.params.sessionId === session?.sessionId}
+                    isActiveSession={match.params.sessionId === session?.sessionId}
                 />}
                 
             {"Notification" in window &&
@@ -123,10 +136,8 @@ const SplitView = (props: {
                 
             {(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
                 ((course && user) ? (
-                    (session && props.match.params.sessionId === session.sessionId) ? (
+                    (session) ? (
                         <SessionView
-                            course={course}
-                            session={session}
                             isDesktop={width > MOBILE_BREAKPOINT}
                             backCallback={handleBackClick}
                             joinCallback={handleJoinClick}
@@ -168,8 +179,10 @@ const SplitView = (props: {
     );
 };
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user : state.auth.user,
+    course : state.course.course,
+    session: state.course.session
 })
 
 
-export default connect(mapStateToProps, {})(SplitView);
+export default connect(mapStateToProps, {updateCourse, updateSession})(SplitView);

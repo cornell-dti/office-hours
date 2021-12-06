@@ -272,7 +272,9 @@ const SessionView = (
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user : state.auth.user,
+    course : state.course.course,
+    session: state.course.session
 })
 
 export default connect(mapStateToProps, {})( (props: Omit<Props, 'questions'>) => {

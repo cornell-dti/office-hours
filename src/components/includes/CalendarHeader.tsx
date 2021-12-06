@@ -1,18 +1,21 @@
 import * as React from 'react';
 import { useHistory } from 'react-router';
+import {connect} from 'react-redux'
 import { useMyCourses } from '../../firehooks';
 
 import { CURRENT_SEMESTER } from '../../constants';
+import {updateSession} from '../../redux/actions/course'
 
 import Toggle from '../../media/Toggle.svg';
 
 type Props = {
     readonly currentCourseCode: string;
     readonly role?: FireCourseRole;
+    updateSession: (user: FireSession | undefined) => Promise<void>;
     // readonly avatar?: string;
 };
 
-const CalendarHeader = ({ currentCourseCode, role }: Props): React.ReactElement => {
+const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): React.ReactElement => {
     const [showCourses, setShowCourses] = React.useState(false);
     const ref = React.useRef<HTMLDivElement>(null);
     const courses = useMyCourses();
@@ -25,6 +28,7 @@ const CalendarHeader = ({ currentCourseCode, role }: Props): React.ReactElement 
     };
 
     const courseClicked = (course: FireCourse) => {
+        updateSession(undefined);
         history.push('/course/' + course.courseId);
         window.localStorage.setItem('lastid', String(course.courseId));
     };
@@ -82,4 +86,4 @@ CalendarHeader.defaultProps = {
     // avatar: undefined
 }
 
-export default CalendarHeader;
+export default connect(null, {updateSession})(CalendarHeader);
