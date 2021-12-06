@@ -81,7 +81,7 @@ const SessionView = (
             return;
         }
         if ((user.roles[course.courseId] === 'professor' ||
-            user.roles[course.courseId] === 'ta')) {
+            user.roles[course.courseId] === 'ta') && window.localStorage.getItem("prevSession") === session.sessionId) {
             const prevQString = window.localStorage.getItem("prevQuestions");
             const prevQArr = JSON.parse(prevQString || "{}");
             const prevQSet = new Set(Array.from(prevQArr))
@@ -110,6 +110,8 @@ const SessionView = (
             window.localStorage.setItem("prevQuestions", JSON.stringify(questionIds));
         }
 
+        window.localStorage.setItem("prevSession", session.sessionId);
+
         const myQuestions = questions.filter(q => q.askerId === user.userId);
         const lastAskedQuestion = myQuestions.length > 0
             ? myQuestions.reduce(
@@ -132,8 +134,7 @@ const SessionView = (
             return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
         setPrevQuestSet(new Set(questions.map(q => q.questionId)));
-    }, [prevQuestSet, questions, user.userId, course.courseId, user.roles, user]);
-
+    }, [prevQuestSet, questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
 
     const dismissUndo = () => {
         if (timeoutId) {

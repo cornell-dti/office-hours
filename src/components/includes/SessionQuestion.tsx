@@ -80,9 +80,7 @@ class SessionQuestion extends React.Component<Props, State> {
         const previousState = prevProps.question;
         const currentState = this.props.question;
         const user = this.props.myUserId;
-        console.log(this.props);
         if(!this.props.isPast) {
-            console.log("Isn't a past session");
             if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
                 addNotificationWrapper(this.props.user, 'TA comment', 'New TA comment', currentState.taComment);
             }
@@ -121,13 +119,6 @@ class SessionQuestion extends React.Component<Props, State> {
                     'A TA has been unassigned from your question and you\'ve been readded to the top of the queue.'
                 );
             }
-            if(currentState.askerId === user && this.props.index === 0 && prevProps.index !== 0) {
-                addNotificationWrapper(
-                    this.props.user, 
-                    'Your question is up!', 
-                    'Your question is up!', 
-                    'Your question has reached the top of the queue.');
-            }
         }
     }
 
@@ -139,14 +130,7 @@ class SessionQuestion extends React.Component<Props, State> {
                     'Question Marked as Complete', 
                     'Question marked as complete', 
                     'Your question has been marked as complete/no-show.');
-                window.localStorage.setItem('questionUpNotif', '');
-            } else if (this.props.index === -1){
-                addNotificationWrapper(
-                    this.props.user, 
-                    'Question Removed', 
-                    'Question removed', 
-                    'Your question has been removed from the queue.');
-                window.localStorage.setItem('questionUpNotif', '');
+                window.localStorage.removeItem(this.props.question.questionId);
             }
         } 
     }

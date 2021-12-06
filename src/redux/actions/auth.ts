@@ -19,5 +19,5 @@ export const updateAuthStatus = (authState: boolean) => async (dispatch: AppDisp
         type : UPDATE_AUTH,
         payload
     })
-    dispatch({type: LOGOUT_CLEAR})
+    if(!authState) dispatch({type: LOGOUT_CLEAR})
 }
