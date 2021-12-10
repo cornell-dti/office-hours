@@ -7,13 +7,18 @@
     display: flex;
     flex-direction: row;
     text-align: left;
-    position: fixed;
     margin: auto;
+    position: fixed;
     width: 60%;
-    top: 650px;
-    bottom: 0;
+    //top: 620px;
     z-index: 9999;
 
+    #browserNotif{
+        top: 600px;
+    }
+    #textNotif{
+        top: 660px;
+    }
     .label {
         align-self: center;
         justify-self: flex-start;

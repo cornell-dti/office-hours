@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from 'semantic-ui-react';
 import addNotification from 'react-push-notification';
-
 import { connect } from 'react-redux';
 import SessionInformationHeader from './SessionInformationHeader';
 import SessionQuestionsContainer from './SessionQuestionsContainer';
@@ -206,11 +205,20 @@ const SessionView = (
         <section className="StudentSessionView">
             {"Notification" in window &&
                 window?.Notification.permission !== "granted" && showNotifBanner === true &&
-                <div className="SessionNotification">
-                    <img src={Browser} alt="Browser" />
-                    <div className="label">Enable browser notifications to know when it's your turn.</div>
-                    <div className="button" onClick={() => setShowNotifBanner(false)}>
-                        GOT IT
+                <div>
+                    <div className="SessionNotification" id="browserNotif">
+                        <img src={Browser} alt="Browser" />
+                        <div className="label">Enable browser notifications to know when it's your turn.</div>
+                        <div className="button" onClick={() => setShowNotifBanner(false)}>
+                            GOT IT
+                        </div>
+                    </div>
+                    <div className="SessionNotification" id="textNotif">
+                        <img src={Browser} alt="Browser" />
+                        <div className="label">Enable text message notifications to know when it's your turn.</div>
+                        <div className="button" onClick={() => setShowNotifBanner(false)}>
+                            ENABLE
+                        </div>
                     </div>
                 </div>
             }
@@ -272,10 +280,10 @@ const SessionView = (
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
-export default connect(mapStateToProps, {})( (props: Omit<Props, 'questions'>) => {
+export default connect(mapStateToProps, {})((props: Omit<Props, 'questions'>) => {
     const isTa = props.user.roles[props.course.courseId] !== undefined;
     const questions = props.session.modality === 'review' ? useSessionQuestions(props.session.sessionId, true) :
         filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));
