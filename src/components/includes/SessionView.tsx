@@ -205,15 +205,15 @@ const SessionView = (
         <section className="StudentSessionView">
             {"Notification" in window &&
                 window?.Notification.permission !== "granted" && showNotifBanner === true &&
-                <div>
-                    <div className="SessionNotification" id="browserNotif">
+                <div className="SessionNotification">
+                    <div className="browserNotif">
                         <img src={Browser} alt="Browser" />
                         <div className="label">Enable browser notifications to know when it's your turn.</div>
                         <div className="button" onClick={() => setShowNotifBanner(false)}>
                             GOT IT
                         </div>
                     </div>
-                    <div className="SessionNotification" id="textNotif">
+                    <div className="textNotif">
                         <img src={Browser} alt="Browser" />
                         <div className="label">Enable text message notifications to know when it's your turn.</div>
                         <div className="button" onClick={() => setShowNotifBanner(false)}>
