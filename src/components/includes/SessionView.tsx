@@ -63,7 +63,9 @@ const SessionView = (
     });
 
     const [prevQuestSet, setPrevQuestSet] = useState(new Set(questions.map(q => q.questionId)));
-    const [showNotifBanner, setShowNotifBanner] = useState(true);
+    const [showBrowserNotifBanner, setShowBrowserNotifBanner] = useState(true);
+    const [showTextsNotifBanner, setShowTextsNotifBanner] = useState(true);
+
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
 
@@ -201,22 +203,41 @@ const SessionView = (
         return null;
     }, [myQuestions]);
 
+    const enableClicked = () => {
+        setShowBrowserNotifBanner(false);
+        console.log(showBrowserNotifBanner);
+    };
+
+    const gotItClicked = () => {
+        setShowTextsNotifBanner(false);
+        console.log(showTextsNotifBanner);
+    };
+
+    console.log(showBrowserNotifBanner);
+    console.log(showTextsNotifBanner);
+
     return (
         <section className="StudentSessionView">
             {"Notification" in window &&
-                window?.Notification.permission !== "granted" && showNotifBanner === true &&
+                window?.Notification.permission !== "granted" && showBrowserNotifBanner === true &&
                 <div className="SessionNotification">
                     <div className="browserNotif">
                         <img src={Browser} alt="Browser" />
                         <div className="label">Enable browser notifications to know when it's your turn.</div>
-                        <div className="button" onClick={() => setShowNotifBanner(false)}>
+                        <div className="button" onClick={() => enableClicked}>
                             GOT IT
                         </div>
                     </div>
+                </div>
+            }
+            {
+                "Notification" in window &&
+                window?.Notification.permission !== "granted" && showTextsNotifBanner === true &&
+                <div className="SessionNotification">
                     <div className="textNotif">
                         <img src={Browser} alt="Browser" />
                         <div className="label">Enable text message notifications to know when it's your turn.</div>
-                        <div className="button" onClick={() => setShowNotifBanner(false)}>
+                        <div className="button" onClick={() => gotItClicked}>
                             ENABLE
                         </div>
                     </div>
@@ -238,7 +259,8 @@ const SessionView = (
                 }}
             />
 
-            {undoQuestionId &&
+            {
+                undoQuestionId &&
                 <div className="undoContainer">
                     <p className="undoClose" onClick={dismissUndo}>
                         <Icon name="close" />
@@ -275,7 +297,7 @@ const SessionView = (
                 setShowModal={setShowModal}
                 setRemoveQuestionId={setRemoveQuestionId}
             />
-        </section>
+        </section >
     );
 };
 
