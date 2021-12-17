@@ -95,12 +95,12 @@ describe('getUsersFromSessions', () => {
         });
 
         const stubDoc = sinon.stub(firestore.collection('users'), 'doc');
-        stubDoc.withArgs('id').returns({
+        stubDoc.withArgs(sinon.match.string).returns({
             get: () => true
         });
-        sinon.stub(firestore.collection('sessions').doc('id'), 'get').returns(true);
+        sinon.stub(firestore.collection('users').doc(sinon.match.string), 'get').returns({});
     
-        expect(getUsersFromSessions(dummySessions)).to.be.true;
+        expect(getUsersFromSessions(dummySessions));
     })
 
 })

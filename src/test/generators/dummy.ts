@@ -245,3 +245,16 @@ export const getDummyPendingUserByCourses = (
         roles
     }
 }
+
+export const getDummyBlogPost = (
+    postId: string
+): BlogPost => {
+    const timeEntered = 9999;
+    return {
+        postId: postId,
+        title: 'dummy post',
+        description: 'dummy description',
+        listItems: ['item 1', 'item 2'],
+        timeEntered: timeToFireTimestamp(timeEntered)
+    }
+}
