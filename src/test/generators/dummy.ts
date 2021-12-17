@@ -251,7 +251,7 @@ export const getDummyBlogPost = (
 ): BlogPost => {
     const timeEntered = 9999;
     return {
-        postId: postId,
+        postId,
         title: 'dummy post',
         description: 'dummy description',
         listItems: ['item 1', 'item 2'],

@@ -1,10 +1,10 @@
 // @ts-nocheck
 
 import sinon from 'sinon';
+import { expect } from 'chai';
 import { deleteSession, addSession, updateSession, getUsersFromSessions } from '../../firebasefunctions/session'
 import { firestore } from '../../firebase'
 import { getDummySession, getDummySessionSeries } from '../generators/dummysession'
-import { expect } from 'chai';
 
 
 describe('deleteSession', () => { 
