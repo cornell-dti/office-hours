@@ -138,4 +138,21 @@
             width: 80%;
         }
     }
+
+    .CalendarExportModalVisible {
+        width: 80%;
+
+        .ExportText {
+            font-size: 15px;
+        }
+
+        img {
+            height: 40px;
+            width: 40px;
+        }
+
+        .CalendarItem {
+            width: 35%;
+        }
+    }
 }
