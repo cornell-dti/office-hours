@@ -64,13 +64,18 @@
     }
 }
 
+.CalendarExportModalVisible {
+    width: 600px;
+    height: 350px;
+}
+
 .CalendarExportModalScreen {
     .Title {
         font-weight: 500;
         font-size: 25px;
         line-height: 20px;
         color: #484848;
-        margin-bottom: 60px;
+        margin-bottom: 40px;
     }
 
     .CalendarContainer {
