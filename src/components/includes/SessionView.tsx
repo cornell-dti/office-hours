@@ -203,18 +203,13 @@ const SessionView = (
         return null;
     }, [myQuestions]);
 
-    const enableClicked = () => {
-        setShowBrowserNotifBanner(false);
-        console.log(showBrowserNotifBanner);
-    };
-
     const gotItClicked = () => {
-        setShowTextsNotifBanner(false);
-        console.log(showTextsNotifBanner);
+        setShowBrowserNotifBanner(false);
     };
 
-    console.log(showBrowserNotifBanner);
-    console.log(showTextsNotifBanner);
+    const enableClicked = () => {
+        setShowTextsNotifBanner(false);
+    };
 
     return (
         <section className="StudentSessionView">
@@ -224,7 +219,7 @@ const SessionView = (
                     <div className="browserNotif">
                         <img src={Browser} alt="Browser" />
                         <div className="label">Enable browser notifications to know when it's your turn.</div>
-                        <div className="button" onClick={() => enableClicked}>
+                        <div className="button" onClick={gotItClicked}>
                             GOT IT
                         </div>
                     </div>
@@ -237,7 +232,7 @@ const SessionView = (
                     <div className="textNotif">
                         <img src={Browser} alt="Browser" />
                         <div className="label">Enable text message notifications to know when it's your turn.</div>
-                        <div className="button" onClick={() => gotItClicked}>
+                        <div className="button" onClick={enableClicked}>
                             ENABLE
                         </div>
                     </div>
