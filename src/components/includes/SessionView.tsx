@@ -17,6 +17,7 @@ import { firestore } from '../../firebase';
 
 import { RootState } from '../../redux/store';
 import Browser from '../../media/browser.svg';
+import SMS from '../../media/sms.svg';
 
 
 type Props = {
@@ -230,7 +231,7 @@ const SessionView = (
                 window?.Notification.permission !== "granted" && showTextsNotifBanner === true &&
                 <div className="SessionNotification">
                     <div className="textNotif">
-                        <img src={Browser} alt="Browser" />
+                        <img src={SMS} alt="SMS" />
                         <div className="label">Enable text message notifications to know when it's your turn.</div>
                         <div className="button" onClick={enableClicked}>
                             ENABLE
