@@ -4,7 +4,8 @@ import Moment from 'react-moment';
 import { useState } from 'react';
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
-import addNotification from 'react-push-notification';
+import { connect } from 'react-redux';
+import {addNotificationWrapper} from '../../utilities/notifications'
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
 
@@ -17,6 +18,7 @@ import {
     markQuestionDontKnow,
     updateComment,
 } from '../../firebasefunctions/sessionQuestion';
+import { RootState } from '../../redux/store';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -45,12 +47,15 @@ type State = {
     isEditingLocation: boolean;
     showDotMenu: boolean;
     showUndoPopup: boolean;
+    showNoShowPopup: boolean;
     timeoutID: any;
+    timeoutID2: any;
     undoQuestionIdDontKnow?: number;
     undoName?: string;
     enableEditingComment: boolean;
     width: number;
 };
+
 
 class SessionQuestion extends React.Component<Props, State> {
     state: State;
@@ -63,7 +68,9 @@ class SessionQuestion extends React.Component<Props, State> {
             isEditingLocation: false,
             showDotMenu: false,
             showUndoPopup: false,
+            showNoShowPopup: false,
             timeoutID: 0,
+            timeoutID2: 0,
             enableEditingComment: false,
             width: window.innerWidth,
         };
@@ -73,36 +80,64 @@ class SessionQuestion extends React.Component<Props, State> {
         const previousState = prevProps.question;
         const currentState = this.props.question;
         const user = this.props.myUserId;
+
+
         if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
-            try {
-                addNotification({
-                    title: 'TA comment',
-                    subtitle: 'New TA comment',
-                    message: `${currentState.taComment}`,
-                    theme: 'darkblue',
-                    native: true,
-                });
-            } catch (error) {
-                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
-            }
+            addNotificationWrapper(this.props.user, 'TA comment', 'New TA comment', currentState.taComment);
+        }
+
+        if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
+            addNotificationWrapper(
+                this.props.user, 
+                'Student comment', 
+                'New student comment', 
+                currentState.studentComment
+            );
         }
 
         if (
-            previousState.studentComment !== currentState.studentComment &&
-            user === currentState.answererId
+            previousState.answererId !== currentState.answererId && 
+            currentState.answererId !== '' && 
+            user === currentState.askerId
         ) {
-            try {
-                addNotification({
-                    title: 'Student comment',
-                    subtitle: 'New student comment',
-                    message: `${currentState.studentComment}`,
-                    theme: 'darkblue',
-                    native: true,
-                });
-            } catch (error) {
-                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
-            }
+            addNotificationWrapper(
+                this.props.user, 
+                'TA Assigned', 
+                'TA Assigned', 
+                'A TA has been assigned to your question'
+            );
         }
+
+        if (
+            previousState.answererId !== currentState.answererId && 
+            currentState.answererId === '' && 
+            user === currentState.askerId
+        ) {
+            addNotificationWrapper(
+                this.props.user, 
+                'TA Unassigned', 
+                'TA Unassigned', 
+                'A TA has been unassigned from your question and you\'ve been readded to the top of the queue.'
+            );
+        }
+        if(currentState.askerId === user && this.props.index === 0 && prevProps.index !== 0) {
+            addNotificationWrapper(
+                this.props.user, 
+                'Your question is up!', 
+                'Your question is up!', 
+                'Your question has reached the top of the queue.');
+        }
+    }
+
+    componentWillUnmount() {
+        if(this.props.myUserId === this.props.question.askerId) {
+            addNotificationWrapper(
+                this.props.user, 
+                'Question Marked as Complete', 
+                'Question marked as complete', 
+                'Your question has been marked as complete/no-show.');
+            window.localStorage.setItem('questionUpNotif', '');
+        } 
     }
 
     // Given an index from [1..n], converts it to text that is displayed on the
@@ -137,6 +172,7 @@ class SessionQuestion extends React.Component<Props, State> {
         }
     };
 
+
     onClickRemove = () => {
         this.props.setShowModal(true);
         this.props.setRemoveQuestionId(this.props.question.questionId);
@@ -155,7 +191,21 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     studentNoShow = () => {
-        markStudentNoShow(firestore, this.props.question);
+        this.setState({
+            showNoShowPopup: true,
+        });
+
+        const id = setTimeout(() => {
+            this.setState({
+                showNoShowPopup: false,
+            });
+            markStudentNoShow(firestore, this.props.question);
+        }, 3000);
+
+        this.setState({
+            timeoutID2: id,
+        });
+
     };
 
     questionDone = () => {
@@ -173,14 +223,22 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({
             timeoutID: id,
         });
-
     };
 
-    undo = () => {
+    undoDone = () => {
         clearTimeout(this.state.timeoutID);
         this.setState({
             showUndoPopup: false,
             timeoutID: 0,
+        });
+        this.questionDontKnow();
+    }
+
+    undoNoShow = () => {
+        clearTimeout(this.state.timeoutID2);
+        this.setState({
+            showNoShowPopup: false,
+            timeoutID2: 0,
         });
         this.questionDontKnow();
     }
@@ -194,10 +252,10 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     toggleComment = () => {
-        this.setState(({ enableEditingComment }) => ({
-            enableEditingComment: !enableEditingComment,
+        this.setState(({ enableEditingComment }) => ({ 
+            enableEditingComment: !enableEditingComment 
         }));
-    };
+    }
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
@@ -378,6 +436,25 @@ class SessionQuestion extends React.Component<Props, State> {
                                     <p className="Delete" onClick={this.studentNoShow}>
                                         No show
                                     </p>
+                                    {this.state.showNoShowPopup && (
+                                        <div className="popup">
+                                            <div className="popupContainer">
+                                                <div className="resolvedQuestionBadge">
+                                                    <img
+                                                        className="resolvedCheckImage"
+                                                        alt="Green check"
+                                                        src={GreenCheck}
+                                                    />
+                                                    <p className="resolvedQuestionText">
+                                                        Student Marked as No Show
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <p className="Undo" onClick={this.undoNoShow}>
+                                                Undo
+                                            </p>
+                                        </div>
+                                    )}
                                     <p className="Done" onClick={this.questionDone}>
                                         Done
                                     </p>
@@ -395,7 +472,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                                     </p>
                                                 </div>
                                             </div>
-                                            <p className="Undo" onClick={this.undo}>
+                                            <p className="Undo" onClick={this.undoDone}>
                                                 Undo
                                             </p>
                                         </div>
@@ -582,4 +659,9 @@ CommentBox.defaultProps = {
     studentCSS: undefined,
 };
 
-export default SessionQuestion;
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+
+export default connect(mapStateToProps, {})(SessionQuestion);

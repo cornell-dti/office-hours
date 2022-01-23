@@ -190,26 +190,19 @@ interface BlogPost {
     description: string;
     listItems: string[];
     timeEntered: FireTimestamp;
-    edited? : FireTimestamp;
+    edited?: FireTimestamp;
 }
 
-// These classes are used to write tests, then converted to their readonly versions
-interface FireEditableUser extends FireUser {
-    courses: string[];
-    roles: { [courseId: string]: PrivilegedFireCourseRole | undefined };
+interface SessionNotification {
+    title: string;
+    subtitle: string;
+    message: string;
+    createdAt: FireTimestamp;
 }
 
-interface FireEditableCourse extends FireCourse {
-    professors: string[];
-    tas: string[];
-}
-
-// An environment that describes the entire QMI App state
-interface FireEnvironment {
-    courses: FireCourse[];
-    pendingUsers: FirePendingUser[];
-    questions: FireQuestion[];
-    sessions: FireSession[];
-    tags: FireTag[];
-    users: FireUser[];
+interface NotificationTracker {
+    id: string;
+    notifications: FireTimestamp;
+    productUpdates: FireTimestamp;
+    notificationList: SessionNotification[];
 }

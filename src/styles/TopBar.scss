@@ -63,6 +63,12 @@
             width: 30px;
             margin-left: 46px;
         }
+        .rightContentWrapper {
+            width: 20%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
         .userProfile {
             align-self: right;

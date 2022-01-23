@@ -72,7 +72,7 @@ const BlogPostInternal = ({blogPost}: Props) => {
                             className="blogPost__date" 
                             date={blogPost.timeEntered.toDate()} 
                             interval={0} 
-                            format={'hh:mm A on Y'} 
+                            format={'hh:mm A on MMMM D'} 
                         />) : (<Moment 
                             className="blogPost__date" 
                             date={blogPost.timeEntered.toDate()} 
@@ -86,12 +86,12 @@ const BlogPostInternal = ({blogPost}: Props) => {
                             <li>{change}</li>
                         ))}
                     </ul>
-                    <Moment 
+                    {blogPost.edited !== undefined && <Moment 
                         className="blogPost__dateEdited" 
-                        date={blogPost.timeEntered.toDate()} 
+                        date={blogPost.edited.toDate()} 
                         interval={0} 
                         format={'[Edited] MMMM D, Y'} 
-                    />
+                    />}
                 </Card>
             </Grid>) 
                 : 

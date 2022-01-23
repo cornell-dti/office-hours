@@ -5,7 +5,7 @@ import AddBlogPost from '../includes/AddBlogPost';
 import BlogPostDisplay from '../includes/BlogPostDisplay';
 import TopBar from '../includes/TopBar';
 
-import { useMyUser, useIsAdmin } from '../../firehooks';
+import { useIsAdmin } from '../../firehooks';
 
 const BlogCMS = () => {
     const history = useHistory();
@@ -18,7 +18,6 @@ const BlogCMS = () => {
     return (
         <>
             <TopBar
-                user={useMyUser()}
                 // In admin view, it is never the case that the Dashboard section should be shown.
                 role="student"
                 context="professor"

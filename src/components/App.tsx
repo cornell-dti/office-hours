@@ -15,7 +15,11 @@ import * as ReactGA from 'react-ga';
 import { Loader } from 'semantic-ui-react';
 
 import { Notifications } from 'react-push-notification';
+import { Provider ,connect} from 'react-redux'
 import { auth, firestore } from '../firebase';
+
+import {updateAuthStatus, updateUser} from '../redux/actions/auth'
+import {store} from '../redux/store'
 
 import AdminView from './pages/AdminView';
 import BlogCMS from './pages/BlogCMS';
@@ -188,69 +192,85 @@ const DefaultRoute = () => {
     return <Redirect from="/" to={getDefaultRedirect(user, courses)} />;
 };
 
-export default () => {
+type AppProps = {
+    updateUser: (user: FireUser | undefined) => Promise<void>;
+    updateAuthStatus: (authStatus: boolean) => Promise<void>;
+}
+
+export default connect(null, {updateUser, updateAuthStatus})( ({updateUser, updateAuthStatus}: AppProps) => {
+    const user = useMyUser();
+    React.useEffect(() => {
+        updateUser(user);
+    }, [user, updateUser])
+    React.useEffect(() => {
+        auth.onAuthStateChanged((user) => {
+            updateAuthStatus(!!user)
+        });
+    }, [updateAuthStatus])
     return (
-        <Router>
-            <div className="App">
-                <Notifications />
-                <Route path="/" component={Analytics} />
-                <Switch>
-                    <Route path="/login" component={LoginView} />
-                    <PrivateRoute path="/admin" component={AdminView} requireProfessor={false} />
-                    <PrivateRoute path="/blog" component={BlogCMS} requireProfessor={false} />
-                    <PrivateRoute
-                        path="/edit"
-                        component={CourseEditView}
-                        requireProfessor={false}
-                    />
-                    <PrivateRoute
-                        path="/home"
-                        component={CourseSelectionView}
-                        requireProfessor={false}
-                    />
-                    <PrivateRoute
-                        path="/professor-tags/course/:courseId"
-                        component={ProfessorTagsView}
-                        exact={true}
-                        requireProfessor
-                    />
-                    <PrivateRoute
-                        path="/professor-people/course/:courseId"
-                        component={ProfessorPeopleView}
-                        exact={true}
-                        requireProfessor
-                    />
-                    <PrivateRoute
-                        path="/professor-dashboard/course/:courseId"
-                        component={ProfessorDashboardView}
-                        exact={true}
-                        requireProfessor
-                    />
-                    <PrivateRoute
-                        path="/professor-roles/course/:courseId"
-                        component={ProfessorRoles}
-                        exact={true}
-                        requireProfessor
-                    />
-                    <PrivateRoute
-                        path="/professor/course/:courseId"
-                        component={ProfessorView}
-                        exact={true}
-                        requireProfessor
-                    />
-                    <PrivateRoute
-                        path="/course/:courseId/session/:sessionId/:page?"
-                        component={SplitView}
-                        requireProfessor={false}
-                    />
-                    <PrivateRoute
-                        path="/course/:courseId"
-                        component={SplitView}
-                        requireProfessor={false}
-                    />
-                    <DefaultRoute />
-                </Switch>
-            </div>
-        </Router>
+        <Provider store={store} >
+            <Router>
+                <div className="App">
+                    <Notifications />
+                    <Route path="/" component={Analytics} />
+                    <Switch>
+                        <Route path="/login" component={LoginView} />
+                        <PrivateRoute path="/admin" component={AdminView} requireProfessor={false} />
+                        <PrivateRoute path="/blog" component={BlogCMS} requireProfessor={false} />
+                        <PrivateRoute
+                            path="/edit"
+                            component={CourseEditView}
+                            requireProfessor={false}
+                        />
+                        <PrivateRoute
+                            path="/home"
+                            component={CourseSelectionView}
+                            requireProfessor={false}
+                        />
+                        <PrivateRoute
+                            path="/professor-tags/course/:courseId"
+                            component={ProfessorTagsView}
+                            exact={true}
+                            requireProfessor
+                        />
+                        <PrivateRoute
+                            path="/professor-people/course/:courseId"
+                            component={ProfessorPeopleView}
+                            exact={true}
+                            requireProfessor
+                        />
+                        <PrivateRoute
+                            path="/professor-dashboard/course/:courseId"
+                            component={ProfessorDashboardView}
+                            exact={true}
+                            requireProfessor
+                        />
+                        <PrivateRoute
+                            path="/professor-roles/course/:courseId"
+                            component={ProfessorRoles}
+                            exact={true}
+                            requireProfessor
+                        />
+                        <PrivateRoute
+                            path="/professor/course/:courseId"
+                            component={ProfessorView}
+                            exact={true}
+                            requireProfessor
+                        />
+                        <PrivateRoute
+                            path="/course/:courseId/session/:sessionId/:page?"
+                            component={SplitView}
+                            requireProfessor={false}
+                        />
+                        <PrivateRoute
+                            path="/course/:courseId"
+                            component={SplitView}
+                            requireProfessor={false}
+                        />
+                        <DefaultRoute />
+                    </Switch>
+                </div>
+            </Router>
+        </Provider>
     );
-};
+});
