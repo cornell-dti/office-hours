@@ -5,7 +5,7 @@ import { useState } from "react";
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
 import { connect } from 'react-redux';
-import {addNotificationWrapper} from '../../utilities/notifications'
+// import {addNotificationWrapper} from '../../utilities/notifications'
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
 
@@ -76,66 +76,66 @@ class SessionQuestion extends React.Component<Props, State> {
         };
     }
 
-    componentDidUpdate(prevProps: Props) {
-        const previousState = prevProps.question;
-        const currentState = this.props.question;
-        const user = this.props.myUserId;
+    // componentDidUpdate(prevProps: Props) {
+    // const previousState = prevProps.question;
+    // const currentState = this.props.question;
+    // const user = this.props.myUserId;
 
 
-        if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
-            addNotificationWrapper(this.props.user, 'TA comment', 'New TA comment', currentState.taComment);
-        }
+    // if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
+    //     addNotificationWrapper(this.props.user, 'TA comment', 'New TA comment', currentState.taComment);
+    // }
 
-        if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
-            addNotificationWrapper(
-                this.props.user, 
-                'Student comment', 
-                'New student comment', 
-                currentState.studentComment
-            );
-        }
+    // if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
+    //     addNotificationWrapper(
+    //         this.props.user, 
+    //         'Student comment', 
+    //         'New student comment', 
+    //         currentState.studentComment
+    //     );
+    // }
 
-        if (
-            previousState.answererId !== currentState.answererId && 
-            currentState.answererId !== '' && 
-            user === currentState.askerId
-        ) {
-            addNotificationWrapper(
-                this.props.user, 
-                'TA Assigned', 
-                'TA Assigned', 
-                'A TA has been assigned to your question'
-            );
-        }
+    // if (
+    //     previousState.answererId !== currentState.answererId && 
+    //     currentState.answererId !== '' && 
+    //     user === currentState.askerId
+    // ) {
+    //     addNotificationWrapper(
+    //         this.props.user, 
+    //         'TA Assigned', 
+    //         'TA Assigned', 
+    //         'A TA has been assigned to your question'
+    //     );
+    // }
 
-        if (
-            previousState.answererId !== currentState.answererId && 
-            currentState.answererId === '' && 
-            user === currentState.askerId
-        ) {
-            addNotificationWrapper(
-                this.props.user, 
-                'TA Unassigned', 
-                'TA Unassigned', 
-                'A TA has been unassigned from your question and you\'ve been readded to the top of the queue.'
-            );
-        }
-        if(currentState.askerId === user && this.props.index === 0 && prevProps.index !== 0) {
-            addNotificationWrapper(
-                this.props.user, 
-                'Your question is up!', 
-                'Your question is up!', 
-                'Your question has reached the top of the queue.');
-        }
-    }
+    // if (
+    //     previousState.answererId !== currentState.answererId && 
+    //     currentState.answererId === '' && 
+    //     user === currentState.askerId
+    // ) {
+    //     addNotificationWrapper(
+    //         this.props.user, 
+    //         'TA Unassigned', 
+    //         'TA Unassigned', 
+    //         'A TA has been unassigned from your question and you\'ve been readded to the top of the queue.'
+    //     );
+    // }
+    // if(currentState.askerId === user && this.props.index === 0 && prevProps.index !== 0) {
+    //     addNotificationWrapper(
+    //         this.props.user, 
+    //         'Your question is up!', 
+    //         'Your question is up!', 
+    //         'Your question has reached the top of the queue.');
+    // }
+    // }
 
     componentWillUnmount() {
         if(this.props.myUserId === this.props.question.askerId) {
-            addNotificationWrapper(
-                this.props.user, 
-                'Question Marked as Complete', 
-                'Question marked as complete', 
-                'Your question has been marked as complete/no-show.');
+        //     addNotificationWrapper(
+        //         this.props.user, 
+        //         'Question Marked as Complete', 
+        //         'Question marked as complete', 
+        //         'Your question has been marked as complete/no-show.');
             window.localStorage.setItem('questionUpNotif', '');
         } 
     }

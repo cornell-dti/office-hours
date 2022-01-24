@@ -230,6 +230,23 @@ exports.onQuestionUpdate = functions.firestore
                 createdAt: admin.database.ServerValue.TIMESTAMP
             }, ...askerNotifs.notificationList]});
         }
+        if(newQuestion.status === 'resolved' ) {
+            db.doc(`notificationTrackers/${asker.email}`).update({notificationList: [{
+                title: 'Question resolved',
+                subtitle: 'Question marked as resolved',
+                message: 
+              'A TA has marked your question as resolved and you have been removed from the queue',
+                createdAt: admin.database.ServerValue.TIMESTAMP
+            }, ...askerNotifs.notificationList]});
+        } else if(newQuestion.status === "no-show" ) {
+            db.doc(`notificationTrackers/${asker.email}`).update({notificationList: [{
+                title: 'Question marked no-show',
+                subtitle: 'Question marked as no-show',
+                message: 
+              'A TA has marked your question as no-show and you have been removed from the queue',
+                createdAt: admin.database.ServerValue.TIMESTAMP
+            }, ...askerNotifs.notificationList]}); }
+
 
         // Log for debugging
         /* functions.logger.log(`Status change from ${prevStatus} to ${newStatus}. Changes:
