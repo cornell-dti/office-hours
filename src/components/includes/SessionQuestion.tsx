@@ -76,7 +76,6 @@ class SessionQuestion extends React.Component<Props, State> {
         };
     }
 
-<<<<<<< HEAD
     // componentDidUpdate(prevProps: Props) {
     // const previousState = prevProps.question;
     // const currentState = this.props.question;
@@ -138,64 +137,6 @@ class SessionQuestion extends React.Component<Props, State> {
         //         'Question marked as complete', 
         //         'Your question has been marked as complete/no-show.');
             window.localStorage.setItem('questionUpNotif', '');
-=======
-    componentDidUpdate(prevProps: Props) {
-        const previousState = prevProps.question;
-        const currentState = this.props.question;
-        const user = this.props.myUserId;
-        if(!this.props.isPast) {
-            if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
-                addNotificationWrapper(this.props.user, 'TA comment', 'New TA comment', currentState.taComment);
-            }
-
-            if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
-                addNotificationWrapper(
-                    this.props.user, 
-                    'Student comment', 
-                    'New student comment', 
-                    currentState.studentComment
-                );
-            }
-
-            if (
-                previousState.answererId !== currentState.answererId && 
-            currentState.answererId !== '' && 
-            user === currentState.askerId
-            ) {
-                addNotificationWrapper(
-                    this.props.user, 
-                    'TA Assigned', 
-                    'TA Assigned', 
-                    'A TA has been assigned to your question'
-                );
-            }
-
-            if (
-                previousState.answererId !== currentState.answererId && 
-            currentState.answererId === '' && 
-            user === currentState.askerId
-            ) {
-                addNotificationWrapper(
-                    this.props.user, 
-                    'TA Unassigned', 
-                    'TA Unassigned', 
-                    'A TA has been unassigned from your question and you\'ve been readded to the top of the queue.'
-                );
-            }
-        }
-    }
-
-    componentWillUnmount() {
-        if(!this.props.isPast && this.props.myUserId === this.props.question.askerId) {
-            if(this.props.question.status !== 'unresolved' && this.props.index === -1) {
-                addNotificationWrapper(
-                    this.props.user, 
-                    'Question Marked as Complete', 
-                    'Question marked as complete', 
-                    'Your question has been marked as complete/no-show.');
-                window.localStorage.removeItem(this.props.question.questionId);
-            }
->>>>>>> 11080a535b60811f49f946d94f6d3f428012e162
         } 
     }
 
