@@ -15,9 +15,10 @@ type Props = {
     sessionCallback: (sessionId: string) => void;
     course?: FireCourse;
     user?: FireUser;
+    isActiveSession: boolean;
 };
 
-const CalenderView = ({ session, sessionCallback, course, user }: Props) => {
+const CalenderView = ({ session, sessionCallback, course, user, isActiveSession }: Props) => {
     const [selectedDateEpoch, setSelectedDate] = React.useState(new Date().setHours(0, 0, 0, 0));
     const selectedDate = new Date(selectedDateEpoch);
     selectedDate.setHours(0, 0, 0, 0);
@@ -43,7 +44,7 @@ const CalenderView = ({ session, sessionCallback, course, user }: Props) => {
             <CalendarDaySelect callback={setSelectedDate} />
             {course && user && sessions ? (
                 <CalendarSessions
-                    activeSession={session}
+                    activeSession={isActiveSession? session : undefined}
                     callback={sessionCallback}
                     course={course}
                     sessions={filteredSessions || []}

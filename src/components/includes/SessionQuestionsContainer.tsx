@@ -103,9 +103,6 @@ const StudentMyQuestion = ({
 };
 
 const SessionQuestionsContainer = (props: Props) => {
-    const [sentNotification, setSentNotification] = React.useState(
-        window.localStorage.getItem('questionUpNotif') === 'sent'
-    );
     const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
     const [sortByUpvotes, setSortByUpvotes] = React.useState(true);
 
@@ -167,9 +164,9 @@ const SessionQuestionsContainer = (props: Props) => {
         // Update tab with user position
         document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
         // if user is up and we haven't already sent a notification, send one.
-        if (myQuestionIndex === 0 && window.localStorage.getItem('questionUpNotif') !== 'sent') {
-            window.localStorage.setItem('questionUpNotif', 'sent');
-            setSentNotification(true);
+        if (!props.isPast && myQuestionIndex === 0 && 
+            window.localStorage.getItem(props.myQuestion ? props.myQuestion.questionId : '') !== 'sent') {
+            window.localStorage.setItem(props.myQuestion ? props.myQuestion.questionId : '', 'sent');
             addDBNotification(
                 props.user, 
                 {
@@ -188,18 +185,15 @@ const SessionQuestionsContainer = (props: Props) => {
                 // Do nothing. iOS crashes because Notification isn't defined
             }
             // If next render, the user isn't at 0 anymore, reset state
-        } else if (myQuestionIndex !== 0 && sentNotification) {
-            window.localStorage.setItem('questionUpNotif', '');
-            setSentNotification(false);
+        } else if (myQuestionIndex > 0 && 
+            window.localStorage.getItem(props.myQuestion ? props.myQuestion.questionId : '') === 'sent') {
+            window.localStorage.setItem(props.myQuestion ? props.myQuestion.questionId : '', '');
         }
     } else if (props.isTA && shownQuestions) {
         document.title = '(' + shownQuestions.length + ') Queue Me In';
     } else {
         // Reset title and notif state
         document.title = 'Queue Me In';
-        if (sentNotification) {
-            setSentNotification(false);
-        }
     }
 
     return (
