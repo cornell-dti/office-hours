@@ -139,7 +139,7 @@ questionStatusNumbers.set("no-show", [0, 0, 0]);
 
 exports.onQuestionUpdate = functions.firestore
     .document('questions/{questionId}')
-    .onUpdate((change) => {
+    .onUpdate(async (change) => {
         const newQuestion: FireQuestion = change.after.data() as FireQuestion;
         const prevQuestion: FireQuestion = change.before.data() as FireQuestion;
 
@@ -179,6 +179,56 @@ exports.onQuestionUpdate = functions.firestore
             && prevQuestion.timeAddressed !== undefined
         ){
             resolveTimeChange = prevQuestion.timeAssigned.seconds - prevQuestion.timeAddressed.seconds;
+        }
+
+        // Figure out who needs to be updated with a notification based on the changes
+        const asker: FireUser = (await db.doc(`users/${newQuestion.askerId}`).get()).data() as FireUser;
+        const answerer: FireUser = (await db.doc(`users/${newQuestion.answererId}`).get()).data() as FireUser;
+        const askerNotifs: NotificationTracker = 
+          (await db.doc(`notificationTrackers/${asker.email}`).get()).data() as NotificationTracker;
+        const answererNotifs: NotificationTracker = 
+          (await db.doc(`notificationTrackers/${answerer.email}`).get()).data() as NotificationTracker;
+        
+        if (prevQuestion.taComment !== newQuestion.taComment) {
+            db.doc(`notificationTrackers/${asker.email}`).update({notificationList: [{
+                title: 'TA comment',
+                subtitle: 'New TA comment',
+                message: newQuestion.taComment,
+                createdAt: admin.database.ServerValue.TIMESTAMP
+            }, ...askerNotifs.notificationList]});
+        }
+
+        if (prevQuestion.studentComment !== newQuestion.studentComment) {
+            db.doc(`notificationTrackers/${answerer.email}`).update({notificationList: [{
+                title: 'Student comment',
+                subtitle: 'New student comment',
+                message: newQuestion.studentComment,
+                createdAt: admin.database.ServerValue.TIMESTAMP
+            }, ...answererNotifs.notificationList]});
+        }
+        if (
+            prevQuestion.answererId !== newQuestion.answererId && 
+        newQuestion.answererId !== ''
+        ) {
+            db.doc(`notificationTrackers/${asker.email}`).update({notificationList: [{
+                title: 'TA Assigned',
+                subtitle: 'TA Assigned',
+                message: 'A TA has been assigned to your question',
+                createdAt: admin.database.ServerValue.TIMESTAMP
+            }, ...askerNotifs.notificationList]});
+        }
+
+        if (
+            prevQuestion.answererId !== newQuestion.answererId && 
+        newQuestion.answererId === ''
+        ) {
+            db.doc(`notificationTrackers/${asker.email}`).update({notificationList: [{
+                title: 'TA Unassigned',
+                subtitle: 'TA Unassigned',
+                message: 
+                  'A TA has been unassigned from your question and you\'ve been readded to the top of the queue.',
+                createdAt: admin.database.ServerValue.TIMESTAMP
+            }, ...askerNotifs.notificationList]});
         }
 
         // Log for debugging
