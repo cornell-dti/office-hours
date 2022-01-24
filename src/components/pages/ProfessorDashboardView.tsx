@@ -5,7 +5,7 @@ import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import TagsBarChart from '../includes/TagsBarChart';
 
-import { useMyUser, useQuery, useCourse, getTagsQuery, getQuestionsQuery } from '../../firehooks';
+import { useQuery, useCourse, getTagsQuery, getQuestionsQuery } from '../../firehooks';
 
 interface CategoryTag {
     category: string;
@@ -90,7 +90,7 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
                 code={course ? course.code : 'Loading'}
                 selected={'dashboard'}
             />
-            <TopBar courseId={courseId} user={useMyUser()} context="professor" role="professor" />
+            <TopBar courseId={courseId} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 <div className="main">
                     <div className="Category-dropdown-container">

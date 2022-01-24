@@ -2,10 +2,13 @@ import * as React from 'react';
 import { Loader } from 'semantic-ui-react';
 import moment from 'moment';
 import addNotification from 'react-push-notification';
+import { connect } from 'react-redux';
+import {addDBNotification} from '../../firebasefunctions/notifications';
 import SessionQuestion from './SessionQuestion';
 import AddQuestion from './AddQuestion';
 import DiscussionQuestion from './DiscussionQuestion';
 import SortArrows from '../../media/sortbyarrows.svg';
+import { RootState } from '../../redux/store';
 
 // Maximum number of questions to be shown to user
 const NUM_QUESTIONS_SHOWN = 20;
@@ -45,7 +48,6 @@ type StudentMyQuestionProps = {
     readonly myUserId: string;
     readonly modality: FireSessionModality;
     readonly studentQuestion: FireQuestion | null;
-    readonly user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
 };
@@ -59,7 +61,6 @@ const StudentMyQuestion = ({
     myUserId,
     modality,
     studentQuestion,
-    user,
     setShowModal,
     setRemoveQuestionId,
 }: StudentMyQuestionProps) => {
@@ -73,13 +74,12 @@ const StudentMyQuestion = ({
             {modality === 'review' ? (
                 <DiscussionQuestion
                     question={studentQuestion as FireDiscussionQuestion}
-                    user={user}
                     users={{}}
                     tags={tags}
                     isTA={false}
                     includeRemove={true}
                     isPast={isPast}
-                    // myQuestion={true}
+                // myQuestion={true}
                 />
             ) : (
                 <SessionQuestion
@@ -87,7 +87,6 @@ const StudentMyQuestion = ({
                     question={studentQuestion}
                     modality={modality}
                     users={{}}
-                    user={user}
                     tags={tags}
                     index={index}
                     isTA={false}
@@ -105,7 +104,7 @@ const StudentMyQuestion = ({
 
 const SessionQuestionsContainer = (props: Props) => {
     const [sentNotification, setSentNotification] = React.useState(
-        window.localStorage.getItem('questionUpNotif') === 'sent' || false
+        window.localStorage.getItem('questionUpNotif') === 'sent'
     );
     const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
     const [sortByUpvotes, setSortByUpvotes] = React.useState(true);
@@ -168,14 +167,23 @@ const SessionQuestionsContainer = (props: Props) => {
         // Update tab with user position
         document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
         // if user is up and we haven't already sent a notification, send one.
-        if (myQuestionIndex === 0 && !sentNotification) {
+        if (myQuestionIndex === 0 && window.localStorage.getItem('questionUpNotif') !== 'sent') {
             window.localStorage.setItem('questionUpNotif', 'sent');
             setSentNotification(true);
+            addDBNotification(
+                props.user, 
+                {
+                    title : 'Your question is up!', 
+                    subtitle : 'Your question is up!', 
+                    message: "Your question has reached the top of the queue."
+                }
+            )
             try {
                 addNotification({
                     title: 'Your question is up!',
                     native: true,
                 });
+                
             } catch (error) {
                 // Do nothing. iOS crashes because Notification isn't defined
             }
@@ -225,7 +233,6 @@ const SessionQuestionsContainer = (props: Props) => {
             )}
             {shownQuestions && myQuestion && (
                 <StudentMyQuestion
-                    user={props.user}
                     questionId={myQuestion.questionId}
                     studentQuestion={myQuestion}
                     modality={props.modality}
@@ -300,13 +307,12 @@ const SessionQuestionsContainer = (props: Props) => {
                     <DiscussionQuestion
                         key={question.questionId}
                         question={question as FireDiscussionQuestion}
-                        user={props.user}
                         users={props.users}
                         tags={props.tags}
                         isTA={props.isTA}
                         includeRemove={false}
                         isPast={props.isPast}
-                        // myQuestion={false}
+                    // myQuestion={false}
                     />
                 ))}
             {shownQuestions &&
@@ -327,7 +333,6 @@ const SessionQuestionsContainer = (props: Props) => {
                         triggerUndo={props.triggerUndo}
                         isPast={props.isPast}
                         myUserId={props.myUserId}
-                        user={props.user}
                         setShowModal={props.setShowModal}
                         setRemoveQuestionId={props.setRemoveQuestionId}
                     />
@@ -336,17 +341,17 @@ const SessionQuestionsContainer = (props: Props) => {
                 <>
                     {
                         !props.isOpen &&
-                            (props.isPast ? (
-                                <p className="noQuestionsWarning">This office hour session has ended.</p>
-                            ) : (
-                                <p className="noQuestionsWarning">
-                                    Please check back at {moment(props.openingTime).format('h:mm A')}
-                                    {moment().startOf('day') === moment(props.openingTime).startOf('day')
-                                        ? ''
-                                        : ' on ' + moment(props.openingTime).format('MMM D')}
-                                    !
-                                </p>
-                            ))
+                        (props.isPast ? (
+                            <p className="noQuestionsWarning">This office hour session has ended.</p>
+                        ) : (
+                            <p className="noQuestionsWarning">
+                                Please check back at {moment(props.openingTime).format('h:mm A')}
+                                {moment().startOf('day') === moment(props.openingTime).startOf('day')
+                                    ? ''
+                                    : ' on ' + moment(props.openingTime).format('MMM D')}
+                                !
+                            </p>
+                        ))
                         // !props.isTA
                         //     ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
                         //     : <p className="noQuestionsWarning">No questions in the queue yet. </p>
@@ -361,4 +366,9 @@ SessionQuestionsContainer.defaultProps = {
     myVirtualLocation: undefined,
 };
 
-export default SessionQuestionsContainer;
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+
+export default connect(mapStateToProps, {})(SessionQuestionsContainer);

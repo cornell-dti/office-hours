@@ -3,12 +3,14 @@ import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
 // @ts-ignore (Linkify has no typescript)
 import Linkify from 'linkifyjs/react';
+import { connect } from 'react-redux';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
 import Arrow from '../../media/arrow_discussion.svg';
 import CommentImage from '../../media/comment_discussion.svg';
 import ResolvedIcon from '../../media/resolvedcheck.svg';
 import { markQuestionDone } from '../../firebasefunctions/sessionQuestion';
+import { RootState } from '../../redux/store';
 
 type Props = {
     question: FireDiscussionQuestion;
@@ -67,7 +69,7 @@ const DiscussionQuestion = (props: Props) => {
         firestore
             .doc(`questions/${question.questionId}`)
             .update(update)
-            .catch(() => {});
+            .catch(() => { });
     };
 
     const resolveQuestion = () => {
@@ -306,5 +308,9 @@ CommentBox.defaultProps = {
     taComment: undefined,
     studentCSS: undefined,
 };
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
 
-export default DiscussionQuestion;
+
+export default connect(mapStateToProps, {})(DiscussionQuestion);

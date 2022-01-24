@@ -3,6 +3,7 @@ import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
 
 import { Grid } from '@material-ui/core';
+import { connect } from 'react-redux';
 import people from '../../media/people.svg';
 import clock from '../../media/clock.svg';
 import zoom from '../../media/zoom.svg';
@@ -12,6 +13,7 @@ import editZoomLink from '../../media/editZoomLink.svg';
 import { useSessionQuestions, useSessionTAs } from '../../firehooks';
 import { computeNumberAhead } from '../../utilities/questions';
 import JoinErrorMessage from './JoinErrorMessage';
+import { RootState } from '../../redux/store';
 
 type Props = {
     session: FireSession;
@@ -490,4 +492,9 @@ SessionInformationHeader.defaultProps = {
     virtualLocation: undefined,
     assignedQuestion: undefined,
 };
-export default SessionInformationHeader;
+
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+export default connect(mapStateToProps, {})(SessionInformationHeader);

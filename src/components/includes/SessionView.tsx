@@ -2,17 +2,22 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from 'semantic-ui-react';
 import addNotification from 'react-push-notification';
 
+import { connect } from 'react-redux';
 import SessionInformationHeader from './SessionInformationHeader';
 import SessionQuestionsContainer from './SessionQuestionsContainer';
 
-import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile, 
-    useAskerQuestions } from '../../firehooks';
-import { updateQuestion , updateVirtualLocation } from '../../firebasefunctions/sessionQuestion' 
+import {
+    useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile,
+    useAskerQuestions
+} from '../../firehooks';
+import { updateQuestion, updateVirtualLocation } from '../../firebasefunctions/sessionQuestion'
+import { addDBNotification } from '../../firebasefunctions/notifications'
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 import { firestore } from '../../firebase';
 
-import NotifBell from '../../media/notifBellWhite.svg';
+import { RootState } from '../../redux/store';
+import Browser from '../../media/browser.svg';
 
 
 type Props = {
@@ -41,7 +46,7 @@ type AbsentState = {
 };
 
 const SessionView = (
-    { course, session, questions, isDesktop, backCallback , joinCallback , user, setShowModal, 
+    { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal,
         setRemoveQuestionId }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
@@ -75,19 +80,34 @@ const SessionView = (
         if (newQuestions.size <= 0) {
             return;
         }
-
         if ((user.roles[course.courseId] === 'professor' ||
-            user.roles[course.courseId] === 'ta') && questions.length > 0) {
-            try {
-                addNotification({
-                    title: 'A new question has been added!',
-                    message: 'Check the queue.',
-                    native: true
-                });
-            } catch (error) {
-                // TODO: Handle this better.
-                // Do nothing. iOS crashes because Notification isn't defined
+            user.roles[course.courseId] === 'ta')) {
+            const prevQString = window.localStorage.getItem("prevQuestions");
+            const prevQArr = JSON.parse(prevQString || "{}");
+            const prevQSet = new Set(Array.from(prevQArr))
+            const newQuestionsPessimistic = new Set(questionIds.filter(q => !prevQSet.has(q)))
+            if (newQuestionsPessimistic.size > 0) {
+                addDBNotification(
+                    user,
+                    {
+                        title: 'A new question has been added!',
+                        subtitle: 'A new question was added',
+                        message: "Check the queue."
+                    }
+                )
+                try {
+                    addNotification({
+                        title: 'A new question has been added!',
+                        subtitle: 'A new question was added',
+                        message: 'Check the queue.',
+                        native: true
+                    });
+                } catch (error) {
+                    // TODO: Handle this better.
+                    // Do nothing. iOS crashes because Notification isn't defined
+                }
             }
+            window.localStorage.setItem("prevQuestions", JSON.stringify(questionIds));
         }
 
         const myQuestions = questions.filter(q => q.askerId === user.userId);
@@ -112,7 +132,7 @@ const SessionView = (
             return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
         setPrevQuestSet(new Set(questions.map(q => q.questionId)));
-    }, [prevQuestSet, questions, user.userId, course.courseId, user.roles]);
+    }, [prevQuestSet, questions, user.userId, course.courseId, user.roles, user]);
 
 
     const dismissUndo = () => {
@@ -185,21 +205,18 @@ const SessionView = (
     return (
         <section className="StudentSessionView">
             {"Notification" in window &&
-                            window?.Notification.permission !== "granted" && showNotifBanner === true &&
-                            <div className="SessionNotification">
-                                <img src={NotifBell} alt="Notification Bell" />
-                                <p>Enable browser notifications to know when it's your turn.</p>
-                                <button
-                                    type="button"
-                                    onClick={()=> setShowNotifBanner(false)}
-                                >
-                                    <Icon name="x" /></button>
-                            </div>
+                window?.Notification.permission !== "granted" && showNotifBanner === true &&
+                <div className="SessionNotification">
+                    <img src={Browser} alt="Browser" />
+                    <div className="label">Enable browser notifications to know when it's your turn.</div>
+                    <div className="button" onClick={() => setShowNotifBanner(false)}>
+                        GOT IT
+                    </div>
+                </div>
             }
             <SessionInformationHeader
                 session={session}
                 course={course}
-                user={user}
                 callback={backCallback}
                 isDesktop={isDesktop}
                 isTa={isTa}
@@ -234,13 +251,12 @@ const SessionView = (
                 isTA={isTa}
                 modality={session.modality}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
-                questions={session.modality === 'review' ? questions.filter(q => q.status !== 'retracted') : 
+                questions={session.modality === 'review' ? questions.filter(q => q.status !== 'retracted') :
                     questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
                 users={users}
                 tags={tags}
                 handleJoinClick={joinCallback}
                 myUserId={user.userId}
-                user={user}
                 triggerUndo={triggerUndo}
                 isOpen={isOpen(session, course.queueOpenInterval)}
                 isPast={isPast(session)}
@@ -255,9 +271,13 @@ const SessionView = (
     );
 };
 
-export default (props: Omit<Props, 'questions'>) => {
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+export default connect(mapStateToProps, {})( (props: Omit<Props, 'questions'>) => {
     const isTa = props.user.roles[props.course.courseId] !== undefined;
     const questions = props.session.modality === 'review' ? useSessionQuestions(props.session.sessionId, true) :
         filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));
     return <SessionView questions={questions} {...props} />;
-};
+});

@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import * as H from 'history';
 import { Loader } from 'semantic-ui-react';
 
+import { connect } from 'react-redux';
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import NotificationModal from '../includes/NotificationModal';
 import LeaveQueue from '../includes/LeaveQueue';
+import ProductUpdates from "../includes/ProductUpdates"
 
-import { useCourse, useSession, useMyUser } from '../../firehooks';
+import { useCourse, useSession } from '../../firehooks';
 import { firestore } from '../../firebase';
 import { removeQuestionbyID } from '../../firebasefunctions/sessionQuestion'
 import TopBar from '../includes/TopBar';
+import { RootState } from '../../redux/store';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -47,6 +50,7 @@ const SplitView = (props: {
             page: string | null;
         };
     };
+    user: FireUser | undefined;
 }) => {
     const [activeView, setActiveView] = useState(
         props.match.params.page === 'add'
@@ -56,7 +60,7 @@ const SplitView = (props: {
     const [showModal, setShowModal] = useState(false);
     const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
 
-    const user = useMyUser();
+    const user = props.user;
     const course = useCourse(props.match.params.courseId);
     const session = useSession(props.match.params.sessionId);
     const width = useWindowWidth();
@@ -99,7 +103,6 @@ const SplitView = (props: {
         <>
             <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion}/>
             <TopBar
-                user={user}
                 role={(user && course && user.roles[course.courseId]) || 'student'}
                 context="student"
                 courseId={props.match.params.courseId}
@@ -108,7 +111,6 @@ const SplitView = (props: {
             {(width > MOBILE_BREAKPOINT || activeView === 'calendar') &&
                 <CalendarView
                     course={course}
-                    user={user}
                     session={session}
                     sessionCallback={handleSessionClick}
                 />}
@@ -124,7 +126,6 @@ const SplitView = (props: {
                         <SessionView
                             course={course}
                             session={session}
-                            user={user}
                             isDesktop={width > MOBILE_BREAKPOINT}
                             backCallback={handleBackClick}
                             joinCallback={handleJoinClick}
@@ -160,9 +161,14 @@ const SplitView = (props: {
                         </section>
                     )
                 ) : <Loader active={true} content="Loading" />)}
+            <ProductUpdates />
            
         </>
     );
 };
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
 
-export default SplitView;
+
+export default connect(mapStateToProps, {})(SplitView);
