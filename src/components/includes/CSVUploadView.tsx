@@ -222,7 +222,6 @@ const CSVUploadView = (
 
                     const TAEmailList = TAList.map(user => user.split(',')[0].trim().toLowerCase());
                     const professorEmailList = professorList.map(user => user.split(',')[0].trim().toLowerCase());
-
                     setTAEmailList(TAEmailList);
                     setProfessorEmailList(professorEmailList);
                 }                
