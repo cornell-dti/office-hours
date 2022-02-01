@@ -57,10 +57,10 @@ exports.onUserCreate = functions.firestore
 
             const taCourseDocs = await Promise.all(
                 taCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
+                
             const profCourseDocs = await Promise.all(
                 profCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
             taCourseDocs.map((doc, index) => {
-                functions.logger.log("Adding ta to course")
                 if (!doc.exists) {
                     functions.logger.error('ta course doc does not exist.')
                 }
