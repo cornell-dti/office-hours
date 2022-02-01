@@ -76,9 +76,11 @@ const CSVUploadView = (
                 importProfessorsOrTAsFromCSV(course, 'ta', TAEmailList)?.then((users) => {
                     const taAddedEmails = users.updatedUsers.map(user => user.email);  
                     const taMissingEmails = Array.from(users.missingSet);  
-                    return {taAddedEmails, taMissingEmails}
+                    const newCourse = users.courseChange;
+                    return {taAddedEmails, taMissingEmails, newCourse}
                 }).then((taEmails)=> {
-                    importProfessorsOrTAsFromCSV(course, 'professor', professorEmailList)?.then((users) => {
+                    const editedCourse = taEmails.newCourse;
+                    importProfessorsOrTAsFromCSV(editedCourse, 'professor', professorEmailList)?.then((users) => {
                         const profAddedEmails = users.updatedUsers.map(user => user.email);   
                         const profMissingEmails = Array.from(users.missingSet);  
                         getAddedUsersList(taEmails.taAddedEmails.concat(profAddedEmails));  
