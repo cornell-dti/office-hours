@@ -109,10 +109,28 @@ exports.onUserCreate = functions.firestore
 
 exports.onSessionUpdate = functions.firestore
     .document('sessions/{sessionId}')
-    .onUpdate((change) => {
-        const data = change.after.data();
-        const sessionId = data!.sessionId;
-        functions.logger.log(`Session ${sessionId} was updated.`);
+    .onUpdate(async (change) => {
+        const after = change.after.data() as FireSession;
+        const before = change.before.data() as FireSession;
+        const afterSessionId = after.sessionId;
+        const beforeSessionId = before.sessionId;
+        functions.logger.log(`Session ${before} was updated.`);
+        const afterQuestions = (await db.collection('questions')
+            .where('sessionId', '==', afterSessionId)
+            .orderBy('timeEntered', 'asc').get()).docs.map(doc => doc.data()) as FireQuestion[];
+        const beforeQuestions = (await db.collection('questions')
+            .where('sessionId', '==', beforeSessionId)
+            .orderBy('timeEntered', 'asc').get()).docs.map(doc => doc.data()) as FireQuestion[];
+        if(afterQuestions[0].questionId !== beforeQuestions[0].questionId) {
+            const asker: FireUser = (await db.doc(`users/${afterQuestions[0].askerId}`).get()).data() as FireUser;
+            db.doc(`notificationTrackers/${asker.email}`)
+                .update({notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'Your Question is Up!',
+                    subtitle: 'Your question has reached the top of the queue.',
+                    message: "Your question has reached the top of the queue. A TA will likely help you shortly.",
+                    createdAt: admin.database.ServerValue.TIMESTAMP
+                })});
+        }
     })
 
 exports.onQuestionCreate = functions.firestore
