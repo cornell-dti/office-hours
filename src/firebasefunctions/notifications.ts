@@ -34,7 +34,7 @@ async (user: FireUser, notification: Omit<SessionNotification, 'notificationId' 
     }
 }
 
-export const clearNotifications = 
+export const periodicClearNotifications = 
 (user: FireUser | undefined, notificationTracker: NotificationTracker | undefined) => 
 {
     if (user !== undefined) {
@@ -47,6 +47,19 @@ export const clearNotifications =
                 notificationList: notificationTracker?.notificationList.filter(notification => {
                     return notification.createdAt.toDate().getTime() > dayPast;
                 })
+            }
+            trackerRef.update(updatedTracker);
+        }
+    }
+}
+
+export const clearNotifications = (user: firebase.User | null) => {
+    if(user !== null) {
+        const email = user.email;
+        if(email != null) {
+            const trackerRef = firestore.collection('notificationTrackers').doc(email);
+            const updatedTracker: Partial<NotificationTracker> = {
+                notificationList: []
             }
             trackerRef.update(updatedTracker);
         }

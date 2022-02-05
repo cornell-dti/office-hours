@@ -5,7 +5,7 @@ import moment from 'moment-timezone';
 import { connect } from 'react-redux';
 import notif from '../../media/notif.svg'
 import notification from '../../media/notification.svg'
-import {viewedTrackable, clearNotifications} from '../../firebasefunctions/notifications'
+import {viewedTrackable, periodicClearNotifications} from '../../firebasefunctions/notifications'
 import { RootState } from '../../redux/store';
 
 type Props = {
@@ -30,7 +30,7 @@ const TopBarNotifications = ({notificationTracker, user}: Props) => {
 
     useEffect(() => {
         if(notificationTracker !== undefined) {
-            clearNotifications(user, notificationTracker);
+            periodicClearNotifications(user, notificationTracker);
         }
         toggleHasViewed(notificationTracker === undefined || 
         notifications === undefined || notifications.length === 0 ||

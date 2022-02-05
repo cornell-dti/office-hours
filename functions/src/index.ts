@@ -10,7 +10,7 @@ const db = admin.firestore();
 /** Adds new roles to a user without them being in QMI's system
  * Not inclusive: Still need to consider users that are
  * already in the system. (THIS CASE IS HANDLED BY NOT INCLDUING THEM IN THE
- * pendingUsers COLLECTIONIN THE FIRST PLACE)
+ * pendingUsers COLLECTION IN THE FIRST PLACE)
  */
 exports.onUserCreate = functions.firestore
     .document('users/{userId}')
@@ -107,18 +107,48 @@ exports.onUserCreate = functions.firestore
 //     return course;
 // }
 
+exports.onSessionUpdate = functions.firestore
+    .document('sessions/{sessionId}')
+    .onUpdate((change) => {
+        const data = change.after.data();
+        const sessionId = data!.sessionId;
+        functions.logger.log(`Session ${sessionId} was updated.`);
+    })
+
 exports.onQuestionCreate = functions.firestore
     .document('questions/{questionId}')
-    .onCreate((snap) => {
+    .onCreate(async (snap) => {
         // Get data object and obtain session ID
         const data = snap.data();
         const sessionId = data!.sessionId;
+        const session = (await db.collection('sessions').doc(sessionId).get()).data() as FireSession;
+        const course = (await db.collection('courses').doc(session.courseId).get()).data() as FireCourse;
 
         // Log Session ID for debugging
         // functions.logger.log(`Session ID is: ${sessionId}`);
 
         // Increment total number of questions of relevant session
         const increment = admin.firestore.FieldValue.increment(1);
+        course.tas.forEach(ta => {
+            db.doc(`users/${ta}`).update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'New Question',
+                    subtitle: 'A new question has been added',
+                    message: 'A new question has been added',
+                    createdAt: admin.database.ServerValue.TIMESTAMP
+                })
+            })
+        });
+        course.professors.forEach(professor => {
+            db.doc(`users/${professor}`).update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'New Question',
+                    subtitle: 'A new question has been added',
+                    message: 'A new question has been added',
+                    createdAt: admin.database.ServerValue.TIMESTAMP
+                })
+            })
+        });
         return db.doc(`sessions/${sessionId}`).update({
             totalQuestions: increment,
         });
@@ -182,68 +212,70 @@ exports.onQuestionUpdate = functions.firestore
         // Figure out who needs to be updated with a notification based on the changes
         const asker: FireUser = (await db.doc(`users/${newQuestion.askerId}`).get()).data() as FireUser;
         const answerer: FireUser = (await db.doc(`users/${newQuestion.answererId}`).get()).data() as FireUser;
-        const askerNotifs: NotificationTracker = 
-          (await db.doc(`notificationTrackers/${asker.email}`).get()).data() as NotificationTracker;
-        const answererNotifs: NotificationTracker = 
-          (await db.doc(`notificationTrackers/${answerer.email}`).get()).data() as NotificationTracker;
         
         if (prevQuestion.taComment !== newQuestion.taComment) {
-            db.doc(`notificationTrackers/${asker.email}`).update({notificationList: [{
-                title: 'TA comment',
-                subtitle: 'New TA comment',
-                message: newQuestion.taComment,
-                createdAt: admin.database.ServerValue.TIMESTAMP
-            }, ...askerNotifs.notificationList]});
+            db.doc(`notificationTrackers/${asker.email}`)
+                .update({notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'TA comment',
+                    subtitle: 'New TA comment',
+                    message: newQuestion.taComment,
+                    createdAt: admin.database.ServerValue.TIMESTAMP
+                })});
         }
 
         if (prevQuestion.studentComment !== newQuestion.studentComment) {
-            db.doc(`notificationTrackers/${answerer.email}`).update({notificationList: [{
-                title: 'Student comment',
-                subtitle: 'New student comment',
-                message: newQuestion.studentComment,
-                createdAt: admin.database.ServerValue.TIMESTAMP
-            }, ...answererNotifs.notificationList]});
+            db.doc(`notificationTrackers/${answerer.email}`)
+                .update({notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'Student comment',
+                    subtitle: 'New student comment',
+                    message: newQuestion.studentComment,
+                    createdAt: admin.database.ServerValue.TIMESTAMP
+                })});
         }
         if (
             prevQuestion.answererId !== newQuestion.answererId && 
         newQuestion.answererId !== ''
         ) {
-            db.doc(`notificationTrackers/${asker.email}`).update({notificationList: [{
-                title: 'TA Assigned',
-                subtitle: 'TA Assigned',
-                message: 'A TA has been assigned to your question',
-                createdAt: admin.database.ServerValue.TIMESTAMP
-            }, ...askerNotifs.notificationList]});
+            db.doc(`notificationTrackers/${asker.email}`)
+                .update({notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'TA Assigned',
+                    subtitle: 'TA Assigned',
+                    message: 'A TA has been assigned to your question',
+                    createdAt: admin.database.ServerValue.TIMESTAMP
+                })});
         }
 
         if (
             prevQuestion.answererId !== newQuestion.answererId && 
         newQuestion.answererId === ''
         ) {
-            db.doc(`notificationTrackers/${asker.email}`).update({notificationList: [{
-                title: 'TA Unassigned',
-                subtitle: 'TA Unassigned',
-                message: 
+            db.doc(`notificationTrackers/${asker.email}`)
+                .update({notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'TA Unassigned',
+                    subtitle: 'TA Unassigned',
+                    message: 
                   'A TA has been unassigned from your question and you\'ve been readded to the top of the queue.',
-                createdAt: admin.database.ServerValue.TIMESTAMP
-            }, ...askerNotifs.notificationList]});
+                    createdAt: admin.database.ServerValue.TIMESTAMP
+                })});
         }
         if(newQuestion.status === 'resolved' ) {
-            db.doc(`notificationTrackers/${asker.email}`).update({notificationList: [{
-                title: 'Question resolved',
-                subtitle: 'Question marked as resolved',
-                message: 
+            db.doc(`notificationTrackers/${asker.email}`)
+                .update({notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'Question resolved',
+                    subtitle: 'Question marked as resolved',
+                    message: 
               'A TA has marked your question as resolved and you have been removed from the queue',
-                createdAt: admin.database.ServerValue.TIMESTAMP
-            }, ...askerNotifs.notificationList]});
+                    createdAt: admin.database.ServerValue.TIMESTAMP
+                })});
         } else if(newQuestion.status === "no-show" ) {
-            db.doc(`notificationTrackers/${asker.email}`).update({notificationList: [{
-                title: 'Question marked no-show',
-                subtitle: 'Question marked as no-show',
-                message: 
+            db.doc(`notificationTrackers/${asker.email}`)
+                .update({notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'Question marked no-show',
+                    subtitle: 'Question marked as no-show',
+                    message: 
               'A TA has marked your question as no-show and you have been removed from the queue',
-                createdAt: admin.database.ServerValue.TIMESTAMP
-            }, ...askerNotifs.notificationList]}); 
+                    createdAt: admin.database.ServerValue.TIMESTAMP
+                })}); 
         }
 
 
