@@ -57,10 +57,9 @@ exports.onUserCreate = functions.firestore
 
             const taCourseDocs = await Promise.all(
                 taCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
-                        
+                
             const profCourseDocs = await Promise.all(
                 profCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
-
             taCourseDocs.map((doc, index) => {
                 if (!doc.exists) {
                     functions.logger.error('ta course doc does not exist.')
@@ -71,7 +70,7 @@ exports.onUserCreate = functions.firestore
                 // const course = doc.data() as FireCourse;
                 batch.update(
                     db.collection('courses').doc(courseId),
-                    {tas: [userId]}
+                    {tas: admin.firestore.FieldValue.arrayUnion(userId)}
                 );
             });
 
@@ -80,12 +79,11 @@ exports.onUserCreate = functions.firestore
                     functions.logger.error('prof course doc does not exist.')
                 }
 
-                const courseId = taCourseIds[index];
-                
+                const courseId = profCourseIds[index];
                 // const course = doc.data() as FireCourse;
                 batch.update(
                     db.collection('courses').doc(courseId),
-                    {professors: [userId]}
+                    {professors: admin.firestore.FieldValue.arrayUnion(userId)}
                 );
             });
 
