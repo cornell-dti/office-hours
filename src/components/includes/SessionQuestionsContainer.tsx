@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Loader } from 'semantic-ui-react';
 import moment from 'moment';
-import addNotification from 'react-push-notification';
+// import addNotification from 'react-push-notification';
 import { connect } from 'react-redux';
-import {addDBNotification} from '../../firebasefunctions/notifications';
+// import {addDBNotification} from '../../firebasefunctions/notifications';
 import SessionQuestion from './SessionQuestion';
 import AddQuestion from './AddQuestion';
 import DiscussionQuestion from './DiscussionQuestion';
@@ -32,7 +32,7 @@ type Props = {
     readonly openingTime: Date;
     readonly haveAnotherQuestion: boolean;
     readonly modality: FireSessionModality;
-    readonly user: FireUser;
+    // readonly user: FireUser;
     course: FireCourse;
     readonly myQuestion: FireQuestion | null;
     setShowModal: (show: boolean) => void;
@@ -159,36 +159,36 @@ const SessionQuestionsContainer = (props: Props) => {
 
     // Make sure that the data has loaded and user has a question
     if (shownQuestions && myQuestion) {
-        // Get user's position in queue (0 indexed)
-        const myQuestionIndex = allQuestions.findIndex(elt => elt.questionId === myQuestion.questionId);
-        // Update tab with user position
-        document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
-        // if user is up and we haven't already sent a notification, send one.
-        if (!props.isPast && myQuestionIndex === 0 && 
-            window.localStorage.getItem(props.myQuestion ? props.myQuestion.questionId : '') !== 'sent') {
-            window.localStorage.setItem(props.myQuestion ? props.myQuestion.questionId : '', 'sent');
-            addDBNotification(
-                props.user, 
-                {
-                    title : 'Your question is up!', 
-                    subtitle : 'Your question is up!', 
-                    message: "Your question has reached the top of the queue."
-                }
-            )
-            try {
-                addNotification({
-                    title: 'Your question is up!',
-                    native: true,
-                });
+        // // Get user's position in queue (0 indexed)
+        // const myQuestionIndex = allQuestions.findIndex(elt => elt.questionId === myQuestion.questionId);
+        // // Update tab with user position
+        // document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
+        // // if user is up and we haven't already sent a notification, send one.
+        // if (!props.isPast && myQuestionIndex === 0 && 
+        //     window.localStorage.getItem(props.myQuestion ? props.myQuestion.questionId : '') !== 'sent') {
+        //     window.localStorage.setItem(props.myQuestion ? props.myQuestion.questionId : '', 'sent');
+        //     addDBNotification(
+        //         props.user, 
+        //         {
+        //             title : 'Your question is up!', 
+        //             subtitle : 'Your question is up!', 
+        //             message: "Your question has reached the top of the queue."
+        //         }
+        //     )
+        //     try {
+        //         addNotification({
+        //             title: 'Your question is up!',
+        //             native: true,
+        //         });
                 
-            } catch (error) {
-                // Do nothing. iOS crashes because Notification isn't defined
-            }
-            // If next render, the user isn't at 0 anymore, reset state
-        } else if (myQuestionIndex > 0 && 
-            window.localStorage.getItem(props.myQuestion ? props.myQuestion.questionId : '') === 'sent') {
-            window.localStorage.setItem(props.myQuestion ? props.myQuestion.questionId : '', '');
-        }
+        //     } catch (error) {
+        //         // Do nothing. iOS crashes because Notification isn't defined
+        //     }
+        //     // If next render, the user isn't at 0 anymore, reset state
+        // } else if (myQuestionIndex > 0 && 
+        //     window.localStorage.getItem(props.myQuestion ? props.myQuestion.questionId : '') === 'sent') {
+        //     window.localStorage.setItem(props.myQuestion ? props.myQuestion.questionId : '', '');
+        // }
     } else if (props.isTA && shownQuestions) {
         document.title = '(' + shownQuestions.length + ') Queue Me In';
     } else {
