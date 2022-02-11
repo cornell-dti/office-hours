@@ -1,15 +1,5 @@
 import addNotification from 'react-push-notification';
-import {Twilio} from "twilio";
 import {addDBNotification} from '../firebasefunctions/notifications';
-
-// TODO: Change to dotenv, this is only here for testing
-const accountSid = "insert here...";
-const authToken = "insert here...";
-const twilioNumber = "insert here...";
-// TODO: Receiver number should be changed to receiver's number
-const receiver = "insert here..."; 
-
-const client = new Twilio(accountSid, authToken);
 
 export const addNotificationWrapper = (
     user: FireUser, 
@@ -17,16 +7,28 @@ export const addNotificationWrapper = (
     subtitle: string, 
     message: string | undefined
 ): void => {
-    addDBNotification(user, {title, subtitle, message: `${message}`})
-    try {
-        client.messages
-        .create({
-          from: twilioNumber,
-          to: receiver,
-          body: message,
-        })
-        .then((message) => console.log(message.sid));
+    addDBNotification(user, {title, subtitle, message: `${message}`});
 
+    // Attempt to send text message so long as the user has set up text message notifs
+    try {
+        const data : SMSRequest = {
+            'userPhone' : user.phoneNumber as string,
+            'message': message as string
+        };
+
+        if (user.phoneNumber === "Dummy number")
+            throw("Hasn't set phone number");
+        
+        fetch("https://us-central1-qmi-test.cloudfunctions.net/sendSMSNotif/", {
+            method: "POST",
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(res => console.log(res.json()))
+    } catch (err) {console.log("error: " + err)}
+
+    try {
         addNotification({
             title,
             subtitle,

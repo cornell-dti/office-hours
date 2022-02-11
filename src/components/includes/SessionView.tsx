@@ -14,6 +14,7 @@ import { filterUnresolvedQuestions } from '../../utilities/questions';
 import { firestore } from '../../firebase';
 
 import NotifBell from '../../media/notifBellWhite.svg';
+import { addNotificationWrapper } from '../../utilities/notifications';
 
 
 type Props = {
@@ -83,25 +84,12 @@ const SessionView = (
             const prevQSet = new Set(Array.from(prevQArr))
             const newQuestionsPessimistic = new Set(questionIds.filter(q => !prevQSet.has(q)))
             if(newQuestionsPessimistic.size > 0) {
-                addDBNotification(
+                addNotificationWrapper(
                     user, 
-                    {
-                        title : 'A new question has been added!', 
-                        subtitle : 'A new question was added', 
-                        message: "Check the queue."
-                    }
+                    'A new question has been added!', 
+                    'A new question was added', 
+                    'Check the queue.'
                 )
-                try {
-                    addNotification({
-                        title: 'A new question has been added!',
-                        subtitle : 'A new question was added', 
-                        message: 'Check the queue.',
-                        native: true
-                    });
-                } catch (error) {
-                    // TODO: Handle this better.
-                    // Do nothing. iOS crashes because Notification isn't defined
-                }
             }
             window.localStorage.setItem("prevQuestions", JSON.stringify(questionIds));
         }

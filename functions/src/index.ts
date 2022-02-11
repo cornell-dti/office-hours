@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { Twilio } from "twilio";
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
@@ -195,3 +196,32 @@ exports.onQuestionUpdate = functions.firestore
             totalResolveTime: admin.firestore.FieldValue.increment(resolveTimeChange),
         });
     });
+
+const accountSid = functions.config().accountSid;
+const authToken = functions.config().authToken;
+const twilioNumber = functions.config().twilioNumber;
+const client = new Twilio(accountSid, authToken);
+
+/**
+ * Cloud function that handles POSTed data and sends a text message to a requested phone number
+ * Requires: req is of type SMSRequest
+ */
+exports.sendSMSNotif = functions.https.onRequest(async (req: CustomRequest<SMSRequest>, res) => {
+    res.set('Access-Control-Allow-Origin', "*");
+    res.set('Access-Control-Allow-Methods', 'GET, POST');
+    res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+
+    const userPhone = req.body.userPhone;
+    const message = req.body.message;
+    try {
+        client.messages
+            .create({
+                from: twilioNumber,
+                to: userPhone,
+                body: message,
+            })
+            .then((message: { sid: any }) => res.send(message.sid));
+    } catch (error) {
+        res.send(`To was: ${userPhone}; Message was: ${message}; ${error}`);
+    }
+})

@@ -136,6 +136,7 @@ interface FireUser {
     courses: readonly string[];
     roles: { readonly [courseId: string]: PrivilegedFireCourseRole | undefined };
     phoneNumber?: string;
+    textNotifsEnabled?: boolean;
 }
 
 interface FirePendingUser {
