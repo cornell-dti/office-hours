@@ -2,9 +2,9 @@ import addNotification from 'react-push-notification';
 import {addDBNotification} from '../firebasefunctions/notifications';
 
 export const addNotificationWrapper = (
-    user: FireUser, 
-    title: string, 
-    subtitle: string, 
+    user: FireUser,
+    title: string,
+    subtitle: string,
     message: string | undefined
 ): void => {
     addDBNotification(user, {title, subtitle, message: `${message}`});
@@ -18,7 +18,7 @@ export const addNotificationWrapper = (
 
         if (user.phoneNumber === "Dummy number")
             throw("Hasn't set phone number");
-        
+
         fetch("https://us-central1-qmi-test.cloudfunctions.net/sendSMSNotif/", {
             method: "POST",
             mode: 'cors',

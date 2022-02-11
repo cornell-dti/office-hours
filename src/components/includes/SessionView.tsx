@@ -5,17 +5,19 @@ import addNotification from 'react-push-notification';
 import SessionInformationHeader from './SessionInformationHeader';
 import SessionQuestionsContainer from './SessionQuestionsContainer';
 
-import { useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile, 
-    useAskerQuestions } from '../../firehooks';
-import { updateQuestion , updateVirtualLocation } from '../../firebasefunctions/sessionQuestion' 
-import {addDBNotification} from '../../firebasefunctions/notifications'
+import {
+    useCourseTags, useCourseUsersMap, useSessionQuestions, useSessionProfile,
+    useAskerQuestions
+} from '../../firehooks';
+import { updateQuestion, updateVirtualLocation } from '../../firebasefunctions/sessionQuestion'
+import { addDBNotification } from '../../firebasefunctions/notifications'
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 import { firestore } from '../../firebase';
 
 import NotifBell from '../../media/notifBellWhite.svg';
 import { addNotificationWrapper } from '../../utilities/notifications';
-
+import Browser from '../../media/browser.svg';
 
 type Props = {
     course: FireCourse;
@@ -43,7 +45,7 @@ type AbsentState = {
 };
 
 const SessionView = (
-    { course, session, questions, isDesktop, backCallback , joinCallback , user, setShowModal, 
+    { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal,
         setRemoveQuestionId }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
@@ -85,9 +87,9 @@ const SessionView = (
             const newQuestionsPessimistic = new Set(questionIds.filter(q => !prevQSet.has(q)))
             if(newQuestionsPessimistic.size > 0) {
                 addNotificationWrapper(
-                    user, 
-                    'A new question has been added!', 
-                    'A new question was added', 
+                    user,
+                    'A new question has been added!',
+                    'A new question was added',
                     'Check the queue.'
                 )
             }
@@ -189,16 +191,14 @@ const SessionView = (
     return (
         <section className="StudentSessionView">
             {"Notification" in window &&
-                            window?.Notification.permission !== "granted" && showNotifBanner === true &&
-                            <div className="SessionNotification">
-                                <img src={NotifBell} alt="Notification Bell" />
-                                <p>Enable browser notifications to know when it's your turn.</p>
-                                <button
-                                    type="button"
-                                    onClick={()=> setShowNotifBanner(false)}
-                                >
-                                    <Icon name="x" /></button>
-                            </div>
+                window?.Notification.permission !== "granted" && showNotifBanner === true &&
+                <div className="SessionNotification">
+                    <img src={Browser} alt="Browser" />
+                    <div className="label">Enable browser notifications to know when it's your turn.</div>
+                    <div className="button" onClick={() => setShowNotifBanner(false)}>
+                        GOT IT
+                    </div>
+                </div>
             }
             <SessionInformationHeader
                 session={session}
@@ -217,7 +217,8 @@ const SessionView = (
                 }}
             />
 
-            {undoQuestionId &&
+            {
+                undoQuestionId &&
                 <div className="undoContainer">
                     <p className="undoClose" onClick={dismissUndo}>
                         <Icon name="close" />
@@ -238,7 +239,7 @@ const SessionView = (
                 isTA={isTa}
                 modality={session.modality}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
-                questions={session.modality === 'review' ? questions.filter(q => q.status !== 'retracted') : 
+                questions={session.modality === 'review' ? questions.filter(q => q.status !== 'retracted') :
                     questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
                 users={users}
                 tags={tags}
@@ -255,7 +256,7 @@ const SessionView = (
                 setShowModal={setShowModal}
                 setRemoveQuestionId={setRemoveQuestionId}
             />
-        </section>
+        </section >
     );
 };
 
