@@ -1,6 +1,5 @@
 import firebase from 'firebase/app';
-
-const firestore = firebase.firestore();
+import { firestore } from '../firebase';
 
 export const addBlogPost = (
     user: firebase.User | null, 

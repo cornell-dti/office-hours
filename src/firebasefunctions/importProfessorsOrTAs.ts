@@ -51,10 +51,11 @@ const importProfessorsOrTAs = async (
     course: FireCourse,
     role: 'professor' | 'ta',
     emailListTotal: readonly string[]
-): Promise<{ updatedUsers: FireUser[]; missingSet: Set<string> }> => {
+): Promise<{ updatedUsers: FireUser[]; courseChange: FireCourse; missingSet: Set<string>}> => {
     const missingSet = new Set<string>(emailListTotal);
     const batch = db.batch();
     const updatedUsers: FireUser[] = [];
+    const courseChange: FireCourse = {...course};
 
     const emailBlocks = blockArray(emailListTotal, 10);
 
@@ -104,20 +105,20 @@ const importProfessorsOrTAs = async (
                     }
                 });
         })
-
         // update course's ta/professor roles
+        const updates = getCourseRoleUpdates(
+            course,
+            allUpdates.map(({ user }) => [user.userId, role] as const)
+        );
+        if (updates.professors) courseChange.professors = updates.professors;
+        if (updates.tas) courseChange.tas = updates.tas;
         batch.update(
             db.collection('courses').doc(course.courseId),
-            getCourseRoleUpdates(
-                course,
-                allUpdates.map(({ user }) => [user.userId, role] as const)
-            )
-        )
-
-
+            updates
+        );
         batch.commit();
     }).then(() => {
-        return { updatedUsers, missingSet };
+        return { updatedUsers, courseChange, missingSet};
     });
 
 };
@@ -171,8 +172,7 @@ export const importProfessorsOrTAsFromCSV = (
     course: FireCourse,
     role: 'professor' | 'ta',
     emailList: string[]
-): Promise<{ updatedUsers: FireUser[]; missingSet: Set<string> }> | undefined => {
-
+): Promise<{ updatedUsers: FireUser[]; courseChange: FireCourse; missingSet: Set<string> }> | undefined => {
     return importProfessorsOrTAs(
         course,
         role,

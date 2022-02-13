@@ -1,0 +1,94 @@
+.notifications {
+    &__top {
+        position: relative;
+        width: 28px;
+        margin-right: 1em;
+        padding-bottom: 10px;
+    }
+    &__icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    &__dropdown {
+        position: absolute;
+        z-index: 100;
+        width: 15%;
+        min-width: 23em;
+        max-width: 30em;
+        max-height: 45%;
+        overflow-y: auto;
+        right: 0;
+        top: 48px;
+        background: #f5f5f5;
+        box-shadow: -5px 13px 20px rgba(0, 0, 0, 0.25);
+        border-radius: 0px 0px 6px 6px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.2s cubic-bezier(0.075, 0.82, 0.165, 1);
+        padding: 1em 1.5em;
+        .notification {
+            &__header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+            }
+            &__title {
+                text-align: left;
+                font-family: Roboto;
+                font-style: normal;
+                font-weight: 500;
+                font-size: 14px;
+                line-height: 16px;
+                color: #484848;
+            }
+            &__date {
+                font-weight: 300;
+                color: lighten(#484848, 0.2);
+                width: 5em;
+            }
+            &__content {
+                padding-top: 1em;
+                text-align: left;
+            }
+            &__show-more {
+                position: absolute;
+                bottom: 0.5em;
+                right: 1em;
+            }
+        }
+    }
+    @media (min-width: 1800px) {
+        &__dropdown {
+            width: 18%;
+        }
+    }
+    @media (min-width: 2100px) {
+        &__dropdown {
+            width: 16%;
+        }
+    }
+    &__visible {
+        visibility: visible;
+        opacity: 1;
+    }
+    &__indicator {
+        position: absolute;
+        top: 0;
+        left: 16px;
+    }
+    &__notification {
+        position: relative;
+        max-height: 18em;
+        background: #ffffff;
+        box-shadow: 0px 7px 40px rgba(196, 196, 196, 0.3);
+        border-radius: 8px;
+        margin-top: 0.5em;
+        width: 100%;
+        padding: 1em;
+    }
+}

@@ -5,7 +5,7 @@ import {Grid} from '@material-ui/core'
 import TopBar from '../includes/TopBar';
 import AdminCourseCard from '../includes/AdminCourseCard';
 import AdminCourseCreator from '../includes/AdminCourseCreator';
-import { useAllCourses, useMyUser, useIsAdmin } from '../../firehooks';
+import { useAllCourses, useIsAdmin } from '../../firehooks';
 import { CURRENT_SEMESTER } from '../../constants';
 
 
@@ -23,7 +23,6 @@ const AdminView = () => {
     return (
         <div className="AdminView">
             <TopBar
-                user={useMyUser()}
                 // In admin view, it is never the case that the Dashboard section should be shown.
                 role="student"
                 context="professor"

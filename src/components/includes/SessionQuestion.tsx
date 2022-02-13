@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { Icon, Loader, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
-import { useState } from 'react';
+import { useState } from "react";
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
-import addNotification from 'react-push-notification';
+import { connect } from 'react-redux';
+import {addNotificationWrapper} from '../../utilities/notifications'
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
 
@@ -15,8 +16,9 @@ import {
     assignQuestionToTA,
     markQuestionDone,
     markQuestionDontKnow,
-    updateComment,
+    updateComment
 } from '../../firebasefunctions/sessionQuestion';
+import { RootState } from '../../redux/store';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -54,6 +56,7 @@ type State = {
     width: number;
 };
 
+
 class SessionQuestion extends React.Component<Props, State> {
     state: State;
 
@@ -69,7 +72,7 @@ class SessionQuestion extends React.Component<Props, State> {
             timeoutID: 0,
             timeoutID2: 0,
             enableEditingComment: false,
-            width: window.innerWidth,
+            width: window.innerWidth
         };
     }
 
@@ -77,36 +80,64 @@ class SessionQuestion extends React.Component<Props, State> {
         const previousState = prevProps.question;
         const currentState = this.props.question;
         const user = this.props.myUserId;
+
+
         if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
-            try {
-                addNotification({
-                    title: 'TA comment',
-                    subtitle: 'New TA comment',
-                    message: `${currentState.taComment}`,
-                    theme: 'darkblue',
-                    native: true,
-                });
-            } catch (error) {
-                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
-            }
+            addNotificationWrapper(this.props.user, 'TA comment', 'New TA comment', currentState.taComment);
+        }
+
+        if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
+            addNotificationWrapper(
+                this.props.user, 
+                'Student comment', 
+                'New student comment', 
+                currentState.studentComment
+            );
         }
 
         if (
-            previousState.studentComment !== currentState.studentComment &&
-            user === currentState.answererId
+            previousState.answererId !== currentState.answererId && 
+            currentState.answererId !== '' && 
+            user === currentState.askerId
         ) {
-            try {
-                addNotification({
-                    title: 'Student comment',
-                    subtitle: 'New student comment',
-                    message: `${currentState.studentComment}`,
-                    theme: 'darkblue',
-                    native: true,
-                });
-            } catch (error) {
-                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
-            }
+            addNotificationWrapper(
+                this.props.user, 
+                'TA Assigned', 
+                'TA Assigned', 
+                'A TA has been assigned to your question'
+            );
         }
+
+        if (
+            previousState.answererId !== currentState.answererId && 
+            currentState.answererId === '' && 
+            user === currentState.askerId
+        ) {
+            addNotificationWrapper(
+                this.props.user, 
+                'TA Unassigned', 
+                'TA Unassigned', 
+                'A TA has been unassigned from your question and you\'ve been readded to the top of the queue.'
+            );
+        }
+        if(currentState.askerId === user && this.props.index === 0 && prevProps.index !== 0) {
+            addNotificationWrapper(
+                this.props.user, 
+                'Your question is up!', 
+                'Your question is up!', 
+                'Your question has reached the top of the queue.');
+        }
+    }
+
+    componentWillUnmount() {
+        if(this.props.myUserId === this.props.question.askerId) {
+            addNotificationWrapper(
+                this.props.user, 
+                'Question Marked as Complete', 
+                'Question marked as complete', 
+                'Your question has been marked as complete/no-show.');
+            window.localStorage.setItem('questionUpNotif', '');
+        } 
     }
 
     // Given an index from [1..n], converts it to text that is displayed on the
@@ -120,31 +151,33 @@ class SessionQuestion extends React.Component<Props, State> {
         return String(index);
     }
 
+
     public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         this.setState({ isEditingLocation: true });
         const target = event.target as HTMLTextAreaElement;
         if (target.value.length <= LOCATION_CHAR_LIMIT) {
             this.setState({
-                location: target.value,
+                location: target.value
             });
 
             const question = firestore.collection('questions').doc(this.props.question.questionId);
             question.update({
-                location: target.value,
+                location: target.value
             });
 
             setTimeout(() => {
                 this.setState({
-                    isEditingLocation: false,
+                    isEditingLocation: false
                 });
             }, 1000);
         }
     };
 
+
     onClickRemove = () => {
         this.props.setShowModal(true);
         this.props.setRemoveQuestionId(this.props.question.questionId);
-    };
+    }
 
     retractQuestion = (): void => {
         retractStudentQuestion(firestore, this.props.question);
@@ -155,7 +188,11 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     assignQuestion = () => {
-        assignQuestionToTA(firestore, this.props.question, this.props.virtualLocation, this.props.myUserId);
+        assignQuestionToTA(
+            firestore,
+            this.props.question,
+            this.props.virtualLocation,
+            this.props.myUserId)
     };
 
     studentNoShow = () => {
@@ -191,7 +228,6 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({
             timeoutID: id,
         });
-
     };
 
     undoDone = () => {
@@ -221,26 +257,31 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     toggleComment = () => {
-        this.setState(({ enableEditingComment }) => ({
-            enableEditingComment: !enableEditingComment,
+        this.setState(({ enableEditingComment }) => ({ 
+            enableEditingComment: !enableEditingComment 
         }));
-    };
+    }
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
             variables: {
                 questionId: this.props.question.questionId,
                 status,
-            },
+            }
         });
         const question = this.props.question;
         const asker = this.props.users[question.askerId];
-        this.props.triggerUndo(question.questionId, status, asker.firstName + ' ' + asker.lastName);
+        this.props.triggerUndo(
+            question.questionId,
+            status,
+            asker.firstName + ' ' + asker.lastName
+        );
     };
 
     setDotMenu = (status: boolean) => {
         this.setState({ showDotMenu: status });
     };
+
 
     render() {
         const question = this.props.question;
@@ -628,4 +669,9 @@ CommentBox.defaultProps = {
     studentCSS: undefined,
 };
 
-export default SessionQuestion;
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+
+export default connect(mapStateToProps, {})(SessionQuestion);
