@@ -17,7 +17,6 @@
     "firebase": "^8.0.1",
     "firebase-admin": "^9.3.0",
     "firebase-functions": "^3.11.0",
-    "googleapis": "^91.0.0",
     "history": "^4.10.1",
     "linkifyjs": "^2.1.9",
     "lodash": "^4.17.15",

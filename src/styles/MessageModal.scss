@@ -65,8 +65,8 @@
 }
 
 .CalendarExportModalVisible {
-    width: 600px;
-    height: 350px;
+    width: 700px;
+    height: 400px;
 }
 
 .CalendarExportModalScreen {
@@ -75,7 +75,7 @@
         font-size: 25px;
         line-height: 20px;
         color: #484848;
-        margin-bottom: 40px;
+        margin: 10px 0 60px 0; 
     }
 
     .CalendarContainer {
@@ -87,6 +87,10 @@
         text-align: center;
         display: flex;
         justify-content: center;
+        
+        img {
+            margin-top: 10px;
+        }
     }
 
     .ExportText {
@@ -94,7 +98,7 @@
         text-align: center;
         text-decoration-line: underline;
         color: #5599db;
-        margin-top: 120px;
+        margin-top: 110px;
         width: 200px;
         line-height: 25px;
         cursor: pointer;
