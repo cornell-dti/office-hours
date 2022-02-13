@@ -48,8 +48,7 @@ const CalendarExportModal = ({
     //     return csvRows.join('\n');
     // };
 
-    const createIcs = () => {
-        const icsRows = [];
+    const getDateItems = (): {date: string; startTime: string; endTime: string} => {
         const date = currentExportSession.startTime
             .toDate()
             .toISOString()
@@ -70,6 +69,12 @@ const CalendarExportModal = ({
             .substring(16, 22)
             .split(':')
             .join('');
+        return {date, startTime, endTime};
+    }
+
+    const createIcs = () => {
+        const icsRows = [];
+        const {date, startTime, endTime} = getDateItems();
 
         icsRows.push('BEGIN:VCALENDAR');
         icsRows.push('VERSION:2.0');
@@ -105,9 +110,19 @@ const CalendarExportModal = ({
         document.body.removeChild(a);
     };
 
-    const exportToGoogleCalendar = () => {
-        // createNewEvent();
-    };
+    const getGoogleCalendarLink = (): string => {
+        const title = encodeURIComponent(currentExportSession.title ? currentExportSession.title : 
+            `${course?.code} office hour`);
+        const {date, startTime, endTime} = getDateItems();
+        const dates = encodeURIComponent(`${date}T${startTime}00/${date}T${endTime}00`);
+        const ctz = encodeURIComponent('America/New_York');
+        const location = encodeURIComponent('building' in currentExportSession ? 
+            `${currentExportSession.building} ${currentExportSession.room}` : 'Online');
+
+        const finalLink = `https://calendar.google.com/calendar/render?action=TEMPLATE` + 
+        `&text=${title}&dates=${dates}&ctz=${ctz}&location=${location}`;
+        return finalLink;
+    }
 
     const exportToAppleCalendar = () => {
         const icsData = createIcs();
@@ -133,12 +148,12 @@ const CalendarExportModal = ({
                                     src={GoogleIcon}
                                     alt='Export to Google Calendar'
                                 />
-                                <div
+                                <a
                                     className='ExportText'
-                                    onClick={exportToGoogleCalendar}
+                                    href={getGoogleCalendarLink()}
                                 >
                                     Export to Google Calendar
-                                </div>
+                                </a>
                             </div>
                             <div className='Line' />
                             <div className='CalendarItem'>
