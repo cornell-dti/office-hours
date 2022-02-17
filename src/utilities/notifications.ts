@@ -25,7 +25,6 @@ export const addNotificationWrapper = (
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         })
-            .then(res => console.log(res.json()))
     } catch (err) {console.log("error: " + err)}
 
     try {
