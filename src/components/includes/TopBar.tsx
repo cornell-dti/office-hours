@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Icon } from 'semantic-ui-react';
 import {connect} from 'react-redux'
 import addNotification from 'react-push-notification';
@@ -9,6 +9,7 @@ import ProfessorStudentToggle from './ProfessorStudentToggle';
 import TopBarNotifications from './TopBarNotifications'
 import {useNotificationTracker} from '../../firehooks';
 import { RootState } from '../../redux/store';
+import { updateLastSent } from '../../firebasefunctions/notifications';
 
 type Props = {
     courseId: string;
@@ -23,14 +24,6 @@ type Props = {
     admin?: boolean;
 }
 
-function usePrevious(value: NotificationTracker | undefined): NotificationTracker | undefined {
-    const ref = useRef<NotificationTracker | undefined>();
-    useEffect(() => {
-        ref.current = value;
-    });
-    return ref.current;
-}
-
 const TopBar = (props: Props) => {
     const [showMenu, setShowMenu] = useState(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : '/placeholder.png');
@@ -42,24 +35,23 @@ const TopBar = (props: Props) => {
     const user = props.user;
     const email: string | undefined = user?.email
     const notificationTracker = useNotificationTracker(email);
-    const prevTracker = usePrevious(notificationTracker);
 
     useEffect(() => {
-        if(notificationTracker?.notificationList.length !== prevTracker?.notificationList.length) {
-            const oldNotifSet = new Set(prevTracker?.notificationList);
-            notificationTracker?.notificationList.forEach(notif => {
-                if(!oldNotifSet.has(notif)) {
-                    addNotification({
-                        title: notif.title,
-                        subtitle: notif.subtitle,
-                        message: notif.message,
-                        native: true
-                    });
-                }
-            })
-            
-        }
-    }, [notificationTracker?.notificationList])
+        notificationTracker?.notificationList.forEach(notif => {
+            if(notificationTracker?.lastSent === undefined || 
+              notif.createdAt.toDate().getTime() > notificationTracker?.lastSent.toDate().getTime()+ 1000) {
+                updateLastSent(user, notificationTracker);
+                addNotification({
+                    title: notif.title,
+                    subtitle: notif.subtitle,
+                    message: notif.message,
+                    native: true
+                });
+                // hacky fix for duplicate notifs--server update to lastSent doesn't occur quickly enough
+                setTimeout(() => {}, 100);
+            }
+        })
+    }, [notificationTracker, user])
 
     const handleClick = (e: globalThis.MouseEvent) => {
         if (ref.current && !ref.current.contains(e.target as Node)) {

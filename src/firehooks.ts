@@ -365,7 +365,7 @@ export const useNotificationTracker =
 
 export const useNotifications = 
 (trackerId: string | undefined): SessionNotification[] | undefined => 
-    useNotificationTracker(trackerId)?.notificationList
+    useNotificationTracker(trackerId)?.notificationList.reverse();
 
 // Primatives
 // Look up a doc in Firebase by ID

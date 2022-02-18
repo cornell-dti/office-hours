@@ -27,6 +27,7 @@ async (user: FireUser, notification: Omit<SessionNotification, 'notificationId' 
                     notificationList: [newNotification],
                     notifications: firebase.firestore.Timestamp.now(),
                     productUpdates: firebase.firestore.Timestamp.now(),
+                    lastSent: firebase.firestore.Timestamp.now(),
                 }
                 trackerRef.set(newTracker)
             }
@@ -95,3 +96,27 @@ async (user: FireUser | undefined,
         }
     }
 }
+
+export const updateLastSent = 
+  async (user: FireUser | undefined, notificationTracker: NotificationTracker | undefined) => {
+      if(user !== undefined) {
+          const email = user.email;
+          const updatedTracker: Partial<NotificationTracker> = {
+              lastSent: firebase.firestore.Timestamp.now(),
+          }
+          if(email !== null) {
+              const trackerRef = firestore.collection('notificationTrackers').doc(email);
+              trackerRef.get().then(doc => {
+                  if(notificationTracker !== undefined && doc.exists) {
+                      trackerRef.update(updatedTracker);
+                  } else {
+                      updatedTracker.id= email;
+                      updatedTracker.notificationList = [];
+                      updatedTracker.notifications = firebase.firestore.Timestamp.now();
+                      updatedTracker.productUpdates = firebase.firestore.Timestamp.now();
+                      trackerRef.set(updatedTracker);
+                  }
+              })
+          }
+      };
+  }

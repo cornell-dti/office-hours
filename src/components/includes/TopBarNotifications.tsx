@@ -1,7 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
 import Moment from 'react-moment'
-import moment from 'moment-timezone';
-
 import { connect } from 'react-redux';
 import notif from '../../media/notif.svg'
 import notification from '../../media/notification.svg'
@@ -16,7 +14,10 @@ type Props = {
 const TopBarNotifications = ({notificationTracker, user}: Props) => {
     const [dropped, toggleDropped] = useState(false);
 
-    const notifications = notificationTracker?.notificationList
+    const notifications = notificationTracker?.notificationList.sort((a, b) => {
+        return b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime();
+    });
+
 
     const [hasViewed, toggleHasViewed] = useState(notificationTracker === undefined || 
         notifications === undefined || notifications.length === 0 ||
@@ -82,22 +83,22 @@ const TopBarNotifications = ({notificationTracker, user}: Props) => {
             >
                 {notifications === undefined || notifications.length === 0 ? 
                     (<div className="notification__placeholder">You do not have any notifications</div> ):
-                    notifications.map((notif, index) => (<div 
+                    notifications.map((notific, index) => (<div 
                         className="notifications__notification" 
-                        style={{background: getColor(notif)}} 
+                        style={{background: getColor(notific)}} 
                         key={index}
                     >
                         <div className="notification__header">
-                            <div className="notification__title">{notif.subtitle}</div>
+                            <div className="notification__title">{notific.subtitle}</div>
                             <Moment 
                                 className="notification__date" 
-                                date={moment.now()} 
+                                date={notific.createdAt.toDate()} 
                                 interval={0} 
                                 format={'HH:mm a'} 
                             />
                         </div>
                         <div className="notification__content">
-                            {notif.message}
+                            {notific.message}
                         </div>
                     </div>))}
             </div>
