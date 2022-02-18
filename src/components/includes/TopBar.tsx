@@ -37,20 +37,29 @@ const TopBar = (props: Props) => {
     const notificationTracker = useNotificationTracker(email);
 
     useEffect(() => {
-        notificationTracker?.notificationList.forEach(notif => {
-            if(notificationTracker?.lastSent === undefined || 
-              notif.createdAt.toDate().getTime() > notificationTracker?.lastSent.toDate().getTime()+ 1000) {
-                updateLastSent(user, notificationTracker);
-                addNotification({
-                    title: notif.title,
-                    subtitle: notif.subtitle,
-                    message: notif.message,
-                    native: true
-                });
-                // hacky fix for duplicate notifs--server update to lastSent doesn't occur quickly enough
-                setTimeout(() => {}, 100);
+        if(notificationTracker!== undefined) {
+            for(let i = 0; i < notificationTracker.notificationList.length; i++) {
+                const notif = notificationTracker.notificationList[i];
+                // checks that the notification was created after the last time notifications were sent
+                // adds 1000 to lastSent time because client and server TimeStamps seems to be slightly
+                // misaligned
+                if(notificationTracker.lastSent === undefined || 
+                    notif.createdAt.toDate().getTime() > 
+                    notificationTracker?.lastSent.toDate().getTime()+ 1000) {
+                    updateLastSent(user, notificationTracker);
+                    addNotification({
+                        title: notif.title,
+                        subtitle: notif.subtitle,
+                        message: notif.message,
+                        native: true
+                    });
+                    // hacky fix for duplicate notifs--server update to lastSent doesn't occur quickly enough
+                    setTimeout(() => {}, 100);
+                } else {
+                    break;
+                }
             }
-        })
+        }
     }, [notificationTracker, user])
 
     const handleClick = (e: globalThis.MouseEvent) => {

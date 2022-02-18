@@ -92,38 +92,20 @@ exports.onUserCreate = functions.firestore
 
     });
 
-// const insertTaOrProf = (course: FireCourse, userId: string, role: string) => {
-//     // eslint-disable-next-line
-//     functions.logger.log('inserting into course:');
-//     // eslint-disable-next-line
-//     functions.logger.log(course)
-//     if (role === 'ta') {
-//         course.tas = course.tas? [...course.tas, userId] : [userId];
-//     }
-//     if (role === 'professor') {
-//         course.professors = course.tas? [...course.professors, userId] : [userId];
-//     }
-
-//     return course;
-// }
-
 exports.onSessionUpdate = functions.firestore
     .document('sessions/{sessionId}')
     .onUpdate(async (change) => {
+        // retrieve session id and ordered queue of active questions
         const afterSessionId = change.after.id;
-        const beforeSessionId = change.before.id;
-        functions.logger.log(`Session before=${beforeSessionId} \
-        after=${afterSessionId} was updated.`);
         const afterQuestions = (await db.collection('questions')
             .where('sessionId', '==', afterSessionId)
             .where('status', 'in', ['assigned', 'unresolved'])
             .orderBy('timeEntered', 'asc').get()).docs;
-        functions.logger.log(afterQuestions[0])
-        functions.logger.log(`QuestionID=${afterQuestions[0].id}`)
+
+        // if the top active question was not notified, notify them
         if(!afterQuestions[0].data().wasNotified) {
             const asker: FireUser = (await db.doc(`users/${afterQuestions[0].data().askerId}`)
                 .get()).data() as FireUser;
-            functions.logger.log(`Asked by ${asker.userId} with email ${asker.email}`)
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({notificationList: admin.firestore.FieldValue.arrayUnion({
                     title: 'Your Question is Up!',
@@ -142,18 +124,16 @@ exports.onSessionUpdate = functions.firestore
 exports.onQuestionCreate = functions.firestore
     .document('questions/{questionId}')
     .onCreate(async (snap) => {
-        // Get data object and obtain session ID
+        // Get data object and obtain session/course
         const data = snap.data();
         const sessionId = data.sessionId;
         const session = (await db.collection('sessions').doc(sessionId).get()).data() as FireSession;
         const course = (await db.collection('courses').doc(session.courseId).get()).data() as FireCourse;
-        functions.logger.log(course)
-        functions.logger.log(course.tas)
-        // Log Session ID for debugging
-        // functions.logger.log(`Session ID is: ${sessionId}`);
 
         // Increment total number of questions of relevant session
         const increment = admin.firestore.FieldValue.increment(1);
+
+        // Add new question notification for all TAs
         course.tas.forEach(async ta => {
             const user: FireUser = (await db.doc(`users/${ta}`).get()).data() as FireUser;
             db.doc(`notificationTrackers/${user.email}`).update({
@@ -165,6 +145,8 @@ exports.onQuestionCreate = functions.firestore
                 })
             })
         });
+
+        // Add new question notification for all Professors
         course.professors.forEach(async professor => {
             const user: FireUser = (await db.doc(`users/${professor}`).get()).data() as FireUser;
             db.doc(`notificationTrackers/${user.email}`).update({
@@ -195,6 +177,7 @@ questionStatusNumbers.set("no-show", [0, 0, 0]);
 exports.onQuestionUpdate = functions.firestore
     .document('questions/{questionId}')
     .onUpdate(async (change) => {
+        // retrieve old and new questions
         const newQuestion: FireQuestion = change.after.data() as FireQuestion;
         const prevQuestion: FireQuestion = change.before.data() as FireQuestion;
 
@@ -235,17 +218,12 @@ exports.onQuestionUpdate = functions.firestore
         ){
             resolveTimeChange = prevQuestion.timeAssigned.seconds - prevQuestion.timeAddressed.seconds;
         }
-        functions.logger.log(
-            `Question ID=${newQuestion.questionId} \
-            Asker ID=${newQuestion.askerId}  \
-            Answerer ID=${newQuestion.answererId}`
-        )
+
         // Figure out who needs to be updated with a notification based on the changes
         const asker: FireUser = (await db.doc(`users/${newQuestion.askerId}`).get()).data() as FireUser;
         if(newQuestion.answererId) {
             const answerer: FireUser = (await db.doc(`users/${newQuestion.answererId}`).get()).data() as FireUser;
             if (prevQuestion.studentComment !== newQuestion.studentComment) {
-                functions.logger.log("New student comment")
                 db.doc(`notificationTrackers/${answerer.email}`)
                     .update({notificationList: admin.firestore.FieldValue.arrayUnion({
                         title: 'Student comment',
@@ -256,7 +234,6 @@ exports.onQuestionUpdate = functions.firestore
                     })});
             }
             if (prevQuestion.taComment !== newQuestion.taComment) {
-                functions.logger.log("New ta comment")
                 db.doc(`notificationTrackers/${asker.email}`)
                     .update({notificationList: admin.firestore.FieldValue.arrayUnion({
                         title: 'TA comment',
@@ -271,7 +248,6 @@ exports.onQuestionUpdate = functions.firestore
             prevQuestion.answererId !== newQuestion.answererId && 
         newQuestion.answererId !== ''
         ) {
-            functions.logger.log("ta assigned")
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({notificationList: admin.firestore.FieldValue.arrayUnion({
                     title: 'TA Assigned',
@@ -286,7 +262,6 @@ exports.onQuestionUpdate = functions.firestore
         newQuestion.answererId === ''
         ) {
             const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
-            functions.logger.log("ta unassigned")
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({notificationList: admin.firestore.FieldValue.arrayUnion({
                     title: 'TA Unassigned',
@@ -299,7 +274,6 @@ exports.onQuestionUpdate = functions.firestore
         }
         else if(newQuestion.status === 'resolved' ) {
             const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
-            functions.logger.log("question resolved")
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({notificationList: admin.firestore.FieldValue.arrayUnion({
                     title: 'Question resolved',
@@ -310,7 +284,6 @@ exports.onQuestionUpdate = functions.firestore
                 })});
         } else if(newQuestion.status === "no-show" ) {
             const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
-            functions.logger.log("question no show")
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({notificationList: admin.firestore.FieldValue.arrayUnion({
                     title: 'Question marked no-show',
@@ -320,12 +293,6 @@ exports.onQuestionUpdate = functions.firestore
                     createdAt: admin.firestore.Timestamp.now()
                 })}); 
         }
-
-
-        // Log for debugging
-        /* functions.logger.log(`Status change from ${prevStatus} to ${newStatus}. Changes:
-            ${numQuestionChange} ${numAssignedChange} ${numResolvedChange}
-            ${waitTimeChange} ${resolveTimeChange}`); */
 
         // Update relevant statistics in database
         return db.doc(`sessions/${sessionId}`).update({
