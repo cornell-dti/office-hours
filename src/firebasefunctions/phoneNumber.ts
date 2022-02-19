@@ -1,8 +1,8 @@
 import { firestore } from '../firebase';
 
-export const updatePhoneData = (
+export const updatePhoneNum = (
     userId : string | undefined,
-    phoneData : Partial<FireUser>
+    phoneNumber : Partial<FireUser>
 ) => {
-    return firestore.collection('users').doc(userId).update(phoneData);
+    return firestore.collection('users').doc(userId).update(phoneNumber);
 }
