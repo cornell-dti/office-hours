@@ -1,19 +1,32 @@
 .SessionNotification {
 
-    height: 50px;
-    background: #F2F9FF;
-    border: 1px solid #5599DB;
-    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.1));
-    display: flex;
-    flex-direction: row;
-    text-align: left;
-    position: fixed;
-    margin: auto;
-    width: 60%;
-    top: 650px;
-    bottom: 0;
-    z-index: 9999;
-
+    .browserNotif{
+        height: 50px;
+        background: #F2F9FF;
+        border: 1px solid #5599DB;
+        filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.1));
+        display: flex;
+        flex-direction: row;
+        text-align: left;
+        margin: auto;
+        position: fixed;
+        width: 60%;
+        z-index: 9999;
+        top: 600px;
+    }
+    .textNotif{
+        height: 50px;
+        background: #F2F9FF;
+        border: 1px solid #5599DB;
+        display: flex;
+        flex-direction: row;
+        text-align: left;
+        margin: auto;
+        position: fixed;
+        width: 60%;
+        z-index: 9999;
+        top: 649px;
+    }
     .label {
         align-self: center;
         justify-self: flex-start;
@@ -23,7 +36,7 @@
         font-weight: 250px;
         font-size: 14px;
         letter-spacing: 0.642857px;
-        padding: 40.59px;
+        padding-left: 40.59px;
     }
     .button {
         align-self: center;
@@ -36,7 +49,7 @@
         font-size: 14px;
         font-weight: 500px;
         line-height: 48px;   
-        padding: 24px;
+        padding-right: 24px;
         cursor: pointer;
     }
 

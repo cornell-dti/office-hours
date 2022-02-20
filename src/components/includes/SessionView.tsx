@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from 'semantic-ui-react';
 import addNotification from 'react-push-notification';
-
 import { connect } from 'react-redux';
 import SessionInformationHeader from './SessionInformationHeader';
 import SessionQuestionsContainer from './SessionQuestionsContainer';
@@ -18,6 +17,7 @@ import { firestore } from '../../firebase';
 
 import { RootState } from '../../redux/store';
 import Browser from '../../media/browser.svg';
+import SMS from '../../media/sms.svg';
 
 
 type Props = {
@@ -64,7 +64,9 @@ const SessionView = (
     });
 
     const [prevQuestSet, setPrevQuestSet] = useState(new Set(questions.map(q => q.questionId)));
-    const [showNotifBanner, setShowNotifBanner] = useState(true);
+    const [showBrowserNotifBanner, setShowBrowserNotifBanner] = useState(true);
+    const [showTextsNotifBanner, setShowTextsNotifBanner] = useState(true);
+
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
 
@@ -202,15 +204,38 @@ const SessionView = (
         return null;
     }, [myQuestions]);
 
+    const gotItClicked = () => {
+        setShowBrowserNotifBanner(false);
+    };
+
+    const enableClicked = () => {
+        setShowTextsNotifBanner(false);
+    };
+
     return (
         <section className="StudentSessionView">
             {"Notification" in window &&
-                window?.Notification.permission !== "granted" && showNotifBanner === true &&
+                window?.Notification.permission !== "granted" && showBrowserNotifBanner === true &&
                 <div className="SessionNotification">
-                    <img src={Browser} alt="Browser" />
-                    <div className="label">Enable browser notifications to know when it's your turn.</div>
-                    <div className="button" onClick={() => setShowNotifBanner(false)}>
-                        GOT IT
+                    <div className="browserNotif">
+                        <img src={Browser} alt="Browser" />
+                        <div className="label">Enable browser notifications to know when it's your turn.</div>
+                        <div className="button" onClick={gotItClicked}>
+                            GOT IT
+                        </div>
+                    </div>
+                </div>
+            }
+            {
+                "Notification" in window &&
+                window?.Notification.permission !== "granted" && showTextsNotifBanner === true &&
+                <div className="SessionNotification">
+                    <div className="textNotif">
+                        <img src={SMS} alt="SMS" />
+                        <div className="label">Enable text message notifications to know when it's your turn.</div>
+                        <div className="button" onClick={enableClicked}>
+                            ENABLE
+                        </div>
                     </div>
                 </div>
             }
@@ -230,7 +255,8 @@ const SessionView = (
                 }}
             />
 
-            {undoQuestionId &&
+            {
+                undoQuestionId &&
                 <div className="undoContainer">
                     <p className="undoClose" onClick={dismissUndo}>
                         <Icon name="close" />
@@ -267,15 +293,15 @@ const SessionView = (
                 setShowModal={setShowModal}
                 setRemoveQuestionId={setRemoveQuestionId}
             />
-        </section>
+        </section >
     );
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
-export default connect(mapStateToProps, {})( (props: Omit<Props, 'questions'>) => {
+export default connect(mapStateToProps, {})((props: Omit<Props, 'questions'>) => {
     const isTa = props.user.roles[props.course.courseId] !== undefined;
     const questions = props.session.modality === 'review' ? useSessionQuestions(props.session.sessionId, true) :
         filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));
