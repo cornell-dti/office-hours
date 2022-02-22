@@ -21,6 +21,7 @@ import Review from '../../media/host_review.svg';
 import Analytics from '../../media/analytics.svg';
 
 import QMIThreePeople from '../../media/ppl_illustration.svg';
+import { clearNotifications } from '../../firebasefunctions/notifications';
 
 const LoginView: React.FC = () => {
     const history = useHistory();
@@ -40,6 +41,7 @@ const LoginView: React.FC = () => {
             .signInWithPopup(authProvider)
             .then((response) => {
                 const user = response.user;
+                clearNotifications(user);
                 userUpload(user, firestore);
                 history.push('/');
             });

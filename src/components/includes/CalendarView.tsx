@@ -15,6 +15,7 @@ type Props = {
     sessionCallback: (sessionId: string) => void;
     course?: FireCourse;
     user?: FireUser;
+    isActiveSession: boolean;
     setShowCalendarModal: React.Dispatch<React.SetStateAction<boolean>>;
     setCurrentExportSession: React.Dispatch<React.SetStateAction<FireSession>>;
 };
@@ -24,6 +25,7 @@ const CalenderView = ({
     sessionCallback,
     course,
     user,
+    isActiveSession,
     setShowCalendarModal,
     setCurrentExportSession,
 }: Props) => {
@@ -59,7 +61,7 @@ const CalenderView = ({
             <CalendarDaySelect callback={setSelectedDate} />
             {course && user && sessions ? (
                 <CalendarSessions
-                    activeSession={session}
+                    activeSession={isActiveSession? session : undefined}
                     callback={sessionCallback}
                     course={course}
                     sessions={filteredSessions || []}

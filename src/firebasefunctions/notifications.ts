@@ -27,6 +27,7 @@ async (user: FireUser, notification: Omit<SessionNotification, 'notificationId' 
                     notificationList: [newNotification],
                     notifications: firebase.firestore.Timestamp.now(),
                     productUpdates: firebase.firestore.Timestamp.now(),
+                    lastSent: firebase.firestore.Timestamp.now(),
                 }
                 trackerRef.set(newTracker)
             }
@@ -34,7 +35,7 @@ async (user: FireUser, notification: Omit<SessionNotification, 'notificationId' 
     }
 }
 
-export const clearNotifications = 
+export const periodicClearNotifications = 
 (user: FireUser | undefined, notificationTracker: NotificationTracker | undefined) => 
 {
     if (user !== undefined) {
@@ -47,6 +48,19 @@ export const clearNotifications =
                 notificationList: notificationTracker?.notificationList.filter(notification => {
                     return notification.createdAt.toDate().getTime() > dayPast;
                 })
+            }
+            trackerRef.update(updatedTracker);
+        }
+    }
+}
+
+export const clearNotifications = (user: firebase.User | null) => {
+    if(user !== null) {
+        const email = user.email;
+        if(email != null) {
+            const trackerRef = firestore.collection('notificationTrackers').doc(email);
+            const updatedTracker: Partial<NotificationTracker> = {
+                notificationList: []
             }
             trackerRef.update(updatedTracker);
         }
@@ -82,3 +96,27 @@ async (user: FireUser | undefined,
         }
     }
 }
+
+export const updateLastSent = 
+  async (user: FireUser | undefined, notificationTracker: NotificationTracker | undefined) => {
+      if(user !== undefined) {
+          const email = user.email;
+          const updatedTracker: Partial<NotificationTracker> = {
+              lastSent: firebase.firestore.Timestamp.now(),
+          }
+          if(email !== null) {
+              const trackerRef = firestore.collection('notificationTrackers').doc(email);
+              trackerRef.get().then(doc => {
+                  if(notificationTracker !== undefined && doc.exists) {
+                      trackerRef.update(updatedTracker);
+                  } else {
+                      updatedTracker.id= email;
+                      updatedTracker.notificationList = [];
+                      updatedTracker.notifications = firebase.firestore.Timestamp.now();
+                      updatedTracker.productUpdates = firebase.firestore.Timestamp.now();
+                      trackerRef.set(updatedTracker);
+                  }
+              })
+          }
+      };
+  }
