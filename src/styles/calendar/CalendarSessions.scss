@@ -133,15 +133,12 @@ $open: #ffdba6;
             .Ahead {
                 .AheadNum {
                     margin-right: 8px;
-                    color: #ff6767;
-                    &.zero {
-                        color: $num-color;
-                    }
+                    color: #FF5A60;
                 }
             }
             .Finished {
                 .FinishedNum {
-                    color: $num-color;
+                    color: #14A856;
                 }
             }
         }
