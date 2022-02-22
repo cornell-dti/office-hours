@@ -16,10 +16,22 @@ type Props = {
     course?: FireCourse;
     user?: FireUser;
     isActiveSession: boolean;
+    setShowCalendarModal: React.Dispatch<React.SetStateAction<boolean>>;
+    setCurrentExportSession: React.Dispatch<React.SetStateAction<FireSession>>;
 };
 
-const CalenderView = ({ session, sessionCallback, course, user, isActiveSession }: Props) => {
-    const [selectedDateEpoch, setSelectedDate] = React.useState(new Date().setHours(0, 0, 0, 0));
+const CalenderView = ({
+    session,
+    sessionCallback,
+    course,
+    user,
+    isActiveSession,
+    setShowCalendarModal,
+    setCurrentExportSession,
+}: Props) => {
+    const [selectedDateEpoch, setSelectedDate] = React.useState(
+        new Date().setHours(0, 0, 0, 0)
+    );
     const selectedDate = new Date(selectedDateEpoch);
     selectedDate.setHours(0, 0, 0, 0);
     const selectedDateEnd = new Date(selectedDate);
@@ -33,14 +45,19 @@ const CalenderView = ({ session, sessionCallback, course, user, isActiveSession 
 
     const filteredSessions =
         sessions &&
-        sessions.filter(s => {
+        sessions.filter((s) => {
             const sessionStart = s.startTime.toDate();
             const sessionEnd = s.endTime.toDate();
-            return hasOverlap(sessionStart, sessionEnd, selectedDate, selectedDateEnd);
+            return hasOverlap(
+                sessionStart,
+                sessionEnd,
+                selectedDate,
+                selectedDateEnd
+            );
         });
 
     return (
-        <aside className="CalendarView">
+        <aside className='CalendarView'>
             <CalendarDaySelect callback={setSelectedDate} />
             {course && user && sessions ? (
                 <CalendarSessions
@@ -48,9 +65,11 @@ const CalenderView = ({ session, sessionCallback, course, user, isActiveSession 
                     callback={sessionCallback}
                     course={course}
                     sessions={filteredSessions || []}
+                    setShowCalendarModal={setShowCalendarModal}
+                    setCurrentExportSession={setCurrentExportSession}
                 />
             ) : (
-                <div className="CalendarSessions">
+                <div className='CalendarSessions'>
                     <Loader active={true} content={'Loading'} />
                 </div>
             )}
@@ -61,8 +80,8 @@ const CalenderView = ({ session, sessionCallback, course, user, isActiveSession 
 CalenderView.defaultProps = {
     session: undefined,
     course: undefined,
-    user: undefined
-}
+    user: undefined,
+};
 
 const mapStateToProps = (state: RootState) => ({
     user : state.auth.user
