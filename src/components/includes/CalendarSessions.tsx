@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { Dispatch, SetStateAction, ReactElement } from 'react';
 import { groupBy } from 'lodash';
 
 import CalendarSessionCard from './CalendarSessionCard';
@@ -8,11 +8,15 @@ const CalendarSessions = ({
     course,
     sessions,
     callback,
+    setShowCalendarModal,
+    setCurrentExportSession,
 }: {
     activeSession?: FireSession;
     course: FireCourse;
     sessions: FireSession[];
     callback: (sessionId: string) => void;
+    setShowCalendarModal: Dispatch<SetStateAction<boolean>>;
+    setCurrentExportSession: Dispatch<SetStateAction<FireSession>>;
 }) => {
     const labelSession = (session: FireSession, intervalMs: number) => {
         if (new Date(session.endTime.toDate()) < new Date()) {
@@ -21,33 +25,45 @@ const CalendarSessions = ({
         if (new Date(session.startTime.toDate()) < new Date()) {
             return 'Ongoing';
         }
-        if (new Date(session.startTime.toDate()) < new Date(new Date().getTime() + intervalMs)) {
+        if (
+            new Date(session.startTime.toDate()) <
+            new Date(new Date().getTime() + intervalMs)
+        ) {
             return 'Open';
         }
 
         return 'Upcoming';
     };
 
-    const sessionCards = sessions.map(session => {
+    const sessionCards = sessions.map((session) => {
         return (
             <CalendarSessionCard
                 course={course}
                 session={session}
                 key={session.sessionId}
                 callback={callback}
-                active={activeSession ? activeSession.sessionId === session.sessionId : false}
+                active={
+                    activeSession
+                        ? activeSession.sessionId === session.sessionId
+                        : false
+                }
                 status={labelSession(session, course.queueOpenInterval * 1000)}
+                setShowCalendarModal={setShowCalendarModal}
+                setCurrentExportSession={setCurrentExportSession}
             />
         );
     });
     const groupedCards =
-        sessionCards && groupBy(sessionCards, (card: React.ReactElement) => card.props.status);
+        sessionCards &&
+        groupBy(sessionCards, (card: ReactElement) => card.props.status);
     return (
-        <div className="CalendarSessions">
+        <div className='CalendarSessions'>
             {sessions.length === 0 && (
                 <>
-                    <p className="noHoursHeading">No Office Hours</p>
-                    <p className="noHoursBody">No office hours are scheduled for today.</p>
+                    <p className='noHoursHeading'>No Office Hours</p>
+                    <p className='noHoursBody'>
+                        No office hours are scheduled for today.
+                    </p>
                 </>
             )}
             {groupedCards && (

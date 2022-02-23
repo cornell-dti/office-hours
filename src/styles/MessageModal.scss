@@ -1,4 +1,6 @@
-.NotifModalScreen, .JoinErrorMessageScreen {
+.CalendarExportModalScreen,
+.NotifModalScreen,
+.JoinErrorMessageScreen {
     position: fixed;
     display: flex;
     align-items: center;
@@ -9,11 +11,13 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(112, 112, 112,0.8);
+    background-color: rgba(112, 112, 112, 0.8);
     z-index: 9999;
 }
 
-.NotificationModalVisible, .JoinErrorMessageVisible {
+.CalendarExportModalVisible,
+.NotificationModalVisible,
+.JoinErrorMessageVisible {
     width: 687px;
     height: 407px;
     border-radius: 8px;
@@ -31,7 +35,7 @@
         align-self: center;
     }
 
-    p { 
+    p {
         align-self: center;
         position: absolute;
         width: 353px;
@@ -41,7 +45,7 @@
         font-weight: 500;
         font-size: 25px;
         line-height: 29px;
-        color: #5599DB;
+        color: #5599db;
     }
 
     .closeButton {
@@ -49,7 +53,7 @@
         height: 45px;
         left: 74.14%;
         right: 24.61%;
-        top: calc(50% - 45px/2 - 209.5px);
+        top: calc(50% - 45px / 2 - 209.5px);
         font-size: 20px;
         line-height: 48px;
         color: #484848;
@@ -58,35 +62,76 @@
         background-color: transparent;
         border: none;
     }
-    
+}
+
+.CalendarExportModalVisible {
+    width: 700px;
+    height: 400px;
+}
+
+.CalendarExportModalScreen {
+    .Title {
+        font-weight: 500;
+        font-size: 25px;
+        line-height: 20px;
+        color: #484848;
+        margin: 10px 0 60px 0; 
+    }
+
+    .CalendarContainer {
+        display: flex;
+    }
+
+    .CalendarItem {
+        flex: 1;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        
+        img {
+            margin-top: 10px;
+        }
+    }
+
+    .ExportText {
+        font-size: 20px;
+        text-align: center;
+        text-decoration-line: underline;
+        color: #5599db;
+        margin-top: 110px;
+        width: 200px;
+        line-height: 25px;
+        cursor: pointer;
+    }
+
+    .Line {
+        border: 1px solid #484848;
+        height: 200px;
+    }
 }
 
 .JoinErrorMessageVisible {
     p {
         width: 450px;
         font-size: 23px;
-        color: #DC9C35;
+        color: #dc9c35;
     }
 
     .GotItButton {
         position: absolute;
         bottom: 0;
         width: 100%;
-        background: #5599DB;
+        background: #5599db;
         height: 70px;
-        border: none; 
+        border: none;
         justify-self: end;
         font-size: 20px;
         color: white;
         border-bottom-left-radius: 8px;
         border-bottom-right-radius: 8px;
         outline: none;
-
     }
- 
 }
-
-
 
 @media only screen and (max-width: $mobile-breakpoint) {
     .NotificationModalVisible {
@@ -97,5 +142,21 @@
             width: 80%;
         }
     }
-}
 
+    .CalendarExportModalVisible {
+        width: 80%;
+
+        .ExportText {
+            font-size: 15px;
+        }
+
+        img {
+            height: 40px;
+            width: 40px;
+        }
+
+        .CalendarItem {
+            width: 35%;
+        }
+    }
+}
