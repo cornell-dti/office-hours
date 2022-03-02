@@ -159,6 +159,7 @@ interface FireQuestion {
     timeAssigned?: FireTimestamp;
     taComment?: string;
     studentComment?: string;
+    wasNotified: boolean;
 }
 
 interface FireOHQuestion extends FireQuestion {
@@ -208,4 +209,5 @@ interface NotificationTracker {
     notifications: FireTimestamp;
     productUpdates: FireTimestamp;
     notificationList: SessionNotification[];
+    lastSent: FireTimestamp;
 }

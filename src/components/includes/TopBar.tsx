@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Icon } from 'semantic-ui-react';
 import {connect} from 'react-redux'
+import addNotification from 'react-push-notification';
 import { logOut } from '../../firebasefunctions/user';
 import Logo from '../../media/QLogo2.svg';
 import CalendarHeader from './CalendarHeader';
@@ -8,6 +9,7 @@ import ProfessorStudentToggle from './ProfessorStudentToggle';
 import TopBarNotifications from './TopBarNotifications'
 import {useNotificationTracker} from '../../firehooks';
 import { RootState } from '../../redux/store';
+import { updateLastSent } from '../../firebasefunctions/notifications';
 
 type Props = {
     courseId: string;
@@ -34,13 +36,39 @@ const TopBar = (props: Props) => {
     const email: string | undefined = user?.email
     const notificationTracker = useNotificationTracker(email);
 
+    useEffect(() => {
+        if(notificationTracker!== undefined) {
+            for(let i = 0; i < notificationTracker.notificationList.length; i++) {
+                const notif = notificationTracker.notificationList[i];
+                // checks that the notification was created after the last time notifications were sent
+                // adds 1000 to lastSent time because client and server TimeStamps seems to be slightly
+                // misaligned
+                if(notificationTracker.lastSent === undefined || 
+                    notif.createdAt.toDate().getTime() > 
+                    notificationTracker?.lastSent.toDate().getTime()+ 1000) {
+                    updateLastSent(user, notificationTracker);
+                    addNotification({
+                        title: notif.title,
+                        subtitle: notif.subtitle,
+                        message: notif.message,
+                        native: true
+                    });
+                    // hacky fix for duplicate notifs--server update to lastSent doesn't occur quickly enough
+                    setTimeout(() => {}, 100);
+                } else {
+                    break;
+                }
+            }
+        }
+    }, [notificationTracker, user])
+
     const handleClick = (e: globalThis.MouseEvent) => {
         if (ref.current && !ref.current.contains(e.target as Node)) {
             setShowMenu(false);
         }
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         document.addEventListener('mousedown', handleClick);
         return () => {
             document.removeEventListener('mousedown', handleClick);

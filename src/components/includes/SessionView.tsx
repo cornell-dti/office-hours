@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from 'semantic-ui-react';
-import addNotification from 'react-push-notification';
 
 import { connect } from 'react-redux';
 import SessionInformationHeader from './SessionInformationHeader';
@@ -11,7 +10,7 @@ import {
     useAskerQuestions
 } from '../../firehooks';
 import { updateQuestion, updateVirtualLocation } from '../../firebasefunctions/sessionQuestion'
-import { addDBNotification } from '../../firebasefunctions/notifications'
+// import { addDBNotification } from '../../firebasefunctions/notifications'
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 import { firestore } from '../../firebase';
@@ -65,7 +64,6 @@ const SessionView = (
         lastAskedQuestion: null
     });
 
-    const [prevQuestSet, setPrevQuestSet] = useState(new Set(questions.map(q => q.questionId)));
     const [showNotifBanner, setShowNotifBanner] = useState(true);
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
@@ -75,43 +73,6 @@ const SessionView = (
     }, [questions, user]);
 
     useEffect(() => {
-        const questionIds = questions.map(q => q.questionId);
-
-        const newQuestions = new Set(questionIds.filter(q => !prevQuestSet.has(q)));
-
-        if (newQuestions.size <= 0) {
-            return;
-        }
-        if ((user.roles[course.courseId] === 'professor' ||
-            user.roles[course.courseId] === 'ta')) {
-            const prevQString = window.localStorage.getItem("prevQuestions");
-            const prevQArr = JSON.parse(prevQString || "{}");
-            const prevQSet = new Set(Array.from(prevQArr))
-            const newQuestionsPessimistic = new Set(questionIds.filter(q => !prevQSet.has(q)))
-            if (newQuestionsPessimistic.size > 0) {
-                addDBNotification(
-                    user,
-                    {
-                        title: 'A new question has been added!',
-                        subtitle: 'A new question was added',
-                        message: "Check the queue."
-                    }
-                )
-                try {
-                    addNotification({
-                        title: 'A new question has been added!',
-                        subtitle: 'A new question was added',
-                        message: 'Check the queue.',
-                        native: true
-                    });
-                } catch (error) {
-                    // TODO: Handle this better.
-                    // Do nothing. iOS crashes because Notification isn't defined
-                }
-            }
-            window.localStorage.setItem("prevQuestions", JSON.stringify(questionIds));
-        }
-
         const myQuestions = questions.filter(q => q.askerId === user.userId);
         const lastAskedQuestion = myQuestions.length > 0
             ? myQuestions.reduce(
@@ -133,9 +94,8 @@ const SessionView = (
             }
             return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
-        setPrevQuestSet(new Set(questions.map(q => q.questionId)));
-    }, [prevQuestSet, questions, user.userId, course.courseId, user.roles, user]);
-
+        // setPrevQuestSet(new Set(questions.map(q => q.questionId)));
+    }, [ questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
 
     const dismissUndo = () => {
         if (timeoutId) {
@@ -276,7 +236,9 @@ const SessionView = (
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user : state.auth.user,
+    course : state.course.course,
+    session: state.course.session
 })
 
 export default connect(mapStateToProps, {})( (props: Omit<Props, 'questions'>) => {
