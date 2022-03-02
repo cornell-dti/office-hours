@@ -30,6 +30,8 @@ type Props = {
     user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
+    setShowBanner: (show: boolean) => void;
+    setIsTimeWarning: (isWarning: boolean) => void;
 };
 
 type UndoState = {
@@ -47,7 +49,7 @@ type AbsentState = {
 
 const SessionView = (
     { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal,
-        setRemoveQuestionId }: Props
+        setRemoveQuestionId, setShowBanner, setIsTimeWarning }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
     const tags = useCourseTags(course.courseId);
@@ -266,6 +268,8 @@ const SessionView = (
                 myQuestion={myQuestion}
                 setShowModal={setShowModal}
                 setRemoveQuestionId={setRemoveQuestionId}
+                setShowBanner={setShowBanner}
+                setIsTimeWarning={setIsTimeWarning}
             />
         </section>
     );

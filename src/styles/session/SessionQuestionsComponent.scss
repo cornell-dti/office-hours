@@ -492,6 +492,18 @@
             }
         }
     }
+
+    .buttonsAndCantRemove {
+        position: relative;
+        .cantRemove {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 20px;
+            color: red;
+            font-size: 10px;
+        }
+    }
 }
 
 //UI to get a button to appear as a link
