@@ -67,15 +67,8 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
             : match.params.sessionId ? 'session' : 'calendar'
     );
     const [showModal, setShowModal] = useState(false);
-<<<<<<< HEAD
     const [showBanner, setShowBanner] = useState(false);
     const [isTimeWarning, setIsTimeWarning] = useState(false);
-    const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
-
-    const user = props.user;
-    const course = useCourse(props.match.params.courseId);
-    const session = useSession(props.match.params.sessionId);
-=======
     const [removeQuestionId, setRemoveQuestionId] = useState<
     string | undefined
     >(undefined);
@@ -98,7 +91,6 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
 
     const courseHook = useCourse(match.params.courseId);
     const sessionHook = useSession(match.params.sessionId);
->>>>>>> 80c3e3721d486a7f5c5a1c208e8631b3bb853672
     const width = useWindowWidth();
 
     useEffect(() => {
@@ -143,7 +135,6 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
 
     return (
         <>
-<<<<<<< HEAD
             <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion}/>
             <TimeLimitBanner
                 showBanner={showBanner}
@@ -152,13 +143,6 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
                 timeWarning={course ? course.timeWarning : 1}
             />
             
-=======
-            <LeaveQueue
-                setShowModal={setShowModal}
-                showModal={showModal}
-                removeQuestion={removeQuestion}
-            />
->>>>>>> 80c3e3721d486a7f5c5a1c208e8631b3bb853672
             <TopBar
                 role={(user && course && user.roles[course.courseId]) || 'student'}
                 context="student"

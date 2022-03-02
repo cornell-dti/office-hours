@@ -82,7 +82,6 @@ class SessionQuestion extends React.Component<Props, State> {
     componentDidUpdate(prevProps: Props) {
         const previousState = prevProps.question;
         const currentState = this.props.question;
-        const user = this.props.myUserId;
 
         if (previousState.status === 'unresolved' && currentState.status === 'assigned') {
             this.props.newQuestionAssigned();
