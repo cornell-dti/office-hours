@@ -1,40 +1,6 @@
 import firebase from 'firebase/app';
 import { firestore } from '../firebase';
 
-export const addDBNotification = 
-async (user: FireUser, notification: Omit<SessionNotification, 'notificationId' | 'createdAt'>) => {
-    if (user !== undefined) {
-        const email = user.email;
-        if (email !== null) {
-            const trackerRef = firestore.collection('notificationTrackers').doc(email);
-            const prevTracker = (await trackerRef.get()).data();
-            const notifList: SessionNotification[] = prevTracker !== undefined ? prevTracker.notificationList : []
-            const newNotification: SessionNotification = {
-                title: notification.title,
-                subtitle: notification.subtitle,
-                message: notification.message,
-                createdAt: firebase.firestore.Timestamp.now()
-            }
-            if (prevTracker !== undefined) {
-                const updatedTracker: Partial<NotificationTracker> = {
-                    notificationList: [newNotification, ...notifList]
-                }
-            
-                trackerRef.update(updatedTracker);
-            } else {
-                const newTracker: NotificationTracker = {
-                    id: email,
-                    notificationList: [newNotification],
-                    notifications: firebase.firestore.Timestamp.now(),
-                    productUpdates: firebase.firestore.Timestamp.now(),
-                    lastSent: firebase.firestore.Timestamp.now(),
-                }
-                trackerRef.set(newTracker)
-            }
-        }
-    }
-}
-
 export const periodicClearNotifications = 
 (user: FireUser | undefined, notificationTracker: NotificationTracker | undefined) => 
 {

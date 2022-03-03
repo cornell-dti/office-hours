@@ -228,7 +228,7 @@ exports.onQuestionUpdate = functions.firestore
                     .update({notificationList: admin.firestore.FieldValue.arrayUnion({
                         title: 'Student comment',
                         subtitle: "New student comment",
-                        message: `${asker.firstName} commented "${newQuestion.studentComment} \
+                        message: `${asker.firstName} commented "${newQuestion.studentComment}" \
                         on your assigned question"`,
                         createdAt: admin.firestore.Timestamp.now()
                     })});
@@ -238,7 +238,7 @@ exports.onQuestionUpdate = functions.firestore
                     .update({notificationList: admin.firestore.FieldValue.arrayUnion({
                         title: 'TA comment',
                         subtitle: 'New TA comment',
-                        message: `A TA commented "${newQuestion.taComment} on your question`,
+                        message: `A TA commented "${newQuestion.taComment}" on your question`,
                         createdAt: admin.firestore.Timestamp.now()
                     })});
             }
