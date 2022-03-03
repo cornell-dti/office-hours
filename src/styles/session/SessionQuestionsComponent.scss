@@ -60,17 +60,6 @@
     .OrderTooltip {
         position: relative;
         cursor: pointer;
-        
-
-        // .Order:hover {
-        //     position: absolute;
-        //     top: -.25rem;
-        //     left: 50%;
-        //     height: 50px;
-        //     width: 50px;
-        //     background-color: blue;
-        //     // transform: translateX(-50%) translateY(-100%);
-        // }
     }
 
     .TooltipText {
@@ -86,7 +75,6 @@
         border: solid $number-blue 3px;
         visibility: hidden;
         opacity: 0;
-        // transition: opacity 0.2s ease;
     }
 
     .TooltipText::before {
