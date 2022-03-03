@@ -57,6 +57,54 @@
         right: 20px;
     }
 
+    .OrderTooltip {
+        position: relative;
+        cursor: pointer;
+        
+
+        // .Order:hover {
+        //     position: absolute;
+        //     top: -.25rem;
+        //     left: 50%;
+        //     height: 50px;
+        //     width: 50px;
+        //     background-color: blue;
+        //     // transform: translateX(-50%) translateY(-100%);
+        // }
+    }
+
+    .TooltipText {
+        position: absolute;
+        left: 62%;
+        top: 0;
+        width: 120px;
+        transform: translateX(-50%);
+        color: black;
+        background-color: white;
+        padding: 5px 5px;
+        border-radius: 7px;
+        border: solid $number-blue 3px;
+        visibility: hidden;
+        opacity: 0;
+        // transition: opacity 0.2s ease;
+    }
+
+    .TooltipText::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 105%;
+        transform: translateX(-50%);
+        border: 10px solid;
+        border-color: $number-blue #0000 #0000 #0000;
+    }
+
+    .OrderTooltip:hover .TooltipText{
+        top: -130%;
+        visibility: visible;
+        opacity: 1;
+    }
+
     .Order {
         float: left;
         font-size: 17px;
