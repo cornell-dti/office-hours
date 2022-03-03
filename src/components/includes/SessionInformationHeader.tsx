@@ -4,8 +4,10 @@ import { Icon } from 'semantic-ui-react';
 
 import { Grid } from '@material-ui/core';
 import { connect } from 'react-redux';
-import people from '../../media/people.svg';
-import clock from '../../media/clock.svg';
+import users from '../../media/users.svg'
+import chalkboard from '../../media/chalkboard-teacher.svg'
+import hourglass from '../../media/hourglass-half.svg'
+
 import zoom from '../../media/zoom.svg';
 import closeZoom from '../../media/closeZoom.svg';
 
@@ -175,7 +177,7 @@ const SessionInformationHeader = ({
                                 <div className="OneQueueInfo">
                                     <Grid container direction="row" justify="center" alignItems={'center'}>
                                         <Grid item xs={2}>
-                                            <img src={people} alt="number of people" />
+                                            <img src={users} alt="number of people" />
                                         </Grid>
                                         <Grid item xs={10}>
                                             <p>
@@ -187,7 +189,19 @@ const SessionInformationHeader = ({
                                 <div className="OneQueueInfo">
                                     <Grid container direction="row" justify="center" alignItems={'center'}>
                                         <Grid item xs={2}>
-                                            <img src={clock} alt="time" />
+                                            <img src={chalkboard} alt="number of people" />
+                                        </Grid>
+                                        <Grid item xs={10}>
+                                            <p>
+                                                <span className="red">{numAhead + ' '}</span> ahead
+                                            </p>
+                                        </Grid>
+                                    </Grid>
+                                </div>
+                                <div className="OneQueueInfo">
+                                    <Grid container direction="row" justify="center" alignItems={'center'}>
+                                        <Grid item xs={2}>
+                                            <img src={hourglass} alt="time" />
                                         </Grid>
                                         <Grid item xs={10}>
                                             {avgWaitTime !== 'No information available' ? (
@@ -409,9 +423,9 @@ const SessionInformationHeader = ({
                                                     : avgWaitTime === 'No information available'
                                                         ? 'Please wait for your turn to join the Zoom call'
                                                         : 'Please wait for your turn to ' +
-                                                  'join the Zoom call (estimated wait time: ' +
-                                                  avgWaitTime +
-                                                  ')'
+                                                        'join the Zoom call (estimated wait time: ' +
+                                                        avgWaitTime +
+                                                        ')'
                                         }
                                         show={true}
                                         closeModal={() => {
@@ -459,7 +473,7 @@ const SessionInformationHeader = ({
             <div className="MoreInformation">
                 <hr />
                 <div className="QueueInfo">
-                    <img src={people} alt="number of people" />
+                    <img src={users} alt="number of people" />
                     <p>
                         <span className="red">{numAhead + ' '}</span>
                         in queue
@@ -494,7 +508,7 @@ SessionInformationHeader.defaultProps = {
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
 export default connect(mapStateToProps, {})(SessionInformationHeader);
