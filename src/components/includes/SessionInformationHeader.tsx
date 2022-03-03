@@ -181,7 +181,7 @@ const SessionInformationHeader = ({
                                         </Grid>
                                         <Grid item xs={10}>
                                             <p>
-                                                <span className="red">{numAhead + ' '}</span> ahead
+                                                <span className="red">{numAhead + ' students '}</span> ahead
                                             </p>
                                         </Grid>
                                     </Grid>
@@ -193,7 +193,7 @@ const SessionInformationHeader = ({
                                         </Grid>
                                         <Grid item xs={10}>
                                             <p>
-                                                <span className="red">{numAhead + ' '}</span> ahead
+                                                <span className="blue">{numAhead + ' TAs '}</span> ahead
                                             </p>
                                         </Grid>
                                     </Grid>
@@ -475,7 +475,7 @@ const SessionInformationHeader = ({
                 <div className="QueueInfo">
                     <img src={users} alt="number of people" />
                     <p>
-                        <span className="red">{numAhead + ' '}</span>
+                        <span className="red">{numAhead + 'students '}</span>
                         in queue
                     </p>
                 </div>
