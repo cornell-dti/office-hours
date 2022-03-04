@@ -193,7 +193,7 @@ const SessionInformationHeader = ({
                                         </Grid>
                                         <Grid item xs={10}>
                                             <p>
-                                                <span className="blue">{numAhead + ' TAs '}</span> ahead
+                                                <span className="blue">{tas.length + ' TAs '}</span> helping students now
                                             </p>
                                         </Grid>
                                     </Grid>
