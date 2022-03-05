@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Icon, Loader, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import { useState } from "react";
+// eslint-disable-next-line 
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
 import { connect } from 'react-redux';
