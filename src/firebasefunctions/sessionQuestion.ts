@@ -41,7 +41,8 @@ export const addQuestion = (
             answererId: '',
             content: question,
             primaryTag: selectedPrimary != null ? selectedPrimary.tagId: '',
-            secondaryTag: selectedSecondary != null ? selectedSecondary.tagId : ''
+            secondaryTag: selectedSecondary != null ? selectedSecondary.tagId : '',
+            wasNotified: false,
         };
         batch.set(db.collection('questionSlots').doc(questionId), newQuestionSlot);
         batch.set(db.collection('questions').doc(questionId), newQuestion);

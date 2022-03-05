@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Loader } from 'semantic-ui-react';
 import moment from 'moment';
-import { addNotificationWrapper } from '../../utilities/notifications';
+import { connect } from 'react-redux';
 import SessionQuestion from './SessionQuestion';
 import AddQuestion from './AddQuestion';
 import DiscussionQuestion from './DiscussionQuestion';
 import SortArrows from '../../media/sortbyarrows.svg';
+import { RootState } from '../../redux/store';
 
 // Maximum number of questions to be shown to user
 const NUM_QUESTIONS_SHOWN = 20;
@@ -29,7 +30,7 @@ type Props = {
     readonly openingTime: Date;
     readonly haveAnotherQuestion: boolean;
     readonly modality: FireSessionModality;
-    readonly user: FireUser;
+    // readonly user: FireUser;
     course: FireCourse;
     readonly myQuestion: FireQuestion | null;
     setShowModal: (show: boolean) => void;
@@ -45,7 +46,6 @@ type StudentMyQuestionProps = {
     readonly myUserId: string;
     readonly modality: FireSessionModality;
     readonly studentQuestion: FireQuestion | null;
-    readonly user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
 };
@@ -59,7 +59,6 @@ const StudentMyQuestion = ({
     myUserId,
     modality,
     studentQuestion,
-    user,
     setShowModal,
     setRemoveQuestionId,
 }: StudentMyQuestionProps) => {
@@ -73,7 +72,6 @@ const StudentMyQuestion = ({
             {modality === 'review' ? (
                 <DiscussionQuestion
                     question={studentQuestion as FireDiscussionQuestion}
-                    user={user}
                     users={{}}
                     tags={tags}
                     isTA={false}
@@ -87,7 +85,6 @@ const StudentMyQuestion = ({
                     question={studentQuestion}
                     modality={modality}
                     users={{}}
-                    user={user}
                     tags={tags}
                     index={index}
                     isTA={false}
@@ -104,9 +101,6 @@ const StudentMyQuestion = ({
 };
 
 const SessionQuestionsContainer = (props: Props) => {
-    const [sentNotification, setSentNotification] = React.useState(
-        window.localStorage.getItem('questionUpNotif') === 'sent'
-    );
     const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
     const [sortByUpvotes, setSortByUpvotes] = React.useState(true);
 
@@ -163,35 +157,13 @@ const SessionQuestionsContainer = (props: Props) => {
 
     // Make sure that the data has loaded and user has a question
     if (shownQuestions && myQuestion) {
-        // Get user's position in queue (0 indexed)
-        const myQuestionIndex = allQuestions.findIndex(elt => elt.questionId === myQuestion.questionId);
         // Update tab with user position
         document.title = '(' + (1 + myQuestionIndex) + ') Queue Me In';
-        // if user is up and we haven't already sent a notification, send one.
-        if (myQuestionIndex === 0 && window.localStorage.getItem('questionUpNotif') !== 'sent') {
-            window.localStorage.setItem('questionUpNotif', 'sent');
-            setSentNotification(true);
-
-            addNotificationWrapper(
-                props.user,
-                'Your question is up!',
-                'Be sure to navigate to the website',
-                'Your question is currently being answered, be sure to be on the site!'
-            );
-
-            // If next render, the user isn't at 0 anymore, reset state
-        } else if (myQuestionIndex !== 0 && sentNotification) {
-            window.localStorage.setItem('questionUpNotif', '');
-            setSentNotification(false);
-        }
     } else if (props.isTA && shownQuestions) {
         document.title = '(' + shownQuestions.length + ') Queue Me In';
     } else {
         // Reset title and notif state
         document.title = 'Queue Me In';
-        if (sentNotification) {
-            setSentNotification(false);
-        }
     }
 
     return (
@@ -225,7 +197,6 @@ const SessionQuestionsContainer = (props: Props) => {
             )}
             {shownQuestions && myQuestion && (
                 <StudentMyQuestion
-                    user={props.user}
                     questionId={myQuestion.questionId}
                     studentQuestion={myQuestion}
                     modality={props.modality}
@@ -300,7 +271,6 @@ const SessionQuestionsContainer = (props: Props) => {
                     <DiscussionQuestion
                         key={question.questionId}
                         question={question as FireDiscussionQuestion}
-                        user={props.user}
                         users={props.users}
                         tags={props.tags}
                         isTA={props.isTA}
@@ -327,7 +297,6 @@ const SessionQuestionsContainer = (props: Props) => {
                         triggerUndo={props.triggerUndo}
                         isPast={props.isPast}
                         myUserId={props.myUserId}
-                        user={props.user}
                         setShowModal={props.setShowModal}
                         setRemoveQuestionId={props.setRemoveQuestionId}
                     />
@@ -361,4 +330,9 @@ SessionQuestionsContainer.defaultProps = {
     myVirtualLocation: undefined,
 };
 
-export default SessionQuestionsContainer;
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+
+export default connect(mapStateToProps, {})(SessionQuestionsContainer);

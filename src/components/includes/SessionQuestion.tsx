@@ -4,7 +4,7 @@ import Moment from 'react-moment';
 import { useState } from "react";
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
-import { addNotificationWrapper } from '../../utilities/notifications'
+import { connect } from 'react-redux';
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
 
@@ -17,6 +17,7 @@ import {
     markQuestionDontKnow,
     updateComment
 } from '../../firebasefunctions/sessionQuestion';
+import { RootState } from '../../redux/store';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -73,71 +74,7 @@ class SessionQuestion extends React.Component<Props, State> {
             width: window.innerWidth
         };
     }
-
-    componentDidUpdate(prevProps: Props) {
-        const previousState = prevProps.question;
-        const currentState = this.props.question;
-        const user = this.props.myUserId;
-
-
-        if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
-            addNotificationWrapper(this.props.user, 'TA comment', 'New TA comment', currentState.taComment);
-        }
-
-        if (previousState.studentComment !== currentState.studentComment && user === currentState.answererId) {
-            addNotificationWrapper(
-                this.props.user,
-                'Student comment',
-                'New student comment',
-                currentState.studentComment
-            );
-        }
-
-        if (
-            previousState.answererId !== currentState.answererId &&
-            currentState.answererId !== '' &&
-            user === currentState.askerId
-        ) {
-            addNotificationWrapper(
-                this.props.user,
-                'TA Assigned',
-                'TA Assigned',
-                'A TA has been assigned to your question'
-            );
-        }
-
-        if (
-            previousState.answererId !== currentState.answererId &&
-            currentState.answererId === '' &&
-            user === currentState.askerId
-        ) {
-            addNotificationWrapper(
-                this.props.user,
-                'TA Unassigned',
-                'TA Unassigned',
-                'A TA has been unassigned from your question and you\'ve been readded to the top of the queue.'
-            );
-        }
-        if (currentState.askerId === user && this.props.index === 0 && prevProps.index !== 0) {
-            addNotificationWrapper(
-                this.props.user,
-                'Your question is up!',
-                'Your question is up!',
-                'Your question has reached the top of the queue.');
-        }
-    }
-
-    componentWillUnmount() {
-        if (this.props.myUserId === this.props.question.askerId) {
-            addNotificationWrapper(
-                this.props.user,
-                'Question Marked as Complete',
-                'Question marked as complete',
-                'Your question has been marked as complete/no-show.');
-            window.localStorage.setItem('questionUpNotif', '');
-        }
-    }
-
+    
     // Given an index from [1..n], converts it to text that is displayed on the
     // question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
@@ -385,14 +322,14 @@ class SessionQuestion extends React.Component<Props, State> {
                                     {this.props.isTA &&
                                         question.location &&
                                         question.location.substr(0, 25) === 'https://cornell.zoom.us/j' && (
-                                            <a
-                                                href={question.location}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
+                                        <a
+                                            href={question.location}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
                                                 Zoom Link
-                                            </a>
-                                        )}
+                                        </a>
+                                    )}
                                     {this.props.isTA &&
                                         question.location &&
                                         question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
@@ -667,4 +604,9 @@ CommentBox.defaultProps = {
     studentCSS: undefined,
 };
 
-export default SessionQuestion;
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+
+export default connect(mapStateToProps, {})(SessionQuestion);

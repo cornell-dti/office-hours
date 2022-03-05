@@ -13,7 +13,7 @@ import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
-import {useProfessorViewSessions, useCourse, useMyUser } from '../../firehooks';
+import { useProfessorViewSessions, useCourse } from '../../firehooks';
 import { firestore } from '../../firebase';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
@@ -35,7 +35,6 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
     };
 
     const course = useCourse(courseId);
-    const me = useMyUser();
 
     const [staff, setStaff] = useState<FireUser[]>([]);
 
@@ -76,7 +75,6 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
             />
             <TopBar
                 courseId={courseId}
-                user={me}
                 context="professor"
                 role="professor"
             />

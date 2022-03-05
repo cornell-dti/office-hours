@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Icon } from 'semantic-ui-react';
+import { Icon , Modal, Input, Button, Checkbox, Message, Confirm } from 'semantic-ui-react';
+import {connect} from 'react-redux'
+import addNotification from 'react-push-notification';
 import { logOut } from '../../firebasefunctions/user';
 import Logo from '../../media/QLogo2.svg';
 import CalendarHeader from './CalendarHeader';
 import ProfessorStudentToggle from './ProfessorStudentToggle';
 import TopBarNotifications from './TopBarNotifications'
-import {useNotificationTracker, useMyUser} from '../../firehooks';
-import { Modal, Input, Button, Checkbox, Message, Confirm } from 'semantic-ui-react';
+import {useNotificationTracker} from '../../firehooks';
 import { updatePhoneNum } from '../../firebasefunctions/phoneNumber';
+import { RootState } from '../../redux/store';
+import { updateLastSent } from '../../firebasefunctions/notifications';
 
 enum Validation {
     NOT_REQUESTED,
@@ -15,13 +18,13 @@ enum Validation {
     FAILURE,
 }
 
-const validatePhone = (phNumber : string) => {
+const validatePhone = (phNumber: string) => {
     return phNumber.length == 10 && /[1-9]{1}[0-9]{9}/.test(phNumber);
 }
 
-const TopBar = (props: {
+type Props = {
     courseId: string;
-    user?: FireUser;
+    user: FireUser | undefined;
     // A user's role: student, ta, or professor
     // We show TA's and Profs extra links
     role: FireCourseRole;
@@ -30,7 +33,9 @@ const TopBar = (props: {
     context: string;
     course?: FireCourse;
     admin?: boolean;
-}) => {
+}
+
+const TopBar = (props: Props) => {
     const [showMenu, setShowMenu] = useState(false);
     const [phoneModalVisible, setPhoneModalVisible] = useState(false);
     const [phoneNum, setPhoneNum] = useState(props.user?.phoneNumber || "");
@@ -43,9 +48,35 @@ const TopBar = (props: {
     const userPhotoUrl = props.user ? props.user.photoUrl : '/placeholder.png';
     useEffect(() => setImage(userPhotoUrl), [userPhotoUrl]);
 
-    const user = useMyUser();
+    const user = props.user;
     const email: string | undefined = user?.email
     const notificationTracker = useNotificationTracker(email);
+
+    useEffect(() => {
+        if(notificationTracker!== undefined) {
+            for(let i = 0; i < notificationTracker.notificationList.length; i++) {
+                const notif = notificationTracker.notificationList[i];
+                // checks that the notification was created after the last time notifications were sent
+                // adds 1000 to lastSent time because client and server TimeStamps seems to be slightly
+                // misaligned
+                if(notificationTracker.lastSent === undefined || 
+                    notif.createdAt.toDate().getTime() > 
+                    notificationTracker?.lastSent.toDate().getTime()+ 1000) {
+                    updateLastSent(user, notificationTracker);
+                    addNotification({
+                        title: notif.title,
+                        subtitle: notif.subtitle,
+                        message: notif.message,
+                        native: true
+                    });
+                    // hacky fix for duplicate notifs--server update to lastSent doesn't occur quickly enough
+                    setTimeout(() => {}, 100);
+                } else {
+                    break;
+                }
+            }
+        }
+    }, [notificationTracker, user])
 
     const handleClick = (e: globalThis.MouseEvent) => {
         if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -53,7 +84,7 @@ const TopBar = (props: {
         }
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         document.addEventListener('mousedown', handleClick);
         return () => {
             document.removeEventListener('mousedown', handleClick);
@@ -79,7 +110,7 @@ const TopBar = (props: {
                         )}
                     </div>
                     <div className="rightContentWrapper" >
-                        <TopBarNotifications notificationTracker={notificationTracker} user={user} />
+                        <TopBarNotifications notificationTracker={notificationTracker} />
                         <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
                             <img
                                 src={image}
@@ -125,33 +156,33 @@ const TopBar = (props: {
                 </>
             )}
             <Modal
-                onClose = {() => setPhoneModalVisible(false)}
-                open = {phoneModalVisible}
+                onClose={() => setPhoneModalVisible(false)}
+                open={phoneModalVisible}
             >
-                <Modal.Header style = {{ FontFace: 'Roboto' }}>Text Message Notifications</Modal.Header>
-                <div style = {{ paddingLeft: '1em', paddingTop: '1em' }}>
+                <Modal.Header style={{ FontFace: 'Roboto' }}>Text Message Notifications</Modal.Header>
+                <div style={{ paddingLeft: '1em', paddingTop: '1em' }}>
                     { user?.textNotifsEnabled ? 
                         <h3>Update SMS Notifications</h3> : <h3>Enable SMS Notifications</h3>
                     }
                 </div>
-                <div style = {{ display: 'flex', flexDirection: 'row', padding: '1em'}}>
+                <div style={{ display: 'flex', flexDirection: 'row', padding: '1em'}}>
                     <Checkbox
-                        checked = {phoneConsent}
-                        onChange = {() => setPhoneConsent(!phoneConsent)}
-                        style = {{ alignSelf: 'center' }}
+                        checked={phoneConsent}
+                        onChange={() => setPhoneConsent(!phoneConsent)}
+                        style={{ alignSelf: 'center' }}
                     />
-                    <h4 style = {{ alignSelf: 'center', marginTop: '.25em', marginLeft: '1em' }}>
+                    <h4 style={{ alignSelf: 'center', marginTop: '.25em', marginLeft: '1em' }}>
                         By checking this box you consent to receiving SMS messages from Queue Me In. 
                         We do not give your number to third party clients.
                     </h4>
                 </div>
-                <div style = {{ display: 'flex', flexDirection: 'column', padding: '1em' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', padding: '1em' }}>
                     <Input
-                        disabled = {!phoneConsent}
-                        placeholder = 'Phone Number (ex. 1231231234)' 
-                        size = 'big' 
-                        value = {phoneNum}
-                        onChange = {
+                        disabled={!phoneConsent}
+                        placeholder='Phone Number (ex. 1231231234)' 
+                        size='big' 
+                        value={phoneNum}
+                        onChange={
                             (event, data) =>  {
                                 // Only let user enter numbers
                                 if (data.value === "" || /^[0-9\b]+$/.test(data.value))
@@ -160,9 +191,9 @@ const TopBar = (props: {
                         }
                     />
                     <Button 
-                        className = 'ui button'
-                        type = 'submit'
-                        onClick = {
+                        className='ui button'
+                        type='submit'
+                        onClick={
                             () => {
                                 if (validatePhone(phoneNum) && phoneConsent) {
                                     updatePhoneNum(user?.userId, {
@@ -177,31 +208,31 @@ const TopBar = (props: {
                                 }
                             }
                         }
-                        style = {{ marginTop: '1em' }}
+                        style={{ marginTop: '1em' }}
                     >
                         Save All Changes / Enable SMS Notifs
                     </Button>
                     <Confirm 
-                        open = {validation === Validation.SUCCESS}
-                        onCancel = {() => setValidation(Validation.NOT_REQUESTED)}
-                        onClose = {() => setValidation(Validation.NOT_REQUESTED)}
-                        onConfirm = {() => setValidation(Validation.NOT_REQUESTED)}
-                        header = 'Update successful'
-                        content = 'SMS Settings Updated Successfully'
+                        open={validation === Validation.SUCCESS}
+                        onCancel={() => setValidation(Validation.NOT_REQUESTED)}
+                        onClose={() => setValidation(Validation.NOT_REQUESTED)}
+                        onConfirm={() => setValidation(Validation.NOT_REQUESTED)}
+                        header='Update successful'
+                        content='SMS Settings Updated Successfully'
                     />
                     <Confirm 
-                        open = {validation === Validation.FAILURE}
-                        onCancel = {() => setValidation(Validation.NOT_REQUESTED)}
-                        onClose = {() => setValidation(Validation.NOT_REQUESTED)}
-                        onConfirm = {() => setValidation(Validation.NOT_REQUESTED)}
-                        header = 'Failed to update'
-                        content = "You didn't consent to receiving notifs or you entered an invalid phone number!"
+                        open={validation === Validation.FAILURE}
+                        onCancel={() => setValidation(Validation.NOT_REQUESTED)}
+                        onClose={() => setValidation(Validation.NOT_REQUESTED)}
+                        onConfirm={() => setValidation(Validation.NOT_REQUESTED)}
+                        header='Failed to update'
+                        content="You didn't consent to receiving notifs or you entered an invalid phone number!"
                     />
                 </div>
-                <div style = {{ paddingLeft: '1em', paddingTop: '1em' }}>
+                <div style={{ paddingLeft: '1em', paddingTop: '1em' }}>
                     <h3>Disable SMS Notifications</h3>
                 </div>
-                <div style = {{ display: 'flex', flexDirection: 'column', padding: '1em' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', padding: '1em' }}>
                     <Message negative>
                         <h4>
                             NOTE: Disabling SMS notifs will remove your phone number data.
@@ -209,9 +240,9 @@ const TopBar = (props: {
                         </h4>
                     </Message>
                     <Button 
-                        className = 'ui button'
-                        type = 'submit'
-                        onClick = {
+                        className='ui button'
+                        type='submit'
+                        onClick={
                             () => {
                                 updatePhoneNum(user?.userId, {phoneNumber: "", textNotifsEnabled: false})
                                 setPhoneNum("")
@@ -219,17 +250,17 @@ const TopBar = (props: {
                                 setDisableModalVisible(true);
                             }
                         }
-                        style = {{ backgroundColor: 'red', color: 'white' }}
+                        style={{ backgroundColor: 'red', color: 'white' }}
                     >
                         Disable SMS Notifs
                     </Button>
                     <Confirm 
-                        open = {disableModalVisible}
-                        onCancel = {() => setDisableModalVisible(false)}
-                        onClose = {() => setDisableModalVisible(false)}
-                        onConfirm = {() => setDisableModalVisible(false)}
-                        header = 'SMS Notifs Disabled'
-                        content = "You will no longer receive SMS notifs!"
+                        open={disableModalVisible}
+                        onCancel={() => setDisableModalVisible(false)}
+                        onClose={() => setDisableModalVisible(false)}
+                        onConfirm={() => setDisableModalVisible(false)}
+                        header='SMS Notifs Disabled'
+                        content="You will no longer receive SMS notifs!"
                     />
                 </div>
             </Modal>
@@ -238,9 +269,13 @@ const TopBar = (props: {
 };
 
 TopBar.defaultProps = {
-    user: undefined,
     course: undefined,
     admin: false,
 };
 
-export default TopBar;
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
+
+
+export default connect(mapStateToProps, {})(TopBar);

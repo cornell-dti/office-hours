@@ -1,22 +1,25 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import Moment from 'react-moment'
-import moment from 'moment-timezone';
-
+import { connect } from 'react-redux';
 import notif from '../../media/notif.svg'
 import notification from '../../media/notification.svg'
-import { viewedTrackable, clearNotifications } from '../../firebasefunctions/notifications'
+import {viewedTrackable, periodicClearNotifications} from '../../firebasefunctions/notifications'
+import { RootState } from '../../redux/store';
 
 type Props = {
     notificationTracker: NotificationTracker | undefined;
     user: FireUser | undefined;
 }
 
-const TopBarNotifications = ({ notificationTracker, user }: Props) => {
+const TopBarNotifications = ({notificationTracker, user}: Props) => {
     const [dropped, toggleDropped] = useState(false);
 
-    const notifications = notificationTracker?.notificationList
+    const notifications = notificationTracker?.notificationList.sort((a, b) => {
+        return b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime();
+    });
 
-    const [hasViewed, toggleHasViewed] = useState(notificationTracker === undefined ||
+
+    const [hasViewed, toggleHasViewed] = useState(notificationTracker === undefined || 
         notifications === undefined || notifications.length === 0 ||
         notificationTracker.notifications.toDate() >= notifications[0].createdAt.toDate());
 
@@ -27,17 +30,17 @@ const TopBarNotifications = ({ notificationTracker, user }: Props) => {
     }
 
     useEffect(() => {
-        if (notificationTracker !== undefined) {
-            clearNotifications(user, notificationTracker);
+        if(notificationTracker !== undefined) {
+            periodicClearNotifications(user, notificationTracker);
         }
-        toggleHasViewed(notificationTracker === undefined ||
-            notifications === undefined || notifications.length === 0 ||
-            notificationTracker.notifications.toDate() >= notifications[0].createdAt.toDate())
+        toggleHasViewed(notificationTracker === undefined || 
+        notifications === undefined || notifications.length === 0 ||
+        notificationTracker.notifications.toDate() >= notifications[0].createdAt.toDate())
     }, [notificationTracker, notifications, user])
 
     const getColor = (currNotif: SessionNotification) => {
         if (
-            notificationTracker !== undefined
+            notificationTracker !== undefined 
             && notificationTracker.notifications < currNotif.createdAt
         ) {
             return "#d6eafe"
@@ -48,7 +51,7 @@ const TopBarNotifications = ({ notificationTracker, user }: Props) => {
     const onClickOff = (e: MouseEvent) => {
         if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
             toggleDropped(false);
-            if (dropped) {
+            if(dropped) {
                 updateTrackable();
             }
         }
@@ -62,7 +65,7 @@ const TopBarNotifications = ({ notificationTracker, user }: Props) => {
     })
 
     const iconClicked = () => {
-        if (dropped) {
+        if(dropped) {
             updateTrackable();
         }
         toggleDropped(!dropped);
@@ -74,28 +77,28 @@ const TopBarNotifications = ({ notificationTracker, user }: Props) => {
                 <img className="notifications__icon" src={notification} alt="Notification icon" />
                 {!hasViewed && <img className="notifications__indicator" src={notif} alt="Notification indicator" />}
             </div>
-            <div
-                className={`notifications__dropdown notifications__${dropped ? "visible" : "hidden"}`}
+            <div  
+                className={`notifications__dropdown notifications__${dropped ? "visible": "hidden"}`} 
                 onClick={e => e.stopPropagation()}
             >
-                {notifications === undefined || notifications.length === 0 ?
-                    (<div className="notification__placeholder">You do not have any notifications</div>) :
-                    notifications.map((notif, index) => (<div
-                        className="notifications__notification"
-                        style={{ background: getColor(notif) }}
+                {notifications === undefined || notifications.length === 0 ? 
+                    (<div className="notification__placeholder">You do not have any notifications</div> ):
+                    notifications.map((notific, index) => (<div 
+                        className="notifications__notification" 
+                        style={{background: getColor(notific)}} 
                         key={index}
                     >
                         <div className="notification__header">
-                            <div className="notification__title">{notif.subtitle}</div>
-                            <Moment
-                                className="notification__date"
-                                date={moment.now()}
-                                interval={0}
-                                format={'HH:mm a'}
+                            <div className="notification__title">{notific.subtitle}</div>
+                            <Moment 
+                                className="notification__date" 
+                                date={notific.createdAt.toDate()} 
+                                interval={0} 
+                                format={'HH:mm a'} 
                             />
                         </div>
                         <div className="notification__content">
-                            {notif.message}
+                            {notific.message}
                         </div>
                     </div>))}
             </div>
@@ -103,6 +106,9 @@ const TopBarNotifications = ({ notificationTracker, user }: Props) => {
     )
 }
 
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user
+})
 
 
-export default TopBarNotifications
+export default connect(mapStateToProps, {})(TopBarNotifications);

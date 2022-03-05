@@ -1,0 +1,5 @@
+export const UPDATE_USER = "UPDATE_USER";
+export const UPDATE_AUTH = "UPDATE_AUTH";
+export const UPDATE_COURSE = "UPDATE_COURSE";
+export const UPDATE_SESSION = "UPDATE_SESSION";
+export const LOGOUT_CLEAR = "LOGOUT_CLEAR";
