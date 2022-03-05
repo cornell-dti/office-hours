@@ -17,7 +17,10 @@ const client = new Twilio(accountSid, authToken);
 /**
  * Function that handles data and sends a text message to a requested phone number
  */
-const sendSMSNotif = async (userPhone: string, message: string) => {
+const sendSMSNotif = async (user: FireUser, message: string) => {
+    const userPhone = user.phoneNumber;
+    if (userPhone === "Dummy number" || userPhone === undefined)
+        return;
     try {
         await client.messages
             .create({
@@ -129,6 +132,8 @@ exports.onSessionUpdate = functions.firestore
         if(!afterQuestions[0].data().wasNotified) {
             const asker: FireUser = (await db.doc(`users/${afterQuestions[0].data().askerId}`)
                 .get()).data() as FireUser;
+            sendSMSNotif(asker, `Your question has reached the top of the \
+                ${(change.after.data() as FireSession).title} queue. A TA will likely help you shortly.`);
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({notificationList: admin.firestore.FieldValue.arrayUnion({
                     title: 'Your Question is Up!',
