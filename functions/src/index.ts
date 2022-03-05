@@ -9,15 +9,17 @@ admin.initializeApp();
 const db = admin.firestore();
 
 // Twilio Setup
-const accountSid = functions.config().accountSid;
-const authToken = functions.config().authToken;
-const twilioNumber = functions.config().twilioNumber;
+const accountSid = functions.config().twilio.accountsid;
+const authToken = functions.config().twilio.authtoken;
+const twilioNumber = functions.config().twilio.twilionumber;
+functions.logger.log(`${accountSid} ${authToken} ${twilioNumber}`);
 const client = new Twilio(accountSid, authToken);
 
 /**
  * Function that handles data and sends a text message to a requested phone number
  */
-const sendSMSNotif = async (user: FireUser, message: string) => {
+async function sendSMS (user: FireUser, message: string) {
+    functions.logger.log("sending sms");
     const userPhone = user.phoneNumber;
     if (userPhone === "Dummy number" || userPhone === undefined)
         return;
@@ -27,6 +29,8 @@ const sendSMSNotif = async (user: FireUser, message: string) => {
                 from: twilioNumber,
                 to: userPhone,
                 body: message,
+            }).then(msg => {
+                functions.logger.log(msg);
             });
     } catch (error) {
         functions.logger.log(error);
@@ -132,7 +136,7 @@ exports.onSessionUpdate = functions.firestore
         if(!afterQuestions[0].data().wasNotified) {
             const asker: FireUser = (await db.doc(`users/${afterQuestions[0].data().askerId}`)
                 .get()).data() as FireUser;
-            sendSMSNotif(asker, `Your question has reached the top of the \
+            sendSMS(asker, `Your question has reached the top of the \
                 ${(change.after.data() as FireSession).title} queue. A TA will likely help you shortly.`);
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({notificationList: admin.firestore.FieldValue.arrayUnion({

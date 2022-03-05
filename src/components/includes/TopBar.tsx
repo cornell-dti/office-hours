@@ -19,7 +19,7 @@ enum Validation {
 }
 
 const validatePhone = (phNumber: string) => {
-    return phNumber.length == 10 && /[1-9]{1}[0-9]{9}/.test(phNumber);
+    return phNumber.length === 10 && /[1-9]{1}[0-9]{9}/.test(phNumber);
 }
 
 type Props = {
