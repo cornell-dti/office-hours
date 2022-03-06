@@ -1,26 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Icon , Modal, Input, Button, Checkbox, Message, Confirm } from 'semantic-ui-react';
+
 import {connect} from 'react-redux'
 import addNotification from 'react-push-notification';
+import { Icon } from 'semantic-ui-react';
 import { logOut } from '../../firebasefunctions/user';
 import Logo from '../../media/QLogo2.svg';
 import CalendarHeader from './CalendarHeader';
 import ProfessorStudentToggle from './ProfessorStudentToggle';
 import TopBarNotifications from './TopBarNotifications'
 import {useNotificationTracker} from '../../firehooks';
-import { updatePhoneNum } from '../../firebasefunctions/phoneNumber';
 import { RootState } from '../../redux/store';
 import { updateLastSent } from '../../firebasefunctions/notifications';
-
-enum Validation {
-    NOT_REQUESTED,
-    SUCCESS,
-    FAILURE,
-}
-
-const validatePhone = (phNumber: string) => {
-    return phNumber.length === 10 && /[1-9]{1}[0-9]{9}/.test(phNumber);
-}
+import Banner from "./Banner";
+import TextNotificationModal from './TextNotificationModal';
 
 type Props = {
     courseId: string;
@@ -37,11 +29,9 @@ type Props = {
 
 const TopBar = (props: Props) => {
     const [showMenu, setShowMenu] = useState(false);
-    const [phoneModalVisible, setPhoneModalVisible] = useState(false);
-    const [phoneNum, setPhoneNum] = useState(props.user?.phoneNumber || "");
-    const [phoneConsent, setPhoneConsent] = useState(props.user?.textNotifsEnabled || false);
-    const [validation, setValidation] = useState(Validation.NOT_REQUESTED);
-    const [disableModalVisible, setDisableModalVisible] = useState(false);
+    const [showTextModal, setShowTextModal] = useState<boolean>(false);
+    const [showBanner, setShowBanner] = useState<boolean>(false);
+    const [bannerText, setBannerText] = useState<string>("");
     const [image, setImage] = useState(props.user ? props.user.photoUrl : '/placeholder.png');
     const ref = React.useRef<HTMLDivElement>(null);
 
@@ -145,7 +135,10 @@ const TopBar = (props: Props) => {
                             Send Feedback
                         </li>
                         <li
-                            onMouseDown={() => setPhoneModalVisible(true)}
+                            onMouseDown={() => {
+                                setShowMenu(false);
+                                setShowTextModal(true);
+                            }}
                         >
                             <span>
                                 <Icon name="settings" />
@@ -155,115 +148,19 @@ const TopBar = (props: Props) => {
                     </ul>
                 </>
             )}
-            <Modal
-                onClose={() => setPhoneModalVisible(false)}
-                open={phoneModalVisible}
-            >
-                <Modal.Header style={{ FontFace: 'Roboto' }}>Text Message Notifications</Modal.Header>
-                <div style={{ paddingLeft: '1em', paddingTop: '1em' }}>
-                    { user?.textNotifsEnabled ? 
-                        <h3>Update SMS Notifications</h3> : <h3>Enable SMS Notifications</h3>
-                    }
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'row', padding: '1em'}}>
-                    <Checkbox
-                        checked={phoneConsent}
-                        onChange={() => setPhoneConsent(!phoneConsent)}
-                        style={{ alignSelf: 'center' }}
-                    />
-                    <h4 style={{ alignSelf: 'center', marginTop: '.25em', marginLeft: '1em' }}>
-                        By checking this box you consent to receiving SMS messages from Queue Me In. 
-                        We do not give your number to third party clients.
-                    </h4>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', padding: '1em' }}>
-                    <Input
-                        disabled={!phoneConsent}
-                        placeholder='Phone Number (ex. 1231231234)' 
-                        size='big' 
-                        value={phoneNum}
-                        onChange={
-                            (event, data) =>  {
-                                // Only let user enter numbers
-                                if (data.value === "" || /^[0-9\b]+$/.test(data.value))
-                                    setPhoneNum(data.value)
-                            }
-                        }
-                    />
-                    <Button 
-                        className='ui button'
-                        type='submit'
-                        onClick={
-                            () => {
-                                if (validatePhone(phoneNum) && phoneConsent) {
-                                    updatePhoneNum(user?.userId, {
-                                        phoneNumber: phoneNum, 
-                                        textNotifsEnabled: true
-                                    })
-                                    setValidation(Validation.SUCCESS)
-                                } else {
-                                    setPhoneConsent(user?.textNotifsEnabled || false)
-                                    setPhoneNum(user?.phoneNumber || "")
-                                    setValidation(Validation.FAILURE)
-                                }
-                            }
-                        }
-                        style={{ marginTop: '1em' }}
-                    >
-                        Save All Changes / Enable SMS Notifs
-                    </Button>
-                    <Confirm 
-                        open={validation === Validation.SUCCESS}
-                        onCancel={() => setValidation(Validation.NOT_REQUESTED)}
-                        onClose={() => setValidation(Validation.NOT_REQUESTED)}
-                        onConfirm={() => setValidation(Validation.NOT_REQUESTED)}
-                        header='Update successful'
-                        content='SMS Settings Updated Successfully'
-                    />
-                    <Confirm 
-                        open={validation === Validation.FAILURE}
-                        onCancel={() => setValidation(Validation.NOT_REQUESTED)}
-                        onClose={() => setValidation(Validation.NOT_REQUESTED)}
-                        onConfirm={() => setValidation(Validation.NOT_REQUESTED)}
-                        header='Failed to update'
-                        content="You didn't consent to receiving notifs or you entered an invalid phone number!"
-                    />
-                </div>
-                <div style={{ paddingLeft: '1em', paddingTop: '1em' }}>
-                    <h3>Disable SMS Notifications</h3>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', padding: '1em' }}>
-                    <Message negative>
-                        <h4>
-                            NOTE: Disabling SMS notifs will remove your phone number data.
-                            To re-enable SMS notifs, you'll have to re-enter your phone number.
-                        </h4>
-                    </Message>
-                    <Button 
-                        className='ui button'
-                        type='submit'
-                        onClick={
-                            () => {
-                                updatePhoneNum(user?.userId, {phoneNumber: "", textNotifsEnabled: false})
-                                setPhoneNum("")
-                                setPhoneConsent(false);
-                                setDisableModalVisible(true);
-                            }
-                        }
-                        style={{ backgroundColor: 'red', color: 'white' }}
-                    >
-                        Disable SMS Notifs
-                    </Button>
-                    <Confirm 
-                        open={disableModalVisible}
-                        onCancel={() => setDisableModalVisible(false)}
-                        onClose={() => setDisableModalVisible(false)}
-                        onConfirm={() => setDisableModalVisible(false)}
-                        header='SMS Notifs Disabled'
-                        content="You will no longer receive SMS notifs!"
-                    />
-                </div>
-            </Modal>
+            <TextNotificationModal
+                showTextModal={showTextModal}
+                setShowTextModal={setShowTextModal}
+                user={user}
+                setShowBanner={setShowBanner}
+                setBannerText={setBannerText}
+            />
+            <Banner 
+                announcement={bannerText}
+                showBanner={showBanner}
+                setShowBanner={setShowBanner} 
+                setBannerText={setBannerText}
+            />
         </div>
     );
 };
