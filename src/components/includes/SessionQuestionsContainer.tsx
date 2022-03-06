@@ -48,11 +48,8 @@ type StudentMyQuestionProps = {
     readonly myUserId: string;
     readonly modality: FireSessionModality;
     readonly studentQuestion: FireQuestion | null;
-    course: FireCourse;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
-    setShowBanner: (show: boolean) => void;
-    setIsTimeWarning: (isTimeWarning: boolean) => void;
 };
 
 const StudentMyQuestion = ({
@@ -65,63 +62,11 @@ const StudentMyQuestion = ({
     modality,
     studentQuestion,
     setShowModal,
-    setRemoveQuestionId,
-    setShowBanner,
-    setIsTimeWarning,
-    course
+    setRemoveQuestionId
 }: StudentMyQuestionProps) => {
-
-    const [timeoutId, setTimeoutId] = React.useState<any>(undefined);
-    const [warningTimeoutId, setWarningTimeoutId] = React.useState<any>(undefined);
-    // eslint-disable-next-line
-    const [audio, setAudio] = React.useState<HTMLAudioElement>(new Audio("../../../qmijinglefinal.mp3"));
 
     if (studentQuestion == null) {
         return <div />;
-    }
-
-    const questionWarning = () => {
-        audio.play().catch((e) => {
-            // eslint-disable-next-line no-console
-            console.log(e);
-        });
-        setIsTimeWarning(true);
-        setShowBanner(true);
-    }
-    
-    const questionTimeUp = () => {
-        audio.play().catch((e) => {
-            // eslint-disable-next-line no-console
-            console.log(e);
-        });
-        setIsTimeWarning(false);
-        setShowBanner(true);
-    }
-
-    const newQuestionAssigned = () => {
-        if (typeof course.isTimeLimit === 'undefined' || !course.isTimeLimit || 
-        typeof course.timeLimit === 'undefined' || typeof course.timeWarning === 'undefined') return;
-        if (typeof timeoutId !== 'undefined') {
-            clearTimeout(timeoutId);
-        }
-        if (typeof warningTimeoutId !== 'undefined') {
-            clearTimeout(warningTimeoutId);
-        }
-        // Time limit is in minutes, so we convert to milliseconds by multiplying by 60k
-        setTimeoutId(setTimeout(questionTimeUp, course.timeLimit * 60000));
-        setWarningTimeoutId(setTimeout(questionWarning, (course.timeLimit - course.timeWarning) * 60000));
-    }
-
-    const clearQuestionAssigned = () => {
-        if (typeof timeoutId !== 'undefined') {
-            clearTimeout(timeoutId);
-        }
-        if (typeof warningTimeoutId !== 'undefined') {
-            clearTimeout(warningTimeoutId);
-        }
-        setWarningTimeoutId(undefined);
-        setTimeoutId(undefined);
-        setShowBanner(false);
     }
 
     return (
@@ -152,13 +97,21 @@ const StudentMyQuestion = ({
                     myUserId={myUserId}
                     setShowModal={setShowModal}
                     setRemoveQuestionId={setRemoveQuestionId}
-                    newQuestionAssigned={newQuestionAssigned}
-                    clearQuestionAssigned={clearQuestionAssigned}
+                    newQuestionAssigned={() => {}}
+                    clearQuestionAssigned={() => {}}
                 />
             )}
         </div>
     );
 };
+
+const usePrev = <T extends unknown>(val: T): T | undefined => {
+    const r = React.useRef<T>();
+    React.useEffect(() => {
+        r.current = val;
+    });
+    return r.current;
+}
 
 const SessionQuestionsContainer = (props: Props) => {
     const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
@@ -167,6 +120,7 @@ const SessionQuestionsContainer = (props: Props) => {
     const [warningTimeoutId, setWarningTimeoutId] = React.useState<any>(undefined);
     // eslint-disable-next-line
     const [audio, setAudio] = React.useState<HTMLAudioElement>(new Audio("../../../qmijinglefinal.mp3"));
+    const prevQuestion = usePrev<FireQuestion | null>(props.myQuestion);
 
     React.useEffect(() => {
         try {
@@ -178,6 +132,20 @@ const SessionQuestionsContainer = (props: Props) => {
             // Do nothing. iOS crashes because Notification isn't defined
         }
     }, []);
+    
+    // Handles student side of time limit
+    React.useEffect(() => {
+        if (prevQuestion && prevQuestion.status === 'assigned') {
+            if (props.myQuestion === null || props.myQuestion.status === 'unresolved') {
+                clearQuestionAssigned();
+            }
+        } else if (prevQuestion && prevQuestion.status === 'unresolved') {
+            if (props.myQuestion && props.myQuestion.status === 'assigned') {
+                newQuestionAssigned();
+            }
+        }
+    // eslint-disable-next-line
+    }, [props.myQuestion])
 
 
     const questionWarning = () => {
@@ -319,9 +287,6 @@ const SessionQuestionsContainer = (props: Props) => {
                     myUserId={props.myUserId}
                     setShowModal={props.setShowModal}
                     setRemoveQuestionId={props.setRemoveQuestionId}
-                    course={props.course}
-                    setShowBanner={props.setShowBanner}
-                    setIsTimeWarning={props.setIsTimeWarning}
                 />
             )}
             {shownQuestions && shownQuestions.length > 0 && props.modality === 'review' && (
