@@ -8,7 +8,6 @@ const OPEN_OPTIONS: { text: string; value: number }[] = [
     { text: '30', value: 30 }
 ];
 const LIMIT_OPTIONS: { text: string; value: number }[] = [
-    { text: '0.5', value: 0.5 },
     { text: '5', value: 5 },
     { text: '10', value: 10 },
     { text: '15', value: 15 },
@@ -18,7 +17,6 @@ const LIMIT_OPTIONS: { text: string; value: number }[] = [
 ];
 
 const WARNING_OPTIONS: { text: string; value: number }[] = [
-    { text: '0.25', value: 0.25 },
     { text: '1', value: 1 },
     { text: '5', value: 5 },
     { text: '10', value: 10 },
