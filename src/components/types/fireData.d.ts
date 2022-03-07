@@ -111,6 +111,9 @@ interface FireCourse {
     charLimit: number;
     term: string;
     year: string;
+    timeLimit?: number;
+    timeWarning?: number;
+    isTimeLimit?: boolean;
 }
 
 type PrivilegedFireCourseRole = 'professor' | 'ta';

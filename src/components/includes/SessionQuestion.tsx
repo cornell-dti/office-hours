@@ -38,6 +38,8 @@ type Props = {
     readonly user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
+    newQuestionAssigned: () => void;
+    clearQuestionAssigned: () => void;
 };
 
 type State = {
@@ -53,6 +55,7 @@ type State = {
     undoName?: string;
     enableEditingComment: boolean;
     width: number;
+    showCantRemove: boolean;
 };
 
 
@@ -71,8 +74,18 @@ class SessionQuestion extends React.Component<Props, State> {
             timeoutID: 0,
             timeoutID2: 0,
             enableEditingComment: false,
-            width: window.innerWidth
+            width: window.innerWidth,
+            showCantRemove: false
         };
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        const previousState = prevProps.question;
+        const currentState = this.props.question;
+
+        if (previousState.status === 'unresolved' && currentState.status === 'assigned') {
+            this.props.newQuestionAssigned();
+        }
     }
     
     // Given an index from [1..n], converts it to text that is displayed on the
@@ -110,6 +123,10 @@ class SessionQuestion extends React.Component<Props, State> {
 
 
     onClickRemove = () => {
+        if (this.props.question.status === 'assigned') {
+            this.setState({showCantRemove: true});
+            return;
+        }
         this.props.setShowModal(true);
         this.props.setRemoveQuestionId(this.props.question.questionId);
     }
@@ -145,7 +162,7 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({
             timeoutID2: id,
         });
-
+        this.props.clearQuestionAssigned();
     };
 
     questionDone = () => {
@@ -163,6 +180,7 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({
             timeoutID: id,
         });
+        this.props.clearQuestionAssigned();
     };
 
     undoDone = () => {
@@ -185,6 +203,7 @@ class SessionQuestion extends React.Component<Props, State> {
 
     questionDontKnow = () => {
         markQuestionDontKnow(firestore, this.props.question);
+        this.props.clearQuestionAssigned();
     };
 
     questionComment = (newComment: string, isTA: boolean) => {
@@ -491,11 +510,18 @@ class SessionQuestion extends React.Component<Props, State> {
 
                 {
                     this.props.includeRemove && !this.props.isPast && (
-                        <div className="Buttons">
-                            <hr />
-                            <p className="Remove" onClick={this.onClickRemove}>
-                                <Icon name="close" /> Remove
-                            </p>
+                        <div className="buttonsAndCantRemove">
+                            <div className="Buttons">
+                                <hr />
+                                <p className="Remove" onClick={this.onClickRemove}>
+                                    <Icon name="close" /> Remove
+                                </p>
+                            </div>
+                            {this.state.showCantRemove &&
+                                <div className="cantRemove">
+                                    Can't remove question when assigned!
+                                </div>
+                            }
                         </div>
                     )
                 }
