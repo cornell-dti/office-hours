@@ -305,7 +305,9 @@ class SessionQuestion extends React.Component<Props, State> {
                 <div className="TopBar">
                     {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
                     <div className="OrderTooltip">
-                        <span className="TooltipText">You are position {this.props.index + 1} in the queue.</span>
+                        {!this.props.isTA && 
+                            <span className="TooltipText">You are position {this.props.index + 1} in the queue.</span>
+                        }
                         <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
                             {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                         </p>

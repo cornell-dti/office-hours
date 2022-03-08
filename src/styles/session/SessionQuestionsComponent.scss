@@ -64,7 +64,7 @@
 
     .TooltipText {
         position: absolute;
-        left: 62%;
+        left: 68%;
         top: 0;
         width: 120px;
         transform: translateX(-50%);
@@ -80,7 +80,7 @@
     .TooltipText::before {
         content: "";
         position: absolute;
-        left: 50%;
+        left: 49%;
         top: 105%;
         transform: translateX(-50%);
         border: 10px solid;
