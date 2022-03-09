@@ -1,6 +1,5 @@
 .QueueQuestions {
     background-color: white;
-    display: block;
     margin: 12px auto 12px;
     position: relative;
     text-align: center;
@@ -130,6 +129,22 @@
         justify-content: flex-start;
     }
 
+    .hybridBadge {
+        text-align: center;
+        font-size: 10px;
+        color: white;
+        border-radius: 15px;
+        display: inline-block;
+        padding: 0px 5px;
+        margin-right: 5px;
+        &.virtual {
+            background-color: #EC4339;
+        }
+        &.inPerson {
+            background-color: #5599DB;
+        }
+    }
+
     .RightBar {
         text-align: right;
         flex-grow: 1;
@@ -243,6 +258,8 @@
         margin: 0em;
         color: #595959;
         font-weight: 300;
+        display: flex;
+        align-items: center;
     }
 
     .LocationTooltip {
