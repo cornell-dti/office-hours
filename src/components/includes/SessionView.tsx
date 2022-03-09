@@ -93,7 +93,7 @@ const SessionView = (
             return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
         // setPrevQuestSet(new Set(questions.map(q => q.questionId)));
-    }, [ questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
+    }, [questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
 
     const dismissUndo = () => {
         if (timeoutId) {
@@ -232,12 +232,12 @@ const SessionView = (
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user,
-    course : state.course.course,
+    user: state.auth.user,
+    course: state.course.course,
     session: state.course.session
 })
 
-export default connect(mapStateToProps, {})( (props: Omit<Props, 'questions'>) => {
+export default connect(mapStateToProps, {})((props: Omit<Props, 'questions'>) => {
     const isTa = props.user.roles[props.course.courseId] !== undefined;
     const questions = props.session.modality === 'review' ? useSessionQuestions(props.session.sessionId, true) :
         filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));

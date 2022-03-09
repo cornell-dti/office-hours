@@ -49,6 +49,30 @@ const formatAvgTime = (rawTimeSecs: number) => {
     return timeHours + ' h ' + timeDispMins + ' mins';
 };
 
+const formatEstimatedTime = (waitTimeSecs: number, currentTime: Date) => {
+    const currMins = currentTime.getMinutes();
+    const currHour = currentTime.getHours();
+
+    const timeSecs = Math.floor(waitTimeSecs);
+    const timeMins = Math.floor(timeSecs / 60);
+    const timeHours = Math.floor(timeMins / 60);
+
+    const timeDispMins = timeMins - timeHours * 60;
+
+    let amPm = " am";
+    if ((currHour + timeHours) % 24 >= 12) {
+        amPm = " pm"
+    }
+    let totalHour = (currHour + timeHours) % 12;
+    let totalMins = currMins + timeDispMins;
+
+    if (totalMins >= 60) {
+        totalHour = (totalHour + 1) % 12;
+        totalMins = totalMins % 60
+    }
+    return ' (' + totalHour + ':' + totalMins + amPm + ') ';
+}
+
 const SessionInformationHeader = ({
     session,
     course,
@@ -69,6 +93,8 @@ const SessionInformationHeader = ({
     );
 
     const avgWaitTime = formatAvgTime(session.totalWaitTime / session.assignedQuestions);
+    const today = new Date();
+    const esimatedTime = formatEstimatedTime(session.totalWaitTime / session.assignedQuestions, today)
 
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState('hide');
     const [zoomLink, setZoomLink] = React.useState('');
@@ -206,7 +232,8 @@ const SessionInformationHeader = ({
                                         <Grid item xs={10}>
                                             {avgWaitTime !== 'No information available' ? (
                                                 <p>
-                                                    <span className="blue">{avgWaitTime + ' '}</span>
+                                                    <span className="blue">{avgWaitTime + ' ' + esimatedTime}</span>
+
                                                     estimated wait time
                                                 </p>
                                             ) : (
