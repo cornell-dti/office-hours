@@ -64,9 +64,9 @@ const formatEstimatedTime = (waitTimeSecs: number, currentTime: Date) => {
         amPm = " pm"
     }
     let totalHour = (currHour + timeHours) % 12;
-    let totalMins = (currMins + timeDispMins) % 60;
+    const totalMins = (currMins + timeDispMins) % 60;
 
-    if (totalcurrMins + timeDispMinsMins >= 60) {
+    if (currMins + timeDispMins >= 60) {
         totalHour = (totalHour + 1) % 12;
     }
     return ' (' + totalHour + ':' + totalMins + amPm + ') ';
