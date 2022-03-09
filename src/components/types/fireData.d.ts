@@ -160,6 +160,7 @@ interface FireQuestion {
     taComment?: string;
     studentComment?: string;
     wasNotified: boolean;
+    isVirtual?: boolean;
 }
 
 interface FireOHQuestion extends FireQuestion {

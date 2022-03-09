@@ -157,7 +157,6 @@
             width: 100%;
             height: auto;
             @media only screen and (min-width: $mobile-breakpoint) {
-              text-indent: 21px;
               width: 60%;
               height: auto;
             }
@@ -171,13 +170,18 @@
 
     .locationInput {
         position: relative;
+        display: flex;
+        flex-direction: column;
+        .hybridCheckbox {
+          margin-bottom: 14px;
+        }
         .map.marker.alternate.icon {
             display: none;
             @media only screen and (min-width: $mobile-breakpoint) {
                 display: block;
-                position: absolute;
-                top: 11px;
-                left: 4px;
+                // position: absolute;
+                // top: 11px;
+                // left: 4px;
                 font-size: 20px;
                 color: #e6e6e6;
             }
