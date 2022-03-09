@@ -373,7 +373,9 @@ const SessionInformationHeader = ({
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
                                             <Grid container item xs={10}>
-                                                <p>Use student provided Zoom link</p>
+                                                <p>{(typeof session.useTALink === 'undefined' || 
+                                                session.useTALink === false) ? 'Use student provided Zoom link' 
+                                                    : 'Use TA zoom on course site'}</p>
                                             </Grid>
                                         </Grid>
                                     </div>

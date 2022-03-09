@@ -51,6 +51,7 @@ const ProfessorOHInfo = (props: {
     const [modality, setModality] = useState(
         props.isOfficeHour ? Modality.VIRTUAL : Modality.REVIEW
     );
+    const [useTALink, setUseTALink] = useState(false);
 
     React.useEffect(() => {
         if (session) {
@@ -217,7 +218,16 @@ const ProfessorOHInfo = (props: {
                     }
                 }
 
+                let hybridProperties = {}
+
+                if (modality === Modality.HYBRID) {
+                    hybridProperties = {
+                        useTALink
+                    }
+                }
+
                 series = {
+                    ...hybridProperties,
                     modality,
                     courseId: props.courseId,
                     endTime: endTimestamp,
@@ -245,6 +255,14 @@ const ProfessorOHInfo = (props: {
 
         const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
 
+        let hybridProperties = {}
+
+        if (modality === Modality.HYBRID) {
+            hybridProperties = {
+                useTALink
+            }
+        }
+
         const sessionLocation =
             modality === Modality.HYBRID || modality === Modality.INPERSON
                 ? {
@@ -259,6 +277,7 @@ const ProfessorOHInfo = (props: {
                 }
                 : {};
         const sessionWithoutSessionSeriesId = {
+            ...hybridProperties,
             modality,
             courseId: props.courseId,
             endTime: endTimestamp,
@@ -298,6 +317,7 @@ const ProfessorOHInfo = (props: {
         startTime,
         taSelected,
         title,
+        useTALink
     ]);
 
     let isMaxTA = false;
@@ -535,6 +555,15 @@ const ProfessorOHInfo = (props: {
                             onChange={() => setIsSeriesMutation((old) => !old)}
                         />
                     )}
+                    {modality === Modality.HYBRID && 
+                    <Checkbox
+                        className="TAZoomCheckbox" 
+                        label="Use TA zoom link"
+                        checked={useTALink}
+                        onChange={() => setUseTALink((oldTALink) => {
+                            return !oldTALink;
+                        })}
+                    />}
                 </div>
                 <div className='row TA'>{AddTA}</div>
             </div>

@@ -114,7 +114,11 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
             setStage(LOCATION_INPUTTED);
             setSelectedSecondary(tag);
         } else {
-            setStage(SECONDARY_SELECTED);
+            if (session.modality === 'hybrid' && typeof session.useTALink !== 'undefined' && session.useTALink) {
+                setStage(LOCATION_INPUTTED);
+            } else {
+                setStage(SECONDARY_SELECTED);
+            }
             setSelectedSecondary(tag);
         }
     };
@@ -348,13 +352,16 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                                                 checked={isVirtual}
                                                 onClick={() => setIsVirtual(!isVirtual)}
                                             />}
-                                            <textarea
-                                                className='TextInput location'
-                                                value={location}
-                                                onChange={handleUpdateLocation}
-                                                placeholder={(session.modality === 'in-person' || !isVirtual) ? 
-                                                    'What is your location?' : 'What is your zoom link?'}
-                                            />
+                                            {!(session.modality === 'hybrid' && 
+                                            typeof session.useTALink !== 'undefined' && session.useTALink) &&
+                                                <textarea
+                                                    className='TextInput location'
+                                                    value={location}
+                                                    onChange={handleUpdateLocation}
+                                                    placeholder={(session.modality === 'in-person' || !isVirtual) ? 
+                                                        'What is your location?' : 'What is your zoom link?'}
+                                                /> 
+                                            }
                                         </div>
                                     ) : (
                                         <p className='placeHolder text'>
