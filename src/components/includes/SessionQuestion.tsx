@@ -263,7 +263,7 @@ class SessionQuestion extends React.Component<Props, State> {
                             {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                         </p>
                     </div>
-                    {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) && (
+                    {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) && (this.state.location.length > 0) && (
                         <div className="LocationPin">
                             <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" />
                             <div
