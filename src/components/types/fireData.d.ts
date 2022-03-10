@@ -45,6 +45,7 @@ interface FireHybridSession extends FireBaseSession, FireSessionLocation {
     modality: 'hybrid';
     building: string;
     room: string;
+    useTALink?: boolean;
 }
 
 interface FireReviewSession extends FireBaseSession, FireVirtualLocation {
@@ -77,6 +78,7 @@ interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLoca
     modality: 'hybrid';
     building: string;
     room: string;
+    useTALink?: boolean;
 }
 
 interface FireInPersonSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
@@ -111,6 +113,9 @@ interface FireCourse {
     charLimit: number;
     term: string;
     year: string;
+    timeLimit?: number;
+    timeWarning?: number;
+    isTimeLimit?: boolean;
 }
 
 type PrivilegedFireCourseRole = 'professor' | 'ta';
@@ -157,6 +162,7 @@ interface FireQuestion {
     taComment?: string;
     studentComment?: string;
     wasNotified: boolean;
+    isVirtual?: boolean;
 }
 
 interface FireOHQuestion extends FireQuestion {

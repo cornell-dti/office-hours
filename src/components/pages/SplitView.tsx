@@ -7,6 +7,7 @@ import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
 import NotificationModal from '../includes/NotificationModal';
 import LeaveQueue from '../includes/LeaveQueue';
+import TimeLimitBanner from '../includes/TimeLimitBanner';
 import ProductUpdates from "../includes/ProductUpdates"
 
 import { useCourse, useSession } from '../../firehooks';
@@ -66,6 +67,8 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
             : match.params.sessionId ? 'session' : 'calendar'
     );
     const [showModal, setShowModal] = useState(false);
+    const [showBanner, setShowBanner] = useState(false);
+    const [isTimeWarning, setIsTimeWarning] = useState(false);
     const [removeQuestionId, setRemoveQuestionId] = useState<
     string | undefined
     >(undefined);
@@ -132,11 +135,14 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
 
     return (
         <>
-            <LeaveQueue
-                setShowModal={setShowModal}
-                showModal={showModal}
-                removeQuestion={removeQuestion}
+            <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion}/>
+            <TimeLimitBanner
+                showBanner={showBanner}
+                setShowBanner={setShowBanner}
+                isTimeWarning={isTimeWarning} 
+                timeWarning={course ? course.timeWarning : 1}
             />
+            
             <TopBar
                 role={(user && course && user.roles[course.courseId]) || 'student'}
                 context="student"
@@ -174,6 +180,8 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
                             joinCallback={handleJoinClick}
                             setShowModal={setShowModal}
                             setRemoveQuestionId={setRemoveQuestionId}
+                            setShowBanner={setShowBanner}
+                            setIsTimeWarning={setIsTimeWarning}
                         />
                     ) : (
                         <section className='StudentSessionView'>
