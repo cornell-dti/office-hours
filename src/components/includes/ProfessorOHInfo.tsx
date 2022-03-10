@@ -442,7 +442,8 @@ const ProfessorOHInfo = (props: {
                               ' which is provided to the student when the TA is assigned to them.'
                             : modality === Modality.HYBRID
                                 ? 'In a hybrid session the student can either provide a Zoom link' +
-                              ' or a physical location.'
+                              ' or a physical location. Or, if you check the course zoom link checkbox' +
+                              ' the student is referred to the course website for the zoom link.'
                                 : modality === Modality.REVIEW
                                     ? 'In a review session a Zoom link for the review is posted ' +
                               ' and students can ask questions to be answered during the session.'
