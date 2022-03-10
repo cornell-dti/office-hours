@@ -558,7 +558,7 @@ const ProfessorOHInfo = (props: {
                     {modality === Modality.HYBRID && 
                     <Checkbox
                         className="TAZoomCheckbox" 
-                        label="Use TA zoom link"
+                        label="Use course zoom link"
                         checked={useTALink}
                         onChange={() => setUseTALink((oldTALink) => {
                             return !oldTALink;
