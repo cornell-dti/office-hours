@@ -90,8 +90,8 @@ interface FireReviewSeries extends FireBaseSessionSeries, FireVirtualLocation {
     link: string;
 }
 
-type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries | 
-FireInPersonSessionSeries | FireReviewSeries);
+type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries |
+    FireInPersonSessionSeries | FireReviewSeries);
 type FireSessionSeriesDefinition =
     Omit<FireVirtualSessionSeries, 'sessionSeriesId'>
     | Omit<FireHybridSessionSeries, 'sessionSeriesId'>
@@ -157,6 +157,7 @@ interface FireQuestion {
     taComment?: string;
     studentComment?: string;
     wasNotified: boolean;
+    position: number;
 }
 
 interface FireOHQuestion extends FireQuestion {
@@ -164,8 +165,8 @@ interface FireOHQuestion extends FireQuestion {
     answererLocation?: string;
 }
 
-type FireQuestionSlot = Pick<FireQuestion, 'askerId' 
-| 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
+type FireQuestionSlot = Pick<FireQuestion, 'askerId'
+    | 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
 
 interface FireTag {
     active: boolean;
