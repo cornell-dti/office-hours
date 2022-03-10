@@ -45,6 +45,7 @@ interface FireHybridSession extends FireBaseSession, FireSessionLocation {
     modality: 'hybrid';
     building: string;
     room: string;
+    useTALink?: boolean;
 }
 
 interface FireReviewSession extends FireBaseSession, FireVirtualLocation {
@@ -77,6 +78,7 @@ interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLoca
     modality: 'hybrid';
     building: string;
     room: string;
+    useTALink?: boolean;
 }
 
 interface FireInPersonSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
