@@ -91,7 +91,7 @@ interface FireReviewSeries extends FireBaseSessionSeries, FireVirtualLocation {
 }
 
 type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries |
-    FireInPersonSessionSeries | FireReviewSeries);
+FireInPersonSessionSeries | FireReviewSeries);
 type FireSessionSeriesDefinition =
     Omit<FireVirtualSessionSeries, 'sessionSeriesId'>
     | Omit<FireHybridSessionSeries, 'sessionSeriesId'>
@@ -166,7 +166,7 @@ interface FireOHQuestion extends FireQuestion {
 }
 
 type FireQuestionSlot = Pick<FireQuestion, 'askerId'
-    | 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
+| 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
 
 interface FireTag {
     active: boolean;

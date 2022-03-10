@@ -27,7 +27,7 @@ type Props = {
     onUpdate: (virtualLocation: string) => void;
     myQuestion: FireQuestion | null;
     isOpen: boolean;
-    questions: readonly FireQuestion[]
+    questions: readonly FireQuestion[];
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
