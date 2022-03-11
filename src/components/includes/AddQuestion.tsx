@@ -305,7 +305,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                                             ))
                                     ) : (
                                         <p className='placeHolder'>
-                                            First select a category
+                                            {activeTags.length > 0 ? 'First select a category' :''}
                                         </p>
                                     )}
                                 </div>
