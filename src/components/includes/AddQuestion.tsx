@@ -343,7 +343,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                                             )}
                                         </p>
                                     }
-                                    {stage >= SECONDARY_SELECTED ? (
+                                    {stage >= SECONDARY_SELECTED || activeTags.length === 0 ? (
                                         <div className='locationInput'>
                                             {session.modality === 'hybrid' && 
                                             <Checkbox
