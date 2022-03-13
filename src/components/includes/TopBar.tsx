@@ -11,7 +11,7 @@ import TopBarNotifications from './TopBarNotifications'
 import {useNotificationTracker} from '../../firehooks';
 import { RootState } from '../../redux/store';
 import { updateLastSent } from '../../firebasefunctions/notifications';
-import Banner from "./Banner";
+import Snackbar from "./Snackbar"
 import TextNotificationModal from './TextNotificationModal';
 
 type Props = {
@@ -25,13 +25,12 @@ type Props = {
     context: string;
     course?: FireCourse;
     admin?: boolean;
+    snackbars: Announcement[];
 }
 
 const TopBar = (props: Props) => {
     const [showMenu, setShowMenu] = useState(false);
     const [showTextModal, setShowTextModal] = useState<boolean>(false);
-    const [showBanner, setShowBanner] = useState<boolean>(false);
-    const [bannerText, setBannerText] = useState<string>("");
     const [image, setImage] = useState(props.user ? props.user.photoUrl : '/placeholder.png');
     const ref = React.useRef<HTMLDivElement>(null);
 
@@ -152,15 +151,8 @@ const TopBar = (props: Props) => {
                 showTextModal={showTextModal}
                 setShowTextModal={setShowTextModal}
                 user={user}
-                setShowBanner={setShowBanner}
-                setBannerText={setBannerText}
             />
-            <Banner 
-                announcement={bannerText}
-                showBanner={showBanner}
-                setShowBanner={setShowBanner} 
-                setBannerText={setBannerText}
-            />
+            {props.snackbars.map(snackbar => (<Snackbar icon={snackbar.icon} announcement={snackbar.text}  />))}
         </div>
     );
 };
@@ -171,7 +163,8 @@ TopBar.defaultProps = {
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user : state.auth.user,
+    snackbars : state.announcements.snackbars
 })
 
 

@@ -1,0 +1,109 @@
+.banner {
+  &__wrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 30px;
+    background: #f2f9ff;
+    border: 1px solid #5599db;
+    box-sizing: border-box;
+    width: 60%;
+    height: 52px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 15px;
+    padding-right: 40px;
+    z-index: 100;
+    box-shadow: 3px 3px 3px rgba(10, 10, 10, 0.3);
+  }
+  &__left {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    align-items: center;
+  }
+  &__icon {
+    width: 12.59px;
+    height: 16px;
+    color: #484848;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  &__text {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 16px;
+    color: #484848;
+  }
+  &__close {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 16px;
+    color: #5599db;
+    cursor: pointer;
+    &:hover {
+      color: darken(#5599db, 10%);
+    }
+  }
+}
+
+.snackbar {
+  &__wrapper {
+    position: absolute;
+    left: 40px;
+    bottom: 26px;
+    background: #484848;
+    box-sizing: border-box;
+    width: 432px;
+    height: 52px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding-left: 15px;
+    padding-right: 40px;
+    z-index: 100;
+    box-shadow: 2px 2px 2px rgba(10, 10, 10, 0.3);
+  }
+  &__icon {
+    width: 12.59px;
+    height: 16px;
+    color: #d6eafe;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  &__text {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 16px;
+    color: #d6eafe;
+  }
+  &__close {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 16px;
+    color: #5599db;
+    cursor: pointer;
+    &:hover {
+      color: darken(#5599db, 10%);
+    }
+  }
+}
+
+@media (max-width: 925px) {
+  .snackbar {
+    &__wrapper {
+      width: 45%;
+    }
+  }
+}

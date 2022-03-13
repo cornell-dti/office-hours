@@ -1,8 +1,11 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
+import {connect} from 'react-redux';
 import { Icon, Checkbox } from 'semantic-ui-react';
 import { updatePhoneNum } from '../../firebasefunctions/phoneNumber';
+import {addSnackbar} from "../../redux/actions/announcements"
 import smsNotif from '../../media/smsNotif.svg'
 import phone from '../../media/phone.svg'
+import snackbarIcon from '../../media/snackbarIcon.svg'
 
 enum Validation {
     NOT_REQUESTED,
@@ -14,16 +17,14 @@ type Props = {
     showTextModal: boolean;
     setShowTextModal: Dispatch<SetStateAction<boolean>>;
     user: FireUser | undefined;
-    setShowBanner: Dispatch<SetStateAction<boolean>>;
-    setBannerText: Dispatch<SetStateAction<string>>;
+    addSnackbar: (snackbar: Announcement) => Promise<void>;
 };
 
 const TextNotificationModal = ({
     showTextModal,
     setShowTextModal,
     user,
-    setShowBanner,
-    setBannerText
+    addSnackbar
 }: Props) => {
     const [phoneNum, setPhoneNum] = useState(user?.phoneNumber || "");
     const [phoneConsent, setPhoneConsent] = useState(user?.textNotifsEnabled || false);
@@ -39,7 +40,11 @@ const TextNotificationModal = ({
         return phNumber.length === 10 && /[1-9]{1}[0-9]{9}/.test(phNumber);
     }
 
-    
+    const twilioTag = (<a 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        href="https://www.twilio.com/legal/privacy"
+    >Privacy Policy</a>)
 
     return (
         <>
@@ -84,6 +89,7 @@ const TextNotificationModal = ({
                                         />
                                         <div className="enableDialogue__consentDialogue">
                                           By checking this box you consent to receiving SMS messages from Queue Me In. 
+                                          We use Twilio ({twilioTag}) to send notifications.
                                           We do not give your number to third party clients.
                                         </div>
                                     </div>
@@ -126,17 +132,16 @@ const TextNotificationModal = ({
                                         onClick={
                                             () => {
                                                 if (validatePhone(phoneNum) && phoneConsent) {
-                                                    setBannerText(
-                                                        `Text message notifications have been \
-                                                    ${user?.textNotifsEnabled ? "updated" : "enabled"}!`
-                                                    );
+                                                    addSnackbar(
+                                                        {text : `Text message notifications have been \
+                                                  ${user?.textNotifsEnabled ? "updated" : "enabled"}!`, 
+                                                        icon : snackbarIcon})
                                                     updatePhoneNum(user?.userId, {
                                                         phoneNumber: phoneNum, 
                                                         textNotifsEnabled: true
                                                     })
                                                     setValidation(Validation.SUCCESS)
                                                     setShowTextModal(false);
-                                                    setShowBanner(true);
                                                 } else if(validatePhone(phoneNum)) {
                                                     setCheckError(true);
                                                 } else {
@@ -174,10 +179,9 @@ const TextNotificationModal = ({
                                                 setPhoneNum("")
                                                 setPhoneConsent(false);
                                                 setShowTextModal(false);
-                                                setShowBanner(true);
-                                                setBannerText(
-                                                    "Text message notifications have been disabled."
-                                                );
+                                                addSnackbar(
+                                                    {text : "Text message notifications have been disabled.", 
+                                                        icon : snackbarIcon})
                                             }
                                         }
                                     >
@@ -193,4 +197,4 @@ const TextNotificationModal = ({
     );
 };
 
-export default TextNotificationModal;
+export default connect(null, {addSnackbar})(TextNotificationModal);

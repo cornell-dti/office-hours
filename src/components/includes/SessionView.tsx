@@ -17,6 +17,7 @@ import { firestore } from '../../firebase';
 
 import { RootState } from '../../redux/store';
 import Browser from '../../media/browser.svg';
+import Banner from './Banner';
 
 
 type Props = {
@@ -29,6 +30,7 @@ type Props = {
     user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
+    banners: Announcement[];
 };
 
 type UndoState = {
@@ -46,7 +48,7 @@ type AbsentState = {
 
 const SessionView = (
     { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal,
-        setRemoveQuestionId }: Props
+        setRemoveQuestionId, banners }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
     const tags = useCourseTags(course.courseId);
@@ -174,6 +176,7 @@ const SessionView = (
                     </div>
                 </div>
             }
+            {banners.map(banner => (<Banner icon={banner.icon} announcement={banner.text}  />))}
             <SessionInformationHeader
                 session={session}
                 course={course}
@@ -234,7 +237,8 @@ const SessionView = (
 const mapStateToProps = (state: RootState) => ({
     user : state.auth.user,
     course : state.course.course,
-    session: state.course.session
+    session: state.course.session,
+    banners: state.announcements.banners
 })
 
 export default connect(mapStateToProps, {})( (props: Omit<Props, 'questions'>) => {

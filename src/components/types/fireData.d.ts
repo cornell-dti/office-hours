@@ -210,3 +210,8 @@ interface NotificationTracker {
     notificationList: SessionNotification[];
     lastSent: FireTimestamp;
 }
+
+interface Announcement {
+    text: string;
+    icon: string;
+}
