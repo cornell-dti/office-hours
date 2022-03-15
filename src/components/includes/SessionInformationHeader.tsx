@@ -68,8 +68,12 @@ const SessionInformationHeader = ({
         user.userId
     );
 
-    const dynamicPosition = questions.findIndex(question => question.askerId === myQuestion?.askerId) + 1
-    const avgWaitTime = formatAvgTime((session.totalWaitTime / session.assignedQuestions) * dynamicPosition);
+    let dynamicPosition = questions.findIndex(question => question.askerId === myQuestion?.askerId) + 1
+    if (dynamicPosition === 0) {
+        dynamicPosition = questions.length + 1
+    }
+
+    const avgWaitTime = formatAvgTime((session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition));
 
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState('hide');
     const [zoomLink, setZoomLink] = React.useState('');
