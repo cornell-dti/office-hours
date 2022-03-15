@@ -10,9 +10,10 @@ const db = admin.firestore();
 
 // Twilio Setup
 const accountSid = functions.config().twilio.accountsid;
-const authToken = functions.config().twilio.authtoken;
+const authToken = process.env.twilio_auth_token === undefined ? "" : process.env.twilio_auth_token;
 const twilioNumber = functions.config().twilio.twilionumber;
 functions.logger.log(`${accountSid} ${authToken} ${twilioNumber}`);
+
 const client = new Twilio(accountSid, authToken);
 
 /**

@@ -10,13 +10,11 @@ import {
     useAskerQuestions
 } from '../../firehooks';
 import { updateQuestion, updateVirtualLocation } from '../../firebasefunctions/sessionQuestion'
-// import { addDBNotification } from '../../firebasefunctions/notifications'
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 import { firestore } from '../../firebase';
 
 import { RootState } from '../../redux/store';
-import Browser from '../../media/browser.svg';
 import Banner from './Banner';
 
 
@@ -48,7 +46,7 @@ type AbsentState = {
 
 const SessionView = (
     { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal,
-        setRemoveQuestionId, banners }: Props
+        setRemoveQuestionId, banners}: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
     const tags = useCourseTags(course.courseId);
@@ -63,8 +61,6 @@ const SessionView = (
         dismissedAbsent: true,
         lastAskedQuestion: null
     });
-
-    const [showNotifBanner, setShowNotifBanner] = useState(true);
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
 
@@ -166,8 +162,9 @@ const SessionView = (
 
     return (
         <section className="StudentSessionView">
-            {"Notification" in window &&
+            {/* {"Notification" in window &&
                 window?.Notification.permission !== "granted" && showNotifBanner === true &&
+            
                 <div className="SessionNotification">
                     <img src={Browser} alt="Browser" />
                     <div className="label">Enable browser notifications to know when it's your turn.</div>
@@ -175,7 +172,7 @@ const SessionView = (
                         GOT IT
                     </div>
                 </div>
-            }
+            } */}
             {banners.map(banner => (<Banner icon={banner.icon} announcement={banner.text}  />))}
             <SessionInformationHeader
                 session={session}

@@ -214,4 +214,5 @@ interface NotificationTracker {
 interface Announcement {
     text: string;
     icon: string;
+    alert?: boolean;
 }

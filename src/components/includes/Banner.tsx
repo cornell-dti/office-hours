@@ -5,12 +5,13 @@ import { removeBanner } from '../../redux/actions/announcements';
 type Props = {
     icon: string;
     announcement: string;
+    warning?: boolean
     removeBanner: (banner: string) => Promise<void>;
 }
 
-const Banner = ({icon, announcement, removeBanner}: Props) => {
+const Banner = ({icon, announcement, warning, removeBanner}: Props) => {
     return ( <>
-        <div className="banner__wrapper" >
+        <div className={`banner__wrapper ${warning ? "banner__alert" : ""}`} >
             <div className="banner__left" > 
                 <img src={icon} alt="Text icon" className="banner__icon" />
                 <div className="banner__text">{announcement}</div>

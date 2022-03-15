@@ -5,7 +5,6 @@ import { Loader } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
-import NotificationModal from '../includes/NotificationModal';
 import LeaveQueue from '../includes/LeaveQueue';
 import ProductUpdates from "../includes/ProductUpdates"
 
@@ -16,6 +15,8 @@ import TopBar from '../includes/TopBar';
 import CalendarExportModal from '../includes/CalendarExportModal';
 import { RootState } from '../../redux/store';
 import {updateCourse, updateSession} from "../../redux/actions/course";
+import Browser from '../../media/browser.svg';
+import { addBanner } from '../../redux/actions/announcements';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -57,9 +58,10 @@ type SplitViewProps = {
     session: FireSession;
     updateCourse: (user: FireCourse | undefined) => Promise<void>;
     updateSession: (user: FireSession | undefined) => Promise<void>;
+    addBanner: (banner: Announcement) => Promise<void>;
 }
 
-const SplitView = ({history, match, user, course, session, updateCourse, updateSession}: SplitViewProps) => {
+const SplitView = ({history, match, user, course, session, updateCourse, updateSession, addBanner}: SplitViewProps) => {
     const [activeView, setActiveView] = useState(
         match.params.page === 'add'
             ? 'addQuestion'
@@ -130,6 +132,12 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
         removeQuestionbyID(firestore, removeQuestionId);
     };
 
+    useEffect(() => {
+        if("Notification" in window && window?.Notification.permission !== "granted") {
+            addBanner({text: "Enable browser notifications to know when it's your turn.", icon: Browser});
+        };
+    }, [addBanner])
+
     return (
         <>
             <LeaveQueue
@@ -152,11 +160,6 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
                     setShowCalendarModal={setShowCalendarModal}
                     setCurrentExportSession={setCurrentExportSession}
                 />)}
-                
-            {"Notification" in window &&
-            window?.Notification.permission !== "granted" && (
-                <NotificationModal show={activeView !== 'session'} />
-            )}
 
             <CalendarExportModal
                 showCalendarModal={showCalendarModal}
@@ -216,4 +219,4 @@ const mapStateToProps = (state: RootState) => ({
 })
 
 
-export default connect(mapStateToProps, {updateCourse, updateSession})(SplitView);
+export default connect(mapStateToProps, {updateCourse, updateSession, addBanner})(SplitView);
