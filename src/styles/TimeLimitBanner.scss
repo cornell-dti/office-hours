@@ -1,0 +1,61 @@
+.bannerContainer {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translateX(-50%);
+    height: 50px;
+    background: #F2F9FF;
+    border: 1px solid #5599DB;
+    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.1));
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    width: 60%;
+    bottom: 0;
+    z-index: 9999;
+
+
+    .label {
+        align-self: center;
+        justify-self: flex-start;
+        color: #484848;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 250px;
+        font-size: 14px;
+        letter-spacing: 0.642857px;
+    }
+
+    .button {
+        align-self: center;
+        margin-left: auto;
+        margin-right: 24px;
+        outline: none; 
+        border: none;
+        background-color: transparent;
+        color: #5599DB;
+        font-family: Roboto;
+        font-size: 14px;
+        font-weight: 500px;
+        cursor: pointer;
+    }
+
+    img {
+        align-self: center;
+        size: 80%;
+        margin: 0px 14px;
+    }
+    
+    p {
+        width: 70%;
+        float: left;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        letter-spacing: 0.642857px;
+        margin: 0;
+        color: #484848;
+    }
+}
