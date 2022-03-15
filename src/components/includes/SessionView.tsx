@@ -213,7 +213,9 @@ const SessionView = (
                 modality={session.modality}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
                 questions={session.modality === 'review' ? questions.filter(q => q.status !== 'retracted') :
-                    questions.filter(q => q.status === 'unresolved' || q.status === 'assigned').sort((a, b) => (a.timeEntered > b.timeEntered) ? 1 : -1)}
+                    questions
+                        .filter(q => q.status === 'unresolved' || q.status === 'assigned')
+                        .sort((a, b) => (a.timeEntered > b.timeEntered) ? 1 : -1)}
                 users={users}
                 tags={tags}
                 handleJoinClick={joinCallback}

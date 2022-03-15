@@ -73,7 +73,9 @@ const SessionInformationHeader = ({
         dynamicPosition = questions.length + 1
     }
 
-    const avgWaitTime = formatAvgTime((session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition));
+    const avgWaitTime =
+        formatAvgTime((session.totalWaitTime / session.assignedQuestions)
+            * (isTa ? 1 : dynamicPosition));
 
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState('hide');
     const [zoomLink, setZoomLink] = React.useState('');

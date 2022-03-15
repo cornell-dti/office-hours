@@ -203,11 +203,15 @@ exports.onQuestionUpdate = functions.firestore
         // Derive timing changes (changes from assigned to unassigned)
         if (numAssignedChange === 1 && newQuestion.timeAssigned !== undefined) {
             // Add new time addressed
-            waitTimeChange = (newQuestion.timeAssigned.seconds - newQuestion.timeEntered.seconds) / (newQuestion.position || 1);
+            waitTimeChange = 
+            (newQuestion.timeAssigned.seconds - newQuestion.timeEntered.seconds) 
+            / (newQuestion.position || 1);
         }
         else if (numAssignedChange === -1 && prevQuestion.timeAssigned !== undefined) {
             // Subtract previous time addressed
-            waitTimeChange = (prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds) / (newQuestion.position || 1);
+            waitTimeChange = 
+            (prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds) 
+            / (newQuestion.position || 1);
         }
 
         // Derive timing changes (changes from assigned to resolved)
