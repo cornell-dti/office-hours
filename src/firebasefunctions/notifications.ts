@@ -8,7 +8,9 @@ async (user: FireUser, notification: Omit<SessionNotification, 'notificationId' 
         if (email !== null) {
             const trackerRef = firestore.collection('notificationTrackers').doc(email);
             const prevTracker = (await trackerRef.get()).data();
-            const notifList: SessionNotification[] = prevTracker !== undefined ? prevTracker.notificationList : []
+            const notifList: SessionNotification[] = 
+              prevTracker !== undefined && 
+              prevTracker.notificatoniList !== undefined ? prevTracker.notificationList : []
             const newNotification: SessionNotification = {
                 title: notification.title,
                 subtitle: notification.subtitle,
@@ -40,14 +42,26 @@ export const periodicClearNotifications =
 {
     if (user !== undefined) {
         const email = user.email;
-        if (email !== null && notificationTracker !== undefined  && notificationTracker.notificationList) {
+        if (email !== null && 
+          notificationTracker !== undefined && 
+          notificationTracker.notificationList !== undefined
+        ) {
             const trackerRef = firestore.collection('notificationTrackers').doc(email);
             const day = 1000 * 60 * 60 * 24;
             const dayPast = Date.now() - day;
             const updatedTracker: Partial<NotificationTracker> = {
-                notificationList: notificationTracker?.notificationList.filter(notification => {
+                notificationList: notificationTracker?.notificationList?.filter(notification => {
                     return notification.createdAt.toDate().getTime() > dayPast;
                 })
+            }
+            trackerRef.update(updatedTracker);
+        } else if (email !== null && 
+          notificationTracker !== undefined && 
+          notificationTracker.notificationList === undefined
+        ) {
+            const trackerRef = firestore.collection('notificationTrackers').doc(email);
+            const updatedTracker: Partial<NotificationTracker> = {
+                notificationList: []
             }
             trackerRef.update(updatedTracker);
         }

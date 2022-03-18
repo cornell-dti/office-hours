@@ -42,7 +42,7 @@ const TopBar = (props: Props) => {
     const notificationTracker = useNotificationTracker(email);
 
     useEffect(() => {
-        if(notificationTracker!== undefined) {
+        if(notificationTracker!== undefined && notificationTracker.notificationList !== undefined) {
             for(let i = 0; i < notificationTracker.notificationList.length; i++) {
                 const notif = notificationTracker.notificationList[i];
                 // checks that the notification was created after the last time notifications were sent

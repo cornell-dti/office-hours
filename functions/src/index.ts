@@ -137,8 +137,10 @@ exports.onSessionUpdate = functions.firestore
         if(!afterQuestions[0].data().wasNotified) {
             const asker: FireUser = (await db.doc(`users/${afterQuestions[0].data().askerId}`)
                 .get()).data() as FireUser;
-            sendSMS(asker, `Your question has reached the top of the \
+            if(process.env.DATABASE === "prod") {
+                sendSMS(asker, `Your question has reached the top of the \
                 ${(change.after.data() as FireSession).title} queue. A TA will likely help you shortly.`);
+            }
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({notificationList: admin.firestore.FieldValue.arrayUnion({
                     title: 'Your Question is Up!',
