@@ -64,7 +64,7 @@ const formatEstimatedTime = (waitTimeSecs: number, currentTime: Date) => {
         amPm = " pm"
     }
     let totalHour = (currHour + timeHours) % 12;
-    let totalMins = (currMins + timeDispMins) % 60;
+    const totalMins = (currMins + timeDispMins) % 60;
 
     if (currHour + timeHours >= 24) {
         return " (No estimate available) "
