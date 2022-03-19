@@ -27,6 +27,7 @@ type Props = {
     onUpdate: (virtualLocation: string) => void;
     myQuestion: FireQuestion | null;
     isOpen: boolean;
+    questions: readonly FireQuestion[];
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
@@ -59,6 +60,7 @@ const SessionInformationHeader = ({
     onUpdate,
     myQuestion,
     isOpen,
+    questions
 }: Props) => {
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
@@ -66,7 +68,14 @@ const SessionInformationHeader = ({
         user.userId
     );
 
-    const avgWaitTime = formatAvgTime(session.totalWaitTime / session.assignedQuestions);
+    let dynamicPosition = questions.findIndex(question => question.askerId === myQuestion?.askerId) + 1
+    if (dynamicPosition === 0) {
+        dynamicPosition = questions.length + 1
+    }
+
+    const avgWaitTime =
+        formatAvgTime((session.totalWaitTime / session.assignedQuestions)
+            * (isTa ? 1 : dynamicPosition));
 
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState('hide');
     const [zoomLink, setZoomLink] = React.useState('');
@@ -411,9 +420,9 @@ const SessionInformationHeader = ({
                                                     : avgWaitTime === 'No information available'
                                                         ? 'Please wait for your turn to join the Zoom call'
                                                         : 'Please wait for your turn to ' +
-                                                  'join the Zoom call (estimated wait time: ' +
-                                                  avgWaitTime +
-                                                  ')'
+                                                        'join the Zoom call (estimated wait time: ' +
+                                                        avgWaitTime +
+                                                        ')'
                                         }
                                         show={true}
                                         closeModal={() => {
@@ -496,7 +505,7 @@ SessionInformationHeader.defaultProps = {
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
 export default connect(mapStateToProps, {})(SessionInformationHeader);
