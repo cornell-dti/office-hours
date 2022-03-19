@@ -18,6 +18,23 @@ $open: #ffdba6;
     color: $text-grey;
 }
 
+.DateWrapper {
+    display: flex;
+    font-size: 18px;
+    font-weight: 500;
+    color: black;
+    padding-top: 11px;
+    padding-left: 10px;
+    line-height: 0;
+    margin: 0;
+    text-align: left;
+
+    .CalendarExportIcon {
+        margin-left: 7px;
+        margin-bottom: 18px;
+    }
+}
+
 .CalendarSessions h6 {
     font-size: 14px;
     font-weight: normal;
@@ -25,7 +42,7 @@ $open: #ffdba6;
     text-align: left;
     padding-left: 12px;
     margin: 0;
-    padding-top: 17px;
+    padding-top: 12px;
     line-height: 0;
 }
 
