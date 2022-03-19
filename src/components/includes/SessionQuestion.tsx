@@ -263,7 +263,8 @@ class SessionQuestion extends React.Component<Props, State> {
                             {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                         </p>
                     </div>
-                    {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) && (
+                    {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) && 
+                    (this.state.location.length > 0) && (
                         <div className="LocationPin">
                             <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" />
                             <div
@@ -336,8 +337,16 @@ class SessionQuestion extends React.Component<Props, State> {
                             </div>
                         )}
                         <div className="Location">
+                            {this.props.isTA && this.props.modality === 'hybrid' && 
+                            typeof this.props.question.isVirtual !== 'undefined' && 
+                                <div className={`hybridBadge ${this.props.question.isVirtual ? 
+                                    'virtual' : 'inPerson'}`}
+                                >
+                                    {this.props.question.isVirtual ? 'Virtual' : 'In-person'}
+                                </div>
+                            }
                             {
-                                <>
+                                <div className="locationContent">
                                     {this.props.isTA &&
                                         question.location &&
                                         question.location.substr(0, 25) === 'https://cornell.zoom.us/j' && (
@@ -353,7 +362,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                         question.location &&
                                         question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
                                         question.location}
-                                </>
+                                </div>
                             }
                         </div>
                         {(this.props.isTA || includeBookmark || this.props.includeRemove) && (

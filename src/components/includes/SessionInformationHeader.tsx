@@ -29,6 +29,7 @@ type Props = {
     onUpdate: (virtualLocation: string) => void;
     myQuestion: FireQuestion | null;
     isOpen: boolean;
+    questions: readonly FireQuestion[];
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
@@ -90,6 +91,7 @@ const SessionInformationHeader = ({
     onUpdate,
     myQuestion,
     isOpen,
+    questions
 }: Props) => {
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
@@ -97,9 +99,17 @@ const SessionInformationHeader = ({
         user.userId
     );
 
-    const avgWaitTime = formatAvgTime(session.totalWaitTime / session.assignedQuestions);
+
     const today = new Date();
     const esimatedTime = formatEstimatedTime(session.totalWaitTime / session.assignedQuestions, today)
+    let dynamicPosition = questions.findIndex(question => question.askerId === myQuestion?.askerId) + 1
+    if (dynamicPosition === 0) {
+        dynamicPosition = questions.length + 1
+    }
+
+    const avgWaitTime =
+        formatAvgTime((session.totalWaitTime / session.assignedQuestions)
+            * (isTa ? 1 : dynamicPosition));
 
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState('hide');
     const [zoomLink, setZoomLink] = React.useState('');
@@ -420,7 +430,9 @@ const SessionInformationHeader = ({
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
                                             <Grid container item xs={10}>
-                                                <p>Use student provided Zoom link</p>
+                                                <p>{(typeof session.useTALink === 'undefined' || 
+                                                session.useTALink === false) ? 'Use student provided Zoom link' 
+                                                    : 'Use TA zoom on course site'}</p>
                                             </Grid>
                                         </Grid>
                                     </div>
