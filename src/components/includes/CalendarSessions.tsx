@@ -67,6 +67,29 @@ const CalendarSessions = ({
         setCurrentExportSessions(sessions);
     };
 
+    const getDateString = (): string => {
+        const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const months = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
+        ];
+        const dateStr = (
+            `${days[sessions[0].startTime.toDate().getDay()]}, ` + 
+            `${months[sessions[0].startTime.toDate().getMonth()]} ` +
+            `${sessions[0].startTime.toDate().getDate()}`);
+        return dateStr;
+    }
+
     return (
         <div className='CalendarSessions'>
             {sessions.length === 0 && (
@@ -79,7 +102,7 @@ const CalendarSessions = ({
             )}
             {sessions.length !== 0 &&
                 <div className='DateWrapper'>
-                    <p>{sessions[0].startTime.toDate().toString()}</p>
+                    <p>{getDateString()}</p>
                     <img
                         src={CalendarExport}
                         alt='Export to calendar'

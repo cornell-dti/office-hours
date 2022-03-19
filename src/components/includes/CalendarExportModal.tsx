@@ -48,6 +48,30 @@ const CalendarExportModal = ({
         return { date, startTime, endTime };
     }
 
+    const getDateString = (): string => {
+        const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const months = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
+        ];
+        const dateStr = (
+            `${days[currentExportSessions[0].startTime.toDate().getDay()]}, ` + 
+            `${months[currentExportSessions[0].startTime.toDate().getMonth()]} ` +
+            `${currentExportSessions[0].startTime.toDate().getDate()}`);
+        return dateStr;
+    }
+
+
     const createIcs = () => {
         const icsRows = [];
 
@@ -121,7 +145,7 @@ const CalendarExportModal = ({
                             <Icon name='x' />
                         </button>
                         {isDayExport ? 
-                            <div className='Title'>{currentExportSessions[0].startTime.toDate().toString()} Office Hours</div> :
+                            <div className='Title'>{getDateString()} Office Hours</div> :
                             <div className='Title'>{currentExportSessions[0].title ?
                                 course?.code + ` ` + currentExportSessions[0].title : ``} Office Hours</div>
                         }
