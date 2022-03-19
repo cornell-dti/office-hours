@@ -100,9 +100,9 @@ const SessionInformationHeader = ({
     );
 
 
-    const today = new Date();
-    const esimatedTime = formatEstimatedTime(session.totalWaitTime / session.assignedQuestions, today)
+
     let dynamicPosition = questions.findIndex(question => question.askerId === myQuestion?.askerId) + 1
+
     if (dynamicPosition === 0) {
         dynamicPosition = questions.length + 1
     }
@@ -110,6 +110,10 @@ const SessionInformationHeader = ({
     const avgWaitTime =
         formatAvgTime((session.totalWaitTime / session.assignedQuestions)
             * (isTa ? 1 : dynamicPosition));
+
+    const today = new Date();
+    const esimatedTime = formatEstimatedTime((session.totalWaitTime / session.assignedQuestions)
+        * (isTa ? 1 : dynamicPosition), today)
 
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState('hide');
     const [zoomLink, setZoomLink] = React.useState('');
@@ -430,8 +434,8 @@ const SessionInformationHeader = ({
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
                                             <Grid container item xs={10}>
-                                                <p>{(typeof session.useTALink === 'undefined' || 
-                                                session.useTALink === false) ? 'Use student provided Zoom link' 
+                                                <p>{(typeof session.useTALink === 'undefined' ||
+                                                    session.useTALink === false) ? 'Use student provided Zoom link'
                                                     : 'Use TA zoom on course site'}</p>
                                             </Grid>
                                         </Grid>
