@@ -10,9 +10,8 @@ const db = admin.firestore();
 
 // Twilio Setup
 const accountSid = functions.config().twilio.accountsid;
-const authToken = process.env.twilio_auth_token === undefined ? "" : process.env.twilio_auth_token;
+const authToken = functions.config().twilio.twilio_auth_token;
 const twilioNumber = functions.config().twilio.twilionumber;
-functions.logger.log(`${accountSid} ${authToken} ${twilioNumber}`);
 
 const client = new Twilio(accountSid, authToken);
 
@@ -20,16 +19,19 @@ const client = new Twilio(accountSid, authToken);
  * Function that handles data and sends a text message to a requested phone number
  */
 async function sendSMS (user: FireUser, message: string) {
-    functions.logger.log("sending sms");
+    if(process.env.DATABASE === "staging") {
+        return;
+    }
     const userPhone = user.phoneNumber;
     if (userPhone === "Dummy number" || userPhone === undefined)
         return;
     try {
+        functions.logger.log(`[QueueMeIn] ${message}`)
         await client.messages
             .create({
                 from: twilioNumber,
                 to: userPhone,
-                body: message,
+                body: `[QueueMeIn] ${message}`.replace(/\s+/g, " "),
             }).then(msg => {
                 functions.logger.log(msg);
             });
@@ -137,10 +139,8 @@ exports.onSessionUpdate = functions.firestore
         if(!afterQuestions[0].data().wasNotified) {
             const asker: FireUser = (await db.doc(`users/${afterQuestions[0].data().askerId}`)
                 .get()).data() as FireUser;
-            if(process.env.DATABASE === "prod") {
-                sendSMS(asker, `Your question has reached the top of the \
+            sendSMS(asker, `Your question has reached the top of the \
                 ${(change.after.data() as FireSession).title} queue. A TA will likely help you shortly.`);
-            }
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({notificationList: admin.firestore.FieldValue.arrayUnion({
                     title: 'Your Question is Up!',
