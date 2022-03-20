@@ -26,7 +26,6 @@ async function sendSMS (user: FireUser, message: string) {
     if (userPhone === "Dummy number" || userPhone === undefined)
         return;
     try {
-        functions.logger.log(`[QueueMeIn] ${message}`)
         await client.messages
             .create({
                 from: twilioNumber,

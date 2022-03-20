@@ -15,6 +15,7 @@ import { filterUnresolvedQuestions } from '../../utilities/questions';
 import { firestore } from '../../firebase';
 
 import { RootState } from '../../redux/store';
+import Browser from '../../media/browser.svg';
 import Banner from './Banner';
 
 

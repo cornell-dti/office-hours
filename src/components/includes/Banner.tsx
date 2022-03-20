@@ -33,5 +33,4 @@ Banner.defaultProps = {
     global: false
 }
 
-
 export default connect(null, {removeBanner})(Banner);
