@@ -87,7 +87,7 @@ class SessionQuestion extends React.Component<Props, State> {
             this.props.newQuestionAssigned();
         }
     }
-    
+
     // Given an index from [1..n], converts it to text that is displayed on the
     // question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
@@ -124,7 +124,7 @@ class SessionQuestion extends React.Component<Props, State> {
 
     onClickRemove = () => {
         if (this.props.question.status === 'assigned') {
-            this.setState({showCantRemove: true});
+            this.setState({ showCantRemove: true });
             return;
         }
         this.props.setShowModal(true);
@@ -211,8 +211,8 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     toggleComment = () => {
-        this.setState(({ enableEditingComment }) => ({ 
-            enableEditingComment: !enableEditingComment 
+        this.setState(({ enableEditingComment }) => ({
+            enableEditingComment: !enableEditingComment
         }));
     }
 
@@ -259,55 +259,55 @@ class SessionQuestion extends React.Component<Props, State> {
                 <div className="TopBar">
                     {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
                     <div className="OrderTooltip">
-                        {!this.props.isTA && 
+                        {!this.props.isTA &&
                             <span className="TooltipText">You are position {this.props.index + 1} in the queue.</span>
                         }
                         <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
                             {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                         </p>
                     </div>
-                    {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) && 
-                    (this.state.location.length > 0) && (
-                        <div className="LocationPin">
-                            <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" />
-                            <div
-                                className="LocationTooltip"
-                                style={{
-                                    visibility: this.state.showLocation ? 'visible' : 'hidden',
-                                }}
-                            >
-                                <p>
-                                    Location &nbsp;{' '}
-                                    <span
-                                        className={
-                                            'characterCount ' +
-                                            (this.state.location.length >= 40 ? 'warn' : '')
-                                        }
-                                    >
-                                        {this.state.location.length}/{LOCATION_CHAR_LIMIT}
-                                    </span>
-                                </p>
-                                <textarea
-                                    className="TextInput question"
-                                    value={this.state.location}
-                                    onChange={e => this.handleUpdateLocation(e)}
-                                />
-                                {this.state.isEditingLocation ? (
-                                    <Loader
-                                        className={'locationLoader'}
-                                        active={true}
-                                        inline={true}
-                                        size={'tiny'}
+                    {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) &&
+                        (this.state.location.length > 0) && (
+                            <div className="LocationPin">
+                                <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" />
+                                <div
+                                    className="LocationTooltip"
+                                    style={{
+                                        visibility: this.state.showLocation ? 'visible' : 'hidden',
+                                    }}
+                                >
+                                    <p>
+                                        Location &nbsp;{' '}
+                                        <span
+                                            className={
+                                                'characterCount ' +
+                                                (this.state.location.length >= 40 ? 'warn' : '')
+                                            }
+                                        >
+                                            {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                        </span>
+                                    </p>
+                                    <textarea
+                                        className="TextInput question"
+                                        value={this.state.location}
+                                        onChange={e => this.handleUpdateLocation(e)}
                                     />
-                                ) : (
-                                    <Icon name="check" />
-                                )}
-                                <div className="DoneButton" onClick={this.toggleLocationTooltip}>
-                                    Done
+                                    {this.state.isEditingLocation ? (
+                                        <Loader
+                                            className={'locationLoader'}
+                                            active={true}
+                                            inline={true}
+                                            size={'tiny'}
+                                        />
+                                    ) : (
+                                        <Icon name="check" />
+                                    )}
+                                    <div className="DoneButton" onClick={this.toggleLocationTooltip}>
+                                        Done
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
                     <div className="QuestionInfo">
                         {this.props.isTA && asker && (
                             <div className="studentInformation">
@@ -340,9 +340,9 @@ class SessionQuestion extends React.Component<Props, State> {
                             </div>
                         )}
                         <div className="Location">
-                            {this.props.isTA && this.props.modality === 'hybrid' && 
-                            typeof this.props.question.isVirtual !== 'undefined' && 
-                                <div className={`hybridBadge ${this.props.question.isVirtual ? 
+                            {this.props.isTA && this.props.modality === 'hybrid' &&
+                                typeof this.props.question.isVirtual !== 'undefined' &&
+                                <div className={`hybridBadge ${this.props.question.isVirtual ?
                                     'virtual' : 'inPerson'}`}
                                 >
                                     {this.props.question.isVirtual ? 'Virtual' : 'In-person'}
@@ -353,14 +353,14 @@ class SessionQuestion extends React.Component<Props, State> {
                                     {this.props.isTA &&
                                         question.location &&
                                         question.location.substr(0, 25) === 'https://cornell.zoom.us/j' && (
-                                        <a
-                                            href={question.location}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
+                                            <a
+                                                href={question.location}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
                                                 Zoom Link
-                                        </a>
-                                    )}
+                                            </a>
+                                        )}
                                     {this.props.isTA &&
                                         question.location &&
                                         question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
@@ -422,12 +422,15 @@ class SessionQuestion extends React.Component<Props, State> {
                                                         src={GreenCheck}
                                                     />
                                                     <p className="resolvedQuestionText">
-                                                        Student Marked as No Show
+                                                        Student was removed from the queue
                                                     </p>
                                                 </div>
                                             </div>
                                             <p className="Undo" onClick={this.undoNoShow}>
                                                 Undo
+                                            </p>
+                                            <p className="Undo" onClick={this.undoNoShow}>
+                                                Move to bottom of queue instead
                                             </p>
                                         </div>
                                     )}
@@ -643,7 +646,7 @@ CommentBox.defaultProps = {
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
 
