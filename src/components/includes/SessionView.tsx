@@ -31,6 +31,8 @@ type Props = {
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
     banners: Announcement[];
+    setShowBanner: (show: boolean) => void;
+    setIsTimeWarning: (isWarning: boolean) => void;
 };
 
 type UndoState = {
@@ -48,7 +50,7 @@ type AbsentState = {
 
 const SessionView = (
     { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal,
-        setRemoveQuestionId, banners }: Props
+        setRemoveQuestionId, setShowBanner, setIsTimeWarning, banners }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
     const tags = useCourseTags(course.courseId);
@@ -95,7 +97,7 @@ const SessionView = (
             return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
         // setPrevQuestSet(new Set(questions.map(q => q.questionId)));
-    }, [ questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
+    }, [questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
 
     const dismissUndo = () => {
         if (timeoutId) {
@@ -191,6 +193,7 @@ const SessionView = (
                     updateVirtualLocation(firestore, user, session, virtualLocation);
                     updateSessionProfile(virtualLocation);
                 }}
+                questions={questions.filter(q => q.status === 'unresolved')}
             />
 
             {undoQuestionId &&
@@ -215,7 +218,9 @@ const SessionView = (
                 modality={session.modality}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
                 questions={session.modality === 'review' ? questions.filter(q => q.status !== 'retracted') :
-                    questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
+                    questions
+                        .filter(q => q.status === 'unresolved' || q.status === 'assigned')
+                        .sort((a, b) => (a.timeEntered > b.timeEntered) ? 1 : -1)}
                 users={users}
                 tags={tags}
                 handleJoinClick={joinCallback}
@@ -229,6 +234,8 @@ const SessionView = (
                 myQuestion={myQuestion}
                 setShowModal={setShowModal}
                 setRemoveQuestionId={setRemoveQuestionId}
+                setShowBanner={setShowBanner}
+                setIsTimeWarning={setIsTimeWarning}
             />
         </section>
     );
@@ -241,7 +248,7 @@ const mapStateToProps = (state: RootState) => ({
     banners: state.announcements.banners
 })
 
-export default connect(mapStateToProps, {})( (props: Omit<Props, 'questions'>) => {
+export default connect(mapStateToProps, {})((props: Omit<Props, 'questions'>) => {
     const isTa = props.user.roles[props.course.courseId] !== undefined;
     const questions = props.session.modality === 'review' ? useSessionQuestions(props.session.sessionId, true) :
         filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));

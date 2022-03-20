@@ -14,7 +14,7 @@ type Props = {
 const TopBarNotifications = ({notificationTracker, user}: Props) => {
     const [dropped, toggleDropped] = useState(false);
 
-    const notifications = notificationTracker?.notificationList.sort((a, b) => {
+    const notifications = notificationTracker?.notificationList?.sort((a, b) => {
         return b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime();
     });
 

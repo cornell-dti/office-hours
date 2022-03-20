@@ -1,6 +1,5 @@
 .QueueQuestions {
     background-color: white;
-    display: block;
     margin: 12px auto 12px;
     position: relative;
     text-align: center;
@@ -55,6 +54,42 @@
     
     .Bookmark {
         right: 20px;
+    }
+
+    .OrderTooltip {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .TooltipText {
+        position: absolute;
+        left: 68%;
+        top: 0;
+        width: 120px;
+        transform: translateX(-50%);
+        color: black;
+        background-color: white;
+        padding: 5px 5px;
+        border-radius: 7px;
+        border: solid $number-blue 3px;
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .TooltipText::before {
+        content: "";
+        position: absolute;
+        left: 49%;
+        top: 105%;
+        transform: translateX(-50%);
+        border: 10px solid;
+        border-color: $number-blue #0000 #0000 #0000;
+    }
+
+    .OrderTooltip:hover .TooltipText{
+        top: -130%;
+        visibility: visible;
+        opacity: 1;
     }
 
     .Order {
@@ -128,6 +163,22 @@
     .TopBar {
         display: flex;
         justify-content: flex-start;
+    }
+
+    .hybridBadge {
+        text-align: center;
+        font-size: 10px;
+        color: white;
+        border-radius: 15px;
+        display: inline-block;
+        padding: 0px 5px;
+        margin-right: 5px;
+        &.virtual {
+            background-color: #EC4339;
+        }
+        &.inPerson {
+            background-color: #5599DB;
+        }
     }
 
     .RightBar {
@@ -243,6 +294,8 @@
         margin: 0em;
         color: #595959;
         font-weight: 300;
+        display: flex;
+        align-items: center;
     }
 
     .LocationTooltip {
@@ -490,6 +543,18 @@
                     text-decoration: normal;
                 }
             }
+        }
+    }
+
+    .buttonsAndCantRemove {
+        position: relative;
+        .cantRemove {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            right: 20px;
+            color: red;
+            font-size: 10px;
         }
     }
 }

@@ -101,7 +101,10 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
                                     courseId={courseId}
                                     charLimitDefault={course.charLimit}
                                     openIntervalDefault={course.queueOpenInterval}
+                                    timeLimit={course.timeLimit}
+                                    isTimeLimit={course.isTimeLimit}
                                     toggleDelete={() => setSettingsVisible(visible => !visible)}
+                                    timeWarning={course.timeWarning}
                                 />
                             }
                         />

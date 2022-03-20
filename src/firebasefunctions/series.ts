@@ -74,7 +74,17 @@ export const createSeries = async (
 
             batch.set(db.collection('sessions').doc(), derivedSession);
         } else {
+            let hybridProperty = {}
+
+            if (sessionSeries.modality === 'hybrid' && typeof sessionSeries.useTALink !== 'undefined') {
+                hybridProperty = {
+                    useTALink: sessionSeries.useTALink
+                }
+            }
+
+
             const derivedSession: Omit<FireInPersonSession | FireHybridSession, 'sessionId'> = {
+                ...hybridProperty,
                 sessionSeriesId,
                 modality: sessionSeries.modality,
                 building: sessionSeries.building,
@@ -164,7 +174,17 @@ export const updateSeries = async (
             };
             batch.set(db.collection('sessions').doc(sessionId), newSession);
         } else {
+
+            let hybridProperty = {}
+
+            if (sessionSeries.modality === 'hybrid' && typeof sessionSeries.useTALink !== 'undefined') {
+                hybridProperty = {
+                    useTALink: sessionSeries.useTALink
+                }
+            }
+
             const newSession: Omit<FireHybridSession | FireInPersonSession, 'sessionId'> = {
+                ...hybridProperty,
                 sessionSeriesId,
                 modality: sessionSeries.modality,
                 building: sessionSeries.building,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router';
-import { Icon } from 'semantic-ui-react';
+import { Checkbox } from 'semantic-ui-react';
 import moment from 'moment';
 
 import SelectedTags from './SelectedTags';
@@ -11,6 +11,14 @@ import { addQuestion } from '../../firebasefunctions/sessionQuestion';
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
+
+// States
+const INITIAL_STATE = 10;
+const PRIMARY_SELECTED = 20;
+const SECONDARY_SELECTED = 30;
+const LOCATION_INPUTTED = 40;
+const QUESTION_INPUTTED = 50;
+const CLOSE_TO_END_OF_OH = 60;
 
 type Props = {
     session: FireSession;
@@ -31,12 +39,14 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
 
     const [location, setLocation] = useState<string>('');
     const [question, setQuestion] = useState<string>('');
-    const [stage, setStage] = useState<number>(10);
+    const [stage, setStage] = useState<number>(INITIAL_STATE);
     const [width, setWidth] = useState<number>(window.innerWidth);
     const [selectedPrimary, setSelectedPrimary] = useState<FireTag>();
     const [selectedSecondary, setSelectedSecondary] = useState<FireTag>();
     const [redirect, setRedirect] = useState<boolean>(false);
     const [tags, setTags] = useState<FireTag[]>([]);
+    // For hybrid sessions to keep track if student is in virtual location
+    const [isVirtual, setIsVirtual] = useState<boolean>(false);
 
     const primaryTags = tags.filter((tag) => tag.level === 1);
     const secondaryTags = tags.filter((tag) => tag.level === 2);
@@ -71,19 +81,19 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
             setLocation('');
             setQuestion('');
             if (selectedPrimary.tagId === tag?.tagId) {
-                setStage(10);
+                setStage(INITIAL_STATE);
                 setSelectedPrimary(undefined);
                 setSelectedSecondary(undefined);
             } else {
-                setStage(20);
+                setStage(PRIMARY_SELECTED);
                 setSelectedPrimary(tag);
                 setSelectedSecondary(undefined);
             }
-        } else if (stage <= 10) {
-            setStage(20);
+        } else if (stage <= INITIAL_STATE) {
+            setStage(PRIMARY_SELECTED);
             setSelectedPrimary(tag);
         } else {
-            setStage(10);
+            setStage(INITIAL_STATE);
             setSelectedPrimary(undefined);
             setSelectedSecondary(undefined);
         }
@@ -94,17 +104,21 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
             setLocation('');
             setQuestion('');
             if (selectedSecondary.tagId === tag.tagId) {
-                setStage(20);
+                setStage(PRIMARY_SELECTED);
                 setSelectedSecondary(undefined);
             } else {
-                !('building' in session) ? setStage(40) : setStage(30);
+                !('building' in session) ? setStage(LOCATION_INPUTTED) : setStage(SECONDARY_SELECTED);
                 setSelectedSecondary(tag);
             }
         } else if (!('building' in session)) {
-            setStage(40);
+            setStage(LOCATION_INPUTTED);
             setSelectedSecondary(tag);
         } else {
-            setStage(30);
+            if (session.modality === 'hybrid' && typeof session.useTALink !== 'undefined' && session.useTALink) {
+                setStage(LOCATION_INPUTTED);
+            } else {
+                setStage(SECONDARY_SELECTED);
+            }
             setSelectedSecondary(tag);
         }
     };
@@ -116,12 +130,12 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
         let newStage: number;
         if (target.value.length > 0) {
             if (question.length > 0) {
-                newStage = 50;
+                newStage = QUESTION_INPUTTED;
             } else {
-                newStage = 40;
+                newStage = LOCATION_INPUTTED;
             }
         } else {
-            newStage = 30;
+            newStage = SECONDARY_SELECTED;
         }
 
         if (session.modality === 'in-person') {
@@ -144,7 +158,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
         setQuestion(
             target.value.length <= course.charLimit ? target.value : question
         );
-        setStage(target.value.length > 0 ? 50 : 40);
+        setStage(target.value.length > 0 ? QUESTION_INPUTTED : LOCATION_INPUTTED);
     };
 
     const addNewQuestion = () => {
@@ -155,7 +169,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
             location,
             selectedPrimary,
             selectedSecondary,
-            question
+            question,
+            isVirtual
         );
 
         setRedirect(allowRedirect);
@@ -163,12 +178,12 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
 
     const handleJoinClick = (): void => {
         if (
-            stage !== 60 &&
+            stage !== CLOSE_TO_END_OF_OH &&
             moment()
                 .add(WARNING_THRESHOLD, 'minutes')
                 .isAfter(session.endTime.seconds * 1000)
         ) {
-            setStage(60);
+            setStage(CLOSE_TO_END_OF_OH);
         } else {
             addNewQuestion();
         }
@@ -180,7 +195,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
             !event.repeat &&
             (event.ctrlKey || event.metaKey) &&
             event.keyCode === 13 &&
-            (stage > 40 ||
+            (stage > LOCATION_INPUTTED ||
                 primaryTags.length === 0 ||
                 secondaryTags.length === 0)
         ) {
@@ -206,7 +221,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
 
     return (
         <div className='QuestionView' onKeyDown={(e) => handleKeyPressDown(e)}>
-            {(stage < 60 || width < mobileBreakpoint) && (
+            {(stage < CLOSE_TO_END_OF_OH || width < mobileBreakpoint) && (
                 <div className='AddQuestion'>
                     <div className='queueHeader'>
                         <p className='title'>Join The Queue</p>
@@ -228,7 +243,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                                                 <SelectedTags
                                                     key={tag.tagId}
                                                     tag={tag}
-                                                    isSelected={stage > 10}
+                                                    isSelected={stage > INITIAL_STATE}
                                                     onClick={() =>
                                                         handlePrimarySelected(
                                                             tag
@@ -290,7 +305,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                                             ))
                                     ) : (
                                         <p className='placeHolder'>
-                                            First select a category
+                                            {activeTags.length > 0 ? 'First select a category' :''}
                                         </p>
                                     )}
                                 </div>
@@ -303,7 +318,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                                 <div className='tagsMiniContainer'>
                                     {
                                         <p className='header'>
-                                            Location or Zoom Link &nbsp;
+                                            {session.modality === 'hybrid' ? 
+                                                'Location or Zoom Link' : 'Location'} &nbsp;
                                             {session.modality ===
                                                 'in-person' && (
                                                 <span
@@ -322,20 +338,30 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                                                     {LOCATION_CHAR_LIMIT -
                                                         location.length !==
                                                         1 && 's'}{' '}
-                                                    left )
+                                                    left)
                                                 </span>
                                             )}
                                         </p>
                                     }
-                                    {stage >= 30 ? (
+                                    {stage >= SECONDARY_SELECTED || activeTags.length === 0 ? (
                                         <div className='locationInput'>
-                                            <Icon name='map marker alternate' />
-                                            <textarea
-                                                className='TextInput location'
-                                                value={location}
-                                                onChange={handleUpdateLocation}
-                                                placeholder='What is your zoom link?'
-                                            />
+                                            {session.modality === 'hybrid' && 
+                                            <Checkbox
+                                                className="hybridCheckbox"
+                                                label="Are you virtual?" 
+                                                checked={isVirtual}
+                                                onClick={() => setIsVirtual(!isVirtual)}
+                                            />}
+                                            {!(session.modality === 'hybrid' && 
+                                            typeof session.useTALink !== 'undefined' && session.useTALink) &&
+                                                <textarea
+                                                    className='TextInput location'
+                                                    value={location}
+                                                    onChange={handleUpdateLocation}
+                                                    placeholder={(session.modality === 'in-person' || !isVirtual) ? 
+                                                        'What is your location?' : 'What is your zoom link?'}
+                                                /> 
+                                            }
                                         </div>
                                     ) : (
                                         <p className='placeHolder text'>
@@ -348,7 +374,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                         )}
                         <div className='tagsMiniContainer'>
                             <p className='header'>{'Question '}</p>
-                            {stage >= 40 ||
+                            {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||
                             secondaryTags.length === 0 ||
                             activeTags.length === 0 ? (
@@ -373,7 +399,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                                 )}
                         </div>
                         <div className='addButtonWrapper'>
-                            {stage > 40 ||
+                            {stage > LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||
                             secondaryTags.length === 0 ? (
                                     <p
@@ -389,7 +415,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                     </div>
                 </div>
             )}
-            {stage === 60 && (
+            {stage === CLOSE_TO_END_OF_OH && (
                 <SessionAlertModal
                     header={'Warning'}
                     icon={'exclamation'}
