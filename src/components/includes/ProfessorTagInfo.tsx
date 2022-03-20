@@ -19,6 +19,7 @@ type State = {
     tag: FireTag;
     newTagText: string;
     newTags: NewTag[];
+    showWarning: boolean;
 };
 
 // This is just a simple way to get unique keys for "new" tags.
@@ -44,7 +45,8 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                 courseId: props.courseId
             },
             newTagText: '',
-            newTags: []
+            newTags: [],
+            showWarning: false
         };
     }
 
@@ -216,6 +218,11 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                         </div>
                     </div>
                 </div>
+                {this.state.showWarning && 
+                        <div className="warningText">
+                            You need at least one tag!
+                        </div>
+                }
                 <div className="EditButtons">
                     <button type="button" className="Bottom Cancel" onClick={() => this.props.cancelCallback()}>
                         Cancel
@@ -225,6 +232,11 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                             type="button"
                             className="Bottom Edit"
                             onClick={() => {
+                                if (this.state.newTags.length === 0) {
+                                    this.setState({showWarning: true});
+                                    return;
+                                }
+                                this.setState({showWarning: false});
                                 this.handleCreateAssignment();
                                 this.props.cancelCallback();
                             }}
@@ -236,6 +248,11 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                             type="button"
                             className="Bottom Edit"
                             onClick={() => {
+                                if (this.state.newTags.length === 0) {
+                                    this.setState({showWarning: true});
+                                    return;
+                                }
+                                this.setState({showWarning: false});
                                 this.handleEditAssignment();
                                 this.props.cancelCallback();
                             }}
