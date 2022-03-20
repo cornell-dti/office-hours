@@ -45,6 +45,7 @@ interface FireHybridSession extends FireBaseSession, FireSessionLocation {
     modality: 'hybrid';
     building: string;
     room: string;
+    useTALink?: boolean;
 }
 
 interface FireReviewSession extends FireBaseSession, FireVirtualLocation {
@@ -77,6 +78,7 @@ interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLoca
     modality: 'hybrid';
     building: string;
     room: string;
+    useTALink?: boolean;
 }
 
 interface FireInPersonSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
@@ -90,7 +92,7 @@ interface FireReviewSeries extends FireBaseSessionSeries, FireVirtualLocation {
     link: string;
 }
 
-type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries | 
+type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries |
 FireInPersonSessionSeries | FireReviewSeries);
 type FireSessionSeriesDefinition =
     Omit<FireVirtualSessionSeries, 'sessionSeriesId'>
@@ -111,6 +113,9 @@ interface FireCourse {
     charLimit: number;
     term: string;
     year: string;
+    timeLimit?: number;
+    timeWarning?: number;
+    isTimeLimit?: boolean;
 }
 
 type PrivilegedFireCourseRole = 'professor' | 'ta';
@@ -160,6 +165,8 @@ interface FireQuestion {
     taComment?: string;
     studentComment?: string;
     wasNotified: boolean;
+    position?: number;
+    isVirtual?: boolean;
 }
 
 interface FireOHQuestion extends FireQuestion {
@@ -167,7 +174,7 @@ interface FireOHQuestion extends FireQuestion {
     answererLocation?: string;
 }
 
-type FireQuestionSlot = Pick<FireQuestion, 'askerId' 
+type FireQuestionSlot = Pick<FireQuestion, 'askerId'
 | 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
 
 interface FireTag {
@@ -216,4 +223,5 @@ interface Announcement {
     text: string;
     icon: string;
     alert?: boolean;
+    global?: boolean;
 }

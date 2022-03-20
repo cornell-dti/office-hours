@@ -82,6 +82,7 @@ const SplitView = ({
             : match.params.sessionId ? 'session' : 'calendar'
     );
     const [showModal, setShowModal] = useState(false);
+
     const [removeQuestionId, setRemoveQuestionId] = useState<
     string | undefined
     >(undefined);
@@ -149,7 +150,11 @@ const SplitView = ({
     useEffect(() => {
         // Add a banner prompting the user to enable browser notifications
         if("Notification" in window && Notification.permission === 'default') {
-            addBanner({text: "Enable browser notifications to receive notification updates.", icon: Browser});
+            addBanner({
+                text: "Enable browser notifications to receive notification updates.", 
+                icon: Browser, 
+                global: true
+            });
         };
         try {
             // Request permission to send desktop notifications
@@ -160,25 +165,26 @@ const SplitView = ({
             // Do nothing. iOS crashes because Notification isn't defined
         }
         if(!user?.textPrompted) {
-            addBanner({text: "Enable text notifications to know when your question is up.", icon: smsNotif});
+            addBanner({
+                text: "Enable text notifications to know when your question is up.", 
+                icon: smsNotif, 
+                global: true
+            });
             updateTextPrompted(user?.userId);
         }
     }, [addBanner, user])
 
     return (
         <>
-            <LeaveQueue
-                setShowModal={setShowModal}
-                showModal={showModal}
-                removeQuestion={removeQuestion}
-            />
+            <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion}/>
+            
             <TopBar
                 role={(user && course && user.roles[course.courseId]) || 'student'}
                 context="student"
                 courseId={match.params.courseId}
                 course={course}
             />
-            {banners.map(banner => (<Banner icon={banner.icon} announcement={banner.text}  />))}
+            {banners.map(banner => (<Banner icon={banner.icon} announcement={banner.text} global={banner.global} />))}
             {(width > MOBILE_BREAKPOINT || activeView === 'calendar') && (
                 <CalendarView
                     course={course}
@@ -205,6 +211,7 @@ const SplitView = ({
                             joinCallback={handleJoinClick}
                             setShowModal={setShowModal}
                             setRemoveQuestionId={setRemoveQuestionId}
+                            timeWarning={course ? course.timeWarning : 1}
                         />
                     ) : (
                         <section className='StudentSessionView'>

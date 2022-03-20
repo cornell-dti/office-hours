@@ -19,6 +19,12 @@
     box-shadow: 0px 0px 10px #5599db;
     z-index: 100 !important;
   }
+  &__global {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+  }
   &__alert {
     border: 1px solid #ec4339;
     box-shadow: 0px 0px 10px #ec4339;

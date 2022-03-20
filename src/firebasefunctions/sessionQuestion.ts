@@ -19,7 +19,8 @@ export const addQuestion = (
     location: string,
     selectedPrimary: FireTag | undefined,
     selectedSecondary: FireTag | undefined,
-    question: string
+    question: string,
+    isVirtual: boolean
 ): boolean => {
     if (user != null) {
         const batch = db.batch();
@@ -31,6 +32,9 @@ export const addQuestion = (
             timeEntered: firebase.firestore.Timestamp.now()
         };
 
+        const addVirtual = session.modality === 'hybrid' ? 
+            { isVirtual } : {};
+
         const finalLocation = location.length === 0 ? {} : { location };
         const upvotedUsers = session.modality === "review" ? { upvotedUsers: [user.uid] } : {}
 
@@ -38,11 +42,14 @@ export const addQuestion = (
             ...newQuestionSlot,
             ...finalLocation,
             ...upvotedUsers,
+            ...addVirtual,
             answererId: '',
             content: question,
-            primaryTag: selectedPrimary != null ? selectedPrimary.tagId: '',
+            primaryTag: selectedPrimary != null ? selectedPrimary.tagId : '',
             secondaryTag: selectedSecondary != null ? selectedSecondary.tagId : '',
             wasNotified: false,
+            position: session.totalQuestions - session.assignedQuestions + 1,
+
         };
         batch.set(db.collection('questionSlots').doc(questionId), newQuestionSlot);
         batch.set(db.collection('questions').doc(questionId), newQuestion);

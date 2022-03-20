@@ -7,6 +7,8 @@ import AddQuestion from './AddQuestion';
 import DiscussionQuestion from './DiscussionQuestion';
 import SortArrows from '../../media/sortbyarrows.svg';
 import { RootState } from '../../redux/store';
+import { addBanner, removeBanner } from '../../redux/actions/announcements';
+import Chalkboard from '../../media/chalkboard-teacher.svg';
 
 // Maximum number of questions to be shown to user
 const NUM_QUESTIONS_SHOWN = 20;
@@ -35,6 +37,9 @@ type Props = {
     readonly myQuestion: FireQuestion | null;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
+    timeWarning: number | undefined;
+    addBanner: (banner: Announcement, session: boolean) => Promise<void>;
+    removeBanner: (banner: string, session: boolean) => Promise<void>;
 };
 
 type StudentMyQuestionProps = {
@@ -60,8 +65,9 @@ const StudentMyQuestion = ({
     modality,
     studentQuestion,
     setShowModal,
-    setRemoveQuestionId,
+    setRemoveQuestionId
 }: StudentMyQuestionProps) => {
+
     if (studentQuestion == null) {
         return <div />;
     }
@@ -94,15 +100,101 @@ const StudentMyQuestion = ({
                     myUserId={myUserId}
                     setShowModal={setShowModal}
                     setRemoveQuestionId={setRemoveQuestionId}
+                    newQuestionAssigned={() => {}}
+                    clearQuestionAssigned={() => {}}
                 />
             )}
         </div>
     );
 };
 
+const usePrev = <T extends unknown>(val: T): T | undefined => {
+    const r = React.useRef<T>();
+    React.useEffect(() => {
+        r.current = val;
+    });
+    return r.current;
+}
+
 const SessionQuestionsContainer = (props: Props) => {
     const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
     const [sortByUpvotes, setSortByUpvotes] = React.useState(true);
+    const [timeoutId, setTimeoutId] = React.useState<any>(undefined);
+    const [warningTimeoutId, setWarningTimeoutId] = React.useState<any>(undefined);
+    // eslint-disable-next-line
+    const [audio, setAudio] = React.useState<HTMLAudioElement>(new Audio("../../../qmijinglefinal.mp3"));
+    const prevQuestion = usePrev<FireQuestion | null>(props.myQuestion);
+    
+    // Handles student side of time limit
+    React.useEffect(() => {
+        if (prevQuestion && prevQuestion.status === 'assigned') {
+            if (props.myQuestion === null || props.myQuestion.status === 'unresolved') {
+                clearQuestionAssigned();
+            }
+        } else if (prevQuestion && prevQuestion.status === 'unresolved') {
+            if (props.myQuestion && props.myQuestion.status === 'assigned') {
+                newQuestionAssigned();
+            }
+        }
+    // eslint-disable-next-line
+    }, [props.myQuestion])
+
+
+    const questionWarning = () => {
+        audio.play().catch((e) => {
+            // eslint-disable-next-line no-console
+            console.log(e);
+        });
+        const warningText = 
+        (typeof props.timeWarning === 'undefined') ? 
+            'You are almost out of time for this question' : 
+            `You have ${props.timeWarning} minutes remaining for this question.`
+        props.addBanner({
+            icon: Chalkboard, 
+            text: warningText}, true)
+    }
+
+    const questionTimeUp = () => {
+        audio.play().catch((e) => {
+            // eslint-disable-next-line no-console
+            console.log(e);
+        });
+        props.addBanner({
+            icon: Chalkboard, 
+            text: 'Your time is up for this question!'}, true)
+    }
+
+    const newQuestionAssigned = () => {
+        if (typeof props.course.isTimeLimit === 'undefined' || !props.course.isTimeLimit || 
+        typeof props.course.timeLimit === 'undefined' || typeof props.course.timeWarning === 'undefined') return;
+        if (typeof timeoutId !== 'undefined') {
+            clearTimeout(timeoutId);
+        }
+        if (typeof warningTimeoutId !== 'undefined') {
+            clearTimeout(warningTimeoutId);
+        }
+        // Time limit is in minutes, so we convert to milliseconds by multiplying by 60k
+        setTimeoutId(setTimeout(questionTimeUp, props.course.timeLimit * 60000));
+        setWarningTimeoutId(setTimeout(questionWarning, (props.course.timeLimit - props.course.timeWarning) * 60000));
+    }
+
+    const clearQuestionAssigned = () => {
+        if (typeof timeoutId !== 'undefined') {
+            clearTimeout(timeoutId);
+        }
+        if (typeof warningTimeoutId !== 'undefined') {
+            clearTimeout(warningTimeoutId);
+        }
+        setWarningTimeoutId(undefined);
+        setTimeoutId(undefined);
+        const warningText = 
+        (typeof props.timeWarning === 'undefined') ? 
+            'You are almost out of time for this question' : 
+            `You have ${props.timeWarning} minutes remaining for this question.`
+        props.removeBanner('Your time is up for this question!', true);
+        props.removeBanner(warningText, true);
+    }
+
 
     const compareUpvotes = (q1: FireDiscussionQuestion, q2: FireDiscussionQuestion) => {
         const upvoteDifference = q2.upvotedUsers.length - q1.upvotedUsers.length;
@@ -154,6 +246,8 @@ const SessionQuestionsContainer = (props: Props) => {
         // Reset title and notif state
         document.title = 'Queue Me In';
     }
+
+    // questionTimeUp();
 
     return (
         <div className="SessionQuestionsContainer splitQuestions">
@@ -288,6 +382,8 @@ const SessionQuestionsContainer = (props: Props) => {
                         myUserId={props.myUserId}
                         setShowModal={props.setShowModal}
                         setRemoveQuestionId={props.setRemoveQuestionId}
+                        newQuestionAssigned={newQuestionAssigned}
+                        clearQuestionAssigned={clearQuestionAssigned}
                     />
                 ))}
             {shownQuestions && shownQuestions.length === 0 && (
@@ -324,4 +420,4 @@ const mapStateToProps = (state: RootState) => ({
 })
 
 
-export default connect(mapStateToProps, {})(SessionQuestionsContainer);
+export default connect(mapStateToProps, {addBanner, removeBanner})(SessionQuestionsContainer);
