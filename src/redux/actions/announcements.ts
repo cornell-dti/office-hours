@@ -9,6 +9,7 @@ import {
 } from "./Types"
 
 export const addBanner = (banner: Announcement, session?: boolean) =>  async (dispatch: AppDispatch) => {
+    banner.global = session ? !session : true;  
     const payload = {
         banner
     };
