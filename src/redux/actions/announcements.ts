@@ -1,14 +1,28 @@
 import type {AppDispatch} from "../store"
-import {ADD_BANNER, REMOVE_BANNER, ADD_SNACKBAR, REMOVE_SNACKBAR} from "./Types"
+import {
+    ADD_BANNER, 
+    REMOVE_BANNER, 
+    ADD_SNACKBAR, 
+    REMOVE_SNACKBAR, 
+    ADD_SESSION_BANNER, 
+    REMOVE_SESSION_BANNER
+} from "./Types"
 
-export const addBanner = (banner: Announcement) =>  async (dispatch: AppDispatch) => {
+export const addBanner = (banner: Announcement, session?: boolean) =>  async (dispatch: AppDispatch) => {
     const payload = {
         banner
     };
-    dispatch({
-        type: ADD_BANNER,
-        payload
-    })
+    if(session) {
+        dispatch({
+            type: ADD_SESSION_BANNER,
+            payload
+        })
+    } else {
+        dispatch({
+            type: ADD_BANNER,
+            payload
+        })
+    }
 }
 
 export const addSnackbar = (snackbar: Announcement) =>  async (dispatch: AppDispatch) => {
@@ -29,14 +43,21 @@ export const addSnackbar = (snackbar: Announcement) =>  async (dispatch: AppDisp
     }, 5000)
 }
 
-export const removeBanner = (banner: string) =>  async (dispatch: AppDispatch) => {
+export const removeBanner = (banner: string, session?: boolean) =>  async (dispatch: AppDispatch) => {
     const payload = {
         banner
     };
-    dispatch({
-        type: REMOVE_BANNER,
-        payload
-    })
+    if(session) {
+        dispatch({
+            type: REMOVE_SESSION_BANNER,
+            payload
+        })
+    } else {
+        dispatch({
+            type: REMOVE_BANNER,
+            payload
+        })
+    }
 }
 
 export const removeSnackbar = (snackbar: string) =>  async (dispatch: AppDispatch) => {

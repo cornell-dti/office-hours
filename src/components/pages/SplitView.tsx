@@ -17,6 +17,7 @@ import { RootState } from '../../redux/store';
 import {updateCourse, updateSession} from "../../redux/actions/course";
 import Browser from '../../media/browser.svg';
 import { addBanner } from '../../redux/actions/announcements';
+import Banner from '../includes/Banner';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -59,9 +60,20 @@ type SplitViewProps = {
     updateCourse: (user: FireCourse | undefined) => Promise<void>;
     updateSession: (user: FireSession | undefined) => Promise<void>;
     addBanner: (banner: Announcement) => Promise<void>;
+    banners: Announcement[];
 }
 
-const SplitView = ({history, match, user, course, session, updateCourse, updateSession, addBanner}: SplitViewProps) => {
+const SplitView = ({
+    history, 
+    match, 
+    user, 
+    course, 
+    session, 
+    updateCourse, 
+    updateSession, 
+    addBanner, 
+    banners
+}: SplitViewProps) => {
     const [activeView, setActiveView] = useState(
         match.params.page === 'add'
             ? 'addQuestion'
@@ -151,6 +163,7 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
                 courseId={match.params.courseId}
                 course={course}
             />
+            {banners.map(banner => (<Banner icon={banner.icon} announcement={banner.text}  />))}
             {(width > MOBILE_BREAKPOINT || activeView === 'calendar') && (
                 <CalendarView
                     course={course}
@@ -215,7 +228,8 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
 const mapStateToProps = (state: RootState) => ({
     user : state.auth.user,
     course : state.course.course,
-    session: state.course.session
+    session: state.course.session,
+    banners: state.announcements.banners
 })
 
 

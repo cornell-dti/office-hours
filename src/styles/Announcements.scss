@@ -1,5 +1,6 @@
 .banner {
   &__wrapper {
+    position: relative;
     margin-left: 48px;
     margin-right: 48px;
     margin-top: 25px;
@@ -15,11 +16,12 @@
     padding-left: 15px;
     padding-right: 40px;
     z-index: 100;
-    box-shadow: 0px 0px 10px #5599DB;
+    box-shadow: 0px 0px 10px #5599db;
+    z-index: 100 !important;
   }
   &__alert {
-    border : 1px solid #EC4339;
-    box-shadow: 0px 0px 10px #EC4339;
+    border: 1px solid #ec4339;
+    box-shadow: 0px 0px 10px #ec4339;
   }
   &__left {
     display: flex;
