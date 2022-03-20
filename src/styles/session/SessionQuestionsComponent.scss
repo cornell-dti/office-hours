@@ -56,6 +56,42 @@
         right: 20px;
     }
 
+    .OrderTooltip {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .TooltipText {
+        position: absolute;
+        left: 68%;
+        top: 0;
+        width: 120px;
+        transform: translateX(-50%);
+        color: black;
+        background-color: white;
+        padding: 5px 5px;
+        border-radius: 7px;
+        border: solid $number-blue 3px;
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    .TooltipText::before {
+        content: "";
+        position: absolute;
+        left: 49%;
+        top: 105%;
+        transform: translateX(-50%);
+        border: 10px solid;
+        border-color: $number-blue #0000 #0000 #0000;
+    }
+
+    .OrderTooltip:hover .TooltipText{
+        top: -130%;
+        visibility: visible;
+        opacity: 1;
+    }
+
     .Order {
         float: left;
         font-size: 17px;
