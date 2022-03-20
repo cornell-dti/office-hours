@@ -26,7 +26,10 @@ export default function(state: AuthState = initialState, action: AnyAction) {
         case ADD_BANNER:
             return {
                 ...state,
-                banners: [...state.banners, payload.banner]
+                banners: 
+                  state.banners.filter(banner => banner.text === payload.banner.text).length > 0 
+                      ? state.banners 
+                      : [...state.banners, payload.banner]
             }
         case REMOVE_BANNER: 
             return {
@@ -36,7 +39,10 @@ export default function(state: AuthState = initialState, action: AnyAction) {
         case ADD_SESSION_BANNER:
             return {
                 ...state,
-                sessionBanners: [...state.sessionBanners, payload.banner]
+                sessionBanners: 
+                  state.sessionBanners.filter(banner => banner.text === payload.banner.text).length > 0 
+                      ? state.sessionBanners 
+                      : [...state.sessionBanners, payload.banner]
             }
         case REMOVE_SESSION_BANNER: 
             return {

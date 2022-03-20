@@ -16,8 +16,10 @@ import CalendarExportModal from '../includes/CalendarExportModal';
 import { RootState } from '../../redux/store';
 import {updateCourse, updateSession} from "../../redux/actions/course";
 import Browser from '../../media/browser.svg';
+import smsNotif from '../../media/smsNotif.svg'
 import { addBanner } from '../../redux/actions/announcements';
 import Banner from '../includes/Banner';
+import { updateTextPrompted } from '../../firebasefunctions/phoneNumber';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -145,10 +147,23 @@ const SplitView = ({
     };
 
     useEffect(() => {
-        if("Notification" in window && window?.Notification.permission !== "granted") {
-            addBanner({text: "Enable browser notifications to know when it's your turn.", icon: Browser});
+        // Add a banner prompting the user to enable browser notifications
+        if("Notification" in window && Notification.permission === 'default') {
+            addBanner({text: "Enable browser notifications to receive notification updates.", icon: Browser});
         };
-    }, [addBanner])
+        try {
+            // Request permission to send desktop notifications
+            if (Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        } catch (error) {
+            // Do nothing. iOS crashes because Notification isn't defined
+        }
+        if(!user?.textPrompted) {
+            addBanner({text: "Enable text notifications to know when your question is up.", icon: smsNotif});
+            updateTextPrompted(user?.userId);
+        }
+    }, [addBanner, user])
 
     return (
         <>

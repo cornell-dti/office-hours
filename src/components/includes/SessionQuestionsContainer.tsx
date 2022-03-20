@@ -104,17 +104,6 @@ const SessionQuestionsContainer = (props: Props) => {
     const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
     const [sortByUpvotes, setSortByUpvotes] = React.useState(true);
 
-    React.useEffect(() => {
-        try {
-            // Request permission to send desktop notifications
-            if (Notification.permission === 'default') {
-                Notification.requestPermission();
-            }
-        } catch (error) {
-            // Do nothing. iOS crashes because Notification isn't defined
-        }
-    }, []);
-
     const compareUpvotes = (q1: FireDiscussionQuestion, q2: FireDiscussionQuestion) => {
         const upvoteDifference = q2.upvotedUsers.length - q1.upvotedUsers.length;
         if (upvoteDifference !== 0) return upvoteDifference;
