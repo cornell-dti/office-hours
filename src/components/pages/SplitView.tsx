@@ -73,8 +73,9 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
     string | undefined
     >(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
-    const [currentExportSession, setCurrentExportSession] =
-        useState<FireSession>({
+    const [isDayExport, setIsDayExport] = useState<boolean>(false);
+    const [currentExportSessions, setCurrentExportSessions] =
+        useState<FireSession[]>([{
             modality: 'virtual',
             courseId: '',
             endTime: { seconds: 0, nanoseconds: 0, toDate: () => new Date() },
@@ -87,7 +88,7 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
             resolvedQuestions: 0,
             totalWaitTime: 0,
             totalResolveTime: 0,
-        });
+        }]);
 
     const courseHook = useCourse(match.params.courseId);
     const sessionHook = useSession(match.params.sessionId);
@@ -156,7 +157,8 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
                     sessionCallback={handleSessionClick}
                     isActiveSession={match.params.sessionId === session?.sessionId}
                     setShowCalendarModal={setShowCalendarModal}
-                    setCurrentExportSession={setCurrentExportSession}
+                    setIsDayExport={setIsDayExport}
+                    setCurrentExportSessions={setCurrentExportSessions}
                 />)}
                 
             {"Notification" in window &&
@@ -167,7 +169,8 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
             <CalendarExportModal
                 showCalendarModal={showCalendarModal}
                 setShowCalendarModal={setShowCalendarModal}
-                currentExportSession={currentExportSession}
+                isDayExport={isDayExport}
+                currentExportSessions={currentExportSessions}
                 course={course}
             />
 
