@@ -511,6 +511,22 @@
                 border-radius: 4px;
             }
 
+            .Move {
+                display: flex;
+                flex-direction: row;
+
+                background: #FFFFFF;
+                border: 1px solid #5599DB;
+                color: #5599DB;
+                box-sizing: border-box;
+                border-radius: 4px;
+
+                flex: none;
+                order: 1;
+                flex-grow: 0;
+                margin: 0px 12px;
+            }
+
             .DotMenu {
                 color: black;
                 padding: 2px 15px;
