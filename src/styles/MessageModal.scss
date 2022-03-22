@@ -376,12 +376,13 @@
   }
   &__Error {
     position: absolute;
-    bottom: 0;
-    left: 0;
+    bottom: -25px;
+    right: -5px;
     text-align: left;
     color: #ec4339;
   }
   &__checkError {
+    bottom: -35px;
     margin-top: 5px;
     margin-bottom: 10px;
     margin-left: 28px;

@@ -93,13 +93,13 @@ const TextNotificationModal = ({
                                           and to the {twilioTag} privacy policy.
                                           We do not give your number to third party clients.
                                         </div>
-                                    </div>
-                                    
-                                    {checkError && 
+                                        {checkError && 
                                       <label htmlFor="phoneConsent" className="enableDialogue__Error enableDialogue__checkError">
                                         *Please check the box to enable SMS Notifs
                                       </label>
                                     }
+                                    </div>
+                                    
                                     
                                     <div className="enableDialogue__phoneForm" >
                                         <img 
