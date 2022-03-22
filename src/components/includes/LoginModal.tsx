@@ -37,13 +37,11 @@ const LoginModal = ({
         e.preventDefault();
         app
             .auth().signInWithEmailAndPassword(formData.email, formData.password).then((response) => {
-                console.log(response)
                 const user = response.user;
                 userUpload(user, firestore);
                 clearNotifications(user);
                 history.push('/');
             }).catch((error) => {
-                console.log(error);
             });
     }
 
