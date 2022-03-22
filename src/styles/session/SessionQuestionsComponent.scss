@@ -498,33 +498,28 @@
                 color: $number-blue;
             }
 
+            .NoShowButtons {
+                display: flex;
+                flex-direction: row;
+                box-sizing: border-box;
+                border-radius: 4px;
+
+
+                .Undo {
+                    background: #FFFFFF;
+                    border: 1px solid #B41515;
+                    color: #B41515;
+                }
+    
+                .Move {    
+                    background: #FFFFFF;
+                    border: 1px solid #5599DB;
+                    color: #5599DB;
+                    }
+            }
             .Done {
                 border: 0.5px solid $tag-blue;
                 color: $tag-blue;
-            }
-
-            .Undo {
-                background: #FFFFFF;
-                border: 1px solid #B41515;
-                color: #B41515;
-                box-sizing: border-box;
-                border-radius: 4px;
-            }
-
-            .Move {
-                display: flex;
-                flex-direction: row;
-
-                background: #FFFFFF;
-                border: 1px solid #5599DB;
-                color: #5599DB;
-                box-sizing: border-box;
-                border-radius: 4px;
-
-                flex: none;
-                order: 1;
-                flex-grow: 0;
-                margin: 0px 12px;
             }
 
             .DotMenu {

@@ -426,11 +426,13 @@ class SessionQuestion extends React.Component<Props, State> {
                                                     </p>
                                                 </div>
                                             </div>
-                                            <p className="Undo" onClick={this.undoNoShow}>
-                                                Undo
-                                            </p>
-                                            <p className="Move" onClick={this.undoNoShow}>
-                                                Move to bottom of queue instead
+                                            <p className="NoShowButtons">
+                                                <p className="Undo" onClick={this.undoNoShow}>
+                                                    Undo
+                                                </p>
+                                                <p className="Move" onClick={() => this.props.index + (this.state.location.length - this.props.index)}>
+                                                    Move to bottom of queue instead
+                                                </p>
                                             </p>
                                         </div>
                                     )}
