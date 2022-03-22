@@ -166,7 +166,7 @@ const SplitView = ({
         }
         if(!user?.textPrompted) {
             addBanner({
-                text: "Enable text notifications to know when your question is up.", 
+                text: "Enable text notifications under [Profile -> Notification Settings].", 
                 icon: smsNotif, 
                 global: true
             });
