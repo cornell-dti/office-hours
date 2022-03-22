@@ -227,7 +227,7 @@ const SplitView = ({
                                 <p> </p>
                                 {'Notification' in window &&
                                     window?.Notification !== undefined &&
-                                    window?.Notification.permission ===
+                                    window?.Notification.permission !==
                                         'granted' && (
                                     <div className='warningArea'>
                                         <div>&#9888;</div>

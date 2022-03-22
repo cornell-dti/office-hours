@@ -325,6 +325,7 @@
     flex-direction: row;
     align-items: flex-start;
     justify-content: flex-start;
+    position: relative;
     .checkbox {
       margin-right: 10px;
       margin-top: 3px;
@@ -349,6 +350,7 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    position: relative;
   }
   &__phoneIcon {
     margin-bottom: 3px;
@@ -358,6 +360,7 @@
     margin: 10px;
   }
   &__phoneInput {
+    position: relative;
     height: 36px;
     width: 280px;
   }
@@ -372,6 +375,9 @@
     margin-left: 3px;
   }
   &__Error {
+    position: absolute;
+    bottom: 0;
+    left: 0;
     text-align: left;
     color: #ec4339;
   }

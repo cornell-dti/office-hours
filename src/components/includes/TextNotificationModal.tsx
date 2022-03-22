@@ -44,7 +44,7 @@ const TextNotificationModal = ({
         target="_blank" 
         rel="noopener noreferrer" 
         href="https://www.twilio.com/legal/privacy"
-    >Privacy Policy</a>)
+    >Twilio</a>)
 
     return (
         <>
@@ -83,21 +83,22 @@ const TextNotificationModal = ({
                                         <Checkbox
                                             disabled={user?.textNotifsEnabled}
                                             checked={phoneConsent}
+                                            id="phoneConsent"
                                             onChange={() => {
                                                 setCheckError(false);
                                                 setPhoneConsent(!phoneConsent)}}
                                         />
                                         <div className="enableDialogue__consentDialogue">
-                                          By checking this box you consent to receiving SMS messages from Queue Me In. 
-                                          We use Twilio ({twilioTag}) to send notifications.
+                                          By checking this box you consent to receiving SMS messages from Queue Me In 
+                                          and to the {twilioTag} privacy policy.
                                           We do not give your number to third party clients.
                                         </div>
                                     </div>
                                     
                                     {checkError && 
-                                      <span className="enableDialogue__Error enableDialogue__checkError">
+                                      <label htmlFor="phoneConsent" className="enableDialogue__Error enableDialogue__checkError">
                                         *Please check the box to enable SMS Notifs
-                                      </span>
+                                      </label>
                                     }
                                     
                                     <div className="enableDialogue__phoneForm" >
@@ -111,6 +112,7 @@ const TextNotificationModal = ({
                                             className="enableDialogue__phoneInput"
                                             placeholder='Phone Number (ex. 1231231234)' 
                                             value={phoneNum}
+                                            id="phoneInput"
                                             onChange={
                                                 (e) =>  {
                                                     setValidation(Validation.NOT_REQUESTED)
@@ -120,12 +122,12 @@ const TextNotificationModal = ({
                                             }
                                         /> 
                                         <div className="enableDialogue__required">*</div>
-                                    </div>
-                                    {validation === Validation.FAILURE && 
-                                      <span className="enableDialogue__Error enableDialogue__phoneError">
+                                        {validation === Validation.FAILURE && 
+                                      <label htmlFor="phoneInput" className="enableDialogue__Error enableDialogue__phoneError">
                                         *Please enter a valid phone number to enable SMS Notifs
-                                      </span>
+                                      </label>
                                     }
+                                    </div>
                                     <button 
                                         className='textNotifModal__confirm'
                                         type='submit'
@@ -144,6 +146,8 @@ const TextNotificationModal = ({
                                                     setShowTextModal(false);
                                                 } else if(validatePhone(phoneNum)) {
                                                     setCheckError(true);
+                                                } else if (phoneConsent) {
+                                                    setValidation(Validation.FAILURE);
                                                 } else {
                                                     setPhoneConsent(user?.textNotifsEnabled || false);
                                                     setValidation(Validation.FAILURE);
