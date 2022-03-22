@@ -1,7 +1,8 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Icon } from 'semantic-ui-react';
-import {app} from "../../firebase"
+import { app, firestore } from '../../firebase';
+import { userUpload } from '../../firebasefunctions/user';
 import { clearNotifications } from '../../firebasefunctions/notifications';
 import userIcon from '../../media/userIcon.svg'
 import lockIcon from '../../media/lockIcon.svg'
@@ -38,6 +39,7 @@ const LoginModal = ({
             .auth().signInWithEmailAndPassword(formData.email, formData.password).then((response) => {
                 console.log(response)
                 const user = response.user;
+                userUpload(user, firestore);
                 clearNotifications(user);
                 history.push('/');
             }).catch((error) => {
