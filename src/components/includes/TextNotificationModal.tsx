@@ -94,10 +94,14 @@ const TextNotificationModal = ({
                                           We do not give your number to third party clients.
                                         </div>
                                         {checkError && 
-                                      <label htmlFor="phoneConsent" className="enableDialogue__Error enableDialogue__checkError">
-                                        *Please check the box to enable SMS Notifs
-                                      </label>
-                                    }
+                                        /* eslint-disable-next-line jsx-a11y/label-has-associated-control */
+                                        <label 
+                                            htmlFor="phoneConsent" 
+                                            className="enableDialogue__Error enableDialogue__checkError"
+                                        >
+                                            *Please check the box to enable SMS Notifs
+                                        </label>
+                                        }
                                     </div>
                                     
                                     
@@ -123,10 +127,14 @@ const TextNotificationModal = ({
                                         /> 
                                         <div className="enableDialogue__required">*</div>
                                         {validation === Validation.FAILURE && 
-                                      <label htmlFor="phoneInput" className="enableDialogue__Error enableDialogue__phoneError">
-                                        *Please enter a valid phone number to enable SMS Notifs
-                                      </label>
-                                    }
+                                        /* eslint-disable-next-line jsx-a11y/label-has-associated-control */
+                                        <label 
+                                            htmlFor="phoneInput" 
+                                            className="enableDialogue__Error enableDialogue__phoneError"
+                                        >
+                                            *Please enter a valid phone number to enable SMS Notifs
+                                        </label>
+                                        }
                                     </div>
                                     <button 
                                         className='textNotifModal__confirm'
