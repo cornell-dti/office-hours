@@ -41,7 +41,7 @@ const LoginModal = ({
                 userUpload(user, firestore);
                 clearNotifications(user);
                 history.push('/');
-            }).catch((error) => {
+            }).catch(() => {
             });
     }
 
