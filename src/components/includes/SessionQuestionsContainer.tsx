@@ -97,8 +97,8 @@ const StudentMyQuestion = ({
                     myUserId={myUserId}
                     setShowModal={setShowModal}
                     setRemoveQuestionId={setRemoveQuestionId}
-                    newQuestionAssigned={() => {}}
-                    clearQuestionAssigned={() => {}}
+                    newQuestionAssigned={() => { }}
+                    clearQuestionAssigned={() => { }}
                 />
             )}
         </div>
@@ -132,7 +132,7 @@ const SessionQuestionsContainer = (props: Props) => {
             // Do nothing. iOS crashes because Notification isn't defined
         }
     }, []);
-    
+
     // Handles student side of time limit
     React.useEffect(() => {
         if (prevQuestion && prevQuestion.status === 'assigned') {
@@ -144,7 +144,7 @@ const SessionQuestionsContainer = (props: Props) => {
                 newQuestionAssigned();
             }
         }
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, [props.myQuestion])
 
 
@@ -167,8 +167,8 @@ const SessionQuestionsContainer = (props: Props) => {
     }
 
     const newQuestionAssigned = () => {
-        if (typeof props.course.isTimeLimit === 'undefined' || !props.course.isTimeLimit || 
-        typeof props.course.timeLimit === 'undefined' || typeof props.course.timeWarning === 'undefined') return;
+        if (typeof props.course.isTimeLimit === 'undefined' || !props.course.isTimeLimit ||
+            typeof props.course.timeLimit === 'undefined' || typeof props.course.timeWarning === 'undefined') return;
         if (typeof timeoutId !== 'undefined') {
             clearTimeout(timeoutId);
         }
@@ -413,7 +413,7 @@ SessionQuestionsContainer.defaultProps = {
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
 

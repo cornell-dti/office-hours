@@ -7,8 +7,10 @@ import Linkify from 'linkifyjs/react';
 import { connect } from 'react-redux';
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
+import { addQuestion } from '../../firebasefunctions/sessionQuestion';
 
-import { firestore } from '../../firebase';
+import { firestore, auth } from '../../firebase';
+
 import {
     markStudentNoShow,
     retractStudentQuestion,
@@ -35,6 +37,9 @@ type Props = {
     virtualLocation?: string;
     triggerUndo: Function;
     isPast: boolean;
+    session: FireSession;
+    course: FireCourse;
+    mobileBreakpoint: number;
     readonly user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
@@ -199,6 +204,31 @@ class SessionQuestion extends React.Component<Props, State> {
             timeoutID2: 0,
         });
         this.questionDontKnow();
+    }
+
+    moveToBottom = () => {
+        const ques = this.props.question;
+        const quesSession = this.props.session;
+        const [redirect, setRedirect] = useState<boolean>(false);
+
+        markQuestionDone(firestore, this.props.question);
+        this.props.clearQuestionAssigned();
+
+        // const session: FireSession = ques.sessionId;
+        const quesPrimaryTag: FireTag = ques.primaryTag as unknown as FireTag;
+        const quesSecondaryTag: FireTag = ques.secondaryTag as unknown as FireTag;
+
+        const allowRedirect = addQuestion(
+            auth.currentUser,
+            quesSession,
+            firestore,
+            String(ques.location),
+            quesPrimaryTag,
+            quesSecondaryTag,
+            ques.content,
+            Boolean(ques.isVirtual)
+        );
+        setRedirect(allowRedirect);
     }
 
     questionDontKnow = () => {
@@ -430,7 +460,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                                 <p className="Undo" onClick={this.undoNoShow}>
                                                     Undo
                                                 </p>
-                                                <p className="Move" onClick={() => this.props.index + (this.state.location.length - this.props.index)}>
+                                                <p className="Move" onClick={this.moveToBottom}>
                                                     Move to bottom of queue instead
                                                 </p>
                                             </p>

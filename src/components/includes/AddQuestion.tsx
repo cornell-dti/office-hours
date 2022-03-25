@@ -305,7 +305,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                                             ))
                                     ) : (
                                         <p className='placeHolder'>
-                                            {activeTags.length > 0 ? 'First select a category' :''}
+                                            {activeTags.length > 0 ? 'First select a category' : ''}
                                         </p>
                                     )}
                                 </div>
@@ -318,49 +318,49 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                                 <div className='tagsMiniContainer'>
                                     {
                                         <p className='header'>
-                                            {session.modality === 'hybrid' ? 
+                                            {session.modality === 'hybrid' ?
                                                 'Location or Zoom Link' : 'Location'} &nbsp;
                                             {session.modality ===
                                                 'in-person' && (
-                                                <span
-                                                    className={
-                                                        'characterCount ' +
-                                                        (location.length >=
-                                                        LOCATION_CHAR_LIMIT
-                                                            ? 'warn'
-                                                            : '')
-                                                    }
-                                                >
-                                                    (
-                                                    {LOCATION_CHAR_LIMIT -
-                                                        location.length}{' '}
-                                                    character
-                                                    {LOCATION_CHAR_LIMIT -
-                                                        location.length !==
-                                                        1 && 's'}{' '}
-                                                    left)
-                                                </span>
-                                            )}
+                                                    <span
+                                                        className={
+                                                            'characterCount ' +
+                                                            (location.length >=
+                                                                LOCATION_CHAR_LIMIT
+                                                                ? 'warn'
+                                                                : '')
+                                                        }
+                                                    >
+                                                        (
+                                                        {LOCATION_CHAR_LIMIT -
+                                                            location.length}{' '}
+                                                        character
+                                                        {LOCATION_CHAR_LIMIT -
+                                                            location.length !==
+                                                            1 && 's'}{' '}
+                                                        left)
+                                                    </span>
+                                                )}
                                         </p>
                                     }
                                     {stage >= SECONDARY_SELECTED || activeTags.length === 0 ? (
                                         <div className='locationInput'>
-                                            {session.modality === 'hybrid' && 
-                                            <Checkbox
-                                                className="hybridCheckbox"
-                                                label="Are you virtual?" 
-                                                checked={isVirtual}
-                                                onClick={() => setIsVirtual(!isVirtual)}
-                                            />}
-                                            {!(session.modality === 'hybrid' && 
-                                            typeof session.useTALink !== 'undefined' && session.useTALink) &&
+                                            {session.modality === 'hybrid' &&
+                                                <Checkbox
+                                                    className="hybridCheckbox"
+                                                    label="Are you virtual?"
+                                                    checked={isVirtual}
+                                                    onClick={() => setIsVirtual(!isVirtual)}
+                                                />}
+                                            {!(session.modality === 'hybrid' &&
+                                                typeof session.useTALink !== 'undefined' && session.useTALink) &&
                                                 <textarea
                                                     className='TextInput location'
                                                     value={location}
                                                     onChange={handleUpdateLocation}
-                                                    placeholder={(session.modality === 'in-person' || !isVirtual) ? 
+                                                    placeholder={(session.modality === 'in-person' || !isVirtual) ?
                                                         'What is your location?' : 'What is your zoom link?'}
-                                                /> 
+                                                />
                                             }
                                         </div>
                                     ) : (
@@ -375,42 +375,42 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
                         <div className='tagsMiniContainer'>
                             <p className='header'>{'Question '}</p>
                             {stage >= LOCATION_INPUTTED ||
-                            primaryTags.length === 0 ||
-                            secondaryTags.length === 0 ||
-                            activeTags.length === 0 ? (
-                                    <textarea
-                                        className='TextInput question'
-                                        value={question}
-                                        onChange={handleUpdateQuestion}
-                                        placeholder="What's your question about?"
-                                    />
-                                ) : (
-                                    <textarea
-                                        disabled
-                                        className='TextInput question'
-                                        value={question}
-                                        onChange={handleUpdateQuestion}
-                                        placeholder={
-                                            !('building' in session)
-                                                ? 'First select a category and a tag'
-                                                : 'Enter your location...'
-                                        }
-                                    />
-                                )}
+                                primaryTags.length === 0 ||
+                                secondaryTags.length === 0 ||
+                                activeTags.length === 0 ? (
+                                <textarea
+                                    className='TextInput question'
+                                    value={question}
+                                    onChange={handleUpdateQuestion}
+                                    placeholder="What's your question about?"
+                                />
+                            ) : (
+                                <textarea
+                                    disabled
+                                    className='TextInput question'
+                                    value={question}
+                                    onChange={handleUpdateQuestion}
+                                    placeholder={
+                                        !('building' in session)
+                                            ? 'First select a category and a tag'
+                                            : 'Enter your location...'
+                                    }
+                                />
+                            )}
                         </div>
                         <div className='addButtonWrapper'>
                             {stage > LOCATION_INPUTTED ||
-                            primaryTags.length === 0 ||
-                            secondaryTags.length === 0 ? (
-                                    <p
-                                        className='AddButton active'
-                                        onClick={() => handleJoinClick()}
-                                    >
+                                primaryTags.length === 0 ||
+                                secondaryTags.length === 0 ? (
+                                <p
+                                    className='AddButton active'
+                                    onClick={() => handleJoinClick()}
+                                >
                                     Add My Question
-                                    </p>
-                                ) : (
-                                    <p className='AddButton'> Add My Question </p>
-                                )}
+                                </p>
+                            ) : (
+                                <p className='AddButton'> Add My Question </p>
+                            )}
                         </div>
                     </div>
                 </div>
