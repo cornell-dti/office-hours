@@ -37,9 +37,9 @@ type Props = {
     virtualLocation?: string;
     triggerUndo: Function;
     isPast: boolean;
-    session: FireSession;
-    course: FireCourse;
-    mobileBreakpoint: number;
+    // session: FireSession;
+    // course: FireCourse;
+    // mobileBreakpoint: number;
     readonly user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
@@ -207,28 +207,27 @@ class SessionQuestion extends React.Component<Props, State> {
     }
 
     moveToBottom = () => {
-        const ques = this.props.question;
-        const quesSession = this.props.session;
-        const [redirect, setRedirect] = useState<boolean>(false);
+        // const ques = this.props.question;
+        // const quesSession = this.props.session;
+        // const [redirect, setRedirect] = useState<boolean>(false);
 
         markQuestionDone(firestore, this.props.question);
         this.props.clearQuestionAssigned();
 
-        // const session: FireSession = ques.sessionId;
-        const quesPrimaryTag: FireTag = ques.primaryTag as unknown as FireTag;
-        const quesSecondaryTag: FireTag = ques.secondaryTag as unknown as FireTag;
+        // const quesPrimaryTag: FireTag = ques.primaryTag as unknown as FireTag;
+        // const quesSecondaryTag: FireTag = ques.secondaryTag as unknown as FireTag;
 
-        const allowRedirect = addQuestion(
-            auth.currentUser,
-            quesSession,
-            firestore,
-            String(ques.location),
-            quesPrimaryTag,
-            quesSecondaryTag,
-            ques.content,
-            Boolean(ques.isVirtual)
-        );
-        setRedirect(allowRedirect);
+        // const allowRedirect = addQuestion(
+        //     auth.currentUser,
+        //     quesSession,
+        //     firestore,
+        //     String(ques.location),
+        //     quesPrimaryTag,
+        //     quesSecondaryTag,
+        //     ques.content,
+        //     Boolean(ques.isVirtual)
+        // );
+        // setRedirect(allowRedirect);
     }
 
     questionDontKnow = () => {

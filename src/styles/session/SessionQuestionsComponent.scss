@@ -501,21 +501,32 @@
             .NoShowButtons {
                 display: flex;
                 flex-direction: row;
+                justify-content: center;
+                align-items: center;
                 box-sizing: border-box;
                 border-radius: 4px;
 
-
-                .Undo {
+                .UndoNoShow {
                     background: #FFFFFF;
                     border: 1px solid #B41515;
                     color: #B41515;
                 }
     
                 .Move {    
+                    width: 400px;
+                    white-space: nowrap;
+                    text-align: center;
                     background: #FFFFFF;
                     border: 1px solid #5599DB;
                     color: #5599DB;
                     }
+            }
+            .Undo {
+                background: #FFFFFF;
+                border: 1px solid #B41515;
+                color: #B41515;
+                box-sizing: border-box;
+                border-radius: 4px;
             }
             .Done {
                 border: 0.5px solid $tag-blue;
