@@ -7,8 +7,10 @@ import Linkify from 'linkifyjs/react';
 import { connect } from 'react-redux';
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
+// import { addQuestion } from '../../firebasefunctions/sessionQuestion';
 
 import { firestore } from '../../firebase';
+
 import {
     markStudentNoShow,
     retractStudentQuestion,
@@ -35,6 +37,9 @@ type Props = {
     virtualLocation?: string;
     triggerUndo: Function;
     isPast: boolean;
+    // session: FireSession;
+    // course: FireCourse;
+    // mobileBreakpoint: number;
     readonly user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
@@ -87,7 +92,7 @@ class SessionQuestion extends React.Component<Props, State> {
             this.props.newQuestionAssigned();
         }
     }
-    
+
     // Given an index from [1..n], converts it to text that is displayed on the
     // question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
@@ -124,7 +129,7 @@ class SessionQuestion extends React.Component<Props, State> {
 
     onClickRemove = () => {
         if (this.props.question.status === 'assigned') {
-            this.setState({showCantRemove: true});
+            this.setState({ showCantRemove: true });
             return;
         }
         this.props.setShowModal(true);
@@ -157,7 +162,7 @@ class SessionQuestion extends React.Component<Props, State> {
                 showNoShowPopup: false,
             });
             markStudentNoShow(firestore, this.props.question);
-        }, 3000);
+        }, 4000);
 
         this.setState({
             timeoutID2: id,
@@ -175,7 +180,7 @@ class SessionQuestion extends React.Component<Props, State> {
                 showUndoPopup: false,
             });
             markQuestionDone(firestore, this.props.question);
-        }, 3000);
+        }, 4000);
 
         this.setState({
             timeoutID: id,
@@ -201,6 +206,30 @@ class SessionQuestion extends React.Component<Props, State> {
         this.questionDontKnow();
     }
 
+    moveToBottom = () => {
+        // const ques = this.props.question;
+        // const quesSession = this.props.session;
+        // const [redirect, setRedirect] = useState<boolean>(false);
+
+        markQuestionDone(firestore, this.props.question);
+        this.props.clearQuestionAssigned();
+
+        // const quesPrimaryTag: FireTag = ques.primaryTag as unknown as FireTag;
+        // const quesSecondaryTag: FireTag = ques.secondaryTag as unknown as FireTag;
+
+        // const allowRedirect = addQuestion(
+        //     auth.currentUser,
+        //     quesSession,
+        //     firestore,
+        //     String(ques.location),
+        //     quesPrimaryTag,
+        //     quesSecondaryTag,
+        //     ques.content,
+        //     Boolean(ques.isVirtual)
+        // );
+        // setRedirect(allowRedirect);
+    }
+
     questionDontKnow = () => {
         markQuestionDontKnow(firestore, this.props.question);
         this.props.clearQuestionAssigned();
@@ -211,8 +240,8 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     toggleComment = () => {
-        this.setState(({ enableEditingComment }) => ({ 
-            enableEditingComment: !enableEditingComment 
+        this.setState(({ enableEditingComment }) => ({
+            enableEditingComment: !enableEditingComment
         }));
     }
 
@@ -259,15 +288,15 @@ class SessionQuestion extends React.Component<Props, State> {
                 <div className="TopBar">
                     {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
                     <div className="OrderTooltip">
-                        {!this.props.isTA && 
+                        {!this.props.isTA &&
                             <span className="TooltipText">You are position {this.props.index + 1} in the queue.</span>
                         }
                         <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
                             {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                         </p>
                     </div>
-                    {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) && 
-                    (this.state.location.length > 0) && (
+                    {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) &&
+                        (this.state.location.length > 0) && (
                         <div className="LocationPin">
                             <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" />
                             <div
@@ -277,11 +306,11 @@ class SessionQuestion extends React.Component<Props, State> {
                                 }}
                             >
                                 <p>
-                                    Location &nbsp;{' '}
+                                        Location &nbsp;{' '}
                                     <span
                                         className={
                                             'characterCount ' +
-                                            (this.state.location.length >= 40 ? 'warn' : '')
+                                                (this.state.location.length >= 40 ? 'warn' : '')
                                         }
                                     >
                                         {this.state.location.length}/{LOCATION_CHAR_LIMIT}
@@ -303,7 +332,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                     <Icon name="check" />
                                 )}
                                 <div className="DoneButton" onClick={this.toggleLocationTooltip}>
-                                    Done
+                                        Done
                                 </div>
                             </div>
                         </div>
@@ -340,9 +369,9 @@ class SessionQuestion extends React.Component<Props, State> {
                             </div>
                         )}
                         <div className="Location">
-                            {this.props.isTA && this.props.modality === 'hybrid' && 
-                            typeof this.props.question.isVirtual !== 'undefined' && 
-                                <div className={`hybridBadge ${this.props.question.isVirtual ? 
+                            {this.props.isTA && this.props.modality === 'hybrid' &&
+                                typeof this.props.question.isVirtual !== 'undefined' &&
+                                <div className={`hybridBadge ${this.props.question.isVirtual ?
                                     'virtual' : 'inPerson'}`}
                                 >
                                     {this.props.question.isVirtual ? 'Virtual' : 'In-person'}
@@ -422,12 +451,17 @@ class SessionQuestion extends React.Component<Props, State> {
                                                         src={GreenCheck}
                                                     />
                                                     <p className="resolvedQuestionText">
-                                                        Student Marked as No Show
+                                                        Student was removed from the queue
                                                     </p>
                                                 </div>
                                             </div>
-                                            <p className="Undo" onClick={this.undoNoShow}>
-                                                Undo
+                                            <p className="NoShowButtons">
+                                                <p className="Undo" onClick={this.undoNoShow}>
+                                                    Undo
+                                                </p>
+                                                <p className="Move" onClick={this.moveToBottom}>
+                                                    Move to bottom of queue instead
+                                                </p>
                                             </p>
                                         </div>
                                     )}
@@ -643,7 +677,7 @@ CommentBox.defaultProps = {
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
 
