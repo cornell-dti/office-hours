@@ -7,9 +7,9 @@ import Linkify from 'linkifyjs/react';
 import { connect } from 'react-redux';
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
-import { addQuestion } from '../../firebasefunctions/sessionQuestion';
+// import { addQuestion } from '../../firebasefunctions/sessionQuestion';
 
-import { firestore, auth } from '../../firebase';
+import { firestore } from '../../firebase';
 
 import {
     markStudentNoShow,
@@ -162,7 +162,7 @@ class SessionQuestion extends React.Component<Props, State> {
                 showNoShowPopup: false,
             });
             markStudentNoShow(firestore, this.props.question);
-        }, 3000);
+        }, 4000);
 
         this.setState({
             timeoutID2: id,
@@ -180,7 +180,7 @@ class SessionQuestion extends React.Component<Props, State> {
                 showUndoPopup: false,
             });
             markQuestionDone(firestore, this.props.question);
-        }, 3000);
+        }, 4000);
 
         this.setState({
             timeoutID: id,
