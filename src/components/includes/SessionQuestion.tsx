@@ -297,46 +297,46 @@ class SessionQuestion extends React.Component<Props, State> {
                     </div>
                     {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) &&
                         (this.state.location.length > 0) && (
-                            <div className="LocationPin">
-                                <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" />
-                                <div
-                                    className="LocationTooltip"
-                                    style={{
-                                        visibility: this.state.showLocation ? 'visible' : 'hidden',
-                                    }}
-                                >
-                                    <p>
+                        <div className="LocationPin">
+                            <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" />
+                            <div
+                                className="LocationTooltip"
+                                style={{
+                                    visibility: this.state.showLocation ? 'visible' : 'hidden',
+                                }}
+                            >
+                                <p>
                                         Location &nbsp;{' '}
-                                        <span
-                                            className={
-                                                'characterCount ' +
+                                    <span
+                                        className={
+                                            'characterCount ' +
                                                 (this.state.location.length >= 40 ? 'warn' : '')
-                                            }
-                                        >
-                                            {this.state.location.length}/{LOCATION_CHAR_LIMIT}
-                                        </span>
-                                    </p>
-                                    <textarea
-                                        className="TextInput question"
-                                        value={this.state.location}
-                                        onChange={e => this.handleUpdateLocation(e)}
+                                        }
+                                    >
+                                        {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                    </span>
+                                </p>
+                                <textarea
+                                    className="TextInput question"
+                                    value={this.state.location}
+                                    onChange={e => this.handleUpdateLocation(e)}
+                                />
+                                {this.state.isEditingLocation ? (
+                                    <Loader
+                                        className={'locationLoader'}
+                                        active={true}
+                                        inline={true}
+                                        size={'tiny'}
                                     />
-                                    {this.state.isEditingLocation ? (
-                                        <Loader
-                                            className={'locationLoader'}
-                                            active={true}
-                                            inline={true}
-                                            size={'tiny'}
-                                        />
-                                    ) : (
-                                        <Icon name="check" />
-                                    )}
-                                    <div className="DoneButton" onClick={this.toggleLocationTooltip}>
+                                ) : (
+                                    <Icon name="check" />
+                                )}
+                                <div className="DoneButton" onClick={this.toggleLocationTooltip}>
                                         Done
-                                    </div>
                                 </div>
                             </div>
-                        )}
+                        </div>
+                    )}
                     <div className="QuestionInfo">
                         {this.props.isTA && asker && (
                             <div className="studentInformation">
@@ -382,14 +382,14 @@ class SessionQuestion extends React.Component<Props, State> {
                                     {this.props.isTA &&
                                         question.location &&
                                         question.location.substr(0, 25) === 'https://cornell.zoom.us/j' && (
-                                            <a
-                                                href={question.location}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
+                                        <a
+                                            href={question.location}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
                                                 Zoom Link
-                                            </a>
-                                        )}
+                                        </a>
+                                    )}
                                     {this.props.isTA &&
                                         question.location &&
                                         question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
