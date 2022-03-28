@@ -268,80 +268,98 @@ const SessionInformationHeader = ({
                         <Grid container item alignItems={'center'} justify="center">
                             <div className="ZoomLink">
                                 {session.modality === 'virtual' && isTa && (
-                                    <div className="TaZoom">
-                                        <Grid container direction="row" justify="center" spacing={1}>
-                                            <Grid container justify="center" item xs={2}>
-                                                <img src={zoom} alt="zoom" />
-                                            </Grid>
+                                    <div className={(typeof session.useTALink === 'undefined' 
+                                    || session.useTALink === false) ? "TaZoom" : "StudentZoom"}
+                                    >
+                                        {(typeof session.useTALink === 'undefined' || session.useTALink === false) ?
+                                            <Grid container direction="row" justify="center" spacing={1}>
+                                                <Grid container justify="center" item xs={2}>
+                                                    <img src={zoom} alt="zoom" />
+                                                </Grid>
 
-                                            {zoomLinkDisplay === 'show' && (
-                                                <>
-                                                    <Grid container item lg={7} md={10} xs={7}>
-                                                        <input
-                                                            type="text"
-                                                            id="zoomLinkInput"
-                                                            name="zoomLinkInput"
-                                                            autoComplete="off"
-                                                            value={zoomLink}
-                                                            onChange={e => setZoomLink(e.target.value)}
-                                                        />
-                                                        <div className="CloseZoom">
-                                                            <img
-                                                                onClick={closeZoomLink}
-                                                                src={closeZoom}
-                                                                alt="close zoom"
+                                                {zoomLinkDisplay === 'show' && (
+                                                    <>
+                                                        <Grid container item lg={7} md={10} xs={7}>
+                                                            <input
+                                                                type="text"
+                                                                id="zoomLinkInput"
+                                                                name="zoomLinkInput"
+                                                                autoComplete="off"
+                                                                value={zoomLink}
+                                                                onChange={e => setZoomLink(e.target.value)}
                                                             />
-                                                        </div>
-                                                    </Grid>
-                                                    <Grid
-                                                        container
-                                                        justify="center"
-                                                        alignItems={'center'}
-                                                        item
-                                                        lg={3}
-                                                        md={12}
-                                                        xs={3}
-                                                    >
+                                                            <div className="CloseZoom">
+                                                                <img
+                                                                    onClick={closeZoomLink}
+                                                                    src={closeZoom}
+                                                                    alt="close zoom"
+                                                                />
+                                                            </div>
+                                                        </Grid>
+                                                        <Grid
+                                                            container
+                                                            justify="center"
+                                                            alignItems={'center'}
+                                                            item
+                                                            lg={3}
+                                                            md={12}
+                                                            xs={3}
+                                                        >
+                                                            <button
+                                                                type="button"
+                                                                className="SaveZoomLink"
+                                                                onClick={saveZoomLink}
+                                                            >
+                                                            Save
+                                                            </button>
+                                                        </Grid>
+                                                    </>
+                                                )}
+
+                                                {zoomLinkDisplay === 'hide' && (
+                                                    <Grid container item xs={10}>
                                                         <button
                                                             type="button"
-                                                            className="SaveZoomLink"
-                                                            onClick={saveZoomLink}
+                                                            onClick={() => {
+                                                                setZoomLinkDisplay('show');
+                                                            }}
                                                         >
-                                                            Save
+                                                        update your virtual location
                                                         </button>
                                                     </Grid>
-                                                </>
-                                            )}
+                                                )}
 
-                                            {zoomLinkDisplay === 'hide' && (
-                                                <Grid container item xs={10}>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setZoomLinkDisplay('show');
-                                                        }}
-                                                    >
-                                                        update your virtual location
-                                                    </button>
+                                                {zoomLinkDisplay === 'saved' && (
+                                                    <>
+                                                        <Grid container justify="center" item xs={8}>
+                                                            <p>{zoomLink}</p>
+                                                        </Grid>
+                                                        <Grid container item justify="center" xs={2}>
+                                                            <img
+                                                                id="EditZoom"
+                                                                onClick={() => setZoomLinkDisplay('show')}
+                                                                src={editZoomLink}
+                                                                alt="edit zoom link"
+                                                            />
+                                                        </Grid>
+                                                    </>
+                                                )}
+                                            </Grid>
+                                            :
+                                            <Grid
+                                                container
+                                                direction="row"
+                                                justify="center"
+                                                alignItems={'center'}
+                                            >
+                                                <Grid container justify="center" item xs={2}>
+                                                    <img src={zoom} alt="zoom" />
                                                 </Grid>
-                                            )}
-
-                                            {zoomLinkDisplay === 'saved' && (
-                                                <>
-                                                    <Grid container justify="center" item xs={8}>
-                                                        <p>{zoomLink}</p>
-                                                    </Grid>
-                                                    <Grid container item justify="center" xs={2}>
-                                                        <img
-                                                            id="EditZoom"
-                                                            onClick={() => setZoomLinkDisplay('show')}
-                                                            src={editZoomLink}
-                                                            alt="edit zoom link"
-                                                        />
-                                                    </Grid>
-                                                </>
-                                            )}
-                                        </Grid>
+                                                <Grid container item xs={10}>
+                                                    <p>{'Use TA zoom on course site'}</p>
+                                                </Grid>
+                                            </Grid>
+                                        }
                                     </div>
                                 )}
 
@@ -356,31 +374,40 @@ const SessionInformationHeader = ({
                                             <Grid container justify="center" item lg={2} md={2} xs={2}>
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
-                                            <Grid item lg={6} md={10} xs={6}>
-                                                <p>Zoom meeting link</p>
-                                            </Grid>
-
-                                            <Grid container justify="center" item lg={4} md={12} xs={4}>
-                                                {assignedQuestion?.answererLocation ? (
-                                                    <a
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        href={assignedQuestion.answererLocation}
-                                                    >
-                                                        <button type="button" className="JoinButton">
+                                            {
+                                                (typeof session.useTALink === 'undefined' || 
+                                                session.useTALink === false) &&
+                                                    <Grid item lg={6} md={10} xs={6}>
+                                                        <p>Zoom meeting link</p>
+                                                    </Grid>
+                                            }
+                                            {(typeof session.useTALink === 'undefined' || session.useTALink === false) ?
+                                                <Grid container justify="center" item lg={4} md={12} xs={4}>
+                                                    {assignedQuestion?.answererLocation ? (
+                                                        <a
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            href={assignedQuestion.answererLocation}
+                                                        >
+                                                            <button type="button" className="JoinButton">
+                                                                Join
+                                                            </button>
+                                                        </a>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            className="JoinButton"
+                                                            onClick={() => setShowError(true)}
+                                                        >
                                                             Join
                                                         </button>
-                                                    </a>
-                                                ) : (
-                                                    <button
-                                                        type="button"
-                                                        className="JoinButton"
-                                                        onClick={() => setShowError(true)}
-                                                    >
-                                                        Join
-                                                    </button>
-                                                )}
-                                            </Grid>
+                                                    )}
+                                                </Grid>
+                                                :
+                                                <Grid container item xs={10}>
+                                                    <p>{'Use TA zoom on course site'}</p>
+                                                </Grid>
+                                            }
                                         </Grid>
                                     </div>
                                 )}

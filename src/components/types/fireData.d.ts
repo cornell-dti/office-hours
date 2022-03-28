@@ -33,6 +33,7 @@ interface FireVirtualLocation {
 
 interface FireVirtualSession extends FireBaseSession {
     modality: 'virtual';
+    useTALink?: boolean;
 }
 
 interface FireInPersonSession extends FireBaseSession, FireSessionLocation {
@@ -72,6 +73,7 @@ interface FireBaseSessionSeries {
 
 interface FireVirtualSessionSeries extends FireBaseSessionSeries {
     modality: 'virtual';
+    useTALink?: boolean;
 }
 
 interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLocation {

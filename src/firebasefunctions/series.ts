@@ -39,7 +39,17 @@ export const createSeries = async (
 
         // Session Add Logic (This is yucky and should be refactored...)
         if (sessionSeries.modality === 'virtual') {
+
+            let virtualProperty = {}
+
+            if (typeof sessionSeries.useTALink !== 'undefined') {
+                virtualProperty = {
+                    useTALink: sessionSeries.useTALink
+                }
+            }
+
             const derivedSession: Omit<FireVirtualSession, 'sessionId'> = {
+                ...virtualProperty,
                 modality: sessionSeries.modality,
                 sessionSeriesId,
                 courseId: sessionSeries.courseId,
@@ -141,7 +151,17 @@ export const updateSeries = async (
         );
 
         if (sessionSeries.modality === 'virtual') {
+
+            let virtualProperty = {}
+
+            if (typeof sessionSeries.useTALink !== 'undefined') {
+                virtualProperty = {
+                    useTALink: sessionSeries.useTALink
+                }
+            }
+
             const newSession: Omit<FireVirtualSession, 'sessionId'> = {
+                ...virtualProperty,
                 sessionSeriesId,
                 courseId: sessionSeries.courseId,
                 modality: sessionSeries.modality,
