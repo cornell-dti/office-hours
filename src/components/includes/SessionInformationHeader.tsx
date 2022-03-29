@@ -231,7 +231,8 @@ const SessionInformationHeader = ({
                                         </Grid>
                                     </Grid>
                                 </div>
-                                <div className="OneQueueInfo">
+                                {tas.length > 0 &&
+                                    <div className="OneQueueInfo">
                                     <Grid container direction="row" justify="center" alignItems={'center'}>
                                         <Grid item xs={2}>
                                             <img src={chalkboard} alt="number of people" />
@@ -239,11 +240,12 @@ const SessionInformationHeader = ({
                                         <Grid item xs={10}>
                                             <p>
                                                 <span className="blue">{tas.length + ' TAs '}</span>
-                                                helping students now
-                                            </p>
+                                                assigned to this office hour
+                                            </p>                       
                                         </Grid>
                                     </Grid>
-                                </div>
+                                    </div>
+                                }
                                 <div className="OneQueueInfo">
                                     <Grid container direction="row" justify="center" alignItems={'center'}>
                                         <Grid item xs={2}>
