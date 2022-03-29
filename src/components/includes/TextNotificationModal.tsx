@@ -1,8 +1,11 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
+import {connect} from 'react-redux';
 import { Icon, Checkbox } from 'semantic-ui-react';
 import { updatePhoneNum } from '../../firebasefunctions/phoneNumber';
+import {addSnackbar} from "../../redux/actions/announcements"
 import smsNotif from '../../media/smsNotif.svg'
 import phone from '../../media/phone.svg'
+import snackbarIcon from '../../media/snackbarIcon.svg'
 
 enum Validation {
     NOT_REQUESTED,
@@ -14,16 +17,14 @@ type Props = {
     showTextModal: boolean;
     setShowTextModal: Dispatch<SetStateAction<boolean>>;
     user: FireUser | undefined;
-    setShowBanner: Dispatch<SetStateAction<boolean>>;
-    setBannerText: Dispatch<SetStateAction<string>>;
+    addSnackbar: (snackbar: Announcement) => Promise<void>;
 };
 
 const TextNotificationModal = ({
     showTextModal,
     setShowTextModal,
     user,
-    setShowBanner,
-    setBannerText
+    addSnackbar
 }: Props) => {
     const [phoneNum, setPhoneNum] = useState(user?.phoneNumber || "");
     const [phoneConsent, setPhoneConsent] = useState(user?.textNotifsEnabled || false);
@@ -39,7 +40,11 @@ const TextNotificationModal = ({
         return phNumber.length === 10 && /[1-9]{1}[0-9]{9}/.test(phNumber);
     }
 
-    
+    const twilioTag = (<a 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        href="https://www.twilio.com/legal/privacy"
+    >Twilio</a>)
 
     return (
         <>
@@ -78,21 +83,27 @@ const TextNotificationModal = ({
                                         <Checkbox
                                             disabled={user?.textNotifsEnabled}
                                             checked={phoneConsent}
+                                            id="phoneConsent"
                                             onChange={() => {
                                                 setCheckError(false);
                                                 setPhoneConsent(!phoneConsent)}}
                                         />
                                         <div className="enableDialogue__consentDialogue">
-                                          By checking this box you consent to receiving SMS messages from Queue Me In. 
+                                          By checking this box you consent to receiving SMS messages from Queue Me In 
+                                          and to the {twilioTag} privacy policy.
                                           We do not give your number to third party clients.
                                         </div>
+                                        {checkError && 
+                                        /* eslint-disable-next-line jsx-a11y/label-has-associated-control */
+                                        <label 
+                                            htmlFor="phoneConsent" 
+                                            className="enableDialogue__Error enableDialogue__checkError"
+                                        >
+                                            *Please check the box to enable SMS Notifs
+                                        </label>
+                                        }
                                     </div>
                                     
-                                    {checkError && 
-                                      <span className="enableDialogue__Error enableDialogue__checkError">
-                                        *Please check the box to enable SMS Notifs
-                                      </span>
-                                    }
                                     
                                     <div className="enableDialogue__phoneForm" >
                                         <img 
@@ -105,6 +116,7 @@ const TextNotificationModal = ({
                                             className="enableDialogue__phoneInput"
                                             placeholder='Phone Number (ex. 1231231234)' 
                                             value={phoneNum}
+                                            id="phoneInput"
                                             onChange={
                                                 (e) =>  {
                                                     setValidation(Validation.NOT_REQUESTED)
@@ -114,31 +126,36 @@ const TextNotificationModal = ({
                                             }
                                         /> 
                                         <div className="enableDialogue__required">*</div>
+                                        {validation === Validation.FAILURE && 
+                                        /* eslint-disable-next-line jsx-a11y/label-has-associated-control */
+                                        <label 
+                                            htmlFor="phoneInput" 
+                                            className="enableDialogue__Error enableDialogue__phoneError"
+                                        >
+                                            *Please enter a valid phone number to enable SMS Notifs
+                                        </label>
+                                        }
                                     </div>
-                                    {validation === Validation.FAILURE && 
-                                      <span className="enableDialogue__Error enableDialogue__phoneError">
-                                        *Please enter a valid phone number to enable SMS Notifs
-                                      </span>
-                                    }
                                     <button 
                                         className='textNotifModal__confirm'
                                         type='submit'
                                         onClick={
                                             () => {
                                                 if (validatePhone(phoneNum) && phoneConsent) {
-                                                    setBannerText(
-                                                        `Text message notifications have been \
-                                                    ${user?.textNotifsEnabled ? "updated" : "enabled"}!`
-                                                    );
+                                                    addSnackbar(
+                                                        {text : `Text message notifications have been \
+                                                  ${user?.textNotifsEnabled ? "updated" : "enabled"}!`, 
+                                                        icon : snackbarIcon})
                                                     updatePhoneNum(user?.userId, {
                                                         phoneNumber: phoneNum, 
                                                         textNotifsEnabled: true
                                                     })
                                                     setValidation(Validation.SUCCESS)
                                                     setShowTextModal(false);
-                                                    setShowBanner(true);
                                                 } else if(validatePhone(phoneNum)) {
                                                     setCheckError(true);
+                                                } else if (phoneConsent) {
+                                                    setValidation(Validation.FAILURE);
                                                 } else {
                                                     setPhoneConsent(user?.textNotifsEnabled || false);
                                                     setValidation(Validation.FAILURE);
@@ -174,10 +191,9 @@ const TextNotificationModal = ({
                                                 setPhoneNum("")
                                                 setPhoneConsent(false);
                                                 setShowTextModal(false);
-                                                setShowBanner(true);
-                                                setBannerText(
-                                                    "Text message notifications have been disabled."
-                                                );
+                                                addSnackbar(
+                                                    {text : "Text message notifications have been disabled.", 
+                                                        icon : snackbarIcon})
                                             }
                                         }
                                     >
@@ -193,4 +209,4 @@ const TextNotificationModal = ({
     );
 };
 
-export default TextNotificationModal;
+export default connect(null, {addSnackbar})(TextNotificationModal);

@@ -325,6 +325,7 @@
     flex-direction: row;
     align-items: flex-start;
     justify-content: flex-start;
+    position: relative;
     .checkbox {
       margin-right: 10px;
       margin-top: 3px;
@@ -349,6 +350,7 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    position: relative;
   }
   &__phoneIcon {
     margin-bottom: 3px;
@@ -358,6 +360,7 @@
     margin: 10px;
   }
   &__phoneInput {
+    position: relative;
     height: 36px;
     width: 280px;
   }
@@ -372,10 +375,14 @@
     margin-left: 3px;
   }
   &__Error {
+    position: absolute;
+    bottom: -25px;
+    right: -5px;
     text-align: left;
     color: #ec4339;
   }
   &__checkError {
+    bottom: -35px;
     margin-top: 5px;
     margin-bottom: 10px;
     margin-left: 28px;
@@ -436,6 +443,7 @@
       // -webkit-transform: translateY(-1px);
       // transform: translateY(-1px);
       box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
+      background: #C41B12;
     }
     .settingsSubmit:active {
       -webkit-transform: translateY(1px);

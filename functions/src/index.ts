@@ -10,16 +10,18 @@ const db = admin.firestore();
 
 // Twilio Setup
 const accountSid = functions.config().twilio.accountsid;
-const authToken = functions.config().twilio.authtoken;
+const authToken = functions.config().twilio.twilio_auth_token;
 const twilioNumber = functions.config().twilio.twilionumber;
-functions.logger.log(`${accountSid} ${authToken} ${twilioNumber}`);
+
 const client = new Twilio(accountSid, authToken);
 
 /**
  * Function that handles data and sends a text message to a requested phone number
  */
 async function sendSMS (user: FireUser, message: string) {
-    functions.logger.log("sending sms");
+    if(process.env.DATABASE === "staging") {
+        return;
+    }
     const userPhone = user.phoneNumber;
     if (userPhone === "Dummy number" || userPhone === undefined)
         return;
@@ -28,7 +30,7 @@ async function sendSMS (user: FireUser, message: string) {
             .create({
                 from: twilioNumber,
                 to: userPhone,
-                body: message,
+                body: `[QueueMeIn] ${message}`.replace(/\s+/g, " "),
             }).then(msg => {
                 functions.logger.log(msg);
             });

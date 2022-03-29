@@ -5,9 +5,7 @@ import { Loader } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import SessionView from '../includes/SessionView';
 import CalendarView from '../includes/CalendarView';
-import NotificationModal from '../includes/NotificationModal';
 import LeaveQueue from '../includes/LeaveQueue';
-import TimeLimitBanner from '../includes/TimeLimitBanner';
 import ProductUpdates from "../includes/ProductUpdates"
 
 import { useCourse, useSession } from '../../firehooks';
@@ -17,6 +15,11 @@ import TopBar from '../includes/TopBar';
 import CalendarExportModal from '../includes/CalendarExportModal';
 import { RootState } from '../../redux/store';
 import {updateCourse, updateSession} from "../../redux/actions/course";
+import Browser from '../../media/browser.svg';
+import smsNotif from '../../media/smsNotif.svg'
+import { addBanner } from '../../redux/actions/announcements';
+import Banner from '../includes/Banner';
+import { updateTextPrompted } from '../../firebasefunctions/phoneNumber';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -58,17 +61,28 @@ type SplitViewProps = {
     session: FireSession;
     updateCourse: (user: FireCourse | undefined) => Promise<void>;
     updateSession: (user: FireSession | undefined) => Promise<void>;
+    addBanner: (banner: Announcement) => Promise<void>;
+    banners: Announcement[];
 }
 
-const SplitView = ({history, match, user, course, session, updateCourse, updateSession}: SplitViewProps) => {
+const SplitView = ({
+    history, 
+    match, 
+    user, 
+    course, 
+    session, 
+    updateCourse, 
+    updateSession, 
+    addBanner, 
+    banners
+}: SplitViewProps) => {
     const [activeView, setActiveView] = useState(
         match.params.page === 'add'
             ? 'addQuestion'
             : match.params.sessionId ? 'session' : 'calendar'
     );
     const [showModal, setShowModal] = useState(false);
-    const [showBanner, setShowBanner] = useState(false);
-    const [isTimeWarning, setIsTimeWarning] = useState(false);
+
     const [removeQuestionId, setRemoveQuestionId] = useState<
     string | undefined
     >(undefined);
@@ -133,15 +147,36 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
         removeQuestionbyID(firestore, removeQuestionId);
     };
 
+    useEffect(() => {
+        // Add a banner prompting the user to enable browser notifications
+        if("Notification" in window && Notification.permission === 'default') {
+            addBanner({
+                text: "Enable browser notifications to receive notification updates.", 
+                icon: Browser, 
+                global: true
+            });
+        };
+        try {
+            // Request permission to send desktop notifications
+            if (Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        } catch (error) {
+            // Do nothing. iOS crashes because Notification isn't defined
+        }
+        if(!user?.textPrompted) {
+            addBanner({
+                text: "Enable text notifications under [Profile -> Notification Settings].", 
+                icon: smsNotif, 
+                global: true
+            });
+            updateTextPrompted(user?.userId);
+        }
+    }, [addBanner, user])
+
     return (
         <>
             <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion}/>
-            <TimeLimitBanner
-                showBanner={showBanner}
-                setShowBanner={setShowBanner}
-                isTimeWarning={isTimeWarning} 
-                timeWarning={course ? course.timeWarning : 1}
-            />
             
             <TopBar
                 role={(user && course && user.roles[course.courseId]) || 'student'}
@@ -149,6 +184,7 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
                 courseId={match.params.courseId}
                 course={course}
             />
+            {banners.map(banner => (<Banner icon={banner.icon} announcement={banner.text} global={banner.global} />))}
             {(width > MOBILE_BREAKPOINT || activeView === 'calendar') && (
                 <CalendarView
                     course={course}
@@ -158,11 +194,6 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
                     setShowCalendarModal={setShowCalendarModal}
                     setCurrentExportSession={setCurrentExportSession}
                 />)}
-                
-            {"Notification" in window &&
-            window?.Notification.permission !== "granted" && (
-                <NotificationModal show={activeView !== 'session'} />
-            )}
 
             <CalendarExportModal
                 showCalendarModal={showCalendarModal}
@@ -180,8 +211,7 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
                             joinCallback={handleJoinClick}
                             setShowModal={setShowModal}
                             setRemoveQuestionId={setRemoveQuestionId}
-                            setShowBanner={setShowBanner}
-                            setIsTimeWarning={setIsTimeWarning}
+                            timeWarning={course ? course.timeWarning : 1}
                         />
                     ) : (
                         <section className='StudentSessionView'>
@@ -197,7 +227,7 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
                                 <p> </p>
                                 {'Notification' in window &&
                                     window?.Notification !== undefined &&
-                                    window?.Notification.permission ===
+                                    window?.Notification.permission !==
                                         'granted' && (
                                     <div className='warningArea'>
                                         <div>&#9888;</div>
@@ -220,8 +250,9 @@ const SplitView = ({history, match, user, course, session, updateCourse, updateS
 const mapStateToProps = (state: RootState) => ({
     user : state.auth.user,
     course : state.course.course,
-    session: state.course.session
+    session: state.course.session,
+    banners: state.announcements.banners
 })
 
 
-export default connect(mapStateToProps, {updateCourse, updateSession})(SplitView);
+export default connect(mapStateToProps, {updateCourse, updateSession, addBanner})(SplitView);

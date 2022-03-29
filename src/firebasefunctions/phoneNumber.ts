@@ -6,3 +6,9 @@ export const updatePhoneNum = (
 ) => {
     return firestore.collection('users').doc(userId).update(phoneNumber);
 }
+
+export const updateTextPrompted = (
+    userId: string | undefined
+) => {
+    return firestore.collection('users').doc(userId).update({textPrompted: true});
+}

@@ -142,6 +142,7 @@ interface FireUser {
     roles: { readonly [courseId: string]: PrivilegedFireCourseRole | undefined };
     phoneNumber?: string;
     textNotifsEnabled?: boolean;
+    textPrompted?: boolean;
 }
 
 interface FirePendingUser {
@@ -216,4 +217,11 @@ interface NotificationTracker {
     productUpdates: FireTimestamp;
     notificationList: SessionNotification[];
     lastSent: FireTimestamp;
+}
+
+interface Announcement {
+    text: string;
+    icon: string;
+    alert?: boolean;
+    global?: boolean;
 }

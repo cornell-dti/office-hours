@@ -1,35 +1,36 @@
-import React, {Dispatch, SetStateAction, useEffect} from 'react';
-import bannerIcon from '../../media/bannerIcon.svg'
+import React from 'react';
+import {connect} from 'react-redux';
+import { removeBanner } from '../../redux/actions/announcements';
 
 type Props = {
+    icon: string;
     announcement: string;
-    showBanner: boolean;
-    setShowBanner: Dispatch<SetStateAction<boolean>>;
-    setBannerText: Dispatch<SetStateAction<string>>;
+    warning?: boolean;
+    global?: boolean;
+    removeBanner: (banner: string, session: boolean) => Promise<void>;
 }
 
-const Banner = ({announcement, showBanner, setShowBanner, setBannerText}: Props) => {
-    useEffect(() => {
-    
-    }, [showBanner])
-    return ( <>{showBanner && (
-        <div className="banner__wrapper" >
+const Banner = ({icon, announcement, warning, global, removeBanner}: Props) => {
+    return ( <>
+        <div className={`banner__wrapper ${warning ? "banner__alert" : ""} ${global ? "banner__global" : ""}`} >
             <div className="banner__left" > 
-                <img src={bannerIcon} alt="Text icon" className="banner__icon" />
+                <img src={icon} alt="Text icon" className="banner__icon" />
                 <div className="banner__text">{announcement}</div>
             </div>
             <div
                 className="banner__close"
                 onClick={() => {
-                    setShowBanner(false);
-                    setBannerText("");
+                    removeBanner(announcement, !global);
                 }}
             >GOT IT</div>
         </div>
-    )}
     </>
     );
 }
 
+Banner.defaultProps = {
+    warning: false,
+    global: false
+}
 
-export default Banner;
+export default connect(null, {removeBanner})(Banner);
