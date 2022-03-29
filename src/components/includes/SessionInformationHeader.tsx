@@ -231,19 +231,21 @@ const SessionInformationHeader = ({
                                         </Grid>
                                     </Grid>
                                 </div>
-                                <div className="OneQueueInfo">
-                                    <Grid container direction="row" justify="center" alignItems={'center'}>
-                                        <Grid item xs={2}>
-                                            <img src={chalkboard} alt="number of people" />
+                                {tas.length > 0 &&
+                                    <div className="OneQueueInfo">
+                                        <Grid container direction="row" justify="center" alignItems={'center'}>
+                                            <Grid item xs={2}>
+                                                <img src={chalkboard} alt="number of people" />
+                                            </Grid>
+                                            <Grid item xs={10}>
+                                                <p>
+                                                    <span className="blue">{tas.length + ' TAs '}</span>
+                                                assigned to this office hour
+                                                </p>                       
+                                            </Grid>
                                         </Grid>
-                                        <Grid item xs={10}>
-                                            <p>
-                                                <span className="blue">{tas.length + ' TAs '}</span>
-                                                helping students now
-                                            </p>
-                                        </Grid>
-                                    </Grid>
-                                </div>
+                                    </div>
+                                }
                                 <div className="OneQueueInfo">
                                     <Grid container direction="row" justify="center" alignItems={'center'}>
                                         <Grid item xs={2}>
