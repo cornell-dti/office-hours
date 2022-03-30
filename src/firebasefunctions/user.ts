@@ -38,6 +38,8 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
                     photoUrl,
                     courses: [],
                     roles: {},
+                    phoneNumber: "Dummy Number",
+                    textNotifsEnabled: false,
                 };
                 transaction.set(userDocumentReference, fullUserDocument);
             }

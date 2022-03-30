@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
+// eslint-disable-next-line 
 // @ts-ignore (Linkify has no typescript)
 import Linkify from 'linkifyjs/react';
 import { connect } from 'react-redux';

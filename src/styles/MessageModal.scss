@@ -1,162 +1,464 @@
 .CalendarExportModalScreen,
 .NotifModalScreen,
 .JoinErrorMessageScreen {
-    position: fixed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(112, 112, 112, 0.8);
-    z-index: 9999;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(112, 112, 112, 0.8);
+  z-index: 9999;
 }
 
 .CalendarExportModalVisible,
 .NotificationModalVisible,
 .JoinErrorMessageVisible {
-    width: 687px;
-    height: 407px;
-    border-radius: 8px;
-    display: flex;
-    position: fixed;
-    background-color: white;
-    text-align: center;
-    flex-direction: column;
+  width: 687px;
+  height: 407px;
+  border-radius: 8px;
+  display: flex;
+  position: fixed;
+  background-color: white;
+  text-align: center;
+  flex-direction: column;
 
-    img {
-        position: absolute;
-        height: 64px;
-        width: 64px;
-        top: 126px;
-        align-self: center;
-    }
+  img {
+    position: absolute;
+    height: 64px;
+    width: 64px;
+    top: 126px;
+    align-self: center;
+  }
 
-    p {
-        align-self: center;
-        position: absolute;
-        width: 353px;
-        top: 224px;
-        font-family: Roboto;
-        font-style: normal;
-        font-weight: 500;
-        font-size: 25px;
-        line-height: 29px;
-        color: #5599db;
-    }
+  p {
+    align-self: center;
+    position: absolute;
+    width: 353px;
+    top: 224px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 25px;
+    line-height: 29px;
+    color: #5599db;
+  }
 
-    .closeButton {
-        align-self: flex-end;
-        height: 45px;
-        left: 74.14%;
-        right: 24.61%;
-        top: calc(50% - 45px / 2 - 209.5px);
-        font-size: 20px;
-        line-height: 48px;
-        color: #484848;
-        float: right;
-        outline: none;
-        background-color: transparent;
-        border: none;
-    }
+  .closeButton {
+    align-self: flex-end;
+    height: 45px;
+    left: 74.14%;
+    right: 24.61%;
+    top: calc(50% - 45px / 2 - 209.5px);
+    font-size: 20px;
+    line-height: 48px;
+    color: #484848;
+    float: right;
+    outline: none;
+    background-color: transparent;
+    border: none;
+  }
 }
 
 .CalendarExportModalVisible {
-    width: 700px;
-    height: 400px;
+  width: 700px;
+  height: 400px;
 }
 
 .CalendarExportModalScreen {
-    .Title {
-        font-weight: 500;
-        font-size: 25px;
-        line-height: 20px;
-        color: #484848;
-        margin: 10px 0 60px 0; 
-    }
+  .Title {
+    font-weight: 500;
+    font-size: 25px;
+    line-height: 20px;
+    color: #484848;
+    margin: 10px 0 60px 0;
+  }
 
-    .CalendarContainer {
-        display: flex;
-    }
+  .CalendarContainer {
+    display: flex;
+  }
 
-    .CalendarItem {
-        flex: 1;
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        
-        img {
-            margin-top: 10px;
-        }
-    }
+  .CalendarItem {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    justify-content: center;
 
-    .ExportText {
-        font-size: 20px;
-        text-align: center;
-        text-decoration-line: underline;
-        color: #5599db;
-        margin-top: 110px;
-        width: 200px;
-        line-height: 25px;
-        cursor: pointer;
+    img {
+      margin-top: 10px;
     }
+  }
 
-    .Line {
-        border: 1px solid #484848;
-        height: 200px;
-    }
+  .ExportText {
+    font-size: 20px;
+    text-align: center;
+    text-decoration-line: underline;
+    color: #5599db;
+    margin-top: 110px;
+    width: 200px;
+    line-height: 25px;
+    cursor: pointer;
+  }
+
+  .Line {
+    border: 1px solid #484848;
+    height: 200px;
+  }
 }
 
 .JoinErrorMessageVisible {
-    p {
-        width: 450px;
-        font-size: 23px;
-        color: #dc9c35;
-    }
+  p {
+    width: 450px;
+    font-size: 23px;
+    color: #dc9c35;
+  }
 
-    .GotItButton {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        background: #5599db;
-        height: 70px;
-        border: none;
-        justify-self: end;
-        font-size: 20px;
-        color: white;
-        border-bottom-left-radius: 8px;
-        border-bottom-right-radius: 8px;
-        outline: none;
-    }
+  .GotItButton {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: #5599db;
+    height: 70px;
+    border: none;
+    justify-self: end;
+    font-size: 20px;
+    color: white;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    outline: none;
+  }
 }
 
 @media only screen and (max-width: $mobile-breakpoint) {
-    .NotificationModalVisible {
-        width: 80%;
+  .NotificationModalVisible {
+    width: 80%;
 
-        p {
-            font-size: 22px;
-            width: 80%;
-        }
+    p {
+      font-size: 22px;
+      width: 80%;
+    }
+  }
+
+  .CalendarExportModalVisible {
+    width: 80%;
+
+    .ExportText {
+      font-size: 15px;
     }
 
-    .CalendarExportModalVisible {
-        width: 80%;
-
-        .ExportText {
-            font-size: 15px;
-        }
-
-        img {
-            height: 40px;
-            width: 40px;
-        }
-
-        .CalendarItem {
-            width: 35%;
-        }
+    img {
+      height: 40px;
+      width: 40px;
     }
+
+    .CalendarItem {
+      width: 35%;
+    }
+  }
+}
+
+.textNotifModalScreen {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(112, 112, 112, 0.8);
+  z-index: 9999;
+}
+
+.textNotifModalVisible {
+  width: 475px;
+  height: 420px;
+  border-radius: 8px;
+  display: flex;
+  position: fixed;
+  background-color: white;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  .closeButton {
+    align-self: flex-end;
+    height: 20px;
+    left: 74.14%;
+    right: 24.61%;
+    top: calc(50% - 45px / 2 - 209.5px);
+    font-size: 20px;
+    line-height: 48px;
+    color: #484848;
+    float: right;
+    outline: none;
+    background-color: transparent;
+    border: none;
+  }
+}
+
+.textNotifModalExtended {
+  width: 475px;
+  height: 550px;
+  .textNotifModal__enableDialogue {
+    height: 48%;
+  }
+}
+
+.enableDialogue__line {
+  border-left: 1px solid #979797;
+  padding: 5px;
+  height: 100%;
+  width: 1px;
+}
+
+.textNotifModal {
+  &__icon {
+    top: 126px;
+    align-self: center;
+    padding: 15px;
+  }
+  &__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+  }
+  &__title {
+    margin-left: 25%;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
+    color: #484848;
+  }
+  &__status {
+    padding-left: 9%;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    justify-self: flex-end;
+    color: #6f6f6f;
+    .off {
+      color: red;
+    }
+    .on {
+      color: #5599db;
+    }
+  }
+  &__enableDialogue {
+    width: 100%;
+    height: 65%;
+    padding-top: 20px;
+    margin-bottom: 20px;
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  &__disableDialogue {
+    width: 100%;
+    height: 21.5%;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+  }
+  &__confirm {
+    width: 368px;
+    height: 36px;
+    padding: 10px;
+    background: #5599db;
+    color: #ffffff;
+    margin-left: 20px;
+    border-radius: 4px;
+    border: none;
+    -webkit-box-shadow: 0 2px 5px 1px rgba(64, 60, 67, 0.16);
+    box-shadow: 0 2px 5px 1px rgba(64, 60, 67, 0.16);
+    transition-duration: 0.3s;
+    transition-property: transform, box-shadow;
+    &:hover {
+      // -webkit-transform: translateY(-1px);
+      // transform: translateY(-1px);
+      box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
+    }
+    .settingsSubmit:active {
+      -webkit-transform: translateY(1px);
+      transform: translateY(1px);
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.enableDialogue {
+  &__enableTitle {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #484848;
+    text-align: left;
+    padding-bottom: 10px;
+  }
+  &__split {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: stretch;
+    height: 90%;
+  }
+  &__line {
+    border-left: 2px solid #979797;
+    padding: 5px;
+    height: 100%;
+    width: 2px;
+  }
+  &__consent {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    position: relative;
+    .checkbox {
+      margin-right: 10px;
+      margin-top: 3px;
+    }
+  }
+  &__consentDialogue {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: #484848;
+    text-align: left;
+  }
+  &__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  &__phoneForm {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+  }
+  &__phoneIcon {
+    margin-bottom: 3px;
+    color: #484848;
+    width: 16px;
+    height: 12px;
+    margin: 10px;
+  }
+  &__phoneInput {
+    position: relative;
+    height: 36px;
+    width: 280px;
+  }
+  &__required {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: #ec4339;
+    height: 90%;
+    margin-left: 3px;
+  }
+  &__Error {
+    position: absolute;
+    bottom: -25px;
+    right: -5px;
+    text-align: left;
+    color: #ec4339;
+  }
+  &__checkError {
+    bottom: -35px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    margin-left: 28px;
+  }
+  &__phoneError {
+    margin-left: 35px;
+  }
+}
+
+.disableDialogue {
+  &__split {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: stretch;
+    height: 100%;
+  }
+  &__line {
+    border-left: 2px solid #979797;
+    padding: 5px;
+    height: 100%;
+    width: 2px;
+  }
+  &__warning {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: #484848;
+    text-align: left;
+    margin-bottom: 10px;
+  }
+  &__title {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #484848;
+    text-align: left;
+    padding-bottom: 10px;
+  }
+  &__confirm {
+    width: 368px;
+    height: 36px;
+    padding: 10px;
+    background: #ec4339;
+    color: #ffffff;
+    margin-left: 20px;
+    border-radius: 4px;
+    border: none;
+    -webkit-box-shadow: 0 2px 5px 1px rgba(64, 60, 67, 0.16);
+    box-shadow: 0 2px 5px 1px rgba(64, 60, 67, 0.16);
+    transition-duration: 0.3s;
+    transition-property: transform, box-shadow;
+    &:hover {
+      // -webkit-transform: translateY(-1px);
+      // transform: translateY(-1px);
+      box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
+      background: #C41B12;
+    }
+    .settingsSubmit:active {
+      -webkit-transform: translateY(1px);
+      transform: translateY(1px);
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+  }
+}
+
+@media only screen and (max-width: $mobile-breakpoint) {
+  .textNotifModalVisible {
+    p {
+      font-size: 22px;
+      width: 80%;
+    }
+  }
 }

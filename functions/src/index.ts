@@ -1,11 +1,43 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { Twilio } from "twilio";
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
 admin.initializeApp();
 
 const db = admin.firestore();
+
+// Twilio Setup
+const accountSid = functions.config().twilio.accountsid;
+const authToken = functions.config().twilio.twilio_auth_token;
+const twilioNumber = functions.config().twilio.twilionumber;
+
+const client = new Twilio(accountSid, authToken);
+
+/**
+ * Function that handles data and sends a text message to a requested phone number
+ */
+async function sendSMS (user: FireUser, message: string) {
+    if(process.env.DATABASE === "staging") {
+        return;
+    }
+    const userPhone = user.phoneNumber;
+    if (userPhone === "Dummy number" || userPhone === undefined)
+        return;
+    try {
+        await client.messages
+            .create({
+                from: twilioNumber,
+                to: userPhone,
+                body: `[QueueMeIn] ${message}`.replace(/\s+/g, " "),
+            }).then(msg => {
+                functions.logger.log(msg);
+            });
+    } catch (error) {
+        functions.logger.log(error);
+    }
+}
 
 /** Adds new roles to a user without them being in QMI's system
  * Not inclusive: Still need to consider users that are
@@ -106,6 +138,8 @@ exports.onSessionUpdate = functions.firestore
         if (!afterQuestions[0].data().wasNotified) {
             const asker: FireUser = (await db.doc(`users/${afterQuestions[0].data().askerId}`)
                 .get()).data() as FireUser;
+            sendSMS(asker, `Your question has reached the top of the \
+                ${(change.after.data() as FireSession).title} queue. A TA will likely help you shortly.`);
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({
                     notificationList: admin.firestore.FieldValue.arrayUnion({

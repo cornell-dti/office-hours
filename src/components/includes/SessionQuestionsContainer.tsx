@@ -7,6 +7,8 @@ import AddQuestion from './AddQuestion';
 import DiscussionQuestion from './DiscussionQuestion';
 import SortArrows from '../../media/sortbyarrows.svg';
 import { RootState } from '../../redux/store';
+import { addBanner, removeBanner } from '../../redux/actions/announcements';
+import Chalkboard from '../../media/chalkboard-teacher.svg';
 
 // Maximum number of questions to be shown to user
 const NUM_QUESTIONS_SHOWN = 20;
@@ -35,8 +37,9 @@ type Props = {
     readonly myQuestion: FireQuestion | null;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
-    setShowBanner: (show: boolean) => void;
-    setIsTimeWarning: (isTimeWarning: boolean) => void;
+    timeWarning: number | undefined;
+    addBanner: (banner: Announcement, session: boolean) => Promise<void>;
+    removeBanner: (banner: string, session: boolean) => Promise<void>;
 };
 
 type StudentMyQuestionProps = {
@@ -121,17 +124,6 @@ const SessionQuestionsContainer = (props: Props) => {
     // eslint-disable-next-line
     const [audio, setAudio] = React.useState<HTMLAudioElement>(new Audio("../../../qmijinglefinal.mp3"));
     const prevQuestion = usePrev<FireQuestion | null>(props.myQuestion);
-
-    React.useEffect(() => {
-        try {
-            // Request permission to send desktop notifications
-            if (Notification.permission === 'default') {
-                Notification.requestPermission();
-            }
-        } catch (error) {
-            // Do nothing. iOS crashes because Notification isn't defined
-        }
-    }, []);
     
     // Handles student side of time limit
     React.useEffect(() => {
@@ -153,8 +145,13 @@ const SessionQuestionsContainer = (props: Props) => {
             // eslint-disable-next-line no-console
             console.log(e);
         });
-        props.setIsTimeWarning(true);
-        props.setShowBanner(true);
+        const warningText = 
+        (typeof props.timeWarning === 'undefined') ? 
+            'You are almost out of time for this question' : 
+            `You have ${props.timeWarning} minutes remaining for this question.`
+        props.addBanner({
+            icon: Chalkboard, 
+            text: warningText}, true)
     }
 
     const questionTimeUp = () => {
@@ -162,8 +159,9 @@ const SessionQuestionsContainer = (props: Props) => {
             // eslint-disable-next-line no-console
             console.log(e);
         });
-        props.setIsTimeWarning(false);
-        props.setShowBanner(true);
+        props.addBanner({
+            icon: Chalkboard, 
+            text: 'Your time is up for this question!'}, true)
     }
 
     const newQuestionAssigned = () => {
@@ -189,7 +187,12 @@ const SessionQuestionsContainer = (props: Props) => {
         }
         setWarningTimeoutId(undefined);
         setTimeoutId(undefined);
-        props.setShowBanner(false);
+        const warningText = 
+        (typeof props.timeWarning === 'undefined') ? 
+            'You are almost out of time for this question' : 
+            `You have ${props.timeWarning} minutes remaining for this question.`
+        props.removeBanner('Your time is up for this question!', true);
+        props.removeBanner(warningText, true);
     }
 
 
@@ -417,4 +420,4 @@ const mapStateToProps = (state: RootState) => ({
 })
 
 
-export default connect(mapStateToProps, {})(SessionQuestionsContainer);
+export default connect(mapStateToProps, {addBanner, removeBanner})(SessionQuestionsContainer);
