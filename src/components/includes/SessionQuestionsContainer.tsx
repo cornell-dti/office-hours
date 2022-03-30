@@ -44,6 +44,8 @@ type StudentMyQuestionProps = {
     readonly tags: { readonly [tagId: string]: FireTag };
     readonly index: number;
     readonly triggerUndo: Function;
+    readonly session: FireSession;
+    readonly course: FireCourse;
     readonly isPast: boolean;
     readonly myUserId: string;
     readonly modality: FireSessionModality;
@@ -57,6 +59,8 @@ const StudentMyQuestion = ({
     tags,
     index,
     triggerUndo,
+    session,
+    course,
     isPast,
     myUserId,
     modality,
@@ -94,6 +98,8 @@ const StudentMyQuestion = ({
                     includeRemove={true}
                     triggerUndo={triggerUndo}
                     isPast={isPast}
+                    session={session}
+                    course={course}
                     myUserId={myUserId}
                     setShowModal={setShowModal}
                     setRemoveQuestionId={setRemoveQuestionId}
@@ -284,6 +290,8 @@ const SessionQuestionsContainer = (props: Props) => {
                     index={myQuestionIndex}
                     triggerUndo={props.triggerUndo}
                     isPast={props.isPast}
+                    session={props.session}
+                    course={props.course}
                     myUserId={props.myUserId}
                     setShowModal={props.setShowModal}
                     setRemoveQuestionId={props.setRemoveQuestionId}
@@ -376,6 +384,8 @@ const SessionQuestionsContainer = (props: Props) => {
                         includeRemove={false}
                         triggerUndo={props.triggerUndo}
                         isPast={props.isPast}
+                        session={props.session}
+                        course={props.course}
                         myUserId={props.myUserId}
                         setShowModal={props.setShowModal}
                         setRemoveQuestionId={props.setRemoveQuestionId}

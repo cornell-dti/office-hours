@@ -7,9 +7,9 @@ import Linkify from 'linkifyjs/react';
 import { connect } from 'react-redux';
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
-// import { addQuestion } from '../../firebasefunctions/sessionQuestion';
+import { addQuestion } from '../../firebasefunctions/sessionQuestion';
 
-import { firestore } from '../../firebase';
+import { firestore, auth } from '../../firebase';
 
 import {
     markStudentNoShow,
@@ -37,9 +37,8 @@ type Props = {
     virtualLocation?: string;
     triggerUndo: Function;
     isPast: boolean;
-    // session: FireSession;
-    // course: FireCourse;
-    // mobileBreakpoint: number;
+    session: FireSession;
+    course: FireCourse;
     readonly user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
@@ -207,26 +206,26 @@ class SessionQuestion extends React.Component<Props, State> {
     }
 
     moveToBottom = () => {
-        // const ques = this.props.question;
-        // const quesSession = this.props.session;
+        const ques = this.props.question;
+        const quesSession = this.props.session;
         // const [redirect, setRedirect] = useState<boolean>(false);
 
         markQuestionDone(firestore, this.props.question);
-        this.props.clearQuestionAssigned();
+        // this.props.clearQuestionAssigned();
 
-        // const quesPrimaryTag: FireTag = ques.primaryTag as unknown as FireTag;
-        // const quesSecondaryTag: FireTag = ques.secondaryTag as unknown as FireTag;
+        const primaryTag: FireTag = this.props.tags[ques.primaryTag]
+        const secondaryTag: FireTag = this.props.tags[ques.secondaryTag];
 
-        // const allowRedirect = addQuestion(
-        //     auth.currentUser,
-        //     quesSession,
-        //     firestore,
-        //     String(ques.location),
-        //     quesPrimaryTag,
-        //     quesSecondaryTag,
-        //     ques.content,
-        //     Boolean(ques.isVirtual)
-        // );
+        addQuestion(
+            auth.currentUser,
+            quesSession,
+            firestore,
+            String(ques.location),
+            primaryTag,
+            secondaryTag,
+            ques.content,
+            Boolean(ques.isVirtual)
+        );
         // setRedirect(allowRedirect);
     }
 
@@ -297,46 +296,46 @@ class SessionQuestion extends React.Component<Props, State> {
                     </div>
                     {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) &&
                         (this.state.location.length > 0) && (
-                        <div className="LocationPin">
-                            <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" />
-                            <div
-                                className="LocationTooltip"
-                                style={{
-                                    visibility: this.state.showLocation ? 'visible' : 'hidden',
-                                }}
-                            >
-                                <p>
+                            <div className="LocationPin">
+                                <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" />
+                                <div
+                                    className="LocationTooltip"
+                                    style={{
+                                        visibility: this.state.showLocation ? 'visible' : 'hidden',
+                                    }}
+                                >
+                                    <p>
                                         Location &nbsp;{' '}
-                                    <span
-                                        className={
-                                            'characterCount ' +
+                                        <span
+                                            className={
+                                                'characterCount ' +
                                                 (this.state.location.length >= 40 ? 'warn' : '')
-                                        }
-                                    >
-                                        {this.state.location.length}/{LOCATION_CHAR_LIMIT}
-                                    </span>
-                                </p>
-                                <textarea
-                                    className="TextInput question"
-                                    value={this.state.location}
-                                    onChange={e => this.handleUpdateLocation(e)}
-                                />
-                                {this.state.isEditingLocation ? (
-                                    <Loader
-                                        className={'locationLoader'}
-                                        active={true}
-                                        inline={true}
-                                        size={'tiny'}
+                                            }
+                                        >
+                                            {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                        </span>
+                                    </p>
+                                    <textarea
+                                        className="TextInput question"
+                                        value={this.state.location}
+                                        onChange={e => this.handleUpdateLocation(e)}
                                     />
-                                ) : (
-                                    <Icon name="check" />
-                                )}
-                                <div className="DoneButton" onClick={this.toggleLocationTooltip}>
+                                    {this.state.isEditingLocation ? (
+                                        <Loader
+                                            className={'locationLoader'}
+                                            active={true}
+                                            inline={true}
+                                            size={'tiny'}
+                                        />
+                                    ) : (
+                                        <Icon name="check" />
+                                    )}
+                                    <div className="DoneButton" onClick={this.toggleLocationTooltip}>
                                         Done
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
                     <div className="QuestionInfo">
                         {this.props.isTA && asker && (
                             <div className="studentInformation">
@@ -382,14 +381,14 @@ class SessionQuestion extends React.Component<Props, State> {
                                     {this.props.isTA &&
                                         question.location &&
                                         question.location.substr(0, 25) === 'https://cornell.zoom.us/j' && (
-                                        <a
-                                            href={question.location}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
+                                            <a
+                                                href={question.location}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
                                                 Zoom Link
-                                        </a>
-                                    )}
+                                            </a>
+                                        )}
                                     {this.props.isTA &&
                                         question.location &&
                                         question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
