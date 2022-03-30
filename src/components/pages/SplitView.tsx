@@ -165,7 +165,7 @@ const SplitView = ({
         }
         if(!user?.textPrompted) {
             addBanner({
-                text: "Enable text notifications under [Profile -> Notification Settings].", 
+                text: "Enable text notifications under [Profile -> SMS Settings].", 
                 icon: smsNotif, 
                 noshow: true,
                 global: true
