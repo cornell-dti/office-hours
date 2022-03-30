@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { Twilio } from "twilio";
+import { Twilio } from 'twilio';
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
@@ -136,11 +136,7 @@ exports.onSessionUpdate = functions.firestore
 
         const sessionName: string | undefined= (change.after.data() as FireSession).title
 
-        functions.logger.log(sessionName)
-
         const topQuestion: FireQuestion = (afterQuestions[0].data() as FireQuestion);
-
-        functions.logger.log(topQuestion.content)
 
         // if the top active question was not notified, notify them
         if (!topQuestion.wasNotified) {
