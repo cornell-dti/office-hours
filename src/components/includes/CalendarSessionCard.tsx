@@ -17,8 +17,9 @@ const CalendarSessionCard = (props: {
     callback: (sessionId: string) => void;
     active: boolean;
     status: string;
+    setIsDayExport: React.Dispatch<React.SetStateAction<boolean>>;
     setShowCalendarModal: React.Dispatch<React.SetStateAction<boolean>>;
-    setCurrentExportSession: React.Dispatch<React.SetStateAction<FireSession>>;
+    setCurrentExportSessions: React.Dispatch<React.SetStateAction<FireSession[]>>;
 }) => {
     const handleOnClick = () => {
         props.callback(props.session.sessionId);
@@ -47,8 +48,9 @@ const CalendarSessionCard = (props: {
     const timeDesc = '';
 
     const showCalendarExportModal = () => {
-        props.setCurrentExportSession(session);
+        props.setCurrentExportSessions([session]);
         props.setShowCalendarModal(true);
+        props.setIsDayExport(false);
     };
 
     return (

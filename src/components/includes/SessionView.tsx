@@ -10,13 +10,12 @@ import {
     useAskerQuestions
 } from '../../firehooks';
 import { updateQuestion, updateVirtualLocation } from '../../firebasefunctions/sessionQuestion'
-// import { addDBNotification } from '../../firebasefunctions/notifications'
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 import { firestore } from '../../firebase';
 
 import { RootState } from '../../redux/store';
-import Browser from '../../media/browser.svg';
+import Banner from './Banner';
 
 
 type Props = {
@@ -29,8 +28,8 @@ type Props = {
     user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
-    setShowBanner: (show: boolean) => void;
-    setIsTimeWarning: (isWarning: boolean) => void;
+    sessionBanners: Announcement[];
+    timeWarning: number | undefined;
 };
 
 type UndoState = {
@@ -48,7 +47,7 @@ type AbsentState = {
 
 const SessionView = (
     { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal,
-        setRemoveQuestionId, setShowBanner, setIsTimeWarning }: Props
+        setRemoveQuestionId, timeWarning, sessionBanners }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
     const tags = useCourseTags(course.courseId);
@@ -63,8 +62,6 @@ const SessionView = (
         dismissedAbsent: true,
         lastAskedQuestion: null
     });
-
-    const [showNotifBanner, setShowNotifBanner] = useState(true);
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
 
@@ -95,7 +92,7 @@ const SessionView = (
             return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
         // setPrevQuestSet(new Set(questions.map(q => q.questionId)));
-    }, [ questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
+    }, [questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
 
     const dismissUndo = () => {
         if (timeoutId) {
@@ -166,8 +163,9 @@ const SessionView = (
 
     return (
         <section className="StudentSessionView">
-            {"Notification" in window &&
+            {/* {"Notification" in window &&
                 window?.Notification.permission !== "granted" && showNotifBanner === true &&
+            
                 <div className="SessionNotification">
                     <img src={Browser} alt="Browser" />
                     <div className="label">Enable browser notifications to know when it's your turn.</div>
@@ -175,7 +173,8 @@ const SessionView = (
                         GOT IT
                     </div>
                 </div>
-            }
+            } */}
+            {sessionBanners.map(banner => (<Banner icon={banner.icon} announcement={banner.text}  />))}
             <SessionInformationHeader
                 session={session}
                 course={course}
@@ -190,6 +189,7 @@ const SessionView = (
                     updateVirtualLocation(firestore, user, session, virtualLocation);
                     updateSessionProfile(virtualLocation);
                 }}
+                questions={questions.filter(q => q.status === 'unresolved')}
             />
 
             {undoQuestionId &&
@@ -214,7 +214,9 @@ const SessionView = (
                 modality={session.modality}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
                 questions={session.modality === 'review' ? questions.filter(q => q.status !== 'retracted') :
-                    questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
+                    questions
+                        .filter(q => q.status === 'unresolved' || q.status === 'assigned')
+                        .sort((a, b) => (a.timeEntered > b.timeEntered) ? 1 : -1)}
                 users={users}
                 tags={tags}
                 handleJoinClick={joinCallback}
@@ -228,8 +230,7 @@ const SessionView = (
                 myQuestion={myQuestion}
                 setShowModal={setShowModal}
                 setRemoveQuestionId={setRemoveQuestionId}
-                setShowBanner={setShowBanner}
-                setIsTimeWarning={setIsTimeWarning}
+                timeWarning={timeWarning}
             />
         </section>
     );
@@ -238,10 +239,11 @@ const SessionView = (
 const mapStateToProps = (state: RootState) => ({
     user : state.auth.user,
     course : state.course.course,
-    session: state.course.session
+    session: state.course.session,
+    sessionBanners: state.announcements.sessionBanners
 })
 
-export default connect(mapStateToProps, {})( (props: Omit<Props, 'questions'>) => {
+export default connect(mapStateToProps, {})((props: Omit<Props, 'questions'>) => {
     const isTa = props.user.roles[props.course.courseId] !== undefined;
     const questions = props.session.modality === 'review' ? useSessionQuestions(props.session.sessionId, true) :
         filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));
