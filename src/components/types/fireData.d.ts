@@ -224,4 +224,5 @@ interface Announcement {
     icon: string;
     alert?: boolean;
     global?: boolean;
+    noshow?: boolean;
 }

@@ -19,11 +19,32 @@
     box-shadow: 0px 0px 10px #5599db;
     z-index: 100 !important;
   }
+  &__right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
   &__global {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     width: 70%;
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+  &__show {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 16px;
+    color: #5599db;
+    cursor: pointer;
+    margin-right: 24px;
+    &:hover {
+      color: darken(#5599db, 10%);
+    }
   }
   &__alert {
     border: 1px solid #ec4339;
@@ -115,6 +136,17 @@
   .snackbar {
     &__wrapper {
       width: 45%;
+    }
+  }
+}
+
+@media (max-width: 1100px) {
+  .banner {
+    &__global {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
     }
   }
 }

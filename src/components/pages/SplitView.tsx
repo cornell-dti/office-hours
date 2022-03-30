@@ -19,7 +19,6 @@ import Browser from '../../media/browser.svg';
 import smsNotif from '../../media/smsNotif.svg'
 import { addBanner } from '../../redux/actions/announcements';
 import Banner from '../includes/Banner';
-import { updateTextPrompted } from '../../firebasefunctions/phoneNumber';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -168,9 +167,9 @@ const SplitView = ({
             addBanner({
                 text: "Enable text notifications under [Profile -> Notification Settings].", 
                 icon: smsNotif, 
+                noshow: true,
                 global: true
             });
-            updateTextPrompted(user?.userId);
         }
     }, [addBanner, user])
 
@@ -184,7 +183,13 @@ const SplitView = ({
                 courseId={match.params.courseId}
                 course={course}
             />
-            {banners.map(banner => (<Banner icon={banner.icon} announcement={banner.text} global={banner.global} />))}
+            {banners.map(banner => 
+                (<Banner 
+                    icon={banner.icon} 
+                    announcement={banner.text} 
+                    global={banner.global} 
+                    noshow={banner.noshow}
+                />))}
             {(width > MOBILE_BREAKPOINT || activeView === 'calendar') && (
                 <CalendarView
                     course={course}

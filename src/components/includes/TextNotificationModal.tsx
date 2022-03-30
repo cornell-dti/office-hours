@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction, useState } from 'react';
 import {connect} from 'react-redux';
 import { Icon, Checkbox } from 'semantic-ui-react';
 import { updatePhoneNum } from '../../firebasefunctions/phoneNumber';
-import {addSnackbar} from "../../redux/actions/announcements"
+import {addSnackbar, removeBanner} from "../../redux/actions/announcements"
 import smsNotif from '../../media/smsNotif.svg'
 import phone from '../../media/phone.svg'
 import snackbarIcon from '../../media/snackbarIcon.svg'
@@ -18,13 +18,15 @@ type Props = {
     setShowTextModal: Dispatch<SetStateAction<boolean>>;
     user: FireUser | undefined;
     addSnackbar: (snackbar: Announcement) => Promise<void>;
+    removeBanner: (banner: string, session?: boolean) => Promise<void>;
 };
 
 const TextNotificationModal = ({
     showTextModal,
     setShowTextModal,
     user,
-    addSnackbar
+    addSnackbar,
+    removeBanner
 }: Props) => {
     const [phoneNum, setPhoneNum] = useState(user?.phoneNumber || "");
     const [phoneConsent, setPhoneConsent] = useState(user?.textNotifsEnabled || false);
@@ -45,6 +47,34 @@ const TextNotificationModal = ({
         rel="noopener noreferrer" 
         href="https://www.twilio.com/legal/privacy"
     >Twilio</a>)
+
+    const confirmModal = () => {
+        if (validatePhone(phoneNum) && phoneConsent) {
+            addSnackbar(
+                {text : `Text message notifications have been \
+      ${user?.textNotifsEnabled ? "updated" : "enabled"}!`, 
+                icon : snackbarIcon})
+            removeBanner(
+                "Enable text notifications under [Profile -> Notification Settings].", 
+                false
+            );
+            updatePhoneNum(user?.userId, {
+                phoneNumber: phoneNum, 
+                textPrompted: true,
+                textNotifsEnabled: true
+            })
+            setValidation(Validation.SUCCESS)
+            setShowTextModal(false);
+        } else if(validatePhone(phoneNum)) {
+            setCheckError(true);
+        } else if (phoneConsent) {
+            setValidation(Validation.FAILURE);
+        } else {
+            setPhoneConsent(user?.textNotifsEnabled || false);
+            setValidation(Validation.FAILURE);
+            setCheckError(true);
+        }
+    }
 
     return (
         <>
@@ -140,28 +170,7 @@ const TextNotificationModal = ({
                                         className='textNotifModal__confirm'
                                         type='submit'
                                         onClick={
-                                            () => {
-                                                if (validatePhone(phoneNum) && phoneConsent) {
-                                                    addSnackbar(
-                                                        {text : `Text message notifications have been \
-                                                  ${user?.textNotifsEnabled ? "updated" : "enabled"}!`, 
-                                                        icon : snackbarIcon})
-                                                    updatePhoneNum(user?.userId, {
-                                                        phoneNumber: phoneNum, 
-                                                        textNotifsEnabled: true
-                                                    })
-                                                    setValidation(Validation.SUCCESS)
-                                                    setShowTextModal(false);
-                                                } else if(validatePhone(phoneNum)) {
-                                                    setCheckError(true);
-                                                } else if (phoneConsent) {
-                                                    setValidation(Validation.FAILURE);
-                                                } else {
-                                                    setPhoneConsent(user?.textNotifsEnabled || false);
-                                                    setValidation(Validation.FAILURE);
-                                                    setCheckError(true);
-                                                }
-                                            }
+                                            confirmModal
                                         }
                                         style={{ marginTop: '1em' }}
                                     >
@@ -209,4 +218,4 @@ const TextNotificationModal = ({
     );
 };
 
-export default connect(null, {addSnackbar})(TextNotificationModal);
+export default connect(null, {addSnackbar, removeBanner})(TextNotificationModal);

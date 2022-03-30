@@ -1,28 +1,39 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import { updateTextPrompted } from '../../firebasefunctions/phoneNumber';
 import { removeBanner } from '../../redux/actions/announcements';
+import { RootState } from '../../redux/store';
 
 type Props = {
     icon: string;
     announcement: string;
     warning?: boolean;
     global?: boolean;
+    noshow?: boolean;
     removeBanner: (banner: string, session: boolean) => Promise<void>;
+    user: FireUser | undefined;
 }
 
-const Banner = ({icon, announcement, warning, global, removeBanner}: Props) => {
+const Banner = ({icon, announcement, warning, global, noshow, removeBanner, user}: Props) => {
+    const dontShow = () => {
+        removeBanner(announcement, !global);
+        updateTextPrompted(user?.userId);
+    }
     return ( <>
         <div className={`banner__wrapper ${warning ? "banner__alert" : ""} ${global ? "banner__global" : ""}`} >
             <div className="banner__left" > 
                 <img src={icon} alt="Text icon" className="banner__icon" />
                 <div className="banner__text">{announcement}</div>
             </div>
-            <div
-                className="banner__close"
-                onClick={() => {
-                    removeBanner(announcement, !global);
-                }}
-            >GOT IT</div>
+            <div className="banner__right">
+                {noshow && <div className="banner__show" onClick={dontShow}>DON'T SHOW AGAIN</div>}
+                <div
+                    className="banner__close"
+                    onClick={() => {
+                        removeBanner(announcement, !global);
+                    }}
+                >GOT IT</div>
+            </div>
         </div>
     </>
     );
@@ -30,7 +41,12 @@ const Banner = ({icon, announcement, warning, global, removeBanner}: Props) => {
 
 Banner.defaultProps = {
     warning: false,
-    global: false
+    global: false,
+    noshow: false
 }
 
-export default connect(null, {removeBanner})(Banner);
+const mapStateToProps = (state: RootState) => ({
+    user : state.auth.user,
+})
+
+export default connect(mapStateToProps, {removeBanner})(Banner);
