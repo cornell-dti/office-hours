@@ -10,13 +10,12 @@ import {
     useAskerQuestions
 } from '../../firehooks';
 import { updateQuestion, updateVirtualLocation } from '../../firebasefunctions/sessionQuestion'
-// import { addDBNotification } from '../../firebasefunctions/notifications'
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 import { firestore } from '../../firebase';
 
 import { RootState } from '../../redux/store';
-import Browser from '../../media/browser.svg';
+import Banner from './Banner';
 
 
 type Props = {
@@ -29,8 +28,8 @@ type Props = {
     user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
-    setShowBanner: (show: boolean) => void;
-    setIsTimeWarning: (isWarning: boolean) => void;
+    sessionBanners: Announcement[];
+    timeWarning: number | undefined;
 };
 
 type UndoState = {
@@ -48,7 +47,7 @@ type AbsentState = {
 
 const SessionView = (
     { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal,
-        setRemoveQuestionId, setShowBanner, setIsTimeWarning }: Props
+        setRemoveQuestionId, timeWarning, sessionBanners }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
     const tags = useCourseTags(course.courseId);
@@ -63,8 +62,6 @@ const SessionView = (
         dismissedAbsent: true,
         lastAskedQuestion: null
     });
-
-    const [showNotifBanner, setShowNotifBanner] = useState(true);
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
 
@@ -166,8 +163,9 @@ const SessionView = (
 
     return (
         <section className="StudentSessionView">
-            {"Notification" in window &&
+            {/* {"Notification" in window &&
                 window?.Notification.permission !== "granted" && showNotifBanner === true &&
+            
                 <div className="SessionNotification">
                     <img src={Browser} alt="Browser" />
                     <div className="label">Enable browser notifications to know when it's your turn.</div>
@@ -175,7 +173,8 @@ const SessionView = (
                         GOT IT
                     </div>
                 </div>
-            }
+            } */}
+            {sessionBanners.map(banner => (<Banner icon={banner.icon} announcement={banner.text}  />))}
             <SessionInformationHeader
                 session={session}
                 course={course}
@@ -231,17 +230,17 @@ const SessionView = (
                 myQuestion={myQuestion}
                 setShowModal={setShowModal}
                 setRemoveQuestionId={setRemoveQuestionId}
-                setShowBanner={setShowBanner}
-                setIsTimeWarning={setIsTimeWarning}
+                timeWarning={timeWarning}
             />
         </section>
     );
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user: state.auth.user,
-    course: state.course.course,
-    session: state.course.session
+    user : state.auth.user,
+    course : state.course.course,
+    session: state.course.session,
+    sessionBanners: state.announcements.sessionBanners
 })
 
 export default connect(mapStateToProps, {})((props: Omit<Props, 'questions'>) => {

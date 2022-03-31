@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Icon, Loader, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import { useState } from "react";
+// eslint-disable-next-line 
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
 import { connect } from 'react-redux';
@@ -211,8 +212,8 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     toggleComment = () => {
-        this.setState(({ enableEditingComment }) => ({ 
-            enableEditingComment: !enableEditingComment 
+        this.setState(({ enableEditingComment }) => ({
+            enableEditingComment: !enableEditingComment
         }));
     }
 
@@ -258,7 +259,10 @@ class SessionQuestion extends React.Component<Props, State> {
             <div className="QueueQuestions">
                 <div className="TopBar">
                     {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
-                    <div>
+                    <div className="OrderTooltip">
+                        {!this.props.isTA && 
+                            <span className="TooltipText">You are position {this.props.index + 1} in the queue.</span>
+                        }
                         <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
                             {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                         </p>

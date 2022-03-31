@@ -33,6 +33,7 @@ interface FireVirtualLocation {
 
 interface FireVirtualSession extends FireBaseSession {
     modality: 'virtual';
+    useTALink?: boolean;
 }
 
 interface FireInPersonSession extends FireBaseSession, FireSessionLocation {
@@ -72,6 +73,7 @@ interface FireBaseSessionSeries {
 
 interface FireVirtualSessionSeries extends FireBaseSessionSeries {
     modality: 'virtual';
+    useTALink?: boolean;
 }
 
 interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
@@ -140,6 +142,9 @@ interface FireUser {
     email: string;
     courses: readonly string[];
     roles: { readonly [courseId: string]: PrivilegedFireCourseRole | undefined };
+    phoneNumber?: string;
+    textNotifsEnabled?: boolean;
+    textPrompted?: boolean;
 }
 
 interface FirePendingUser {
@@ -214,4 +219,12 @@ interface NotificationTracker {
     productUpdates: FireTimestamp;
     notificationList: SessionNotification[];
     lastSent: FireTimestamp;
+}
+
+interface Announcement {
+    text: string;
+    icon: string;
+    alert?: boolean;
+    global?: boolean;
+    noshow?: boolean;
 }
