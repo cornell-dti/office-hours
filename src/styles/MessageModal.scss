@@ -1,3 +1,4 @@
+.ImportRolesModalScreen,
 .CalendarExportModalScreen,
 .NotifModalScreen,
 .JoinErrorMessageScreen {
@@ -15,6 +16,7 @@
     z-index: 9999;
 }
 
+.ImportRolesModalVisible,
 .CalendarExportModalVisible,
 .NotificationModalVisible,
 .JoinErrorMessageVisible {
@@ -64,11 +66,13 @@
     }
 }
 
+.ImportRolesModalVisible,
 .CalendarExportModalVisible {
     width: 700px;
     height: 400px;
 }
 
+.ImportRolesModalScreen,
 .CalendarExportModalScreen {
     .Title {
         font-weight: 500;
@@ -143,6 +147,7 @@
         }
     }
 
+    .ImportRolesModalVisible,
     .CalendarExportModalVisible {
         width: 80%;
 

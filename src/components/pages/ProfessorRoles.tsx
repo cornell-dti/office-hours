@@ -1,18 +1,21 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { useState } from 'react';
+import { Icon } from 'semantic-ui-react';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import ProfessorRolesTable from '../includes/ProfessorRolesTable';
 import { useCourse } from '../../firehooks';
 import CSVUploadView from '../includes/CSVUploadView';
 import CloseIcon from '../../media/CloseIcon.svg';
+import ImportRolesModal from '../includes/ImportRolesModal';
 
 const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
     const course = useCourse(courseId);
     const [viewOnlyMode, setViewOnlyMode] = useState(true);
     const [addedUsers, setAddedUsers] = useState<string[]>([]);
     const [missingUsers, setMissingUsers] = useState<string[]>([]);
+    const [showImportModal, setShowImportModal] = useState<boolean>(false);
     
 
     const cancel = () => {
@@ -22,7 +25,8 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
     const hide = () => {
         setAddedUsers([]);
         setMissingUsers([]);
-        setViewOnlyMode(false);
+        // setViewOnlyMode(false);
+        setShowImportModal(true);
     }
 
     const getAddedUsersList = (emails: string[]) => { 
@@ -44,12 +48,17 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
         <div className="ProfessorView">
             <ProfessorSidebar courseId={courseId} code={course ? course.code : 'Loading'} selected={'roles'} />
             <TopBar courseId={courseId} context="professor" role="professor" />
+            <ImportRolesModal
+                showImportModal={showImportModal}
+                setShowImportModal={setShowImportModal}
+            />
             <section className="rightOfSidebar">
                 {viewOnlyMode ?
                     <div className="main">
                         <div className="rightHeading">
                             <p className="manageRoles">Manage Roles</p>
                             <button type="button" id="importProf" onClick={hide}>
+                                <Icon name="plus" />
                                 Import Professors/TAs
                             </button>
                         </div>
