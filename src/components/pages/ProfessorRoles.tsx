@@ -49,6 +49,10 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
             <ProfessorSidebar courseId={courseId} code={course ? course.code : 'Loading'} selected={'roles'} />
             <TopBar courseId={courseId} context="professor" role="professor" />
             <ImportRolesModal
+                onReturn={cancel} 
+                getAddedUsersList={getAddedUsersList} 
+                getMissingUsers={getMissingUsers} 
+                course={course}
                 showImportModal={showImportModal}
                 setShowImportModal={setShowImportModal}
             />
