@@ -104,12 +104,12 @@ const SessionInformationHeader = ({
     let dynamicPosition = questions.findIndex(question => question.askerId === myQuestion?.askerId) + 1
 
     if (dynamicPosition === 0) {
-        dynamicPosition = questions.length + 1
+        dynamicPosition = questions.length === 0 ? 1 : questions.length + 1
     }
 
     const avgWaitTime =
         formatAvgTime((session.totalWaitTime / session.assignedQuestions)
-            * (isTa ? 1 : dynamicPosition));
+            * (isTa ? 1 : dynamicPosition - 1));
 
     const today = new Date();
     const esimatedTime = formatEstimatedTime((session.totalWaitTime / session.assignedQuestions)
@@ -240,8 +240,8 @@ const SessionInformationHeader = ({
                                             <Grid item xs={10}>
                                                 <p>
                                                     <span className="blue">{tas.length + ' TAs '}</span>
-                                                assigned to this office hour
-                                                </p>                       
+                                                    assigned to this office hour
+                                                </p>
                                             </Grid>
                                         </Grid>
                                     </div>
@@ -270,8 +270,8 @@ const SessionInformationHeader = ({
                         <Grid container item alignItems={'center'} justify="center">
                             <div className="ZoomLink">
                                 {session.modality === 'virtual' && isTa && (
-                                    <div className={(typeof session.useTALink === 'undefined' 
-                                    || session.useTALink === false) ? "TaZoom" : "StudentZoom"}
+                                    <div className={(typeof session.useTALink === 'undefined'
+                                        || session.useTALink === false) ? "TaZoom" : "StudentZoom"}
                                     >
                                         {(typeof session.useTALink === 'undefined' || session.useTALink === false) ?
                                             <Grid container direction="row" justify="center" spacing={1}>
@@ -312,7 +312,7 @@ const SessionInformationHeader = ({
                                                                 className="SaveZoomLink"
                                                                 onClick={saveZoomLink}
                                                             >
-                                                            Save
+                                                                Save
                                                             </button>
                                                         </Grid>
                                                     </>
@@ -326,7 +326,7 @@ const SessionInformationHeader = ({
                                                                 setZoomLinkDisplay('show');
                                                             }}
                                                         >
-                                                        update your virtual location
+                                                            update your virtual location
                                                         </button>
                                                     </Grid>
                                                 )}
@@ -377,11 +377,11 @@ const SessionInformationHeader = ({
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
                                             {
-                                                (typeof session.useTALink === 'undefined' || 
-                                                session.useTALink === false) &&
-                                                    <Grid item lg={6} md={10} xs={6}>
-                                                        <p>Zoom meeting link</p>
-                                                    </Grid>
+                                                (typeof session.useTALink === 'undefined' ||
+                                                    session.useTALink === false) &&
+                                                <Grid item lg={6} md={10} xs={6}>
+                                                    <p>Zoom meeting link</p>
+                                                </Grid>
                                             }
                                             {(typeof session.useTALink === 'undefined' || session.useTALink === false) ?
                                                 <Grid container justify="center" item lg={4} md={12} xs={4}>
