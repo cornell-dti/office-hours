@@ -255,8 +255,7 @@ const SessionInformationHeader = ({
                                             {avgWaitTime !== 'No information available' ? (
                                                 <p>
                                                     <span className="blue">{avgWaitTime + ' ' + esimatedTime}</span>
-
-                                                    estimated wait time
+                                                    {isTa ? 'to move one position' : 'estimated wait time'}
                                                 </p>
                                             ) : (
                                                 <p className="blue">{avgWaitTime}</p>
