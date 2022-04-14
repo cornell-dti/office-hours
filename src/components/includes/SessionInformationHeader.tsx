@@ -132,12 +132,12 @@ const SessionInformationHeader = ({
     let dynamicPosition = questions.findIndex((question) => question.askerId === myQuestion?.askerId) + 1;
 
     if (dynamicPosition === 0) {
-        dynamicPosition = questions.length + 1;
+        dynamicPosition = questions.length === 0 ? 1 : questions.length + 1
     }
 
-    const avgWaitTime = formatAvgTime(
-        (session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition),
-    );
+    const avgWaitTime =
+        formatAvgTime((session.totalWaitTime / session.assignedQuestions)
+            * (isTa ? 1 : dynamicPosition - 1));
 
     const today = new Date();
     const esimatedTime = formatEstimatedTime(
