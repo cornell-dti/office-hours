@@ -16,6 +16,7 @@ import { firestore } from '../../firebase';
 
 import { RootState } from '../../redux/store';
 import Banner from './Banner';
+import TaAnnouncements from './TaAnnouncements';
 
 
 type Props = {
@@ -174,7 +175,7 @@ const SessionView = (
                     </div>
                 </div>
             } */}
-            {sessionBanners.map(banner => (<Banner icon={banner.icon} announcement={banner.text}  />))}
+            {sessionBanners.map(banner => (<Banner icon={banner.icon} announcement={banner.text} />))}
             <SessionInformationHeader
                 session={session}
                 course={course}
@@ -191,6 +192,8 @@ const SessionView = (
                 }}
                 questions={questions.filter(q => q.status === 'unresolved')}
             />
+
+            <TaAnnouncements />
 
             {undoQuestionId &&
                 <div className="undoContainer">
@@ -237,8 +240,8 @@ const SessionView = (
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user,
-    course : state.course.course,
+    user: state.auth.user,
+    course: state.course.course,
     session: state.course.session,
     sessionBanners: state.announcements.sessionBanners
 })

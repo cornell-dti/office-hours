@@ -1,0 +1,17 @@
+.AnnouncementContainer {
+  background-color: white;
+  margin: 20px 48px;
+  padding: 20px 12px;
+  position: relative;
+  text-align: center;
+  display: flex;
+  border-radius: 10px;
+
+  .AnnouncementTitle {
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 21px;
+    color: #484848;
+  }
+
+}
