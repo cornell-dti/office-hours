@@ -420,7 +420,7 @@ const SessionInformationHeader = ({
                                         <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
                                         <span className="blue"> {avgWaitTime}</span>
                                         <span className="gray"> {esimatedTime}</span>
-                                        <span>estimated wait time</span>
+                                        <span>{isTa ? 'to move one position' : 'estimated wait time'}</span>
                                     </p>
                                 </>
                             ) : (
