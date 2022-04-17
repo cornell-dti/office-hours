@@ -5,19 +5,8 @@ import ArrowBackIcon from '../../media/back.svg';
 import EditIcon from '../../media/edit.svg';
 import FileIcon from '../../media/file.svg';
 import { importProfessorsOrTAsFromCSV} from '../../firebasefunctions/importProfessorsOrTAs';
-// import CSVUploadCheck from '../../media/CSVUploadCheck.svg';
-// import CSVInfoIcon from '../../media/CSVInfoIcon.svg';
-// import ExampleTable from '../../media/ExampleTable.svg';
-// import FileIcon from '../../media/FileIcon.svg';
 import CloseIcon from '../../media/CloseIcon.svg';
-import WarningIcon from '../../media/WarningIcon.svg';
-// import AddEmailIcon from '../../media/AddEmailIcon.svg';
-
-type PageInfo = {
-    header: string;
-    leftButton: string;
-    rightButton: string;
-}
+import AddEmailIcon from '../../media/AddEmailIcon.svg';
 
 type NewUser = {
     key: number;
@@ -36,11 +25,23 @@ const ImportRolesModal = (
     // const [EnterErrorMessage, setEnterErrorMessage] = useState('none');
     const [TAEmailList, setTAEmailList] = useState<string[]>();
     const [professorEmailList, setProfessorEmailList] = useState<string[]>();
-    const [newUsers, setNewUsers] = useState<NewUser[]>([{
-        key: 0, 
-        email: '', 
-        role: ''
-    }]);
+    const [newUsers, setNewUsers] = useState<NewUser[]>([
+        {
+            key: 0, 
+            email: '', 
+            role: ''
+        },
+        {
+            key: 0, 
+            email: '', 
+            role: ''
+        },
+        {
+            key: 0, 
+            email: '', 
+            role: ''
+        },
+    ]);
     
     const closeModal = () => {
         setShowImportModal(false);
@@ -195,6 +196,30 @@ const ImportRolesModal = (
         }
     }
 
+    const handleUpdateUsers = (event: React.ChangeEvent<HTMLInputElement>, key: number): void => {
+        const value = event.target.value;
+        const name = event.target.id;
+        const updatedUser = {
+            ...newUsers[key],
+            [name]: value
+        }
+
+        const begining = newUsers.slice(0, key); 
+        const end = newUsers.slice(key+ 1)
+
+        setNewUsers([...begining, updatedUser, ...end])        
+    }
+
+    const addNewCell = () => {
+        const newEmptyUser = {
+            key: newUsers.length,
+            email: '',
+            role: ''
+        }
+
+        setNewUsers([...newUsers, newEmptyUser]);
+    }
+
     useEffect(() => {
         processCSV();
     }, [selectedFile, processCSV])
@@ -216,20 +241,20 @@ const ImportRolesModal = (
                             <div className='CalendarItem'>
                                 <img
                                     src={EditIcon}
-                                    alt='Export to Google Calendar'
+                                    alt='Enter Manually'
                                 />
                                 <div
                                     className='ExportText'
                                     onClick={()=>setUploadType('enter')}
                                 >
-                                    Export Manually
+                                    Enter Manually
                                 </div>
                             </div>
                             <div className='Line' />
                             <div className='CalendarItem'>
                                 <img
                                     src={FileIcon}
-                                    alt='Export to Apple Calendar'
+                                    alt='Upload CSV'
                                 />
                                 <div
                                     className='ExportText'
@@ -267,13 +292,7 @@ const ImportRolesModal = (
                         </div>
                         <div className='Title'>Upload CSV file</div>
 
-                        <div className="CSVUploadContainer">
-                            {/* <div className="UploadMessage">
-                                <img src={CSVInfoIcon} alt="info"/>
-                                Your CSV file must contain a header line with at least the Email and Role columns.
-                            </div>
-                            <img style={{width: "60%"}} src={ExampleTable} alt="table"/> */}
-
+                        <div className="CSVContainer">
                             <div className="SelectFileBox">
                                 <div className="SelectFile">
                                     <p>File:</p>
@@ -291,21 +310,6 @@ const ImportRolesModal = (
                                         Choose File
                                         </button>
                                     </div>
-                                    {/* <div className="File">
-                                        {selectedFile? 
-                                            <div className="FileName">
-                                                <a 
-                                                    href={URL.createObjectURL(selectedFile)} 
-                                                    download={selectedFile?.name} 
-                                                    id={CSVErrorMessage === 'none'? 'FileLink' : 'FileLinkRed'}
-                                                >
-                                                    {selectedFile.name.substr(0, 20) + "\u2026"}
-                                                </a> 
-                                                <img onClick={()=> setSelectedFile(undefined)} src={CloseIcon} alt="close"/>
-                                            </div>
-                                            : <p>no file chosen</p>}
-                                        <p id="FileType">File Types: .csv .xlsx</p> 
-                                    </div> */}
                                 </div>
                             </div>
 
@@ -343,6 +347,73 @@ const ImportRolesModal = (
 
                     </div>
                 </div>
+            }
+
+            {showImportModal && uploadType === 'enter' && 
+                <div className="ManualUploadScreen">
+                    <div className='EnterModal'>
+                        <div>
+                            <button
+                                type='button'
+                                className='backButton'
+                                onClick={back}
+                            >
+                                <img
+                                    src={ArrowBackIcon}
+                                    alt='Back'
+                                />
+                            </button>
+                            <button
+                                type='button'
+                                className='closeButton'
+                                onClick={closeModal}
+                            >
+                                <Icon name='x' />
+                            </button>
+                        </div>
+                        <div className='Title'>Enter email(s) and roles manually</div>
+                        <div className="EnterContainer">
+                            <div className="ColTitles">
+                                <p>Enter Email</p>
+                                <p>Select Role</p>
+                            </div>
+                            <div className="RolesTable">
+                                <table>
+                                    <tbody>
+                                        {newUsers.map(user => {
+                                            return (<tr key={user.key}>                                   
+                                                <th>
+                                                    <input 
+                                                        id="email" 
+                                                        value={user.email} 
+                                                        onChange={(e) => handleUpdateUsers(e, user.key)} 
+                                                        // placeholder={newUsers.length === 3 ? 
+                                                        //     'example@cornell.edu': ''} 
+                                                        placeholder='example@cornell.edu'
+                                                        autoComplete="off"
+                                                    />
+                                                </th>
+                                                <th>
+                                                    <input 
+                                                        id="role" 
+                                                        value={user.role} 
+                                                        onChange={(e) => handleUpdateUsers(e, user.key)} 
+                                                        // placeholder={newUsers.length === 3? 'Professor': ''} 
+                                                        placeholder='Professor'
+                                                        autoComplete="off"
+                                                    />
+                                                </th>
+                                            </tr>);
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <img className="AddButton" onClick={addNewCell} src={AddEmailIcon} alt="add"/>
+                            <button type="button" className="ConfirmButton" onClick={finish}>CONFIRM &amp; FINISH  &gt;</button>
+                        </div>
+                    </div>
+                </div>
+
             }
 
         </>

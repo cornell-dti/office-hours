@@ -166,6 +166,7 @@
     }
 }
 
+.ManualUploadScreen,
 .CSVUploadScreen {
     position: fixed;
     display: flex;
@@ -180,24 +181,43 @@
     background-color: rgba(112, 112, 112, 0.8);
     z-index: 9999;
 
-    .Title {
-        font-weight: 500;
-        font-size: 16px;
-        color: #484848;
-        margin: 0 0 40px 0; 
-        line-height: 15px;
-    }
-
     
 }
 
+.EnterModal,
 .CSVModal {
     border-radius: 8px;
-    display: flex;
+    // display: flex;
     position: fixed;
     background-color: white;
     text-align: center;
     flex-direction: column;
+
+    .CSVContainer,
+    .EnterContainer {
+
+        display: flex;
+        text-align: center;
+        flex-direction: column;
+
+        .ConfirmButton {
+            font-style: bold;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 17px;
+            color: #5599DB;
+            position: absolute;
+            // bottom: 32px;
+            left: 139px;
+        }
+
+        p {
+            color: #4A4A4A;
+            font-size: 20px;
+            font-weight: 500;
+            padding-bottom: 10px;
+        }
+    }
 
     .closeButton {
         align-self: flex-end;
@@ -216,120 +236,200 @@
         top: 15px;
     }
 
-    .CSVUploadContainer {
-
+    .Title {
+        font-weight: 500;
         display: flex;
-        text-align: center;
-        flex-direction: column;
-        height: 275px;
-        width: 403px;
+        justify-content: center;
+        font-size: 16px;
+        color: #484848;
+        padding-bottom: 40px;
+        line-height: 15px;
+        width: 100%;
 
-        .ErrorMessage {
-            font-style: italic;
-            font-weight: 300 light;
+    }
+}
+
+.CSVContainer {
+    height: 275px;
+    width: 430px;
+    display: flex;
+}
+
+.EnterContainer {
+    width: 434px;
+    display: flex;
+}
+
+.EnterModal {
+
+    .AddButton {
+        line-height: 17px;
+        position: absolute;
+        bottom: 55px;
+        left: 210px;
+        width: 15px;
+    }
+
+
+    .ConfirmButton {
+        bottom: 20px;
+    }
+
+    .ColTitles {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 95px;
+        height: 15px;
+
+        p {
             font-size: 12px;
-            line-height: 18px;
-            color: #F67D7D;
+            font-weight: 400px;
+        }
+    }
+
+
+    table {
+        display: inline-block;
+        margin-bottom: 77px;
+        width: 370px;
+        margin-top: 12px;
+        border: solid;
+        border-color: #696969;
+        border-radius: 6px;
+        background-color: #F5F5F5;
+        border-spacing: 0;
+
+        tr:first-child {
+            border-left: none;
+        }
+
+        tr:last-child {
+            border-right: none;
+        }
+
+        td:first-child {
+            border-top: none;
+        }
+
+        td:last-child {
+            border-bottom: none;
+        }
+
+        th {
+            padding-left: 0;
+            border: solid 1px;
+            color: #696969;
+        }
+
+        #TableHeader th {
+            padding-left: 25px;
+        }
+
+        input:not(.DateInput_input) {
+            width: 180.5px;
+            height: 38px;
+            background-color: transparent;
+            border: none;
             text-align: center;
-            margin: 4px 65px 0 65px;
+            color: #888888;
+        }
+    }
+}
+
+.CSVModal {
+
+    .ErrorMessage {
+        font-style: italic;
+        font-weight: 300 light;
+        font-size: 12px;
+        line-height: 18px;
+        color: #F67D7D;
+        text-align: center;
+        margin: 4px 65px 0 65px;
+    }
+
+    .ConfirmButton {
+        bottom: 32px;
+    }
+
+    .SelectFile {
+        display: flex;
+        justify-content: center;
+
+
+        p {
+            margin: 0px 15px 0 110px;
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 37px;
+            width: 48px;
+        }    
+
+        Button.ChooseFile {
+            width: 127px;
+            height: 37px;
+            margin: 0px 110px 0px 0px;
+            background: #EEEEEE;
+            border: 2px solid #979797;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: 500;
+            color: #4A4A4A;
+        }
+    }
+
+    .DragDrop {
+        width: 323;
+        height: 110px;
+        background: #F1EFEF;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #4A4A4A;
+        border: 3px dashed #979797;
+        padding-left: 10px;
+        padding-right: 10px;
+        position: absolute;
+        top: 178px;
+        bottom: 80px;
+        left: 40px;
+        right: 40px;
+
+        .DropHere {
+            font-size: 20px;
+            font-style: italic;
+            font-weight: 500;
+            line-height: 24px;
+            margin: 0 0 10px 0;
         }
 
-        .SelectFile {
-            display: flex;
-            justify-content: center;
-
-    
-            p {
-                margin: 0px 15px 0 110px;
-                font-size: 20px;
-                font-weight: 500;
-                line-height: 37px;
-                width: 48px;
-            }    
-    
-            Button.ChooseFile {
-                width: 127px;
-                height: 37px;
-                margin: 0px 110px 0px 0px;
-                background: #EEEEEE;
-                border: 2px solid #979797;
-                border-radius: 4px;
-                font-size: 18px;
-                font-weight: 500;
-                color: #4A4A4A;
-            }
+        .FileTypes {
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 18px;
         }
 
-        .DragDrop {
-            width: 323;
-            height: 110px;
-            background: #F1EFEF;
+        .FileName {
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #4A4A4A;
-            border: 3px dashed #979797;
-            padding-left: 10px;
-            padding-right: 10px;
-            position: absolute;
-            top: 178px;
-            bottom: 80px;
-            left: 40px;
-            right: 40px;
-
-            .DropHere {
-                font-size: 20px;
-                font-style: italic;
-                font-weight: 500;
-                line-height: 24px;
-                margin: 0 0 10px 0;
-            }
-
-            .FileTypes {
-                font-size: 15px;
-                font-weight: 400;
-                line-height: 18px;
-            }
-
+            width: 323;
+            margin: 0 0 20px 0;
             img {
-                margin: 20px 0 12px 0;
-                line-height: 10px;
+                display: inline-flex;
+                padding-left: 7px;
+                cursor: pointer; 
+                margin: 0;
             }
-
-            .FileName {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: 323;
-                margin: 0 0 20px 0;
-                img {
-                    display: inline-flex;
-                    padding-left: 7px;
-                    cursor: pointer; 
-                    margin: 0;
-                }
-            }
-
         }
 
-        .ConfirmButton {
-            font-style: bold;
-            font-size: 14px;
-            font-weight: 700;
-            line-height: 17px;
-            color: #5599DB;
-            position: absolute;
-            bottom: 32px;
-            left: 125px;
-        }
+    }
 
-        #FileLink {
-            font-style: italic;
-            font-weight: 500;
-            font-size: 18px;
-            text-decoration-line: underline;
-            color: #5599DB;
-        }
-
+    #FileLink {
+        font-style: italic;
+        font-weight: 500;
+        font-size: 18px;
+        text-decoration-line: underline;
+        color: #5599DB;
     }
 }
