@@ -62,13 +62,12 @@ const CalendarSessions = ({
         sessionCards &&
         groupBy(sessionCards, (card: ReactElement) => card.props.status);
 
-    const [collapsed, setCollapsed] = useState('Open' in groupedCards || 'Ongoing' in groupedCards || 'Upcoming' in groupedCards);
+    const [collapsed, setCollapsed] = useState(
+        'Open' in groupedCards || 
+      'Ongoing' in groupedCards || 
+      'Upcoming' in groupedCards
+    );
 
-    React.useEffect(() => {
-        if(collapsed) {
-            setCollapsed('Open' in groupedCards || 'Ongoing' in groupedCards || 'Upcoming' in groupedCards);
-        }
-    }, [groupedCards])
 
     const showCalendarExportModal = () => {
         setShowCalendarModal(true);
@@ -126,18 +125,18 @@ const CalendarSessions = ({
                         <>
                             <div className="pastHeader">
                                 <h6>Past</h6>
-                                <Icon name='chevron down' onClick={() => {console.log("setting collapsed to false"); setCollapsed(false)}}/>
+                                <Icon name='chevron down' onClick={() => {setCollapsed(false)}}/>
                             </div>
                         </>
                     ) : 
-                    (<>
-                        <div className="pastHeader">
-                            <h6>Past</h6>
-                            <Icon name='chevron up' onClick={() => setCollapsed(true)}/>
-                        </div>
-                        {groupedCards.Past}
-                    </>
-                    ))}
+                        (<>
+                            <div className="pastHeader">
+                                <h6>Past</h6>
+                                <Icon name='chevron up' onClick={() => setCollapsed(true)}/>
+                            </div>
+                            {groupedCards.Past}
+                        </>
+                        ))}
                     {'Open' in groupedCards && (
                         <>
                             <h6>Open</h6>
