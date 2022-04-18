@@ -62,12 +62,13 @@ const CalendarSessions = ({
         sessionCards &&
         groupBy(sessionCards, (card: ReactElement) => card.props.status);
 
-    const [num, inc] = useState(0);
     const [collapsed, setCollapsed] = useState('Open' in groupedCards || 'Ongoing' in groupedCards || 'Upcoming' in groupedCards);
 
     React.useEffect(() => {
-        inc(num + 1);
-    }, [collapsed])
+        if(collapsed) {
+            setCollapsed('Open' in groupedCards || 'Ongoing' in groupedCards || 'Upcoming' in groupedCards);
+        }
+    }, [groupedCards])
 
     const showCalendarExportModal = () => {
         setShowCalendarModal(true);
