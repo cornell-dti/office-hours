@@ -1,17 +1,127 @@
 .AnnouncementContainer {
   background-color: white;
   margin: 20px 48px;
-  padding: 20px 12px;
   position: relative;
   text-align: center;
-  display: flex;
   border-radius: 10px;
 
-  .AnnouncementTitle {
-    font-weight: 500;
-    font-size: 18px;
-    line-height: 21px;
-    color: #484848;
+  .AnnouncementTop {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 12px;
+
+    .AnnouncementTitle {
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 21px;
+      color: #484848;
+    }
+
+    .AnnouncementIcons {
+      img {
+        cursor: pointer;
+      }
+
+      img+img {
+        margin-left: 16px;
+        margin-right: 16px;
+        padding-bottom: 4px;
+      }
+    }
   }
+
+  .AnnouncementBottom {
+    text-align: left;
+    padding-bottom: 20px;
+
+    .NoAnnouncement {
+      font-style: italic;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 14px;
+      color: #696969;
+      padding: 0 12px;
+    }
+
+
+    .NewAnnouncement {
+      background: #D6EAFE;
+      border-radius: 4px;
+      padding: 8px 12px;
+
+      .NewAnnouncementTop {
+        margin-top: 5px;
+        display: flex;
+
+        .NewAnnouncementTaName {
+          font-size: 16px;
+          line-height: 28px;
+          margin: 0px 8px;
+        }
+      }
+
+      .NewAnnouncementMiddle {
+        margin: 10px 0;
+        padding: 10px 9px;
+        background: #FFFFFF;
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+
+        .NewAnnouncementInput {
+          width: 90%;
+
+          input {
+            border: none;
+            width: 100%;
+          }
+
+          input::placeholder {
+            color: #888888;
+          }
+        }
+
+        .NewAnnouncementLength {
+          color: #888888;
+        }
+
+
+
+      }
+
+      .NewAnnouncementBottom {
+        text-align: right;
+
+        span {
+          cursor: pointer;
+          font-size: 12px;
+          line-height: 16px;
+          text-decoration-line: underline;
+        }
+
+        .CancelButton {
+          color: #F46565;
+        }
+
+        .PostButton {
+          color: #5599DB;
+        }
+
+        span+span {
+          margin-left: 20px;
+        }
+
+      }
+
+
+
+    }
+
+
+
+
+  }
+
 
 }
