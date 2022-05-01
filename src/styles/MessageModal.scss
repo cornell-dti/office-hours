@@ -331,11 +331,7 @@
         margin: 0 3px 77px 15px;
         width: 370px;
         margin-top: 12px;
-        overflow: auto;
-        // border: solid;
-        // border-color: #696969;
-        // border-radius: 6px;
-        // background-color: #F5F5F5;
+        overflow: visible;
         border-spacing: 0;
 
         img {
@@ -391,21 +387,21 @@
             // border: none;
             text-align: center;
 
-            select {
+            .RoleOptions {
                 outline: none;
                 border: none;
                 scroll-behavior: smooth;
                 background-color: transparent;
                 width: 100%;
-                justify-content: center;
-                border-radius: 0px;
-                margin-top: 10px;
                 text-align: center;
                 font-family: Roboto;
                 font-size: 14px;
+                margin-top: 10px;
+                justify-content: center;
                 font-weight: 400px;
                 color: #696969;
-
+                position: relative;
+                width: 100px;
             }
         }
 

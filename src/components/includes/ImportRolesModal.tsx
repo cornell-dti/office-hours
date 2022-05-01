@@ -285,17 +285,6 @@ const ImportRolesModal = (
             updatedUser[i].key = i;
         }
         setNewUsers(updatedUser)
-        // if (updateUser.length)
-        for (let i = 0; i < newUsers.length; i++) {
-            console.log(newUsers[key].role)
-        }
-        // let td = event.target.parentNode;
-        // let tr = td.parentNode;
-        // tr.parentNode.removeChild(tr);
-        // console.log(newUsers)
-        // this.setState(prevState => ({
-        //     prevState.newUsers.filter(user => user.key !== key)
-        // }))
     }
 
     const handleUpdateRole = (event: React.ChangeEvent<HTMLSelectElement>, key: number): void => {
@@ -328,6 +317,41 @@ const ImportRolesModal = (
     const showDropdown = () => {
         document.getElementById('RoleOptions')?.classList.add("hidden");
     }
+
+    const RoleDropdown = ({
+        user,
+        disabled
+    }: {
+        readonly user: NewUser;
+        readonly disabled?: boolean;
+    }) => {
+        return (
+            <Dropdown
+                className='RoleOptions'
+                options={[
+                    { key: 1, text: 'Professor', value: 'Professor' },
+                    { key: 2, text: 'TA', value: 'TA' },
+                ]}
+                disabled={disabled}
+                defaultValue={user.role}
+                onChange={(e, newValue) => {
+                    const value = newValue.value as string;
+                    const updatedUser = {
+                        ...newUsers[user.key],
+                        role: value
+                    }
+                    for (let i = 0; i < newUsers.length; i++)  {
+                        console.log(newUsers[i].role);
+                    }
+
+                    const begining = newUsers.slice(0, user.key); 
+                    const end = newUsers.slice(user.key+ 1)
+
+                    setNewUsers([...begining, updatedUser, ...end])  
+                }}
+            />
+        );
+    };
 
     useEffect(() => {
         processCSV();
@@ -513,10 +537,14 @@ const ImportRolesModal = (
                                                     />
                                                 </td>
                                                 <td>
-                                                    <select name='RoleOptions' id='role' defaultValue={user.role} onChange={(e) => handleUpdateRole(e, user.key)}>
+                                                    {/* <select name='RoleOptions' id='role' defaultValue={user.role} onChange={(e) => handleUpdateRole(e, user.key)}>
                                                         <option value='Professor'>Professor</option>
                                                         <option value='TA'>TA</option>
-                                                    </select>
+                                                    </select> */}
+                                                    <RoleDropdown
+                                                        user={user}
+                                                        disabled={false}
+                                                    />
 
                                                 </td>
                                                 <td>
