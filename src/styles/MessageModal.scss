@@ -16,12 +16,18 @@
     z-index: 9999;
 }
 
+.NotificationModalVisible {
+    img {
+        top: 50px;
+    }
+}
+
 .ImportRolesModalVisible,
 .CalendarExportModalVisible,
 .NotificationModalVisible,
 .JoinErrorMessageVisible {
-    width: 687px;
-    height: 407px;
+    width: 450px;
+    height: 300px;
     border-radius: 8px;
     display: flex;
     position: fixed;
@@ -31,21 +37,21 @@
 
     img {
         position: absolute;
-        height: 64px;
-        width: 64px;
-        top: 126px;
+        height: 45px;
+        width: 45px;
+        top: 120px;
         align-self: center;
     }
 
     p {
         align-self: center;
         position: absolute;
-        width: 353px;
-        top: 224px;
+        width: 300px;
+        top: 160px;
         font-family: Roboto;
         font-style: normal;
         font-weight: 500;
-        font-size: 25px;
+        font-size: 20px;
         line-height: 29px;
         color: #5599db;
     }
@@ -66,24 +72,32 @@
     }
 }
 
+.NotificationModalVisible {
+    img {
+        top: 90px;
+    }
+}
+
 .ImportRolesModalVisible,
 .CalendarExportModalVisible {
-    width: 700px;
-    height: 400px;
+    width: 450px;
+    height: 300px;
 }
 
 .ImportRolesModalScreen,
 .CalendarExportModalScreen {
     .Title {
         font-weight: 500;
-        font-size: 25px;
+        font-size: 20px;
         line-height: 20px;
         color: #484848;
-        margin: 10px 0 60px 0; 
+        margin: 0 0 45px 0; 
     }
 
     .CalendarContainer {
         display: flex;
+        width: 450px;
+        height: 300px;
     }
 
     .CalendarItem {
@@ -91,26 +105,27 @@
         text-align: center;
         display: flex;
         justify-content: center;
+        height: 250px;
         
         img {
-            margin-top: 10px;
+            margin-top: 0px;
         }
     }
 
     .ExportText {
-        font-size: 20px;
+        font-size: 16px;
         text-align: center;
         text-decoration-line: underline;
         color: #5599db;
-        margin-top: 110px;
-        width: 200px;
+        margin-top: 80px;
+        width: 150px;
         line-height: 25px;
         cursor: pointer;
     }
 
     .Line {
         border: 1px solid #484848;
-        height: 200px;
+        height: 140px;
     }
 }
 
@@ -149,7 +164,7 @@
 
     .ImportRolesModalVisible,
     .CalendarExportModalVisible {
-        width: 80%;
+        // width: 50%;
 
         .ExportText {
             font-size: 15px;
@@ -199,6 +214,8 @@
         display: flex;
         text-align: center;
         flex-direction: column;
+        // height: 290px;
+        overflow: auto;
 
         .ConfirmButton {
             font-style: bold;
@@ -206,9 +223,9 @@
             font-weight: 700;
             line-height: 17px;
             color: #5599DB;
-            position: absolute;
+            // position: absolute;
             // bottom: 32px;
-            left: 139px;
+            // left: 139px;
         }
 
         p {
@@ -249,10 +266,21 @@
     }
 }
 
+.EnterContainer {
+    overflow: auto;
+    height: 240px;
+}
+
 .CSVContainer {
     height: 275px;
     width: 430px;
     display: flex;
+
+    .ConfirmButton {
+        bottom: 32px;
+        left: 139px;
+        position: absolute;
+    }
 }
 
 .EnterContainer {
@@ -264,15 +292,25 @@
 
     .AddButton {
         line-height: 17px;
-        position: absolute;
-        bottom: 55px;
+        position: relative;
+        bottom: 65px;
         left: 210px;
         width: 15px;
     }
 
+    .ErrorMessage {
+        font-style: italic;
+        font-weight: 300 light;
+        font-size: 12px;
+        line-height: 18px;
+        color: #F67D7D;
+        text-align: center;
+        margin: -30px 65px 20px 65px;
+    }
 
     .ConfirmButton {
-        bottom: 20px;
+        position: relative;
+        bottom: 50px;
     }
 
     .ColTitles {
@@ -290,35 +328,85 @@
 
     table {
         display: inline-block;
-        margin-bottom: 77px;
+        margin: 0 3px 77px 15px;
         width: 370px;
         margin-top: 12px;
-        border: solid;
-        border-color: #696969;
-        border-radius: 6px;
-        background-color: #F5F5F5;
+        overflow: auto;
+        // border: solid;
+        // border-color: #696969;
+        // border-radius: 6px;
+        // background-color: #F5F5F5;
         border-spacing: 0;
 
+        img {
+            width: 13px;
+            height: 13px;
+            margin-top: 15px;
+            margin-left: 5px;
+        }
+
         tr:first-child {
-            border-left: none;
+            td:nth-last-child(2) {
+                border-top-right-radius: 6px;
+            }
+        }
+
+        tr:first-child {
+            td:first-of-type {
+                border-top-left-radius: 6px;
+            }
         }
 
         tr:last-child {
-            border-right: none;
+
+            td:nth-last-child(2) {
+                border-bottom-right-radius: 6px;
+            }
         }
 
-        td:first-child {
-            border-top: none;
+        tr:last-child {
+            td:first-of-type {
+                border-bottom-left-radius: 6px;
+            }
         }
 
-        td:last-child {
-            border-bottom: none;
+        td:last-of-type {
+            border: none;
+            background-color: transparent;
+            width: 10px;
+            margin-left: 5px;
         }
 
-        th {
+        td:nth-last-child(2) {
+            padding-bottom: 10px;
+        }
+
+        td {
             padding-left: 0;
             border: solid 1px;
             color: #696969;
+            width: 170.5px;
+            height: 38px;
+            background-color: #F5F5F5;
+            // border: none;
+            text-align: center;
+
+            select {
+                outline: none;
+                border: none;
+                scroll-behavior: smooth;
+                background-color: transparent;
+                width: 100%;
+                justify-content: center;
+                border-radius: 0px;
+                margin-top: 10px;
+                text-align: center;
+                font-family: Roboto;
+                font-size: 14px;
+                font-weight: 400px;
+                color: #696969;
+
+            }
         }
 
         #TableHeader th {

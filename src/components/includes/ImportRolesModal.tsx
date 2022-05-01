@@ -1,12 +1,17 @@
-import React, { Dispatch, SetStateAction, useState, useEffect, useCallback } from "react";
+import React, { Dispatch, SetStateAction, useState, useEffect, useCallback, ReactHTMLElement, useRef } from "react";
 
-import { Icon } from 'semantic-ui-react';
+import { Dropdown, Icon } from 'semantic-ui-react';
 import ArrowBackIcon from '../../media/back.svg';
 import EditIcon from '../../media/edit.svg';
 import FileIcon from '../../media/file.svg';
+import ExpandIcon from '../../media/expand.svg';
+import DeleteIcon from '../../media/delete.svg';
 import { importProfessorsOrTAsFromCSV} from '../../firebasefunctions/importProfessorsOrTAs';
 import CloseIcon from '../../media/CloseIcon.svg';
 import AddEmailIcon from '../../media/AddEmailIcon.svg';
+import { table } from "console";
+import { updateUser } from "../../redux/actions/auth";
+import nanoid from 'nanoid';
 
 type NewUser = {
     key: number;
@@ -17,34 +22,50 @@ type NewUser = {
 const ImportRolesModal = (
     { onReturn, course, getAddedUsersList, getMissingUsers, showImportModal, setShowImportModal }: 
     { onReturn: () => void; course: FireCourse | undefined; getAddedUsersList: (emails: string[]) => void ; 
-        getMissingUsers: (emails: string[]) => void; showImportModal: boolean; setShowImportModal: Dispatch<SetStateAction<boolean>>;}
+        getMissingUsers: (emails: string[]) => void; showImportModal: boolean; 
+        setShowImportModal: Dispatch<SetStateAction<boolean>>;}
 ) => {
     const [uploadType, setUploadType] = useState('none');
+    const [EnterErrorMessage, setEnterErrorMessage] = useState('none');
     const [selectedFile, setSelectedFile] = useState<File | undefined>();
     const [CSVErrorMessage, setCSVErrorMessage] = useState('none');
-    // const [EnterErrorMessage, setEnterErrorMessage] = useState('none');
     const [TAEmailList, setTAEmailList] = useState<string[]>();
     const [professorEmailList, setProfessorEmailList] = useState<string[]>();
     const [newUsers, setNewUsers] = useState<NewUser[]>([
         {
             key: 0, 
             email: '', 
-            role: ''
+            role: 'Professor'
         },
         {
-            key: 0, 
+            key: 1, 
             email: '', 
-            role: ''
+            role: 'Professor'
         },
         {
-            key: 0, 
+            key: 2, 
             email: '', 
-            role: ''
+            role: 'Professor'
         },
     ]);
     
     const closeModal = () => {
         setShowImportModal(false);
+        setNewUsers([{
+            key: 0, 
+            email: '', 
+            role: 'Professor'
+        },
+        {
+            key: 1, 
+            email: '', 
+            role: 'Professor'
+        },
+        {
+            key: 2, 
+            email: '', 
+            role: 'Professor'
+        }]);
         setUploadType('none'); 
         setCSVErrorMessage('none');
         setSelectedFile(undefined);
@@ -106,7 +127,8 @@ const ImportRolesModal = (
                 if (data) {
                     const header = data[0].split(',');
                     if (header.length !== 2) {
-                        setCSVErrorMessage('*Your CSV file must contain a header line with at least the Email and Role columns.')
+                        setCSVErrorMessage(
+                            '*Your CSV file must contain a header line with at least the Email and Role columns.')
                         return;
                     }                    
 
@@ -184,6 +206,51 @@ const ImportRolesModal = (
         }
     }
 
+    const processListOfUsers = () => {
+        setEnterErrorMessage('none');
+        if (newUsers.length === 0) {
+            setEnterErrorMessage('Enter a role to add');
+        }
+        newUsers.forEach(user => {
+            const role = user.role.trim();
+            const email = user.email.trim();
+            if (role === '' && email === '') {
+                if (user.key !== 0) {
+                    setNewUsers([...newUsers.slice(0, user.key), ...newUsers.slice(user.key+1)]);
+                }
+            } else if (email === '') {
+                setEnterErrorMessage('Enter an email for each role');
+            } else if (!isValidEmail(email)) {
+                setEnterErrorMessage('Enter valid email for each role');
+            } else if (role !== 'Professor' && role !== 'TA') {
+                setEnterErrorMessage('Enter valid roles (either "Professor" or "TA")');
+            }
+
+            const TAList = newUsers.filter(user => user.role === 'TA'); 
+            const professorList = newUsers.filter(user => user.role === 'Professor')
+
+            const TAEmailList = TAList.map(user => user.email.toLowerCase());
+            const professorEmailList = professorList.map(user => user.email.toLowerCase());
+
+            setTAEmailList(TAEmailList);
+            setProfessorEmailList(professorEmailList);
+            
+        })
+    }
+
+    const finishEnter = () => {
+        if (EnterErrorMessage === 'none') {
+            addTAandProfessors();
+            setShowImportModal(false);
+            setUploadType('none');
+            Promise.resolve()
+                .then(() => {
+                    onReturn();
+                    
+                });
+        }
+    }
+
     const finish = () => {
         if (selectedFile && CSVErrorMessage==='none') {
             addTAandProfessors();
@@ -204,25 +271,71 @@ const ImportRolesModal = (
             [name]: value
         }
 
+        const beginning = newUsers.slice(0, key); 
+        const end = newUsers.slice(key+ 1)
+
+        setNewUsers([...beginning, updatedUser, ...end])      
+        console.log(newUsers[key].email)  
+    }
+
+    const deleteRow = (key: number) => (event: any) => {
+        console.log(newUsers[key].role)
+        const updatedUser = newUsers.filter((user) => user.key !== key)
+        for (let i = key; i <updatedUser.length; i++) {
+            updatedUser[i].key = i;
+        }
+        setNewUsers(updatedUser)
+        // if (updateUser.length)
+        for (let i = 0; i < newUsers.length; i++) {
+            console.log(newUsers[key].role)
+        }
+        // let td = event.target.parentNode;
+        // let tr = td.parentNode;
+        // tr.parentNode.removeChild(tr);
+        // console.log(newUsers)
+        // this.setState(prevState => ({
+        //     prevState.newUsers.filter(user => user.key !== key)
+        // }))
+    }
+
+    const handleUpdateRole = (event: React.ChangeEvent<HTMLSelectElement>, key: number): void => {
+        const value = event.target.value;
+        const name = event.target.id;
+        const updatedUser = {
+            ...newUsers[key],
+            [name]: value
+        }
+        for (let i = 0; i < newUsers.length; i++)  {
+            console.log(newUsers[i].role);
+        }
+
         const begining = newUsers.slice(0, key); 
         const end = newUsers.slice(key+ 1)
 
-        setNewUsers([...begining, updatedUser, ...end])        
+        setNewUsers([...begining, updatedUser, ...end])   
     }
 
     const addNewCell = () => {
         const newEmptyUser = {
-            key: newUsers.length,
+            key: newUsers.length, 
             email: '',
-            role: ''
+            role: 'Professor'
         }
 
         setNewUsers([...newUsers, newEmptyUser]);
     }
 
+    const showDropdown = () => {
+        document.getElementById('RoleOptions')?.classList.add("hidden");
+    }
+
     useEffect(() => {
         processCSV();
     }, [selectedFile, processCSV])
+
+    useEffect(() => {
+        processListOfUsers();
+    }, [newUsers])
  
     return (
         <>
@@ -341,7 +454,9 @@ const ImportRolesModal = (
                                     </div>}
                             </div>   
 
-                            <button type="button" className="ConfirmButton" onClick={finish}>CONFIRM &amp; FINISH  &gt;</button>
+                            <button type="button" className="ConfirmButton" onClick={finish}>
+                                CONFIRM &amp; FINISH  &gt;
+                            </button>
 
                         </div>
 
@@ -372,6 +487,9 @@ const ImportRolesModal = (
                             </button>
                         </div>
                         <div className='Title'>Enter email(s) and roles manually</div>
+                        {EnterErrorMessage !== 'none' && <div className="ErrorMessage">
+                                {EnterErrorMessage}
+                        </div>}
                         <div className="EnterContainer">
                             <div className="ColTitles">
                                 <p>Enter Email</p>
@@ -381,35 +499,44 @@ const ImportRolesModal = (
                                 <table>
                                     <tbody>
                                         {newUsers.map(user => {
-                                            return (<tr key={user.key}>                                   
-                                                <th>
+                                            return (<tr key={user.key}> 
+                                                {/* <td>{user.key}</td>                                   */}
+                                                <td>
                                                     <input 
                                                         id="email" 
                                                         value={user.email} 
-                                                        onChange={(e) => handleUpdateUsers(e, user.key)} 
-                                                        // placeholder={newUsers.length === 3 ? 
-                                                        //     'example@cornell.edu': ''} 
+                                                        onChange={(e) => {
+                                                            handleUpdateUsers(e, user.key)
+                                                        }} 
                                                         placeholder='example@cornell.edu'
                                                         autoComplete="off"
                                                     />
-                                                </th>
-                                                <th>
-                                                    <input 
-                                                        id="role" 
-                                                        value={user.role} 
-                                                        onChange={(e) => handleUpdateUsers(e, user.key)} 
-                                                        // placeholder={newUsers.length === 3? 'Professor': ''} 
-                                                        placeholder='Professor'
-                                                        autoComplete="off"
+                                                </td>
+                                                <td>
+                                                    <select name='RoleOptions' id='role' defaultValue={user.role} onChange={(e) => handleUpdateRole(e, user.key)}>
+                                                        <option value='Professor'>Professor</option>
+                                                        <option value='TA'>TA</option>
+                                                    </select>
+
+                                                </td>
+                                                <td>
+                                                    <img
+                                                        src={DeleteIcon}
+                                                        alt='Enter Manually'
+                                                        onClick={deleteRow(user.key)}
                                                     />
-                                                </th>
-                                            </tr>);
+                                                </td>
+                                            </tr>
+                                            
+                                            );
                                         })}
                                     </tbody>
                                 </table>
                             </div>
                             <img className="AddButton" onClick={addNewCell} src={AddEmailIcon} alt="add"/>
-                            <button type="button" className="ConfirmButton" onClick={finish}>CONFIRM &amp; FINISH  &gt;</button>
+                            <button type="button" className="ConfirmButton" onClick={finishEnter}>
+                                CONFIRM &amp; FINISH  &gt;
+                            </button>
                         </div>
                     </div>
                 </div>
