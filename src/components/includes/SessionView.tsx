@@ -193,6 +193,8 @@ const SessionView = (
                 questions={questions.filter(q => q.status === 'unresolved')}
             />
 
+            {console.log(session)}
+
             <TaAnnouncements />
 
             {undoQuestionId &&

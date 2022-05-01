@@ -6,6 +6,12 @@ interface FireTimestamp {
 
 type FireSessionModality = 'in-person' | 'hybrid' | 'virtual' | 'review';
 
+interface TaAnnouncement {
+    ta: FireUser; 
+    announcement: string; 
+    uploadTime: FireTimestamp; 
+}
+
 interface FireBaseSession {
     modality: FireSessionModality;
     courseId: string;
@@ -20,6 +26,7 @@ interface FireBaseSession {
     resolvedQuestions: number;
     totalWaitTime: number;
     totalResolveTime: number;
+    taAnnouncemements?: TaAnnouncement[]; 
 }
 
 interface FireSessionLocation {

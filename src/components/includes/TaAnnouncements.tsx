@@ -20,7 +20,7 @@ const TaAnnouncements = () => {
     setShowNewAnnouncement(true);
   }
 
-  const clickChevronIcon = () => {
+  const collapseBody = () => {
     setShowBody(state => !state)
     setShowAnnouncements(true);
   }
@@ -30,7 +30,9 @@ const TaAnnouncements = () => {
   }
 
   const onClickCancelButton = () => {
-    alert("remove announcement? collapse?")
+    setAnnouncementContent("")
+    collapseBody();
+
   }
 
   const onClickPostButton = () => {
@@ -44,12 +46,6 @@ const TaAnnouncements = () => {
     }
   }, [showBody])
 
-
-
-
-
-
-
   return (
     <div className="AnnouncementContainer">
       <div className="AnnouncementTop">
@@ -58,7 +54,7 @@ const TaAnnouncements = () => {
         </div>
         <div className="AnnouncementIcons">
           <img src={plusCircle} alt="Add New Announcement" onClick={clickCircleIcon} />
-          <img src={showBody ? chevronUp : chevronDown} alt="View Announcements" onClick={clickChevronIcon} />
+          <img src={showBody ? chevronUp : chevronDown} alt="View Announcements" onClick={collapseBody} />
         </div>
       </div>
       {showBody &&
