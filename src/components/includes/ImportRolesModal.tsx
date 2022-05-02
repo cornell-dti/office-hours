@@ -235,7 +235,7 @@ const ImportRolesModal = (
         setNewUsers([...beginning, updatedUser, ...end])      
     }
 
-    const deleteRow = (key: number) => (event: any) => {
+    const deleteRow = (key: number) => {
         const updatedUser = newUsers.filter((user) => user.key !== key)
         for (let i = key; i <updatedUser.length; i++) {
             updatedUser[i].key = i;
@@ -471,7 +471,7 @@ const ImportRolesModal = (
                         </div>
                         <div className='Title'>Enter email(s) and roles manually</div>
                         {EnterErrorMessage !== 'none' && <div className="ErrorMessage">
-                                {EnterErrorMessage}
+                            {EnterErrorMessage}
                         </div>}
                         <div className="EnterContainer">
                             <div className="ColTitles">
@@ -504,7 +504,7 @@ const ImportRolesModal = (
                                                     <img
                                                         src={DeleteIcon}
                                                         alt='Delete role'
-                                                        onClick={deleteRow(user.key)}
+                                                        onClick={() => deleteRow(user.key)}
                                                     />
                                                 </td>
                                             </tr>
