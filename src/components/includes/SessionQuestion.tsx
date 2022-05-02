@@ -9,7 +9,7 @@ import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
 import { addQuestion } from '../../firebasefunctions/sessionQuestion';
 
-import { firestore, auth } from '../../firebase';
+import { firestore } from '../../firebase';
 
 import {
     markStudentNoShow,
@@ -211,13 +211,14 @@ class SessionQuestion extends React.Component<Props, State> {
         // const [redirect, setRedirect] = useState<boolean>(false);
 
         markQuestionDone(firestore, this.props.question);
-        // this.props.clearQuestionAssigned();
+        this.props.clearQuestionAssigned();
 
+        const user = this.props.users[ques.askerId];
         const primaryTag: FireTag = this.props.tags[ques.primaryTag]
         const secondaryTag: FireTag = this.props.tags[ques.secondaryTag];
 
         addQuestion(
-            auth.currentUser,
+            user,
             quesSession,
             firestore,
             String(ques.location),
