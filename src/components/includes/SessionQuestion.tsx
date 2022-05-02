@@ -7,7 +7,7 @@ import Linkify from 'linkifyjs/react';
 import { connect } from 'react-redux';
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
-import { addQuestion } from '../../firebasefunctions/sessionQuestion';
+import { updateQuestionPosition } from '../../firebasefunctions/sessionQuestion';
 
 import { firestore } from '../../firebase';
 
@@ -214,18 +214,11 @@ class SessionQuestion extends React.Component<Props, State> {
         this.props.clearQuestionAssigned();
 
         const user = this.props.users[ques.askerId];
-        const primaryTag: FireTag = this.props.tags[ques.primaryTag]
-        const secondaryTag: FireTag = this.props.tags[ques.secondaryTag];
 
-        addQuestion(
+        updateQuestionPosition(
             user,
             quesSession,
-            firestore,
-            String(ques.location),
-            primaryTag,
-            secondaryTag,
-            ques.content,
-            Boolean(ques.isVirtual)
+            firestore
         );
         // setRedirect(allowRedirect);
     }
