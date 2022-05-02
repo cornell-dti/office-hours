@@ -17,8 +17,8 @@ type NewUser = {
 }
 
 const ImportRolesModal = (
-    { onReturn, course, getAddedUsersList, getMissingUsers, showImportModal, setShowImportModal }: 
-    { onReturn: () => void; course: FireCourse | undefined; 
+    { course, getAddedUsersList, getMissingUsers, showImportModal, setShowImportModal }: 
+    { course: FireCourse | undefined; 
         getAddedUsersList: (emails: string[]) => void ; 
         getMissingUsers: (emails: string[]) => void; showImportModal: boolean; 
         setShowImportModal: Dispatch<SetStateAction<boolean>>;}
@@ -209,11 +209,6 @@ const ImportRolesModal = (
             addTAandProfessors();
             setShowImportModal(false);
             setUploadType('none');
-            Promise.resolve()
-                .then(() => {
-                    onReturn();
-                    
-                });
         }
     }
 
@@ -223,11 +218,6 @@ const ImportRolesModal = (
             setShowImportModal(false);
             setUploadType('none');
             setSelectedFile(undefined);
-            Promise.resolve()
-                .then(() => {
-                    onReturn();
-                    
-                });
         }
     }
 
