@@ -65,11 +65,12 @@ export const updateQuestionPosition = (
     user: FireUser | null,
     session: FireSession,
     db: firebase.firestore.Firestore,
+    questionId: string
 
 ): boolean => {
     if (user != null) {
         const batch = db.batch();
-        const questionId = db.collection('questions').doc().id;
+        // const questionId = db.collection('questions').doc().id;
         const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
             askerId: user.userId,
             sessionId: session.sessionId,
@@ -77,12 +78,13 @@ export const updateQuestionPosition = (
             timeEntered: firebase.firestore.Timestamp.now()
         };
 
-        batch.set(db.collection('questionSlots').doc(questionId), newQuestionSlot);
+        // batch.set(db.collection('questionSlots').doc(questionId), newQuestionSlot);
+
+        batch.update(db.collection('questionSlots').doc(questionId), newQuestionSlot);
         batch.commit();
 
         return true
     }
-
     return false
 }
 export const markStudentNoShow = (

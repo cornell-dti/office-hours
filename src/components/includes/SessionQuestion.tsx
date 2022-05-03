@@ -208,6 +208,7 @@ class SessionQuestion extends React.Component<Props, State> {
     moveToBottom = () => {
         const ques = this.props.question;
         const quesSession = this.props.session;
+        const questionId = this.props.question.questionId;
         // const [redirect, setRedirect] = useState<boolean>(false);
 
         markQuestionDone(firestore, this.props.question);
@@ -218,7 +219,8 @@ class SessionQuestion extends React.Component<Props, State> {
         updateQuestionPosition(
             user,
             quesSession,
-            firestore
+            firestore,
+            questionId
         );
         // setRedirect(allowRedirect);
     }
