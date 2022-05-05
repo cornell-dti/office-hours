@@ -209,11 +209,6 @@ class SessionQuestion extends React.Component<Props, State> {
         const ques = this.props.question;
         const quesSession = this.props.session;
         const questionId = this.props.question.questionId;
-        // const [redirect, setRedirect] = useState<boolean>(false);
-
-        markQuestionDone(firestore, this.props.question);
-        this.props.clearQuestionAssigned();
-
         const user = this.props.users[ques.askerId];
 
         updateQuestionPosition(
@@ -222,7 +217,6 @@ class SessionQuestion extends React.Component<Props, State> {
             firestore,
             questionId
         );
-        // setRedirect(allowRedirect);
     }
 
     questionDontKnow = () => {

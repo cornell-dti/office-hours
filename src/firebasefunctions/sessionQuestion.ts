@@ -70,7 +70,6 @@ export const updateQuestionPosition = (
 ): boolean => {
     if (user != null) {
         const batch = db.batch();
-        // const questionId = db.collection('questions').doc().id;
         const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
             askerId: user.userId,
             sessionId: session.sessionId,
