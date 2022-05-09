@@ -223,6 +223,7 @@
         bottom: 65px;
         left: 210px;
         width: 15px;
+        cursor: pointer;
     }
 
     .ErrorMessage {
@@ -256,9 +257,10 @@
 
         img {
             width: 13px;
-            height: 13px;
-            margin-top: 15px;
+            display: flex;
+            align-items: center;
             margin-left: 5px;
+            cursor: pointer;
         }
 
         tr:first-child {
