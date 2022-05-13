@@ -49,6 +49,15 @@
           background: white;
         }
       }
+      .Undo {
+        background: #ffffff;
+        border: 1px solid #b41515;
+        color: #b41515;
+        box-sizing: border-box;
+        border-radius: 4px;
+        padding: 3px 34px;
+        cursor: pointer;
+      }
     }
   }
 
@@ -155,26 +164,18 @@
       font-weight: 300;
     }
 
-    .Question.Student {
-      padding-top: 16px;
-    }
-  }
+    .QuestionInfo {
+      float: left;
+      font-size: 14px;
 
-  .TopBar {
-    display: flex;
-    justify-content: flex-start;
-  }
-
-  .hybridBadge {
-    text-align: center;
-    font-size: 10px;
-    color: white;
-    border-radius: 15px;
-    display: inline-block;
-    padding: 0px 5px;
-    margin-right: 5px;
-    &.virtual {
-      background-color: #ec4339;
+      .studentInformation {
+        display: inline-block;
+        width: 100%;
+        padding-top: 11px;
+        padding-left: 12px;
+        // padding: 11px 0px 0px 12px;
+        text-align: left;
+      }
     }
     &.inPerson {
       background-color: #5599db;
@@ -230,324 +231,419 @@
 
       .commentText {
         font-weight: 300;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.33;
-        letter-spacing: normal;
-      }
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        p {
+          font-size: 12px;
+        }
 
-      .commentTextArea {
-        width: 90%;
-      }
+        .Tags {
+          float: left;
+          text-align: left;
 
-      .commentBtnHolder {
-        margin-top: 12px;
-        font-weight: 300;
+          .tag {
+            cursor: default;
+          }
+        }
 
-        .commentSaveBtn {
-          width: 107px;
-          height: 23px;
+        .Time {
+          float: right;
+          font-weight: 300;
+          color: black;
+          padding-right: 25px;
+        }
+
+        .commentBtn {
+          background-color: Transparent;
+          outline: none;
           border: none;
-          color: white;
-          border-radius: 4px;
-          background-color: #3594f1;
+          cursor: pointer;
         }
 
-        .commentCancelBtn {
-          margin-left: 20px;
-          width: 107px;
-          height: 23px;
-          border-radius: 4px;
-          border: solid 1px black;
-          background-color: white;
-        }
-      }
-    }
-  }
-
-  .LocationPin {
-    display: inline-block;
-    float: right;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    i {
-      color: $number-blue;
-      font-size: 1.25em;
-      cursor: pointer;
-    }
-
-    .modalShade {
-      display: none;
-    }
-
-    @media only screen and (max-width: $mobile-breakpoint) {
-      .modalShade {
-        display: block;
-      }
-    }
-  }
-
-  .Location {
-    font-size: 12px;
-    text-align: left;
-    padding: 5px 12px 0 12px;
-    margin: 0em;
-    color: #595959;
-    font-weight: 300;
-    display: flex;
-    align-items: center;
-  }
-
-  .LocationTooltip {
-    position: absolute;
-    top: 45px;
-    left: 20px;
-    width: 315px;
-    height: 64px;
-    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
-    background: #ffffff;
-    font-size: 12px;
-    padding: 8px 0 0 20px;
-    text-align: left;
-    z-index: 100;
-
-    i {
-      cursor: pointer;
-    }
-
-    @media only screen and (max-width: $mobile-breakpoint) {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 9999;
-      width: 311px;
-      height: 162px;
-      border-radius: 8px;
-      padding: 26px 0 0 24px;
-      font-size: 14px;
-    }
-
-    p {
-      color: #000000;
-      margin-bottom: 6px;
-
-      @media only screen and (max-width: $mobile-breakpoint) {
-        margin-bottom: 20px;
-      }
-
-      .characterCount {
-        opacity: 0.5;
-        font-size: 11px;
-
-        @media only screen and (max-width: $mobile-breakpoint) {
-          font-size: 14px;
+        .commentTextArea {
+          width: 90%;
         }
 
-        &.warn {
-          color: #ce2a2a;
+        .Question {
+          text-align: left;
+          padding: 8px 12px;
+          margin: 0em;
+          color: #595959;
+          font-weight: 300;
+        }
+
+        .Question.Student {
+          padding-top: 16px;
+        }
+
+        .CommentBox {
+          margin-top: 12px;
+          font-weight: 300;
+
+          .commentSaveBtn {
+            width: 107px;
+            height: 23px;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            background-color: #3594f1;
+          }
+
+          .commentCancelBtn {
+            margin-left: 20px;
+            width: 107px;
+            height: 23px;
+            border-radius: 4px;
+            border: solid 1px black;
+            background-color: white;
+          }
         }
       }
     }
 
-    .TextInput {
-      font-weight: normal;
-      border: 0px;
-      color: $text-grey;
-      padding: 5px 25px 5px 8px;
-      resize: none;
-      border-radius: 3px;
-      background-color: #edeff2;
-      height: 24px;
-      width: 275px;
-      opacity: 0.6;
-      cursor: text;
-
-      @media only screen and (max-width: $mobile-breakpoint) {
-        width: 264px;
-        height: 45px;
-      }
-    }
-
-    .ui.inline.loader.active,
-    .ui.inline.loader.visible,
-    .check.icon {
-      position: absolute;
-      top: 35px;
-      left: 275px;
-      color: #afabab;
-
-      @media only screen and (max-width: $mobile-breakpoint) {
-        top: 80px;
-        left: 260px;
-      }
-    }
-
-    .DoneButton {
-      display: none;
-
-      @media only screen and (max-width: $mobile-breakpoint) {
-        display: block;
-        margin: 26px 0 0 -24px;
-        background-color: $brand-primary;
-        height: 44px;
-        border-bottom-left-radius: 8px;
-        border-bottom-right-radius: 8px;
-        text-align: center;
-        padding: 12px 0;
-        font-size: 20px;
-        font-weight: 300;
-        color: #ffffff;
-      }
-    }
-  }
-
-  .LocationTooltip::after {
-    @media only screen and (min-width: $mobile-breakpoint) {
-      content: "";
-      position: absolute;
-      width: 0;
-      height: 0;
-      top: 0;
-      right: 15px;
-      box-sizing: border-box;
-      border: 4px solid black;
-      border-color: #ffffff #ffffff transparent transparent;
-      transform-origin: 0 0;
-      transform: rotate(-45deg);
-      box-shadow: 1px -1px 1px 0 rgba(0, 0, 0, 0.15);
-    }
-  }
-
-  .BottomBar {
-    width: 100%;
-    overflow: hidden;
-
-    p {
-      font-size: 12px;
-    }
-
-    .Spacer {
-      float: left;
-      width: 40px;
-      height: 23px;
-    }
-
-    .Tags {
-      float: left;
-      margin-left: 0px;
-      margin-bottom: 5px;
-      padding: 1px 0px 8px 13px;
-      text-align: left;
-
-      .tag {
-        cursor: default;
-      }
-    }
-
-    .Time {
-      float: right;
-      font-weight: 300;
-      color: gray;
-      padding-right: 25px;
-    }
-  }
-
-  .ui.button.JoinButton {
-    margin: 10px;
-  }
-
-  .Buttons {
-    hr {
-      display: block;
-      height: 1px;
-      border: 1px;
-      border-top: 1px solid #ebebeb;
-      margin: 0px 10px;
-      padding: 0;
-    }
-
-    .Remove {
-      color: #595959;
-      padding: 10px 30px;
-      font-size: 15px;
-      user-select: none;
-      cursor: pointer;
-    }
-
-    .TAButtons {
+    .LocationPin {
       display: inline-block;
-      padding-top: 10px;
-      user-select: none;
+      float: right;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      i {
+        color: $number-blue;
+        font-size: 1.25em;
+        cursor: pointer;
+      }
+
+      .modalShade {
+        display: none;
+      }
+
+      @media only screen and (max-width: $mobile-breakpoint) {
+        .modalShade {
+          display: block;
+        }
+      }
+    }
+
+    .Location {
+      font-size: 12px;
+      text-align: left;
+      padding: 5px 12px 0 12px;
+      margin: 0em;
+      color: #595959;
+      font-weight: 300;
+      display: flex;
+      align-items: center;
+    }
+
+    .LocationTooltip {
+      position: absolute;
+      top: 45px;
+      left: 20px;
+      width: 315px;
+      height: 64px;
+      box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+      background: #ffffff;
+      font-size: 12px;
+      padding: 8px 0 0 20px;
+      text-align: left;
+      z-index: 100;
+
+      i {
+        cursor: pointer;
+      }
+
+      @media only screen and (max-width: $mobile-breakpoint) {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        width: 311px;
+        height: 162px;
+        border-radius: 8px;
+        padding: 26px 0 0 24px;
+        font-size: 14px;
+      }
 
       p {
-        display: inline-block;
-        border-radius: 5px;
-        color: white;
-        padding: 2px 30px;
-        font-size: 15px;
-        cursor: pointer;
-        margin: 0 3px 10px;
-        width: 166px;
+        color: #000000;
+        margin-bottom: 6px;
+
+        @media only screen and (max-width: $mobile-breakpoint) {
+          margin-bottom: 20px;
+        }
+
+        .characterCount {
+          opacity: 0.5;
+          font-size: 11px;
+
+          @media only screen and (max-width: $mobile-breakpoint) {
+            font-size: 14px;
+          }
+
+          &.warn {
+            color: #ce2a2a;
+          }
+        }
       }
 
-      .Delete {
-        border: 0.5px solid red;
-        color: red;
+      .TextInput {
+        font-weight: normal;
+        border: 0px;
+        color: $text-grey;
+        padding: 5px 25px 5px 8px;
+        resize: none;
+        border-radius: 3px;
+        background-color: #edeff2;
+        height: 24px;
+        width: 275px;
+        opacity: 0.6;
+        cursor: text;
+
+        @media only screen and (max-width: $mobile-breakpoint) {
+          width: 264px;
+          height: 45px;
+        }
       }
 
-      .Begin {
-        border: 0.5px solid $number-blue;
-        color: $number-blue;
+      .ui.inline.loader.active,
+      .ui.inline.loader.visible,
+      .check.icon {
+        position: absolute;
+        top: 35px;
+        left: 275px;
+        color: #afabab;
+
+        @media only screen and (max-width: $mobile-breakpoint) {
+          top: 80px;
+          left: 260px;
+        }
       }
 
-      .Done {
-        border: 0.5px solid $tag-blue;
-        color: $tag-blue;
-      }
+      .DoneButton {
+        display: none;
 
-      .Undo {
-        background: #ffffff;
-        border: 1px solid #b41515;
-        color: #b41515;
+        @media only screen and (max-width: $mobile-breakpoint) {
+          display: block;
+          margin: 26px 0 0 -24px;
+          background-color: $brand-primary;
+          height: 44px;
+          border-bottom-left-radius: 8px;
+          border-bottom-right-radius: 8px;
+          text-align: center;
+          padding: 12px 0;
+          font-size: 20px;
+          font-weight: 300;
+          color: #ffffff;
+        }
+      }
+    }
+
+    .LocationTooltip::after {
+      @media only screen and (min-width: $mobile-breakpoint) {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        top: 0;
+        right: 15px;
         box-sizing: border-box;
-        border-radius: 4px;
+        border: 4px solid black;
+        border-color: #ffffff #ffffff transparent transparent;
+        transform-origin: 0 0;
+        transform: rotate(-45deg);
+        box-shadow: 1px -1px 1px 0 rgba(0, 0, 0, 0.15);
+      }
+    }
+
+    .ui.button.JoinButton {
+      margin: 10px;
+    }
+
+    .Buttons {
+      hr {
+        display: block;
+        height: 1px;
+        border: 1px;
+        border-top: 1px solid #ebebeb;
+        margin: 0px 10px;
+        padding: 0;
+      }
+      .studentButtons {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        position: relative;
+        padding: 12px 12px 12px 0px;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+        &:hover {
+          opacity: 1;
+        }
+        .Remove {
+          margin-left: 5px;
+          color: #5599db;
+          text-decoration: underline;
+          font-size: 12px;
+          border: none;
+          background-color: transparent;
+          cursor: pointer;
+        }
+        .replyButton {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          cursor: pointer;
+          &.hideReply {
+            opacity: 0;
+          }
+        }
       }
 
-      .DotMenu {
-        color: black;
-        padding: 2px 15px;
-        width: auto;
-        position: absolute;
-        right: 0;
-        size: 50px;
-        font-weight: 800;
-      }
+      .buttonsWrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0px 12px;
+        position: relative;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+        &:hover {
+          opacity: 1;
+        }
+        .replyButton {
+          display: flex;
+          cursor: pointer;
+          align-items: flex-start;
+          margin: auto;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          .replyText {
+            margin-left: 5px;
+            color: #5599db;
+            text-decoration: underline;
+            font-size: 15px;
+          }
+        }
 
-      .IReallyDontKnow {
-        border-radius: 8px;
-        width: 220px;
-        height: 45px;
-        position: absolute;
-        overflow: hidden;
-        box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
-        padding: 10px;
-        background-color: #f2f1f1;
-        text-align: center;
-        margin-top: 15px;
-        right: 0;
-        z-index: 1;
+        .Delete {
+          margin-left: 5px;
+          color: #5599db;
+          text-decoration: underline;
+          font-size: 15px;
+        }
 
-        p {
-          width: 200px;
+        .Begin {
+          border: 0.5px solid $number-blue;
+          color: $number-blue;
+        }
+
+        .Done {
+          border: 0.5px solid $tag-blue;
+          color: $tag-blue;
+        }
+
+        .Undo {
+          background: #ffffff;
+          border: 1px solid #b41515;
+          color: #b41515;
+          box-sizing: border-box;
+          border-radius: 4px;
+        }
+
+        .DotMenu {
           color: black;
-          size: 13px;
-          font-weight: normal;
-          text-decoration: normal;
+          padding: 2px 15px;
+          width: auto;
+          position: absolute;
+          right: 0;
+          size: 50px;
+          font-weight: 800;
+        }
+        .assignedButtons {
+          .Delete {
+            margin-left: 5px;
+            color: #5599db;
+            text-decoration: underline;
+            font-size: 12px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+          }
+          .Done {
+            margin-left: 5px;
+            color: #5599db;
+            text-decoration: underline;
+            font-size: 12px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+          }
+        }
+
+        .TAButtons {
+          display: inline-block;
+          padding: 12px 0;
+          user-select: none;
+          p {
+            display: inline-block;
+            border-radius: 5px;
+            color: white;
+            // padding: 2px 30px;
+            font-size: 15px;
+            cursor: pointer;
+            margin: 0px 0px 10px 0px;
+            width: 100px;
+          }
+
+          .Begin {
+            border: none;
+            text-decoration: underline;
+            color: #5599db;
+            font-weight: normal;
+            font-size: 12px;
+            width: auto;
+          }
+
+          .DotMenu {
+            color: black;
+            padding: 2px 15px;
+            width: auto;
+            position: absolute;
+            right: 0;
+            size: 50px;
+            font-weight: 800;
+          }
+
+          .IReallyDontKnow {
+            border-radius: 8px;
+            width: 220px;
+            height: 45px;
+            position: absolute;
+            overflow: hidden;
+            box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
+            padding: 10px;
+            background-color: #f2f1f1;
+            text-align: center;
+            margin-top: 15px;
+            right: 0;
+            z-index: 1;
+
+            p {
+              width: 200px;
+              color: black;
+              size: 13px;
+              font-weight: normal;
+              text-decoration: normal;
+            }
+          }
         }
       }
     }
@@ -581,4 +677,28 @@
 .link-button:hover,
 .link-button:focus {
   text-decoration: none;
+}
+
+.expandContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 60.5px;
+  .expandImage {
+    width: 14px;
+    height: 14px;
+    margin: 0px 8px;
+    cursor: pointer;
+  }
+  .expandProfile {
+    width: 28.5px;
+    height: 28.5px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  .expandName {
+    margin: 0;
+    font-weight: 300;
+    font-size: 14px;
+  }
 }
