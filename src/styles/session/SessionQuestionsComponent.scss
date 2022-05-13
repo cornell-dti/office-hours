@@ -1,577 +1,584 @@
 .QueueQuestions {
-    background-color: white;
-    margin: 12px auto 12px;
-    position: relative;
-    text-align: center;
+  background-color: white;
+  margin: 12px auto 12px;
+  position: relative;
+  text-align: center;
+  width: 100%;
+  display: inline-block;
+  border-radius: 10px;
+
+  .popup {
     width: 100%;
-    display: inline-block;
-    border-radius: 10px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    position: absolute;
+    top: 0px;
+    left: 0px;
 
-    .popup {
-        width: 100%;
-        height: 100%;
+    .popupContainer {
+      white-space: nowrap;
+      text-overflow: clip;
+      display: inline-block;
+      padding: 0px;
+      .resolvedQuestionBadge {
+        border-radius: 8px;
+        margin-left: 0px;
         display: flex;
+        align-items: center;
         justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        background-color:rgba(255, 255, 255, 0.5);
-        text-align: center;
-        position: absolute;
-        top: 0px;
-        left: 0px;
-
-        .popupContainer {
-            white-space: nowrap;
-            text-overflow: clip;
-            display: inline-block;
-            padding: 0px;
-            .resolvedQuestionBadge {
-                border-radius: 8px;
-                margin-left: 0px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                .resolvedQuestionText {
-                    color: black;
-                    font-size: 20px;
-                    font-weight: 500;
-                    width: auto;
-                    margin: 0;
-                    font-family: Roboto;
-                    font-style: normal;
-                    padding: 5px;
-                }
-                .resolvedCheckImage {
-                    padding: 0px;
-                    margin: 3px;     
-                    width: 40px; 
-                    height: 40px;   
-                    background: white;            
-                }
-            }
+        .resolvedQuestionText {
+          color: black;
+          font-size: 20px;
+          font-weight: 500;
+          width: auto;
+          margin: 0;
+          font-family: Roboto;
+          font-style: normal;
+          padding: 5px;
         }
+        .resolvedCheckImage {
+          padding: 0px;
+          margin: 3px;
+          width: 40px;
+          height: 40px;
+          background: white;
+        }
+      }
     }
-    
-    .Bookmark {
-        right: 20px;
+  }
+
+  .Bookmark {
+    right: 20px;
+  }
+
+  .OrderTooltip {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .TooltipText {
+    position: absolute;
+    left: 68%;
+    top: 0;
+    width: 120px;
+    transform: translateX(-50%);
+    color: black;
+    background-color: white;
+    padding: 5px 5px;
+    border-radius: 7px;
+    border: solid $number-blue 3px;
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .TooltipText::before {
+    content: "";
+    position: absolute;
+    left: 49%;
+    top: 105%;
+    transform: translateX(-50%);
+    border: 10px solid;
+    border-color: $number-blue #0000 #0000 #0000;
+  }
+
+  .OrderTooltip:hover .TooltipText {
+    top: -130%;
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .Order {
+    float: left;
+    font-size: 17px;
+    width: 30px;
+    margin: 13px 0 12px 12px;
+    color: white;
+    background-color: $number-blue;
+    border: solid $number-blue 0px;
+    border-radius: 5px;
+    text-align: center;
+  }
+
+  .Order.assigned {
+    background-color: #ffcd83;
+  }
+
+  .userInformationImg {
+    display: inline-block;
+    margin-right: 6px;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+    vertical-align: middle;
+    object-fit: cover;
+  }
+
+  .userInformationName {
+    font-weight: 500;
+    text-align: left;
+    line-height: 12px;
+    //   padding: 10px 0px 0px 15px;
+    margin: 0em;
+    color: #595959;
+    vertical-align: middle;
+    letter-spacing: 0.1px;
+
+    .assigned {
+      font-weight: normal;
+      color: #9e9e9e;
+    }
+  }
+
+  .QuestionInfo {
+    float: left;
+    font-size: 14px;
+
+    .studentInformation {
+      display: inline-block;
+      width: 100%;
+      padding-top: 11px;
+      padding-left: 12px;
+      // padding: 11px 0px 0px 12px;
+      text-align: left;
     }
 
-    .OrderTooltip {
-        position: relative;
+    .Question {
+      text-align: left;
+      padding: 8px 12px;
+      margin: 0em;
+      color: #595959;
+      font-weight: 300;
+    }
+
+    .Question.Student {
+      padding-top: 16px;
+    }
+  }
+
+  .TopBar {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .hybridBadge {
+    text-align: center;
+    font-size: 10px;
+    color: white;
+    border-radius: 15px;
+    display: inline-block;
+    padding: 0px 5px;
+    margin-right: 5px;
+    &.virtual {
+      background-color: #ec4339;
+    }
+    &.inPerson {
+      background-color: #5599db;
+    }
+  }
+
+  .RightBar {
+    text-align: right;
+    flex-grow: 1;
+    font-weight: 300;
+    margin-top: 16px;
+    margin-right: 16px;
+
+    .commentBtn {
+      background-color: Transparent;
+      outline: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .commentBtn:hover {
+      background-color: lightgray;
+      border-radius: 30px;
+    }
+  }
+
+  .CommentBox {
+    margin-top: 12px;
+    padding-top: 18px;
+    margin-bottom: 12px;
+    padding-bottom: 18px;
+    padding-left: 12px;
+    margin-left: 11%;
+    background-color: #f5f5f5;
+    border: 1px solid #d8d8d8;
+    width: 78%;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 300;
+    text-align: left;
+
+    .commentBody {
+      margin-left: 30px;
+      margin-right: 12px;
+      margin-top: 3px;
+
+      .commentEdit {
+        margin-left: calc(100% - 30px);
         cursor: pointer;
-    }
-
-    .TooltipText {
-        position: absolute;
-        left: 68%;
-        top: 0;
-        width: 120px;
-        transform: translateX(-50%);
-        color: black;
-        background-color: white;
-        padding: 5px 5px;
-        border-radius: 7px;
-        border: solid $number-blue 3px;
-        visibility: hidden;
-        opacity: 0;
-    }
-
-    .TooltipText::before {
-        content: "";
-        position: absolute;
-        left: 49%;
-        top: 105%;
-        transform: translateX(-50%);
-        border: 10px solid;
-        border-color: $number-blue #0000 #0000 #0000;
-    }
-
-    .OrderTooltip:hover .TooltipText{
-        top: -130%;
-        visibility: visible;
-        opacity: 1;
-    }
-
-    .Order {
-        float: left;
-        font-size: 17px;
-        width: 30px;
-        margin: 13px 0 12px 12px;
-        color: white;
-        background-color: $number-blue;
-        border: solid $number-blue 0px;
-        border-radius: 5px;
-        text-align: center;
-    }
-
-    .Order.assigned {
-        background-color: #ffcd83;
-    }
-
-    .userInformationImg {
-        display: inline-block;
-        margin-right: 6px;
-        width: 30px;
-        height: 30px;
-        border-radius: 30px;
-        vertical-align: middle;
-        object-fit: cover;
-    }
-
-    .userInformationName {
-        font-weight: 500;
-        text-align: left;
-        line-height: 12px;
-        //   padding: 10px 0px 0px 15px;
-        margin: 0em;
-        color: #595959;
-        vertical-align: middle;
-        letter-spacing: 0.1px;
-
-        .assigned {
-            font-weight: normal;
-            color: #9e9e9e;
-        }
-    }
-
-    .QuestionInfo {
-        float: left;
-        font-size: 14px;
-
-        .studentInformation {
-            display: inline-block;
-            width: 100%;
-            padding-top: 11px;
-            padding-left: 12px;
-            // padding: 11px 0px 0px 12px;
-            text-align: left;
-        }
-
-        .Question {
-            text-align: left;
-            padding: 8px 12px;
-            margin: 0em;
-            color: #595959;
-            font-weight: 300;
-        }
-
-        .Question.Student {
-            padding-top: 16px;
-        }
-    }
-
-    .TopBar {
-        display: flex;
-        justify-content: flex-start;
-    }
-
-    .hybridBadge {
-        text-align: center;
-        font-size: 10px;
-        color: white;
-        border-radius: 15px;
-        display: inline-block;
-        padding: 0px 5px;
-        margin-right: 5px;
-        &.virtual {
-            background-color: #EC4339;
-        }
-        &.inPerson {
-            background-color: #5599DB;
-        }
-    }
-
-    .RightBar {
         text-align: right;
-        flex-grow: 1;
+        margin-right: 12px;
+      }
+
+      .commentText {
         font-weight: 300;
-        margin-top: 16px;
-        margin-right: 16px;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.33;
+        letter-spacing: normal;
+      }
 
-        .commentBtn {
-            background-color: Transparent;
-            outline: none;
-            border: none;
-            cursor: pointer;
-        }
+      .commentTextArea {
+        width: 90%;
+      }
 
-        .commentBtn:hover {
-            background-color: lightgray;
-            border-radius: 30px;
-        }
-    }
-
-    .CommentBox {
+      .commentBtnHolder {
         margin-top: 12px;
-        padding-top: 18px;
-        margin-bottom: 12px;
-        padding-bottom: 18px;
-        padding-left: 12px;
-        margin-left: 11%;
-        background-color: #f5f5f5;
-        border: 1px solid #d8d8d8;
-        width: 78%;
-        border-radius: 4px;
-        font-size: 14px;
         font-weight: 300;
-        text-align: left;
 
-        .commentBody {
-            margin-left: 30px;
-            margin-right: 12px;
-            margin-top: 3px;
-
-            .commentEdit {
-                margin-left: calc(100% - 30px);
-                cursor: pointer;
-                text-align: right;
-                margin-right: 12px;
-            }
-
-            .commentText {
-                font-weight: 300;
-                font-stretch: normal;
-                font-style: normal;
-                line-height: 1.33;
-                letter-spacing: normal;
-            }
-
-            .commentTextArea {
-                width: 90%;
-            }
-
-            .commentBtnHolder {
-                margin-top: 12px;
-                font-weight: 300;
-
-                .commentSaveBtn {
-                    width: 107px;
-                    height: 23px;
-                    border: none;
-                    color: white;
-                    border-radius: 4px;
-                    background-color: #3594f1;
-                }
-
-                .commentCancelBtn {
-                    margin-left: 20px;
-                    width: 107px;
-                    height: 23px;
-                    border-radius: 4px;
-                    border: solid 1px black;
-                    background-color: white;
-                }
-            }
+        .commentSaveBtn {
+          width: 107px;
+          height: 23px;
+          border: none;
+          color: white;
+          border-radius: 4px;
+          background-color: #3594f1;
         }
 
+        .commentCancelBtn {
+          margin-left: 20px;
+          width: 107px;
+          height: 23px;
+          border-radius: 4px;
+          border: solid 1px black;
+          background-color: white;
+        }
+      }
+    }
+  }
 
+  .LocationPin {
+    display: inline-block;
+    float: right;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    i {
+      color: $number-blue;
+      font-size: 1.25em;
+      cursor: pointer;
     }
 
-    .LocationPin {
+    .modalShade {
+      display: none;
+    }
+
+    @media only screen and (max-width: $mobile-breakpoint) {
+      .modalShade {
+        display: block;
+      }
+    }
+  }
+
+  .Location {
+    font-size: 12px;
+    text-align: left;
+    padding: 5px 12px 0 12px;
+    margin: 0em;
+    color: #595959;
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+  }
+
+  .LocationTooltip {
+    position: absolute;
+    top: 45px;
+    left: 20px;
+    width: 315px;
+    height: 64px;
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    background: #ffffff;
+    font-size: 12px;
+    padding: 8px 0 0 20px;
+    text-align: left;
+    z-index: 100;
+
+    i {
+      cursor: pointer;
+    }
+
+    @media only screen and (max-width: $mobile-breakpoint) {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      width: 311px;
+      height: 162px;
+      border-radius: 8px;
+      padding: 26px 0 0 24px;
+      font-size: 14px;
+    }
+
+    p {
+      color: #000000;
+      margin-bottom: 6px;
+
+      @media only screen and (max-width: $mobile-breakpoint) {
+        margin-bottom: 20px;
+      }
+
+      .characterCount {
+        opacity: 0.5;
+        font-size: 11px;
+
+        @media only screen and (max-width: $mobile-breakpoint) {
+          font-size: 14px;
+        }
+
+        &.warn {
+          color: #ce2a2a;
+        }
+      }
+    }
+
+    .TextInput {
+      font-weight: normal;
+      border: 0px;
+      color: $text-grey;
+      padding: 5px 25px 5px 8px;
+      resize: none;
+      border-radius: 3px;
+      background-color: #edeff2;
+      height: 24px;
+      width: 275px;
+      opacity: 0.6;
+      cursor: text;
+
+      @media only screen and (max-width: $mobile-breakpoint) {
+        width: 264px;
+        height: 45px;
+      }
+    }
+
+    .ui.inline.loader.active,
+    .ui.inline.loader.visible,
+    .check.icon {
+      position: absolute;
+      top: 35px;
+      left: 275px;
+      color: #afabab;
+
+      @media only screen and (max-width: $mobile-breakpoint) {
+        top: 80px;
+        left: 260px;
+      }
+    }
+
+    .DoneButton {
+      display: none;
+
+      @media only screen and (max-width: $mobile-breakpoint) {
+        display: block;
+        margin: 26px 0 0 -24px;
+        background-color: $brand-primary;
+        height: 44px;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        text-align: center;
+        padding: 12px 0;
+        font-size: 20px;
+        font-weight: 300;
+        color: #ffffff;
+      }
+    }
+  }
+
+  .LocationTooltip::after {
+    @media only screen and (min-width: $mobile-breakpoint) {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 0;
+      top: 0;
+      right: 15px;
+      box-sizing: border-box;
+      border: 4px solid black;
+      border-color: #ffffff #ffffff transparent transparent;
+      transform-origin: 0 0;
+      transform: rotate(-45deg);
+      box-shadow: 1px -1px 1px 0 rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .BottomBar {
+    width: 100%;
+    overflow: hidden;
+
+    p {
+      font-size: 12px;
+    }
+
+    .Spacer {
+      float: left;
+      width: 40px;
+      height: 23px;
+    }
+
+    .Tags {
+      float: left;
+      margin-left: 0px;
+      margin-bottom: 5px;
+      padding: 1px 0px 8px 13px;
+      text-align: left;
+
+      .tag {
+        cursor: default;
+      }
+    }
+
+    .Time {
+      float: right;
+      font-weight: 300;
+      color: gray;
+      padding-right: 25px;
+    }
+  }
+
+  .ui.button.JoinButton {
+    margin: 10px;
+  }
+
+  .Buttons {
+    hr {
+      display: block;
+      height: 1px;
+      border: 1px;
+      border-top: 1px solid #ebebeb;
+      margin: 0px 10px;
+      padding: 0;
+    }
+
+    .Remove {
+      color: #595959;
+      padding: 10px 30px;
+      font-size: 15px;
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .TAButtons {
+      display: inline-block;
+      padding-top: 10px;
+      user-select: none;
+
+      p {
         display: inline-block;
-        float: right;
-        padding: 14px;
+        border-radius: 5px;
+        color: white;
+        padding: 2px 30px;
+        font-size: 15px;
+        cursor: pointer;
+        margin: 0 3px 10px;
+        width: 166px;
+      }
 
-        i {
-            color: $number-blue;
-        }
+      .Delete {
+        border: 0.5px solid red;
+        color: red;
+      }
 
-        .modalShade {
-            display: none;
-        }
+      .Begin {
+        border: 0.5px solid $number-blue;
+        color: $number-blue;
+      }
 
-        @media only screen and (max-width: $mobile-breakpoint) {
-            .modalShade {
-                display: block;
-            }
-        }
-    }
+      .Done {
+        border: 0.5px solid $tag-blue;
+        color: $tag-blue;
+      }
 
-    .Location {
-        font-size: 12px;
-        text-align: left;
-        padding: 5px 12px 0 12px;
-        margin: 0em;
-        color: #595959;
-        font-weight: 300;
-        display: flex;
-        align-items: center;
-    }
-
-    .LocationTooltip {
-        position: absolute;
-        top: 45px;
-        right: 8px;
-        width: 315px;
-        height: 64px;
-        box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.15);
-        border-radius: 4px;
+      .Undo {
         background: #ffffff;
-        font-size: 12px;
-        padding: 8px 0 0 20px;
-        text-align: left;
+        border: 1px solid #b41515;
+        color: #b41515;
+        box-sizing: border-box;
+        border-radius: 4px;
+      }
 
-        @media only screen and (max-width: $mobile-breakpoint) {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-            width: 311px;
-            height: 162px;
-            border-radius: 8px;
-            padding: 26px 0 0 24px;
-            font-size: 14px;
-        }
+      .DotMenu {
+        color: black;
+        padding: 2px 15px;
+        width: auto;
+        position: absolute;
+        right: 0;
+        size: 50px;
+        font-weight: 800;
+      }
 
-        p {
-            color: #8c8c8c;
-            margin-bottom: 6px;
-
-            @media only screen and (max-width: $mobile-breakpoint) {
-                margin-bottom: 20px;
-            }
-
-            .characterCount {
-                opacity: 0.5;
-                font-size: 11px;
-
-                @media only screen and (max-width: $mobile-breakpoint) {
-                    font-size: 14px;
-                }
-
-                &.warn {
-                    color: #ce2a2a;
-                }
-            }
-        }
-
-        .TextInput {
-            font-weight: normal;
-            border: 0px;
-            color: $text-grey;
-            padding: 5px 25px 5px 8px;
-            resize: none;
-            border-radius: 3px;
-            background-color: #edeff2;
-            height: 24px;
-            width: 275px;
-            opacity: 0.6;
-
-            @media only screen and (max-width: $mobile-breakpoint) {
-                width: 264px;
-                height: 45px;
-            }
-        }
-
-        .ui.inline.loader.active,
-        .ui.inline.loader.visible,
-        .check.icon {
-            position: absolute;
-            top: 35px;
-            left: 275px;
-            color: #afabab;
-
-            @media only screen and (max-width: $mobile-breakpoint) {
-                top: 80px;
-                left: 260px;
-
-            }
-        }
-
-        .DoneButton {
-            display: none;
-
-            @media only screen and (max-width: $mobile-breakpoint) {
-                display: block;
-                margin: 26px 0 0 -24px;
-                background-color: $brand-primary;
-                height: 44px;
-                border-bottom-left-radius: 8px;
-                border-bottom-right-radius: 8px;
-                text-align: center;
-                padding: 12px 0;
-                font-size: 20px;
-                font-weight: 300;
-                color: #ffffff;
-            }
-        }
-    }
-
-    .LocationTooltip::after {
-        @media only screen and (min-width: $mobile-breakpoint) {
-            content: "";
-            position: absolute;
-            width: 0;
-            height: 0;
-            top: 0;
-            right: 15px;
-            box-sizing: border-box;
-            border: 4px solid black;
-            border-color: #ffffff #ffffff transparent transparent;
-            transform-origin: 0 0;
-            transform: rotate(-45deg);
-            box-shadow: 1px -1px 1px 0 rgba(0, 0, 0, 0.15);
-        }
-    }
-
-
-    .BottomBar {
-        width: 100%;
+      .IReallyDontKnow {
+        border-radius: 8px;
+        width: 220px;
+        height: 45px;
+        position: absolute;
         overflow: hidden;
+        box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
+        padding: 10px;
+        background-color: #f2f1f1;
+        text-align: center;
+        margin-top: 15px;
+        right: 0;
+        z-index: 1;
 
         p {
-            font-size: 12px;
+          width: 200px;
+          color: black;
+          size: 13px;
+          font-weight: normal;
+          text-decoration: normal;
         }
-
-        .Spacer {
-            float: left;
-            width: 40px;
-            height: 23px;
-        }
-
-        .Tags {
-            float: left;
-            margin-left: 0px;
-            margin-bottom: 5px;
-            padding: 1px 0px 8px 13px;
-            text-align: left;
-
-            .tag {
-                cursor: default;
-            }
-        }
-
-        .Time {
-            float: right;
-            font-weight: 300;
-            color: gray;
-            padding-right: 25px;
-        }
+      }
     }
+  }
 
-    .ui.button.JoinButton {
-        margin: 10px;
+  .buttonsAndCantRemove {
+    position: relative;
+    .cantRemove {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 20px;
+      color: red;
+      font-size: 10px;
     }
-
-    .Buttons {
-        hr {
-            display: block;
-            height: 1px;
-            border: 1px;
-            border-top: 1px solid #ebebeb;
-            margin: 0px 10px;
-            padding: 0;
-        }
-
-        .Remove {
-            color: #595959;
-            padding: 10px 30px;
-            font-size: 15px;
-            user-select: none;
-            cursor: pointer;
-        }
-
-        .TAButtons {
-            display: inline-block;
-            padding-top: 10px;
-            user-select: none;
-
-            p {
-                display: inline-block;
-                border-radius: 5px;
-                color: white;
-                padding: 2px 30px;
-                font-size: 15px;
-                cursor: pointer;
-                margin: 0 3px 10px;
-                width: 166px;
-            }
-
-            .Delete {
-                border: 0.5px solid red;
-                color: red;
-            }
-
-            .Begin {
-                border: 0.5px solid $number-blue;
-                color: $number-blue;
-            }
-
-            .Done {
-                border: 0.5px solid $tag-blue;
-                color: $tag-blue;
-            }
-
-            .Undo {
-                background: #FFFFFF;
-                border: 1px solid #B41515;
-                color: #B41515;
-                box-sizing: border-box;
-                border-radius: 4px;
-            }
-
-            .DotMenu {
-                color: black;
-                padding: 2px 15px;
-                width: auto;
-                position: absolute;
-                right: 0;
-                size: 50px;
-                font-weight: 800;
-            }
-
-            .IReallyDontKnow {
-                border-radius: 8px;
-                width: 220px;
-                height: 45px;
-                position: absolute;
-                overflow: hidden;
-                box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
-                padding: 10px;
-                background-color: #f2f1f1;
-                text-align: center;
-                margin-top: 15px;
-                right: 0;
-                z-index: 1;
-
-                p {
-                    width: 200px;
-                    color: black;
-                    size: 13px;
-                    font-weight: normal;
-                    text-decoration: normal;
-                }
-            }
-        }
-    }
-
-    .buttonsAndCantRemove {
-        position: relative;
-        .cantRemove {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            right: 20px;
-            color: red;
-            font-size: 10px;
-        }
-    }
+  }
 }
 
 //UI to get a button to appear as a link
 .link-button {
-    color: $brand-primary;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    text-decoration: underline;
-    display: inline;
-    margin: 0;
-    padding: 0;
+  color: $brand-primary;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline;
+  margin: 0;
+  padding: 0;
 }
 
 .link-button:hover,
 .link-button:focus {
-    text-decoration: none;
+  text-decoration: none;
 }

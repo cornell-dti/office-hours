@@ -20,6 +20,7 @@ interface FireBaseSession {
     resolvedQuestions: number;
     totalWaitTime: number;
     totalResolveTime: number;
+    isPaused: boolean;
 }
 
 interface FireSessionLocation {

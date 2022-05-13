@@ -2,8 +2,9 @@ import * as React from 'react';
 import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
 
-import { Grid } from '@material-ui/core';
+import { Grid, Switch } from '@material-ui/core';
 import { connect } from 'react-redux';
+import {pauseSession} from '../../firebasefunctions/session';
 import users from '../../media/users.svg'
 import chalkboard from '../../media/chalkboard-teacher.svg'
 import hourglass from '../../media/hourglass-half.svg'
@@ -30,6 +31,7 @@ type Props = {
     myQuestion: FireQuestion | null;
     isOpen: boolean;
     questions: readonly FireQuestion[];
+    isPaused: boolean;
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
@@ -91,7 +93,8 @@ const SessionInformationHeader = ({
     onUpdate,
     myQuestion,
     isOpen,
-    questions
+    questions,
+    isPaused,
 }: Props) => {
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
@@ -144,6 +147,10 @@ const SessionInformationHeader = ({
             setZoomLinkDisplay('saved');
         }
     };
+
+    const handlePause = () => {
+        pauseSession(session, !session.isPaused);
+    }
 
     return isDesktop ? (
         <header className="DesktopSessionInformationHeader">
@@ -263,6 +270,17 @@ const SessionInformationHeader = ({
                                             )}
                                         </Grid>
                                     </Grid>
+                                </div>
+                                <div className="OneQueueInfo">
+                                    {isTa && isOpen && 
+                                (<Grid container direction="row" justify="center" alignItems={'center'}>
+                                    <Grid item xs={2}>
+                                        <Switch checked={!isPaused} onChange={handlePause} color="primary"/> 
+                                    </Grid>
+                                    <Grid item xs={10}>
+                                        <p>{`${isPaused ? "closed" : "open"} to new questions`} </p> 
+                                    </Grid>
+                                </Grid>)}
                                 </div>
                             </div>
                         </Grid>

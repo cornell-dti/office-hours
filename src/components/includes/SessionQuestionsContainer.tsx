@@ -29,6 +29,7 @@ type Props = {
     readonly triggerUndo: Function;
     readonly isOpen: boolean;
     readonly isPast: boolean;
+    readonly isPaused: boolean;
     readonly openingTime: Date;
     readonly haveAnotherQuestion: boolean;
     readonly modality: FireSessionModality;
@@ -251,7 +252,7 @@ const SessionQuestionsContainer = (props: Props) => {
 
     return (
         <div className="SessionQuestionsContainer splitQuestions">
-            {!props.isTA && !myQuestion && props.isOpen && !props.haveAnotherQuestion ? (
+            {!props.isTA && !myQuestion && props.isOpen && !props.isPaused && !props.haveAnotherQuestion ? (
                 props.course && props.session ? (
                     <AddQuestion
                         session={props.session}
@@ -262,7 +263,7 @@ const SessionQuestionsContainer = (props: Props) => {
                     <Loader active={true} content={'Loading'} />
                 )
             ) : null}
-            {!props.isTA && !myQuestion && props.isOpen && props.haveAnotherQuestion && (
+            {!props.isTA && !myQuestion && props.isOpen && !props.isPaused && props.haveAnotherQuestion && (
                 <>
                     <div className="SessionClosedMessage">
                         You are holding a spot in another active queue. To join this queue, please retract
@@ -276,6 +277,11 @@ const SessionQuestionsContainer = (props: Props) => {
             {shownQuestions && shownQuestions.length > 0 && props.isPast && (
                 <div className="SessionClosedMessage">
                     This queue has closed and is no longer accepting new questions.
+                </div>
+            )}
+            {!myQuestion && !props.isTA && props.isPaused && (
+                <div className="SessionClosedMessage">
+              This queue has been temporarily closed and is no longer accepting new questions.
                 </div>
             )}
             {shownQuestions && myQuestion && (

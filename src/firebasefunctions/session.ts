@@ -8,6 +8,14 @@ export const updateSession = (oldSession: FireSession, newSession: Omit<FireSess
     return firestore.collection('sessions').doc(oldSession.sessionId).update(newSession);
 }
 
+export const pauseSession = (oldSession: FireSession, isPaused: boolean) => {
+    const newSession: FireSession = {
+        ...oldSession,
+        isPaused,
+    }
+    return firestore.collection('sessions').doc(oldSession.sessionId).update(newSession)
+}
+
 export const deleteSession = (sessionId: string) => {
     firestore.collection('sessions').doc(sessionId).delete();
 }

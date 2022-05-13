@@ -1,53 +1,75 @@
+.universityLogo {
+  float: left;
+  height: 50px;
+  margin-left: 12px;
+  margin-right: 18px;
+  &Stanford {
+    margin-right: 12px;
+  }
+}
+
 .googleLogo {
-    float: left;
-    height: 34px;
-    margin-left: 5px;
+  float: left;
+  height: 50px;
 }
 
 .loginButtonText {
-    color: gray;
-    font-family: Roboto;
-    width: 100%;
-    display: block;
-    padding: 8px; 
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    font-size: 14px;
+  width: 138px;
+  height: 19px;
+  left: 574px;
+  top: 407.5px;
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+  color: rgba(0, 0, 0, 0.54);
 }
 
 .loginButton {
-    background: white;
-    border: none;
+  background: white;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0px 4px 4px rgba(125, 125, 125, 0.25);
+  padding: 1px;
+  width: 300px;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.17s $curve-standard;
+  display: block;
+  margin: auto;
+  height: 72px;
+  cursor: pointer;
+  &__innerButton {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border: 0.5px solid #145e54;
     border-radius: 5px;
-    box-shadow: 0px 4px 4px rgba(125, 125, 125, 0.25);
-    padding: 1px;
-    width: 180px;
-    font-size: 16px;
-    outline: none;
-    transition: all 0.17s $curve-standard;
-    display: block;
-    margin: auto;
-    height: 45px;
-    cursor: pointer;
+    margin-right: 8px;
+  }
+  margin-left: 12px;
+  margin-right: 12px;
 }
 
 .loginButton:not(:active):not(:disabled):hover {
-    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.12), 0 3px 3px 0 rgba(0, 0, 0, 0.24);
-    transform: translateY(-1px);
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.12), 0 3px 3px 0 rgba(0, 0, 0, 0.24);
+  transform: translateY(-1px);
 }
 
 @media screen and (max-width: $mobile-breakpoint) {
-    .loginButton {
-        padding: 1px;
-        width: 100px;
-        height: 25px;
-    }
-    .googleLogo {
-        height: 17px;
-        margin-left: 2px;
-    }
-    .loginButtonText {
-        padding: 4px; 
-        font-size: 7px;
-    }
+  .loginButton {
+    padding: 1px;
+    width: 100px;
+    height: 25px;
+  }
+  .googleLogo {
+    height: 17px;
+    margin-left: 2px;
+  }
+  .loginButtonText {
+    padding: 4px;
+    font-size: 7px;
+  }
 }

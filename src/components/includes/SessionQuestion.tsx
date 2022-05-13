@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { Icon, Loader, Button } from 'semantic-ui-react';
+import { Icon, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
-import { useState } from "react";
-// eslint-disable-next-line 
+import { useState } from 'react';
 // @ts-ignore (Note that this library does not provide typescript)
 import Linkify from 'linkifyjs/react';
+import addNotification from 'react-push-notification';
 import { connect } from 'react-redux';
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
-
+import Expand from '../../media/expand.png';
 import { firestore } from '../../firebase';
 import {
     markStudentNoShow,
@@ -16,9 +16,14 @@ import {
     assignQuestionToTA,
     markQuestionDone,
     markQuestionDontKnow,
-    updateComment
+    updateComment,
+    addComment,
+    getComments,
+    deleteComment
 } from '../../firebasefunctions/sessionQuestion';
+import CommentsContainer from './CommentsContainer';
 import { RootState } from '../../redux/store';
+import CommentBubble from '../../media/chat_bubble.svg';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -27,6 +32,7 @@ const MOBILE_BREAKPOINT = 920;
 type Props = {
     question: FireOHQuestion;
     users: { readonly [userId: string]: FireUser };
+    commentUsers: { readonly [userId: string]: FireUser };
     tags: { readonly [tagId: string]: FireTag };
     index: number;
     isTA: boolean;
@@ -39,8 +45,6 @@ type Props = {
     readonly user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
-    newQuestionAssigned: () => void;
-    clearQuestionAssigned: () => void;
 };
 
 type State = {
@@ -56,9 +60,11 @@ type State = {
     undoName?: string;
     enableEditingComment: boolean;
     width: number;
-    showCantRemove: boolean;
+    comments: FireComment[];
+    areCommentsVisible: boolean;
+    showNewComment: boolean;
+    retrieveCalled: boolean;
 };
-
 
 class SessionQuestion extends React.Component<Props, State> {
     state: State;
@@ -76,19 +82,49 @@ class SessionQuestion extends React.Component<Props, State> {
             timeoutID2: 0,
             enableEditingComment: false,
             width: window.innerWidth,
-            showCantRemove: false
+            comments: [],
+            areCommentsVisible: false,
+            showNewComment: true,
+            retrieveCalled: false
         };
     }
 
     componentDidUpdate(prevProps: Props) {
         const previousState = prevProps.question;
         const currentState = this.props.question;
+        const user = this.props.myUserId;
+        if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
+            try {
+                addNotification({
+                    title: 'TA comment',
+                    subtitle: 'New TA comment',
+                    message: `${currentState.taComment}`,
+                    theme: 'darkblue',
+                    native: true,
+                });
+            } catch (error) {
+                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
+            }
+        }
 
-        if (previousState.status === 'unresolved' && currentState.status === 'assigned') {
-            this.props.newQuestionAssigned();
+        if (
+            previousState.studentComment !== currentState.studentComment &&
+            user === currentState.answererId
+        ) {
+            try {
+                addNotification({
+                    title: 'Student comment',
+                    subtitle: 'New student comment',
+                    message: `${currentState.studentComment}`,
+                    theme: 'darkblue',
+                    native: true,
+                });
+            } catch (error) {
+                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
+            }
         }
     }
-    
+
     // Given an index from [1..n], converts it to text that is displayed on the
     // question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
@@ -100,37 +136,31 @@ class SessionQuestion extends React.Component<Props, State> {
         return String(index);
     }
 
-
     public handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         this.setState({ isEditingLocation: true });
         const target = event.target as HTMLTextAreaElement;
         if (target.value.length <= LOCATION_CHAR_LIMIT) {
             this.setState({
-                location: target.value
+                location: target.value,
             });
 
             const question = firestore.collection('questions').doc(this.props.question.questionId);
             question.update({
-                location: target.value
+                location: target.value,
             });
 
             setTimeout(() => {
                 this.setState({
-                    isEditingLocation: false
+                    isEditingLocation: false,
                 });
             }, 1000);
         }
     };
 
-
     onClickRemove = () => {
-        if (this.props.question.status === 'assigned') {
-            this.setState({showCantRemove: true});
-            return;
-        }
         this.props.setShowModal(true);
         this.props.setRemoveQuestionId(this.props.question.questionId);
-    }
+    };
 
     retractQuestion = (): void => {
         retractStudentQuestion(firestore, this.props.question);
@@ -141,11 +171,8 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     assignQuestion = () => {
-        assignQuestionToTA(
-            firestore,
-            this.props.question,
-            this.props.virtualLocation,
-            this.props.myUserId)
+        if (this.props.isPast) return;
+        assignQuestionToTA(firestore, this.props.question, this.props.virtualLocation, this.props.myUserId);
     };
 
     studentNoShow = () => {
@@ -163,7 +190,7 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({
             timeoutID2: id,
         });
-        this.props.clearQuestionAssigned();
+
     };
 
     questionDone = () => {
@@ -181,7 +208,7 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({
             timeoutID: id,
         });
-        this.props.clearQuestionAssigned();
+
     };
 
     undoDone = () => {
@@ -204,7 +231,6 @@ class SessionQuestion extends React.Component<Props, State> {
 
     questionDontKnow = () => {
         markQuestionDontKnow(firestore, this.props.question);
-        this.props.clearQuestionAssigned();
     };
 
     questionComment = (newComment: string, isTA: boolean) => {
@@ -213,30 +239,67 @@ class SessionQuestion extends React.Component<Props, State> {
 
     toggleComment = () => {
         this.setState(({ enableEditingComment }) => ({
-            enableEditingComment: !enableEditingComment
+            enableEditingComment: !enableEditingComment,
         }));
-    }
+    };
 
     _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
         updateQuestion({
             variables: {
                 questionId: this.props.question.questionId,
                 status,
-            }
+            },
         });
         const question = this.props.question;
         const asker = this.props.users[question.askerId];
-        this.props.triggerUndo(
-            question.questionId,
-            status,
-            asker.firstName + ' ' + asker.lastName
-        );
+        this.props.triggerUndo(question.questionId, status, asker.firstName + ' ' + asker.lastName);
     };
 
     setDotMenu = (status: boolean) => {
         this.setState({ showDotMenu: status });
     };
 
+    setComments = (comments: FireComment[]) => {
+        this.setState({comments});
+    }
+
+    retrieveComments = async (questionId: string) => {
+        getComments(questionId, this.setComments);
+        this.setState({retrieveCalled: true});
+    }
+
+    deleteCommentsHelper = (commentId: string, questionId: string) => {
+        deleteComment(commentId, questionId);
+    }
+
+    addCommentsHelper = (content: string) => {
+        addComment(content, this.props.myUserId, this.props.question.questionId, 
+            this.props.isTA, this.props.question.askerId);
+    }
+
+    switchCommentsVisible = () => {
+        this.setState({areCommentsVisible: !this.state.areCommentsVisible});
+    }
+
+    handleReplyButton = () => {
+        if (this.props.isPast) return;
+        if (this.state.areCommentsVisible) {
+            this.setState({
+                showNewComment: !this.state.showNewComment
+            });
+        } else {
+            this.setState({
+                areCommentsVisible: true,
+                showNewComment: true
+            })
+        }
+    }
+
+    switchNewComment = () => {
+        this.setState({
+            showNewComment: !this.state.showNewComment
+        });
+    }
 
     render() {
         const question = this.props.question;
@@ -254,232 +317,157 @@ class SessionQuestion extends React.Component<Props, State> {
             : undefined;
 
         const comment = this.props.isTA ? question.taComment : question.studentComment;
-
+        if (this.state.retrieveCalled === false) {
+            this.retrieveComments(question.questionId);
+        }
         return (
-            <div className="QueueQuestions">
-                <div className="TopBar">
-                    {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
-                    <div className="OrderTooltip">
-                        {!this.props.isTA && 
-                            <span className="TooltipText">You are position {this.props.index + 1} in the queue.</span>
-                        }
-                        <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
-                            {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
-                        </p>
-                    </div>
-                    {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) && 
-                    (this.state.location.length > 0) && (
-                        <div className="LocationPin">
-                            <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" />
-                            <div
-                                className="LocationTooltip"
-                                style={{
-                                    visibility: this.state.showLocation ? 'visible' : 'hidden',
-                                }}
-                            >
-                                <p>
-                                    Location &nbsp;{' '}
-                                    <span
-                                        className={
-                                            'characterCount ' +
+            <div className="questionWrapper">
+                <div className="QueueQuestions">
+                    <div className="TopBar">
+                        {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
+                        <div>
+                            <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
+                                {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
+                            </p>
+                        </div>
+                        {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) && 
+                     (
+                         <div className="LocationPin">
+                             <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" />
+                             <div
+                                 className="LocationTooltip"
+                                 style={{
+                                     visibility: this.state.showLocation ? 'visible' : 'hidden',
+                                 }}
+                             >
+                                 <p>
+                                    Edit Location &nbsp;{' '}
+                                     <span
+                                         className={
+                                             'characterCount ' +
                                             (this.state.location.length >= 40 ? 'warn' : '')
-                                        }
-                                    >
-                                        {this.state.location.length}/{LOCATION_CHAR_LIMIT}
-                                    </span>
-                                </p>
-                                <textarea
-                                    className="TextInput question"
-                                    value={this.state.location}
-                                    onChange={e => this.handleUpdateLocation(e)}
-                                />
-                                {this.state.isEditingLocation ? (
-                                    <Loader
-                                        className={'locationLoader'}
-                                        active={true}
-                                        inline={true}
-                                        size={'tiny'}
+                                         }
+                                     >
+                                         {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                     </span>
+                                 </p>
+                                 <textarea
+                                     className="TextInput question"
+                                     value={this.state.location}
+                                     onChange={e => this.handleUpdateLocation(e)}
+                                 />
+                                 <Icon name="check" onClick={this.toggleLocationTooltip}/>
+                             </div>
+                         </div>
+                     )}
+                        <div className="QuestionInfo">
+                            {this.props.isTA && asker &&
+                                <div className="studentInformation">
+                                    <img
+                                        className="userInformationImg"
+                                        src={asker.photoUrl || '/placeholder.png'}
+                                        alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
                                     />
-                                ) : (
-                                    <Icon name="check" />
-                                )}
-                                <div className="DoneButton" onClick={this.toggleLocationTooltip}>
-                                    Done
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    <div className="QuestionInfo">
-                        {this.props.isTA && asker && (
-                            <div className="studentInformation">
-                                <img
-                                    className="userInformationImg"
-                                    src={asker.photoUrl || '/placeholder.png'}
-                                    alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
-                                />
-                                <span className="userInformationName">
-                                    {asker.firstName +
-                                        ' ' +
-                                        asker.lastName +
-                                        ' (' +
-                                        asker.email.slice(0, asker.email.indexOf('@')) +
-                                        ')'}
-                                    {question.status === 'assigned' && (
-                                        <>
-                                            <span className="assigned">
-                                                {' '}
-                                                is assigned
-                                                {answerer &&
-                                                    ' to ' +
-                                                    (answerer.userId === this.props.myUserId
-                                                        ? 'you'
-                                                        : answerer.firstName + ' ' + answerer.lastName)}
-                                            </span>
-                                        </>
-                                    )}
-                                </span>
-                            </div>
-                        )}
-                        <div className="Location">
-                            {this.props.isTA && this.props.modality === 'hybrid' && 
-                            typeof this.props.question.isVirtual !== 'undefined' && 
-                                <div className={`hybridBadge ${this.props.question.isVirtual ? 
-                                    'virtual' : 'inPerson'}`}
-                                >
-                                    {this.props.question.isVirtual ? 'Virtual' : 'In-person'}
+                                    <span className="userInformationName">
+                                        {asker.firstName + ' ' + asker.lastName +
+                                            ' (' + asker.email.slice(0, asker.email.indexOf('@')) + ')'}
+                                        {question.status === 'assigned' &&
+                                            <>
+                                                <span className="assigned"> is assigned
+                                                    {answerer &&
+                                                        (' to ' + (answerer.userId === this.props.myUserId
+                                                            ? 'you'
+                                                            : answerer.firstName + ' '
+                                                            + answerer.lastName))}
+                                                </span>
+                                            </>
+                                        }
+                                    </span>
                                 </div>
                             }
-                            {
-                                <div className="locationContent">
-                                    {this.props.isTA &&
-                                        question.location &&
-                                        question.location.substr(0, 25) === 'https://cornell.zoom.us/j' && (
-                                        <a
-                                            href={question.location}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
+                            {!this.props.isTA && user &&
+                                <div className="studentInformation">
+                                    <img
+                                        className="userInformationImg"
+                                        src={user.photoUrl || '/placeholder.png'}
+                                        alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
+                                    />
+                                    <span className="userInformationName">
+                                        {user.firstName + ' ' + user.lastName +
+                                        ' (You)'}
+                                    </span>
+                                </div>
+                            }
+                            <div className="Location">
+                                {
+                                    (
+                                        <>{this.props.isTA &&
+                                            question.location &&
+                                            question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
+                                            <a href={question.location} target="_blank" rel="noopener noreferrer">
                                                 Zoom Link
-                                        </a>
-                                    )}
-                                    {this.props.isTA &&
-                                        question.location &&
-                                        question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
-                                        question.location}
+                                            </a>
+                                        }
+                                        {this.props.isTA &&
+                                                question.location &&
+                                                question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
+                                                question.location
+                                        }</>)}
+                            </div>
+                        </div>
+                        <div className="RightBar">
+                            <div className="Tags">
+                                {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} />}
+                                {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} />}
+                            </div>
+                            {question.timeEntered != null &&
+                                <p className="Time">
+                                    {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
+                                </p>}
+                        </div>
+                    </div>
+                    {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
+                                <p className={'Question' + studentCSS}>{question.content}</p>}
+                    {
+                        this.props.isTA &&
+                        <div className="Buttons">
+                            <hr />
+                            <div className="buttonsWrapper">
+                                <div className="TAButtons">
+                                    {question.status === 'unresolved' ?
+                                        <p className="Begin" onClick={this.assignQuestion}>
+                                            Assign to me
+                                        </p>
+                                        :
+                                        <p className="Begin" onClick={this.questionDontKnow}>
+                                            Unassign from me
+                                        </p>
+                                    }
                                 </div>
-                            }
+                                <div className="replyButton" onClick={this.handleReplyButton}>
+                                    <img src={CommentBubble} alt="Reply icon"/>
+                                </div>
+                                <div className="assignedButtons">
+                                    {question.status === 'assigned' &&
+                                        <>
+                                            <button
+                                                className="Delete"
+                                                onClick={this.studentNoShow} 
+                                                type="button"
+                                            >No show</button>
+                                            <button
+                                                className="Done"
+                                                onClick={this.questionDone} 
+                                                type="button"
+                                            >Done</button>
+                                        </>
+                                    }
+                                </div>
+                            </div>
                         </div>
-                        {(this.props.isTA || includeBookmark || this.props.includeRemove) && (
-                            <p className={'Question' + studentCSS}>{question.content}</p>
-                        )}
-                    </div>
-                    <div className="RightBar">
-                        <button className="commentBtn" onClick={this.toggleComment} type="button">
-                            <Icon className="large" name="comment outline" />
-                        </button>
-                    </div>
-                </div>
-                {(question.studentComment || question.taComment) && (
-                    <CommentBox
-                        studentComment={question.studentComment}
-                        taComment={question.taComment}
-                        studentCSS={studentCSS}
-                    />
-                )}
-                <div className="BottomBar">
-                    {this.props.isTA && <span className="Spacer" />}
-                    <div className="Tags">
-                        {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} />}
-                        {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} />}
-                    </div>
-                    {question.timeEntered != null && (
-                        <p className="Time">
-                            posted at&nbsp;
-                            {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
-                        </p>
-                    )}
-                </div>
-                {this.props.isTA && (
-                    <div className="Buttons">
-                        <hr />
-                        <div className="TAButtons">
-                            {question.status === 'unresolved' && (
-                                <p className="Begin" onClick={this.assignQuestion}>
-                                    Assign to Me
-                                </p>
-                            )}
-                            {question.status === 'assigned' && (
-                                <>
-                                    <p className="Delete" onClick={this.studentNoShow}>
-                                        No show
-                                    </p>
-                                    {this.state.showNoShowPopup && (
-                                        <div className="popup">
-                                            <div className="popupContainer">
-                                                <div className="resolvedQuestionBadge">
-                                                    <img
-                                                        className="resolvedCheckImage"
-                                                        alt="Green check"
-                                                        src={GreenCheck}
-                                                    />
-                                                    <p className="resolvedQuestionText">
-                                                        Student Marked as No Show
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <p className="Undo" onClick={this.undoNoShow}>
-                                                Undo
-                                            </p>
-                                        </div>
-                                    )}
-                                    <p className="Done" onClick={this.questionDone}>
-                                        Done
-                                    </p>
-                                    {this.state.showUndoPopup && (
-                                        <div className="popup">
-                                            <div className="popupContainer">
-                                                <div className="resolvedQuestionBadge">
-                                                    <img
-                                                        className="resolvedCheckImage"
-                                                        alt="Green check"
-                                                        src={GreenCheck}
-                                                    />
-                                                    <p className="resolvedQuestionText">
-                                                        Question Marked as Done
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <p className="Undo" onClick={this.undoDone}>
-                                                Undo
-                                            </p>
-                                        </div>
-                                    )}
-                                    <p
-                                        className="DotMenu"
-                                        onClick={() => this.setDotMenu(!this.state.showDotMenu)}
-                                    >
-                                        ...
-                                        {this.state.showDotMenu && (
-                                            <div
-                                                className="IReallyDontKnow"
-                                                tabIndex={1}
-                                                onClick={() => this.setDotMenu(false)}
-                                            >
-                                                <p className="DontKnowButton" onClick={this.questionDontKnow}>
-                                                    I Really Don't Know
-                                                </p>
-                                            </div>
-                                        )}
-                                    </p>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                )
-                }
-                {
-                    this.state.enableEditingComment && (
-                        <div className="CommentBox">
+                    }
+                    {
+                        this.state.enableEditingComment && <div className="CommentBox">
                             <div className="commentTopBar">
                                 <img
                                     className="userInformationImg"
@@ -496,49 +484,114 @@ class SessionQuestion extends React.Component<Props, State> {
                                     this.questionComment(newComment, this.props.isTA);
                                     // Disable editing comment
                                     this.setState({
-                                        enableEditingComment: false,
+                                        enableEditingComment: false
                                     });
                                 }}
                                 onCancel={() => {
                                     // Disable editing comment
                                     this.setState({
-                                        enableEditingComment: false,
+                                        enableEditingComment: false
                                     });
                                 }}
-                                initComment={comment || ''}
+                                initComment={comment || ""}
                             />
                         </div>
-                    )
-                }
+                    }
 
-                {
-                    question.answererLocation && this.state.width < MOBILE_BREAKPOINT && (
-                        <>
+                    {
+                        question.answererLocation && this.state.width < MOBILE_BREAKPOINT && <>
                             <Button className="JoinButton" target="_blank" href={question.answererLocation}>
                                 Join Session
                             </Button>
                         </>
-                    )
-                }
+                    }
 
-                {
-                    this.props.includeRemove && !this.props.isPast && (
-                        <div className="buttonsAndCantRemove">
-                            <div className="Buttons">
-                                <hr />
+                    {
+                        this.props.includeRemove && !this.props.isPast &&
+                        <div className="Buttons">
+                            <hr />
+                            <div className="studentButtons">
                                 <p className="Remove" onClick={this.onClickRemove}>
-                                    <Icon name="close" /> Remove
+                                    Remove
                                 </p>
-                            </div>
-                            {this.state.showCantRemove &&
-                                <div className="cantRemove">
-                                    Can't remove question when assigned!
+                                <div className="replyButton">
+                                    <img src={CommentBubble} alt="Reply icon" onClick={this.handleReplyButton}/>
                                 </div>
-                            }
+                            </div>
+
                         </div>
-                    )
+                    }
+                    {this.state.showNoShowPopup && (
+                        <div className="popup">
+                            <div className="popupContainer">
+                                <div className="resolvedQuestionBadge">
+                                    <img
+                                        className="resolvedCheckImage"
+                                        alt="Green check"
+                                        src={GreenCheck}
+                                    />
+                                    <p className="resolvedQuestionText">
+                                        Student Marked as No Show
+                                    </p>
+                                </div>
+                            </div>
+                            <p className="Undo" onClick={this.undoNoShow}>
+                                Undo
+                            </p>
+                        </div>
+                    )}
+                    {this.state.showUndoPopup && (
+                        <div className="popup">
+                            <div className="popupContainer">
+                                <div className="resolvedQuestionBadge">
+                                    <img
+                                        className="resolvedCheckImage"
+                                        alt="Green check"
+                                        src={GreenCheck}
+                                    />
+                                    <p className="resolvedQuestionText">
+                                    Question Marked as Done
+                                    </p>
+                                </div>
+                            </div>
+                            <p className="Undo" onClick={this.undoDone}>
+                            Undo
+                            </p>
+                        </div>
+                    )}
+                </div >
+                {
+                    this.state.areCommentsVisible ?
+                        < CommentsContainer
+                            comments={this.state.comments}
+                            users={this.props.commentUsers}
+                            currentUser={this.props.user}
+                            addCommentsHelper={this.addCommentsHelper}
+                            questionId={question.questionId}
+                            switchCommentsVisible={this.switchCommentsVisible}
+                            deleteCommentsHelper={this.deleteCommentsHelper}
+                            showNewComment={this.state.showNewComment}
+                            switchNewComment={this.switchNewComment}
+                            isPast={this.props.isPast}
+                        /> :
+                        <div className="expandContainer">
+                            <img
+                                src={Expand}
+                                alt="Plus icon"
+                                className="expandImage"
+                                onClick={this.switchCommentsVisible}
+                            />
+                            <img
+                                src={user.photoUrl || '/placeholder.png'}
+                                alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
+                                className="expandProfile"
+                            />
+                            <h3 className="expandName">
+                                {`${user.firstName} ${user.lastName}`}
+                            </h3>
+                        </div>
                 }
-            </div >
+            </div>
         );
     }
 }
