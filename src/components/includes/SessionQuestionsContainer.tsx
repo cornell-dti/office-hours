@@ -29,7 +29,7 @@ type Props = {
     readonly triggerUndo: Function;
     readonly isOpen: boolean;
     readonly isPast: boolean;
-    readonly isPaused: boolean;
+    readonly isPaused: boolean | undefined;
     readonly openingTime: Date;
     readonly haveAnotherQuestion: boolean;
     readonly modality: FireSessionModality;
@@ -290,6 +290,9 @@ const SessionQuestionsContainer = (props: Props) => {
               This queue has been temporarily closed and is no longer accepting new questions.
                 </div>
             )}
+            {shownQuestions && shownQuestions.length > 0 && !props.isTA && myQuestion &&
+                    <p className="QuestionHeader">My Question</p>
+            }
             {shownQuestions && myQuestion && (
                 <StudentMyQuestion
                     questionId={myQuestion.questionId}
@@ -301,6 +304,7 @@ const SessionQuestionsContainer = (props: Props) => {
                     isPast={props.isPast}
                     myUserId={props.myUserId}
                     setShowModal={props.setShowModal}
+                    users={props.users}
                     setRemoveQuestionId={props.setRemoveQuestionId}
                 />
             )}
@@ -395,126 +399,12 @@ const SessionQuestionsContainer = (props: Props) => {
                         myUserId={props.myUserId}
                         setShowModal={props.setShowModal}
                         setRemoveQuestionId={props.setRemoveQuestionId}
-                        newQuestionAssigned={newQuestionAssigned}
-                        clearQuestionAssigned={clearQuestionAssigned}
                     />
                 ))}
-                {otherQuestions && otherQuestions.length > 0 && props.isTA && 
+            {otherQuestions && otherQuestions.length > 0 && props.isTA && 
                     <p className="QuestionHeader">Unassigned Queue Questions</p>
-                }
-                {shownQuestions && shownQuestions.length > 0 && !props.isTA && myQuestion &&
-                    <p className="QuestionHeader">My Question</p>
-                }
-                {!props.isTA && !myQuestion && props.isOpen && !props.haveAnotherQuestion ? (
-                    props.course && props.session ? (
-                        <AddQuestion
-                            session={props.session}
-                            course={props.course}
-                            mobileBreakpoint={MOBILE_BREAKPOINT}
-                        />
-                    ) : (
-                        <Loader active={true} content={'Loading'} />
-                    )
-                ) : null}
-                {!props.isTA && !myQuestion && props.isOpen && props.haveAnotherQuestion && (
-                    <>
-                        <div className="SessionClosedMessage">
-                            You are holding a spot in another active queue. To join this queue, please retract
-                            your question from the other queue!
-                        </div>
-                        <div className="SessionJoinButton disabled">
-                            <p>Join the Queue</p>
-                        </div>
-                    </>
-                )}
-                {shownQuestions && myQuestion && (
-                    <StudentMyQuestion
-                        user={props.user}
-                        users={props.users}
-                        questionId={myQuestion.questionId}
-                        studentQuestion={myQuestion}
-                        modality={props.modality}
-                        tags={props.tags}
-                        index={myQuestionIndex}
-                        triggerUndo={props.triggerUndo}
-                        isPast={props.isPast}
-                        myUserId={props.myUserId}
-                        setShowModal={props.setShowModal}
-                        setRemoveQuestionId={props.setRemoveQuestionId}
-                    />
-                )}
-                {shownQuestions && shownQuestions.length > 0 && props.modality === 'review' && (
-                    <div className="discussionHeaderWrapper">
-                        <div className="discussionQuestionsSlider">
-                            <div
-                                className={
-                                    'discussionSliderSelector' +
-                                    (filterByAnsweredQuestions ? ' isSlidedRight' : '')
-                                }
-                            />
-                            <div
-                                className={
-                                    'discussionSliderOption' + (filterByAnsweredQuestions ? '' : ' isSelected')
-                                }
-                                onClick={() => setFilterByAnsweredQuestions(false)}
-                            >
-                                Unanswered Questions
-                            </div>
-                            <div
-                                className={
-                                    'discussionSliderOption' + (filterByAnsweredQuestions ? ' isSelected' : '')
-                                }
-                                onClick={() => setFilterByAnsweredQuestions(true)}
-                            >
-                                Answered Questions
-                            </div>
-                        </div>
-                        <div className="sortDiscussionQuestionsWrapper">
-                            <div className="discussionArrowsContainer">
-                                <img className="sortDiscussionArrow" src={SortArrows} alt="Sort by arrows" />
-                            </div>
-                            <p className="sortDiscussionQuestionsLabel">sort by</p>
-                            <div className="sortDiscussionQuestionsOptions">
-                                <div
-                                    className={'sortDiscussionsSlider' + (sortByUpvotes ? '' : ' slidedRight')}
-                                />
-                                <div
-                                    className={
-                                        'sortDiscussionQuestionsOption' + (sortByUpvotes ? ' optionChosen' : '')
-                                    }
-                                    onClick={() => setSortByUpvotes(true)}
-                                >
-                                    Most Upvotes
-                                </div>
-                                <div
-                                    className={
-                                        'sortDiscussionQuestionsOption' + (sortByUpvotes ? '' : ' optionChosen')
-                                    }
-                                    onClick={() => setSortByUpvotes(false)}
-                                >
-                                    Most Recent
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                {filteredSortedQuestions &&
-                    shownQuestions.length > 0 &&
-                    props.modality === 'review' &&
-                    filteredSortedQuestions.map(question => (
-                        <DiscussionQuestion
-                            key={question.questionId}
-                            question={question as FireDiscussionQuestion}
-                            user={props.user}
-                            users={props.users}
-                            tags={props.tags}
-                            isTA={props.isTA}
-                            includeRemove={false}
-                            isPast={props.isPast}
-                        // myQuestion={false}
-                        />
-                    ))}
-                {otherQuestions &&
+            }
+            {otherQuestions &&
                     otherQuestions.length > 0 &&
                     props.modality !== 'review' &&
                     props.isTA &&
@@ -533,15 +423,14 @@ const SessionQuestionsContainer = (props: Props) => {
                             triggerUndo={props.triggerUndo}
                             isPast={props.isPast}
                             myUserId={props.myUserId}
-                            user={props.user}
                             setShowModal={props.setShowModal}
                             setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
-                {shownQuestions && shownQuestions.length === 0 && (
-                    <>
-                        {
-                            !props.isOpen &&
+            {shownQuestions && shownQuestions.length === 0 && (
+                <>
+                    {
+                        !props.isOpen &&
                             (props.isPast ? (
                                 <p className="noQuestionsWarning">This office hour session has ended.</p>
                             ) : (
@@ -556,11 +445,11 @@ const SessionQuestionsContainer = (props: Props) => {
                             // !props.isTA
                             //     ? <p className="noQuestionsWarning">Be the first to join the queue!</p>
                             //     : <p className="noQuestionsWarning">No questions in the queue yet. </p>
-                        }
-                    </>
-                )}
-            </div>
+                    }
+                </>
+            )}
         </div>
+
     );
 };
 

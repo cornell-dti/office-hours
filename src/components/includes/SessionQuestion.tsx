@@ -6,9 +6,9 @@ import { useState } from 'react';
 import Linkify from 'linkifyjs/react';
 import addNotification from 'react-push-notification';
 import { connect } from 'react-redux';
+import notif from '../../media/notif.svg'
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
-import Expand from '../../media/expand.png';
 import { firestore } from '../../firebase';
 import {
     markStudentNoShow,
@@ -19,7 +19,8 @@ import {
     updateComment,
     addComment,
     getComments,
-    deleteComment
+    deleteComment,
+    clearIndicator
 } from '../../firebasefunctions/sessionQuestion';
 import CommentsContainer from './CommentsContainer';
 import { RootState } from '../../redux/store';
@@ -282,10 +283,11 @@ class SessionQuestion extends React.Component<Props, State> {
     }
 
     handleReplyButton = () => {
+        clearIndicator(this.props.question, this.props.isTA);
         if (this.props.isPast) return;
         if (this.state.areCommentsVisible) {
             this.setState({
-                showNewComment: !this.state.showNewComment
+                areCommentsVisible: false
             });
         } else {
             this.setState({
@@ -333,7 +335,7 @@ class SessionQuestion extends React.Component<Props, State> {
                         {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) && 
                      (
                          <div className="LocationPin">
-                             <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" />
+                             <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" size='large'/>
                              <div
                                  className="LocationTooltip"
                                  style={{
@@ -433,6 +435,14 @@ class SessionQuestion extends React.Component<Props, State> {
                         <div className="Buttons">
                             <hr />
                             <div className="buttonsWrapper">
+                                <div className="replyButton">
+                                    {!this.state.areCommentsVisible && question.taNew && <img 
+                                        className="indicator" 
+                                        src={notif} 
+                                        alt="Notification indicator" 
+                                    />}
+                                    <img className="replyIcon" src={CommentBubble} alt="Reply icon" onClick={this.handleReplyButton}/>
+                                </div>
                                 <div className="TAButtons">
                                     {question.status === 'unresolved' ?
                                         <p className="Begin" onClick={this.assignQuestion}>
@@ -443,9 +453,6 @@ class SessionQuestion extends React.Component<Props, State> {
                                             Unassign from me
                                         </p>
                                     }
-                                </div>
-                                <div className="replyButton" onClick={this.handleReplyButton}>
-                                    <img src={CommentBubble} alt="Reply icon"/>
                                 </div>
                                 <div className="assignedButtons">
                                     {question.status === 'assigned' &&
@@ -515,7 +522,12 @@ class SessionQuestion extends React.Component<Props, State> {
                                     Remove
                                 </p>
                                 <div className="replyButton">
-                                    <img src={CommentBubble} alt="Reply icon" onClick={this.handleReplyButton}/>
+                                    {!this.state.areCommentsVisible && question.studentNew && <img 
+                                        className="indicator" 
+                                        src={notif} 
+                                        alt="Notification indicator" 
+                                    />}
+                                    <img className="replyIcon" src={CommentBubble} alt="Reply icon" onClick={this.handleReplyButton}/>
                                 </div>
                             </div>
 
@@ -571,25 +583,9 @@ class SessionQuestion extends React.Component<Props, State> {
                             switchCommentsVisible={this.switchCommentsVisible}
                             deleteCommentsHelper={this.deleteCommentsHelper}
                             showNewComment={this.state.showNewComment}
-                            switchNewComment={this.switchNewComment}
                             isPast={this.props.isPast}
                         /> :
-                        <div className="expandContainer">
-                            <img
-                                src={Expand}
-                                alt="Plus icon"
-                                className="expandImage"
-                                onClick={this.switchCommentsVisible}
-                            />
-                            <img
-                                src={user.photoUrl || '/placeholder.png'}
-                                alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
-                                className="expandProfile"
-                            />
-                            <h3 className="expandName">
-                                {`${user.firstName} ${user.lastName}`}
-                            </h3>
-                        </div>
+                        <></>
                 }
             </div>
         );

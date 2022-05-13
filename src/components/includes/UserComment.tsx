@@ -88,14 +88,14 @@ const UserComment = ({content, poster, timePosted, isTA, commenterId, commentId,
                                         }}
                                     />
                                     {deleteShow && 
-                                    <button
+                                    <div
                                         className={`commentButton commentDelete
                                         ${(currentUser && (commenterId === currentUser.userId)) ? ' myDelete' : ''}`}
                                         onClick={() => {
                                             if (!isPast) deleteCommentsHelper(commentId, questionId);
                                         }}
-                                        type="button"
-                                    >Delete</button>
+                                        
+                                    >Delete</div>
                                     }
                                 </div>
                             </div>

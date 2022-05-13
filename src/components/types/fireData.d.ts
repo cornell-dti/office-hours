@@ -20,7 +20,7 @@ interface FireBaseSession {
     resolvedQuestions: number;
     totalWaitTime: number;
     totalResolveTime: number;
-    isPaused: boolean;
+    isPaused?: boolean;
 }
 
 interface FireSessionLocation {
@@ -179,6 +179,8 @@ interface FireQuestion {
     wasNotified: boolean;
     position?: number;
     isVirtual?: boolean;
+    taNew?: boolean;
+    studentNew?: boolean;
 }
 
 interface FireOHQuestion extends FireQuestion {

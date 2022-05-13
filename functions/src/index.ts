@@ -305,57 +305,6 @@ exports.onQuestionUpdate = functions.firestore
 
         // Figure out who needs to be updated with a notification based on the changes
         const asker: FireUser = (await db.doc(`users/${newQuestion.askerId}`).get()).data() as FireUser;
-        if (newQuestion.answererId) {
-            const answerer: FireUser = (await db.doc(`users/${newQuestion.answererId}`).get()).data() as FireUser;
-            if (prevQuestion.studentComment !== newQuestion.studentComment) {
-                db.doc(`notificationTrackers/${answerer.email}`)
-                    .update({
-                        notificationList: admin.firestore.FieldValue.arrayUnion({
-                            title: 'Student comment',
-                            subtitle: "New student comment",
-                            message: `${asker.firstName} commented "${newQuestion.studentComment} \
-                        on your assigned question"`,
-                            createdAt: admin.firestore.Timestamp.now()
-                        })
-                    }).catch(() => {
-                        db.doc(`notificationTrackers/${answerer.email}`).create({id: answerer.email,
-                            notificationList: [{
-                                title: 'Student comment',
-                                subtitle: "New student comment",
-                                message: `${asker.firstName} commented "${newQuestion.studentComment} \
-                        on your assigned question"`,
-                                createdAt: admin.firestore.Timestamp.now()
-                            }],
-                            notifications: admin.firestore.Timestamp.now(),
-                            productUpdates: admin.firestore.Timestamp.now(),
-                            lastSent: admin.firestore.Timestamp.now(),})
-                    
-                    });
-            }
-            if (prevQuestion.taComment !== newQuestion.taComment) {
-                db.doc(`notificationTrackers/${asker.email}`)
-                    .update({
-                        notificationList: admin.firestore.FieldValue.arrayUnion({
-                            title: 'TA comment',
-                            subtitle: 'New TA comment',
-                            message: `A TA commented "${newQuestion.taComment} on your question`,
-                            createdAt: admin.firestore.Timestamp.now()
-                        })
-                    }).catch(() => {
-                        db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
-                            notificationList: [{
-                                title: 'TA comment',
-                                subtitle: 'New TA comment',
-                                message: `A TA commented "${newQuestion.taComment} on your question`,
-                                createdAt: admin.firestore.Timestamp.now()
-                            }],
-                            notifications: admin.firestore.Timestamp.now(),
-                            productUpdates: admin.firestore.Timestamp.now(),
-                            lastSent: admin.firestore.Timestamp.now(),})
-                    
-                    });
-            }
-        }
 
         if (
             prevQuestion.answererId !== newQuestion.answererId &&

@@ -132,6 +132,16 @@ export const updateComment = (
     db.doc(`questions/${question.questionId}`).update(update);
 }
 
+export const clearIndicator = (question: FireQuestion, ta: boolean) => {
+    let update: Partial<FireQuestion>;
+    if(ta) {
+        update = {taNew : false};
+    } else {
+        update= {studentNew : false};
+    }
+    firestore.doc(`questions/${question.questionId}`).update(update);
+}
+
 
 export const assignQuestionToTA = (
     db: firebase.firestore.Firestore,
@@ -191,6 +201,7 @@ export const addComment = (content: string, commenterId: string, questionId: str
     askerId: string) => {
     const timePosted = firebase.firestore.Timestamp.now();
     const commentId = firestore.doc(`questions/${questionId}`).collection('comments').doc().id;
+    firestore.doc(`questions/${questionId}`).update(isTA ? {studentNew: true} : {taNew: true});
     const newComment: FireComment = {
         content,
         commenterId,

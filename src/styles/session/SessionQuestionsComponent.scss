@@ -1,11 +1,12 @@
 .QueueQuestions {
   background-color: white;
-  margin: 12px auto 12px;
+  margin: 0px auto 12px;
   position: relative;
   text-align: center;
   width: 100%;
   display: inline-block;
   border-radius: 10px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
 
   .popup {
     width: 100%;
@@ -49,15 +50,15 @@
           background: white;
         }
       }
-      .Undo {
-        background: #ffffff;
-        border: 1px solid #b41515;
-        color: #b41515;
-        box-sizing: border-box;
-        border-radius: 4px;
-        padding: 3px 34px;
-        cursor: pointer;
-      }
+    }
+    .Undo {
+      background: #ffffff;
+      border: 1px solid #b41515;
+      color: #b41515;
+      box-sizing: border-box;
+      border-radius: 4px;
+      padding: 3px 34px;
+      cursor: pointer;
     }
   }
 
@@ -155,27 +156,23 @@
       // padding: 11px 0px 0px 12px;
       text-align: left;
     }
+  }
 
-    .Question {
-      text-align: left;
-      padding: 8px 12px;
-      margin: 0em;
-      color: #595959;
-      font-weight: 300;
-    }
+  .TopBar {
+    display: flex;
+    justify-content: flex-start;
+  }
 
-    .QuestionInfo {
-      float: left;
-      font-size: 14px;
-
-      .studentInformation {
-        display: inline-block;
-        width: 100%;
-        padding-top: 11px;
-        padding-left: 12px;
-        // padding: 11px 0px 0px 12px;
-        text-align: left;
-      }
+  .hybridBadge {
+    text-align: center;
+    font-size: 10px;
+    color: white;
+    border-radius: 15px;
+    display: inline-block;
+    padding: 0px 5px;
+    margin-right: 5px;
+    &.virtual {
+      background-color: #ec4339;
     }
     &.inPerson {
       background-color: #5599db;
@@ -186,8 +183,28 @@
     text-align: right;
     flex-grow: 1;
     font-weight: 300;
-    margin-top: 16px;
-    margin-right: 16px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    p {
+      font-size: 12px;
+    }
+
+    .Tags {
+      float: left;
+      text-align: left;
+
+      .tag {
+        cursor: default;
+      }
+    }
+
+    .Time {
+      float: right;
+      font-weight: 300;
+      color: black;
+      padding-right: 25px;
+    }
 
     .commentBtn {
       background-color: Transparent;
@@ -200,6 +217,20 @@
       background-color: lightgray;
       border-radius: 30px;
     }
+  }
+
+  .Question {
+    text-align: left;
+    padding: 8px 12px;
+    margin: 0em;
+    color: #595959;
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+  }
+
+  .Question.Student {
+    padding-top: 16px;
   }
 
   .CommentBox {
@@ -231,331 +262,350 @@
 
       .commentText {
         font-weight: 300;
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        p {
-          font-size: 12px;
-        }
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.33;
+        letter-spacing: normal;
+      }
 
-        .Tags {
-          float: left;
-          text-align: left;
+      .commentTextArea {
+        width: 90%;
+      }
 
-          .tag {
-            cursor: default;
-          }
-        }
+      .commentBtnHolder {
+        margin-top: 12px;
+        font-weight: 300;
 
-        .Time {
-          float: right;
-          font-weight: 300;
-          color: black;
-          padding-right: 25px;
-        }
-
-        .commentBtn {
-          background-color: Transparent;
-          outline: none;
+        .commentSaveBtn {
+          width: 107px;
+          height: 23px;
           border: none;
-          cursor: pointer;
+          color: white;
+          border-radius: 4px;
+          background-color: #3594f1;
         }
 
-        .commentTextArea {
-          width: 90%;
-        }
-
-        .Question {
-          text-align: left;
-          padding: 8px 12px;
-          margin: 0em;
-          color: #595959;
-          font-weight: 300;
-        }
-
-        .Question.Student {
-          padding-top: 16px;
-        }
-
-        .CommentBox {
-          margin-top: 12px;
-          font-weight: 300;
-
-          .commentSaveBtn {
-            width: 107px;
-            height: 23px;
-            border: none;
-            color: white;
-            border-radius: 4px;
-            background-color: #3594f1;
-          }
-
-          .commentCancelBtn {
-            margin-left: 20px;
-            width: 107px;
-            height: 23px;
-            border-radius: 4px;
-            border: solid 1px black;
-            background-color: white;
-          }
+        .commentCancelBtn {
+          margin-left: 20px;
+          width: 107px;
+          height: 23px;
+          border-radius: 4px;
+          border: solid 1px black;
+          background-color: white;
         }
       }
     }
+  }
 
-    .LocationPin {
-      display: inline-block;
-      float: right;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+  .LocationPin {
+    display: inline-block;
+    float: right;
+    padding: 14px;
 
-      i {
-        color: $number-blue;
-        font-size: 1.25em;
-        cursor: pointer;
-      }
+    i {
+      cursor: pointer;
+      color: $number-blue;
+    }
 
+    .modalShade {
+      display: none;
+    }
+
+    @media only screen and (max-width: $mobile-breakpoint) {
       .modalShade {
-        display: none;
+        display: block;
       }
+    }
+  }
+
+  .Location {
+    font-size: 12px;
+    text-align: left;
+    padding: 5px 12px 0 12px;
+    margin: 0em;
+    color: #595959;
+    font-weight: 300;
+  }
+
+  .LocationTooltip {
+    position: absolute;
+    top: 45px;
+    left: 30px;
+    width: 315px;
+    height: 64px;
+    box-shadow: 2px 2px 1px 0px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    background: #ffffff;
+    font-size: 12px;
+    padding: 8px 0 0 20px;
+    text-align: left;
+    z-index: 10;
+
+    @media only screen and (max-width: $mobile-breakpoint) {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      width: 311px;
+      height: 162px;
+      border-radius: 8px;
+      padding: 26px 0 0 24px;
+      font-size: 14px;
+    }
+
+    p {
+      color: #202020;
+      margin-bottom: 6px;
 
       @media only screen and (max-width: $mobile-breakpoint) {
-        .modalShade {
-          display: block;
+        margin-bottom: 20px;
+      }
+
+      .characterCount {
+        opacity: 0.5;
+        font-size: 11px;
+
+        @media only screen and (max-width: $mobile-breakpoint) {
+          font-size: 14px;
+        }
+
+        &.warn {
+          color: #ce2a2a;
         }
       }
     }
 
-    .Location {
-      font-size: 12px;
-      text-align: left;
-      padding: 5px 12px 0 12px;
-      margin: 0em;
-      color: #595959;
-      font-weight: 300;
+    .TextInput {
+      font-weight: normal;
+      border: 0px;
+      color: $text-grey;
+      padding: 5px 25px 5px 8px;
+      resize: none;
+      border-radius: 3px;
+      background-color: #edeff2;
+      height: 24px;
+      width: 275px;
+      opacity: 0.6;
+
+      @media only screen and (max-width: $mobile-breakpoint) {
+        width: 264px;
+        height: 45px;
+      }
+    }
+
+    .ui.inline.loader.active,
+    .ui.inline.loader.visible,
+    .check.icon {
+      position: absolute;
+      top: 35px;
+      left: 275px;
+      color: #afabab;
+
+      @media only screen and (max-width: $mobile-breakpoint) {
+        top: 80px;
+        left: 260px;
+      }
+    }
+
+    .DoneButton {
+      display: none;
+
+      @media only screen and (max-width: $mobile-breakpoint) {
+        display: block;
+        margin: 26px 0 0 -24px;
+        background-color: $brand-primary;
+        height: 44px;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        text-align: center;
+        padding: 12px 0;
+        font-size: 20px;
+        font-weight: 300;
+        color: #ffffff;
+      }
+    }
+  }
+
+  .LocationTooltip::after {
+    @media only screen and (min-width: $mobile-breakpoint) {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 0;
+      top: 0;
+      right: 15px;
+      box-sizing: border-box;
+      border: 4px solid black;
+      border-color: #ffffff #ffffff transparent transparent;
+      transform-origin: 0 0;
+      transform: rotate(-45deg);
+      box-shadow: 1px -1px 1px 0 rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .ui.button.JoinButton {
+    margin: 10px;
+  }
+
+  .Buttons {
+    hr {
+      display: block;
+      height: 1px;
+      border: 1px;
+      border-top: 1px solid #ebebeb;
+      margin: 0px 10px;
+      padding: 0;
+    }
+    .studentButtons {
       display: flex;
       align-items: center;
-    }
-
-    .LocationTooltip {
-      position: absolute;
-      top: 45px;
-      left: 20px;
-      width: 315px;
-      height: 64px;
-      box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.15);
-      border-radius: 4px;
-      background: #ffffff;
-      font-size: 12px;
-      padding: 8px 0 0 20px;
-      text-align: left;
-      z-index: 100;
-
-      i {
+      justify-content: flex-end;
+      position: relative;
+      padding: 12px 12px 12px 0px;
+      .Remove {
+        margin: 0;
+        color: #5599db;
+        text-decoration: underline;
+        font-size: 14px;
+        border: none;
+        background-color: transparent;
         cursor: pointer;
       }
-
-      @media only screen and (max-width: $mobile-breakpoint) {
-        position: fixed;
+      .replyButton {
+        position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        z-index: 9999;
-        width: 311px;
-        height: 162px;
-        border-radius: 8px;
-        padding: 26px 0 0 24px;
-        font-size: 14px;
-      }
-
-      p {
-        color: #000000;
-        margin-bottom: 6px;
-
-        @media only screen and (max-width: $mobile-breakpoint) {
-          margin-bottom: 20px;
-        }
-
-        .characterCount {
-          opacity: 0.5;
-          font-size: 11px;
-
-          @media only screen and (max-width: $mobile-breakpoint) {
-            font-size: 14px;
-          }
-
-          &.warn {
-            color: #ce2a2a;
-          }
-        }
-      }
-
-      .TextInput {
-        font-weight: normal;
-        border: 0px;
-        color: $text-grey;
-        padding: 5px 25px 5px 8px;
-        resize: none;
-        border-radius: 3px;
-        background-color: #edeff2;
-        height: 24px;
-        width: 275px;
-        opacity: 0.6;
-        cursor: text;
-
-        @media only screen and (max-width: $mobile-breakpoint) {
-          width: 264px;
-          height: 45px;
-        }
-      }
-
-      .ui.inline.loader.active,
-      .ui.inline.loader.visible,
-      .check.icon {
-        position: absolute;
-        top: 35px;
-        left: 275px;
-        color: #afabab;
-
-        @media only screen and (max-width: $mobile-breakpoint) {
-          top: 80px;
-          left: 260px;
-        }
-      }
-
-      .DoneButton {
-        display: none;
-
-        @media only screen and (max-width: $mobile-breakpoint) {
-          display: block;
-          margin: 26px 0 0 -24px;
-          background-color: $brand-primary;
-          height: 44px;
-          border-bottom-left-radius: 8px;
-          border-bottom-right-radius: 8px;
-          text-align: center;
-          padding: 12px 0;
-          font-size: 20px;
-          font-weight: 300;
-          color: #ffffff;
-        }
-      }
-    }
-
-    .LocationTooltip::after {
-      @media only screen and (min-width: $mobile-breakpoint) {
-        content: "";
-        position: absolute;
-        width: 0;
-        height: 0;
-        top: 0;
-        right: 15px;
-        box-sizing: border-box;
-        border: 4px solid black;
-        border-color: #ffffff #ffffff transparent transparent;
-        transform-origin: 0 0;
-        transform: rotate(-45deg);
-        box-shadow: 1px -1px 1px 0 rgba(0, 0, 0, 0.15);
-      }
-    }
-
-    .ui.button.JoinButton {
-      margin: 10px;
-    }
-
-    .Buttons {
-      hr {
-        display: block;
-        height: 1px;
-        border: 1px;
-        border-top: 1px solid #ebebeb;
-        margin: 0px 10px;
-        padding: 0;
-      }
-      .studentButtons {
+        cursor: pointer;
         display: flex;
+        flex-direction: row;
         align-items: center;
-        justify-content: flex-end;
-        position: relative;
-        padding: 12px 12px 12px 0px;
-        opacity: 0;
-        transition: opacity 0.2s ease-in-out;
-        &:hover {
-          opacity: 1;
+        &.hideReply {
+          opacity: 0;
         }
-        .Remove {
-          margin-left: 5px;
-          color: #5599db;
-          text-decoration: underline;
-          font-size: 12px;
-          border: none;
-          background-color: transparent;
-          cursor: pointer;
+        .replyIcon {
+          width: 25px;
         }
-        .replyButton {
+        .indicator {
           position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          cursor: pointer;
-          &.hideReply {
-            opacity: 0;
-          }
+          top: 0;
+          left: 16px;
         }
       }
+    }
 
-      .buttonsWrapper {
+    .buttonsWrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0px 12px;
+      position: relative;
+      .replyButton {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0px 12px;
-        position: relative;
-        opacity: 0;
-        transition: opacity 0.2s ease-in-out;
-        &:hover {
-          opacity: 1;
-        }
-        .replyButton {
-          display: flex;
-          cursor: pointer;
-          align-items: flex-start;
-          margin: auto;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          .replyText {
-            margin-left: 5px;
-            color: #5599db;
-            text-decoration: underline;
-            font-size: 15px;
-          }
-        }
-
-        .Delete {
+        cursor: pointer;
+        align-items: flex-start;
+        margin: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        .replyText {
           margin-left: 5px;
           color: #5599db;
           text-decoration: underline;
           font-size: 15px;
         }
+        .replyIcon {
+          width: 25px;
+        }
+        .indicator {
+          position: absolute;
+          top: 0;
+          left: 16px;
+        }
+      }
+
+      .Delete {
+        margin-left: 5px;
+        color: #5599db;
+        text-decoration: underline;
+        font-size: 14px;
+      }
+
+      .Begin {
+        border: 0.5px solid $number-blue;
+        color: $number-blue;
+      }
+
+      .Done {
+        border: 0.5px solid $tag-blue;
+        color: $tag-blue;
+      }
+
+      .Undo {
+        background: #ffffff;
+        border: 1px solid #b41515;
+        color: #b41515;
+        box-sizing: border-box;
+        border-radius: 4px;
+      }
+
+      .DotMenu {
+        color: black;
+        padding: 2px 15px;
+        width: auto;
+        position: absolute;
+        right: 0;
+        size: 50px;
+        font-weight: 800;
+      }
+      .assignedButtons {
+        .Delete {
+          margin-left: 5px;
+          color: #5599db;
+          text-decoration: underline;
+          font-size: 14px;
+          border: none;
+          background-color: transparent;
+          cursor: pointer;
+        }
+        .Done {
+          margin-left: 5px;
+          color: #5599db;
+          text-decoration: underline;
+          font-size: 14px;
+          border: none;
+          background-color: transparent;
+          cursor: pointer;
+        }
+      }
+
+      .TAButtons {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 12px 0;
+        user-select: none;
+        p {
+          display: inline-block;
+          border-radius: 5px;
+          color: white;
+          // padding: 2px 30px;
+          font-size: 15px;
+          cursor: pointer;
+          margin: 0px 0px 10px 0px;
+          width: 100px;
+        }
 
         .Begin {
-          border: 0.5px solid $number-blue;
-          color: $number-blue;
-        }
-
-        .Done {
-          border: 0.5px solid $tag-blue;
-          color: $tag-blue;
-        }
-
-        .Undo {
-          background: #ffffff;
-          border: 1px solid #b41515;
-          color: #b41515;
-          box-sizing: border-box;
-          border-radius: 4px;
+          border: none;
+          text-decoration: underline;
+          color: #5599db;
+          font-weight: normal;
+          font-size: 14px;
+          width: auto;
+          margin-bottom: 0;
         }
 
         .DotMenu {
@@ -567,88 +617,32 @@
           size: 50px;
           font-weight: 800;
         }
-        .assignedButtons {
-          .Delete {
-            margin-left: 5px;
-            color: #5599db;
-            text-decoration: underline;
-            font-size: 12px;
-            border: none;
-            background-color: transparent;
-            cursor: pointer;
-          }
-          .Done {
-            margin-left: 5px;
-            color: #5599db;
-            text-decoration: underline;
-            font-size: 12px;
-            border: none;
-            background-color: transparent;
-            cursor: pointer;
-          }
-        }
 
-        .TAButtons {
-          display: inline-block;
-          padding: 12px 0;
-          user-select: none;
+        .IReallyDontKnow {
+          border-radius: 8px;
+          width: 220px;
+          height: 45px;
+          position: absolute;
+          overflow: hidden;
+          box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
+          padding: 10px;
+          background-color: #f2f1f1;
+          text-align: center;
+          margin-top: 15px;
+          right: 0;
+          z-index: 1;
+
           p {
-            display: inline-block;
-            border-radius: 5px;
-            color: white;
-            // padding: 2px 30px;
-            font-size: 15px;
-            cursor: pointer;
-            margin: 0px 0px 10px 0px;
-            width: 100px;
-          }
-
-          .Begin {
-            border: none;
-            text-decoration: underline;
-            color: #5599db;
-            font-weight: normal;
-            font-size: 12px;
-            width: auto;
-          }
-
-          .DotMenu {
+            width: 200px;
             color: black;
-            padding: 2px 15px;
-            width: auto;
-            position: absolute;
-            right: 0;
-            size: 50px;
-            font-weight: 800;
-          }
-
-          .IReallyDontKnow {
-            border-radius: 8px;
-            width: 220px;
-            height: 45px;
-            position: absolute;
-            overflow: hidden;
-            box-shadow: 1px 0 5px 0 rgba(0, 0, 0, 0.25);
-            padding: 10px;
-            background-color: #f2f1f1;
-            text-align: center;
-            margin-top: 15px;
-            right: 0;
-            z-index: 1;
-
-            p {
-              width: 200px;
-              color: black;
-              size: 13px;
-              font-weight: normal;
-              text-decoration: normal;
-            }
+            size: 15px;
+            font-weight: normal;
+            text-decoration: normal;
           }
         }
       }
     }
   }
-
   .buttonsAndCantRemove {
     position: relative;
     .cantRemove {

@@ -31,7 +31,7 @@ type Props = {
     myQuestion: FireQuestion | null;
     isOpen: boolean;
     questions: readonly FireQuestion[];
-    isPaused: boolean;
+    isPaused: boolean | undefined;
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
