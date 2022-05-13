@@ -5,7 +5,7 @@ import { Dropdown, Icon } from 'semantic-ui-react';
 import ArrowBackIcon from '../../media/back.svg';
 import EditIcon from '../../media/edit.svg';
 import FileIcon from '../../media/file.svg';
-import DeleteIcon from '../../media/delete.svg';
+import DeleteIcon from '../../media/trash.svg';
 import { importProfessorsOrTAsFromCSV} from '../../firebasefunctions/importProfessorsOrTAs';
 import CloseIcon from '../../media/CloseIcon.svg';
 import AddEmailIcon from '../../media/AddEmailIcon.svg';
