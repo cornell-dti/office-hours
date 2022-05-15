@@ -1,10 +1,6 @@
 import * as React from 'react';
 import { Icon, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
-import { useState } from 'react';
-// @ts-ignore (Note that this library does not provide typescript)
-import Linkify from 'linkifyjs/react';
-import addNotification from 'react-push-notification';
 import { connect } from 'react-redux';
 import notif from '../../media/notif.svg'
 import SelectedTags from './SelectedTags';
@@ -89,43 +85,7 @@ class SessionQuestion extends React.Component<Props, State> {
             retrieveCalled: false
         };
     }
-
-    componentDidUpdate(prevProps: Props) {
-        const previousState = prevProps.question;
-        const currentState = this.props.question;
-        const user = this.props.myUserId;
-        if (previousState.taComment !== currentState.taComment && user === currentState.askerId) {
-            try {
-                addNotification({
-                    title: 'TA comment',
-                    subtitle: 'New TA comment',
-                    message: `${currentState.taComment}`,
-                    theme: 'darkblue',
-                    native: true,
-                });
-            } catch (error) {
-                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
-            }
-        }
-
-        if (
-            previousState.studentComment !== currentState.studentComment &&
-            user === currentState.answererId
-        ) {
-            try {
-                addNotification({
-                    title: 'Student comment',
-                    subtitle: 'New student comment',
-                    message: `${currentState.studentComment}`,
-                    theme: 'darkblue',
-                    native: true,
-                });
-            } catch (error) {
-                // TODO(ewlsh): Handle this better, this notification library doesn't handle iOS
-            }
-        }
-    }
-
+    
     // Given an index from [1..n], converts it to text that is displayed on the
     // question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
@@ -261,7 +221,7 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     setComments = (comments: FireComment[]) => {
-        this.setState({comments});
+        this.setState({comments : [...comments]});
     }
 
     retrieveComments = async (questionId: string) => {
@@ -275,7 +235,7 @@ class SessionQuestion extends React.Component<Props, State> {
 
     addCommentsHelper = (content: string) => {
         addComment(content, this.props.myUserId, this.props.question.questionId, 
-            this.props.isTA, this.props.question.askerId);
+            this.props.isTA, this.props.question.askerId, this.props.question.answererId);
     }
 
     switchCommentsVisible = () => {
@@ -318,7 +278,6 @@ class SessionQuestion extends React.Component<Props, State> {
             ? this.props.tags[this.props.question.secondaryTag]
             : undefined;
 
-        const comment = this.props.isTA ? question.taComment : question.studentComment;
         if (this.state.retrieveCalled === false) {
             this.retrieveComments(question.questionId);
         }
@@ -413,7 +372,10 @@ class SessionQuestion extends React.Component<Props, State> {
                                         {this.props.isTA &&
                                                 question.location &&
                                                 question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
-                                                question.location
+                                                (<div className="taLocationInfo">
+                                                    <Icon name="map marker alternate" size='small'/>
+                                                    <p>{question.location}</p> 
+                                                </div>)
                                         }</>)}
                             </div>
                         </div>
@@ -441,7 +403,12 @@ class SessionQuestion extends React.Component<Props, State> {
                                         src={notif} 
                                         alt="Notification indicator" 
                                     />}
-                                    <img className="replyIcon" src={CommentBubble} alt="Reply icon" onClick={this.handleReplyButton}/>
+                                    <img 
+                                        className="replyIcon" 
+                                        src={CommentBubble} 
+                                        alt="Reply icon" 
+                                        onClick={this.handleReplyButton}
+                                    />
                                 </div>
                                 <div className="TAButtons">
                                     {question.status === 'unresolved' ?
@@ -473,37 +440,6 @@ class SessionQuestion extends React.Component<Props, State> {
                             </div>
                         </div>
                     }
-                    {
-                        this.state.enableEditingComment && <div className="CommentBox">
-                            <div className="commentTopBar">
-                                <img
-                                    className="userInformationImg"
-                                    src={user.photoUrl || '/placeholder.png'}
-                                    alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
-                                />
-                                <span className="userInformationName">
-                                    {user.firstName} {user.lastName}
-                                </span>
-                            </div>
-                            <EditComment
-                                onValueChange={(newComment: string) => {
-                                    // Set a comment
-                                    this.questionComment(newComment, this.props.isTA);
-                                    // Disable editing comment
-                                    this.setState({
-                                        enableEditingComment: false
-                                    });
-                                }}
-                                onCancel={() => {
-                                    // Disable editing comment
-                                    this.setState({
-                                        enableEditingComment: false
-                                    });
-                                }}
-                                initComment={comment || ""}
-                            />
-                        </div>
-                    }
 
                     {
                         question.answererLocation && this.state.width < MOBILE_BREAKPOINT && <>
@@ -527,7 +463,12 @@ class SessionQuestion extends React.Component<Props, State> {
                                         src={notif} 
                                         alt="Notification indicator" 
                                     />}
-                                    <img className="replyIcon" src={CommentBubble} alt="Reply icon" onClick={this.handleReplyButton}/>
+                                    <img 
+                                        className="replyIcon" 
+                                        src={CommentBubble} 
+                                        alt="Reply icon" 
+                                        onClick={this.handleReplyButton}
+                                    />
                                 </div>
                             </div>
 
@@ -591,106 +532,6 @@ class SessionQuestion extends React.Component<Props, State> {
         );
     }
 }
-
-type EditCommentProps = {
-    readonly initComment: string;
-    readonly onValueChange: Function;
-    readonly onCancel: Function;
-};
-
-const EditComment = (props: EditCommentProps) => {
-    const [editable, setEditable] = useState(false);
-    const [comment, setComment] = useState(props.initComment);
-    const [prevComment, setPrevComment] = useState(comment);
-
-    if (editable) {
-        return (
-            <div className="commentBody">
-                <textarea
-                    placeholder="Add a comment..."
-                    className="commentTextArea"
-                    onChange={evt => {
-                        setComment(evt.target.value);
-                    }}
-                    value={comment}
-                />
-                <div className="commentBtnHolder">
-                    <button
-                        type="button"
-                        className="commentSaveBtn"
-                        onClick={() => {
-                            props.onValueChange(comment);
-                            setPrevComment(comment);
-                            setEditable(false);
-                        }}
-                    >
-                        Save
-                    </button>
-                    <button
-                        type="button"
-                        className="commentCancelBtn"
-                        onClick={() => {
-                            props.onCancel();
-                            setComment(prevComment);
-                            setEditable(false);
-                        }}
-                    >
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    // Not editable
-    return (
-        <div className="commentBody">
-            <Linkify tagName="p">
-                {comment !== '' && comment !== undefined ? comment : 'Add a comment...'}
-            </Linkify>
-            <button
-                type="button"
-                className="link-button commentEdit"
-                onClick={evt => {
-                    evt.preventDefault();
-                    setPrevComment(comment);
-                    setEditable(true);
-                }}
-            >
-                edit
-            </button>
-        </div>
-    );
-};
-
-type CommentBoxProps = {
-    readonly studentComment?: string;
-    readonly taComment?: string;
-    readonly studentCSS?: string;
-};
-
-const CommentBox = (props: CommentBoxProps) => {
-    return (
-        <div className="CommentBox">
-            {props.studentComment && (
-                <Linkify className={'Question' + props.studentCSS} tagName="p">
-                    Student Comment: {props.studentComment}
-                </Linkify>
-            )}
-            {props.taComment && (
-                <Linkify className={'Question' + props.studentCSS} tagName="p">
-                    TA Comment: {props.taComment}
-                </Linkify>
-            )}
-        </div>
-    );
-};
-
-CommentBox.defaultProps = {
-    studentComment: undefined,
-    taComment: undefined,
-    studentCSS: undefined,
-};
 
 const mapStateToProps = (state: RootState) => ({
     user : state.auth.user

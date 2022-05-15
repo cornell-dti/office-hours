@@ -10,6 +10,7 @@
   filter: drop-shadow(0px 0px 20px rgba(0, 0, 0, 0.1));
   &.yourComment {
     background-color: #d6eafe;
+    z-index: 100;
   }
   &:last-child {
     margin-bottom: 0px;

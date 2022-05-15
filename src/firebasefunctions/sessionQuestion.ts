@@ -198,7 +198,7 @@ export const updateQuestion = (
 }
 
 export const addComment = (content: string, commenterId: string, questionId: string, isTA: boolean, 
-    askerId: string) => {
+    askerId: string, answererId: string) => {
     const timePosted = firebase.firestore.Timestamp.now();
     const commentId = firestore.doc(`questions/${questionId}`).collection('comments').doc().id;
     firestore.doc(`questions/${questionId}`).update(isTA ? {studentNew: true} : {taNew: true});
@@ -208,7 +208,8 @@ export const addComment = (content: string, commenterId: string, questionId: str
         timePosted,
         isTA,
         commentId,
-        askerId
+        askerId,
+        answererId,
     }
     const batch = firestore.batch();
     batch.set(firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId), newComment);

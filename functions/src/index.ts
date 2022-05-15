@@ -124,6 +124,64 @@ exports.onUserCreate = functions.firestore
 
     });
 
+exports.onCommentCreate = functions.firestore
+    .document(`questions/{questionId}/comments/{commentId}`)
+    .onCreate(async (snap) => {
+        const data = snap.data();
+        const askerId = data.askerId;
+        const answererId = data.answererId;
+        const commenterId = data.commenterId;
+        const asker: FireUser = (await db.doc(`users/${askerId}`).get()).data() as FireUser;
+        if(askerId === commenterId) {
+            const answerer: FireUser = (await db.doc(`users/${answererId}`).get()).data() as FireUser;
+            db.doc(`notificationTrackers/${answerer.email}`)
+                .update({
+                    notificationList: admin.firestore.FieldValue.arrayUnion({
+                        title: 'Student comment',
+                        subtitle: "New student comment",
+                        message: `${asker.firstName} commented \
+                        on your assigned question"`,
+                        createdAt: admin.firestore.Timestamp.now()
+                    })
+                }).catch(() => {
+                    db.doc(`notificationTrackers/${answerer.email}`).create({id: answerer.email,
+                        notificationList: [{
+                            title: 'Student comment',
+                            subtitle: "New student comment",
+                            message: `${asker.firstName} commented \
+                        on your assigned question`,
+                            createdAt: admin.firestore.Timestamp.now()
+                        }],
+                        notifications: admin.firestore.Timestamp.now(),
+                        productUpdates: admin.firestore.Timestamp.now(),
+                        lastSent: admin.firestore.Timestamp.now(),})
+                    
+                });
+        } else {
+            db.doc(`notificationTrackers/${asker.email}`)
+                .update({
+                    notificationList: admin.firestore.FieldValue.arrayUnion({
+                        title: 'TA comment',
+                        subtitle: 'New TA comment',
+                        message: `A TA commented on your question`,
+                        createdAt: admin.firestore.Timestamp.now()
+                    })
+                }).catch(() => {
+                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                        notificationList: [{
+                            title: 'TA comment',
+                            subtitle: 'New TA comment',
+                            message: `A TA commented on your question`,
+                            createdAt: admin.firestore.Timestamp.now()
+                        }],
+                        notifications: admin.firestore.Timestamp.now(),
+                        productUpdates: admin.firestore.Timestamp.now(),
+                        lastSent: admin.firestore.Timestamp.now(),})
+                    
+                });
+        }
+    })
+
 exports.onSessionUpdate = functions.firestore
     .document('sessions/{sessionId}')
     .onUpdate(async (change) => {

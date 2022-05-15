@@ -71,22 +71,27 @@ const UserComment = ({content, poster, timePosted, isTA, commenterId, commentId,
                             >Post</button>
                             :
                             <div className="notEditableButtonsWrapper">
-                                <button
+                                {/* <button
                                     className="commentButton commentEdit"
                                     onClick={() => {
                                         if (!isPast) setCommentEditable(true)
                                     }} 
                                     type="button"
-                                >Edit</button>
+                                >Edit</button> */}
                                 <div className="showDeleteMenu" >
-                                    <img
+                                    <div
                                         className="deleteDots"
-                                        src={Dots} 
-                                        alt="Hide or show delete"
                                         onClick={() => {
                                             if (!isPast) setDeleteShow(!deleteShow);
                                         }}
-                                    />
+                                    >
+                                        <img
+                                            className="deleteDots"
+                                            src={Dots} 
+                                            alt="Hide or show delete"
+                                        
+                                        />
+                                    </div>
                                     {deleteShow && 
                                     <div
                                         className={`commentButton commentDelete
