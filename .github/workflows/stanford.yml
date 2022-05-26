@@ -1,8 +1,8 @@
-name: CD
+name: Release
 on:
   push:
     branches:
-      - master
+      - release
 
 jobs:
   deploy:
@@ -16,12 +16,12 @@ jobs:
       - name: Install
         run: yarn install
       - name: Build Client
-        env:
-          REACT_APP_API_KEY: ${{ secrets.REACT_APP_TEST_API_KEY }}
-        run: yarn build:staging
-      - name: Deploy Client
+        env: 
+          REACT_APP_API_KEY: ${{ secrets.REACT_APP_STANFORD_API_KEY }}
+        run: yarn build
+      - name: Deploy
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          yarn firebase use default
-          yarn firebase deploy --token "$FIREBASE_TOKEN" --non-interactive --only hosting
+          yarn firebase use production
+          yarn firebase deploy --token "$FIREBASE_TOKEN" --non-interactive
