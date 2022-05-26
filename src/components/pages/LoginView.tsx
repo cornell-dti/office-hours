@@ -5,8 +5,6 @@ import firebase, { app, firestore } from '../../firebase';
 import { userUpload } from '../../firebasefunctions/user';
 
 import QMILogo2020 from '../../media/QMILogo2020.svg';
-import cornellLogo from '../../media/Cornell_University_seal.svg';
-import stanfordLogo from '../../media/Stanford_University_Logo.svg';
 import QMIPeople from '../../media/QMIPeople.gif';
 import googleLogo from '../../media/googleLogo.svg';
 import Demo from '../../media/demo_higher_res.png';
@@ -31,11 +29,11 @@ const LoginView: React.FC = () => {
 
     const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
 
-    const googleAuth = (university: string) => {
+    const googleAuth = () => {
         const authProvider = new firebase.auth.GoogleAuthProvider();
         if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
             authProvider.setCustomParameters({
-                hd: `${university}.edu`,
+                hd: 'stanford.edu',
             });
         }
         authProvider.addScope('email');
@@ -70,19 +68,9 @@ const LoginView: React.FC = () => {
                 <div className="nameAndButtonWrapper">
                     <h2 className="mainLogoText">Queue Me In</h2>
                     <h3 className="subHeader">Office Hours Simplified</h3>
-                    <button type="button" className="loginButton" onClick={() => googleAuth('cornell')}>
-                        <img src={cornellLogo} className="universityLogo" alt="Cornell logo" />
-                        <div className="loginButton__innerButton">
-                            <img src={googleLogo} className="googleLogo" alt="Google logo" />
-                            <span className="loginButtonText">Sign in with Google</span>
-                        </div>
-                    </button>
-                    <button type="button" className="loginButton" onClick={() => googleAuth('stanford')}>
-                        <img src={stanfordLogo} className="universityLogo universityLogoStanford" alt="Stanford logo" />
-                        <div className="loginButton__innerButton">
-                            <img src={googleLogo} className="googleLogo" alt="Google logo" />
-                            <span className="loginButtonText">Sign in with Google</span>
-                        </div>
+                    <button type="button" className="loginButton" onClick={googleAuth}>
+                        <img src={googleLogo} className="googleLogo" alt="Google logo" />
+                        <span className="loginButtonText">Sign in with Google</span>
                     </button>
                 </div>
                 <img src={QMIPeople} className="qmiPeople" alt="People lining up" />
