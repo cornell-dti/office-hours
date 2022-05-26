@@ -35,8 +35,7 @@ const LoginModal = ({
 
     const passLogin = (e: React.FormEvent<HTMLElement>) => {
         e.preventDefault();
-        app
-            .auth().signInWithEmailAndPassword(formData.email, formData.password).then((response) => {
+        app.auth().signInWithEmailAndPassword(formData.email, formData.password).then((response) => {
                 const user = response.user;
                 userUpload(user, firestore);
                 clearNotifications(user);
