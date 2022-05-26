@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !=
         messagingSenderId: "124053693123",
         appId: "1:124053693123:web:a31aa48e14f409ff273876",
         measurementId: "G-311TQWQWWC"
-      };
+    };
 } else {
     firebaseConfig = {
         apiKey: process.env.REACT_APP_API_KEY,
@@ -42,13 +42,13 @@ const loggedIn$ = authState(auth).pipe(filter((user) => !!user)); // Observable 
 
 const Timestamp = firebase.firestore.Timestamp;
 
-export { 
-    app, 
-    auth, 
-    firestore, 
-    collectionData, 
-    loggedIn$, 
-    Timestamp 
+export {
+    app,
+    auth,
+    firestore,
+    collectionData,
+    loggedIn$,
+    Timestamp
 };
 
 export default firebase;

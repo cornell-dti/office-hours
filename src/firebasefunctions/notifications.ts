@@ -3,7 +3,6 @@ import { firestore } from '../firebase';
 
 export const createNotificationTracker = async (user: firebase.User | null) => {
     if (user !== null) {
-        const uid = user.uid;
         const email = user.email;
         if (email !== null) {
             const trackerRef = firestore.collection('notificationTrackers').doc(email);
