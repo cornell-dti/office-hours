@@ -132,9 +132,7 @@ exports.onCommentCreate = functions.firestore
         const answererId = data.answererId;
         const commenterId = data.commenterId;
         const asker: FireUser = (await db.doc(`users/${askerId}`).get()).data() as FireUser;
-        functions.logger.log(data)
-        if(askerId === commenterId && answererId) {
-            functions.logger.log("notifying ta")
+        if(askerId === commenterId && answererId !== "") {
             const answerer: FireUser = (await db.doc(`users/${answererId}`).get()).data() as FireUser;
             db.doc(`notificationTrackers/${answerer.email}`)
                 .update({
@@ -160,7 +158,6 @@ exports.onCommentCreate = functions.firestore
                     
                 });
         } else {
-            functions.logger.log("notifying student")
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({
                     notificationList: admin.firestore.FieldValue.arrayUnion({
@@ -203,7 +200,6 @@ exports.onSessionUpdate = functions.firestore
         if (!topQuestion.wasNotified) {
             const asker: FireUser = (await db.doc(`users/${topQuestion.askerId}`)
                 .get()).data() as FireUser;
-            functions.logger.log(asker.firstName);
             sendSMS(asker, `Your question has reached the top of the \
                 ${sessionName} queue. A TA will likely help you shortly.`);
             db.doc(`notificationTrackers/${asker.email}`)
@@ -217,7 +213,6 @@ exports.onSessionUpdate = functions.firestore
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
-                    functions.logger.log("Creating notificationTracker")
                     db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
                         notificationList: [{
                             title: 'Your Question is Up!',
