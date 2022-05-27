@@ -1,8 +1,8 @@
-name: Release
+name: Stanford
 on:
   push:
     branches:
-      - release
+      - release/stanford
 
 jobs:
   deploy:
