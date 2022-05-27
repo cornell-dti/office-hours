@@ -85,7 +85,7 @@ class SessionQuestion extends React.Component<Props, State> {
             retrieveCalled: false
         };
     }
-    
+
     // Given an index from [1..n], converts it to text that is displayed on the
     // question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
@@ -221,12 +221,12 @@ class SessionQuestion extends React.Component<Props, State> {
     };
 
     setComments = (comments: FireComment[]) => {
-        this.setState({comments : [...comments]});
+        this.setState({ comments: [...comments] });
     }
 
     retrieveComments = async (questionId: string) => {
         getComments(questionId, this.setComments);
-        this.setState({retrieveCalled: true});
+        this.setState({ retrieveCalled: true });
     }
 
     deleteCommentsHelper = (commentId: string, questionId: string) => {
@@ -234,12 +234,13 @@ class SessionQuestion extends React.Component<Props, State> {
     }
 
     addCommentsHelper = (content: string) => {
-        addComment(content, this.props.myUserId, this.props.question.questionId, 
+        console.log(this.props.question.answererId);
+        addComment(content, this.props.myUserId, this.props.question.questionId,
             this.props.isTA, this.props.question.askerId, this.props.question.answererId);
     }
 
     switchCommentsVisible = () => {
-        this.setState({areCommentsVisible: !this.state.areCommentsVisible});
+        this.setState({ areCommentsVisible: !this.state.areCommentsVisible });
     }
 
     handleReplyButton = () => {
@@ -291,36 +292,36 @@ class SessionQuestion extends React.Component<Props, State> {
                                 {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
                             </p>
                         </div>
-                        {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) && 
-                     (
-                         <div className="LocationPin">
-                             <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" size='large'/>
-                             <div
-                                 className="LocationTooltip"
-                                 style={{
-                                     visibility: this.state.showLocation ? 'visible' : 'hidden',
-                                 }}
-                             >
-                                 <p>
-                                    Edit Location &nbsp;{' '}
-                                     <span
-                                         className={
-                                             'characterCount ' +
-                                            (this.state.location.length >= 40 ? 'warn' : '')
-                                         }
-                                     >
-                                         {this.state.location.length}/{LOCATION_CHAR_LIMIT}
-                                     </span>
-                                 </p>
-                                 <textarea
-                                     className="TextInput question"
-                                     value={this.state.location}
-                                     onChange={e => this.handleUpdateLocation(e)}
-                                 />
-                                 <Icon name="check" onClick={this.toggleLocationTooltip}/>
-                             </div>
-                         </div>
-                     )}
+                        {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) &&
+                            (
+                                <div className="LocationPin">
+                                    <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" size='large' />
+                                    <div
+                                        className="LocationTooltip"
+                                        style={{
+                                            visibility: this.state.showLocation ? 'visible' : 'hidden',
+                                        }}
+                                    >
+                                        <p>
+                                            Edit Location &nbsp;{' '}
+                                            <span
+                                                className={
+                                                    'characterCount ' +
+                                                    (this.state.location.length >= 40 ? 'warn' : '')
+                                                }
+                                            >
+                                                {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                            </span>
+                                        </p>
+                                        <textarea
+                                            className="TextInput question"
+                                            value={this.state.location}
+                                            onChange={e => this.handleUpdateLocation(e)}
+                                        />
+                                        <Icon name="check" onClick={this.toggleLocationTooltip} />
+                                    </div>
+                                </div>
+                            )}
                         <div className="QuestionInfo">
                             {this.props.isTA && asker &&
                                 <div className="studentInformation">
@@ -355,11 +356,19 @@ class SessionQuestion extends React.Component<Props, State> {
                                     />
                                     <span className="userInformationName">
                                         {user.firstName + ' ' + user.lastName +
-                                        ' (You)'}
+                                            ' (You)'}
                                     </span>
                                 </div>
                             }
                             <div className="Location">
+                                {this.props.isTA && this.props.modality === 'hybrid' &&
+                                    typeof this.props.question.isVirtual !== 'undefined' &&
+                                    <div className={`hybridBadge ${this.props.question.isVirtual ?
+                                        'virtual' : 'inPerson'}`}
+                                    >
+                                        {this.props.question.isVirtual ? 'Virtual' : 'In-person'}
+                                    </div>
+                                }
                                 {
                                     (
                                         <>{this.props.isTA &&
@@ -369,14 +378,14 @@ class SessionQuestion extends React.Component<Props, State> {
                                                 Zoom Link
                                             </a>
                                         }
-                                        {this.props.isTA &&
+                                            {this.props.isTA &&
                                                 question.location &&
                                                 question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
                                                 (<div className="taLocationInfo">
-                                                    <Icon name="map marker alternate" size='small'/>
-                                                    <p>{question.location}</p> 
+                                                    <Icon name="map marker alternate" size='small' />
+                                                    <p>{question.location}</p>
                                                 </div>)
-                                        }</>)}
+                                            }</>)}
                             </div>
                         </div>
                         <div className="RightBar">
@@ -391,22 +400,22 @@ class SessionQuestion extends React.Component<Props, State> {
                         </div>
                     </div>
                     {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
-                                <p className={'Question' + studentCSS}>{question.content}</p>}
+                        <p className={'Question' + studentCSS}>{question.content}</p>}
                     {
                         this.props.isTA &&
                         <div className="Buttons">
                             <hr />
                             <div className="buttonsWrapper">
                                 <div className="replyButton">
-                                    {!this.state.areCommentsVisible && question.taNew && <img 
-                                        className="indicator" 
-                                        src={notif} 
-                                        alt="Notification indicator" 
+                                    {!this.state.areCommentsVisible && question.taNew && <img
+                                        className="indicator"
+                                        src={notif}
+                                        alt="Notification indicator"
                                     />}
-                                    <img 
-                                        className="replyIcon" 
-                                        src={CommentBubble} 
-                                        alt="Reply icon" 
+                                    <img
+                                        className="replyIcon"
+                                        src={CommentBubble}
+                                        alt="Reply icon"
                                         onClick={this.handleReplyButton}
                                     />
                                 </div>
@@ -426,12 +435,12 @@ class SessionQuestion extends React.Component<Props, State> {
                                         <>
                                             <button
                                                 className="Delete"
-                                                onClick={this.studentNoShow} 
+                                                onClick={this.studentNoShow}
                                                 type="button"
                                             >No show</button>
                                             <button
                                                 className="Done"
-                                                onClick={this.questionDone} 
+                                                onClick={this.questionDone}
                                                 type="button"
                                             >Done</button>
                                         </>
@@ -458,15 +467,15 @@ class SessionQuestion extends React.Component<Props, State> {
                                     Remove
                                 </p>
                                 <div className="replyButton">
-                                    {!this.state.areCommentsVisible && question.studentNew && <img 
-                                        className="indicator" 
-                                        src={notif} 
-                                        alt="Notification indicator" 
+                                    {!this.state.areCommentsVisible && question.studentNew && <img
+                                        className="indicator"
+                                        src={notif}
+                                        alt="Notification indicator"
                                     />}
-                                    <img 
-                                        className="replyIcon" 
-                                        src={CommentBubble} 
-                                        alt="Reply icon" 
+                                    <img
+                                        className="replyIcon"
+                                        src={CommentBubble}
+                                        alt="Reply icon"
                                         onClick={this.handleReplyButton}
                                     />
                                 </div>
@@ -503,12 +512,12 @@ class SessionQuestion extends React.Component<Props, State> {
                                         src={GreenCheck}
                                     />
                                     <p className="resolvedQuestionText">
-                                    Question Marked as Done
+                                        Question Marked as Done
                                     </p>
                                 </div>
                             </div>
                             <p className="Undo" onClick={this.undoDone}>
-                            Undo
+                                Undo
                             </p>
                         </div>
                     )}
@@ -534,7 +543,7 @@ class SessionQuestion extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
 

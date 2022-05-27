@@ -2,7 +2,7 @@
   padding-bottom: 30px;
 }
 
-.sessionQuestionsWrapper {
+.SessionQuestionsWrapper {
   .SessionClosedMessage {
     margin: 20px auto;
     padding: 0 10px;
@@ -10,6 +10,11 @@
     font-weight: 400;
     letter-spacing: 0.3px;
     color: $text-grey;
+  }
+
+  .whiteBackground {
+    background-color: white;
+    border-radius: 10.6px;
   }
 
   .SessionQuestionsContainer {
@@ -20,10 +25,6 @@
     //         border: solid 3px #ffdba6;
     //     }
     // }]
-    &.whiteBackground {
-      background-color: white;
-      border-radius: 10.6px;
-    }
 
     .User {
       margin-bottom: 16px;
@@ -39,8 +40,10 @@
       padding: 20px 0px;
       margin-left: 12px;
     }
+
     .discussionHeaderWrapper {
       position: relative;
+
       .discussionQuestionsSlider {
         width: 100%;
         border-radius: 8px;
@@ -48,9 +51,11 @@
         display: flex;
         position: relative;
         align-items: center;
+
         &:hover {
           cursor: pointer;
         }
+
         .discussionSliderSelector {
           background: linear-gradient(45deg, #668ae9 0%, #6db9ea 100%);
           position: absolute;
@@ -60,10 +65,12 @@
           border-radius: 6px;
           transition: left 0.4s ease-in-out;
           z-index: -1;
+
           &.isSlidedRight {
             left: 50%;
           }
         }
+
         .discussionSliderOption {
           width: 50%;
           font-size: 20px;
@@ -71,28 +78,34 @@
           color: #979797;
           padding: 20px;
           transition: color 0.4s ease-in-out;
+
           &.isSelected {
             color: white;
           }
         }
       }
+
       .sortDiscussionQuestionsWrapper {
         display: flex;
         margin: 20px 0px;
         align-items: center;
         justify-content: flex-end;
+
         .discussionArrowsContainer {
           display: flex;
           align-items: center;
           margin-right: 5px;
+
           .sortDiscussionArrow {
             width: 20px;
             height: 13px;
           }
         }
+
         .sortDiscussionQuestionsLabel {
           margin: 0px 5px 0px 0px;
         }
+
         .sortDiscussionQuestionsOptions {
           display: flex;
           border: 1px solid #3594f1;
@@ -100,9 +113,11 @@
           width: 200px;
           align-items: center;
           position: relative;
+
           &:hover {
             cursor: pointer;
           }
+
           .sortDiscussionsSlider {
             position: absolute;
             left: 1px;
@@ -112,10 +127,12 @@
             background-color: #5599db;
             border-radius: 3px;
             transition: left 0.4s ease-in-out;
+
             &.slidedRight {
               left: 50%;
             }
           }
+
           .sortDiscussionQuestionsOption {
             color: #3594f1;
             font-weight: 300;
@@ -123,6 +140,7 @@
             width: 50%;
             padding: 5px 0px;
             transition: color 0.4s ease-in-out;
+
             &.optionChosen {
               color: white;
             }

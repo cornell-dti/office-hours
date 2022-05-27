@@ -259,43 +259,45 @@ const SessionQuestionsContainer = (props: Props) => {
     // questionTimeUp();
 
     return (
-        <div className="SessionQuestionsContainer splitQuestions">
-            {!props.isTA && !myQuestion && props.isOpen && !props.isPaused && !props.haveAnotherQuestion ? (
-                props.course && props.session ? (
-                    <AddQuestion
-                        session={props.session}
-                        course={props.course}
-                        mobileBreakpoint={MOBILE_BREAKPOINT}
-                    />
-                ) : (
-                    <Loader active={true} content={'Loading'} />
-                )
-            ) : null}
-            {!props.isTA && !myQuestion && props.isOpen && !props.isPaused && props.haveAnotherQuestion && (
-                <>
-                    <div className="SessionClosedMessage">
-                        You are holding a spot in another active queue. To join this queue, please retract
-                        your question from the other queue!
-                    </div>
-                    <div className="SessionJoinButton disabled">
-                        <p>Join the Queue</p>
-                    </div>
-                </>
-            )}
+        <div className="SessionQuestionsWrapper">
             {shownQuestions && shownQuestions.length > 0 && props.isPast && (
-                <div className="SessionClosedMessage">
-                    This queue has closed and is no longer accepting new questions.
-                </div>
-            )}
-            {!myQuestion && !props.isTA && props.isPaused && (
-                <div className="SessionClosedMessage">
-                    This queue has been temporarily closed and is no longer accepting new questions.
-                </div>
-            )}
-            {shownQuestions && shownQuestions.length > 0 && !props.isTA && myQuestion &&
-                <p className="QuestionHeader">My Question</p>
-            }
-            <div className="sessionQuestionsWrapper">
+                    <div className="SessionClosedMessage">
+                        This queue has closed and is no longer accepting new questions.
+                    </div>
+                )}
+            <div className={"SessionQuestionsContainer splitQuestions" +
+                ((shownQuestions && shownQuestions.length > 0 && (props.isTA || myQuestion)) ? ' whiteBackground' : '')}
+            >
+                {!props.isTA && !myQuestion && props.isOpen && !props.isPaused && !props.haveAnotherQuestion ? (
+                    props.course && props.session ? (
+                        <AddQuestion
+                            session={props.session}
+                            course={props.course}
+                            mobileBreakpoint={MOBILE_BREAKPOINT}
+                        />
+                    ) : (
+                        <Loader active={true} content={'Loading'} />
+                    )
+                ) : null}
+                {!props.isTA && !myQuestion && props.isOpen && !props.isPaused && props.haveAnotherQuestion && (
+                    <>
+                        <div className="SessionClosedMessage">
+                            You are holding a spot in another active queue. To join this queue, please retract
+                            your question from the other queue!
+                        </div>
+                        <div className="SessionJoinButton disabled">
+                            <p>Join the Queue</p>
+                        </div>
+                    </>
+                )}
+                {!props.isPast && !myQuestion && !props.isTA && props.isPaused && (
+                    <div className="SessionClosedMessage">
+                        This queue has been temporarily closed and is no longer accepting new questions.
+                    </div>
+                )}
+                {shownQuestions && shownQuestions.length > 0 && !props.isTA && myQuestion &&
+                    <p className="QuestionHeader">My Question</p>
+                }
                 {shownQuestions && myQuestion && (
                     <StudentMyQuestion
                         questionId={myQuestion.questionId}
@@ -381,6 +383,9 @@ const SessionQuestionsContainer = (props: Props) => {
                         // myQuestion={false}
                         />
                     ))}
+                    {assignedQuestions && assignedQuestions.length > 0 && props.isTA && 
+                    <p className="QuestionHeader">Assigned Questions</p>
+                }
                 {shownQuestions &&
                     shownQuestions.length > 0 &&
                     props.modality !== 'review' &&

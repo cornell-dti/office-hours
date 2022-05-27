@@ -132,7 +132,9 @@ exports.onCommentCreate = functions.firestore
         const answererId = data.answererId;
         const commenterId = data.commenterId;
         const asker: FireUser = (await db.doc(`users/${askerId}`).get()).data() as FireUser;
-        if(askerId === commenterId) {
+        functions.logger.log(data)
+        if(askerId === commenterId && answererId) {
+            functions.logger.log("notifying ta")
             const answerer: FireUser = (await db.doc(`users/${answererId}`).get()).data() as FireUser;
             db.doc(`notificationTrackers/${answerer.email}`)
                 .update({
@@ -140,7 +142,7 @@ exports.onCommentCreate = functions.firestore
                         title: 'Student comment',
                         subtitle: "New student comment",
                         message: `${asker.firstName} commented \
-                        on your assigned question"`,
+                        on your assigned question`.trim(),
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
@@ -149,7 +151,7 @@ exports.onCommentCreate = functions.firestore
                             title: 'Student comment',
                             subtitle: "New student comment",
                             message: `${asker.firstName} commented \
-                        on your assigned question`,
+                        on your assigned question`.trim(),
                             createdAt: admin.firestore.Timestamp.now()
                         }],
                         notifications: admin.firestore.Timestamp.now(),
@@ -158,12 +160,13 @@ exports.onCommentCreate = functions.firestore
                     
                 });
         } else {
+            functions.logger.log("notifying student")
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({
                     notificationList: admin.firestore.FieldValue.arrayUnion({
                         title: 'TA comment',
                         subtitle: 'New TA comment',
-                        message: `A TA commented on your question`,
+                        message: `A TA commented on your question`.trim(),
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
@@ -171,7 +174,7 @@ exports.onCommentCreate = functions.firestore
                         notificationList: [{
                             title: 'TA comment',
                             subtitle: 'New TA comment',
-                            message: `A TA commented on your question`,
+                            message: `A TA commented on your question`.trim(),
                             createdAt: admin.firestore.Timestamp.now()
                         }],
                         notifications: admin.firestore.Timestamp.now(),

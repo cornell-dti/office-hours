@@ -16,6 +16,7 @@
     justify-content: left;
     width: 100%;
     margin-left: 2px;
+
     .MuiFormControlLabel-label {
       font-size: 15px;
       width: 100%;
@@ -120,6 +121,12 @@
     }
   }
 
+  @media only screen and (max-width: 1300px) {
+    .closeQueueSwitch {
+      margin-left: -10px;
+    }
+  }
+
   .ZoomLink {
     background-color: white;
     border-radius: 8px;
@@ -171,6 +178,7 @@
         color: #5599db;
         padding: 4px 13px;
       }
+
       input {
         background: #f3f5fc;
         border-top-left-radius: 8px;
@@ -208,6 +216,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+
         button {
           outline: none;
           border: none;

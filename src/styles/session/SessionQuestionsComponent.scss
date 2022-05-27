@@ -326,6 +326,11 @@
     margin: 0em;
     color: #595959;
     font-weight: 300;
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
     .taLocationInfo {
       display: flex;
       flex-direction: row;
@@ -492,7 +497,7 @@
           opacity: 0;
         }
         .replyIcon {
-          width: 25px;
+          width: 22px;
         }
         .indicator {
           position: absolute;
@@ -524,7 +529,7 @@
           font-size: 15px;
         }
         .replyIcon {
-          width: 25px;
+          width: 22px;
         }
         .indicator {
           position: absolute;
@@ -572,7 +577,7 @@
           margin-left: 5px;
           color: #5599db;
           text-decoration: underline;
-          font-size: 14px;
+          font-size: 13px;
           border: none;
           background-color: transparent;
           cursor: pointer;
@@ -581,7 +586,7 @@
           margin-left: 5px;
           color: #5599db;
           text-decoration: underline;
-          font-size: 14px;
+          font-size: 13px;
           border: none;
           background-color: transparent;
           cursor: pointer;
@@ -610,7 +615,7 @@
           text-decoration: underline;
           color: #5599db;
           font-weight: normal;
-          font-size: 14px;
+          font-size: 13px;
           width: auto;
           margin-bottom: 0;
         }

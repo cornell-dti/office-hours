@@ -275,10 +275,10 @@ const SessionInformationHeader = ({
                                     {isTa && isOpen && 
                                 (<Grid container direction="row" justify="center" alignItems={'center'}>
                                     <Grid item xs={2}>
-                                        <Switch checked={!isPaused} onChange={handlePause} color="primary"/> 
+                                        <Switch className="closeQueueSwitch" checked={!isPaused} onChange={handlePause} color="primary"/> 
                                     </Grid>
                                     <Grid item xs={10}>
-                                        <p>{`${isPaused ? "closed" : "open"} to new questions`} </p> 
+                                        <p>{`Queue is ${isPaused ? "closed" : "open"}`} </p> 
                                     </Grid>
                                 </Grid>)}
                                 </div>
