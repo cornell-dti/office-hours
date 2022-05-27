@@ -231,7 +231,7 @@ class SessionQuestion extends React.Component<Props, State> {
     }
 
     retrieveComments = async (questionId: string) => {
-        let unsub = getComments(questionId, this.setComments);
+        const unsub = getComments(questionId, this.setComments);
         this.setState({retrieveCalled: true, unsubscribe: unsub});
     }
 
