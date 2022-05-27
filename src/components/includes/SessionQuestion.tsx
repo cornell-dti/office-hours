@@ -240,7 +240,6 @@ class SessionQuestion extends React.Component<Props, State> {
     }
 
     addCommentsHelper = (content: string) => {
-        console.log(this.props.question.answererId);
         addComment(content, this.props.myUserId, this.props.question.questionId,
             this.props.isTA, this.props.question.askerId, this.props.question.answererId);
     }
@@ -301,7 +300,11 @@ class SessionQuestion extends React.Component<Props, State> {
                         {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) &&
                             (
                                 <div className="LocationPin">
-                                    <Icon onClick={this.toggleLocationTooltip} name="map marker alternate" size='large' />
+                                    <Icon
+                                        onClick={this.toggleLocationTooltip}
+                                        name="map marker alternate"
+                                        size='large'
+                                    />
                                     <div
                                         className="LocationTooltip"
                                         style={{
@@ -377,13 +380,14 @@ class SessionQuestion extends React.Component<Props, State> {
                                 }
                                 {
                                     (
-                                        <>{this.props.isTA &&
-                                            question.location &&
-                                            question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
-                                            <a href={question.location} target="_blank" rel="noopener noreferrer">
-                                                Zoom Link
-                                            </a>
-                                        }
+                                        <>
+                                            {this.props.isTA &&
+                                                question.location &&
+                                                question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
+                                                <a href={question.location} target="_blank" rel="noopener noreferrer">
+                                                    Zoom Link
+                                                </a>
+                                            }
                                             {this.props.isTA &&
                                                 question.location &&
                                                 question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
@@ -391,7 +395,9 @@ class SessionQuestion extends React.Component<Props, State> {
                                                     <Icon name="map marker alternate" size='small' />
                                                     <p>{question.location}</p>
                                                 </div>)
-                                            }</>)}
+                                            }
+                                        </>
+                                    )}
                             </div>
                         </div>
                         <div className="RightBar">
