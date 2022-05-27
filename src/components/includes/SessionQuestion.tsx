@@ -61,6 +61,7 @@ type State = {
     areCommentsVisible: boolean;
     showNewComment: boolean;
     retrieveCalled: boolean;
+    unsubscribe: () => void;
 };
 
 class SessionQuestion extends React.Component<Props, State> {
@@ -82,10 +83,15 @@ class SessionQuestion extends React.Component<Props, State> {
             comments: [],
             areCommentsVisible: false,
             showNewComment: true,
-            retrieveCalled: false
+            retrieveCalled: false,
+            unsubscribe: () => {}
         };
     }
 
+    componentWillUnmount() {
+        this.state.unsubscribe();
+    }
+    
     // Given an index from [1..n], converts it to text that is displayed on the
     // question cards. 1 => "NOW", 2 => "2nd", 3 => "3rd", and so on.
     getDisplayText(index: number): string {
@@ -225,8 +231,8 @@ class SessionQuestion extends React.Component<Props, State> {
     }
 
     retrieveComments = async (questionId: string) => {
-        getComments(questionId, this.setComments);
-        this.setState({ retrieveCalled: true });
+        const unsub = getComments(questionId, this.setComments);
+        this.setState({retrieveCalled: true, unsubscribe: unsub});
     }
 
     deleteCommentsHelper = (commentId: string, questionId: string) => {
