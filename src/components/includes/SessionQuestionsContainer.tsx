@@ -261,10 +261,10 @@ const SessionQuestionsContainer = (props: Props) => {
     return (
         <div className="SessionQuestionsWrapper">
             {shownQuestions && shownQuestions.length > 0 && props.isPast && (
-                    <div className="SessionClosedMessage">
-                        This queue has closed and is no longer accepting new questions.
-                    </div>
-                )}
+                <div className="SessionClosedMessage">
+                    This queue has closed and is no longer accepting new questions.
+                </div>
+            )}
             <div className={"SessionQuestionsContainer splitQuestions" +
                 ((shownQuestions && shownQuestions.length > 0 && (props.isTA || myQuestion)) ? ' whiteBackground' : '')}
             >
@@ -383,7 +383,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         // myQuestion={false}
                         />
                     ))}
-                    {assignedQuestions && assignedQuestions.length > 0 && props.isTA && 
+                {assignedQuestions && assignedQuestions.length > 0 && props.isTA &&
                     <p className="QuestionHeader">Assigned Questions</p>
                 }
                 {shownQuestions &&
