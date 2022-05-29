@@ -2,7 +2,7 @@ name: Stanford
 on:
   push:
     branches:
-      - release/stanford
+      - stanford
 
 jobs:
   deploy:
