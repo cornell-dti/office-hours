@@ -101,6 +101,7 @@ const SplitView = ({
             resolvedQuestions: 0,
             totalWaitTime: 0,
             totalResolveTime: 0,
+            isPaused: false,
         }]);
 
     const courseHook = useCourse(match.params.courseId);

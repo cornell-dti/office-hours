@@ -2,8 +2,9 @@ import * as React from 'react';
 import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
 
-import { Grid } from '@material-ui/core';
+import { Grid, Switch } from '@material-ui/core';
 import { connect } from 'react-redux';
+import { pauseSession } from '../../firebasefunctions/session';
 import users from '../../media/users.svg'
 import chalkboard from '../../media/chalkboard-teacher.svg'
 import hourglass from '../../media/hourglass-half.svg'
@@ -30,6 +31,7 @@ type Props = {
     myQuestion: FireQuestion | null;
     isOpen: boolean;
     questions: readonly FireQuestion[];
+    isPaused: boolean | undefined;
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
@@ -91,7 +93,8 @@ const SessionInformationHeader = ({
     onUpdate,
     myQuestion,
     isOpen,
-    questions
+    questions,
+    isPaused,
 }: Props) => {
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
@@ -144,6 +147,10 @@ const SessionInformationHeader = ({
             setZoomLinkDisplay('saved');
         }
     };
+
+    const handlePause = () => {
+        pauseSession(session, !session.isPaused);
+    }
 
     return isDesktop ? (
         <header className="DesktopSessionInformationHeader">
@@ -240,8 +247,8 @@ const SessionInformationHeader = ({
                                             <Grid item xs={10}>
                                                 <p>
                                                     <span className="blue">{tas.length + ' TAs '}</span>
-                                                assigned to this office hour
-                                                </p>                       
+                                                    assigned to this office hour
+                                                </p>
                                             </Grid>
                                         </Grid>
                                     </div>
@@ -264,14 +271,30 @@ const SessionInformationHeader = ({
                                         </Grid>
                                     </Grid>
                                 </div>
+                                <div className="OneQueueInfo">
+                                    {isTa && isOpen &&
+                                        (<Grid container direction="row" justify="center" alignItems={'center'}>
+                                            <Grid item xs={2}>
+                                                <Switch 
+                                                    className="closeQueueSwitch" 
+                                                    checked={!isPaused} 
+                                                    onChange={handlePause} 
+                                                    color="primary" 
+                                                />
+                                            </Grid>
+                                            <Grid item xs={10}>
+                                                <p>{`Queue is ${isPaused ? "closed" : "open"}`} </p>
+                                            </Grid>
+                                        </Grid>)}
+                                </div>
                             </div>
                         </Grid>
 
                         <Grid container item alignItems={'center'} justify="center">
                             <div className="ZoomLink">
                                 {session.modality === 'virtual' && isTa && (
-                                    <div className={(typeof session.useTALink === 'undefined' 
-                                    || session.useTALink === false) ? "TaZoom" : "StudentZoom"}
+                                    <div className={(typeof session.useTALink === 'undefined'
+                                        || session.useTALink === false) ? "TaZoom" : "StudentZoom"}
                                     >
                                         {(typeof session.useTALink === 'undefined' || session.useTALink === false) ?
                                             <Grid container direction="row" justify="center" spacing={1}>
@@ -312,7 +335,7 @@ const SessionInformationHeader = ({
                                                                 className="SaveZoomLink"
                                                                 onClick={saveZoomLink}
                                                             >
-                                                            Save
+                                                                Save
                                                             </button>
                                                         </Grid>
                                                     </>
@@ -326,7 +349,7 @@ const SessionInformationHeader = ({
                                                                 setZoomLinkDisplay('show');
                                                             }}
                                                         >
-                                                        update your virtual location
+                                                            update your virtual location
                                                         </button>
                                                     </Grid>
                                                 )}
@@ -377,11 +400,11 @@ const SessionInformationHeader = ({
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
                                             {
-                                                (typeof session.useTALink === 'undefined' || 
-                                                session.useTALink === false) &&
-                                                    <Grid item lg={6} md={10} xs={6}>
-                                                        <p>Zoom meeting link</p>
-                                                    </Grid>
+                                                (typeof session.useTALink === 'undefined' ||
+                                                    session.useTALink === false) &&
+                                                <Grid item lg={6} md={10} xs={6}>
+                                                    <p>Zoom meeting link</p>
+                                                </Grid>
                                             }
                                             {(typeof session.useTALink === 'undefined' || session.useTALink === false) ?
                                                 <Grid container justify="center" item lg={4} md={12} xs={4}>

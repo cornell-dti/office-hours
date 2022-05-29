@@ -1,8 +1,8 @@
-name: Release
+name: Stanford
 on:
   push:
     branches:
-      - release
+      - stanford
 
 jobs:
   deploy:
@@ -17,11 +17,11 @@ jobs:
         run: yarn install
       - name: Build Client
         env: 
-          REACT_APP_API_KEY: ${{ secrets.REACT_PROD_API_KEY }}
+          REACT_APP_API_KEY: ${{ secrets.REACT_STANFORD_API_KEY }}
         run: yarn build
       - name: Deploy
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          yarn firebase use production
+          yarn firebase use stanford
           yarn firebase deploy --token "$FIREBASE_TOKEN" --non-interactive
