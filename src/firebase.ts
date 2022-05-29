@@ -10,13 +10,14 @@ let firebaseConfig: object;
 if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
     firebaseConfig = {
         apiKey: process.env.REACT_APP_API_KEY,
-        authDomain: "queue-me-in-prod-stanford.firebaseapp.com",
-        projectId: "queue-me-in-prod-stanford",
-        storageBucket: "queue-me-in-prod-stanford.appspot.com",
-        messagingSenderId: "124053693123",
-        appId: "1:124053693123:web:a31aa48e14f409ff273876",
-        measurementId: "G-311TQWQWWC"
-    };
+        authDomain: "queue-me-in-prod.firebaseapp.com",
+        databaseURL: "https://queue-me-in-prod.firebaseio.com",
+        projectId: "queue-me-in-prod",
+        storageBucket: "queue-me-in-prod.appspot.com",
+        messagingSenderId: "283964683310",
+        appId: "1:283964683310:web:98ef1bd535c6315749dbbf",
+        measurementId: "G-GHJ0TML275"
+      };;
 } else {
     firebaseConfig = {
         apiKey: process.env.REACT_APP_API_KEY,
