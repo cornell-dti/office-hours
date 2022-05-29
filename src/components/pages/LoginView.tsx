@@ -33,7 +33,7 @@ const LoginView: React.FC = () => {
         const authProvider = new firebase.auth.GoogleAuthProvider();
         if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
             authProvider.setCustomParameters({
-                hd: 'cornell.edu',
+                hd: 'stanford.edu',
             });
         }
         authProvider.addScope('email');
