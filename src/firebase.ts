@@ -9,7 +9,7 @@ import { filter } from 'rxjs/operators';
 let firebaseConfig: object;
 if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
     firebaseConfig = {
-        apiKey: process.env.REACT_APP_API_KEY,
+        apiKey: "AIzaSyBtxSkhR9RcnKP2FSsWtdxlwX4TcIjjm8A",
         authDomain: "queue-me-in-prod.firebaseapp.com",
         databaseURL: "https://queue-me-in-prod.firebaseio.com",
         projectId: "queue-me-in-prod",
@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !=
         messagingSenderId: "283964683310",
         appId: "1:283964683310:web:98ef1bd535c6315749dbbf",
         measurementId: "G-GHJ0TML275"
-    };
+      };
 } else {
     firebaseConfig = {
         apiKey: process.env.REACT_APP_API_KEY,
