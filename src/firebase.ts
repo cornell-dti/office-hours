@@ -9,7 +9,7 @@ import { filter } from 'rxjs/operators';
 let firebaseConfig: object;
 if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
     firebaseConfig = {
-        apiKey: "AIzaSyBtxSkhR9RcnKP2FSsWtdxlwX4TcIjjm8A",
+        apiKey: process.env.REACT_APP_API_KEY,
         authDomain: "queue-me-in-prod.firebaseapp.com",
         databaseURL: "https://queue-me-in-prod.firebaseio.com",
         projectId: "queue-me-in-prod",
