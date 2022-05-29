@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !=
         messagingSenderId: "283964683310",
         appId: "1:283964683310:web:98ef1bd535c6315749dbbf",
         measurementId: "G-GHJ0TML275"
-      };
+    };
 } else {
     firebaseConfig = {
         apiKey: process.env.REACT_APP_API_KEY,
