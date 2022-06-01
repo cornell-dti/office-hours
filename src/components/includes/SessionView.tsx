@@ -162,7 +162,9 @@ const SessionView = (
 
     return (
         <section className="StudentSessionView">
-            {sessionBanners.map((banner, index) => (<Banner key={index} icon={banner.icon} announcement={banner.text}  />))}
+            {sessionBanners.map((banner, index) => (
+                <Banner key={index} icon={banner.icon} announcement={banner.text} />
+            ))}
             <SessionInformationHeader
                 session={session}
                 course={course}
@@ -227,8 +229,8 @@ const SessionView = (
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user,
-    course : state.course.course,
+    user: state.auth.user,
+    course: state.course.course,
     session: state.course.session,
     sessionBanners: state.announcements.sessionBanners
 })
