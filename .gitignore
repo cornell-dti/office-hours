@@ -17,6 +17,7 @@ functions/lib
 .env.test.local
 .env.production.local
 .env.development.local
+.env
 .vscode
 .firebase
 
