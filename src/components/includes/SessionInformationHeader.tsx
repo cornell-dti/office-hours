@@ -154,8 +154,8 @@ const SessionInformationHeader = ({
 
     return isDesktop ? (
         <header className="DesktopSessionInformationHeader">
-            <Grid container direction="row" justify="center" alignItems={'stretch'} spacing={3}>
-                <Grid container item lg={7} md={7} xs={12} justify="center">
+            <Grid container direction="row" justifyContent="center" alignItems={'stretch'} spacing={3}>
+                <Grid container item lg={7} md={7} xs={12} justifyContent="center">
                     <div className="LeftInformationHeader">
                         <Grid container direction="row">
                             <Grid container item lg={4} md={5} xs={4} className="Picture">
@@ -216,18 +216,18 @@ const SessionInformationHeader = ({
                     </div>
                 </Grid>
 
-                <Grid container item lg={5} md={5} xs={12} justify="center">
+                <Grid container item lg={5} md={5} xs={12} justifyContent="center">
                     <Grid
                         container
                         direction="column"
-                        justify="space-evenly"
+                        justifyContent="space-evenly"
                         alignItems={'stretch'}
                         spacing={2}
                     >
                         <Grid container item>
                             <div className="QueueInfo">
                                 <div className="OneQueueInfo">
-                                    <Grid container direction="row" justify="center" alignItems={'center'}>
+                                    <Grid container direction="row" justifyContent="center" alignItems={'center'}>
                                         <Grid item xs={2}>
                                             <img src={users} alt="number of people" />
                                         </Grid>
@@ -240,7 +240,7 @@ const SessionInformationHeader = ({
                                 </div>
                                 {tas.length > 0 &&
                                     <div className="OneQueueInfo">
-                                        <Grid container direction="row" justify="center" alignItems={'center'}>
+                                        <Grid container direction="row" justifyContent="center" alignItems={'center'}>
                                             <Grid item xs={2}>
                                                 <img src={chalkboard} alt="number of people" />
                                             </Grid>
@@ -254,7 +254,7 @@ const SessionInformationHeader = ({
                                     </div>
                                 }
                                 <div className="OneQueueInfo">
-                                    <Grid container direction="row" justify="center" alignItems={'center'}>
+                                    <Grid container direction="row" justifyContent="center" alignItems={'center'}>
                                         <Grid item xs={2}>
                                             <img src={hourglass} alt="time" />
                                         </Grid>
@@ -273,7 +273,7 @@ const SessionInformationHeader = ({
                                 </div>
                                 <div className="OneQueueInfo">
                                     {isTa && isOpen &&
-                                        (<Grid container direction="row" justify="center" alignItems={'center'}>
+                                        (<Grid container direction="row" justifyContent="center" alignItems={'center'}>
                                             <Grid item xs={2}>
                                                 <Switch 
                                                     className="closeQueueSwitch" 
@@ -290,15 +290,15 @@ const SessionInformationHeader = ({
                             </div>
                         </Grid>
 
-                        <Grid container item alignItems={'center'} justify="center">
+                        <Grid container item alignItems={'center'} justifyContent="center">
                             <div className="ZoomLink">
                                 {session.modality === 'virtual' && isTa && (
                                     <div className={(typeof session.useTALink === 'undefined'
                                         || session.useTALink === false) ? "TaZoom" : "StudentZoom"}
                                     >
                                         {(typeof session.useTALink === 'undefined' || session.useTALink === false) ?
-                                            <Grid container direction="row" justify="center" spacing={1}>
-                                                <Grid container justify="center" item xs={2}>
+                                            <Grid container direction="row" justifyContent="center" spacing={1}>
+                                                <Grid container justifyContent="center" item xs={2}>
                                                     <img src={zoom} alt="zoom" />
                                                 </Grid>
 
@@ -323,7 +323,7 @@ const SessionInformationHeader = ({
                                                         </Grid>
                                                         <Grid
                                                             container
-                                                            justify="center"
+                                                            justifyContent="center"
                                                             alignItems={'center'}
                                                             item
                                                             lg={3}
@@ -356,10 +356,10 @@ const SessionInformationHeader = ({
 
                                                 {zoomLinkDisplay === 'saved' && (
                                                     <>
-                                                        <Grid container justify="center" item xs={8}>
+                                                        <Grid container justifyContent="center" item xs={8}>
                                                             <p>{zoomLink}</p>
                                                         </Grid>
-                                                        <Grid container item justify="center" xs={2}>
+                                                        <Grid container item justifyContent="center" xs={2}>
                                                             <img
                                                                 id="EditZoom"
                                                                 onClick={() => setZoomLinkDisplay('show')}
@@ -374,10 +374,10 @@ const SessionInformationHeader = ({
                                             <Grid
                                                 container
                                                 direction="row"
-                                                justify="center"
+                                                justifyContent="center"
                                                 alignItems={'center'}
                                             >
-                                                <Grid container justify="center" item xs={2}>
+                                                <Grid container justifyContent="center" item xs={2}>
                                                     <img src={zoom} alt="zoom" />
                                                 </Grid>
                                                 <Grid container item xs={10}>
@@ -393,10 +393,10 @@ const SessionInformationHeader = ({
                                         <Grid
                                             container
                                             direction="row"
-                                            justify="center"
+                                            justifyContent="center"
                                             alignItems={'center'}
                                         >
-                                            <Grid container justify="center" item lg={2} md={2} xs={2}>
+                                            <Grid container justifyContent="center" item lg={2} md={2} xs={2}>
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
                                             {
@@ -407,7 +407,7 @@ const SessionInformationHeader = ({
                                                 </Grid>
                                             }
                                             {(typeof session.useTALink === 'undefined' || session.useTALink === false) ?
-                                                <Grid container justify="center" item lg={4} md={12} xs={4}>
+                                                <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
                                                     {assignedQuestion?.answererLocation ? (
                                                         <a
                                                             target="_blank"
@@ -442,10 +442,10 @@ const SessionInformationHeader = ({
                                         <Grid
                                             container
                                             direction="row"
-                                            justify="center"
+                                            justifyContent="center"
                                             alignItems={'center'}
                                         >
-                                            <Grid container justify="center" item lg={2} md={2}>
+                                            <Grid container justifyContent="center" item lg={2} md={2}>
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
                                             <Grid item lg={6} md={10}>
@@ -454,7 +454,7 @@ const SessionInformationHeader = ({
 
                                             <Grid
                                                 container
-                                                justify="center"
+                                                justifyContent="center"
                                                 item
                                                 lg={4}
                                                 md={12}
@@ -479,10 +479,10 @@ const SessionInformationHeader = ({
                                         <Grid
                                             container
                                             direction="row"
-                                            justify="center"
+                                            justifyContent="center"
                                             alignItems={'center'}
                                         >
-                                            <Grid container justify="center" item xs={2}>
+                                            <Grid container justifyContent="center" item xs={2}>
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
                                             <Grid container item xs={10}>
@@ -499,10 +499,10 @@ const SessionInformationHeader = ({
                                         <Grid
                                             container
                                             direction="row"
-                                            justify="center"
+                                            justifyContent="center"
                                             alignItems={'center'}
                                         >
-                                            <Grid container justify="center" item xs={2}>
+                                            <Grid container justifyContent="center" item xs={2}>
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
                                             <Grid container item xs={10}>

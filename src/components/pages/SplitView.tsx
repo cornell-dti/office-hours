@@ -230,10 +230,9 @@ const SplitView = ({
                                     {user && user.firstName}
                                 </span>
                             </p>
-                            <p className='noSessionSelected'>
+                            <div className='noSessionSelected'>
                                 Please select an office hour from the calendar.
-                                <p> </p>
-                                <p> </p>
+                                <span>{"\n"}</span>
                                 {'Notification' in window &&
                                     window?.Notification !== undefined &&
                                     window?.Notification.permission !==
@@ -247,7 +246,7 @@ const SplitView = ({
                                         </div>
                                     </div>
                                 )}
-                            </p>
+                            </div>
                         </section>
                     )
                 ) : <Loader active={true} content="Loading" />)}

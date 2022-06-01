@@ -25,8 +25,8 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
         || term.trim().length === 0;
 
     const onSave = () => {
-        if (term !== 'FA' && term !== 'SP') {
-            alert('Incorrect term format: enter FA or SP');
+        if (term !== 'FA' && term !== 'SP' && term !== 'SU') {
+            alert('Incorrect term format: enter FA, SP, or SU');
             return;
         }
         if (isNaN(year as unknown as number) || year as unknown as number < 0) {
