@@ -162,7 +162,7 @@ const SessionView = (
 
     return (
         <section className="StudentSessionView">
-            {sessionBanners.map(banner => (<Banner icon={banner.icon} announcement={banner.text}  />))}
+            {sessionBanners.map((banner, index) => (<Banner key={index} icon={banner.icon} announcement={banner.text}  />))}
             <SessionInformationHeader
                 session={session}
                 course={course}
