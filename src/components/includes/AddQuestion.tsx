@@ -66,9 +66,10 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
             'tagId'
         );
 
-        tags$.subscribe((newTags) => setTags(newTags));
+        const subscription = tags$.subscribe((newTags) => setTags(newTags));
         return () => {
             window.removeEventListener('resize', updateWindowDimensions);
+            subscription.unsubscribe();
         };
     });
 

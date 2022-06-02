@@ -94,7 +94,7 @@ const TopBarNotifications = ({notificationTracker, user}: Props) => {
                                 className="notification__date" 
                                 date={notific.createdAt.toDate()} 
                                 interval={0} 
-                                format={'HH:mm a'} 
+                                format={'hh:mm a'} 
                             />
                         </div>
                         <div className="notification__content">

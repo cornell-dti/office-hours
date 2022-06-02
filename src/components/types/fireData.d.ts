@@ -20,6 +20,7 @@ interface FireBaseSession {
     resolvedQuestions: number;
     totalWaitTime: number;
     totalResolveTime: number;
+    isPaused?: boolean;
 }
 
 interface FireSessionLocation {
@@ -33,6 +34,7 @@ interface FireVirtualLocation {
 
 interface FireVirtualSession extends FireBaseSession {
     modality: 'virtual';
+    useTALink?: boolean;
 }
 
 interface FireInPersonSession extends FireBaseSession, FireSessionLocation {
@@ -72,6 +74,7 @@ interface FireBaseSessionSeries {
 
 interface FireVirtualSessionSeries extends FireBaseSessionSeries {
     modality: 'virtual';
+    useTALink?: boolean;
 }
 
 interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
@@ -140,11 +143,24 @@ interface FireUser {
     email: string;
     courses: readonly string[];
     roles: { readonly [courseId: string]: PrivilegedFireCourseRole | undefined };
+    phoneNumber?: string;
+    textNotifsEnabled?: boolean;
+    textPrompted?: boolean;
 }
 
 interface FirePendingUser {
     email: string;
     roles: Record<string, role>;
+}
+
+interface FireComment {
+    commentId: string;
+    content: string;
+    commenterId: string;
+    timePosted: FireTimeStamp;
+    isTA: boolean;
+    askerId: string;
+    answererId: string;
 }
 
 interface FireQuestion {
@@ -164,6 +180,8 @@ interface FireQuestion {
     wasNotified: boolean;
     position?: number;
     isVirtual?: boolean;
+    taNew?: boolean;
+    studentNew?: boolean;
 }
 
 interface FireOHQuestion extends FireQuestion {
@@ -214,4 +232,12 @@ interface NotificationTracker {
     productUpdates: FireTimestamp;
     notificationList: SessionNotification[];
     lastSent: FireTimestamp;
+}
+
+interface Announcement {
+    text: string;
+    icon: string;
+    alert?: boolean;
+    global?: boolean;
+    noshow?: boolean;
 }

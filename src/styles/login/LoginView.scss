@@ -1,322 +1,590 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
 
 .loginView {
-    background: linear-gradient(270deg, #6AAFDC 19%, #668BE9 66%);
-    background-size: cover;
-    min-height: 100%;
-    top: 20vh;
+  background: linear-gradient(270deg, #6aafdc 19%, #668be9 66%);
+  background-size: cover;
+  min-height: 100%;
+  top: 20vh;
 }
 
 .whiteSectionWrapper {
-    background-color: white;
-    .tutorialHeader {
-        color: #5599DB;
+  background-color: white;
+  position: relative;
+  .tutorialHeader {
+    color: #5599db;
+  }
+  .loginView__alt {
+    background: none !important;
+    border: none;
+    padding: 0 !important;
+    /*optional*/
+    font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+    color: #069;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 10px;
+    position: absolute;
+    bottom: 102px;
+    right: 0;
+    &:hover {
+      color: lighten($color: #069, $amount: 10%);
     }
+  }
 }
 
 .qmiContact {
-    box-shadow: 2px 4px 5px rgba(108, 108, 108, 0.25);
-    background: #F67D7D;
-    border-radius: 5px;
-    font-family: "Roboto";
-    font-weight: 300;
-    padding: 10px 30px;
-    color: #FFFFFF;
-    transition: transform 0.3s;
-    transform: translateY(0px);
-    &:hover {
-        background: #fa8181;
-        color: white;
-        transform: translateY(-2px);
-    }
+  box-shadow: 2px 4px 5px rgba(108, 108, 108, 0.25);
+  background: #f67d7d;
+  border-radius: 5px;
+  font-family: "Roboto";
+  font-weight: 300;
+  padding: 10px 30px;
+  color: #ffffff;
+  transition: transform 0.3s;
+  transform: translateY(0px);
+  &:hover {
+    background: #fa8181;
+    color: white;
+    transform: translateY(-2px);
+  }
 }
 
 .header {
-    position: relative;
-    height: 10vh;
-    color: #FFFFFF;
-    .logoWrapper {
-        position: absolute;
-        top: 15px;
-        left: 25px;
-        display: flex;
-        flex-direction: row;
+  position: relative;
+  height: 10vh;
+  color: #ffffff;
+  .logoWrapper {
+    position: absolute;
+    top: 15px;
+    left: 25px;
+    display: flex;
+    flex-direction: row;
 
-        .qmiNewLogo {
-            height: 75px;
-            width: 75px;
-        }
-        .qmiLogoText {
-            font-family: "Roboto";
-            font-weight: 300;
-            font-size: 22px;
-        }
+    .qmiNewLogo {
+      height: 75px;
+      width: 75px;
     }
+    .qmiLogoText {
+      font-family: "Roboto";
+      font-weight: 300;
+      font-size: 22px;
+    }
+  }
 
-    .qmiContact {
-        position: absolute;
-        top: 30px;
-        right: 30px;
-        border: none;
-        
-    }
+  .qmiContact {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    border: none;
+  }
 }
 
 .mainInfo {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    .nameAndButtonWrapper {
-        color: #FFFFFF;
-        text-align: left;
-        .mainLogoText {
-            font-family: "Roboto";
-            font-weight: 500;
-            font-size: 80px;
-        }
-        .subHeader {
-            font-family: "Roboto";
-            font-weight: 100;
-            font-size: 30px;
-            margin: 0;
-        }
-        .loginButton {
-            float: left;
-            margin-top: 50px;
-        }
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  .nameAndButtonWrapper {
+    color: #ffffff;
+    text-align: left;
+    .mainLogoText {
+      font-family: "Roboto";
+      font-weight: 500;
+      font-size: 80px;
     }
+    .subHeader {
+      font-family: "Roboto";
+      font-weight: 100;
+      font-size: 30px;
+      margin: 0;
+    }
+    .loginButton {
+      float: left;
+      margin-top: 50px;
+    }
+  }
 }
 
 .demoQMI {
-    position: relative;
-    z-index: 2;
-    height: 625px;
-    animation: float 2s;
-    animation-direction: alternate;
-    animation-iteration-count: infinite;
-
+  position: relative;
+  z-index: 2;
+  height: 625px;
+  animation: float 2s;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
 }
 
 .ribbonWrapper {
-    position: relative;
-    top: -300px;
-    z-index: 1;
+  position: relative;
+  top: -300px;
+  z-index: 1;
 }
 
 .whiteStrip {
-    width: 100vw;
+  width: 100vw;
 }
 
-
 .secondWhiteStrip {
-    width: 100vw;
-    position: relative;
-    top: 7px;
+  width: 100vw;
+  position: relative;
+  top: 7px;
 }
 
 .sloganText {
-    color: #5599DB;
-    font-weight: 600;
-    font-size: 40px;
-    white-space: pre-line;
-    position: relative;
-    top: -210px;
+  color: #5599db;
+  font-weight: 600;
+  font-size: 40px;
+  white-space: pre-line;
+  position: relative;
+  top: -210px;
 }
 
 .tutorialHeader {
-    color: white;
-    font-size: 30px;
-    font-family: "Roboto";
-    font-weight: 500;
-    margin-bottom: 70px;
-    text-align: left;
-    white-space: pre-line;
+  color: white;
+  font-size: 30px;
+  font-family: "Roboto";
+  font-weight: 500;
+  margin-bottom: 70px;
+  text-align: left;
+  white-space: pre-line;
 }
 
 .bothTutorialsWrapper {
-    display: flex;
-    margin-top: 50px;
-    justify-content: space-evenly;
-    .tutorialWrapper {
-        padding-top: 50px;
-    }
+  display: flex;
+  margin-top: 50px;
+  justify-content: space-evenly;
+  .tutorialWrapper {
+    padding-top: 50px;
+  }
 }
 
-
-
 .cardWrapper {
-    display: flex column;
+  display: flex column;
+  align-items: center;
+  justify-content: center;
+  .infoCard {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 6px;
+    width: 490px;
+    height: 130px;
+    display: flex;
+    justify-content: flex-start;
     align-items: center;
-    justify-content: center;
-    .infoCard {
-        background-color: rgba(255, 255, 255, 0.9);
-        border-radius: 6px;
-        width: 490px;
-        height: 130px;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        margin-bottom: 40px;
-        box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.15);
-        position: relative;
-        transition: transform 0.3s;
-        transform: translateY(0px);
-        &:hover {
-            transform: translateY(-2px);
-        }
-        .cardImg {
-            margin-left: 30px;
-            width: 80px;
-            height: 80px;
-        }
-        .cardDesc {
-            margin-left: 30px;
-            font-family: "Roboto";
-            font-weight: 500;
-            font-size: 19px;
-            bottom: 30px;
-            text-align: left;
-            white-space: pre-line;
-            line-height: 120%;
-        }
+    margin-bottom: 40px;
+    box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.15);
+    position: relative;
+    transition: transform 0.3s;
+    transform: translateY(0px);
+    &:hover {
+      transform: translateY(-2px);
     }
+    .cardImg {
+      margin-left: 30px;
+      width: 80px;
+      height: 80px;
+    }
+    .cardDesc {
+      margin-left: 30px;
+      font-family: "Roboto";
+      font-weight: 500;
+      font-size: 19px;
+      bottom: 30px;
+      text-align: left;
+      white-space: pre-line;
+      line-height: 120%;
+    }
+  }
 }
 
 .finalTextSection {
-    display: flex;
-    margin-bottom: 80px;
-    .qmiThreePeople {
-        width: 500px;
-        height: 300px;
-    }
-    .finalTextWrapper {
-        margin-left: 150px;
-    }
-    .finalText {
-        font-family: "Roboto";
-        font-weight: 500;
-        font-size: 50px;
-        text-align: left;
-        margin: 0;
-        white-space: pre-line;
-    }
-    .finalTextHead {
-        color: #5599DB
-    }
-    .qmiContact {
-        float: left;
-        margin-top: 50px;
-    }
+  display: flex;
+  margin-bottom: 80px;
+  .qmiThreePeople {
+    width: 500px;
+    height: 300px;
+  }
+  .finalTextWrapper {
+    margin-left: 150px;
+  }
+  .finalText {
+    font-family: "Roboto";
+    font-weight: 500;
+    font-size: 50px;
+    text-align: left;
+    margin: 0;
+    white-space: pre-line;
+  }
+  .finalTextHead {
+    color: #5599db;
+  }
+  .qmiContact {
+    float: left;
+    margin-top: 50px;
+  }
 }
 
 @media screen and (max-width: $mobile-breakpoint) {
+  .qmiContact {
+    padding: 5px 15px;
+    font-size: 10px;
+  }
+  .header {
+    .logoWrapper {
+      top: 7px;
+      left: 12px;
+      .qmiNewLogo {
+        height: 30px;
+        width: 30px;
+      }
+      .qmiLogoText {
+        font-size: 12px;
+        margin-top: 8px;
+      }
+    }
     .qmiContact {
-        padding: 5px 15px;
+      top: 10px;
+      right: 15px;
+    }
+  }
+  .mainInfo {
+    .nameAndButtonWrapper {
+      .mainLogoText {
+        font-family: "Roboto";
+        font-weight: 500;
+        font-size: 25px;
+      }
+      .subHeader {
+        font-family: "Roboto";
+        font-weight: 100;
         font-size: 10px;
-    }
-    .header {
-        .logoWrapper {
-            top: 7px;
-            left: 12px;
-            .qmiNewLogo {
-                height: 30px;
-                width: 30px;
-            }
-            .qmiLogoText {
-                font-size: 12px;
-                margin-top: 8px;
-            }
-        }
-        .qmiContact {
-            top: 10px;
-            right: 15px;            
-        }
-    }
-    .mainInfo {
-        .nameAndButtonWrapper {
-            .mainLogoText {
-                font-family: "Roboto";
-                font-weight: 500;
-                font-size: 25px;
-            }
-            .subHeader {
-                font-family: "Roboto";
-                font-weight: 100;
-                font-size: 10px;
-                margin: 0;
-            }
-            .loginButton {
-                margin-top: 25px;
-            }
-        }
-        .qmiPeople {
-            width: 140px;
-            height: 80px;
-        }
-    }
-    .demoQMI {
-        height: 150px;
-    }
-    .ribbonWrapper {
-        top: -50px;
-    }
-    .sloganText {
-        font-size: 11px;
-        top: -80px;
-    }
-    .tutorialHeader {
-        font-size: 8px;
-        margin-bottom: 30px;
-    }
-    .bothTutorialsWrapper {
+        margin: 0;
+      }
+      .loginButton {
         margin-top: 25px;
-        .tutorialWrapper {
-            padding-top: 20px;
-        }
+      }
     }
+    .qmiPeople {
+      width: 140px;
+      height: 80px;
+    }
+  }
+  .demoQMI {
+    height: 150px;
+  }
+  .ribbonWrapper {
+    top: -50px;
+  }
+  .sloganText {
+    font-size: 11px;
+    top: -80px;
+  }
+  .tutorialHeader {
+    font-size: 8px;
+    margin-bottom: 30px;
+  }
+  .bothTutorialsWrapper {
+    margin-top: 25px;
+    .tutorialWrapper {
+      padding-top: 20px;
+    }
+  }
 
-    .cardWrapper {
-        .infoCard {
-            width: 120px;
-            height: 40px;
-            margin-bottom: 20px;
-            box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.15);
-            .cardImg {
-                margin-left: 10px;
-                height: 25px;
-                width: 25px;
-            }
-            .cardDesc {
-                margin-left: 10px;
-                font-size: 5px;
-                bottom: 15px;
-            }
-        }
+  .cardWrapper {
+    .infoCard {
+      width: 120px;
+      height: 40px;
+      margin-bottom: 20px;
+      box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.15);
+      .cardImg {
+        margin-left: 10px;
+        height: 25px;
+        width: 25px;
+      }
+      .cardDesc {
+        margin-left: 10px;
+        font-size: 5px;
+        bottom: 15px;
+      }
     }
-    .finalTextSection {
-        margin-bottom: 30px;
-        .qmiThreePeople {
-            width: 110px;
-            height: 65px;
-        }
-        .finalTextWrapper {
-            margin-left: 35px;
-        }
-        .finalText {
-            font-size: 13px;
-        }
-        .qmiContact {
-            margin-top: 15px;
-        }
+  }
+  .finalTextSection {
+    margin-bottom: 30px;
+    .qmiThreePeople {
+      width: 110px;
+      height: 65px;
     }
+    .finalTextWrapper {
+      margin-left: 35px;
+    }
+    .finalText {
+      font-size: 13px;
+    }
+    .qmiContact {
+      margin-top: 15px;
+    }
+  }
+  .whiteSectionWrapper {
+    .loginView__alt {
+      bottom: 52px;
+    }
+  }
 }
 
 @keyframes float {
-    0% {
-        transform: translateY(-10px);
+  0% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(10px);
+  }
+}
+
+//Login body
+*:focus {
+  outline: none;
+}
+
+$translateAmount: 100px;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY($translateAmount);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popUp {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+//Styles for logo on login page
+.login__logo {
+  height: 150px;
+  width: 150px;
+}
+
+//Styles for the login page
+.login__background {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(112, 112, 112, 0.8);
+  z-index: 9999;
+  p {
+    align-self: center;
+    position: absolute;
+    width: 353px;
+    top: 224px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 25px;
+    line-height: 29px;
+    color: #5599db;
+  }
+  .closeButton {
+    align-self: flex-end;
+    height: 20px;
+    left: 74.14%;
+    right: 24.61%;
+    top: calc(50% - 45px / 2 - 209.5px);
+    font-size: 20px;
+    line-height: 48px;
+    color: #484848;
+    float: right;
+    outline: none;
+    background-color: transparent;
+    border: none;
+  }
+  .login__blockVisible {
+    width: 500px;
+    height: 550px;
+    border-radius: 8px;
+    display: flex;
+    position: fixed;
+    background-color: white;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+//styles for internals on login page
+.login__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 65%;
+  height: 100%;
+  form {
+    width: 100%;
+  }
+  .login__form {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+  }
+  .login__formsContainer {
+    width: 100%;
+  }
+  .form-group {
+    width: 100%;
+    transform: translateY($translateAmount);
+    opacity: 0;
+    position: relative;
+    animation: fadeIn 0.3s forwards;
+    margin-top: 1rem;
+    padding-top: 2rem;
+    display: flex;
+    overflow: hidden;
+    &:last-of-type {
+      margin-bottom: 4rem;
     }
-    100% {
-        transform: translateY(10px);
+    &:nth-child(1) {
+      animation-delay: 0.1s;
     }
+    &:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+  }
+  .form-group > label {
+    font-size: 20px;
+    @media (max-width: $mobile-breakpoint) {
+      font-size: 1.5rem; //mobile not phone
+    }
+    position: absolute;
+    text-align: left;
+    margin: 0;
+    margin-left: 4rem;
+    width: 100%;
+    left: 0rem;
+    top: 30px;
+    pointer-events: none;
+    color: $text-color;
+    transition: 0.3s;
+  }
+  .form-input {
+    flex: 1;
+    font-size: 16px;
+    @media (max-width: $mobile-breakpoint) {
+      font-size: 14px;
+    }
+    background: none;
+    border: none;
+    border-bottom: 2px solid $text-color;
+    border-radius: 0px;
+    width: 100%;
+    display: inline-block;
+    padding-left: 4rem;
+    background-color: none;
+    padding-bottom: 0.5rem;
+    &:focus {
+      border: none;
+      border-bottom: 2px solid rgb(47, 114, 255);
+    }
+    &:focus + label {
+      top: 0rem;
+      font-size: 1.2rem;
+      @media (max-width: $mobile-breakpoint) {
+        font-size: 1.2rem;
+      }
+    }
+    &:valid + label {
+      top: 0rem;
+      font-size: 1rem;
+      @media (max-width: $mobile-breakpoint) {
+        font-size: 1.2rem;
+      }
+    }
+    //&:invalid{
+    //    border:green;
+    //}
+  }
+  .login-button {
+    background: #5599db;
+    border-radius: 4px;
+    font-family: "Roboto";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 14px;
+    height: 36px;
+    color: white;
+    border: none;
+    width: 100%;
+    display: inline-block;
+    transform: scale(0);
+    animation: popUp 0.3s 0.3s forwards;
+    cursor: pointer;
+    &:hover {
+      background-color: darken(#5599db, 10%);
+    }
+  }
+  .login__icon {
+    width: 2rem;
+    height: 2rem;
+    font-size: 2rem;
+    position: absolute;
+    left: 5px;
+    top: 25px;
+    color: #484848;
+  }
+  .login__iconLock {
+    left: 12px;
+    top: 23px;
+  }
+  .login__view {
+    width: 3rem;
+    height: 3rem;
+    fill: darken($text-color, 5%);
+    top: 0.8rem;
+    left: 1.25rem;
+    position: absolute;
+    &-1 {
+      visibility: visible;
+    }
+    &-2 {
+      visibility: hidden;
+    }
+  }
+  .login__eyes {
+    position: relative;
+    width: 4rem;
+    font-size: 2rem;
+    // right: 4rem;
+    text-align: center;
+    border-bottom: 2px solid $text-color;
+    transition: transform 0.75s ease;
+  }
+}
+
+[data-status="text"] .login__eyes::after {
+  transform: translateY(-50%) scale(40);
+}
+
+[data-status="text"] .form-input {
+  &.pass {
+    color: #eee;
+  }
+  label {
+    color: #eee;
+  }
 }

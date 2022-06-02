@@ -178,9 +178,9 @@ const ProfessorOHInfo = (props: {
         });
         if (isSeriesMutation) {
             let series: FireSessionSeriesDefinition;
-
             if (modality === Modality.VIRTUAL) {
                 series = {
+                    useTALink,
                     modality,
                     courseId: props.courseId,
                     endTime: endTimestamp,
@@ -255,10 +255,10 @@ const ProfessorOHInfo = (props: {
 
         const sessionSeriesId = propsSession && propsSession.sessionSeriesId;
 
-        let hybridProperties = {}
+        let hybridOrVirtProperties = {}
 
-        if (modality === Modality.HYBRID) {
-            hybridProperties = {
+        if (modality === Modality.HYBRID || modality === Modality.VIRTUAL) {
+            hybridOrVirtProperties = {
                 useTALink
             }
         }
@@ -277,7 +277,7 @@ const ProfessorOHInfo = (props: {
                 }
                 : {};
         const sessionWithoutSessionSeriesId = {
-            ...hybridProperties,
+            ...hybridOrVirtProperties,
             modality,
             courseId: props.courseId,
             endTime: endTimestamp,
@@ -289,6 +289,7 @@ const ProfessorOHInfo = (props: {
             totalWaitTime: 0,
             totalResolveTime: 0,
             title,
+            isPaused: !!(propsSession && propsSession.isPaused),
             ...sessionLocation,
             ...sessionLink,
         };
@@ -556,7 +557,7 @@ const ProfessorOHInfo = (props: {
                             onChange={() => setIsSeriesMutation((old) => !old)}
                         />
                     )}
-                    {modality === Modality.HYBRID && 
+                    {(modality === Modality.HYBRID || modality === Modality.VIRTUAL) && 
                     <Checkbox
                         className="TAZoomCheckbox" 
                         label="Use course zoom link"
