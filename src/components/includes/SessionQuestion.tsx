@@ -14,7 +14,6 @@ import {
     markQuestionDontKnow,
     updateComment,
     addComment,
-    getComments,
     deleteComment,
     clearIndicator
 } from '../../firebasefunctions/sessionQuestion';

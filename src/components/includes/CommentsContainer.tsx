@@ -4,7 +4,7 @@ import NewComment from './NewComment'
 import { useParameterizedComments } from '../../firehooks';
 
 type Props = {
-    users: { readonly [userId: string]: FireUser};
+    users: { readonly [userId: string]: FireUser };
     currentUser: FireUser;
     addCommentsHelper: (newComment: string) => void;
     questionId: string;
@@ -14,19 +14,19 @@ type Props = {
     isPast: boolean;
 }
 
-const CommentsContainer = ({users, currentUser, addCommentsHelper, questionId, 
+const CommentsContainer = ({ users, currentUser, addCommentsHelper, questionId,
     switchCommentsVisible, deleteCommentsHelper, showNewComment, isPast }: Props) => {
 
     const comments = useParameterizedComments(questionId);
     const sortedComments = [...comments].sort((c1, c2) => c2.timePosted.seconds - c1.timePosted.seconds);
     return (
         <div className="commentsContainer">
-            {(showNewComment || comments.length > 0) && 
+            {(showNewComment || comments.length > 0) &&
                 <div className="commentsLine" onClick={switchCommentsVisible} />
             }
             <div className="allCommentsWrapper">
                 {showNewComment && !isPast && <NewComment
-                    currentUser={currentUser} 
+                    currentUser={currentUser}
                     addCommentsHelper={addCommentsHelper}
                 />}
                 {sortedComments.map((comment) => {
@@ -34,7 +34,7 @@ const CommentsContainer = ({users, currentUser, addCommentsHelper, questionId,
                     return <UserComment
                         {...comment}
                         poster={poster}
-                        questionId={questionId} 
+                        questionId={questionId}
                         deleteCommentsHelper={deleteCommentsHelper}
                         currentUser={currentUser}
                         key={comment.commentId}
