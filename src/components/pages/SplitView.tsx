@@ -185,8 +185,9 @@ const SplitView = ({
                 courseId={match.params.courseId}
                 course={course}
             />
-            {banners.map(banner => 
+            {banners.map((banner, index) => 
                 (<Banner 
+                    key={index}
                     icon={banner.icon} 
                     announcement={banner.text} 
                     global={banner.global} 

@@ -127,7 +127,6 @@ export const updateSeries = async (
 ): Promise<void> => {
     const adjustedStartTime = moment(sessionSeries.startTime.toDate()).tz("America/New_York");
     const adjustedEndTime = moment(sessionSeries.endTime.toDate()).tz("America/New_York");
-
     const querySnapshot = await db
         .collection('sessions')
         .where('sessionSeriesId', '==', sessionSeriesId)
