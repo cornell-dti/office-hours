@@ -86,8 +86,8 @@ export const useBatchQueryWithLoading = <T, P = string>(
 };
 
 export const useProfessorViewSessions = (
-    courseId: string, 
-    selectedWeekEpoch: number 
+    courseId: string,
+    selectedWeekEpoch: number
 ) => {
     const [result, setResult] = useState<FireSession[]>([]);
 
@@ -110,8 +110,8 @@ export const useProfessorViewSessions = (
 };
 
 export const useCoursesBetweenDates = (
-    startDate: moment.Moment, 
-    endDate: moment.Moment, 
+    startDate: moment.Moment,
+    endDate: moment.Moment,
     courseId: string
 ) => {
     const [sessions, setSessions] = useState<FireSession[]>([]);
@@ -150,7 +150,7 @@ export const useCoursesBetweenDates = (
         [courseId, startDate, endDate]
     );
 
-    return {sessions, questions}
+    return { sessions, questions }
 }
 
 export const useQuery = <T, P = string>(
@@ -181,18 +181,18 @@ const needsPromotionObservable = loggedIn$.pipe(
 
 export const needsPromotionSingletonObservable = new SingletonObservable(undefined, needsPromotionObservable);
 
-export const usePendingUser: () => FirePendingUser | undefined  = 
+export const usePendingUser: () => FirePendingUser | undefined =
     createUseSingletonObservableHook(needsPromotionSingletonObservable);
 
 const isAdminObservable = loggedIn$.pipe(
-    switchMap(u => 
+    switchMap(u =>
         docData(firestore.doc('admins/' + u.email)) as Observable<{}>
     )
 )
 
 export const isAdminSingletonObservable = new SingletonObservable(undefined, isAdminObservable);
 
-export const useIsAdmin: () => {} | undefined = 
+export const useIsAdmin: () => {} | undefined =
     createUseSingletonObservableHook(isAdminSingletonObservable);
 
 const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
@@ -347,7 +347,7 @@ export const useSessionProfile: (
     (userId, sessionId) => useDoc(`/sessions/${sessionId}/profiles`, userId, 'userId');
 
 const allBlogPostsObservable: Observable<readonly BlogPost[]> = loggedIn$.pipe(
-    switchMap(() => 
+    switchMap(() =>
         collectionData<BlogPost>(firestore.collection('blogPosts').orderBy("timeEntered", "desc"), 'postId'))
 );
 
@@ -356,16 +356,22 @@ const allBlogPostsSingletonObservable = new SingletonObservable([], allBlogPosts
 export const useAllBlogPosts: () => readonly BlogPost[] =
     createUseSingletonObservableHook(allBlogPostsSingletonObservable);
 
+export const useParameterizedComments: (questionId: string) => readonly FireComment[] =
+    createUseParamaterizedSingletonObservableHook(questionId => {
+        const query = firestore.doc(`questions/${questionId}`).collection('comments')
+        return new SingletonObservable([], collectionData<FireComment>(query, 'commentId'));
+    });
 
-export const useProductUpdate= (): BlogPost | undefined => useAllBlogPosts()[0]
 
-export const useNotificationTracker = 
-(trackerId: string | undefined): NotificationTracker | undefined =>
-    useDoc<NotificationTracker>('notificationTrackers', trackerId, 'trackerId')
+export const useProductUpdate = (): BlogPost | undefined => useAllBlogPosts()[0]
 
-export const useNotifications = 
-(trackerId: string | undefined): SessionNotification[] | undefined => 
-    useNotificationTracker(trackerId)?.notificationList;
+export const useNotificationTracker =
+    (trackerId: string | undefined): NotificationTracker | undefined =>
+        useDoc<NotificationTracker>('notificationTrackers', trackerId, 'trackerId')
+
+export const useNotifications =
+    (trackerId: string | undefined): SessionNotification[] | undefined =>
+        useNotificationTracker(trackerId)?.notificationList;
 
 // Primatives
 // Look up a doc in Firebase by ID
@@ -381,7 +387,7 @@ export const useTag = (tagId: string | undefined) =>
     useDoc<FireTag>('tags', tagId, 'tagId');
 export const useUser = (userId: string | undefined) =>
     useDoc<FireUser>('users', userId, 'userId');
-    
+
 export const getTagsQuery = (courseId: string) => firestore
     .collection('tags')
     .where('courseId', '==', courseId);

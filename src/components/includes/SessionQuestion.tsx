@@ -57,11 +57,9 @@ type State = {
     undoName?: string;
     enableEditingComment: boolean;
     width: number;
-    comments: FireComment[];
     areCommentsVisible: boolean;
     showNewComment: boolean;
     retrieveCalled: boolean;
-    unsubscribe: () => void;
 };
 
 class SessionQuestion extends React.Component<Props, State> {
@@ -80,16 +78,10 @@ class SessionQuestion extends React.Component<Props, State> {
             timeoutID2: 0,
             enableEditingComment: false,
             width: window.innerWidth,
-            comments: [],
             areCommentsVisible: false,
             showNewComment: true,
             retrieveCalled: false,
-            unsubscribe: () => { }
         };
-    }
-
-    componentWillUnmount() {
-        this.state.unsubscribe();
     }
 
     // Given an index from [1..n], converts it to text that is displayed on the
@@ -226,15 +218,6 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({ showDotMenu: status });
     };
 
-    setComments = (comments: FireComment[]) => {
-        this.setState({ comments: [...comments] });
-    }
-
-    retrieveComments = async (questionId: string) => {
-        const unsub = getComments(questionId, this.setComments);
-        this.setState({ retrieveCalled: true, unsubscribe: unsub });
-    }
-
     deleteCommentsHelper = (commentId: string, questionId: string) => {
         deleteComment(commentId, questionId);
     }
@@ -284,9 +267,6 @@ class SessionQuestion extends React.Component<Props, State> {
             ? this.props.tags[this.props.question.secondaryTag]
             : undefined;
 
-        if (this.state.retrieveCalled === false) {
-            this.retrieveComments(question.questionId);
-        }
         return (
             <div className="questionWrapper">
                 <div className="QueueQuestions">
@@ -537,7 +517,6 @@ class SessionQuestion extends React.Component<Props, State> {
                 {
                     this.state.areCommentsVisible ?
                         < CommentsContainer
-                            comments={this.state.comments}
                             users={this.props.commentUsers}
                             currentUser={this.props.user}
                             addCommentsHelper={this.addCommentsHelper}
