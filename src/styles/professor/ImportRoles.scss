@@ -235,25 +235,36 @@
         bottom: 50px;
     }
 
-    .ColTitles {
+    .ColTitles, .ColTitlesScroll {
         display: flex;
-        justify-content: space-between;
-        padding: 0 95px;
+        justify-content: left;
+        padding: 0 25px 0px 35px;
         height: 15px;
+        width: 100%;
 
         p {
             font-size: 12px;
+            width: 48%;
+            height: 15px;
             font-weight: 400px;
         }
+    }
+    
+    .ColTitlesScroll {
+        padding: 0 15px 0px 35px;
+    }
+
+    .ScrollTable {
+        margin: 12px 0px 77px 14px;
     }
 
     table {
         display: inline-block;
-        margin: 0 3px 77px 15px;
+        margin: 12px 0px 77px 4px;
         width: 370px;
-        margin-top: 12px;
         overflow: visible;
         border-spacing: 0;
+
 
         img {
             width: 10px;

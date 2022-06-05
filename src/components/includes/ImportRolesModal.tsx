@@ -474,12 +474,12 @@ const ImportRolesModal = (
                             {EnterErrorMessage}
                         </div>}
                         <div className="EnterContainer">
-                            <div className="ColTitles">
+                            <div className={newUsers.length < 3? "ColTitles" : "ColTitlesScroll"}>
                                 <p>Enter Email</p>
                                 <p>Select Role</p>
                             </div>
                             <div className="RolesTable">
-                                <table>
+                                <table className={newUsers.length >= 3? "ScrollTable" : ""} >
                                     <tbody>
                                         {newUsers.map(user => {
                                             return (<tr key={user.key}> 
