@@ -33,7 +33,7 @@ export const addQuestion = (
             timeEntered: firebase.firestore.Timestamp.now()
         };
 
-        const addVirtual = session.modality === 'hybrid' ? 
+        const addVirtual = session.modality === 'hybrid' ?
             { isVirtual } : {};
 
         const finalLocation = location.length === 0 ? {} : { location };
@@ -134,10 +134,10 @@ export const updateComment = (
 
 export const clearIndicator = (question: FireQuestion, ta: boolean) => {
     let update: Partial<FireQuestion>;
-    if(ta) {
-        update = {taNew : false};
+    if (ta) {
+        update = { taNew: false };
     } else {
-        update= {studentNew : false};
+        update = { studentNew: false };
     }
     firestore.doc(`questions/${question.questionId}`).update(update);
 }
@@ -197,11 +197,11 @@ export const updateQuestion = (
     batch.commit();
 }
 
-export const addComment = (content: string, commenterId: string, questionId: string, isTA: boolean, 
+export const addComment = (content: string, commenterId: string, questionId: string, isTA: boolean,
     askerId: string, answererId: string) => {
     const timePosted = firebase.firestore.Timestamp.now();
     const commentId = firestore.doc(`questions/${questionId}`).collection('comments').doc().id;
-    firestore.doc(`questions/${questionId}`).update(isTA ? {studentNew: true} : {taNew: true});
+    firestore.doc(`questions/${questionId}`).update(isTA ? { studentNew: true } : { taNew: true });
     const newComment: FireComment = {
         content,
         commenterId,
@@ -226,7 +226,7 @@ export const deleteComment = (commentId: string, questionId: string) => {
 export const updateCurrentComment = (commentId: string, questionId: string, newContent: string) => {
     const batch = firestore.batch();
     const curCommentRef = firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId);
-    batch.update(curCommentRef, { content: newContent});
+    batch.update(curCommentRef, { content: newContent });
     batch.commit();
 }
 
