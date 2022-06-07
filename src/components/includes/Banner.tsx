@@ -6,6 +6,7 @@ import { RootState } from '../../redux/store';
 
 type Props = {
     icon: string;
+    key: number;
     announcement: string;
     warning?: boolean;
     global?: boolean;
@@ -14,13 +15,16 @@ type Props = {
     user: FireUser | undefined;
 }
 
-const Banner = ({icon, announcement, warning, global, noshow, removeBanner, user}: Props) => {
+const Banner = ({icon, announcement, warning, global, noshow, removeBanner, user, key}: Props) => {
     const dontShow = () => {
         removeBanner(announcement, !global);
         updateTextPrompted(user?.userId);
     }
     return ( <>
-        <div className={`banner__wrapper ${warning ? "banner__alert" : ""} ${global ? "banner__global" : ""}`} >
+        <div 
+            key={key} 
+            className={`banner__wrapper ${warning ? "banner__alert" : ""} ${global ? "banner__global" : ""}`} 
+        >
             <div className="banner__left" > 
                 <img src={icon} alt="Text icon" className="banner__icon" />
                 <div className="banner__text">{announcement}</div>
