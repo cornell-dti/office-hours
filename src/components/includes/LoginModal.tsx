@@ -27,7 +27,7 @@ const LoginModal = ({
         email: "",
         password: "",
     });
-  
+
     // onchange for form
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,14 +35,13 @@ const LoginModal = ({
 
     const passLogin = (e: React.FormEvent<HTMLElement>) => {
         e.preventDefault();
-        app
-            .auth().signInWithEmailAndPassword(formData.email, formData.password).then((response) => {
-                const user = response.user;
-                userUpload(user, firestore);
-                clearNotifications(user);
-                history.push('/');
-            }).catch(() => {
-            });
+        app.auth().signInWithEmailAndPassword(formData.email, formData.password).then((response) => {
+            const user = response.user;
+            userUpload(user, firestore);
+            clearNotifications(user);
+            history.push('/');
+        }).catch(() => {
+        });
     }
 
     return (
@@ -61,7 +60,7 @@ const LoginModal = ({
                         <form action="" className="login__form" onSubmit={e => passLogin(e)}>
                             <div className="login__formsContainer">
                                 <div className="form-group">
-                                    <img src={userIcon} alt="An outline of a person" className='login__icon'/>
+                                    <img src={userIcon} alt="An outline of a person" className='login__icon' />
                                     <input
                                         className="form-input"
                                         id="loginEmail"
@@ -71,12 +70,12 @@ const LoginModal = ({
                                         required
                                         value={formData.email}
                                     />
-                                    <>{ /* eslint-disable-next-line jsx-a11y/label-has-associated-control */ }</>
+                                    <>{ /* eslint-disable-next-line jsx-a11y/label-has-associated-control */}</>
                                     <label>Email Address</label>
 
                                 </div>
                                 <div className="form-group">
-                                    <img src={lockIcon} alt="A lock" className='login__icon login__iconLock'/>
+                                    <img src={lockIcon} alt="A lock" className='login__icon login__iconLock' />
                                     <input
                                         className="form-input pass"
                                         id="loginPassword"
@@ -86,7 +85,7 @@ const LoginModal = ({
                                         value={formData.password}
                                         required
                                     />
-                                    <>{ /* eslint-disable-next-line jsx-a11y/label-has-associated-control */ }</>
+                                    <>{ /* eslint-disable-next-line jsx-a11y/label-has-associated-control */}</>
                                     <label>Password</label>
                                 </div>
                             </div>
