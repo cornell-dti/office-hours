@@ -155,27 +155,25 @@ const SessionInformationHeader = ({
 
     const activateError = () => {
         setShowError(true);
-        let message : string = "";
+        let message = "";
         if(!myQuestion) {
             if(isOpen) {
                 message = 'Please fill out the "Join the Queue" form first';
             } else {
-                setShowErrorMessage('This queue has closed');
+                message = 'This queue has closed';
             }
+        } else if((session.modality === 'virtual' || 
+            session.modality === 'hybrid') && 
+            !(typeof session.useTALink === 'undefined' || 
+            session.useTALink === false) && 
+            !session.TALink) {
+            message = 'A professor has not set a link for this office hour. Please reference the course website.';
+        } else if(assignedQuestion && !assignedQuestion.answererLocation) {
+            message = 'Please wait for the TA to update their location';
+        } else if(avgWaitTime === 'No information available') {
+            message = 'Please wait for your turn to join the Zoom call';
         } else {
-            if((session.modality === 'virtual' || session.modality === 'hybrid') && !(typeof session.useTALink === 'undefined'
-            || session.useTALink === false) && !session.TALink) {
-                setShowErrorMessage('A professor has not set a link for this office hour. Please reference the course website.');
-            }
-            else if(assignedQuestion && !assignedQuestion.answererLocation) {
-                setShowErrorMessage('Please wait for the TA to update their location');
-            } else {
-                if(avgWaitTime === 'No information available') {
-                    setShowErrorMessage('Please wait for your turn to join the Zoom call');
-                } else {
-                    setShowErrorMessage(`Please wait for your turn to join the Zoom call (estimated wait time: ${avgWaitTime})`);
-                }
-            }
+            message = `Please wait for your turn to join the Zoom call (estimated wait time: ${avgWaitTime})`;
         }
         setShowErrorMessage(message);
     }
