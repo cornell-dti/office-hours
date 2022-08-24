@@ -400,7 +400,7 @@ exports.onQuestionUpdate = functions.firestore
                         title: 'TA Unassigned',
                         subtitle: 'TA Unassigned',
                         message:
-                            `A TA has been unassigned from your question and you\'ve \
+                            `A TA has been unassigned from your question and you have \
                   been readded to the top of the ${session.title} queue.`,
                         createdAt: admin.firestore.Timestamp.now()
                     })
@@ -410,7 +410,7 @@ exports.onQuestionUpdate = functions.firestore
                             title: 'TA Unassigned',
                             subtitle: 'TA Unassigned',
                             message:
-                            `A TA has been unassigned from your question and you\'ve \
+                            `A TA has been unassigned from your question and you have \
                   been readded to the top of the ${session.title} queue.`,
                             createdAt: admin.firestore.Timestamp.now()
                         }],
@@ -428,7 +428,7 @@ exports.onQuestionUpdate = functions.firestore
                         title: 'Question resolved',
                         subtitle: 'Question marked as resolved',
                         message:
-                            `A TA has marked your question as resolved and you 
+                            `A TA has marked your question as resolved and you \
                             have been removed from the ${session.title} queue`,
                         createdAt: admin.firestore.Timestamp.now()
                     })
@@ -438,7 +438,7 @@ exports.onQuestionUpdate = functions.firestore
                             title: 'Question marked no-show',
                             subtitle: 'Question marked as no-show',
                             message:
-                            `A TA has marked your question as no-show and you 
+                            `A TA has marked your question as no-show and you \
                             have been removed from the ${session.title} queue`,
                             createdAt: admin.firestore.Timestamp.now()
                         }],
@@ -455,7 +455,7 @@ exports.onQuestionUpdate = functions.firestore
                         title: 'Question marked no-show',
                         subtitle: 'Question marked as no-show',
                         message:
-                            `A TA has marked your question as no-show and you 
+                            `A TA has marked your question as no-show and you \
                             have been removed from the ${session.title} queue`,
                         createdAt: admin.firestore.Timestamp.now()
                     })
@@ -465,7 +465,7 @@ exports.onQuestionUpdate = functions.firestore
                             title: 'Question marked no-show',
                             subtitle: 'Question marked as no-show',
                             message:
-                            `A TA has marked your question as no-show and you 
+                            `A TA has marked your question as no-show and you \
                             have been removed from the ${session.title} queue`,
                             createdAt: admin.firestore.Timestamp.now()
                         }],

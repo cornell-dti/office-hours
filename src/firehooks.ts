@@ -184,6 +184,15 @@ export const needsPromotionSingletonObservable = new SingletonObservable(undefin
 export const usePendingUser: () => FirePendingUser | undefined =
     createUseSingletonObservableHook(needsPromotionSingletonObservable);
 
+
+const pendingUsersQuery = (courseId: string) => 
+    firestore.collection('pendingUsers').where(`roles.${courseId}`, 'in', ['professor', 'ta']);
+
+export const usePendingUsers = (courseId: string): readonly FirePendingUser[] => {
+    const pendingUsers = useQuery<FirePendingUser>(courseId, pendingUsersQuery, 'courseId');
+    return pendingUsers;
+}
+
 const isAdminObservable = loggedIn$.pipe(
     switchMap(u =>
         docData(firestore.doc('admins/' + u.email)) as Observable<{}>

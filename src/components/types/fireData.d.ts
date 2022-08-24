@@ -35,6 +35,7 @@ interface FireVirtualLocation {
 interface FireVirtualSession extends FireBaseSession {
     modality: 'virtual';
     useTALink?: boolean;
+    TALink?: string;
 }
 
 interface FireInPersonSession extends FireBaseSession, FireSessionLocation {
@@ -48,6 +49,7 @@ interface FireHybridSession extends FireBaseSession, FireSessionLocation {
     building: string;
     room: string;
     useTALink?: boolean;
+    TALink?: string;
 }
 
 interface FireReviewSession extends FireBaseSession, FireVirtualLocation {
@@ -75,6 +77,7 @@ interface FireBaseSessionSeries {
 interface FireVirtualSessionSeries extends FireBaseSessionSeries {
     modality: 'virtual';
     useTALink?: boolean;
+    TALink?: string;
 }
 
 interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
@@ -82,6 +85,7 @@ interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLoca
     building: string;
     room: string;
     useTALink?: boolean;
+    TALink?: string;
 }
 
 interface FireInPersonSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
