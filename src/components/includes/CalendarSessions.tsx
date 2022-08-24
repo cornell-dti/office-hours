@@ -1,6 +1,5 @@
-import React, { Dispatch, SetStateAction, ReactElement, useState } from 'react';
+import React, { Dispatch, SetStateAction, ReactElement } from 'react';
 import { groupBy } from 'lodash';
-import {Icon} from 'semantic-ui-react'
 
 import CalendarSessionCard from './CalendarSessionCard';
 import CalendarExport from '../../media/calendar_export.svg';
@@ -62,13 +61,6 @@ const CalendarSessions = ({
         sessionCards &&
         groupBy(sessionCards, (card: ReactElement) => card.props.status);
 
-    const [collapsed, setCollapsed] = useState(
-        'Open' in groupedCards || 
-      'Ongoing' in groupedCards || 
-      'Upcoming' in groupedCards
-    );
-
-
     const showCalendarExportModal = () => {
         setShowCalendarModal(true);
         setIsDayExport(true);
@@ -121,22 +113,12 @@ const CalendarSessions = ({
             }
             {groupedCards && (
                 <>
-                    {'Past' in groupedCards && (collapsed ? (
+                    {'Past' in groupedCards && (
                         <>
-                            <div className="pastHeader">
-                                <h6>Past</h6>
-                                <Icon name='chevron down' onClick={() => {setCollapsed(false)}}/>
-                            </div>
-                        </>
-                    ) : 
-                        (<>
-                            <div className="pastHeader">
-                                <h6>Past</h6>
-                                <Icon name='chevron up' onClick={() => setCollapsed(true)}/>
-                            </div>
+                            <h6>Past</h6>
                             {groupedCards.Past}
                         </>
-                        ))}
+                    )}
                     {'Open' in groupedCards && (
                         <>
                             <h6>Open</h6>

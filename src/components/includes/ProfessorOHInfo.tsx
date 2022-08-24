@@ -289,7 +289,6 @@ const ProfessorOHInfo = (props: {
             totalWaitTime: 0,
             totalResolveTime: 0,
             title,
-            isPaused: !!(propsSession && propsSession.isPaused),
             ...sessionLocation,
             ...sessionLink,
         };

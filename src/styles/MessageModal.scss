@@ -15,17 +15,11 @@
   z-index: 9999;
 }
 
-.NotificationModalVisible {
-    img {
-        top: 95px;
-    }
-}
-
 .CalendarExportModalVisible,
 .NotificationModalVisible,
 .JoinErrorMessageVisible {
-  width: 450px;
-  height: 300px;
+  width: 687px;
+  height: 407px;
   border-radius: 8px;
   display: flex;
   position: fixed;
@@ -35,21 +29,21 @@
 
   img {
     position: absolute;
-    height: 50px;
-    width: 50px;
-    top: 90px;
+    height: 64px;
+    width: 64px;
+    top: 126px;
     align-self: center;
   }
 
   p {
     align-self: center;
     position: absolute;
-    width: 300px;
-    top: 160px;
+    width: 353px;
+    top: 224px;
     font-family: Roboto;
     font-style: normal;
     font-weight: 500;
-    font-size: 20px;
+    font-size: 25px;
     line-height: 29px;
     color: #5599db;
   }
@@ -71,57 +65,48 @@
 }
 
 .CalendarExportModalVisible {
-  width: 450px;
-  height: 300px;
+  width: 700px;
+  height: 400px;
 }
 
 .CalendarExportModalScreen {
   .Title {
     font-weight: 500;
-    font-size: 20px;
+    font-size: 25px;
     line-height: 20px;
     color: #484848;
-    margin: 0px 0 45px 0;
+    margin: 10px 0 60px 0;
   }
 
   .CalendarContainer {
     display: flex;
-    width: 450px;
-    height: 300px;
-  }
-  img {
-    height: 45px;
-    width: 45px;
-    top: 120px;
   }
 
   .CalendarItem {
     flex: 1;
     text-align: center;
-    width: 35%;
-    height: 250px;
     display: flex;
     justify-content: center;
 
     img {
-      margin-top: 0px;
+      margin-top: 10px;
     }
   }
 
   .ExportText {
-    font-size: 16px;
+    font-size: 20px;
     text-align: center;
     text-decoration-line: underline;
     color: #5599db;
-    margin-top: 80px;
-    width: 150px;
+    margin-top: 110px;
+    width: 200px;
     line-height: 25px;
     cursor: pointer;
   }
 
   .Line {
     border: 1px solid #484848;
-    height: 140px;
+    height: 200px;
   }
 }
 

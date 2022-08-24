@@ -100,8 +100,11 @@
         }
 
         .rightHeading {
+            margin-left: 10%;
             margin-right: 10%;
-            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
     
             .manageRoles {
                 font-family: Roboto;
@@ -115,18 +118,10 @@
             Button#importProf {
                 margin-top: 1em;
                 font-family: Roboto;
-                color: #474747;
-                background-color: white;
-                padding: 10px;
-                border-radius: 4px;
-                font-size: 18px;
-                font-weight: 500;
-                box-shadow: 2px 2px 4px 0 rgba(158, 158, 158, 0.5);
-
-                .plus.icon {
-                    margin-right: 10px;
-                    color: #474747;
-                }
+                color: white;
+                background-color: #474747;
+                padding: 10px 15px;
+                border-radius: 5px;
             }
     
         }

@@ -56,10 +56,6 @@ const CalenderView = ({
                 selectedDate,
                 selectedDateEnd
             );
-        }).sort((a: FireSession, b: FireSession) => {
-            const aStart = a.startTime;
-            const bStart = b.startTime;
-            return aStart.toDate().getTime() - bStart.toDate().getTime();
         });
 
     return (

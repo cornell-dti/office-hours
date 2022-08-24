@@ -34,13 +34,13 @@ const ProfessorSidebar = ({ courseId, code, selected }: Props) => {
                     <Link to={'/professor-dashboard/course/' + courseId}>
                         <button type="button" className={css(selected === 'dashboard')}>
                             <Icon name="line graph" />
-                                Tag Analytics
+                                Dashboard
                         </button>
                     </Link>
                     <Link to={'/professor-people/course/' + courseId}>
                         <button type="button" className={css(selected === 'people')}>
                             <Icon name="users" />
-                                Question Analytics
+                                People
                         </button>
                     </Link>
                     <Link to={'/professor-roles/course/' + courseId}>
