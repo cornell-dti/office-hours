@@ -371,19 +371,33 @@ const SessionInformationHeader = ({
                                                 )}
                                             </Grid>
                                             :
-                                            <Grid
-                                                container
-                                                direction="row"
-                                                justifyContent="center"
-                                                alignItems={'center'}
-                                            >
-                                                <Grid container justifyContent="center" item xs={2}>
-                                                    <img src={zoom} alt="zoom" />
+                                            <div className="StudentZoom">
+                                                <Grid
+                                                    container
+                                                    direction="row"
+                                                    justifyContent="center"
+                                                    alignItems={'center'}
+                                                >
+                                                    <Grid container justifyContent="center" item lg={2} md={2} xs={2}>
+                                                        <img src={zoom} alt="zoom" />
+                                                    </Grid>
+                                                    {
+                                                        
+                                                        <Grid item lg={6} md={10} xs={6}>
+                                                            <p>Zoom meeting link</p>
+                                                        </Grid>
+                                                    }
+                                                    <a
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        href={session.TALink}
+                                                    >
+                                                        <button type="button" className="JoinButton">
+                                                                Join
+                                                        </button>
+                                                    </a>
                                                 </Grid>
-                                                <Grid container item xs={10}>
-                                                    <p>{'Use TA zoom on course site'}</p>
-                                                </Grid>
-                                            </Grid>
+                                            </div>
                                         }
                                     </div>
                                 )}
@@ -399,20 +413,20 @@ const SessionInformationHeader = ({
                                             <Grid container justifyContent="center" item lg={2} md={2} xs={2}>
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
-                                            {
-                                                (typeof session.useTALink === 'undefined' ||
-                                                    session.useTALink === false) &&
-                                                <Grid item lg={6} md={10} xs={6}>
-                                                    <p>Zoom meeting link</p>
-                                                </Grid>
-                                            }
-                                            {(typeof session.useTALink === 'undefined' || session.useTALink === false) ?
-                                                <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
-                                                    {assignedQuestion?.answererLocation ? (
+                                            <Grid item lg={6} md={10} xs={6}>
+                                                <p>Zoom meeting link</p>
+                                            </Grid>
+                                            <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
+                                                {!(typeof session.useTALink === 'undefined' || 
+                                                                session.useTALink === false) || 
+                                                                assignedQuestion?.answererLocation ? (
                                                         <a
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            href={assignedQuestion.answererLocation}
+                                                            href={(typeof session.useTALink === 'undefined' || 
+                                                                session.useTALink === false) ? 
+                                                                assignedQuestion?.answererLocation : 
+                                                                session.TALink}
                                                         >
                                                             <button type="button" className="JoinButton">
                                                                 Join
@@ -427,12 +441,7 @@ const SessionInformationHeader = ({
                                                             Join
                                                         </button>
                                                     )}
-                                                </Grid>
-                                                :
-                                                <Grid container item xs={10}>
-                                                    <p>{'Use TA zoom on course site'}</p>
-                                                </Grid>
-                                            }
+                                            </Grid>
                                         </Grid>
                                     </div>
                                 )}
@@ -485,11 +494,26 @@ const SessionInformationHeader = ({
                                             <Grid container justifyContent="center" item xs={2}>
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
-                                            <Grid container item xs={10}>
-                                                <p>{(typeof session.useTALink === 'undefined' ||
-                                                    session.useTALink === false) ? 'Use student provided Zoom link'
-                                                    : 'Use TA zoom on course site'}</p>
-                                            </Grid>
+                                            {(typeof session.useTALink === 'undefined' ||
+                                                    session.useTALink === false) ? (<Grid container item xs={10}>
+                                                    <p>Use student provided Zoom link</p>
+                                                </Grid>): (<>
+                                                    <Grid item lg={6} md={10} xs={6}>
+                                                        <p>Zoom meeting link</p>
+                                                    </Grid>
+                                                    <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
+                                                        <a
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            href={
+                                                                session.TALink}
+                                                        >
+                                                            <button type="button" className="JoinButton">
+                                                                            Join
+                                                            </button>
+                                                        </a>
+                                                    </Grid>
+                                                </>)}
                                         </Grid>
                                     </div>
                                 )}

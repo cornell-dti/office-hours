@@ -22,6 +22,8 @@ enum Modality {
     REVIEW = 'review',
 }
 
+const defaultTitle = "Office Hours";
+
 class OHMutateError extends Error {}
 
 const ProfessorOHInfo = (props: {
@@ -52,6 +54,7 @@ const ProfessorOHInfo = (props: {
         props.isOfficeHour ? Modality.VIRTUAL : Modality.REVIEW
     );
     const [useTALink, setUseTALink] = useState(false);
+    const [TALink, setTALink] = useState("");
 
     React.useEffect(() => {
         if (session) {
@@ -161,13 +164,17 @@ const ProfessorOHInfo = (props: {
         }
         const endTimestamp = Timestamp.fromDate(endMomentTime.toDate());
 
+        const finalTitle = title || defaultTitle;
+
         if (
-            modality === Modality.REVIEW &&
+            (modality === Modality.REVIEW &&
             (!zoomLink ||
                 (zoomLink.indexOf('http://') === -1 &&
-                    zoomLink.indexOf('https://') === -1))
+                    zoomLink.indexOf('https://') === -1))) || 
+                    (useTALink && (!TALink || (TALink.indexOf('http://') === -1 &&
+                    TALink.indexOf('https://') === -1)))
         ) {
-            return Promise.reject(new OHMutateError('Not a valid link!'));
+            return Promise.reject(new OHMutateError('Not a valid zoom link! Links must be prepending with https://'));
         }
         const propsSession = props.session;
         const taDocuments: string[] = [];
@@ -181,12 +188,13 @@ const ProfessorOHInfo = (props: {
             if (modality === Modality.VIRTUAL) {
                 series = {
                     useTALink,
+                    TALink,
                     modality,
                     courseId: props.courseId,
                     endTime: endTimestamp,
                     startTime: startTimestamp,
                     tas: taDocuments,
-                    title,
+                    title: finalTitle,
                 };
             } else if (modality === Modality.REVIEW) {
                 if (zoomLink === undefined) {
@@ -200,7 +208,7 @@ const ProfessorOHInfo = (props: {
                     endTime: endTimestamp,
                     startTime: startTimestamp,
                     tas: taDocuments,
-                    title,
+                    title: finalTitle,
                     link: zoomLink,
                 };
             } else {
@@ -222,7 +230,8 @@ const ProfessorOHInfo = (props: {
 
                 if (modality === Modality.HYBRID) {
                     hybridProperties = {
-                        useTALink
+                        useTALink,
+                        TALink
                     }
                 }
 
@@ -233,7 +242,7 @@ const ProfessorOHInfo = (props: {
                     endTime: endTimestamp,
                     startTime: startTimestamp,
                     tas: taDocuments,
-                    title,
+                    title: finalTitle,
                     building: locationBuildingSelected || '',
                     room: locationRoomNumSelected || '',
                 };
@@ -259,7 +268,8 @@ const ProfessorOHInfo = (props: {
 
         if (modality === Modality.HYBRID || modality === Modality.VIRTUAL) {
             hybridOrVirtProperties = {
-                useTALink
+                useTALink,
+                TALink
             }
         }
 
@@ -288,7 +298,7 @@ const ProfessorOHInfo = (props: {
             resolvedQuestions: 0,
             totalWaitTime: 0,
             totalResolveTime: 0,
-            title,
+            title: finalTitle,
             isPaused: !!(propsSession && propsSession.isPaused),
             ...sessionLocation,
             ...sessionLink,
@@ -318,7 +328,8 @@ const ProfessorOHInfo = (props: {
         startTime,
         taSelected,
         title,
-        useTALink
+        useTALink,
+        TALink
     ]);
 
     let isMaxTA = false;
@@ -544,6 +555,8 @@ const ProfessorOHInfo = (props: {
                             readOnly={true}
                         />
                     </div>
+                </div>
+                <div className="row">
                     {(props.isNewOH ||
                         props.session?.sessionSeriesId != null) && (
                         <Checkbox
@@ -558,14 +571,22 @@ const ProfessorOHInfo = (props: {
                         />
                     )}
                     {(modality === Modality.HYBRID || modality === Modality.VIRTUAL) && 
-                    <Checkbox
+                    (<><Checkbox
                         className="TAZoomCheckbox" 
                         label="Use course zoom link"
                         checked={useTALink}
                         onChange={() => setUseTALink((oldTALink) => {
                             return !oldTALink;
                         })}
-                    />}
+                    />
+                    {useTALink && (<input
+                        className='shift'
+                        placeholder='Zoom Link'
+                        value={TALink}
+                        onChange={(e) =>setTALink(e.target.value)}
+                    />)}
+                    </>)
+                    }
                 </div>
                 <div className='row TA'>{AddTA}</div>
             </div>
