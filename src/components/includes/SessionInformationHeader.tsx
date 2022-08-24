@@ -121,6 +121,7 @@ const SessionInformationHeader = ({
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState('hide');
     const [zoomLink, setZoomLink] = React.useState('');
     const [showError, setShowError] = React.useState(false);
+    const [showErrorMessage, setShowErrorMessage] = React.useState('');
 
     React.useEffect(() => {
         if (typeof virtualLocation === 'string' && virtualLocation.trim() !== '') {
@@ -150,6 +151,31 @@ const SessionInformationHeader = ({
 
     const handlePause = () => {
         pauseSession(session, !session.isPaused);
+    }
+
+    const activateError = () => {
+        setShowError(true);
+        let message = "";
+        if(!myQuestion) {
+            if(isOpen) {
+                message = 'Please fill out the "Join the Queue" form first';
+            } else {
+                message = 'This queue has closed';
+            }
+        } else if((session.modality === 'virtual' || 
+            session.modality === 'hybrid') && 
+            !(typeof session.useTALink === 'undefined' || 
+            session.useTALink === false) && 
+            !session.TALink) {
+            message = 'A professor has not set a link for this office hour. Please reference the course website.';
+        } else if(assignedQuestion && !assignedQuestion.answererLocation) {
+            message = 'Please wait for the TA to update their location';
+        } else if(avgWaitTime === 'No information available') {
+            message = 'Please wait for your turn to join the Zoom call';
+        } else {
+            message = `Please wait for your turn to join the Zoom call (estimated wait time: ${avgWaitTime})`;
+        }
+        setShowErrorMessage(message);
     }
 
     return isDesktop ? (
@@ -414,8 +440,8 @@ const SessionInformationHeader = ({
                                                 <p>Zoom meeting link</p>
                                             </Grid>
                                             <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
-                                                {!(typeof session.useTALink === 'undefined' || 
-                                                                session.useTALink === false) || 
+                                                {(!(typeof session.useTALink === 'undefined' || 
+                                                                session.useTALink === false) && session.TALink) || 
                                                                 assignedQuestion?.answererLocation ? (
                                                         <a
                                                             target="_blank"
@@ -433,7 +459,7 @@ const SessionInformationHeader = ({
                                                         <button
                                                             type="button"
                                                             className="JoinButton"
-                                                            onClick={() => setShowError(true)}
+                                                            onClick={() => activateError()}
                                                         >
                                                             Join
                                                         </button>
@@ -535,20 +561,7 @@ const SessionInformationHeader = ({
 
                                 {showError && (
                                     <JoinErrorMessage
-                                        message={
-                                            !myQuestion
-                                                ? isOpen
-                                                    ? 'Please fill out the "Join the Queue" form first'
-                                                    : 'This queue has closed'
-                                                : assignedQuestion && !assignedQuestion.answererLocation
-                                                    ? 'Please wait for the TA to update their location'
-                                                    : avgWaitTime === 'No information available'
-                                                        ? 'Please wait for your turn to join the Zoom call'
-                                                        : 'Please wait for your turn to ' +
-                                                        'join the Zoom call (estimated wait time: ' +
-                                                        avgWaitTime +
-                                                        ')'
-                                        }
+                                        message={showErrorMessage}
                                         show={true}
                                         closeModal={() => {
                                             setShowError(false);
