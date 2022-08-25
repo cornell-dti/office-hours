@@ -20,6 +20,7 @@ interface FireBaseSession {
     resolvedQuestions: number;
     totalWaitTime: number;
     totalResolveTime: number;
+    isPaused?: boolean;
 }
 
 interface FireSessionLocation {
@@ -34,6 +35,7 @@ interface FireVirtualLocation {
 interface FireVirtualSession extends FireBaseSession {
     modality: 'virtual';
     useTALink?: boolean;
+    TALink?: string;
 }
 
 interface FireInPersonSession extends FireBaseSession, FireSessionLocation {
@@ -47,6 +49,7 @@ interface FireHybridSession extends FireBaseSession, FireSessionLocation {
     building: string;
     room: string;
     useTALink?: boolean;
+    TALink?: string;
 }
 
 interface FireReviewSession extends FireBaseSession, FireVirtualLocation {
@@ -74,6 +77,7 @@ interface FireBaseSessionSeries {
 interface FireVirtualSessionSeries extends FireBaseSessionSeries {
     modality: 'virtual';
     useTALink?: boolean;
+    TALink?: string;
 }
 
 interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
@@ -81,6 +85,7 @@ interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLoca
     building: string;
     room: string;
     useTALink?: boolean;
+    TALink?: string;
 }
 
 interface FireInPersonSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
@@ -152,6 +157,16 @@ interface FirePendingUser {
     roles: Record<string, role>;
 }
 
+interface FireComment {
+    commentId: string;
+    content: string;
+    commenterId: string;
+    timePosted: FireTimeStamp;
+    isTA: boolean;
+    askerId: string;
+    answererId: string;
+}
+
 interface FireQuestion {
     askerId: string;
     answererId: string;
@@ -169,6 +184,8 @@ interface FireQuestion {
     wasNotified: boolean;
     position?: number;
     isVirtual?: boolean;
+    taNew?: boolean;
+    studentNew?: boolean;
 }
 
 interface FireOHQuestion extends FireQuestion {

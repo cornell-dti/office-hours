@@ -1,6 +1,7 @@
 {
   "projects": {
     "default": "qmi-test",
-    "production": "queue-me-in-prod"
+    "production": "queue-me-in-prod",
+    "stanford": "queue-me-in-prod-stanford"
   }
 }

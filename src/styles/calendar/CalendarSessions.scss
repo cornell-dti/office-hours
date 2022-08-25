@@ -35,6 +35,20 @@ $open: #ffdba6;
     }
 }
 
+.CalendarSessions {
+    .pastHeader {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        .icon {
+            cursor: pointer;
+        }
+    }
+}
+
 .CalendarSessions h6 {
     font-size: 14px;
     font-weight: normal;

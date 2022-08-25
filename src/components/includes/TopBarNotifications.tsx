@@ -30,13 +30,13 @@ const TopBarNotifications = ({notificationTracker, user}: Props) => {
     }
 
     useEffect(() => {
-        if(notificationTracker !== undefined) {
+        if(notificationTracker !== undefined && !hasViewed && dropped) {
             periodicClearNotifications(user, notificationTracker);
         }
         toggleHasViewed(notificationTracker === undefined || 
         notifications === undefined || notifications.length === 0 ||
         notificationTracker.notifications.toDate() >= notifications[0].createdAt.toDate())
-    }, [notificationTracker, notifications, user])
+    }, [notificationTracker, notifications, user, dropped, hasViewed])
 
     const getColor = (currNotif: SessionNotification) => {
         if (
@@ -94,7 +94,7 @@ const TopBarNotifications = ({notificationTracker, user}: Props) => {
                                 className="notification__date" 
                                 date={notific.createdAt.toDate()} 
                                 interval={0} 
-                                format={'HH:mm a'} 
+                                format={'hh:mm a'} 
                             />
                         </div>
                         <div className="notification__content">

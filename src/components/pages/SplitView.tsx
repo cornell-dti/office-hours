@@ -101,6 +101,7 @@ const SplitView = ({
             resolvedQuestions: 0,
             totalWaitTime: 0,
             totalResolveTime: 0,
+            isPaused: false,
         }]);
 
     const courseHook = useCourse(match.params.courseId);
@@ -184,8 +185,9 @@ const SplitView = ({
                 courseId={match.params.courseId}
                 course={course}
             />
-            {banners.map(banner => 
+            {banners.map((banner, index) => 
                 (<Banner 
+                    key={index}
                     icon={banner.icon} 
                     announcement={banner.text} 
                     global={banner.global} 
@@ -229,10 +231,9 @@ const SplitView = ({
                                     {user && user.firstName}
                                 </span>
                             </p>
-                            <p className='noSessionSelected'>
+                            <div className='noSessionSelected'>
                                 Please select an office hour from the calendar.
-                                <p> </p>
-                                <p> </p>
+                                <span>{"\n"}</span>
                                 {'Notification' in window &&
                                     window?.Notification !== undefined &&
                                     window?.Notification.permission !==
@@ -246,7 +247,7 @@ const SplitView = ({
                                         </div>
                                     </div>
                                 )}
-                            </p>
+                            </div>
                         </section>
                     )
                 ) : <Loader active={true} content="Loading" />)}

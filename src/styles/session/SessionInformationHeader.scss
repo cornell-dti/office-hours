@@ -1,347 +1,364 @@
 .DesktopSessionInformationHeader {
-    position: relative;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 25px 48px;
+
+  .OneQueueInfo {
+    padding: 5px 0;
+  }
+
+  .switchWrapper {
     display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    margin: 25px 48px;
-
-    .OneQueueInfo {
-        padding: 5px 0;
-    }
-
-    .LeftInformationHeader {
-        font-size: 13px;
-        background-color: white;
-        color: #484848;
-        text-align: left;
-        letter-spacing: 0.6px;
-        border-radius: 8px;
-        box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
-        height: 100%;
-        width: 100%;
-        padding: 6% 10%;
-
-        .Picture {
-            height: 100%;
-            width: 100%;
-            padding-bottom: 16px;
-
-            img {
-                max-width: 60%;
-                height: 60%;
-                max-height: 72px;
-                max-width: 72px;
-                border-radius: 50%;
-            }
-        }
-
-        .Details {
-            display: inline-block;
-
-
-            .Location {
-                font-size: 20px;
-                font-weight: 500;
-                margin-bottom: 5px;
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-            }
-
-            p time {
-                margin-bottom: 8px;
-            }
-
-            .Date {
-                margin-bottom: 20px;
-            }
-
-            a {
-                color: white;
-                text-decoration: underline;
-            }
-        }
-
-        .Title {
-            margin-bottom: 5px;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-    }
-
-    .ImgWrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-
-    .QueueInfo {
-        border-radius: 8px;
-        box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
-        border-radius: 8px;
-        background-color: #ffffff;
-        color: $text-grey;
-        text-align: center;
-        padding: 4% 10%;
-        width: 100%;
-
-        p {
-            text-align: left;
-            color: #4D4D4D;
-            font-size: 16px;
-            padding-left: 10px;
-        }
-
-        .red {
-            color: #f46565;
-        }
-    
-        .blue {
-            color: #5599DB;
-        }
-
-    }
-
-    .ZoomLink {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
-        padding: 3% 10%;
-        width: 100%;
-
-        .StudentZoom, .TaZoom {
-            text-align: left;
-            color: #4D4D4D;
-            font-size: 16px;
-            display: flex; 
-            align-items: center;
-            justify-content: center;
-            
-            p {
-                padding-left: 10px;
-            }
-
-            button {
-                width: 84px;
-                height: 29px;
-                background: #FFFFFF;
-                border: 1px solid rgba(53, 148, 241, 0.5);
-                box-sizing: border-box;
-                border-radius: 5px;
-                color: rgba(53, 148, 241, 0.5);
-                font-size: 14px;
-                outline: none;
-            }
-
-            .JoinButton {
-                color: #3594F1;
-                border: 1px solid #3594F1;
-            }
-
-            .DisabledJoinButton {
-                pointer-events: none;
-                cursor: not-allowed;
-            }
-
-        }
-
-        .TaZoom {
-            
-            button {
-                width: fit-content;
-                height: fit-content;
-                border: 1px solid #5599DB;
-                color: #5599DB;
-                padding: 4px 13px;
-            }
-            input {
-                background: #F3F5FC;
-                border-top-left-radius: 8px;
-                border-bottom-left-radius: 8px;
-                outline: none;
-                border: none;
-                width: 75%;
-                height: 31px; 
-                padding: 6px;  
-                color: #474747;
-                font-size: 14px;
-            }
-
-            p {
-                width: 100%;
-                height: 31px;
-                background: #F3F5FC;
-                border-radius: 8px;
-                padding: 6px 8px;
-                font-size: 14px;
-                display: inline-block;
-                margin: 0;
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                
-            }
-
-            .CloseZoom {
-                width: 10px;
-                padding: 0 15px 0 10px;
-                height: 31px; 
-                background: #F3F5FC;
-                border-top-right-radius: 8px;
-                border-bottom-right-radius: 8px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                button {
-                    outline: none;
-                    border: none;
-                    background-color: transparent;
-                }
-            }
-
-            .SaveZoomLink {
-                width: fit-content;
-                height: fit-content;      
-                font-size: 14px;
-                color: #3594F1;
-                border: 1px solid #3594F1;
-            }
-            
-        }
-
-    }
-
-}
-
-.SessionInformationHeader {
-    background-color: white;
-    font-size: 15px;
+    justify-content: left;
     width: 100%;
-    border-bottom: solid 1px #e3e3e3;
+    margin-left: 2px;
 
-    .header {
-        padding: 10px 25px 10px 20px;
-        text-align:left;
+    .MuiFormControlLabel-label {
+      font-size: 15px;
+      width: 100%;
+    }
+  }
 
-        .BackButton {
-            font-size: 15px;
-            font-weight: 500;
-            text-align: left;
-            margin: 0px;
-            color: $text-grey;
-            cursor: pointer;
-            display: inline-block;
+  .LeftInformationHeader {
+    font-size: 13px;
+    background-color: white;
+    color: #484848;
+    text-align: left;
+    letter-spacing: 0.6px;
+    border-radius: 8px;
+    box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+    height: 100%;
+    width: 100%;
+    padding: 6% 10%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-            .left {
-                border: solid $text-grey;
-                border-width: 0 1px 1px 0;
-                display: inline-block;
-                padding: 4px;
-                margin-right: 10px;
-            }
+    .Picture {
+      height: 100%;
+      width: 100%;
+      padding-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
 
-            .left {
-                transform: rotate(135deg);
-                -webkit-transform: rotate(135deg);
-            }
-        }
+      img {
+        max-width: 60%;
+        height: 60%;
+        max-height: 72px;
+        max-width: 72px;
+        border-radius: 50%;
+      }
+    }
 
-        .CourseInfo {
+    .Details {
+      display: inline-block;
 
-            .CourseDetails {
-                float: left;
-                padding: 15px 0px 10px 19px;
+      .Location {
+        font-size: 20px;
+        font-weight: 500;
+        margin-bottom: 5px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
 
-                p {
-                    font-size: 16px;
-                    text-align: left;
-                    color: gray;
-                    margin: 0px;
-                }
+      p time {
+        margin-bottom: 8px;
+      }
 
-                .Location {
-                    color: $text-grey;
-                    padding-bottom: 3px;
-                }
-            }
+      .Date {
+        margin-bottom: 20px;
+      }
 
-            .Picture {
-                float: right;
-                padding-right: 10px;
-
-                img {
-                    display: inline-block;
-                    width: 60px;
-                    height: 60px;
-                    border-radius: 35px;
-                    vertical-align: middle;
-                    object-fit: cover;
-                }
-            }
-        }
+      a {
+        color: white;
+        text-decoration: underline;
+      }
     }
 
     .Title {
-        margin-bottom: 5px;
+      margin-bottom: 5px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .ImgWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .QueueInfo {
+    border-radius: 8px;
+    box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: $text-grey;
+    text-align: center;
+    padding: 4% 10%;
+    width: 100%;
+
+    p {
+      text-align: left;
+      color: #4d4d4d;
+      font-size: 16px;
+      padding-left: 10px;
     }
 
-    .MoreInformation {
-        display: inline-block;
+    .red {
+      color: #f46565;
+    }
+
+    .blue {
+      color: #5599db;
+    }
+  }
+
+  @media only screen and (max-width: 1300px) {
+    .closeQueueSwitch {
+      margin-left: -10px;
+    }
+  }
+
+  .ZoomLink {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 3% 10%;
+    width: 100%;
+
+    .StudentZoom,
+    .TaZoom {
+      text-align: left;
+      color: #4d4d4d;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+
+      p {
+        padding-left: 10px;
+      }
+
+      button {
+        width: 84px;
+        height: 29px;
+        background: #ffffff;
+        border: 1px solid rgba(53, 148, 241, 0.5);
+        box-sizing: border-box;
+        border-radius: 5px;
+        color: rgba(53, 148, 241, 0.5);
+        font-size: 14px;
+        outline: none;
+      }
+
+      .JoinButton {
+        color: #3594f1;
+        border: 1px solid #3594f1;
+      }
+
+      .DisabledJoinButton {
+        pointer-events: none;
+        cursor: not-allowed;
+      }
+    }
+
+    .TaZoom {
+      button {
+        width: fit-content;
+        height: fit-content;
+        border: 1px solid #5599db;
+        color: #5599db;
+        padding: 4px 13px;
+      }
+
+      input {
+        background: #f3f5fc;
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+        outline: none;
+        border: none;
+        width: 75%;
+        height: 31px;
+        padding: 6px;
+        color: #474747;
+        font-size: 14px;
+      }
+
+      p {
         width: 100%;
-        padding: 0 20px 20px;
+        height: 31px;
+        background: #f3f5fc;
+        border-radius: 8px;
+        padding: 6px 8px;
+        font-size: 14px;
+        display: inline-block;
+        margin: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
 
-        hr {
-          display: block;
-          height: 1px;
-          border: 0;
-          border-top: 1px solid #ccc;
-          margin: 0;
-          padding: 0;
+      .CloseZoom {
+        width: 10px;
+        padding: 0 15px 0 10px;
+        height: 31px;
+        background: #f3f5fc;
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        button {
+          outline: none;
+          border: none;
+          background-color: transparent;
         }
+      }
 
-        .QueueInfo {
-            float: left;
-            padding-top: 20px;
-            padding-left: 30px;
-
-            p {
-                font-size: 16px;
-                color: $text-grey;
-            }
-
-            .users {
-                font-size: 30px;
-            }
-
-            .red {
-              color: red;
-            }
-        }
-
-        .OfficeHourInfo {
-            float: right;
-            padding-top: 20px;
-            padding-right: 20px;
-
-            p {
-              color: gray;
-              font-size: 14px;
-
-              .black {
-                color: $text-grey;
-              }
-            }
-
-            .OfficeHourDate {
-                float: right;
-                width: 100%;
-                padding-bottom: 5px;
-            }
-        }
+      .SaveZoomLink {
+        width: fit-content;
+        height: fit-content;
+        font-size: 14px;
+        color: #3594f1;
+        border: 1px solid #3594f1;
+      }
     }
+  }
 }
 
+.SessionInformationHeader {
+  background-color: white;
+  font-size: 15px;
+  width: 100%;
+  border-bottom: solid 1px #e3e3e3;
 
+  .header {
+    padding: 10px 25px 10px 20px;
+    text-align: left;
+
+    .BackButton {
+      font-size: 15px;
+      font-weight: 500;
+      text-align: left;
+      margin: 0px;
+      color: $text-grey;
+      cursor: pointer;
+      display: inline-block;
+
+      .left {
+        border: solid $text-grey;
+        border-width: 0 1px 1px 0;
+        display: inline-block;
+        padding: 4px;
+        margin-right: 10px;
+      }
+
+      .left {
+        transform: rotate(135deg);
+        -webkit-transform: rotate(135deg);
+      }
+    }
+
+    .CourseInfo {
+      .CourseDetails {
+        float: left;
+        padding: 15px 0px 10px 19px;
+
+        p {
+          font-size: 16px;
+          text-align: left;
+          color: gray;
+          margin: 0px;
+        }
+
+        .Location {
+          color: $text-grey;
+          padding-bottom: 3px;
+        }
+      }
+
+      .Picture {
+        float: right;
+        padding-right: 10px;
+
+        img {
+          display: inline-block;
+          width: 60px;
+          height: 60px;
+          border-radius: 35px;
+          vertical-align: middle;
+          object-fit: cover;
+        }
+      }
+    }
+  }
+
+  .Title {
+    margin-bottom: 5px;
+  }
+
+  .MoreInformation {
+    display: inline-block;
+    width: 100%;
+    padding: 0 20px 20px;
+
+    hr {
+      display: block;
+      height: 1px;
+      border: 0;
+      border-top: 1px solid #ccc;
+      margin: 0;
+      padding: 0;
+    }
+
+    .QueueInfo {
+      float: left;
+      padding-top: 20px;
+      padding-left: 30px;
+
+      p {
+        font-size: 16px;
+        color: $text-grey;
+      }
+
+      .users {
+        font-size: 30px;
+      }
+
+      .red {
+        color: red;
+      }
+    }
+
+    .OfficeHourInfo {
+      float: right;
+      padding-top: 20px;
+      padding-right: 20px;
+
+      p {
+        color: gray;
+        font-size: 14px;
+
+        .black {
+          color: $text-grey;
+        }
+      }
+
+      .OfficeHourDate {
+        float: right;
+        width: 100%;
+        padding-bottom: 5px;
+      }
+    }
+  }
+}
