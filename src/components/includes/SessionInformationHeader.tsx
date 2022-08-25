@@ -407,12 +407,9 @@ const SessionInformationHeader = ({
                                                     <Grid container justifyContent="center" item lg={2} md={2} xs={2}>
                                                         <img src={zoom} alt="zoom" />
                                                     </Grid>
-                                                    {
-                                                        
-                                                        <Grid item lg={6} md={10} xs={6}>
-                                                            <p>Zoom meeting link</p>
-                                                        </Grid>
-                                                    }
+                                                    <Grid item lg={6} md={10} xs={6}>
+                                                        <p>Zoom Link</p>
+                                                    </Grid>
                                                     <a
                                                         target="_blank"
                                                         rel="noopener noreferrer"
@@ -440,7 +437,7 @@ const SessionInformationHeader = ({
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
                                             <Grid item lg={6} md={10} xs={6}>
-                                                <p>Zoom meeting link</p>
+                                                <p>Zoom link</p>
                                             </Grid>
                                             <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
                                                 {(!(typeof session.useTALink === 'undefined' || 
@@ -484,7 +481,7 @@ const SessionInformationHeader = ({
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
                                             <Grid item lg={6} md={10}>
-                                                <p>Zoom meeting link</p>
+                                                <p>Zoom Link</p>
                                             </Grid>
 
                                             <Grid
@@ -525,7 +522,7 @@ const SessionInformationHeader = ({
                                                     <p>Use student provided Zoom link</p>
                                                 </Grid>): (<>
                                                     <Grid item lg={6} md={10} xs={6}>
-                                                        <p>Zoom meeting link</p>
+                                                        <p>Zoom Link</p>
                                                     </Grid>
                                                     <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
                                                         <a
