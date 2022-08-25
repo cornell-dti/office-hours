@@ -62,7 +62,6 @@ export const createSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
-                isPaused: false,
             };
 
             batch.set(db.collection('sessions').doc(), derivedSession);
@@ -80,8 +79,7 @@ export const createSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
-                link: sessionSeries.link,
-                isPaused: false,
+                link: sessionSeries.link
             };
 
             batch.set(db.collection('sessions').doc(), derivedSession);
@@ -111,7 +109,6 @@ export const createSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
-                isPaused: false,
             };
 
             batch.set(db.collection('sessions').doc(), derivedSession);
@@ -177,7 +174,6 @@ export const updateSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
-                isPaused: false,
             };
             batch.set(db.collection('sessions').doc(sessionId), newSession);
         } else if (sessionSeries.modality === "review") {
@@ -194,8 +190,7 @@ export const updateSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
-                link: sessionSeries.link,
-                isPaused: false,
+                link: sessionSeries.link
             };
             batch.set(db.collection('sessions').doc(sessionId), newSession);
         } else {
@@ -224,7 +219,6 @@ export const updateSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
-                isPaused: false,
             };
             batch.set(db.collection('sessions').doc(sessionId), newSession);
         }

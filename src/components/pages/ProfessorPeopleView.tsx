@@ -14,7 +14,7 @@ import TopBar from '../includes/TopBar';
 const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) => {
     const courseId = props.match.params.courseId;
 
-    const [startDate, setStartDate] = useState(moment(new Date()).add(-1, 'months'));
+    const [startDate, setStartDate] = useState(moment(new Date()).add(-4, 'months'));
     const [endDate, setEndDate] = useState(moment(new Date()));
     const [focusedInput, setFocusedInput] = useState<'endDate' | 'startDate' | null>(null);
 
