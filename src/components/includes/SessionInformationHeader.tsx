@@ -437,7 +437,7 @@ const SessionInformationHeader = ({
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
                                             <Grid item lg={6} md={10} xs={6}>
-                                                <p>Zoom meeting link</p>
+                                                <p>Zoom link</p>
                                             </Grid>
                                             <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
                                                 {(!(typeof session.useTALink === 'undefined' || 

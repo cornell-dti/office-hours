@@ -53,8 +53,10 @@ const ProfessorOHInfo = (props: {
     const [modality, setModality] = useState(
         props.isOfficeHour ? Modality.VIRTUAL : Modality.REVIEW
     );
-    const [useTALink, setUseTALink] = useState(false);
-    const [TALink, setTALink] = useState("");
+    const [useTALink, setUseTALink] = useState(session && 
+        (session.modality === "virtual" || session.modality === "hybrid") ? session.useTALink :false);
+    const [TALink, setTALink] = useState(session && 
+        (session.modality === "virtual" || session.modality === "hybrid") ? session.TALink : "");
 
     React.useEffect(() => {
         if (session) {
