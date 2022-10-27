@@ -228,7 +228,7 @@ const SplitView = ({
                             <p className='welcomeMessage'>
                                 Welcome{user && ', '}
                                 <span className='welcomeName'>
-                                    {user && user.firstName}
+                                    {user && user.firstName + " " + user.lastName}
                                 </span>
                             </p>
                             <div className='noSessionSelected'>
