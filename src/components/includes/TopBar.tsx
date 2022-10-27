@@ -50,7 +50,7 @@ const TopBar = (props: Props) => {
                 // misaligned
                 if(notificationTracker.lastSent === undefined || 
                     notif.createdAt.toDate().getTime() > 
-                    notificationTracker?.lastSent.toDate().getTime()+ 1000) {
+                    notificationTracker?.lastSent.toDate().getTime() + 2000) {
                     updateLastSent(user, notificationTracker);
                     addNotification({
                         title: notif.title,

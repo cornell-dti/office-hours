@@ -16,6 +16,8 @@ jobs:
       - name: Install
         run: yarn install
       - name: Build Client
+        env:
+          REACT_APP_API_KEY: ${{ secrets.REACT_TEST_API_KEY }}
         run: yarn build:staging
       - name: Deploy Client
         env:

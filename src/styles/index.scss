@@ -31,6 +31,9 @@ $mobile-breakpoint: 920px;
 @import "./session/SessionAlertModal";
 @import "./session/SessionNotification";
 @import "./session/DiscussionQuestion";
+@import "./session/UserComment";
+@import "./session/CommentsContainer";
+@import "./session/NewComment";
 
 // Login
 @import "./login/LoginView";
@@ -65,7 +68,6 @@ $mobile-breakpoint: 920px;
 @import "./professor/ProfessorTagsDelete";
 @import "./professor/ProfessorPeopleView";
 @import "./professor/ProfessorRoles";
-@import "./professor/CSVUploadView";
 
 // Admin
 @import "./AdminView";

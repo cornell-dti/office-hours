@@ -1,0 +1,440 @@
+.ImportRolesModalScreen {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(112, 112, 112, 0.8);
+    z-index: 9999;
+}
+
+.ImportRolesModalVisible {
+    width: 450px;
+    height: 300px;
+    border-radius: 8px;
+    display: flex;
+    position: fixed;
+    background-color: white;
+    text-align: center;
+    flex-direction: column;
+
+    img {
+        position: absolute;
+        height: 45px;
+        width: 45px;
+        top: 120px;
+        align-self: center;
+    }
+
+    p {
+        align-self: center;
+        position: absolute;
+        width: 300px;
+        top: 160px;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 20px;
+        line-height: 29px;
+        color: #5599db;
+    }
+
+    .closeButton {
+        align-self: flex-end;
+        height: 45px;
+        left: 74.14%;
+        right: 24.61%;
+        top: calc(50% - 45px / 2 - 209.5px);
+        font-size: 20px;
+        line-height: 48px;
+        color: #484848;
+        float: right;
+        outline: none;
+        background-color: transparent;
+        border: none;
+    }
+}
+
+.ImportRolesModalScreen {
+    .Title {
+        font-weight: 500;
+        font-size: 20px;
+        line-height: 20px;
+        color: #484848;
+        margin: 0 0 45px 0; 
+    }
+
+    .ImportContainer {
+        display: flex;
+        width: 450px;
+        height: 300px;
+    }
+
+    img {
+        height: 40px;
+        width: 40px;
+    }
+
+    .ImportItem {
+        flex: 1;
+        text-align: center;
+        display: flex;
+        width: 35%;
+        justify-content: center;
+        height: 250px;
+        
+        img {
+            margin-top: 0px;
+        }
+    }
+
+    .ExportText {
+        font-size: 16px;
+        text-align: center;
+        text-decoration-line: underline;
+        color: #5599db;
+        margin-top: 80px;
+        width: 150px;
+        line-height: 25px;
+        cursor: pointer;
+    }
+
+    .Line {
+        border: 1px solid #484848;
+        height: 140px;
+    }
+}
+
+.ManualUploadScreen,
+.CSVUploadScreen {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(112, 112, 112, 0.8);
+    z-index: 9999;
+
+    .CSVContainer,
+    .EnterContainer {
+
+        display: flex;
+        text-align: center;
+        flex-direction: column;
+        overflow: auto;
+
+        .ConfirmButton {
+            font-style: bold;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 17px;
+            color: #5599DB;
+        }
+
+        p {
+            color: #4A4A4A;
+            font-size: 20px;
+            font-weight: 500;
+            padding-bottom: 10px;
+        }
+    }
+
+    .EnterContainer {
+        overflow: auto;
+        height: 240px;
+        width: 434px;
+        display: flex;
+    }
+    
+    .CSVContainer {
+        height: 275px;
+        width: 430px;
+        display: flex;
+    
+        .ConfirmButton {
+            bottom: 32px;
+            left: 139px;
+            position: absolute;
+        }
+    }
+}
+
+.EnterModal,
+.CSVModal {
+    border-radius: 8px;
+    position: fixed;
+    background-color: white;
+    text-align: center;
+    flex-direction: column;
+
+    .closeButton {
+        align-self: flex-end;
+        font-size: 20px;
+        color: #484848;
+        float: right;
+        outline: none;
+        background-color: transparent;
+        margin: 10px 0 0 0;
+        border: none;
+    }
+
+    .backButton {
+        position: absolute;
+        left: 10px;
+        top: 15px;
+    }
+
+    .ErrorMessage {
+        font-style: italic;
+        font-weight: 300 light;
+        font-size: 12px;
+        line-height: 18px;
+        color: #F67D7D;
+        text-align: center;
+    }
+
+    .Title {
+        font-weight: 500;
+        display: flex;
+        justify-content: center;
+        font-size: 16px;
+        color: #484848;
+        padding-bottom: 40px;
+        line-height: 15px;
+        width: 100%;
+
+    }
+}
+
+.EnterModal {
+    .AddButton {
+        line-height: 17px;
+        position: relative;
+        bottom: 65px;
+        left: 210px;
+        width: 15px;
+        cursor: pointer;
+    }
+
+    .ErrorMessage {
+        margin: -30px 65px 20px 65px;
+    }
+
+    .ConfirmButton {
+        position: relative;
+        bottom: 50px;
+    }
+
+    .ColTitles, .ColTitlesScroll {
+        display: flex;
+        justify-content: left;
+        padding: 0 25px 0px 35px;
+        height: 15px;
+        width: 100%;
+
+        p {
+            font-size: 12px;
+            width: 48%;
+            height: 15px;
+            font-weight: 400px;
+        }
+    }
+    
+    .ColTitlesScroll {
+        padding: 0 15px 0px 35px;
+    }
+
+    .ScrollTable {
+        margin: 12px 0px 77px 14px;
+    }
+
+    table {
+        display: inline-block;
+        margin: 12px 0px 77px 4px;
+        width: 370px;
+        overflow: visible;
+        border-spacing: 0;
+
+
+        img {
+            width: 10px;
+            display: flex;
+            align-items: center;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        tr:first-child {
+            td:nth-last-child(2) {
+                border-top-right-radius: 6px;
+            }
+        }
+
+        tr:first-child {
+            td:first-of-type {
+                border-top-left-radius: 6px;
+            }
+        }
+
+        tr:last-child {
+
+            td:nth-last-child(2) {
+                border-bottom-right-radius: 6px;
+            }
+        }
+
+        tr:last-child {
+            td:first-of-type {
+                border-bottom-left-radius: 6px;
+            }
+        }
+
+        td:last-of-type {
+            border: none;
+            background-color: transparent;
+            width: 10px;
+            margin-left: 5px;
+        }
+
+        td:nth-last-child(2) {
+            padding-bottom: 10px;
+        }
+
+        td {
+            padding-left: 0;
+            border: solid 1px;
+            color: #696969;
+            width: 170.5px;
+            height: 38px;
+            background-color: #F5F5F5;
+            text-align: center;
+
+            .RoleOptions {
+                outline: none;
+                border: none;
+                scroll-behavior: smooth;
+                background-color: transparent;
+                width: 100%;
+                text-align: center;
+                font-family: Roboto;
+                font-size: 14px;
+                margin-top: 10px;
+                justify-content: center;
+                font-weight: 400px;
+                color: #696969;
+                position: relative;
+                width: 100px;
+            }
+        }
+
+        input:not(.DateInput_input) {
+            width: 180.5px;
+            height: 38px;
+            background-color: transparent;
+            border: none;
+            text-align: center;
+            color: #888888;
+        }
+    }
+}
+
+.CSVModal {
+    .ErrorMessage {
+        margin: 4px 65px 0 65px;
+    }
+
+    .ConfirmButton {
+        bottom: 32px;
+    }
+
+    .SelectFile {
+        display: flex;
+        justify-content: center;
+
+
+        p {
+            margin: 0px 15px 0 110px;
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 37px;
+            width: 48px;
+        }    
+
+        Button.ChooseFile {
+            width: 127px;
+            height: 37px;
+            margin: 0px 110px 0px 0px;
+            background: #EEEEEE;
+            border: 2px solid #979797;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: 500;
+            color: #4A4A4A;
+        }
+    }
+
+    .DragDrop {
+        width: 323;
+        height: 110px;
+        background: #F1EFEF;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #4A4A4A;
+        border: 3px dashed #979797;
+        padding-left: 10px;
+        padding-right: 10px;
+        position: absolute;
+        top: 178px;
+        bottom: 80px;
+        left: 40px;
+        right: 40px;
+
+        .DropHere {
+            font-size: 20px;
+            font-style: italic;
+            font-weight: 500;
+            line-height: 24px;
+            margin: 0 0 10px 0;
+        }
+
+        .FileTypes {
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 18px;
+        }
+
+        .FileName {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 323;
+            margin: 0 0 20px 0;
+            img {
+                display: inline-flex;
+                padding-left: 7px;
+                cursor: pointer; 
+                margin: 0;
+            }
+        }
+
+    }
+
+    #FileLink {
+        font-style: italic;
+        font-weight: 500;
+        font-size: 18px;
+        text-decoration-line: underline;
+        color: #5599DB;
+    }
+}

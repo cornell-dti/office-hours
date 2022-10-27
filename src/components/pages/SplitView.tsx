@@ -14,7 +14,7 @@ import { removeQuestionbyID } from '../../firebasefunctions/sessionQuestion';
 import TopBar from '../includes/TopBar';
 import CalendarExportModal from '../includes/CalendarExportModal';
 import { RootState } from '../../redux/store';
-import {updateCourse, updateSession} from "../../redux/actions/course";
+import { updateCourse, updateSession } from "../../redux/actions/course";
 import Browser from '../../media/browser.svg';
 import smsNotif from '../../media/smsNotif.svg'
 import { addBanner } from '../../redux/actions/announcements';
@@ -65,14 +65,14 @@ type SplitViewProps = {
 }
 
 const SplitView = ({
-    history, 
-    match, 
-    user, 
-    course, 
-    session, 
-    updateCourse, 
-    updateSession, 
-    addBanner, 
+    history,
+    match,
+    user,
+    course,
+    session,
+    updateCourse,
+    updateSession,
+    addBanner,
     banners
 }: SplitViewProps) => {
     const [activeView, setActiveView] = useState(
@@ -101,6 +101,7 @@ const SplitView = ({
             resolvedQuestions: 0,
             totalWaitTime: 0,
             totalResolveTime: 0,
+            isPaused: false,
         }]);
 
     const courseHook = useCourse(match.params.courseId);
@@ -113,7 +114,7 @@ const SplitView = ({
     useEffect(() => {
         updateSession(sessionHook);
     }, [sessionHook, updateSession])
-    
+
     // Handle browser back button
     history.listen((location) => {
         setActiveView(
@@ -149,10 +150,10 @@ const SplitView = ({
 
     useEffect(() => {
         // Add a banner prompting the user to enable browser notifications
-        if("Notification" in window && Notification.permission === 'default') {
+        if ("Notification" in window && Notification.permission === 'default') {
             addBanner({
-                text: "Enable browser notifications to receive notification updates.", 
-                icon: Browser, 
+                text: "Enable browser notifications to receive notification updates.",
+                icon: Browser,
                 global: true
             });
         };
@@ -164,10 +165,10 @@ const SplitView = ({
         } catch (error) {
             // Do nothing. iOS crashes because Notification isn't defined
         }
-        if(!user?.textPrompted) {
+        if (!user?.textPrompted) {
             addBanner({
-                text: "Enable text notifications under [Profile -> SMS Settings].", 
-                icon: smsNotif, 
+                text: "Enable text notifications under [Profile -> SMS Settings].",
+                icon: smsNotif,
                 noshow: true,
                 global: true
             });
@@ -176,19 +177,20 @@ const SplitView = ({
 
     return (
         <>
-            <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion}/>
-            
+            <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
+
             <TopBar
                 role={(user && course && user.roles[course.courseId]) || 'student'}
                 context="student"
                 courseId={match.params.courseId}
                 course={course}
             />
-            {banners.map(banner => 
-                (<Banner 
-                    icon={banner.icon} 
-                    announcement={banner.text} 
-                    global={banner.global} 
+            {banners.map((banner, index) =>
+                (<Banner
+                    key={index}
+                    icon={banner.icon}
+                    announcement={banner.text}
+                    global={banner.global}
                     noshow={banner.noshow}
                 />))}
             {(width > MOBILE_BREAKPOINT || activeView === 'calendar') && (
@@ -229,14 +231,13 @@ const SplitView = ({
                                     {user && user.firstName}
                                 </span>
                             </p>
-                            <p className='noSessionSelected'>
+                            <div className='noSessionSelected'>
                                 Please select an office hour from the calendar.
-                                <p> </p>
-                                <p> </p>
+                                <span>{"\n"}</span>
                                 {'Notification' in window &&
                                     window?.Notification !== undefined &&
                                     window?.Notification.permission !==
-                                        'granted' && (
+                                    'granted' && (
                                     <div className='warningArea'>
                                         <div>&#9888;</div>
                                         <div>
@@ -246,21 +247,21 @@ const SplitView = ({
                                         </div>
                                     </div>
                                 )}
-                            </p>
+                            </div>
                         </section>
                     )
                 ) : <Loader active={true} content="Loading" />)}
             <ProductUpdates />
-           
+
         </>
     );
 };
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user,
-    course : state.course.course,
+    user: state.auth.user,
+    course: state.course.course,
     session: state.course.session,
     banners: state.announcements.banners
 })
 
 
-export default connect(mapStateToProps, {updateCourse, updateSession, addBanner})(SplitView);
+export default connect(mapStateToProps, { updateCourse, updateSession, addBanner })(SplitView);

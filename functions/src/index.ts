@@ -124,6 +124,64 @@ exports.onUserCreate = functions.firestore
 
     });
 
+exports.onCommentCreate = functions.firestore
+    .document(`questions/{questionId}/comments/{commentId}`)
+    .onCreate(async (snap) => {
+        const data = snap.data();
+        const askerId = data.askerId;
+        const answererId = data.answererId;
+        const commenterId = data.commenterId;
+        const asker: FireUser = (await db.doc(`users/${askerId}`).get()).data() as FireUser;
+        if(askerId === commenterId && answererId !== "") {
+            const answerer: FireUser = (await db.doc(`users/${answererId}`).get()).data() as FireUser;
+            db.doc(`notificationTrackers/${answerer.email}`)
+                .update({
+                    notificationList: admin.firestore.FieldValue.arrayUnion({
+                        title: 'Student comment',
+                        subtitle: "New student comment",
+                        message: `${asker.firstName} commented \
+                        on your assigned question`.trim(),
+                        createdAt: admin.firestore.Timestamp.now()
+                    })
+                }).catch(() => {
+                    db.doc(`notificationTrackers/${answerer.email}`).create({id: answerer.email,
+                        notificationList: [{
+                            title: 'Student comment',
+                            subtitle: "New student comment",
+                            message: `${asker.firstName} commented \
+                        on your assigned question`.trim(),
+                            createdAt: admin.firestore.Timestamp.now()
+                        }],
+                        notifications: admin.firestore.Timestamp.now(),
+                        productUpdates: admin.firestore.Timestamp.now(),
+                        lastSent: admin.firestore.Timestamp.now(),})
+                    
+                });
+        } else {
+            db.doc(`notificationTrackers/${asker.email}`)
+                .update({
+                    notificationList: admin.firestore.FieldValue.arrayUnion({
+                        title: 'TA comment',
+                        subtitle: 'New TA comment',
+                        message: `A TA commented on your question`.trim(),
+                        createdAt: admin.firestore.Timestamp.now()
+                    })
+                }).catch(() => {
+                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                        notificationList: [{
+                            title: 'TA comment',
+                            subtitle: 'New TA comment',
+                            message: `A TA commented on your question`.trim(),
+                            createdAt: admin.firestore.Timestamp.now()
+                        }],
+                        notifications: admin.firestore.Timestamp.now(),
+                        productUpdates: admin.firestore.Timestamp.now(),
+                        lastSent: admin.firestore.Timestamp.now(),})
+                    
+                });
+        }
+    })
+
 exports.onSessionUpdate = functions.firestore
     .document('sessions/{sessionId}')
     .onUpdate(async (change) => {
@@ -142,7 +200,6 @@ exports.onSessionUpdate = functions.firestore
         if (!topQuestion.wasNotified) {
             const asker: FireUser = (await db.doc(`users/${topQuestion.askerId}`)
                 .get()).data() as FireUser;
-            functions.logger.log(asker.firstName);
             sendSMS(asker, `Your question has reached the top of the \
                 ${sessionName} queue. A TA will likely help you shortly.`);
             db.doc(`notificationTrackers/${asker.email}`)
@@ -156,7 +213,6 @@ exports.onSessionUpdate = functions.firestore
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
-                    functions.logger.log("Creating notificationTracker")
                     db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
                         notificationList: [{
                             title: 'Your Question is Up!',
@@ -305,57 +361,6 @@ exports.onQuestionUpdate = functions.firestore
 
         // Figure out who needs to be updated with a notification based on the changes
         const asker: FireUser = (await db.doc(`users/${newQuestion.askerId}`).get()).data() as FireUser;
-        if (newQuestion.answererId) {
-            const answerer: FireUser = (await db.doc(`users/${newQuestion.answererId}`).get()).data() as FireUser;
-            if (prevQuestion.studentComment !== newQuestion.studentComment) {
-                db.doc(`notificationTrackers/${answerer.email}`)
-                    .update({
-                        notificationList: admin.firestore.FieldValue.arrayUnion({
-                            title: 'Student comment',
-                            subtitle: "New student comment",
-                            message: `${asker.firstName} commented "${newQuestion.studentComment} \
-                        on your assigned question"`,
-                            createdAt: admin.firestore.Timestamp.now()
-                        })
-                    }).catch(() => {
-                        db.doc(`notificationTrackers/${answerer.email}`).create({id: answerer.email,
-                            notificationList: [{
-                                title: 'Student comment',
-                                subtitle: "New student comment",
-                                message: `${asker.firstName} commented "${newQuestion.studentComment} \
-                        on your assigned question"`,
-                                createdAt: admin.firestore.Timestamp.now()
-                            }],
-                            notifications: admin.firestore.Timestamp.now(),
-                            productUpdates: admin.firestore.Timestamp.now(),
-                            lastSent: admin.firestore.Timestamp.now(),})
-                    
-                    });
-            }
-            if (prevQuestion.taComment !== newQuestion.taComment) {
-                db.doc(`notificationTrackers/${asker.email}`)
-                    .update({
-                        notificationList: admin.firestore.FieldValue.arrayUnion({
-                            title: 'TA comment',
-                            subtitle: 'New TA comment',
-                            message: `A TA commented "${newQuestion.taComment} on your question`,
-                            createdAt: admin.firestore.Timestamp.now()
-                        })
-                    }).catch(() => {
-                        db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
-                            notificationList: [{
-                                title: 'TA comment',
-                                subtitle: 'New TA comment',
-                                message: `A TA commented "${newQuestion.taComment} on your question`,
-                                createdAt: admin.firestore.Timestamp.now()
-                            }],
-                            notifications: admin.firestore.Timestamp.now(),
-                            productUpdates: admin.firestore.Timestamp.now(),
-                            lastSent: admin.firestore.Timestamp.now(),})
-                    
-                    });
-            }
-        }
 
         if (
             prevQuestion.answererId !== newQuestion.answererId &&
@@ -395,7 +400,7 @@ exports.onQuestionUpdate = functions.firestore
                         title: 'TA Unassigned',
                         subtitle: 'TA Unassigned',
                         message:
-                            `A TA has been unassigned from your question and you\'ve \
+                            `A TA has been unassigned from your question and you have \
                   been readded to the top of the ${session.title} queue.`,
                         createdAt: admin.firestore.Timestamp.now()
                     })
@@ -405,7 +410,7 @@ exports.onQuestionUpdate = functions.firestore
                             title: 'TA Unassigned',
                             subtitle: 'TA Unassigned',
                             message:
-                            `A TA has been unassigned from your question and you\'ve \
+                            `A TA has been unassigned from your question and you have \
                   been readded to the top of the ${session.title} queue.`,
                             createdAt: admin.firestore.Timestamp.now()
                         }],
@@ -423,7 +428,7 @@ exports.onQuestionUpdate = functions.firestore
                         title: 'Question resolved',
                         subtitle: 'Question marked as resolved',
                         message:
-                            `A TA has marked your question as resolved and you 
+                            `A TA has marked your question as resolved and you \
                             have been removed from the ${session.title} queue`,
                         createdAt: admin.firestore.Timestamp.now()
                     })
@@ -433,7 +438,7 @@ exports.onQuestionUpdate = functions.firestore
                             title: 'Question marked no-show',
                             subtitle: 'Question marked as no-show',
                             message:
-                            `A TA has marked your question as no-show and you 
+                            `A TA has marked your question as no-show and you \
                             have been removed from the ${session.title} queue`,
                             createdAt: admin.firestore.Timestamp.now()
                         }],
@@ -450,7 +455,7 @@ exports.onQuestionUpdate = functions.firestore
                         title: 'Question marked no-show',
                         subtitle: 'Question marked as no-show',
                         message:
-                            `A TA has marked your question as no-show and you 
+                            `A TA has marked your question as no-show and you \
                             have been removed from the ${session.title} queue`,
                         createdAt: admin.firestore.Timestamp.now()
                     })
@@ -460,7 +465,7 @@ exports.onQuestionUpdate = functions.firestore
                             title: 'Question marked no-show',
                             subtitle: 'Question marked as no-show',
                             message:
-                            `A TA has marked your question as no-show and you 
+                            `A TA has marked your question as no-show and you \
                             have been removed from the ${session.title} queue`,
                             createdAt: admin.firestore.Timestamp.now()
                         }],
