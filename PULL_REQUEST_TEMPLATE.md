@@ -1,7 +1,6 @@
 ### Summary <!-- Required -->
 
 <!-- Provide a general summary of your changes in the Title above -->
-The full name of the user (first name & last name) should now display on the dashboard.
 <!-- Add your summary here -->
 
 <!-- Itemize bug fixes, new features, and other changes -->
@@ -12,7 +11,6 @@ The full name of the user (first name & last name) should now display on the das
 ### Test Plan <!-- Required -->
 
 <!-- Briefly describe how you test you changes. -->
-I've tested that the first name and last name now are shown in the welcome page. Long names are wrapped to the next line below the welcome statement.
 
 ### Notes <!-- Optional -->
 
