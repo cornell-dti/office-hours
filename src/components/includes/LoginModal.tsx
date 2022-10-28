@@ -35,10 +35,13 @@ const LoginModal = ({
 
     const passLogin = (e: React.FormEvent<HTMLElement>) => {
         e.preventDefault();
-        app.auth().signInWithEmailAndPassword(formData.email, formData.password).then((response) => {
+        app.auth().signInWithEmailAndPassword(formData.email, formData.password).then(async (response) => {
             const user = response.user;
-            userUpload(user, firestore);
             clearNotifications(user);
+            userUpload(user, firestore);
+            // If we don't wait, notification clearing will not fully 
+            // propogate to the hooks and new logins will be barraged with notifications
+            await new Promise(r => setTimeout(r, 300));
             history.push('/');
         }).catch(() => {
         });

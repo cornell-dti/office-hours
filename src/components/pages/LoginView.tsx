@@ -42,10 +42,13 @@ const LoginView: React.FC = () => {
         return app
             .auth()
             .signInWithPopup(authProvider)
-            .then((response) => {
+            .then(async (response) => {
                 const user = response.user;
                 clearNotifications(user);
                 userUpload(user, firestore);
+                // If we don't wait, notification clearing will not fully 
+                // propogate to the hooks and new logins will be barraged with notifications
+                await new Promise(r => setTimeout(r, 300));
                 history.push('/');
             });
     };
