@@ -44,6 +44,47 @@
       padding: 0 12px;
     }
 
+    .Announcement {
+      background: #f2f9ff;
+      border: 1px solid #5599db;
+      box-sizing: border-box;
+      margin: 0 12px 12px 12px;
+      padding: 10px;
+
+      .AnnouncementHeading {
+        display: flex;
+        justify-content: space-between;
+
+        div {
+          display: flex;
+          align-items: center;
+        }
+
+        .AnnouncementIcon {
+          width: 40px;
+
+        }
+
+        .AnnouncementTaPhoto {
+          border-radius: 50%;
+          height: 27px;
+          margin: 0 5px;
+        }
+      }
+
+      .AnnouncementContent {
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        span {
+          color: #888888;
+          cursor: pointer;
+        }
+      }
+
+    }
 
     .NewAnnouncement {
       background: #D6EAFE;
