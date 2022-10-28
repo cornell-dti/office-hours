@@ -409,7 +409,8 @@ const SessionQuestionsContainer = (props: Props) => {
                             setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
-                {otherQuestions && otherQuestions.length > 0 && props.isTA &&
+                {otherQuestions && otherQuestions.length > 0 &&
+                    props.modality !== 'review' && props.isTA &&
                     <p className="QuestionHeader">Unassigned Queue Questions</p>
                 }
                 {otherQuestions &&
