@@ -27,6 +27,14 @@ _Screenshots showing major parts of app_
 
 ## Contributors
 
+### 2022-23
+* **Pranavi Gupta** - Product Manager
+* **Alex Nagel** - Technical Project Manager
+* **Dana Kim** - Software Developer
+* **Sung Woo Min** - Software Developer
+* **Erin Xu** - Software Developer
+* **Lily Pham** - Software Developer
+
 ### 2021-22
 * **Nada Attia** - Software Developer
 * **Pooja Kanumalla** - Software Developer
