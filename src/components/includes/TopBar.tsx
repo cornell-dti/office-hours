@@ -81,7 +81,7 @@ const TopBar = (props: Props) => {
     });
 
     return (
-        <div className="MenuBox" onBlur={() => setShowMenu(false)} ref={ref}>
+        <div className="MenuBox" onBlur={() => setShowMenu(false)}>
             <header className="topBar">
                 <div className="triggerArea">
                     <img src={Logo} className="QMILogo" alt="Queue Me In Logo" />
@@ -100,7 +100,7 @@ const TopBar = (props: Props) => {
                     </div>
                     <div className="rightContentWrapper" >
                         <TopBarNotifications notificationTracker={notificationTracker} />
-                        <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
+                        <div className="userProfile" onClick={() => setShowMenu(!showMenu)} ref={ref}>
                             <img
                                 src={image}
                                 className="profilePic"
