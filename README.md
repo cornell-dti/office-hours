@@ -32,6 +32,7 @@ _Screenshots showing major parts of app_
 * **Pooja Kanumalla** - Software Developer
 * **Alex Nagel** - Software Developer
 * **Dana Kim** - Software Developer
+* **Sung Woo Min** - Software Developer
 * **Erin Xu** - Software Developer
 * **Archit Mehta** - Software Developer
 * **Lily Pham** - Software Developer
