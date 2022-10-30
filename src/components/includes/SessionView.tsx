@@ -50,6 +50,7 @@ const SessionView = (
         setRemoveQuestionId, timeWarning, sessionBanners }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
+    const isProf = user.roles[course.courseId] == 'professor';
     const tags = useCourseTags(course.courseId);
     const users = useCourseUsersMap(course.courseId, isTa);
     const [
@@ -202,6 +203,7 @@ const SessionView = (
             <SessionQuestionsContainer
                 session={session}
                 isTA={isTa}
+                isProf={isProf}
                 modality={session.modality}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
                 questions={session.modality === 'review' ? questions.filter(q => q.status !== 'retracted') :

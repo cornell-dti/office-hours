@@ -18,6 +18,7 @@ type Props = {
     // Session used to update TAs on question answering
     readonly session: FireSession;
     readonly isTA: boolean;
+    readonly isProf: boolean;
     // Note that these questions are sorted by time asked
     readonly questions: readonly FireQuestion[];
     readonly users: { readonly [userId: string]: FireUser };
@@ -223,6 +224,9 @@ const SessionQuestionsContainer = (props: Props) => {
     const assignedQuestions = shownQuestions.filter((question) => {
         return question.status === 'assigned' && props.isTA && question.answererId === props.myUserId;
     });
+    const allAssignedQuestions = shownQuestions.filter((question) => {
+        return question.status === 'assigned' && question.answererId !== props.myUserId && props.isProf;
+    });
     const otherQuestions = shownQuestions.filter(question => question.status !== 'assigned' &&
         !assignedQuestions.includes(question));
 
@@ -384,13 +388,41 @@ const SessionQuestionsContainer = (props: Props) => {
                         />
                     ))}
                 {assignedQuestions && assignedQuestions.length > 0 && props.isTA &&
-                    <p className="QuestionHeader">Assigned Questions</p>
+                    <p className="QuestionHeader">Assigned to Me</p>
                 }
                 {shownQuestions &&
                     shownQuestions.length > 0 &&
                     props.modality !== 'review' &&
                     props.isTA &&
                     assignedQuestions.map((question, i: number) => (
+                        <SessionQuestion
+                            key={question.questionId}
+                            modality={props.modality}
+                            question={question}
+                            users={props.users}
+                            commentUsers={props.users}
+                            tags={props.tags}
+                            index={i}
+                            virtualLocation={props.myVirtualLocation}
+                            isTA={props.isTA}
+                            includeRemove={false}
+                            triggerUndo={props.triggerUndo}
+                            isPast={props.isPast}
+                            myUserId={props.myUserId}
+                            setShowModal={props.setShowModal}
+                            setRemoveQuestionId={props.setRemoveQuestionId}
+                        />
+                    ))}
+                {allAssignedQuestions && allAssignedQuestions.length > 0 && props.isProf &&
+                    <>
+                        <p className="QuestionHeader">All Assigned Questions</p>
+                    </>
+                }
+                {shownQuestions &&
+                    shownQuestions.length > 0 &&
+                    props.modality !== 'review' &&
+                    props.isProf &&
+                    allAssignedQuestions.map((question, i: number) => (
                         <SessionQuestion
                             key={question.questionId}
                             modality={props.modality}
