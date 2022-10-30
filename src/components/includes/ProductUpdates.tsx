@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import {connect} from 'react-redux';
 import ProductUpdate from './ProductUpdate'
@@ -24,13 +24,13 @@ const ProductUpdates = ({user}: ProductProps) => {
 
     useEffect(() => {
         toggleHasViewed(notificationTracker === undefined ||
-        productUpdate === undefined || notificationTracker.productUpdates === undefined ||
-        notificationTracker.productUpdates.toDate() >= productUpdate.timeEntered.toDate())
+            productUpdate === undefined || notificationTracker.productUpdates === undefined ||
+            notificationTracker.productUpdates.toDate() >= productUpdate.timeEntered.toDate())
     }, [notificationTracker, productUpdate])
 
-    const [hasViewed, toggleHasViewed] = useState(notificationTracker === undefined || 
-      productUpdate === undefined || notificationTracker.productUpdates === undefined || 
-      notificationTracker.productUpdates.toDate() >= productUpdate.timeEntered.toDate());
+    const [hasViewed, toggleHasViewed] = useState(notificationTracker === undefined ||
+        productUpdate === undefined || notificationTracker.productUpdates === undefined ||
+        notificationTracker.productUpdates.toDate() >= productUpdate.timeEntered.toDate());
 
     const singleRef = useRef<HTMLDivElement>(null);
     const seeAllRef = useRef<HTMLDivElement>(null);
@@ -46,8 +46,8 @@ const ProductUpdates = ({user}: ProductProps) => {
             updateTrackable();
         } else if (seeAllRef.current && !seeAllRef.current.contains(e.target as Node)) {
             toggleSeeAll(false);
-            if(seeAll) {
-                toggleSingleUpdate(false); 
+            if (seeAll) {
+                toggleSingleUpdate(false);
                 updateTrackable();
             };
         }
@@ -72,27 +72,27 @@ const ProductUpdates = ({user}: ProductProps) => {
         <div className="pruductUpdate__wrapper" ref={singleRef}>
             <div className="productUpdates__singleToggler" onClick={() => iconClicked()}>
                 <img className="productUpdates__bugIcon" src={bugFix} alt="Bug fix icon" />
-                {!hasViewed && <img 
-                    className="productUpdates__notification" 
-                    src={notif} 
-                    alt="Notification indicator" 
+                {!hasViewed && <img
+                    className="productUpdates__notification"
+                    src={notif}
+                    alt="Notification indicator"
                 />}
             </div>
-            <div  
-                className={`productUpdates__singleDisplay productUpdates__${singleUpdate ? "visible" : "hidden"}`} 
+            <div
+                className={`productUpdates__singleDisplay productUpdates__${singleUpdate ? "visible" : "hidden"}`}
                 onClick={e => e.stopPropagation()}
             >
                 <div className="singleDisplay__header">
                     <div className="singleDisplay__title">Product updates</div>
                     <div className="singleDisplay__see-all" onClick={() => seeAllClicked()}>See all</div>
                 </div>
-                <ProductUpdate blogPost={productUpdate} notificationTracker={notificationTracker}/>
-                <ProductUpdatesModal 
-                    seeAll={seeAll} 
-                    toggleSeeAll={toggleSeeAll} 
-                    seeAllRef={seeAllRef} 
-                    toggleSingle={toggleSingleUpdate} 
-                    notificationTracker={notificationTracker} 
+                <ProductUpdate blogPost={productUpdate} notificationTracker={notificationTracker} />
+                <ProductUpdatesModal
+                    seeAll={seeAll}
+                    toggleSeeAll={toggleSeeAll}
+                    seeAllRef={seeAllRef}
+                    toggleSingle={toggleSingleUpdate}
+                    notificationTracker={notificationTracker}
                     updateTrackable={updateTrackable}
                 />
             </div>

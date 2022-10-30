@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Icon } from 'semantic-ui-react';
+
 import {connect} from 'react-redux'
+import addNotification from 'react-push-notification';
+import { Icon } from 'semantic-ui-react';
 import { logOut } from '../../firebasefunctions/user';
 import Logo from '../../media/QLogo2.svg';
 import CalendarHeader from './CalendarHeader';
@@ -8,6 +10,9 @@ import ProfessorStudentToggle from './ProfessorStudentToggle';
 import TopBarNotifications from './TopBarNotifications'
 import {useNotificationTracker} from '../../firehooks';
 import { RootState } from '../../redux/store';
+import { updateLastSent } from '../../firebasefunctions/notifications';
+import Snackbar from "./Snackbar"
+import TextNotificationModal from './TextNotificationModal';
 
 type Props = {
     courseId: string;
@@ -20,10 +25,12 @@ type Props = {
     context: string;
     course?: FireCourse;
     admin?: boolean;
+    snackbars: Announcement[];
 }
 
 const TopBar = (props: Props) => {
     const [showMenu, setShowMenu] = useState(false);
+    const [showTextModal, setShowTextModal] = useState<boolean>(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : '/placeholder.png');
     const ref = React.useRef<HTMLDivElement>(null);
 
@@ -34,13 +41,39 @@ const TopBar = (props: Props) => {
     const email: string | undefined = user?.email
     const notificationTracker = useNotificationTracker(email);
 
+    useEffect(() => {
+        if(notificationTracker!== undefined && notificationTracker.notificationList !== undefined) {
+            for(let i = 0; i < notificationTracker.notificationList.length; i++) {
+                const notif = notificationTracker.notificationList[i];
+                // checks that the notification was created after the last time notifications were sent
+                // adds 1000 to lastSent time because client and server TimeStamps seems to be slightly
+                // misaligned
+                if(notificationTracker.lastSent === undefined || 
+                    notif.createdAt.toDate().getTime() > 
+                    notificationTracker?.lastSent.toDate().getTime() + 2000) {
+                    updateLastSent(user, notificationTracker);
+                    addNotification({
+                        title: notif.title,
+                        subtitle: notif.subtitle,
+                        message: notif.message,
+                        native: true
+                    });
+                    // hacky fix for duplicate notifs--server update to lastSent doesn't occur quickly enough
+                    setTimeout(() => {}, 100);
+                } else {
+                    break;
+                }
+            }
+        }
+    }, [notificationTracker, user])
+
     const handleClick = (e: globalThis.MouseEvent) => {
         if (ref.current && !ref.current.contains(e.target as Node)) {
             setShowMenu(false);
         }
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         document.addEventListener('mousedown', handleClick);
         return () => {
             document.removeEventListener('mousedown', handleClick);
@@ -100,9 +133,26 @@ const TopBar = (props: Props) => {
                             </span>
                             Send Feedback
                         </li>
+                        <li
+                            onMouseDown={() => {
+                                setShowMenu(false);
+                                setShowTextModal(true);
+                            }}
+                        >
+                            <span>
+                                <Icon name="settings" />
+                            </span>
+                            SMS Settings
+                        </li>
                     </ul>
                 </>
             )}
+            <TextNotificationModal
+                showTextModal={showTextModal}
+                setShowTextModal={setShowTextModal}
+                user={user}
+            />
+            {props.snackbars.map(snackbar => (<Snackbar icon={snackbar.icon} announcement={snackbar.text}  />))}
         </div>
     );
 };
@@ -113,7 +163,8 @@ TopBar.defaultProps = {
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user : state.auth.user,
+    snackbars : state.announcements.snackbars
 })
 
 

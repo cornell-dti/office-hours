@@ -33,7 +33,11 @@ _Screenshots showing major parts of app_
 * **Alex Nagel** - Software Developer
 * **Dana Kim** - Software Developer
 * **Sung Woo Min** - Software Developer
+* **Erin Xu** - Software Developer
+* **Archit Mehta** - Software Developer
+* **Lily Pham** - Software Developer
 * **Jeremy Jung** - Technical Project Manager
+* **Sarah Kim** - Product Manager
 * **Hank Lin** - Product Manager / Designer
 * **Chenchen Lu** - Product Manager / Designer
 

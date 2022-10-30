@@ -39,7 +39,17 @@ export const createSeries = async (
 
         // Session Add Logic (This is yucky and should be refactored...)
         if (sessionSeries.modality === 'virtual') {
+
+            let virtualProperty = {}
+
+            if (typeof sessionSeries.useTALink !== 'undefined') {
+                virtualProperty = {
+                    useTALink: sessionSeries.useTALink
+                }
+            }
+
             const derivedSession: Omit<FireVirtualSession, 'sessionId'> = {
+                ...virtualProperty,
                 modality: sessionSeries.modality,
                 sessionSeriesId,
                 courseId: sessionSeries.courseId,
@@ -52,6 +62,7 @@ export const createSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
+                isPaused: false,
             };
 
             batch.set(db.collection('sessions').doc(), derivedSession);
@@ -69,12 +80,23 @@ export const createSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
-                link: sessionSeries.link
+                link: sessionSeries.link,
+                isPaused: false,
             };
 
             batch.set(db.collection('sessions').doc(), derivedSession);
         } else {
+            let hybridProperty = {}
+
+            if (sessionSeries.modality === 'hybrid' && typeof sessionSeries.useTALink !== 'undefined') {
+                hybridProperty = {
+                    useTALink: sessionSeries.useTALink
+                }
+            }
+
+
             const derivedSession: Omit<FireInPersonSession | FireHybridSession, 'sessionId'> = {
+                ...hybridProperty,
                 sessionSeriesId,
                 modality: sessionSeries.modality,
                 building: sessionSeries.building,
@@ -89,6 +111,7 @@ export const createSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
+                isPaused: false,
             };
 
             batch.set(db.collection('sessions').doc(), derivedSession);
@@ -131,7 +154,17 @@ export const updateSeries = async (
         );
 
         if (sessionSeries.modality === 'virtual') {
+
+            let virtualProperty = {}
+
+            if (typeof sessionSeries.useTALink !== 'undefined') {
+                virtualProperty = {
+                    useTALink: sessionSeries.useTALink
+                }
+            }
+
             const newSession: Omit<FireVirtualSession, 'sessionId'> = {
+                ...virtualProperty,
                 sessionSeriesId,
                 courseId: sessionSeries.courseId,
                 modality: sessionSeries.modality,
@@ -144,6 +177,7 @@ export const updateSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
+                isPaused: false,
             };
             batch.set(db.collection('sessions').doc(sessionId), newSession);
         } else if (sessionSeries.modality === "review") {
@@ -160,11 +194,22 @@ export const updateSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
-                link: sessionSeries.link
+                link: sessionSeries.link,
+                isPaused: false,
             };
             batch.set(db.collection('sessions').doc(sessionId), newSession);
         } else {
+
+            let hybridProperty = {}
+
+            if (sessionSeries.modality === 'hybrid' && typeof sessionSeries.useTALink !== 'undefined') {
+                hybridProperty = {
+                    useTALink: sessionSeries.useTALink
+                }
+            }
+
             const newSession: Omit<FireHybridSession | FireInPersonSession, 'sessionId'> = {
+                ...hybridProperty,
                 sessionSeriesId,
                 modality: sessionSeries.modality,
                 building: sessionSeries.building,
@@ -179,6 +224,7 @@ export const updateSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
+                isPaused: false,
             };
             batch.set(db.collection('sessions').doc(sessionId), newSession);
         }

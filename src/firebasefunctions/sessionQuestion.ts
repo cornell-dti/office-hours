@@ -1,4 +1,5 @@
 import firebase from 'firebase/app';
+import { firestore } from '../firebase';
 
 export const updateVirtualLocation = (
     db: firebase.firestore.Firestore,
@@ -19,7 +20,8 @@ export const addQuestion = (
     location: string,
     selectedPrimary: FireTag | undefined,
     selectedSecondary: FireTag | undefined,
-    question: string
+    question: string,
+    isVirtual: boolean
 ): boolean => {
     if (user != null) {
         const batch = db.batch();
@@ -31,6 +33,9 @@ export const addQuestion = (
             timeEntered: firebase.firestore.Timestamp.now()
         };
 
+        const addVirtual = session.modality === 'hybrid' ?
+            { isVirtual } : {};
+
         const finalLocation = location.length === 0 ? {} : { location };
         const upvotedUsers = session.modality === "review" ? { upvotedUsers: [user.uid] } : {}
 
@@ -38,10 +43,14 @@ export const addQuestion = (
             ...newQuestionSlot,
             ...finalLocation,
             ...upvotedUsers,
+            ...addVirtual,
             answererId: '',
             content: question,
-            primaryTag: selectedPrimary != null ? selectedPrimary.tagId: '',
-            secondaryTag: selectedSecondary != null ? selectedSecondary.tagId : ''
+            primaryTag: selectedPrimary != null ? selectedPrimary.tagId : '',
+            secondaryTag: selectedSecondary != null ? selectedSecondary.tagId : '',
+            wasNotified: false,
+            position: session.totalQuestions - session.assignedQuestions + 1,
+
         };
         batch.set(db.collection('questionSlots').doc(questionId), newQuestionSlot);
         batch.set(db.collection('questions').doc(questionId), newQuestion);
@@ -123,6 +132,16 @@ export const updateComment = (
     db.doc(`questions/${question.questionId}`).update(update);
 }
 
+export const clearIndicator = (question: FireQuestion, ta: boolean) => {
+    let update: Partial<FireQuestion>;
+    if (ta) {
+        update = { taNew: false };
+    } else {
+        update = { studentNew: false };
+    }
+    firestore.doc(`questions/${question.questionId}`).update(update);
+}
+
 
 export const assignQuestionToTA = (
     db: firebase.firestore.Firestore,
@@ -176,4 +195,48 @@ export const updateQuestion = (
     });
 
     batch.commit();
+}
+
+export const addComment = (content: string, commenterId: string, questionId: string, isTA: boolean,
+    askerId: string, answererId: string) => {
+    const timePosted = firebase.firestore.Timestamp.now();
+    const commentId = firestore.doc(`questions/${questionId}`).collection('comments').doc().id;
+    firestore.doc(`questions/${questionId}`).update(isTA ? { studentNew: true } : { taNew: true });
+    const newComment: FireComment = {
+        content,
+        commenterId,
+        timePosted,
+        isTA,
+        commentId,
+        askerId,
+        answererId,
+    }
+    const batch = firestore.batch();
+    batch.set(firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId), newComment);
+    batch.commit();
+}
+
+export const deleteComment = (commentId: string, questionId: string) => {
+    const batch = firestore.batch();
+    const delCommentRef = firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId);
+    batch.delete(delCommentRef);
+    batch.commit();
+}
+
+export const updateCurrentComment = (commentId: string, questionId: string, newContent: string) => {
+    const batch = firestore.batch();
+    const curCommentRef = firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId);
+    batch.update(curCommentRef, { content: newContent });
+    batch.commit();
+}
+
+export const getComments = (questionId: string, setComments: ((comments: FireComment[]) => void)): (() => void) => {
+    const unsubscribe = firestore.doc(`questions/${questionId}`).collection('comments').onSnapshot((commentData) => {
+        const comments: FireComment[] = [];
+        commentData.forEach((comment) => {
+            comments.push(comment.data() as FireComment);
+        });
+        setComments(comments);
+    });
+    return unsubscribe;
 }

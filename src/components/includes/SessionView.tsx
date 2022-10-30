@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from 'semantic-ui-react';
-import addNotification from 'react-push-notification';
 
 import { connect } from 'react-redux';
 import SessionInformationHeader from './SessionInformationHeader';
@@ -11,13 +10,12 @@ import {
     useAskerQuestions
 } from '../../firehooks';
 import { updateQuestion, updateVirtualLocation } from '../../firebasefunctions/sessionQuestion'
-import { addDBNotification } from '../../firebasefunctions/notifications'
 import { filterUnresolvedQuestions } from '../../utilities/questions';
 
 import { firestore } from '../../firebase';
 
 import { RootState } from '../../redux/store';
-import Browser from '../../media/browser.svg';
+import Banner from './Banner';
 
 
 type Props = {
@@ -30,6 +28,8 @@ type Props = {
     user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
+    sessionBanners: Announcement[];
+    timeWarning: number | undefined;
 };
 
 type UndoState = {
@@ -47,12 +47,11 @@ type AbsentState = {
 
 const SessionView = (
     { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal,
-        setRemoveQuestionId }: Props
+        setRemoveQuestionId, timeWarning, sessionBanners }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
     const tags = useCourseTags(course.courseId);
     const users = useCourseUsersMap(course.courseId, isTa);
-
     const [
         { undoAction, undoName, undoQuestionId, timeoutId },
         setUndoState
@@ -63,9 +62,6 @@ const SessionView = (
         lastAskedQuestion: null
     });
 
-    const [prevQuestSet, setPrevQuestSet] = useState(new Set(questions.map(q => q.questionId)));
-    const [showNotifBanner, setShowNotifBanner] = useState(true);
-
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
 
     const updateSessionProfile = useCallback((virtualLocation: string) => {
@@ -73,43 +69,6 @@ const SessionView = (
     }, [questions, user]);
 
     useEffect(() => {
-        const questionIds = questions.map(q => q.questionId);
-
-        const newQuestions = new Set(questionIds.filter(q => !prevQuestSet.has(q)));
-
-        if (newQuestions.size <= 0) {
-            return;
-        }
-        if ((user.roles[course.courseId] === 'professor' ||
-            user.roles[course.courseId] === 'ta')) {
-            const prevQString = window.localStorage.getItem("prevQuestions");
-            const prevQArr = JSON.parse(prevQString || "{}");
-            const prevQSet = new Set(Array.from(prevQArr))
-            const newQuestionsPessimistic = new Set(questionIds.filter(q => !prevQSet.has(q)))
-            if (newQuestionsPessimistic.size > 0) {
-                addDBNotification(
-                    user,
-                    {
-                        title: 'A new question has been added!',
-                        subtitle: 'A new question was added',
-                        message: "Check the queue."
-                    }
-                )
-                try {
-                    addNotification({
-                        title: 'A new question has been added!',
-                        subtitle: 'A new question was added',
-                        message: 'Check the queue.',
-                        native: true
-                    });
-                } catch (error) {
-                    // TODO: Handle this better.
-                    // Do nothing. iOS crashes because Notification isn't defined
-                }
-            }
-            window.localStorage.setItem("prevQuestions", JSON.stringify(questionIds));
-        }
-
         const myQuestions = questions.filter(q => q.askerId === user.userId);
         const lastAskedQuestion = myQuestions.length > 0
             ? myQuestions.reduce(
@@ -131,9 +90,8 @@ const SessionView = (
             }
             return { lastAskedQuestion, showAbsent, dismissedAbsent };
         });
-        setPrevQuestSet(new Set(questions.map(q => q.questionId)));
-    }, [prevQuestSet, questions, user.userId, course.courseId, user.roles, user]);
-
+        // setPrevQuestSet(new Set(questions.map(q => q.questionId)));
+    }, [questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
 
     const dismissUndo = () => {
         if (timeoutId) {
@@ -204,16 +162,9 @@ const SessionView = (
 
     return (
         <section className="StudentSessionView">
-            {"Notification" in window &&
-                window?.Notification.permission !== "granted" && showNotifBanner === true &&
-                <div className="SessionNotification">
-                    <img src={Browser} alt="Browser" />
-                    <div className="label">Enable browser notifications to know when it's your turn.</div>
-                    <div className="button" onClick={() => setShowNotifBanner(false)}>
-                        GOT IT
-                    </div>
-                </div>
-            }
+            {sessionBanners.map((banner, index) => (
+                <Banner key={index} icon={banner.icon} announcement={banner.text} />
+            ))}
             <SessionInformationHeader
                 session={session}
                 course={course}
@@ -228,6 +179,8 @@ const SessionView = (
                     updateVirtualLocation(firestore, user, session, virtualLocation);
                     updateSessionProfile(virtualLocation);
                 }}
+                questions={questions.filter(q => q.status === 'unresolved')}
+                isPaused={session.isPaused}
             />
 
             {undoQuestionId &&
@@ -252,7 +205,9 @@ const SessionView = (
                 modality={session.modality}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
                 questions={session.modality === 'review' ? questions.filter(q => q.status !== 'retracted') :
-                    questions.filter(q => q.status === 'unresolved' || q.status === 'assigned')}
+                    questions
+                        .filter(q => q.status === 'unresolved' || q.status === 'assigned')
+                        .sort((a, b) => (a.timeEntered > b.timeEntered) ? 1 : -1)}
                 users={users}
                 tags={tags}
                 handleJoinClick={joinCallback}
@@ -260,22 +215,27 @@ const SessionView = (
                 triggerUndo={triggerUndo}
                 isOpen={isOpen(session, course.queueOpenInterval)}
                 isPast={isPast(session)}
+                isPaused={session.isPaused}
                 openingTime={getOpeningTime(session, course.queueOpenInterval)}
                 haveAnotherQuestion={haveAnotherQuestion}
                 course={course}
                 myQuestion={myQuestion}
                 setShowModal={setShowModal}
                 setRemoveQuestionId={setRemoveQuestionId}
+                timeWarning={timeWarning}
             />
         </section>
     );
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user,
+    course: state.course.course,
+    session: state.course.session,
+    sessionBanners: state.announcements.sessionBanners
 })
 
-export default connect(mapStateToProps, {})( (props: Omit<Props, 'questions'>) => {
+export default connect(mapStateToProps, {})((props: Omit<Props, 'questions'>) => {
     const isTa = props.user.roles[props.course.courseId] !== undefined;
     const questions = props.session.modality === 'review' ? useSessionQuestions(props.session.sessionId, true) :
         filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));

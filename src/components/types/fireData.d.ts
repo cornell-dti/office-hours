@@ -20,6 +20,7 @@ interface FireBaseSession {
     resolvedQuestions: number;
     totalWaitTime: number;
     totalResolveTime: number;
+    isPaused?: boolean;
 }
 
 interface FireSessionLocation {
@@ -33,6 +34,8 @@ interface FireVirtualLocation {
 
 interface FireVirtualSession extends FireBaseSession {
     modality: 'virtual';
+    useTALink?: boolean;
+    TALink?: string;
 }
 
 interface FireInPersonSession extends FireBaseSession, FireSessionLocation {
@@ -45,6 +48,8 @@ interface FireHybridSession extends FireBaseSession, FireSessionLocation {
     modality: 'hybrid';
     building: string;
     room: string;
+    useTALink?: boolean;
+    TALink?: string;
 }
 
 interface FireReviewSession extends FireBaseSession, FireVirtualLocation {
@@ -71,12 +76,16 @@ interface FireBaseSessionSeries {
 
 interface FireVirtualSessionSeries extends FireBaseSessionSeries {
     modality: 'virtual';
+    useTALink?: boolean;
+    TALink?: string;
 }
 
 interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
     modality: 'hybrid';
     building: string;
     room: string;
+    useTALink?: boolean;
+    TALink?: string;
 }
 
 interface FireInPersonSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
@@ -90,7 +99,7 @@ interface FireReviewSeries extends FireBaseSessionSeries, FireVirtualLocation {
     link: string;
 }
 
-type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries | 
+type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries |
 FireInPersonSessionSeries | FireReviewSeries);
 type FireSessionSeriesDefinition =
     Omit<FireVirtualSessionSeries, 'sessionSeriesId'>
@@ -111,6 +120,9 @@ interface FireCourse {
     charLimit: number;
     term: string;
     year: string;
+    timeLimit?: number;
+    timeWarning?: number;
+    isTimeLimit?: boolean;
 }
 
 type PrivilegedFireCourseRole = 'professor' | 'ta';
@@ -135,11 +147,24 @@ interface FireUser {
     email: string;
     courses: readonly string[];
     roles: { readonly [courseId: string]: PrivilegedFireCourseRole | undefined };
+    phoneNumber?: string;
+    textNotifsEnabled?: boolean;
+    textPrompted?: boolean;
 }
 
 interface FirePendingUser {
     email: string;
     roles: Record<string, role>;
+}
+
+interface FireComment {
+    commentId: string;
+    content: string;
+    commenterId: string;
+    timePosted: FireTimeStamp;
+    isTA: boolean;
+    askerId: string;
+    answererId: string;
 }
 
 interface FireQuestion {
@@ -156,6 +181,11 @@ interface FireQuestion {
     timeAssigned?: FireTimestamp;
     taComment?: string;
     studentComment?: string;
+    wasNotified: boolean;
+    position?: number;
+    isVirtual?: boolean;
+    taNew?: boolean;
+    studentNew?: boolean;
 }
 
 interface FireOHQuestion extends FireQuestion {
@@ -163,7 +193,7 @@ interface FireOHQuestion extends FireQuestion {
     answererLocation?: string;
 }
 
-type FireQuestionSlot = Pick<FireQuestion, 'askerId' 
+type FireQuestionSlot = Pick<FireQuestion, 'askerId'
 | 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
 
 interface FireTag {
@@ -205,4 +235,13 @@ interface NotificationTracker {
     notifications: FireTimestamp;
     productUpdates: FireTimestamp;
     notificationList: SessionNotification[];
+    lastSent: FireTimestamp;
+}
+
+interface Announcement {
+    text: string;
+    icon: string;
+    alert?: boolean;
+    global?: boolean;
+    noshow?: boolean;
 }

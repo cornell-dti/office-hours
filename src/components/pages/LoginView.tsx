@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useState} from 'react';
 import { useHistory } from 'react-router-dom';
 
 import firebase, { app, firestore } from '../../firebase';
@@ -21,11 +21,15 @@ import Review from '../../media/host_review.svg';
 import Analytics from '../../media/analytics.svg';
 
 import QMIThreePeople from '../../media/ppl_illustration.svg';
+import { clearNotifications } from '../../firebasefunctions/notifications';
+import LoginModal from '../includes/LoginModal';
 
 const LoginView: React.FC = () => {
     const history = useHistory();
 
-    const auth = () => {
+    const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
+
+    const googleAuth = () => {
         const authProvider = new firebase.auth.GoogleAuthProvider();
         if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
             authProvider.setCustomParameters({
@@ -40,6 +44,7 @@ const LoginView: React.FC = () => {
             .signInWithPopup(authProvider)
             .then((response) => {
                 const user = response.user;
+                clearNotifications(user);
                 userUpload(user, firestore);
                 history.push('/');
             });
@@ -63,7 +68,7 @@ const LoginView: React.FC = () => {
                 <div className="nameAndButtonWrapper">
                     <h2 className="mainLogoText">Queue Me In</h2>
                     <h3 className="subHeader">Office Hours Simplified</h3>
-                    <button type="button" className="loginButton" onClick={auth}>
+                    <button type="button" className="loginButton" onClick={googleAuth}>
                         <img src={googleLogo} className="googleLogo" alt="Google logo" />
                         <span className="loginButtonText">Sign in with Google</span>
                     </button>
@@ -157,6 +162,12 @@ const LoginView: React.FC = () => {
                         </a>
                     </div>
                 </section>
+                <LoginModal setShowLoginModal={setShowLoginModal} showLoginModal={showLoginModal} />
+                <button 
+                    type="button" 
+                    className="loginView__alt" 
+                    onClick={() => setShowLoginModal(true)}
+                >Having Trouble Logging In?</button>
                 <Footer />
             </div>
         </div>

@@ -30,6 +30,9 @@ $mobile-breakpoint: 920px;
 @import "./session/SessionAlertModal";
 @import "./session/SessionNotification";
 @import "./session/DiscussionQuestion";
+@import "./session/UserComment";
+@import "./session/CommentsContainer";
+@import "./session/NewComment";
 
 // Login
 @import "./login/LoginView";
@@ -45,6 +48,7 @@ $mobile-breakpoint: 920px;
 @import "./FeedbackPopup";
 @import "./ModalMenu";
 @import "./LeaveQueueModal";
+@import "./TimeLimitBanner";
 
 // Professor
 @import "./professor/ProfessorView";
@@ -63,7 +67,6 @@ $mobile-breakpoint: 920px;
 @import "./professor/ProfessorTagsDelete";
 @import "./professor/ProfessorPeopleView";
 @import "./professor/ProfessorRoles";
-@import "./professor/CSVUploadView";
 
 // Admin
 @import "./AdminView";
@@ -78,6 +81,7 @@ $mobile-breakpoint: 920px;
 @import "./blogPosts/ProductUpdates.scss";
 @import "./blogPosts/Notifications.scss";
 
+@import "./Announcements.scss";
 #root {
   height: 100%;
 }
