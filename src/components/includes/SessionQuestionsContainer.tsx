@@ -273,8 +273,7 @@ const SessionQuestionsContainer = (props: Props) => {
             )}
             <div className={"SessionQuestionsContainer splitQuestions" +
                 ((shownQuestions && shownQuestions.length > 0 && (props.isTA || myQuestion)) ?
-                    ' whiteBackground' : '') +
-                (collapsed ? ' collapsed ' : '')}
+                    ' whiteBackground' : '')}
             >
                 {!props.isTA && !myQuestion && props.isOpen && !props.isPaused && !props.haveAnotherQuestion ? (
                     props.course && props.session ? (
