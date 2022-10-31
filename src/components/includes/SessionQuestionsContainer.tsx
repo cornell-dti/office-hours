@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Loader } from 'semantic-ui-react';
+import { useState } from 'react';
+import { Loader, Icon } from 'semantic-ui-react';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import SessionQuestion from './SessionQuestion';
@@ -227,6 +228,7 @@ const SessionQuestionsContainer = (props: Props) => {
     const allAssignedQuestions = shownQuestions.filter((question) => {
         return question.status === 'assigned' && question.answererId !== props.myUserId && props.isProf;
     });
+    const [collapsed, setCollapsed] = useState(allAssignedQuestions.length === 0);
     const otherQuestions = shownQuestions.filter(question => question.status !== 'assigned' &&
         !assignedQuestions.includes(question));
 
@@ -270,7 +272,9 @@ const SessionQuestionsContainer = (props: Props) => {
                 </div>
             )}
             <div className={"SessionQuestionsContainer splitQuestions" +
-                ((shownQuestions && shownQuestions.length > 0 && (props.isTA || myQuestion)) ? ' whiteBackground' : '')}
+                ((shownQuestions && shownQuestions.length > 0 && (props.isTA || myQuestion)) ?
+                    ' whiteBackground' : '') +
+                (collapsed ? ' collapsed ' : '')}
             >
                 {!props.isTA && !myQuestion && props.isOpen && !props.isPaused && !props.haveAnotherQuestion ? (
                     props.course && props.session ? (
@@ -415,12 +419,20 @@ const SessionQuestionsContainer = (props: Props) => {
                     ))}
                 {allAssignedQuestions && allAssignedQuestions.length > 0 && props.isProf &&
                     <>
-                        <p className="QuestionHeader">All Assigned Questions</p>
+                        <div className="allAssignedHeader">
+                            <p className="QuestionHeader">All Assigned Questions</p>
+                            {collapsed ?
+                                <Icon name='chevron down' onClick={() => setCollapsed(false)} />
+                                :
+                                <Icon name='chevron up' onClick={() => setCollapsed(true)} />
+                            }
+                        </div>
                     </>
                 }
                 {shownQuestions &&
                     shownQuestions.length > 0 &&
                     props.modality !== 'review' &&
+                    !collapsed &&
                     props.isProf &&
                     allAssignedQuestions.map((question, i: number) => (
                         <SessionQuestion

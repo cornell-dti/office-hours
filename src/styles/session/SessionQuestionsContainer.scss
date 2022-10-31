@@ -17,6 +17,10 @@
     border-radius: 10.6px;
   }
 
+  .collapsed {
+    padding-bottom: 0px !important;
+  }
+
   .SessionQuestionsContainer {
     padding-bottom: 30px;
 
@@ -28,6 +32,19 @@
 
     .User {
       margin-bottom: 16px;
+    }
+
+    .allAssignedHeader {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+      padding-right: 10px;
+
+      .icon {
+        cursor: pointer;
+      }
     }
 
     .Queue,
