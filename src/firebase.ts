@@ -20,7 +20,7 @@ if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !=
     };
 } else {
     firebaseConfig = {
-        apiKey: 'AIzaSyCJX5K8BDIpTV-XqYtq9wyVjhOrkhRimMc',
+        apiKey: process.env.REACT_APP_TEST_KEY ? process.env.REACT_APP_TEST_KEY : process.env.REACT_APP_API_KEY,
         authDomain: 'qmi-test.firebaseapp.com',
         databaseURL: 'https://qmi-test.firebaseio.com',
         projectId: 'qmi-test',
