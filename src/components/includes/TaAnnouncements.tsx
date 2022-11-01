@@ -71,7 +71,7 @@ const TaAnnouncements = ({ user, session }: Props) => {
         <div className="AnnouncementContainer">
             <div className="AnnouncementTop">
                 <div className="AnnouncementTitle">
-                    TA announcements ({taAnnouncements?.length})
+                    TA announcements ({taAnnouncements == null ? 0 : taAnnouncements.length})
                 </div>
                 <div className="AnnouncementIcons">
                     {((user.roles[session.courseId]) === "professor" || (user.roles[session.courseId]) === "ta")
@@ -83,9 +83,10 @@ const TaAnnouncements = ({ user, session }: Props) => {
                 <div className="AnnouncementBottom">
                     {showAnnouncements &&
                         <div>
-                            {taAnnouncements?.length === 0 && <span className="NoAnnouncement">
-                                No announcements yet.
-                            </span>}
+                            {(taAnnouncements == null || taAnnouncements?.length === 0)
+                                && <span className="NoAnnouncement">
+                                    No announcements yet.
+                                </span>}
                             {taAnnouncements && <span>
                                 {taAnnouncements?.map((a, i) =>
                                     <div className="Announcement" key={i}>

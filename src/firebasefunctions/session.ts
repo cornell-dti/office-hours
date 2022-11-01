@@ -44,7 +44,7 @@ export const addTaAnnouncement = (
         ...oldSession, 
         taAnnouncemements: 
                 oldSession.taAnnouncemements 
-                    ? [...oldSession.taAnnouncemements, taAnnouncement]
+                    ? [taAnnouncement, ...oldSession.taAnnouncemements]
                     : [taAnnouncement] 
     }
     firestore.collection('sessions').doc(oldSession.sessionId).update(newSession);
