@@ -18,8 +18,8 @@ const client = new Twilio(accountSid, authToken);
 /**
  * Function that handles data and sends a text message to a requested phone number
  */
-async function sendSMS (user: FireUser, message: string) {
-    if(process.env.DATABASE === "staging") {
+async function sendSMS(user: FireUser, message: string) {
+    if (process.env.DATABASE === "staging") {
         return;
     }
     const userPhone = user.phoneNumber;
@@ -132,7 +132,7 @@ exports.onCommentCreate = functions.firestore
         const answererId = data.answererId;
         const commenterId = data.commenterId;
         const asker: FireUser = (await db.doc(`users/${askerId}`).get()).data() as FireUser;
-        if(askerId === commenterId && answererId !== "") {
+        if (askerId === commenterId && answererId !== "") {
             const answerer: FireUser = (await db.doc(`users/${answererId}`).get()).data() as FireUser;
             db.doc(`notificationTrackers/${answerer.email}`)
                 .update({
@@ -144,7 +144,8 @@ exports.onCommentCreate = functions.firestore
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
-                    db.doc(`notificationTrackers/${answerer.email}`).create({id: answerer.email,
+                    db.doc(`notificationTrackers/${answerer.email}`).create({
+                        id: answerer.email,
                         notificationList: [{
                             title: 'Student comment',
                             subtitle: "New student comment",
@@ -154,8 +155,9 @@ exports.onCommentCreate = functions.firestore
                         }],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
-                    
+                        lastSent: admin.firestore.Timestamp.now(),
+                    })
+
                 });
         } else {
             db.doc(`notificationTrackers/${asker.email}`)
@@ -167,7 +169,8 @@ exports.onCommentCreate = functions.firestore
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                    db.doc(`notificationTrackers/${asker.email}`).create({
+                        id: asker.email,
                         notificationList: [{
                             title: 'TA comment',
                             subtitle: 'New TA comment',
@@ -176,8 +179,9 @@ exports.onCommentCreate = functions.firestore
                         }],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
-                    
+                        lastSent: admin.firestore.Timestamp.now(),
+                    })
+
                 });
         }
     })
@@ -192,7 +196,7 @@ exports.onSessionUpdate = functions.firestore
             .where('status', 'in', ['assigned', 'unresolved'])
             .orderBy('timeEntered', 'asc').get()).docs;
 
-        const sessionName: string | undefined= (change.after.data() as FireSession).title
+        const sessionName: string | undefined = (change.after.data() as FireSession).title
 
         const topQuestion: FireQuestion = (afterQuestions[0].data() as FireQuestion);
 
@@ -213,7 +217,8 @@ exports.onSessionUpdate = functions.firestore
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                    db.doc(`notificationTrackers/${asker.email}`).create({
+                        id: asker.email,
                         notificationList: [{
                             title: 'Your Question is Up!',
                             subtitle: `Your question has reached the top of the \
@@ -224,8 +229,9 @@ exports.onSessionUpdate = functions.firestore
                         }],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
-          
+                        lastSent: admin.firestore.Timestamp.now(),
+                    })
+
                 });
             db.doc(`questions/${afterQuestions[0].id}`).update({
                 wasNotified: true
@@ -256,7 +262,8 @@ exports.onQuestionCreate = functions.firestore
                     createdAt: admin.firestore.Timestamp.now()
                 })
             }).catch(() => {
-                db.doc(`notificationTrackers/${user.email}`).create({id: user.email,
+                db.doc(`notificationTrackers/${user.email}`).create({
+                    id: user.email,
                     notificationList: [{
                         title: 'New Question',
                         subtitle: `A new question has been added to the ${session.title} queue`,
@@ -265,8 +272,9 @@ exports.onQuestionCreate = functions.firestore
                     }],
                     notifications: admin.firestore.Timestamp.now(),
                     productUpdates: admin.firestore.Timestamp.now(),
-                    lastSent: admin.firestore.Timestamp.now(),})
-              
+                    lastSent: admin.firestore.Timestamp.now(),
+                })
+
             })
         });
 
@@ -281,7 +289,8 @@ exports.onQuestionCreate = functions.firestore
                     createdAt: admin.firestore.Timestamp.now()
                 })
             }).catch(() => {
-                db.doc(`notificationTrackers/${user.email}`).create({id: user.email,
+                db.doc(`notificationTrackers/${user.email}`).create({
+                    id: user.email,
                     notificationList: [{
                         title: 'New Question',
                         subtitle: `A new question has been added to the ${session.title} queue`,
@@ -290,8 +299,9 @@ exports.onQuestionCreate = functions.firestore
                     }],
                     notifications: admin.firestore.Timestamp.now(),
                     productUpdates: admin.firestore.Timestamp.now(),
-                    lastSent: admin.firestore.Timestamp.now(),})
-            
+                    lastSent: admin.firestore.Timestamp.now(),
+                })
+
             })
         });
         return db.doc(`sessions/${sessionId}`).update({
@@ -337,15 +347,15 @@ exports.onQuestionUpdate = functions.firestore
         // Derive timing changes (changes from assigned to unassigned)
         if (numAssignedChange === 1 && newQuestion.timeAssigned !== undefined) {
             // Add new time addressed
-            waitTimeChange = 
-            (newQuestion.timeAssigned.seconds - newQuestion.timeEntered.seconds) 
-            / (newQuestion.position || 1);
+            waitTimeChange =
+                (newQuestion.timeAssigned.seconds - newQuestion.timeEntered.seconds)
+                / (newQuestion.position || 1);
         }
         else if (numAssignedChange === -1 && prevQuestion.timeAssigned !== undefined) {
             // Subtract previous time addressed
-            waitTimeChange = 
-            (prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds) 
-            / (newQuestion.position || 1);
+            waitTimeChange =
+                (prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds)
+                / (newQuestion.position || 1);
         }
 
         // Derive timing changes (changes from assigned to resolved)
@@ -375,7 +385,8 @@ exports.onQuestionUpdate = functions.firestore
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                    db.doc(`notificationTrackers/${asker.email}`).create({
+                        id: asker.email,
                         notificationList: [{
                             title: 'TA Assigned',
                             subtitle: 'TA Assigned',
@@ -384,10 +395,13 @@ exports.onQuestionUpdate = functions.firestore
                         }],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
-              
+                        lastSent: admin.firestore.Timestamp.now(),
+                    })
+
                 });
         }
+
+        const answerer: FireUser = (await db.doc(`users/${prevQuestion.answererId}`).get()).data() as FireUser;
 
         if (
             prevQuestion.answererId !== newQuestion.answererId &&
@@ -405,19 +419,47 @@ exports.onQuestionUpdate = functions.firestore
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                    db.doc(`notificationTrackers/${asker.email}`).create({
+                        id: asker.email,
                         notificationList: [{
                             title: 'TA Unassigned',
                             subtitle: 'TA Unassigned',
                             message:
-                            `A TA has been unassigned from your question and you have \
+                                `A TA has been unassigned from your question and you have \
                   been readded to the top of the ${session.title} queue.`,
                             createdAt: admin.firestore.Timestamp.now()
                         }],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
-              
+                        lastSent: admin.firestore.Timestamp.now(),
+                    })
+
+                });
+
+            db.doc(`notificationTrackers/${answerer.email}`)
+                .update({
+                    notificationList: admin.firestore.FieldValue.arrayUnion({
+                        title: 'Unassigned from Question',
+                        subtitle: 'Unassigned from Question',
+                        message:
+                            `You've been unassigned from ${asker.firstName} ${asker.lastName}'s question`,
+                        createdAt: admin.firestore.Timestamp.now()
+                    })
+                }).catch(() => {
+                    db.doc(`notificationTrackers/${answerer.email}`).create({
+                        id: answerer.email,
+                        notificationList: [{
+                            title: 'Unassigned from Question',
+                            subtitle: 'Unassigned from Question',
+                            message:
+                                `You've been unassigned from ${asker.firstName} ${asker.lastName}'s question`,
+                            createdAt: admin.firestore.Timestamp.now()
+                        }],
+                        notifications: admin.firestore.Timestamp.now(),
+                        productUpdates: admin.firestore.Timestamp.now(),
+                        lastSent: admin.firestore.Timestamp.now(),
+                    })
+
                 });
         }
         else if (newQuestion.status === 'resolved') {
@@ -433,19 +475,21 @@ exports.onQuestionUpdate = functions.firestore
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                    db.doc(`notificationTrackers/${asker.email}`).create({
+                        id: asker.email,
                         notificationList: [{
                             title: 'Question marked no-show',
                             subtitle: 'Question marked as no-show',
                             message:
-                            `A TA has marked your question as no-show and you \
+                                `A TA has marked your question as no-show and you \
                             have been removed from the ${session.title} queue`,
                             createdAt: admin.firestore.Timestamp.now()
                         }],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
-            
+                        lastSent: admin.firestore.Timestamp.now(),
+                    })
+
                 });
         } else if (newQuestion.status === "no-show") {
             const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
@@ -460,19 +504,21 @@ exports.onQuestionUpdate = functions.firestore
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                    db.doc(`notificationTrackers/${asker.email}`).create({
+                        id: asker.email,
                         notificationList: [{
                             title: 'Question marked no-show',
                             subtitle: 'Question marked as no-show',
                             message:
-                            `A TA has marked your question as no-show and you \
+                                `A TA has marked your question as no-show and you \
                             have been removed from the ${session.title} queue`,
                             createdAt: admin.firestore.Timestamp.now()
                         }],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
-            
+                        lastSent: admin.firestore.Timestamp.now(),
+                    })
+
                 });
         }
 
