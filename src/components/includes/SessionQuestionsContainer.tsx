@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import { Loader } from 'semantic-ui-react';
 import moment from 'moment';
 import { connect } from 'react-redux';
@@ -125,6 +126,7 @@ const SessionQuestionsContainer = (props: Props) => {
     // eslint-disable-next-line
     const [audio, setAudio] = React.useState<HTMLAudioElement>(new Audio("../../../qmijinglefinal.mp3"));
     const prevQuestion = usePrev<FireQuestion | null>(props.myQuestion);
+    const [pageNum, setPageNum] = useState(1);
 
     // Handles student side of time limit
     React.useEffect(() => {
@@ -218,7 +220,9 @@ const SessionQuestionsContainer = (props: Props) => {
     );
 
     // Only display the top 10 questions on the queue
-    const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN));
+    const shownQuestions = allQuestions.slice(
+        (pageNum - 1) * NUM_QUESTIONS_SHOWN,
+        Math.min(allQuestions.length, pageNum * NUM_QUESTIONS_SHOWN));
 
     const assignedQuestions = shownQuestions.filter((question) => {
         return question.status === 'assigned' && props.isTA && question.answererId === props.myUserId;
@@ -456,6 +460,13 @@ const SessionQuestionsContainer = (props: Props) => {
                         }
                     </>
                 )}
+                {props.isTA && <>
+                    {pageNum > 1 &&
+                        <span className="pageNumArrow" onClick={() => setPageNum(num => num - 1)}>&lt;</span>}
+                    {` ${pageNum} `}
+                    {(Math.ceil(allQuestions.length / NUM_QUESTIONS_SHOWN) > pageNum) &&
+                        <span className="pageNumArrow" onClick={() => setPageNum(num => num + 1)}>&gt;</span>}
+                </>}
             </div>
         </div>
 
