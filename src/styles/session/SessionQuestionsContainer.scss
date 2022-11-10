@@ -30,6 +30,28 @@
       margin-bottom: 16px;
     }
 
+    .UnassignedHeader {
+      display: flex;
+      position: relative;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+
+      .ExportButton {
+        margin-right: 20px;
+        width: 130px;
+        height: 28px;
+        padding: 3px 3px;
+        background-color: #7c8fba;
+        border-color: #7c8fba;
+        color: white;
+        border-width: 1px;
+        font-size: 14px;
+        border-radius: 5px;
+        border-style: solid;
+      }
+    }
+
     .Queue,
     .QuestionHeader {
       text-align: left;

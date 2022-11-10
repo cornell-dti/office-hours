@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Loader } from 'semantic-ui-react';
+import { CSVLink } from 'react-csv';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import SessionQuestion from './SessionQuestion';
@@ -258,6 +259,38 @@ const SessionQuestionsContainer = (props: Props) => {
 
     // questionTimeUp();
 
+    const csvHeaders = [
+        { label: "Email", key: "email" },
+        { label: "Question", key: "question" }
+    ]
+
+
+    const csvQueue = otherQuestions.map((question) => (
+        {
+            "email": props.users[question.askerId] ? props.users[question.askerId].email : "",
+            "question": question.content
+        }))
+
+    // const csvAll = props.questions.map((question) => (
+    //     {
+    //         "email": props.users[question.askerId] ? props.users[question.askerId].email : "",
+    //         "question": question.content
+    //     }
+    // ))
+
+    const QueueReport = {
+        data: csvQueue,
+        headers: csvHeaders,
+        filename: 'Queue_Questions.csv'
+    };
+
+    // const AllReport = {
+    //     data: csvAll,
+    //     headers: csvHeaders,
+    //     filename: 'All_Questions.csv'
+    // }
+
+
     return (
         <div className="SessionQuestionsWrapper">
             {shownQuestions && shownQuestions.length > 0 && props.isPast && (
@@ -410,7 +443,10 @@ const SessionQuestionsContainer = (props: Props) => {
                         />
                     ))}
                 {otherQuestions && otherQuestions.length > 0 && props.isTA &&
-                    <p className="QuestionHeader">Unassigned Queue Questions</p>
+                    <div className="UnassignedHeader">
+                        <p className="QuestionHeader">Unassigned Queue Questions</p>
+                        <CSVLink {...QueueReport} className="ExportButton">export questions</CSVLink>
+                    </div>
                 }
                 {otherQuestions &&
                     otherQuestions.length > 0 &&
