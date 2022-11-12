@@ -63,8 +63,8 @@
           width: calc(50% - 2px);
           height: 55px;
           border-radius: 6px;
-          transition: left 0.4s ease-in-out;
-          z-index: -1;
+          transition: left 0.3s ease-in-out;
+          z-index: 1;
 
           &.isSlidedRight {
             left: 50%;
@@ -77,7 +77,8 @@
           font-weight: 500;
           color: #979797;
           padding: 20px;
-          transition: color 0.4s ease-in-out;
+          transition: color 0.3s ease-in-out;
+          z-index: 1;
 
           &.isSelected {
             color: white;
@@ -121,12 +122,12 @@
           .sortDiscussionsSlider {
             position: absolute;
             left: 1px;
-            z-index: -1;
+            z-index: 1;
             height: 27px;
             width: calc(50% - 1px);
             background-color: #5599db;
             border-radius: 3px;
-            transition: left 0.4s ease-in-out;
+            transition: left 0.3s ease-in-out;
 
             &.slidedRight {
               left: 50%;
@@ -139,7 +140,8 @@
             font-size: 14px;
             width: 50%;
             padding: 5px 0px;
-            transition: color 0.4s ease-in-out;
+            transition: color 0.3s ease-in-out;
+            z-index: 1;
 
             &.optionChosen {
               color: white;

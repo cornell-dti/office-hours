@@ -1,26 +1,37 @@
 import React, { useState } from 'react';
 import Moment from 'react-moment';
-import { Icon } from 'semantic-ui-react';
+import { connect } from 'react-redux';
+import GreenCheck from '../../media/greenCheck.svg';
+import CommentBubble from '../../media/chat_bubble.svg';
 // eslint-disable-next-line 
 // @ts-ignore (Linkify has no typescript)
-import Linkify from 'linkifyjs/react';
-import { connect } from 'react-redux';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
 import Arrow from '../../media/arrow_discussion.svg';
-import CommentImage from '../../media/comment_discussion.svg';
+import ArrowOrange from '../../media/arrow_discussion_orange.svg';
 import ResolvedIcon from '../../media/resolvedcheck.svg';
-import { markQuestionDone } from '../../firebasefunctions/sessionQuestion';
+import notif from '../../media/notif.svg'
+import {
+    markStudentNoShow,
+    assignQuestionToTA,
+    markQuestionDone,
+    markQuestionDontKnow,
+    addComment,
+    deleteComment,
+    clearIndicator
+} from '../../firebasefunctions/sessionQuestion';
 import { RootState } from '../../redux/store';
+import CommentsContainer from './CommentsContainer';
 
 type Props = {
     question: FireDiscussionQuestion;
     readonly user: FireUser;
     users: { readonly [userId: string]: FireUser };
+    commentUsers: { readonly [userId: string]: FireUser };
     tags: { readonly [tagId: string]: FireTag };
     isTA: boolean;
-    includeRemove: boolean;
     isPast: boolean;
+    virtualLocation?: string;
     // myQuestion: boolean;
 };
 
@@ -28,20 +39,9 @@ const DiscussionQuestion = (props: Props) => {
     const question = props.question;
     const primaryTag = question.primaryTag ? props.tags[question.primaryTag] : undefined;
     const secondaryTag = question.secondaryTag ? props.tags[question.secondaryTag] : undefined;
-    const comment = props.isTA ? question.taComment : question.studentComment;
-    const studentCSS = props.isTA ? '' : ' Student';
     const user = props.user;
 
     const [showDiscComment, setShowDiscComment] = useState(false);
-
-    const retractQuestion = (): void => {
-        const batch = firestore.batch();
-        const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
-        const questionUpdate: Partial<FireQuestion> = slotUpdate;
-        batch.update(firestore.doc(`questionSlots/${question.questionId}`), slotUpdate);
-        batch.update(firestore.doc(`questions/${question.questionId}`), questionUpdate);
-        batch.commit();
-    };
 
     const upvoteQuestion = () => {
         if (props.isPast) {
@@ -60,22 +60,80 @@ const DiscussionQuestion = (props: Props) => {
         batch.commit();
     };
 
-    const questionComment = (newComment: string) => {
-        let update: Partial<FireDiscussionQuestion>;
-        if (props.isTA) {
-            update = { taComment: newComment };
-        } else {
-            update = { studentComment: newComment };
-        }
-        firestore
-            .doc(`questions/${question.questionId}`)
-            .update(update)
-            .catch(() => { });
+    const deleteCommentsHelper = (commentId: string, questionId: string) => {
+        deleteComment(commentId, questionId);
+    }
+
+    const addCommentsHelper = (content: string) => {
+        addComment(content, props.user.userId, props.question.questionId,
+            props.isTA, props.question.askerId, props.question.answererId);
+    }
+
+    const switchCommentsVisible = () => {
+        setShowDiscComment(!showDiscComment);
+    }
+
+    const assignQuestion = () => {
+        if (props.isPast) return;
+        assignQuestionToTA(firestore, props.question, props.virtualLocation, props.user.userId);
     };
 
-    const resolveQuestion = () => {
-        markQuestionDone(firestore, props.question);
+    const [showNoShowPopup, setShowNoShowPopup] = useState(false);
+    const [showUndoPopup, setShowUndoPopup] = useState(false);
+    const [timeoutID, setTimeoutID] = useState<NodeJS.Timeout>(setTimeout(() => {}, 0));
+    const [timeoutID2, setTimeoutID2] = useState<NodeJS.Timeout>(setTimeout(() => {}, 0));
+
+    const studentNoShow = () => {
+        setShowNoShowPopup(true);
+
+        const id = setTimeout(() => {
+            setShowNoShowPopup(false);
+            markStudentNoShow(firestore, props.question);
+        }, 3000);
+
+        setTimeoutID2(id);
+
     };
+
+    const questionDone = () => {
+        setShowUndoPopup(true);
+
+        const id = setTimeout(() => {
+            setShowUndoPopup(false);
+            markQuestionDone(firestore, props.question);
+        }, 3000);
+
+        setTimeoutID(id);
+
+    };
+
+    const undoDone = () => {
+        clearTimeout(timeoutID);
+        setShowUndoPopup(false);
+        setTimeoutID(setTimeout(() => {}, 0));
+        questionDontKnow();
+    }
+
+    const undoNoShow = () => {
+        clearTimeout(timeoutID2);
+        setShowNoShowPopup(false);
+        setTimeoutID2(setTimeout(() => {}, 0));
+        questionDontKnow();
+    }
+
+    const questionDontKnow = () => {
+        markQuestionDontKnow(firestore, props.question);
+    };
+
+    const handleReplyButton = () => {
+        clearIndicator(props.question, props.isTA);
+        if (props.isPast) return;
+        if (showDiscComment) {
+            setShowDiscComment(false);
+        } else {
+            setShowDiscComment(true);
+        }
+    }
 
     const student = props.users[question.askerId];
 
@@ -97,7 +155,16 @@ const DiscussionQuestion = (props: Props) => {
                                 aria-label="upvote"
                                 onClick={upvoteQuestion}
                             >
-                                <img className="upvoteArrow" src={Arrow} alt="Upvote arrow" />
+                                <img 
+                                    className="upvoteArrow" 
+                                    src={props.question.upvotedUsers && 
+                                      props.question.upvotedUsers.findIndex(
+                                          userId => userId === props.user.userId
+                                      ) !== -1 
+                                        ? ArrowOrange 
+                                        : Arrow} 
+                                    alt="Upvote arrow" 
+                                />
                             </button>
                             <div className="upvoteCount">
                                 {question.upvotedUsers ? question.upvotedUsers.length : 0}
@@ -121,25 +188,11 @@ const DiscussionQuestion = (props: Props) => {
                             </div>
                         )}
                     </div>
-                    <button
-                        className="discussionCommentButton"
-                        onClick={() => setShowDiscComment(!showDiscComment)}
-                        type="button"
-                    >
-                        <img
-                            src={CommentImage}
-                            className="discussionCommentImage"
-                            alt="Discussion comment button"
-                        />
-                    </button>
+                    {question.timeEntered != null &&
+                                <p className="Time">
+                                    {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
+                                </p>}
                 </div>
-                {(question.studentComment || question.taComment) && (
-                    <CommentBox
-                        studentComment={question.studentComment}
-                        taComment={question.taComment}
-                        studentCSS={studentCSS}
-                    />
-                )}
                 <div className="lowerDiscussionContainer">
                     <div className="questionAndTagsWrapper">
                         {props.isTA && (
@@ -158,55 +211,105 @@ const DiscussionQuestion = (props: Props) => {
                             </div>
                         </div>
                     </div>
-                    <p className="discussionQuestionTime">
-                        {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
-                    </p>
                 </div>
-                {showDiscComment && (user.userId === props.question.askerId || props.isTA) && !props.isPast && (
-                    <div className="CommentBox">
-                        <div className="commentTopBar">
-                            <img
-                                className="userInformationImg"
-                                src={user.photoUrl || '/placeholder.png'}
-                                alt={user ? `${user.firstName} ${user.lastName}` : 'not logged-in user'}
-                            />
-                            <span className="userInformationName">
-                                {user.firstName} {user.lastName}
-                            </span>
+                {
+                    props.isTA &&
+                        <div className="Buttons">
+                            <hr />
+                            <div className="buttonsWrapper">
+                                <div className="replyButton">
+                                    {!showDiscComment && question.taNew && <img
+                                        className="indicator"
+                                        src={notif}
+                                        alt="Notification indicator"
+                                    />}
+                                    <img
+                                        className="replyIcon"
+                                        src={CommentBubble}
+                                        alt="Reply icon"
+                                        onClick={handleReplyButton}
+                                    />
+                                </div>
+                                <div className="TAButtons">
+                                    {question.status === 'unresolved' ?
+                                        <p className="Begin" onClick={assignQuestion}>
+                                            Assign to me
+                                        </p>
+                                        :
+                                        <p className="Begin" onClick={questionDontKnow}>
+                                            Unassign from me
+                                        </p>
+                                    }
+                                </div>
+                                <div className="assignedButtons">
+                                    {question.status === 'assigned' &&
+                                        <>
+                                            <button
+                                                className="Delete"
+                                                onClick={studentNoShow}
+                                                type="button"
+                                            >No show</button>
+                                            <button
+                                                className="Done"
+                                                onClick={questionDone}
+                                                type="button"
+                                            >Done</button>
+                                        </>
+                                    }
+                                </div>
+                            </div>
                         </div>
-                        <EditComment
-                            initComment={comment || ''}
-                            onValueChange={(newComment: string) => {
-                                questionComment(newComment);
-                                setShowDiscComment(false);
-                            }}
-                            onCancel={() => {
-                                setShowDiscComment(false);
-                            }}
-                        />
+                }
+                {
+                    showDiscComment ?
+                        < CommentsContainer
+                            users={props.commentUsers}
+                            currentUser={user}
+                            addCommentsHelper={addCommentsHelper}
+                            questionId={question.questionId}
+                            switchCommentsVisible={switchCommentsVisible}
+                            deleteCommentsHelper={deleteCommentsHelper}
+                            showNewComment={true}
+                            isPast={props.isPast}
+                        /> :
+                        <></>
+                }
+                {showNoShowPopup && (
+                    <div className="popup">
+                        <div className="popupContainer">
+                            <div className="resolvedQuestionBadge">
+                                <img
+                                    className="resolvedCheckImage"
+                                    alt="Green check"
+                                    src={GreenCheck}
+                                />
+                                <p className="resolvedQuestionText">
+                                        Student Marked as No Show
+                                </p>
+                            </div>
+                        </div>
+                        <p className="Undo" onClick={undoNoShow}>
+                                Undo
+                        </p>
                     </div>
                 )}
-                {props.includeRemove && !props.isPast && (
-                    <div className="discussionButtons">
-                        <hr className="discussionDivider" />
-                        <div className="discussionRemoveButtonWrapper">
-                            <button
-                                className="discussionRemoveButton"
-                                onClick={retractQuestion}
-                                type="button"
-                            >
-                                <Icon className="discussionRemoveIcon" name="close" />
-                                Remove
-                            </button>
+                {showUndoPopup && (
+                    <div className="popup">
+                        <div className="popupContainer">
+                            <div className="resolvedQuestionBadge">
+                                <img
+                                    className="resolvedCheckImage"
+                                    alt="Green check"
+                                    src={GreenCheck}
+                                />
+                                <p className="resolvedQuestionText">
+                                        Question Marked as Done
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                )}
-                {!props.isPast && props.isTA && question.status !== 'resolved' && (
-                    <div className="discussionTAActionsWrapper">
-                        <hr className="discussionDivider" />
-                        <button className="discussionDoneButton" onClick={resolveQuestion} type="button">
-                            Done
-                        </button>
+                        <p className="Undo" onClick={undoDone}>
+                                Undo
+                        </p>
                     </div>
                 )}
             </div>
@@ -214,101 +317,11 @@ const DiscussionQuestion = (props: Props) => {
     );
 };
 
-type EditCommentProps = {
-    readonly initComment: string;
-    readonly onValueChange: Function;
-    readonly onCancel: Function;
+
+DiscussionQuestion.defaultProps = {
+    virtualLocation: undefined
 };
 
-const EditComment = (props: EditCommentProps) => {
-    const [editable, setEditable] = useState(false);
-    const [comment, setComment] = useState(props.initComment);
-    const [prevComment, setPrevComment] = useState(comment);
-
-    if (editable) {
-        return (
-            <div className="commentBody">
-                <textarea
-                    placeholder="Add a comment..."
-                    className="commentTextArea"
-                    onChange={evt => {
-                        setComment(evt.target.value);
-                    }}
-                    value={comment}
-                />
-                <div className="commentBtnHolder">
-                    <button
-                        type="button"
-                        className="commentSaveBtn"
-                        onClick={() => {
-                            props.onValueChange(comment);
-                            setPrevComment(comment);
-                            setEditable(false);
-                        }}
-                    >
-                        Save
-                    </button>
-                    <button
-                        type="button"
-                        className="commentCancelBtn"
-                        onClick={() => {
-                            props.onCancel();
-                            setComment(prevComment);
-                            setEditable(false);
-                        }}
-                    >
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="commentBody">
-            <Linkify tagName="p">{comment || 'Add a comment...'}</Linkify>
-            <button
-                type="button"
-                className="link-button commentEdit"
-                onClick={() => {
-                    setPrevComment(comment);
-                    setEditable(true);
-                }}
-            >
-                edit
-            </button>
-        </div>
-    );
-};
-
-type CommentBoxProps = {
-    readonly studentComment?: string;
-    readonly taComment?: string;
-    readonly studentCSS?: string;
-};
-
-const CommentBox = (props: CommentBoxProps) => {
-    return (
-        <div className="CommentBox">
-            {props.studentComment && (
-                <Linkify className={`Question ${props.studentCSS || ''}`} tagName="p">
-                    Student Comment: {props.studentComment}
-                </Linkify>
-            )}
-            {props.taComment && (
-                <Linkify className={`Question ${props.studentCSS || ''}`} tagName="p">
-                    TA Comment: {props.taComment}
-                </Linkify>
-            )}
-        </div>
-    );
-};
-
-CommentBox.defaultProps = {
-    studentComment: undefined,
-    taComment: undefined,
-    studentCSS: undefined,
-};
 const mapStateToProps = (state: RootState) => ({
     user : state.auth.user
 })

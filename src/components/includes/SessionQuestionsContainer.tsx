@@ -81,9 +81,9 @@ const StudentMyQuestion = ({
                 <DiscussionQuestion
                     question={studentQuestion as FireDiscussionQuestion}
                     users={{}}
+                    commentUsers={{}}
                     tags={tags}
                     isTA={false}
-                    includeRemove={true}
                     isPast={isPast}
                 // myQuestion={true}
                 />
@@ -200,6 +200,7 @@ const SessionQuestionsContainer = (props: Props) => {
 
 
     const compareUpvotes = (q1: FireDiscussionQuestion, q2: FireDiscussionQuestion) => {
+        if(!q1.upvotedUsers || !q2.upvotedUsers) return 0;
         const upvoteDifference = q2.upvotedUsers.length - q1.upvotedUsers.length;
         if (upvoteDifference !== 0) return upvoteDifference;
         return q2.timeEntered.seconds - q1.timeEntered.seconds;
@@ -236,7 +237,7 @@ const SessionQuestionsContainer = (props: Props) => {
         const filteredDiscussionQuestions = filteredQuestions.map(
             question => question as FireDiscussionQuestion
         );
-        if (filteredDiscussionQuestions.length < 2) {
+        if (filteredDiscussionQuestions && filteredDiscussionQuestions.length < 2) {
             filteredSortedQuestions = filteredDiscussionQuestions;
         } else {
             filteredSortedQuestions = sortByUpvotes
@@ -376,10 +377,11 @@ const SessionQuestionsContainer = (props: Props) => {
                             key={question.questionId}
                             question={question as FireDiscussionQuestion}
                             users={props.users}
+                            commentUsers={props.users}
                             tags={props.tags}
                             isTA={props.isTA}
-                            includeRemove={false}
                             isPast={props.isPast}
+                            virtualLocation={props.myVirtualLocation}
                         // myQuestion={false}
                         />
                     ))}
