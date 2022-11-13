@@ -393,7 +393,7 @@ class SessionQuestion extends React.Component<Props, State> {
                     {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
                         <p className={'Question' + studentCSS}>{question.content}</p>}
                     {
-                        this.props.isTA &&
+                        !this.props.isPast && this.props.isTA &&
                         <div className="Buttons">
                             <hr />
                             <div className="buttonsWrapper">

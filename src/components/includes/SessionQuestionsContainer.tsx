@@ -219,17 +219,20 @@ const SessionQuestionsContainer = (props: Props) => {
     );
 
     // Only display the top 10 questions on the queue
-    const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN));
+    const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN))
+        .filter(q => q.status !== 'resolved');
+
+    const filteredQuestions = filterByAnsweredQuestions
+        ? allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN))
+            .filter(question => question.status === 'resolved')
+        : allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN))
+            .filter(question => question.status !== 'resolved');
 
     const assignedQuestions = shownQuestions.filter((question) => {
         return question.status === 'assigned' && props.isTA && question.answererId === props.myUserId;
     });
     const otherQuestions = shownQuestions.filter(question => question.status !== 'assigned' &&
         !assignedQuestions.includes(question));
-
-    const filteredQuestions = filterByAnsweredQuestions
-        ? shownQuestions.filter(question => question.status === 'resolved')
-        : shownQuestions.filter(question => question.status !== 'resolved');
 
     let filteredSortedQuestions: FireDiscussionQuestion[] = [];
 
@@ -314,7 +317,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         setRemoveQuestionId={props.setRemoveQuestionId}
                     />
                 )}
-                {shownQuestions && shownQuestions.length > 0 && props.modality === 'review' && (
+                {shownQuestions && shownQuestions.length > 0 && (props.modality === 'review' || props.isTA) && (
                     <div className="discussionHeaderWrapper">
                         <div className="discussionQuestionsSlider">
                             <div
@@ -340,7 +343,7 @@ const SessionQuestionsContainer = (props: Props) => {
                                 Answered Questions
                             </div>
                         </div>
-                        <div className="sortDiscussionQuestionsWrapper">
+                        {props.modality === 'review' && <div className="sortDiscussionQuestionsWrapper">
                             <div className="discussionArrowsContainer">
                                 <img className="sortDiscussionArrow" src={SortArrows} alt="Sort by arrows" />
                             </div>
@@ -366,10 +369,32 @@ const SessionQuestionsContainer = (props: Props) => {
                                     Most Recent
                                 </div>
                             </div>
-                        </div>
+                        </div>}
                     </div>
                 )}
-                {filteredSortedQuestions &&
+                {filterByAnsweredQuestions ? (<>
+                    <p />
+                    {filteredQuestions.map((question, i: number) => (
+                        <SessionQuestion
+                            key={question.questionId}
+                            modality={props.modality}
+                            question={question}
+                            users={props.users}
+                            commentUsers={props.users}
+                            tags={props.tags}
+                            index={i}
+                            virtualLocation={props.myVirtualLocation}
+                            isTA={props.isTA}
+                            includeRemove={false}
+                            triggerUndo={props.triggerUndo}
+                            isPast={true}
+                            myUserId={props.myUserId}
+                            setShowModal={props.setShowModal}
+                            setRemoveQuestionId={props.setRemoveQuestionId}
+                        />
+                    ))}
+                </>) : (<>
+                    {filteredSortedQuestions &&
                     shownQuestions.length > 0 &&
                     props.modality === 'review' &&
                     filteredSortedQuestions.map(question => (
@@ -385,10 +410,10 @@ const SessionQuestionsContainer = (props: Props) => {
                         // myQuestion={false}
                         />
                     ))}
-                {assignedQuestions && assignedQuestions.length > 0 && props.isTA &&
+                    {assignedQuestions && assignedQuestions.length > 0 && props.isTA &&
                     <p className="QuestionHeader">Assigned Questions</p>
-                }
-                {shownQuestions &&
+                    }
+                    {shownQuestions &&
                     shownQuestions.length > 0 &&
                     props.modality !== 'review' &&
                     props.isTA &&
@@ -411,11 +436,11 @@ const SessionQuestionsContainer = (props: Props) => {
                             setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
-                {otherQuestions && otherQuestions.length > 0 &&
+                    {otherQuestions && otherQuestions.length > 0 &&
                     props.modality !== 'review' && props.isTA &&
                     <p className="QuestionHeader">Unassigned Queue Questions</p>
-                }
-                {otherQuestions &&
+                    }
+                    {otherQuestions &&
                     otherQuestions.length > 0 &&
                     props.modality !== 'review' &&
                     props.isTA &&
@@ -438,6 +463,7 @@ const SessionQuestionsContainer = (props: Props) => {
                             setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
+                </>)} 
                 {shownQuestions && shownQuestions.length === 0 && (
                     <>
                         {
