@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { Loader } from 'semantic-ui-react';
 import { CSVLink } from 'react-csv';
 import moment from 'moment';
@@ -21,6 +22,7 @@ type Props = {
     readonly isTA: boolean;
     // Note that these questions are sorted by time asked
     readonly questions: readonly FireQuestion[];
+    readonly completeQuestions: readonly FireQuestion[];
     readonly users: { readonly [userId: string]: FireUser };
     readonly tags: { readonly [tagId: string]: FireTag };
     readonly myUserId: string;
@@ -264,19 +266,24 @@ const SessionQuestionsContainer = (props: Props) => {
         { label: "Question", key: "question" }
     ]
 
-
     const csvQueue = otherQuestions.map((question) => (
         {
             "email": props.users[question.askerId] ? props.users[question.askerId].email : "",
             "question": question.content
-        }))
+        }))   
 
-    // const csvAll = props.questions.map((question) => (
-    //     {
-    //         "email": props.users[question.askerId] ? props.users[question.askerId].email : "",
-    //         "question": question.content
-    //     }
-    // ))
+    const csvUnanswered = allQuestions.filter(q => q.status !== 'resolved').map((question) => (
+        {
+            "email": props.users[question.askerId] ? props.users[question.askerId].email : "",
+            "question": question.content
+        })) 
+
+    const csvAll = props.completeQuestions.map((question) => (
+        {
+            "email": props.users[question.askerId] ? props.users[question.askerId].email : "",
+            "question": question.content
+        }
+    ))
 
     const QueueReport = {
         data: csvQueue,
@@ -284,11 +291,23 @@ const SessionQuestionsContainer = (props: Props) => {
         filename: 'Queue_Questions.csv'
     };
 
-    // const AllReport = {
-    //     data: csvAll,
-    //     headers: csvHeaders,
-    //     filename: 'All_Questions.csv'
-    // }
+    const UnansweredReport = {
+        data: csvUnanswered,
+        headers: csvHeaders,
+        filename: 'Unanswered_Questions.csv'
+    };
+
+    const AllReport = {
+        data: csvAll,
+        headers: csvHeaders,
+        filename: 'All_Questions.csv'
+    }
+
+    const [showExport, setShowExport] = useState(false);
+
+    useEffect(() => {
+        setShowExport(false);
+    }, [props.modality]);
 
 
     return (
@@ -399,6 +418,31 @@ const SessionQuestionsContainer = (props: Props) => {
                                 </div>
                             </div>
                         </div>
+                        {props.isTA &&
+                            <>
+                                <div className="ExportDropdown">
+                                    <button 
+                                        type="button" 
+                                        className="ExportButton"
+                                        onClick={() => setShowExport(!showExport)}
+                                    >
+                                        Export Questions
+                                    </button>
+                                </div>
+                                {showExport && (
+                                    <>
+                                        <ul className="ExportMenu">
+                                            <li>
+                                                <CSVLink {...AllReport}>All Questions</CSVLink>
+                                            </li>
+                                            <li>
+                                                <CSVLink {...UnansweredReport}>Unanswered Questions</CSVLink>
+                                            </li>
+                                        </ul>
+                                    </>
+                                )}
+                            </>
+                        }
                     </div>
                 )}
                 {filteredSortedQuestions &&
@@ -417,7 +461,24 @@ const SessionQuestionsContainer = (props: Props) => {
                         />
                     ))}
                 {assignedQuestions && assignedQuestions.length > 0 && props.isTA &&
-                    <p className="QuestionHeader">Assigned Questions</p>
+                    <div className="ExportHeader">
+                        <p className="QuestionHeader">Assigned Questions</p>
+                        <button type="button" className="ExportButton" onClick={() => setShowExport(!showExport)}>
+                            Export Questions
+                        </button>
+                        {showExport && (
+                            <>
+                                <ul className="ExportMenu">
+                                    <li>
+                                        <CSVLink {...AllReport}>All Questions</CSVLink>
+                                    </li>
+                                    <li>
+                                        <CSVLink {...QueueReport}>Unassigned Questions</CSVLink>
+                                    </li>
+                                </ul>
+                            </>
+                        )}
+                    </div>
                 }
                 {shownQuestions &&
                     shownQuestions.length > 0 &&
@@ -442,10 +503,32 @@ const SessionQuestionsContainer = (props: Props) => {
                             setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
-                {otherQuestions && otherQuestions.length > 0 && props.isTA &&
-                    <div className="UnassignedHeader">
+                {props.modality !== 'review' && otherQuestions && otherQuestions.length > 0 && props.isTA &&
+                    <div className="ExportHeader">
                         <p className="QuestionHeader">Unassigned Queue Questions</p>
-                        <CSVLink {...QueueReport} className="ExportButton">export questions</CSVLink>
+                        {props.isTA && assignedQuestions && assignedQuestions.length === 0 &&
+                            <>
+                                <button 
+                                    type="button" 
+                                    className="ExportButton" 
+                                    onClick={() => setShowExport(!showExport)}
+                                >
+                                    Export Questions
+                                </button>
+                                {showExport && (
+                                    <>
+                                        <ul className="ExportMenu">
+                                            <li>
+                                                <CSVLink {...AllReport}>All Questions</CSVLink>
+                                            </li>
+                                            <li>
+                                                <CSVLink {...QueueReport}>Unassigned Questions</CSVLink>
+                                            </li>
+                                        </ul>
+                                    </>
+                                )}
+                            </>
+                        }
                     </div>
                 }
                 {otherQuestions &&

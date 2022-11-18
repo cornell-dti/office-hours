@@ -2,10 +2,11 @@ import * as React from 'react';
 import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
 
+// import { CSVLink } from 'react-csv';
 import { Grid, Switch } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { pauseSession } from '../../firebasefunctions/session';
-import users from '../../media/users.svg'
+import usersImg from '../../media/users.svg'
 import chalkboard from '../../media/chalkboard-teacher.svg'
 import hourglass from '../../media/hourglass-half.svg'
 
@@ -32,6 +33,7 @@ type Props = {
     isOpen: boolean;
     questions: readonly FireQuestion[];
     isPaused: boolean | undefined;
+    // users: { readonly [userId: string]: FireUser };
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
@@ -95,6 +97,7 @@ const SessionInformationHeader = ({
     isOpen,
     questions,
     isPaused,
+    // users,
 }: Props) => {
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
@@ -156,21 +159,21 @@ const SessionInformationHeader = ({
     const activateError = () => {
         setShowError(true);
         let message = "";
-        if(!myQuestion) {
-            if(isOpen) {
+        if (!myQuestion) {
+            if (isOpen) {
                 message = 'Please fill out the "Join the Queue" form first';
             } else {
                 message = 'This queue has closed';
             }
-        } else if((session.modality === 'virtual' || 
-            session.modality === 'hybrid') && 
-            !(typeof session.useTALink === 'undefined' || 
-            session.useTALink === false) && 
+        } else if ((session.modality === 'virtual' ||
+            session.modality === 'hybrid') &&
+            !(typeof session.useTALink === 'undefined' ||
+                session.useTALink === false) &&
             !session.TALink) {
             message = 'A professor has not set a link for this office hour. Please reference the course website.';
-        } else if(assignedQuestion && !assignedQuestion.answererLocation) {
+        } else if (assignedQuestion && !assignedQuestion.answererLocation) {
             message = 'Please wait for the TA to update their location';
-        } else if(avgWaitTime === 'No information available') {
+        } else if (avgWaitTime === 'No information available') {
             message = 'Please wait for your turn to join the Zoom call';
         } else {
             message = `Please wait for your turn to join the Zoom call (estimated wait time: ${avgWaitTime})`;
@@ -237,6 +240,10 @@ const SessionInformationHeader = ({
                                     )}
                                     <br />
                                 </p>
+                                {/* 
+                                {user.roles[course.courseId] !== undefined &&
+                                    <CSVLink {...AllReport} className="ExportButton">export questions</CSVLink>} */}
+
                             </Grid>
                         </Grid>
                     </div>
@@ -255,7 +262,7 @@ const SessionInformationHeader = ({
                                 <div className="OneQueueInfo">
                                     <Grid container direction="row" justifyContent="center" alignItems={'center'}>
                                         <Grid item xs={2}>
-                                            <img src={users} alt="number of people" />
+                                            <img src={usersImg} alt="number of people" />
                                         </Grid>
                                         <Grid item xs={10}>
                                             <p>
@@ -301,11 +308,11 @@ const SessionInformationHeader = ({
                                     {isTa && isOpen &&
                                         (<Grid container direction="row" justifyContent="center" alignItems={'center'}>
                                             <Grid item xs={2}>
-                                                <Switch 
-                                                    className="closeQueueSwitch" 
-                                                    checked={!isPaused} 
-                                                    onChange={handlePause} 
-                                                    color="primary" 
+                                                <Switch
+                                                    className="closeQueueSwitch"
+                                                    checked={!isPaused}
+                                                    onChange={handlePause}
+                                                    color="primary"
                                                 />
                                             </Grid>
                                             <Grid item xs={10}>
@@ -416,7 +423,7 @@ const SessionInformationHeader = ({
                                                         href={session.TALink}
                                                     >
                                                         <button type="button" className="JoinButton">
-                                                                Join
+                                                            Join
                                                         </button>
                                                     </a>
                                                 </Grid>
@@ -440,15 +447,15 @@ const SessionInformationHeader = ({
                                                 <p>Zoom link</p>
                                             </Grid>
                                             <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
-                                                {(!(typeof session.useTALink === 'undefined' || 
-                                                                session.useTALink === false) && session.TALink) || 
-                                                                assignedQuestion?.answererLocation ? (
+                                                {(!(typeof session.useTALink === 'undefined' ||
+                                                    session.useTALink === false) && session.TALink) ||
+                                                    assignedQuestion?.answererLocation ? (
                                                         <a
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            href={(typeof session.useTALink === 'undefined' || 
-                                                                session.useTALink === false) ? 
-                                                                assignedQuestion?.answererLocation : 
+                                                            href={(typeof session.useTALink === 'undefined' ||
+                                                                session.useTALink === false) ?
+                                                                assignedQuestion?.answererLocation :
                                                                 session.TALink}
                                                         >
                                                             <button type="button" className="JoinButton">
@@ -518,9 +525,9 @@ const SessionInformationHeader = ({
                                                 <img src={zoom} alt="zoom" />
                                             </Grid>
                                             {(typeof session.useTALink === 'undefined' ||
-                                                    session.useTALink === false) ? (<Grid container item xs={10}>
+                                                session.useTALink === false) ? (<Grid container item xs={10}>
                                                     <p>Use student provided Zoom link</p>
-                                                </Grid>): (<>
+                                                </Grid>) : (<>
                                                     <Grid item lg={6} md={10} xs={6}>
                                                         <p>Zoom Link</p>
                                                     </Grid>
@@ -532,7 +539,7 @@ const SessionInformationHeader = ({
                                                                 session.TALink}
                                                         >
                                                             <button type="button" className="JoinButton">
-                                                                            Join
+                                                                Join
                                                             </button>
                                                         </a>
                                                     </Grid>
@@ -608,7 +615,7 @@ const SessionInformationHeader = ({
             <div className="MoreInformation">
                 <hr />
                 <div className="QueueInfo">
-                    <img src={users} alt="number of people" />
+                    <img src={usersImg} alt="number of people" />
                     <p>
                         <span className="red">{numAhead + 'students '}</span>
                         in queue

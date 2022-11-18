@@ -22,6 +22,7 @@ type Props = {
     course: FireCourse;
     session: FireSession;
     questions: readonly FireQuestion[];
+    completeQuestions: readonly FireQuestion[];
     isDesktop: boolean;
     backCallback: Function;
     joinCallback: Function;
@@ -46,7 +47,7 @@ type AbsentState = {
 };
 
 const SessionView = (
-    { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal,
+    { course, session, questions, completeQuestions, isDesktop, backCallback, joinCallback, user, setShowModal,
         setRemoveQuestionId, timeWarning, sessionBanners }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
@@ -181,6 +182,7 @@ const SessionView = (
                 }}
                 questions={questions.filter(q => q.status === 'unresolved')}
                 isPaused={session.isPaused}
+                // users={users}
             />
 
             {undoQuestionId &&
@@ -208,6 +210,8 @@ const SessionView = (
                     questions
                         .filter(q => q.status === 'unresolved' || q.status === 'assigned')
                         .sort((a, b) => (a.timeEntered > b.timeEntered) ? 1 : -1)}
+                completeQuestions={session.modality === 'review' ? 
+                    completeQuestions.filter(q => q.status !== 'retracted') : completeQuestions}
                 users={users}
                 tags={tags}
                 handleJoinClick={joinCallback}
@@ -235,9 +239,11 @@ const mapStateToProps = (state: RootState) => ({
     sessionBanners: state.announcements.sessionBanners
 })
 
-export default connect(mapStateToProps, {})((props: Omit<Props, 'questions'>) => {
+export default connect(mapStateToProps, {})((props: Omit<Props, 'questions'|'completeQuestions'>) => {
     const isTa = props.user.roles[props.course.courseId] !== undefined;
     const questions = props.session.modality === 'review' ? useSessionQuestions(props.session.sessionId, true) :
         filterUnresolvedQuestions(useSessionQuestions(props.session.sessionId, isTa));
-    return <SessionView questions={questions} {...props} />;
+    const completeQuestions = props.session.modality === 'review' ? 
+        useSessionQuestions(props.session.sessionId, true) : useSessionQuestions(props.session.sessionId, isTa);
+    return <SessionView questions={questions} completeQuestions={completeQuestions} {...props} />;
 });
