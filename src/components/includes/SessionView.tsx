@@ -182,7 +182,6 @@ const SessionView = (
                 }}
                 questions={questions.filter(q => q.status === 'unresolved')}
                 isPaused={session.isPaused}
-                // users={users}
             />
 
             {undoQuestionId &&

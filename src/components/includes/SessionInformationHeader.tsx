@@ -2,7 +2,6 @@ import * as React from 'react';
 import Moment from 'react-moment';
 import { Icon } from 'semantic-ui-react';
 
-// import { CSVLink } from 'react-csv';
 import { Grid, Switch } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { pauseSession } from '../../firebasefunctions/session';
@@ -33,7 +32,6 @@ type Props = {
     isOpen: boolean;
     questions: readonly FireQuestion[];
     isPaused: boolean | undefined;
-    // users: { readonly [userId: string]: FireUser };
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
@@ -97,7 +95,6 @@ const SessionInformationHeader = ({
     isOpen,
     questions,
     isPaused,
-    // users,
 }: Props) => {
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
@@ -240,10 +237,6 @@ const SessionInformationHeader = ({
                                     )}
                                     <br />
                                 </p>
-                                {/* 
-                                {user.roles[course.courseId] !== undefined &&
-                                    <CSVLink {...AllReport} className="ExportButton">export questions</CSVLink>} */}
-
                             </Grid>
                         </Grid>
                     </div>
