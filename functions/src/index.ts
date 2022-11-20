@@ -322,7 +322,9 @@ questionStatusNumbers.set("no-show", [0, 0, 0]);
 
 exports.onQuestionUpdate = functions.firestore
     .document('questions/{questionId}')
-    .onUpdate(async (change) => {
+    .onUpdate(async (change, context) => {
+        const sender = context.auth?.uid;
+
         // retrieve old and new questions
         const newQuestion: FireQuestion = change.after.data() as FireQuestion;
         const prevQuestion: FireQuestion = change.before.data() as FireQuestion;
@@ -435,32 +437,34 @@ exports.onQuestionUpdate = functions.firestore
                     })
 
                 });
-
-            db.doc(`notificationTrackers/${answerer.email}`)
-                .update({
-                    notificationList: admin.firestore.FieldValue.arrayUnion({
-                        title: 'Unassigned from Question',
-                        subtitle: 'Unassigned from Question',
-                        message:
-                            `You've been unassigned from ${asker.firstName} ${asker.lastName}'s question`,
-                        createdAt: admin.firestore.Timestamp.now()
-                    })
-                }).catch(() => {
-                    db.doc(`notificationTrackers/${answerer.email}`).create({
-                        id: answerer.email,
-                        notificationList: [{
+                
+            if (answerer.userId !== sender) {
+                db.doc(`notificationTrackers/${answerer.email}`)
+                    .update({
+                        notificationList: admin.firestore.FieldValue.arrayUnion({
                             title: 'Unassigned from Question',
                             subtitle: 'Unassigned from Question',
                             message:
                                 `You've been unassigned from ${asker.firstName} ${asker.lastName}'s question`,
                             createdAt: admin.firestore.Timestamp.now()
-                        }],
-                        notifications: admin.firestore.Timestamp.now(),
-                        productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),
-                    })
+                        })
+                    }).catch(() => {
+                        db.doc(`notificationTrackers/${answerer.email}`).create({
+                            id: answerer.email,
+                            notificationList: [{
+                                title: 'Unassigned from Question',
+                                subtitle: 'Unassigned from Question',
+                                message:
+                                    `You've been unassigned from ${asker.firstName} ${asker.lastName}'s question`,
+                                createdAt: admin.firestore.Timestamp.now()
+                            }],
+                            notifications: admin.firestore.Timestamp.now(),
+                            productUpdates: admin.firestore.Timestamp.now(),
+                            lastSent: admin.firestore.Timestamp.now(),
+                        })
 
-                });
+                    });
+            }
         }
         else if (newQuestion.status === 'resolved') {
             const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
