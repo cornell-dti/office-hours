@@ -1,69 +1,77 @@
-import React, { useState } from 'react';
-import { RouteComponentProps } from 'react-router';
-import moment from 'moment';
-import { DateRangePicker } from 'react-dates';
-import ProfessorSidebar from '../includes/ProfessorSidebar';
-import QuestionsPieChart from '../includes/QuestionsPieChart';
-import QuestionsLineChart from '../includes/QuestionsLineChart';
-import QuestionsBarChart from '../includes/QuestionsBarChart';
-import 'react-dates/initialize';
-import 'react-dates/lib/css/_datepicker.css';
-import { useCourse, useCourseUsersMap, useCoursesBetweenDates } from '../../firehooks';
-import TopBar from '../includes/TopBar';
+import React, { useState } from "react";
+import { RouteComponentProps } from "react-router";
+import moment from "moment";
+import { DateRangePicker } from "react-dates";
+import ProfessorSidebar from "../includes/ProfessorSidebar";
+import QuestionsPieChart from "../includes/QuestionsPieChart";
+import QuestionsLineChart from "../includes/QuestionsLineChart";
+import QuestionsBarChart from "../includes/QuestionsBarChart";
+import "react-dates/initialize";
+import "react-dates/lib/css/_datepicker.css";
+import { useCourse, useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
+import TopBar from "../includes/TopBar";
 
 const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) => {
     const courseId = props.match.params.courseId;
 
-    const [startDate, setStartDate] = useState(moment(new Date()).add(-1, 'months'));
+    const [startDate, setStartDate] = useState(moment(new Date()).add(-1, "months"));
     const [endDate, setEndDate] = useState(moment(new Date()));
-    const [focusedInput, setFocusedInput] = useState<'endDate' | 'startDate' | null>(null);
+    const [focusedInput, setFocusedInput] = useState<"endDate" | "startDate" | null>(null);
 
     const course = useCourse(courseId);
     const courseUsers = useCourseUsersMap(courseId, true);
     // Fetch sessions for course between dates
-    const {sessions, questions} = useCoursesBetweenDates(startDate, endDate, courseId)
+    const { sessions, questions } = useCoursesBetweenDates(startDate, endDate, courseId);
 
     // Compute necessary data
     // Aggregate Stats
     const allQuestions = questions.flat();
     const totalQuestions = allQuestions.length;
-    const unresolvedQuestions = allQuestions.filter(q => q.status === 'unresolved');
-    const percentUnresolved = Math.round(100 * unresolvedQuestions.length / totalQuestions);
+    const unresolvedQuestions = allQuestions.filter((q) => q.status === "unresolved");
+    const percentUnresolved = Math.round((100 * unresolvedQuestions.length) / totalQuestions);
     const percentResolved = 100 - percentUnresolved;
 
     // Busiest Session Data
     const busiestSessionIndex = questions.reduce(
-        (busiestIndex, currentQs, i, arr) =>
-            currentQs.length > arr[busiestIndex].length ? i : busiestIndex,
+        (busiestIndex, currentQs, i, arr) => (currentQs.length > arr[busiestIndex].length ? i : busiestIndex),
         0
     );
 
     const busiestSession: FireSession | undefined = sessions[busiestSessionIndex];
     const busiestSessionInfo = busiestSession && {
-        ...('building' in busiestSession ? {
-            building: busiestSession.building, room: busiestSession.room, online: false as const
-        } : { online: true as const }),
-        ohDate: moment(busiestSession.startTime.seconds * 1000).format('MMMM Do'),
-        startHour: moment(busiestSession.startTime.seconds * 1000).format('h:mm a'),
-        endHour: moment(busiestSession.endTime.seconds * 1000).format('h:mm a'),
-        dayOfWeek: moment(busiestSession.startTime.seconds * 1000).format('dddd'),
-        date: moment(busiestSession.startTime.seconds * 1000).format('MMMM Do YYYY'),
-        taNames: busiestSession.tas.map(userId => {
-            const courseUser = courseUsers[userId];
-            if (courseUser === undefined) {
-                return 'unknown';
-            }
-            return `${courseUser.firstName} ${courseUser.lastName}`;
-        }).join(', ')
+        ...("building" in busiestSession
+            ? {
+                  building: busiestSession.building,
+                  room: busiestSession.room,
+                  online: false as const,
+              }
+            : { online: true as const }),
+        ohDate: moment(busiestSession.startTime.seconds * 1000).format("MMMM Do"),
+        startHour: moment(busiestSession.startTime.seconds * 1000).format("h:mm a"),
+        endHour: moment(busiestSession.endTime.seconds * 1000).format("h:mm a"),
+        dayOfWeek: moment(busiestSession.startTime.seconds * 1000).format("dddd"),
+        date: moment(busiestSession.startTime.seconds * 1000).format("MMMM Do YYYY"),
+        taNames: busiestSession.tas
+            .map((userId) => {
+                const courseUser = courseUsers[userId];
+                if (courseUser === undefined) {
+                    return "unknown";
+                }
+                return `${courseUser.firstName} ${courseUser.lastName}`;
+            })
+            .join(", "),
+        totalQuestions: busiestSession.totalQuestions,
+        resolvedQuestions: busiestSession.resolvedQuestions,
     };
 
     // Line Chart
-    const lineChartQuestions = questions.length > 0
-        ? sessions.map((s, i) => ({
-            'x': moment(s.startTime.seconds * 1000).format('MMM D'),
-            'y': questions[i].length
-        }))
-        : [];
+    const lineChartQuestions =
+        questions.length > 0
+            ? sessions.map((s, i) => ({
+                  x: moment(s.startTime.seconds * 1000).format("MMM D"),
+                  y: questions[i].length,
+              }))
+            : [];
 
     const calcTickVals = (yMax: number) => {
         if (yMax === 0) {
@@ -80,52 +88,63 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         return tickVals;
     };
 
+    const averageWaitTimeLineChartQuestions = sessions.map((s, i) => ({
+        x: moment(s.startTime.seconds * 1000).format("MMM D"),
+        y: s.assignedQuestions == 0 ? 0 : s.totalWaitTime / s.assignedQuestions / 60,
+    }));
+
+    const averageWaitTimeMax = Math.max.apply(
+        Math,
+        sessions.map((s) => (s.assignedQuestions == 0 ? 0 : s.totalWaitTime / s.assignedQuestions / 60))
+    );
+
     // Bar Chart
-    const sessionDict: {
-        [key: string]: {
-            ta: string;
-            online: true;
-            questions: number;
-            answered: number;
-            startHour: string;
-            endHour: string;
-        };
-    } | {
-        [key: string]: {
-            ta: string;
-            online: false;
-            questions: number;
-            answered: number;
-            startHour: string;
-            endHour: string;
-            building: string;
-            room: string;
-        };
-    } = {};
+    const sessionDict:
+        | {
+              [key: string]: {
+                  ta: string;
+                  online: true;
+                  questions: number;
+                  answered: number;
+                  startHour: string;
+                  endHour: string;
+              };
+          }
+        | {
+              [key: string]: {
+                  ta: string;
+                  online: false;
+                  questions: number;
+                  answered: number;
+                  startHour: string;
+                  endHour: string;
+                  building: string;
+                  room: string;
+              };
+          } = {};
 
     sessions.forEach((t, i) => {
         if (t.modality === "virtual" || t.modality === "review") {
             sessionDict[t.sessionId] = {
                 // Ryan Todo
-                ta: '',
+                ta: "",
                 questions: questions[i] ? questions[i].length : 0,
-                answered: questions[i] && questions[i].filter(q => q.status !== 'unresolved').length,
-                startHour: moment(t.startTime.seconds * 1000).format('h:mm a'),
-                endHour: moment(t.endTime.seconds * 1000).format('h:mm a'),
+                answered: questions[i] && questions[i].filter((q) => q.status !== "unresolved").length,
+                startHour: moment(t.startTime.seconds * 1000).format("h:mm a"),
+                endHour: moment(t.endTime.seconds * 1000).format("h:mm a"),
                 online: true,
-
             };
         } else {
             sessionDict[t.sessionId] = {
                 // Ryan Todo
-                ta: '',
+                ta: "",
                 questions: questions[i] ? questions[i].length : 0,
-                answered: questions[i] && questions[i].filter(q => q.status !== 'unresolved').length,
-                startHour: moment(t.startTime.seconds * 1000).format('h:mm a'),
-                endHour: moment(t.endTime.seconds * 1000).format('h:mm a'),
+                answered: questions[i] && questions[i].filter((q) => q.status !== "unresolved").length,
+                startHour: moment(t.startTime.seconds * 1000).format("h:mm a"),
+                endHour: moment(t.endTime.seconds * 1000).format("h:mm a"),
                 online: false,
                 building: t.building,
-                room: t.room
+                room: t.room,
             };
         }
     });
@@ -135,7 +154,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
     return (
         <div className="ProfessorView">
-            <ProfessorSidebar courseId={courseId} code={(course && course.code) || 'Loading'} selected={'people'} />
+            <ProfessorSidebar courseId={courseId} code={(course && course.code) || "Loading"} selected={"people"} />
             <TopBar courseId={courseId} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 <div className="main">
@@ -147,15 +166,19 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                             endDate={endDate}
                             endDateId="end1"
                             onDatesChange={({ startDate: newStartDate, endDate: newEndDate }) => {
-                                if (newStartDate) { setStartDate(newStartDate); }
-                                if (newEndDate) { setEndDate(newEndDate); }
+                                if (newStartDate) {
+                                    setStartDate(newStartDate);
+                                }
+                                if (newEndDate) {
+                                    setEndDate(newEndDate);
+                                }
                             }}
                             focusedInput={focusedInput}
-                            onFocusChange={newFocusedInput => setFocusedInput(newFocusedInput)}
+                            onFocusChange={(newFocusedInput) => setFocusedInput(newFocusedInput)}
                         />
                     </div>
-                    {totalQuestions > 0
-                        ? (<div>
+                    {totalQuestions > 0 ? (
+                        <div>
                             <div className="first-row-container">
                                 <div className="Total-Questions-Box">
                                     <QuestionsPieChart
@@ -179,7 +202,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                     <div className="bar-graph">
                                         <QuestionsBarChart
                                             barData={barGraphData}
-                                            sessionKeys={sessions.map(s => s.sessionId)}
+                                            sessionKeys={sessions.map((s) => s.sessionId)}
                                             sessionDict={sessionDict}
                                             yMax={chartYMax}
                                             calcTickVals={calcTickVals}
@@ -195,23 +218,26 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                             <p className="maroon-date">
                                                 {busiestSessionInfo.dayOfWeek}, <br /> {busiestSessionInfo.date}
                                             </p>
+                                            <p>
+                                                {busiestSessionInfo.totalQuestions} Questions Total /
+                                                {busiestSessionInfo.resolvedQuestions} Questions resolved
+                                            </p>
                                         </div>
                                         <hr />
                                         <div>
                                             <p className="crowd-title"> Most Crowded Office Hour </p>
-                                            <p className="maroon-descript">
-                                                {busiestSessionInfo.ohDate}
-                                            </p>
+                                            <p className="maroon-descript">{busiestSessionInfo.ohDate}</p>
                                             <p className="maroon-descript">
                                                 {busiestSessionInfo.startHour} - {busiestSessionInfo.endHour}
                                             </p>
-                                            {busiestSessionInfo.online ? <p className="maroon-descript">Online</p> :
+                                            {busiestSessionInfo.online ? (
+                                                <p className="maroon-descript">Online</p>
+                                            ) : (
                                                 <p className="maroon-descript">
                                                     {busiestSessionInfo.building} {busiestSessionInfo.room}
-                                                </p>}
-                                            <p className="maroon-descript">
-                                                {busiestSessionInfo.taNames}
-                                            </p>
+                                                </p>
+                                            )}
+                                            <p className="maroon-descript">{busiestSessionInfo.taNames}</p>
                                         </div>
                                     </div>
                                 )}
@@ -223,14 +249,30 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                     />
                                 </div>
                             </div>
-                        </div>)
-                        : (<div className="no-question-warning">
+                            <div className="Most-Crowded-Box">
+                                <div className="most-crowded-text">
+                                    <div>
+                                        <p className="crowd-title">Average Wait Time</p>
+                                        <p className="maroon-date">??</p>
+                                    </div>
+                                </div>
+                                <div className="questions-line-container">
+                                    <QuestionsLineChart
+                                        lineData={averageWaitTimeLineChartQuestions}
+                                        yMax={averageWaitTimeMax}
+                                        calcTickVals={calcTickVals}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="no-question-warning">
                             <p>
                                 No questions were asked during the selected time range.
                                 <br /> Please select a new time range.
                             </p>
-                        </div>)
-                    }
+                        </div>
+                    )}
                 </div>
             </section>
         </div>
