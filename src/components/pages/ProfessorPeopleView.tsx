@@ -98,6 +98,14 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         sessions.map((s) => (s.assignedQuestions == 0 ? 0 : s.totalWaitTime / s.assignedQuestions / 60))
     );
 
+    const totalWaitTime = sessions.reduce((accumulator, session) => {
+        return accumulator + session.totalWaitTime;
+    }, 0);
+
+    const totalAssignedQuestions = sessions.reduce((accumulator, session) => {
+        return accumulator + session.assignedQuestions;
+    }, 0);
+
     // Bar Chart
     const sessionDict:
         | {
@@ -253,7 +261,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                 <div className="most-crowded-text">
                                     <div>
                                         <p className="crowd-title">Average Wait Time</p>
-                                        <p className="maroon-date">??</p>
+                                        <p className="maroon-date">{totalWaitTime / totalAssignedQuestions / 60}</p>
                                     </div>
                                 </div>
                                 <div className="questions-line-container">
