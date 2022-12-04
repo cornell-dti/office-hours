@@ -5,7 +5,7 @@ import { DateRangePicker } from "react-dates";
 import ProfessorSidebar from "../includes/ProfessorSidebar";
 import QuestionsPieChart from "../includes/QuestionsPieChart";
 import QuestionsLineChart from "../includes/QuestionsLineChart";
-import QuestionsBarChart from "../includes/QuestionsBarChart";
+// import QuestionsBarChart from "../includes/QuestionsBarChart";
 import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
 import { useCourse, useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
@@ -41,10 +41,10 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const busiestSessionInfo = busiestSession && {
         ...("building" in busiestSession
             ? {
-                  building: busiestSession.building,
-                  room: busiestSession.room,
-                  online: false as const,
-              }
+                building: busiestSession.building,
+                room: busiestSession.room,
+                online: false as const,
+            }
             : { online: true as const }),
         ohDate: moment(busiestSession.startTime.seconds * 1000).format("MMMM Do"),
         startHour: moment(busiestSession.startTime.seconds * 1000).format("h:mm a"),
@@ -68,9 +68,9 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const lineChartQuestions =
         questions.length > 0
             ? sessions.map((s, i) => ({
-                  x: moment(s.startTime.seconds * 1000).format("MMM D"),
-                  y: questions[i]?.length,
-              }))
+                x: moment(s.startTime.seconds * 1000).format("MMM D"),
+                y: questions[i]?.length,
+            }))
             : [];
 
     const calcTickVals = (yMax: number) => {
@@ -92,7 +92,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         return session.assignedQuestions == 0 ? 0 : session.totalWaitTime / session.assignedQuestions / 60;
     };
 
-    let averageWaitTimeLineChartQuestionsTest: { x: string; y: number }[] = [];
+    const averageWaitTimeLineChartQuestionsTest: { x: string; y: number }[] = [];
     let averageWaitTimeMax = 0;
     for (const session of sessions) {
         const x = moment(session.startTime.seconds * 1000).format("MMM D");
@@ -102,7 +102,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             averageWaitTimeLineChartQuestionsTest[lastIndex].y += y;
             averageWaitTimeMax = Math.max(averageWaitTimeMax, averageWaitTimeLineChartQuestionsTest[lastIndex].y);
         } else {
-            averageWaitTimeLineChartQuestionsTest.push({ x: x, y: y });
+            averageWaitTimeLineChartQuestionsTest.push({ x, y });
             averageWaitTimeMax = Math.max(averageWaitTimeMax, y);
         }
     }
@@ -117,28 +117,28 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
 
     // Bar Chart
     const sessionDict:
-        | {
-              [key: string]: {
-                  ta: string;
-                  online: true;
-                  questions: number;
-                  answered: number;
-                  startHour: string;
-                  endHour: string;
-              };
-          }
-        | {
-              [key: string]: {
-                  ta: string;
-                  online: false;
-                  questions: number;
-                  answered: number;
-                  startHour: string;
-                  endHour: string;
-                  building: string;
-                  room: string;
-              };
-          } = {};
+    | {
+        [key: string]: {
+            ta: string;
+            online: true;
+            questions: number;
+            answered: number;
+            startHour: string;
+            endHour: string;
+        };
+    }
+    | {
+        [key: string]: {
+            ta: string;
+            online: false;
+            questions: number;
+            answered: number;
+            startHour: string;
+            endHour: string;
+            building: string;
+            room: string;
+        };
+    } = {};
 
     sessions.forEach((t, i) => {
         if (t.modality === "virtual" || t.modality === "review") {
@@ -166,7 +166,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         }
     });
 
-    const barGraphData = sessions.map((s, i) => ({ [s.sessionId]: questions[i] ? questions[i].length : 0 }));
+    // const barGraphData = sessions.map((s, i) => ({ [s.sessionId]: questions[i] ? questions[i].length : 0 }));
 
     const chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
     return (
