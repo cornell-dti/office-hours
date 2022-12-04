@@ -16,6 +16,7 @@ import { firestore } from '../../firebase';
 
 import { RootState } from '../../redux/store';
 import Banner from './Banner';
+import TaAnnouncements from './TaAnnouncements';
 
 
 type Props = {
@@ -183,6 +184,9 @@ const SessionView = (
                 questions={questions.filter(q => q.status === 'unresolved')}
                 isPaused={session.isPaused}
             />
+
+
+            <TaAnnouncements />
 
             {undoQuestionId &&
                 <div className="undoContainer">
