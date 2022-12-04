@@ -69,7 +69,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         questions.length > 0
             ? sessions.map((s, i) => ({
                   x: moment(s.startTime.seconds * 1000).format("MMM D"),
-                  y: questions[i].length,
+                  y: questions[i]?.length,
               }))
             : [];
 
@@ -88,15 +88,24 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         return tickVals;
     };
 
-    const averageWaitTimeLineChartQuestions = sessions.map((s, i) => ({
-        x: moment(s.startTime.seconds * 1000).format("MMM D"),
-        y: s.assignedQuestions == 0 ? 0 : s.totalWaitTime / s.assignedQuestions / 60,
-    }));
+    const calculateAverageWaitTime = (session: FireSession) => {
+        return session.assignedQuestions == 0 ? 0 : session.totalWaitTime / session.assignedQuestions / 60;
+    };
 
-    const averageWaitTimeMax = Math.max.apply(
-        Math,
-        sessions.map((s) => (s.assignedQuestions == 0 ? 0 : s.totalWaitTime / s.assignedQuestions / 60))
-    );
+    let averageWaitTimeLineChartQuestionsTest: { x: string; y: number }[] = [];
+    let averageWaitTimeMax = 0;
+    for (const session of sessions) {
+        const x = moment(session.startTime.seconds * 1000).format("MMM D");
+        const y = calculateAverageWaitTime(session);
+        const lastIndex = averageWaitTimeLineChartQuestionsTest.length - 1;
+        if (averageWaitTimeLineChartQuestionsTest[lastIndex]?.x === x) {
+            averageWaitTimeLineChartQuestionsTest[lastIndex].y += y;
+            averageWaitTimeMax = Math.max(averageWaitTimeMax, averageWaitTimeLineChartQuestionsTest[lastIndex].y);
+        } else {
+            averageWaitTimeLineChartQuestionsTest.push({ x: x, y: y });
+            averageWaitTimeMax = Math.max(averageWaitTimeMax, y);
+        }
+    }
 
     const totalWaitTime = sessions.reduce((accumulator, session) => {
         return accumulator + session.totalWaitTime;
@@ -206,7 +215,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                         </p>
                                     </div>
                                 </div>
-                                <div className="questions-bar-container">
+                                {/* <div className="questions-bar-container">
                                     <div className="bar-graph">
                                         <QuestionsBarChart
                                             barData={barGraphData}
@@ -216,7 +225,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                             calcTickVals={calcTickVals}
                                         />
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                             <div className="Most-Crowded-Box">
                                 {busiestSessionInfo && (
@@ -225,10 +234,6 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                             <p className="crowd-title"> Most Crowded Day </p>
                                             <p className="maroon-date">
                                                 {busiestSessionInfo.dayOfWeek}, <br /> {busiestSessionInfo.date}
-                                            </p>
-                                            <p>
-                                                {busiestSessionInfo.totalQuestions} Questions Total /
-                                                {busiestSessionInfo.resolvedQuestions} Questions resolved
                                             </p>
                                         </div>
                                         <hr />
@@ -254,6 +259,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                         lineData={lineChartQuestions}
                                         yMax={chartYMax}
                                         calcTickVals={calcTickVals}
+                                        legend="questions"
                                     />
                                 </div>
                             </div>
@@ -261,14 +267,17 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                 <div className="most-crowded-text">
                                     <div>
                                         <p className="crowd-title">Average Wait Time</p>
-                                        <p className="maroon-date">{totalWaitTime / totalAssignedQuestions / 60}</p>
+                                        <p className="maroon-date">
+                                            {(totalWaitTime / totalAssignedQuestions / 60).toFixed(2)} minutes
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="questions-line-container">
                                     <QuestionsLineChart
-                                        lineData={averageWaitTimeLineChartQuestions}
+                                        lineData={averageWaitTimeLineChartQuestionsTest}
                                         yMax={averageWaitTimeMax}
                                         calcTickVals={calcTickVals}
+                                        legend="minutes"
                                     />
                                 </div>
                             </div>
