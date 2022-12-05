@@ -69,6 +69,8 @@ const ImportRolesModal = (
         setUploadType('none'); 
         setCSVErrorMessage('none');
         setSelectedFile(undefined);
+        setTAEmailList([]);
+        setProfessorEmailList([]);
     }
 
     const back = () => {
@@ -214,17 +216,14 @@ const ImportRolesModal = (
     const finishEnter = () => {
         if (EnterErrorMessage === 'none') {
             addTAandProfessors();
-            setShowImportModal(false);
-            setUploadType('none');
+            closeModal();
         }
     }
 
     const finishCSV = () => {
         if (selectedFile && CSVErrorMessage==='none') {
             addTAandProfessors();
-            setShowImportModal(false);
-            setUploadType('none');
-            setSelectedFile(undefined);
+            closeModal();
         }
     }
 
