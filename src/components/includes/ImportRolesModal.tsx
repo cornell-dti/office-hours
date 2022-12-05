@@ -17,10 +17,12 @@ type NewUser = {
 }
 
 const ImportRolesModal = (
-    { course, getAddedUsersList, getMissingUsers, showImportModal, setShowImportModal }: 
+    { course, getAddedUsersList, getMissingUsers, getDemotedUsers, showImportModal, setShowImportModal }: 
     { course: FireCourse | undefined; 
         getAddedUsersList: (emails: string[]) => void ; 
-        getMissingUsers: (emails: string[]) => void; showImportModal: boolean; 
+        getMissingUsers: (emails: string[]) => void; 
+        getDemotedUsers: (emails: string[]) => void; 
+        showImportModal: boolean; 
         setShowImportModal: Dispatch<SetStateAction<boolean>>;}
 ) => {
     const [uploadType, setUploadType] = useState('none');
@@ -167,8 +169,10 @@ const ImportRolesModal = (
             importProfessorsOrTAsFromCSV(course, role, list)?.then((users) => {
                 const addedEmails = users.updatedUsers.map(user => user.email);   
                 const missingEmails = Array.from(users.missingSet);  
+                const demotedEmails = Array.from(users.demotedSet);
                 getAddedUsersList(addedEmails);  
-                getMissingUsers(missingEmails);                               
+                getMissingUsers(missingEmails);  
+                getDemotedUsers(demotedEmails)                             
             });
         }
     }
@@ -178,16 +182,19 @@ const ImportRolesModal = (
             if (TAEmailList && TAEmailList.length !== 0 && professorEmailList && professorEmailList.length !== 0) {
                 importProfessorsOrTAsFromCSV(course, 'ta', TAEmailList)?.then((users) => {
                     const taAddedEmails = users.updatedUsers.map(user => user.email);  
-                    const taMissingEmails = Array.from(users.missingSet);  
+                    const taMissingEmails = Array.from(users.missingSet); 
+                    const taDemotedEmails = Array.from(users.demotedSet); 
                     const newCourse = users.courseChange;
-                    return {taAddedEmails, taMissingEmails, newCourse}
+                    return {taAddedEmails, taMissingEmails, taDemotedEmails, newCourse}
                 }).then((taEmails)=> {
                     const editedCourse = taEmails.newCourse;
                     importProfessorsOrTAsFromCSV(editedCourse, 'professor', professorEmailList)?.then((users) => {
                         const profAddedEmails = users.updatedUsers.map(user => user.email);   
                         const profMissingEmails = Array.from(users.missingSet);  
+                        const profDemotedEmails = Array.from(users.demotedSet);
                         getAddedUsersList(taEmails.taAddedEmails.concat(profAddedEmails));  
                         getMissingUsers(taEmails.taMissingEmails.concat(profMissingEmails));
+                        getDemotedUsers(taEmails.taDemotedEmails.concat(profDemotedEmails));
                     });
                 });
             }
