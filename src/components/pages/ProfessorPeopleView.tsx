@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { RouteComponentProps } from "react-router";
 import moment from "moment";
 import { DateRangePicker } from "react-dates";
+import { range } from "lodash";
+import { BarDatum } from "@nivo/bar";
+import QuestionsBarChart from "../includes/QuestionsBarChart";
+import QuestionsBar from "../includes/QuestionsBar";
 import ProfessorSidebar from "../includes/ProfessorSidebar";
 import QuestionsPieChart from "../includes/QuestionsPieChart";
 import QuestionsLineChart from "../includes/QuestionsLineChart";
@@ -65,13 +69,13 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     };
 
     // Line Chart
-    const lineChartQuestions =
-        questions.length > 0
-            ? sessions.map((s, i) => ({
-                x: moment(s.startTime.seconds * 1000).format("MMM D"),
-                y: questions[i]?.length,
-            }))
-            : [];
+    // const lineChartQuestions =
+    //     questions.length > 0
+    //         ? sessions.map((s, i) => ({
+    //             x: moment(s.startTime.seconds * 1000).format("MMM D"),
+    //             y: questions[i]?.length,
+    //         }))
+    //         : [];
 
     const calcTickVals = (yMax: number) => {
         if (yMax === 0) {
@@ -143,7 +147,6 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     sessions.forEach((t, i) => {
         if (t.modality === "virtual" || t.modality === "review") {
             sessionDict[t.sessionId] = {
-                // Ryan Todo
                 ta: "",
                 questions: questions[i] ? questions[i].length : 0,
                 answered: questions[i] && questions[i].filter((q) => q.status !== "unresolved").length,
@@ -153,7 +156,6 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             };
         } else {
             sessionDict[t.sessionId] = {
-                // Ryan Todo
                 ta: "",
                 questions: questions[i] ? questions[i].length : 0,
                 answered: questions[i] && questions[i].filter((q) => q.status !== "unresolved").length,
@@ -169,6 +171,26 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     // const barGraphData = sessions.map((s, i) => ({ [s.sessionId]: questions[i] ? questions[i].length : 0 }));
 
     const chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
+
+    const barGraphData: BarDatum[] = [];
+    const totalPerSession: number[] = [];
+    for (let i = 0; i < sessions.length; i++) {
+        const session = sessions[i];
+        const x = moment(session.startTime.seconds * 1000).format("MMM D");
+        const y = questions[i] ? questions[i].length : 0;
+        const lastIndex = barGraphData.length - 1;
+        if (barGraphData[lastIndex]?.x === x) {
+            barGraphData[lastIndex][session.sessionId] = y;
+            totalPerSession[i] += y;
+            // chartYMax = Math.max(chartYMax, totalPerSession[i]);
+        } else {
+            barGraphData.push({x});
+            barGraphData[lastIndex + 1][session.sessionId] = y;
+            totalPerSession[i] = y;
+            // chartYMax = Math.max(chartYMax, totalPerSession[i]);
+        }
+    }
+
     return (
         <div className="ProfessorView">
             <ProfessorSidebar courseId={courseId} code={(course && course.code) || "Loading"} selected={"people"} />
@@ -215,7 +237,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                         </p>
                                     </div>
                                 </div>
-                                {/* <div className="questions-bar-container">
+                                <div className="questions-bar-container">
                                     <div className="bar-graph">
                                         <QuestionsBarChart
                                             barData={barGraphData}
@@ -225,7 +247,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                             calcTickVals={calcTickVals}
                                         />
                                     </div>
-                                </div> */}
+                                </div>
                             </div>
                             <div className="Most-Crowded-Box">
                                 {busiestSessionInfo && (
@@ -255,9 +277,10 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                     </div>
                                 )}
                                 <div className="questions-line-container">
-                                    <QuestionsLineChart
-                                        lineData={lineChartQuestions}
+                                    <QuestionsBar
+                                        barData={barGraphData}
                                         yMax={chartYMax}
+                                        sessionKeys={sessions.map((s) => s.sessionId)}
                                         calcTickVals={calcTickVals}
                                         legend="questions"
                                     />
