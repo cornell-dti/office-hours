@@ -21,7 +21,6 @@ const QuestionsBarGraph: React.FC<Props> = (props) => {
     return (
         <div className="QuestionsLineChart" style={{ height: 300 }}>
             <ResponsiveBar
-            // colors="#979797"
                 data={props.barData}
                 indexBy="x"
                 keys={props.sessionKeys}
@@ -33,9 +32,6 @@ const QuestionsBarGraph: React.FC<Props> = (props) => {
                     bottom: 50,
                     left: 80,
                 }}
-                // tooltip={node => {
-                //     return this.createTooltipFunc(node.id as string);
-                // }}
                 tooltip={({ id, value }) => (
                     <div>
                         <strong>
@@ -47,17 +43,6 @@ const QuestionsBarGraph: React.FC<Props> = (props) => {
                         {value} Questions
                     </div>
                 )}
-                // xScale={{
-                //     type: "point",
-                // }}
-                // yScale={{
-                //     type: "linear",
-                //     stacked: false,
-                //     min: 0,
-                //     max: props.yMax,
-                // }}
-                // no custom tooltip for line yet
-                isInteractive={true}
                 axisLeft={{
                     legend: props.legend,
                     tickSize: 1,
@@ -86,19 +71,6 @@ const QuestionsBarGraph: React.FC<Props> = (props) => {
                 motionStiffness={90}
                 motionDamping={15}
                 legends={[]}
-
-            // enableGridX={false}
-            // pointSize={8}
-            // pointColor="#ffffff"
-            // pointBorderWidth={2}
-            // pointBorderColor="#999"
-            // enablePointLabel={false}
-            // // dotLabel="y"
-            // // dotLabelYOffset={-12}
-            // animate={true}
-            // motionStiffness={90}
-            // motionDamping={15}
-            // legends={[]}
             />
         </div>
     );
