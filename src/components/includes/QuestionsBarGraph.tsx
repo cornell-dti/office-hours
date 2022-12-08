@@ -40,7 +40,7 @@ const QuestionsBarGraph: React.FC<Props> = (props) => {
                         </strong>
                         <Icon name="clock" />
                         {props.sessionDict[id].startHour} - {props.sessionDict[id].endHour} <br />
-                        {value} Questions
+                        {value} Question(s)
                     </div>
                 )}
                 axisLeft={{
