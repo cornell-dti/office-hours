@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useHistory } from 'react-router';
 import {connect} from 'react-redux'
-import { useMyCourses } from '../../firehooks';
+import { useMyCourses, useIsAdmin } from '../../firehooks';
 
 import { CURRENT_SEMESTER } from '../../constants';
 import {updateSession} from '../../redux/actions/course'
@@ -20,6 +20,7 @@ const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): Reac
     const ref = React.useRef<HTMLDivElement>(null);
     const courses = useMyCourses();
     const history = useHistory();
+    const isAdmin = useIsAdmin();
 
     const handleClick = (e: globalThis.MouseEvent) => {
         if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -33,8 +34,8 @@ const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): Reac
         window.localStorage.setItem('lastid', String(course.courseId));
     };
 
-    const editClicked = () => {
-        history.push('/edit');
+    const navClicked = (page: string) => {
+        history.push(`/${page}`);
     };
 
     React.useEffect(() => {
@@ -68,12 +69,26 @@ const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): Reac
                                 </li>
                             ))}
                         {role && (
-                            <li>
-                                <div className="editClasses" onClick={() => editClicked()}>
+                            <>
+                                <li>
+                                    <div className="editClasses" onClick={() => navClicked('edit')}>
                                     Edit Classes
+                                    </div>
+                                </li>
+                            </>
+                        )}
+                        {isAdmin && <>
+                            <li>
+                                <div className="blogNav editClasses" onClick={() => navClicked('blog')}>
+                              Product Updates
                                 </div>
                             </li>
-                        )}
+                            <li>
+                                <div className="adminNav editClasses" onClick={() => navClicked('admin')}>
+                                Admin
+                                </div>
+                            </li>
+                        </>}
                     </ul>
                 )}
             </div>
