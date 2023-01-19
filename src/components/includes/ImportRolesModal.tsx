@@ -118,7 +118,7 @@ const ImportRolesModal = (
 
             const reader = new FileReader(); 
             reader.readAsText(selectedFile);
-            reader.onloadend = (e) => {
+            reader.onload = (e) => {
                 const csv = e.target?.result?.toString().trim();
                 const data = csv?.split(/\r\n|\n/);
                 
