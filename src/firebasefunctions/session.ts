@@ -57,7 +57,7 @@ export const deleteTaAnnouncement = (
     uploadTime: FireTimestamp,
 ) => {
     const newTaAnnouncements = oldSession.taAnnouncemements?.filter(
-            a => !((a.ta.userId == user.userId) && (a.announcement == announcement) && (a.uploadTime == uploadTime)))
+            a => !((a.ta.userId === user.userId) && (a.announcement === announcement) && (a.uploadTime === uploadTime)))
     const newSession: FireSession = {
         ...oldSession, 
         taAnnouncemements: newTaAnnouncements
