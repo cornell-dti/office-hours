@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { firestore } from 'firebase-admin';
+import firebase from 'firebase/app';
 import plusCircle from '../../media/plus-circle.svg';
-import chevronUp from '../../media/chevron-up.svg'
-import chevronDown from '../../media/chevron-down.svg'
-import announcement from '../../media/announcement.svg'
+import chevronUp from '../../media/chevron-up.svg';
+import chevronDown from '../../media/chevron-down.svg';
+import announcement from '../../media/announcement.svg';
 import { addTaAnnouncement, deleteTaAnnouncement } from '../../firebasefunctions/session';
 import { RootState } from '../../redux/store';
 
@@ -57,7 +57,7 @@ const TaAnnouncements = ({ user, session }: Props) => {
 
     const getTimeDifference = (announcement: TaAnnouncement) => {
         const announcementTime = announcement.uploadTime.toDate().getTime();
-        const currentTime = firestore.Timestamp.now().toDate().getTime();
+        const currentTime = firebase.firestore.Timestamp.now().toDate().getTime();
         const difference = currentTime - announcementTime;
         const minutes = Math.round(difference / 60000);
         return [Math.floor(minutes / 60), minutes % 60];
@@ -92,16 +92,21 @@ const TaAnnouncements = ({ user, session }: Props) => {
                                     <div className="Announcement" key={i}>
                                         <div className="AnnouncementHeading">
                                             <div>
-                                                <img src={announcement} className="AnnouncementIcon" />
+                                                <img 
+                                                    alt="Announcement Icon" 
+                                                    src={announcement} 
+                                                    className="AnnouncementIcon" 
+                                                />
                                                 <img
                                                     src={user ? user.photoUrl : '/placeholder.png'}
+                                                    alt="Profile"
                                                     className="AnnouncementTaPhoto"
                                                 />
                                                 {a.ta.firstName}
                                                 {a.ta.lastName}
                                                 {(a.ta.userId === user.userId) && "(You)"}
                                             </div>
-                                            <div>{getTimeDifference(a)[0] != 0 && getTimeDifference(a)[0] + ` hour`}
+                                            <div>{getTimeDifference(a)[0] !== 0 && getTimeDifference(a)[0] + ` hour`}
                                                 {getTimeDifference(a)[1]} min ago</div>
                                         </div>
                                         <div className="AnnouncementContent">

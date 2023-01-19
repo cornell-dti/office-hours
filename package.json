@@ -15,8 +15,6 @@
     "@types/node": "^12.12.15",
     "chai": "^4.2.0",
     "firebase": "^8.0.1",
-    "firebase-admin": "^9.3.0",
-    "firebase-functions": "^3.11.0",
     "twilio": "^3.71.3", 
     "history": "^4.10.1",
     "linkifyjs": "^2.1.9",

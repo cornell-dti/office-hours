@@ -118,7 +118,7 @@ const ImportRolesModal = (
 
             const reader = new FileReader(); 
             reader.readAsText(selectedFile);
-            reader.onload = (e) => {
+            reader.onloadend = (e) => {
                 const csv = e.target?.result?.toString().trim();
                 const data = csv?.split(/\r\n|\n/);
                 
@@ -141,7 +141,6 @@ const ImportRolesModal = (
 
                         if (!isValidEmail(email)) {
                             setCSVErrorMessage('*Invalid Email Address');
-                            
                         } 
                     });
 
