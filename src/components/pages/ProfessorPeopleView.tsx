@@ -28,7 +28,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const allQuestions = questions.flat();
     const totalQuestions = allQuestions.length;
     const unresolvedQuestions = allQuestions.filter((q) => q.status === "unresolved");
-    const percentUnresolved = Math.round((100 * unresolvedQuestions.length) / totalQuestions);
+    const percentUnresolved = totalQuestions ? Math.round((100 * unresolvedQuestions.length) / totalQuestions) : 100;
     const percentResolved = 100 - percentUnresolved;
 
     // Busiest Session Data
@@ -117,28 +117,28 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
 
     // Bar Chart
     const sessionDict:
-    | {
-        [key: string]: {
-            ta: string;
-            online: true;
-            questions: number;
-            answered: number;
-            startHour: string;
-            endHour: string;
-        };
-    }
-    | {
-        [key: string]: {
-            ta: string;
-            online: false;
-            questions: number;
-            answered: number;
-            startHour: string;
-            endHour: string;
-            building: string;
-            room: string;
-        };
-    } = {};
+        | {
+            [key: string]: {
+                ta: string;
+                online: true;
+                questions: number;
+                answered: number;
+                startHour: string;
+                endHour: string;
+            };
+        }
+        | {
+            [key: string]: {
+                ta: string;
+                online: false;
+                questions: number;
+                answered: number;
+                startHour: string;
+                endHour: string;
+                building: string;
+                room: string;
+            };
+        } = {};
 
     sessions.forEach((t, i) => {
         if (t.modality === "virtual" || t.modality === "review") {
@@ -268,7 +268,8 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                     <div>
                                         <p className="crowd-title">Average Wait Time</p>
                                         <p className="maroon-date">
-                                            {totalAssignedQuestions ? `${(totalWaitTime / totalAssignedQuestions / 60).toFixed(2)} minutes`
+                                            {totalAssignedQuestions ?
+                                                `${(totalWaitTime / totalAssignedQuestions / 60).toFixed(2)} minutes`
                                                 : "Not applicable"}
                                         </p>
                                     </div>
