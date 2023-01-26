@@ -73,7 +73,7 @@ const StudentMyQuestion = ({
     setRemoveQuestionId
 }: StudentMyQuestionProps) => {
 
-    if (studentQuestion == null) {
+    if (studentQuestion === null) {
         return <div />;
     }
 

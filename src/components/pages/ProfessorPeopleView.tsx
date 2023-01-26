@@ -89,7 +89,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     };
 
     const calculateAverageWaitTime = (session: FireSession) => {
-        return session.assignedQuestions == 0 ? 0 : session.totalWaitTime / session.assignedQuestions / 60;
+        return session.assignedQuestions === 0 ? 0 : session.totalWaitTime / session.assignedQuestions / 60;
     };
 
     const averageWaitTimeLineChartQuestionsTest: { x: string; y: number }[] = [];
@@ -268,7 +268,8 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                     <div>
                                         <p className="crowd-title">Average Wait Time</p>
                                         <p className="maroon-date">
-                                            {(totalWaitTime / totalAssignedQuestions / 60).toFixed(2)} minutes
+                                            {totalAssignedQuestions ? `${(totalWaitTime / totalAssignedQuestions / 60).toFixed(2)} minutes`
+                                                : "Not applicable"}
                                         </p>
                                     </div>
                                 </div>

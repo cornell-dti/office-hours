@@ -50,7 +50,7 @@ const SessionView = (
         setRemoveQuestionId, timeWarning, sessionBanners }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
-    const isProf = user.roles[course.courseId] == 'professor';
+    const isProf = user.roles[course.courseId] === 'professor';
     const tags = useCourseTags(course.courseId);
     const users = useCourseUsersMap(course.courseId, isTa);
     const [
