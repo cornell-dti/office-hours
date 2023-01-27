@@ -117,28 +117,28 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
 
     // Bar Chart
     const sessionDict:
-        | {
-            [key: string]: {
-                ta: string;
-                online: true;
-                questions: number;
-                answered: number;
-                startHour: string;
-                endHour: string;
-            };
-        }
-        | {
-            [key: string]: {
-                ta: string;
-                online: false;
-                questions: number;
-                answered: number;
-                startHour: string;
-                endHour: string;
-                building: string;
-                room: string;
-            };
-        } = {};
+    | {
+        [key: string]: {
+            ta: string;
+            online: true;
+            questions: number;
+            answered: number;
+            startHour: string;
+            endHour: string;
+        };
+    }
+    | {
+        [key: string]: {
+            ta: string;
+            online: false;
+            questions: number;
+            answered: number;
+            startHour: string;
+            endHour: string;
+            building: string;
+            room: string;
+        };
+    } = {};
 
     sessions.forEach((t, i) => {
         if (t.modality === "virtual" || t.modality === "review") {
