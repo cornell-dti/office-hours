@@ -141,7 +141,6 @@ const ImportRolesModal = (
 
                         if (!isValidEmail(email)) {
                             setCSVErrorMessage('*Invalid Email Address');
-                            
                         } 
                     });
 

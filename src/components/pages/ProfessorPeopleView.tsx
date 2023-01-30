@@ -29,9 +29,11 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     // Compute necessary data
     // Aggregate Stats
     const allQuestions = questions.flat();
-    const totalQuestions = allQuestions.length;
+    const totalQuestions = sessions.reduce((accumulator, session) => {
+        return accumulator + session.totalQuestions;
+    }, 0);
     const unresolvedQuestions = allQuestions.filter((q) => q.status === "unresolved");
-    const percentUnresolved = Math.round((100 * unresolvedQuestions.length) / totalQuestions);
+    const percentUnresolved = totalQuestions ? Math.round((100 * unresolvedQuestions.length) / totalQuestions) : 100;
     const percentResolved = 100 - percentUnresolved;
 
     // Busiest Session Data
@@ -67,7 +69,6 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         resolvedQuestions: busiestSession.resolvedQuestions,
     };
 
-    // Line Chart
     const calcTickVals = (yMax: number) => {
         if (yMax === 0) {
             return [0];
@@ -84,7 +85,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     };
 
     const calculateAverageWaitTime = (session: FireSession) => {
-        return session.assignedQuestions == 0 ? 0 : session.totalWaitTime / session.assignedQuestions / 60;
+        return session.assignedQuestions === 0 ? 0 : session.totalWaitTime / session.assignedQuestions / 60;
     };
 
     const averageWaitTimeLineChartQuestionsTest: { x: string; y: number }[] = [];
@@ -118,56 +119,6 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             startHour: string;
             endHour: string;
         };} = {}
-
-    // const sessionDict:
-    // {
-    //     [key: string]: {
-    //         ta: string;
-    //         online: true;
-    //         questions: number;
-    //         answered: number;
-    //         startHour: string;
-    //         endHour: string;
-    //     };
-    // }
-    // | {
-    //     [key: string]: {
-    //         ta: string;
-    //         online: false;
-    //         questions: number;
-    //         answered: number;
-    //         startHour: string;
-    //         endHour: string;
-    //         building: string;
-    //         room: string;
-    //     };
-    // } = {};
-
-    // sessions.forEach((t, i) => {
-    //     if (t.modality === "virtual" || t.modality === "review") {
-    //         sessionDict[t.sessionId] = {
-    //             ta: "",
-    //             questions: questions[i] ? questions[i].length : 0,
-    //             answered: questions[i] && questions[i].filter((q) => q.status !== "unresolved").length,
-    //             startHour: moment(t.startTime.seconds * 1000).format("h:mm a"),
-    //             endHour: moment(t.endTime.seconds * 1000).format("h:mm a"),
-    //             online: true,
-    //         };
-    //     } else {
-    //         sessionDict[t.sessionId] = {
-    //             ta: "",
-    //             questions: questions[i] ? questions[i].length : 0,
-    //             answered: questions[i] && questions[i].filter((q) => q.status !== "unresolved").length,
-    //             startHour: moment(t.startTime.seconds * 1000).format("h:mm a"),
-    //             endHour: moment(t.endTime.seconds * 1000).format("h:mm a"),
-    //             online: false,
-    //             building: t.building,
-    //             room: t.room,
-    //         };
-    //     }
-    // });
-
-    // const oldBarGraphData = sessions.map((s, i) => ({ [s.sessionId]: questions[i] ? questions[i].length : 0 }));
 
     let chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
 
@@ -297,7 +248,9 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                     <div>
                                         <p className="crowd-title">Average Wait Time</p>
                                         <p className="maroon-date">
-                                            {(totalWaitTime / totalAssignedQuestions / 60).toFixed(2)} minutes
+                                            {totalAssignedQuestions ?
+                                                `${(totalWaitTime / totalAssignedQuestions / 60).toFixed(2)} minutes`
+                                                : "Not applicable"}
                                         </p>
                                     </div>
                                 </div>

@@ -141,7 +141,7 @@ type FireCourseRole = 'professor' | 'ta' | 'student';
  * 1. Ids of all related courses of a user appear in the field `courses`.
  * 2. For each course id above
  *    - If the user's role is TA or professor, it will appear in the roles map.
- *    - Otherwise, it will not appear in the roles map. (i.e. `role == 'student'` will never appear!)
+ *    - Otherwise, it will not appear in the roles map. (i.e. `role === 'student'` will never appear!)
  * 3. The `roles` field are in sync with `FireCourse`'s `professors` and `tas` field
  *
  * @see FireCourse
