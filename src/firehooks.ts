@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import firebase from 'firebase/app';
 import { collectionData, docData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
-import { Observable, of, combineLatest } from 'rxjs';
+import { Observable, of, combineLatest, EMPTY } from 'rxjs';
 import moment from 'moment';
 import { firestore, loggedIn$ } from './firebase';
 import {
@@ -131,13 +131,14 @@ export const useCoursesBetweenDates = (
 
             // Fetch all questions for given sessions
             const questions$ = sessions$.pipe(
-                switchMap(s =>
-                    combineLatest(...s.map(session =>
-                        collectionData(
-                            firestore.collection('questions').where('sessionId', '==', session.sessionId),
-                            'questionId'
-                        )
-                    ))
+                switchMap(s => {
+                    return s.length > 0 ?
+                        combineLatest(...s.map(session =>
+                            collectionData(
+                                firestore.collection('questions').where('sessionId', '==', session.sessionId),
+                                'questionId'
+                            )
+                        )) : EMPTY;}
                 )
             );
 
