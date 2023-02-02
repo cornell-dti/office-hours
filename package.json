@@ -85,7 +85,7 @@
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^3.0.0",
     "firebase-tools": "^7.13.1",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "ts-mocha": "^8.0.0",
     "typescript": "^3.7.3"
   },
