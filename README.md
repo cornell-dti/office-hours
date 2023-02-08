@@ -34,6 +34,7 @@ _Screenshots showing major parts of app_
 * **Sung Woo Min** - Software Developer
 * **Erin Xu** - Software Developer
 * **Lily Pham** - Software Developer
+* **Sydney Tran** - Software Developer
 
 ### 2021-22
 * **Nada Attia** - Software Developer
