@@ -24,12 +24,14 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
                 <ul>
                     {course.professors.map(id => {
                         const professor = professorMap[id];
-                        if (professor === null) {
+                        if (professor === null || professor === undefined) {
                             return null;
                         }
                         return (
                             <li key={id}>
-                                {professor.firstName} {professor.lastName} ({professor.email})
+                                {professor.firstName ?? professor.firstName}
+                                {professor.lastName ?? professor.lastName}
+                                ({professor.email ?? professor.email})
                             </li>
                         );
                     })}
@@ -41,12 +43,14 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
                 <ul>
                     {course.tas.map(id => {
                         const ta = taMap[id];
-                        if (ta === null) {
+                        if (ta === null || ta === undefined) {
                             return null;
                         }
                         return (
                             <li key={id}>
-                                {ta.firstName} {ta.lastName} ({ta.email})
+                                {ta.firstName ?? ta.firstName} 
+                                {ta.lastName ?? ta.lastName} 
+                                ({ta.email ?? ta.email})
                             </li>
                         );
                     })}
