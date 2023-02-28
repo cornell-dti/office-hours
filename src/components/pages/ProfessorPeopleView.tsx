@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "react-router";
 import moment from "moment";
 import { DateRangePicker } from "react-dates";
@@ -35,6 +35,26 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const unresolvedQuestions = allQuestions.filter((q) => q.status === "unresolved");
     const percentUnresolved = totalQuestions ? Math.round((100 * unresolvedQuestions.length) / totalQuestions) : 100;
     const percentResolved = 100 - percentUnresolved;
+
+    // TA data
+    // questionTAs includes undefined (for unanswered questions) and duplicates 
+    const questionTAs = allQuestions.map((q) => courseUsers[q.answererId])
+    const allTAs = questionTAs.filter((ta, ind) => ta &&
+        ind === questionTAs.findIndex(elem => elem && elem.userId === ta.userId))
+    const [filteredTAs, setFilteredTAs] = useState<FireUser[]>([])
+    const [TAName, setTAName] = useState("")
+
+    useEffect(() => {
+        const input = TAName.split(" ")
+        if (input.length !== 0) {
+            const filtered = allTAs.filter((ta) =>
+                ta && ta.firstName.toLowerCase().includes(input[0]) &&
+                (input.length === 1 || ta.lastName.toLowerCase().includes(input[1])))
+            setFilteredTAs(filtered)
+        } else {
+            setFilteredTAs(allTAs)
+        }
+    }, [TAName]);
 
     // Busiest Session Data
     const busiestSessionIndex = questions.reduce(
@@ -173,6 +193,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             endHour: string;
             avgWaitTime: string;
         };
+    
     } = {};
 
     let chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
@@ -200,6 +221,64 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             barGraphData[lastIndex + 1][session.sessionId] = y;
             questionsByDay.push(y);
             chartYMax = Math.max(chartYMax, y);
+        }
+    }
+
+    // TA Chart
+    // const taQuestions = questions.flat().filter((q) => q.answererId === "jm0cHTzzw5Xejn2vLYmaoTY1Olq1")
+    let taChartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
+
+    if (sessions.length === 0) {
+        return (
+            <tbody>
+                <tr>
+                    <td colSpan={5} className="NoOH">
+                        <i>No office hours scheduled</i>
+                    </td>
+                </tr>
+            </tbody>
+        );
+    }
+
+
+    const idOfTA = (taName: string) => {
+        const taUser = allTAs.find(ta => ta && ta.firstName === taName);
+        // const taUser = null;
+        // users.forEach((u) => console.log(u.firstName))
+        // sessions.forEach((s) => console.log(getUsersFromSessions(sessions)))
+        // const u = getUsersFromSessions(sessions)
+        // console.log(users)
+        // console.log(taUser ? taUser.userId : "None");
+        console.log(filteredTAs)
+        return taUser
+            ? taUser.userId
+            : 'No TA Assigned';
+        // return " "
+    };
+
+    const taGraphData: BarDatum[] = [];
+    const taQuestionsByDay: number[] = [];
+    for (let i = 0; i < sessions.length; i++) {
+        const session = sessions[i];
+        sessionQuestionDict[session.sessionId] = {
+            ta: session.tas.join(", "),
+            startHour: moment(session.startTime.seconds * 1000).format("h:mm a"),
+            endHour: moment(session.endTime.seconds * 1000).format("h:mm a"),
+            location: (session.modality === "virtual" || session.modality === "review") ? "Online" : session.building,
+        };
+        const x = moment(session.startTime.seconds * 1000).format("MMM D");
+        const taQuestions = questions[i] ? questions[i].filter((q) => q.answererId === idOfTA("Erin")) : []
+        const y = taQuestions.length
+        const lastIndex = taGraphData.length - 1;
+        if (taGraphData[lastIndex]?.x === x) {
+            taGraphData[lastIndex][session.sessionId] = y;
+            taQuestionsByDay[taQuestionsByDay.length - 1] += y;
+            taChartYMax = Math.max(taChartYMax, taQuestionsByDay[taQuestionsByDay.length - 1]);
+        } else {
+            taGraphData.push({ x });
+            taGraphData[lastIndex + 1][session.sessionId] = y;
+            taQuestionsByDay.push(y);
+            taChartYMax = Math.max(taChartYMax, y);
         }
     }
 
@@ -261,6 +340,34 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                         />
                                     </div>
                                 </div> */}
+                            </div>
+                            <div className="Most-Crowded-Box">
+                                <div className="most-crowded-text">
+                                    <p className="maroon-date">
+                                        Select a TA
+                                    </p>
+                                    <input
+                                        placeholder={"Enter TA Name"}
+                                        onChange={(e) => setTAName(e.target.value.toLowerCase())}
+                                    />
+                                    {filteredTAs.map((ta) => (
+                                        <p>{ta.firstName} {ta.lastName}</p>
+                                    ))}
+                                </div>
+                                <div className="questions-line-container">
+                                    <QuestionsBarGraph
+                                        barData={taGraphData}
+                                        yMax={taChartYMax}
+                                        sessionKeys={sessions.map((s) => s.sessionId)}
+                                        calcTickVals={calcTickVals}
+                                        legend="questions"
+                                        sessionDict={sessionQuestionDict}
+                                    />
+                                </div>
+
+                            </div>
+                            <div>
+                                {filteredTAs.length}
                             </div>
                             <div className="Most-Crowded-Box">
                                 {busiestSessionInfo && (
