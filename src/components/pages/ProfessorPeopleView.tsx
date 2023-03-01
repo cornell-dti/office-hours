@@ -43,13 +43,14 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         ind === questionTAs.findIndex(elem => elem && elem.userId === ta.userId))
     const [filteredTAs, setFilteredTAs] = useState<FireUser[]>([])
     const [TAName, setTAName] = useState("")
+    const [selectedTA, setSelectedTA] = useState<FireUser>()
 
     useEffect(() => {
         const input = TAName.split(" ")
         if (input.length !== 0) {
             const filtered = allTAs.filter((ta) =>
-                ta && ta.firstName.toLowerCase().includes(input[0]) &&
-                (input.length === 1 || ta.lastName.toLowerCase().includes(input[1])))
+                ta && ta.firstName.toLowerCase().startsWith(input[0]) &&
+                (input.length === 1 || ta.lastName.toLowerCase().startsWith(input[1])))
             setFilteredTAs(filtered)
         } else {
             setFilteredTAs(allTAs)
@@ -240,22 +241,6 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         );
     }
 
-
-    const idOfTA = (taName: string) => {
-        const taUser = allTAs.find(ta => ta && ta.firstName === taName);
-        // const taUser = null;
-        // users.forEach((u) => console.log(u.firstName))
-        // sessions.forEach((s) => console.log(getUsersFromSessions(sessions)))
-        // const u = getUsersFromSessions(sessions)
-        // console.log(users)
-        // console.log(taUser ? taUser.userId : "None");
-        console.log(filteredTAs)
-        return taUser
-            ? taUser.userId
-            : 'No TA Assigned';
-        // return " "
-    };
-
     const taGraphData: BarDatum[] = [];
     const taQuestionsByDay: number[] = [];
     for (let i = 0; i < sessions.length; i++) {
@@ -267,7 +252,9 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             location: (session.modality === "virtual" || session.modality === "review") ? "Online" : session.building,
         };
         const x = moment(session.startTime.seconds * 1000).format("MMM D");
-        const taQuestions = questions[i] ? questions[i].filter((q) => q.answererId === idOfTA("Erin")) : []
+        const taQuestions = questions[i] ?
+            questions[i].filter((q) => selectedTA && q.answererId === selectedTA.userId)
+            : []
         const y = taQuestions.length
         const lastIndex = taGraphData.length - 1;
         if (taGraphData[lastIndex]?.x === x) {
@@ -329,45 +316,37 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                         </p>
                                     </div>
                                 </div>
-                                {/* <div className="questions-bar-container">
-                                    <div className="bar-graph">
-                                        <QuestionsBarChart
-                                            barData={barGraphData}
+                                <div className="Most-Crowded-Box">
+                                    <div className="most-crowded-text">
+                                        <p className="crown-title">TA Performance</p>
+                                        {selectedTA ?
+                                            (<div>
+                                                <p className="maroon-date">{selectedTA.firstName} {selectedTA.lastName}</p>
+                                                <p className="maroon-descript">{selectedTA.email}</p>
+                                            </div>) :
+                                            (<p className="maroon-date">Select a TA</p>)
+                                        }
+                                        <input
+                                            placeholder={"Enter TA Name"}
+                                            onChange={(e) => setTAName(e.target.value.toLowerCase())}
+                                        />
+                                        <div className="ta-results">
+                                            {filteredTAs.map((ta) => (
+                                                <button type="button" className="ta-result" onClick={e => setSelectedTA(ta)}>{ta.firstName} {ta.lastName}</button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="questions-line-container">
+                                        <QuestionsBarGraph
+                                            barData={taGraphData}
+                                            yMax={taChartYMax}
                                             sessionKeys={sessions.map((s) => s.sessionId)}
-                                            sessionDict={sessionDict}
-                                            yMax={chartYMax}
                                             calcTickVals={calcTickVals}
+                                            legend="questions"
+                                            sessionDict={sessionQuestionDict}
                                         />
                                     </div>
-                                </div> */}
-                            </div>
-                            <div className="Most-Crowded-Box">
-                                <div className="most-crowded-text">
-                                    <p className="maroon-date">
-                                        Select a TA
-                                    </p>
-                                    <input
-                                        placeholder={"Enter TA Name"}
-                                        onChange={(e) => setTAName(e.target.value.toLowerCase())}
-                                    />
-                                    {filteredTAs.map((ta) => (
-                                        <p>{ta.firstName} {ta.lastName}</p>
-                                    ))}
                                 </div>
-                                <div className="questions-line-container">
-                                    <QuestionsBarGraph
-                                        barData={taGraphData}
-                                        yMax={taChartYMax}
-                                        sessionKeys={sessions.map((s) => s.sessionId)}
-                                        calcTickVals={calcTickVals}
-                                        legend="questions"
-                                        sessionDict={sessionQuestionDict}
-                                    />
-                                </div>
-
-                            </div>
-                            <div>
-                                {filteredTAs.length}
                             </div>
                             <div className="Most-Crowded-Box">
                                 {busiestSessionInfo && (
