@@ -25,10 +25,6 @@ const CommentsContainer = ({ users, currentUser, addCommentsHelper, questionId,
                 <div className="commentsLine" onClick={switchCommentsVisible} />
             }
             <div className="allCommentsWrapper">
-                {showNewComment && !isPast && <NewComment
-                    currentUser={currentUser}
-                    addCommentsHelper={addCommentsHelper}
-                />}
                 {sortedComments.map((comment) => {
                     const poster = users[comment.commenterId];
                     return <UserComment
@@ -41,6 +37,10 @@ const CommentsContainer = ({ users, currentUser, addCommentsHelper, questionId,
                         isPast={isPast}
                     />
                 })}
+                {showNewComment && !isPast && <NewComment
+                    currentUser={currentUser}
+                    addCommentsHelper={addCommentsHelper}
+                />}
             </div>
         </div>
 
