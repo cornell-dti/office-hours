@@ -319,13 +319,15 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                 <div className="Most-Crowded-Box">
                                     <div className="most-crowded-text">
                                         <p className="crown-title">TA Performance</p>
-                                        {selectedTA ?
-                                            (<div>
-                                                <p className="maroon-date">{selectedTA.firstName} {selectedTA.lastName}</p>
-                                                <p className="maroon-descript">{selectedTA.email}</p>
-                                            </div>) :
-                                            (<p className="maroon-date">Select a TA</p>)
-                                        }
+                                        <div className="ta-info">
+                                            {selectedTA ?
+                                                (<div>
+                                                    <p className="maroon-date">{selectedTA.firstName} {selectedTA.lastName}</p>
+                                                    <p className="maroon-descript">{selectedTA.email}</p>
+                                                </div>) :
+                                                (<p className="maroon-date">Select a TA</p>)
+                                            }
+                                        </div>
                                         <input
                                             placeholder={"Enter TA Name"}
                                             onChange={(e) => setTAName(e.target.value.toLowerCase())}
