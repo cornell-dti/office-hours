@@ -4,6 +4,7 @@ import moment from "moment";
 import { DateRangePicker } from "react-dates";
 import { BarDatum } from "@nivo/bar";
 // import QuestionsBarChart from "../includes/QuestionsBarChart";
+import { ConversationList } from "twilio/lib/rest/conversations/v1/conversation";
 import QuestionsBarGraph from "../includes/QuestionsBarGraph";
 import ProfessorSidebar from "../includes/ProfessorSidebar";
 import QuestionsPieChart from "../includes/QuestionsPieChart";
@@ -44,6 +45,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const [filteredTAs, setFilteredTAs] = useState<FireUser[]>([])
     const [TAName, setTAName] = useState("")
     const [selectedTA, setSelectedTA] = useState<FireUser>()
+    const [showTADropdown, setShowTADropdown] = useState(false)
 
     useEffect(() => {
         if (TAName.length !== 0) {
@@ -51,7 +53,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                 ta && ta.email.toLowerCase().startsWith(TAName))
             setFilteredTAs(filtered)
         } else {
-            setFilteredTAs(allTAs)
+            setFilteredTAs([])
         }
     }, [TAName]);
 
@@ -224,7 +226,6 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     }
 
     // TA Chart
-    // const taQuestions = questions.flat().filter((q) => q.answererId === "jm0cHTzzw5Xejn2vLYmaoTY1Olq1")
     let taChartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
 
     if (sessions.length === 0) {
@@ -391,12 +392,15 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                     <input
                                         placeholder={"Enter TA NetID"}
                                         onChange={(e) => setTAName(e.target.value.toLowerCase())}
+                                        onFocus={(e) => setShowTADropdown(true)}
+                                        onBlur={(e) => setShowTADropdown(false)}
                                     />
-                                    <div className="ta-results">
-                                        {filteredTAs.map((ta) => (
-                                            <button type="button" className="ta-result" onClick={e => setSelectedTA(ta)}>{ta.firstName} {ta.lastName} ({ta.email.split("@")[0]})</button>
-                                        ))}
-                                    </div>
+                                    {showTADropdown && filteredTAs.length !== 0 &&
+                                        (<div className="ta-results">
+                                            {filteredTAs.map((ta) => (
+                                                <button type="button" className="ta-result" onMouseDown={e => { setSelectedTA(ta) }}>{ta.firstName} {ta.lastName} ({ta.email.split("@")[0]})</button>
+                                            ))}
+                                        </div>)}
                                 </div>
                                 <div className="questions-line-container">
                                     <QuestionsBarGraph
