@@ -46,11 +46,9 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const [selectedTA, setSelectedTA] = useState<FireUser>()
 
     useEffect(() => {
-        const input = TAName.split(" ")
-        if (input.length !== 0) {
+        if (TAName.length !== 0) {
             const filtered = allTAs.filter((ta) =>
-                ta && ta.firstName.toLowerCase().startsWith(input[0]) &&
-                (input.length === 1 || ta.lastName.toLowerCase().startsWith(input[1])))
+                ta && ta.email.toLowerCase().startsWith(TAName))
             setFilteredTAs(filtered)
         } else {
             setFilteredTAs(allTAs)
@@ -318,34 +316,21 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                 </div>
                                 <div className="Most-Crowded-Box">
                                     <div className="most-crowded-text">
-                                        <p className="crown-title">TA Performance</p>
-                                        <div className="ta-info">
-                                            {selectedTA ?
-                                                (<div>
-                                                    <p className="maroon-date">{selectedTA.firstName} {selectedTA.lastName}</p>
-                                                    <p className="maroon-descript">{selectedTA.email}</p>
-                                                </div>) :
-                                                (<p className="maroon-date">Select a TA</p>)
-                                            }
-                                        </div>
-                                        <input
-                                            placeholder={"Enter TA Name"}
-                                            onChange={(e) => setTAName(e.target.value.toLowerCase())}
-                                        />
-                                        <div className="ta-results">
-                                            {filteredTAs.map((ta) => (
-                                                <button type="button" className="ta-result" onClick={e => setSelectedTA(ta)}>{ta.firstName} {ta.lastName}</button>
-                                            ))}
+                                        <div>
+                                            <p className="crowd-title">Average Wait Time</p>
+                                            <p className="maroon-date">
+                                                {totalAssignedQuestions ?
+                                                    `${(totalWaitTime / totalAssignedQuestions / 60).toFixed(2)} minutes`
+                                                    : "Not applicable"}
+                                            </p>
                                         </div>
                                     </div>
                                     <div className="questions-line-container">
-                                        <QuestionsBarGraph
-                                            barData={taGraphData}
-                                            yMax={taChartYMax}
-                                            sessionKeys={sessions.map((s) => s.sessionId)}
+                                        <QuestionsLineChart
+                                            lineData={averageWaitTimeLineChartQuestionsTest}
+                                            yMax={averageWaitTimeMax}
                                             calcTickVals={calcTickVals}
-                                            legend="questions"
-                                            sessionDict={sessionQuestionDict}
+                                            legend="minutes"
                                         />
                                     </div>
                                 </div>
@@ -390,19 +375,57 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                             </div>
                             <div className="Most-Crowded-Box">
                                 <div className="most-crowded-text">
+                                    <p className="crown-title">TA Performance</p>
+                                    <div className="ta-info">
+                                        {selectedTA ?
+                                            (<div>
+                                                <p className="maroon-date">{selectedTA.firstName} {selectedTA.lastName}</p>
+                                                <p className="maroon-descript">{selectedTA.email}</p>
+                                            </div>) :
+                                            (<div>
+                                                <p className="maroon-date">No TA Selected </p>
+                                                <p className="maroon-descript">Search for a TA using NetID</p>
+                                            </div>)
+                                        }
+                                    </div>
+                                    <input
+                                        placeholder={"Enter TA NetID"}
+                                        onChange={(e) => setTAName(e.target.value.toLowerCase())}
+                                    />
+                                    <div className="ta-results">
+                                        {filteredTAs.map((ta) => (
+                                            <button type="button" className="ta-result" onClick={e => setSelectedTA(ta)}>{ta.firstName} {ta.lastName} ({ta.email.split("@")[0]})</button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="questions-line-container">
+                                    <QuestionsBarGraph
+                                        barData={taGraphData}
+                                        yMax={taChartYMax}
+                                        sessionKeys={sessions.map((s) => s.sessionId)}
+                                        calcTickVals={calcTickVals}
+                                        legend="questions"
+                                        sessionDict={sessionQuestionDict}
+                                    />
+                                </div>
+                            </div>
+                            <div className="Most-Crowded-Box">
+                                <div className="most-crowded-text">
                                     <div>
-                                        <p className="crowd-title">Average Wait Time</p>
+                                        <p className="crowd-title">Average Resolve Time</p>
                                         <p className="maroon-date">
-                                            {totalAssignedQuestions ? formattedAverageWaitTime() : "Not applicable"}
+                                            {totalAssignedQuestions ? formattedAverageResolveTime() : "Not applicable"}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="questions-line-container">
-                                    <QuestionsLineChart
-                                        lineData={averageWaitTimeLineChartQuestionsTest}
-                                        yMax={averageWaitTimeMax}
+                                    <QuestionsBarGraph
+                                        barData={taGraphData}
+                                        yMax={taChartYMax}
+                                        sessionKeys={sessions.map((s) => s.sessionId)}
                                         calcTickVals={calcTickVals}
-                                        legend="minutes"
+                                        legend="questions"
+                                        sessionDict={sessionQuestionDict}
                                     />
                                 </div>
                             </div>
