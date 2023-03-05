@@ -173,6 +173,7 @@ const SessionView = (
                 callback={backCallback}
                 isDesktop={isDesktop}
                 isTa={isTa}
+                isProf={isProf}
                 virtualLocation={sessionProfile?.virtualLocation}
                 assignedQuestion={assignedQuestion}
                 isOpen={isOpen(session, course.queueOpenInterval)}

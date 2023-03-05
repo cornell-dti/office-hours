@@ -25,6 +25,7 @@ type Props = {
     user: FireUser;
     isDesktop: boolean;
     isTa: boolean;
+    isProf: boolean;
     virtualLocation?: string;
     assignedQuestion?: FireOHQuestion;
     onUpdate: (virtualLocation: string) => void;
@@ -88,6 +89,7 @@ const SessionInformationHeader = ({
     user,
     isDesktop,
     isTa,
+    isProf,
     virtualLocation,
     assignedQuestion,
     onUpdate,
