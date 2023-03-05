@@ -46,15 +46,10 @@
 
   //End Datepicker CSS
 
-  .first-row-container::-webkit-scrollbar {
-    display: none;
-  }
-
   .first-row-container {
     display: flex;
     margin-top: 15px;
     justify-content: space-between;
-    overflow-x: scroll;
 
     .questions-bar-container {
       width: 80%;
