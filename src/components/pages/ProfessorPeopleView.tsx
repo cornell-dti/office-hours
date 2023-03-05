@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "react-router";
-import moment from "moment";
+import moment, { max } from "moment";
 import { DateRangePicker } from "react-dates";
 import { BarDatum } from "@nivo/bar";
 // import QuestionsBarChart from "../includes/QuestionsBarChart";
@@ -170,19 +170,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     }
 
     // TA Chart
-    let taChartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
-
-    if (sessions.length === 0) {
-        return (
-            <tbody>
-                <tr>
-                    <td colSpan={5} className="NoOH">
-                        <i>No office hours scheduled</i>
-                    </td>
-                </tr>
-            </tbody>
-        );
-    }
+    let taChartYMax = 8;
 
     const taGraphData: BarDatum[] = [];
     const taQuestionsByDay: number[] = [];
@@ -335,13 +323,19 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                     <input
                                         placeholder={"Enter TA NetID"}
                                         onChange={(e) => setTAName(e.target.value.toLowerCase())}
-                                        onFocus={(e) => setShowTADropdown(true)}
-                                        onBlur={(e) => setShowTADropdown(false)}
+                                        onFocus={() => setShowTADropdown(true)}
+                                        onBlur={() => setShowTADropdown(false)}
                                     />
                                     {showTADropdown && filteredTAs.length !== 0 &&
                                         (<div className="ta-results">
                                             {filteredTAs.map((ta) => (
-                                                <button type="button" className="ta-result" onMouseDown={e => { setSelectedTA(ta) }}>{ta.firstName} {ta.lastName} ({ta.email.split("@")[0]})</button>
+                                                <button
+                                                    type="button"
+                                                    className="ta-result"
+                                                    onMouseDown={() => setSelectedTA(ta)}
+                                                >
+                                                    {ta.firstName} {ta.lastName} ({ta.email.split("@")[0]})
+                                                </button>
                                             ))}
                                         </div>)}
                                 </div>
