@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "react-router";
-import moment, { max } from "moment";
+import moment from "moment";
 import { DateRangePicker } from "react-dates";
 import { BarDatum } from "@nivo/bar";
-// import QuestionsBarChart from "../includes/QuestionsBarChart";
-import { ConversationList } from "twilio/lib/rest/conversations/v1/conversation";
 import QuestionsBarGraph from "../includes/QuestionsBarGraph";
 import ProfessorSidebar from "../includes/ProfessorSidebar";
 import QuestionsPieChart from "../includes/QuestionsPieChart";
 import QuestionsLineChart from "../includes/QuestionsLineChart";
-// import QuestionsBarChart from "../includes/QuestionsBarChart";
 import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
 import { useCourse, useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
