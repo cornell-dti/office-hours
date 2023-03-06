@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 type Prop = {
-  msg: String;
+  msg: string;
 }
 
 const ChatMessage = (props: Prop) => {

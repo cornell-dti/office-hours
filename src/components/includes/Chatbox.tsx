@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
 import {connect} from 'react-redux'
-import '../../../src/styles/Chatbox.scss';
+import '../../styles/Chatbox.scss';
 import SendIcon from '../../media/send-icon.png';
 import Dropdown from '../../media/chevron-down.svg';
-import { firestore } from '../../firebase';
 import ChatMessage from './ChatMessage';
 
-import {useNotificationTracker} from '../../firehooks';
 import { RootState } from '../../redux/store';
 
 
@@ -30,18 +28,22 @@ const Chatbox = (props: Props) => {
     const [showChat, setShowChat] = useState(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : '/placeholder.png');
 
+    const userPhotoUrl = props.user ? props.user.photoUrl : '/placeholder.png';
+    useEffect(() => setImage(userPhotoUrl), [userPhotoUrl]);
+
     const user = props.user;
     const email: string | undefined = user?.email
 
 
+
     const [input, setInput] = useState("")
-    const [chatMessages, setChatMessages] = useState<String[]>()
+    const [chatMessages, setChatMessages] = useState<string[]>([])
 
 
     const handleKeyDown = (event: any) => {
-      if (event.key === 'Enter') {
+      if (event.key === 'Enter' && input != "") {
         sendMessage();
-        setChatMessages( (x) => chatMessages ? chatMessages.concat(input) : [])
+        setChatMessages( (x) => chatMessages.concat(input) )
       }
     }
 
@@ -54,24 +56,24 @@ const Chatbox = (props: Props) => {
 
     return (
         <div className="ChatBox" onBlur={() => setShowChat(false)}>
-          <div className="ChatBoxTop">
-            <header className="ChatBoxTopText">CS 1110 Queue Chat</header>
-            <img className="dropdownIcon" src={Dropdown} alt="" />
-          </div>
-          <div className="chatMessages">
-            {chatMessages && chatMessages.map(msg => <ChatMessage msg={msg}/>)}
-          </div>
-          <div className="send">
-            <img className="sendIcon" src={SendIcon} alt="" onClick={sendMessage}/>
-              <input
-                className="TextBox" 
-                value={input}
-                type="text" 
-                placeholder="Type something..." 
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown} 
-              />
-          </div>
+            <div className="ChatBoxTop">
+                <header className="ChatBoxTopText">CS 1110 Queue Chat</header>
+                <img className="dropdownIcon" src={Dropdown} alt="" />
+            </div>
+            <div className="chatMessages">
+                {chatMessages && chatMessages.map(msg => <ChatMessage msg={msg}/>)}
+            </div>
+            <div className="send">
+                <img className="sendIcon" src={SendIcon} alt="" onClick={sendMessage}/>
+                <input
+                    className="TextBox" 
+                    value={input}
+                    type="text" 
+                    placeholder="Type something..." 
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown} 
+                />
+            </div>
         </div>
     );
 };
