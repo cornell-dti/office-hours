@@ -394,8 +394,7 @@ class SessionQuestion extends React.Component<Props, State> {
                     {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
                         <p className={'Question' + studentCSS}>
                             {question.content}
-                            {this.props.isTA && question.status !== 'unresolved' && 
-                                question.timeAssigned !== undefined &&
+                            {this.props.isTA && question.status === 'assigned' && question.timeAssigned !== undefined &&
                                 <SessionQuestionTime assignedTime={question.timeAssigned.toDate().getTime()} />}
                         </p>}
                     {
