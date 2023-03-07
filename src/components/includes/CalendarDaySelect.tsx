@@ -9,7 +9,10 @@ const dayList = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
 
-type Props = { callback: (time: number) => void };
+type Props = { 
+    callback: (time: number) => void; 
+    sessionDates: Date[];
+};
 
 const CalendarDaySelect: React.FC<Props> = (props) => {
     const { callback } = props;
@@ -44,6 +47,15 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
     }, [callback, selectedWeekEpoch]);
 
     const now = new Date(selectedWeekEpoch);
+
+    const hasSessionDays = new Array(7);
+    const sessionDays = props.sessionDates
+        .filter((d) => d.getTime() >= selectedWeekEpoch && d.getTime() <= selectedWeekEpoch + ONE_WEEK)
+        .map((d) => d.getDay());
+    for (const d of sessionDays) {
+        hasSessionDays[((d - 1) + 7) % 7] = true;
+    }
+
     return (
         <div className="CalendarDaySelect">
             <p className="month">{monthNames[now.getMonth()]}</p>
@@ -62,6 +74,7 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
                     date={new Date(now.getTime() + i * ONE_DAY).getDate()}
                     active={i === active}
                     handleClick={handleDateClick}
+                    hasSession={hasSessionDays[i]}
                 />)}
                 <button type="button" className="NextWeek" onClick={() => incrementWeek(true)}>
                     <img src={chevron} alt="Next Week" />
