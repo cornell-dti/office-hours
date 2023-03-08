@@ -15,11 +15,13 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
     // const [viewOnlyMode, setViewOnlyMode] = useState(true);
     const [addedUsers, setAddedUsers] = useState<string[]>([]);
     const [missingUsers, setMissingUsers] = useState<string[]>([]);
+    const [demotedUsers, setDemotedUsers] = useState<string[]>([]);
     const [showImportModal, setShowImportModal] = useState<boolean>(false);
 
     const hide = () => {
         setAddedUsers([]);
         setMissingUsers([]);
+        setDemotedUsers([]);
         setShowImportModal(true);
     }
 
@@ -31,10 +33,15 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
         setMissingUsers(emails);
     }
 
+    const getDemotedUsers = (emails: string[]) => {   
+        setDemotedUsers(emails);
+    }
+
     const closeMessage = () => {
         
         setMissingUsers([]);
         setAddedUsers([]);
+        setDemotedUsers([]);
     }
 
     return (
@@ -45,6 +52,7 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
             <ImportRolesModal
                 getAddedUsersList={getAddedUsersList} 
                 getMissingUsers={getMissingUsers} 
+                getDemotedUsers={getDemotedUsers}
                 course={course}
                 showImportModal={showImportModal}
                 setShowImportModal={setShowImportModal}
@@ -58,13 +66,18 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
                             Import Professors/TAs
                         </button>
                     </div>
-                    {(missingUsers.length !== 0 || addedUsers.length !== 0) &&
+                    {(missingUsers.length !== 0 || addedUsers.length !== 0 || demotedUsers.length !== 0) &&
                         <div className="UploadPopUpMessageWrap">
                             <div className="UploadPopUpMessage">
-                                <p>{addedUsers.length !== 0 && 'Successfully added: ' + addedUsers.join(', ')}
+                                <p>{addedUsers.length !== 0 && 'Successfully Added: ' + addedUsers.join(', ')}
                                     {addedUsers.length !== 0 && missingUsers.length !== 0 && <br/>}
                                     {missingUsers.length !== 0 && 
-                                      'Pending Account Creation: ' + missingUsers.join(', ')}</p>
+                                      'Pending Account Creation: ' + missingUsers.join(', ')}
+                                    {(addedUsers.length !== 0 || missingUsers.length !== 0) && 
+                                        demotedUsers.length !== 0 && <br/>}
+                                    {demotedUsers.length !== 0 && 
+                                      'Failed Demotion: ' + demotedUsers.join(', ')} 
+                                </p>
                                 <img id="MessageCloseIcon" onClick={closeMessage} src={CloseIcon} alt="close"/>
                             </div>
                         </div>}

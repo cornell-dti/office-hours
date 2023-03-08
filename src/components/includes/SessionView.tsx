@@ -15,6 +15,7 @@ import { firestore } from '../../firebase';
 
 import { RootState } from '../../redux/store';
 import Banner from './Banner';
+import TaAnnouncements from './TaAnnouncements';
 
 
 type Props = {
@@ -49,6 +50,7 @@ const SessionView = (
         setRemoveQuestionId, timeWarning, sessionBanners }: Props
 ) => {
     const isTa = user.roles[course.courseId] !== undefined;
+    const isProf = user.roles[course.courseId] === 'professor';
     const tags = useCourseTags(course.courseId);
     const users = useCourseUsersMap(course.courseId, isTa);
     const [
@@ -182,6 +184,9 @@ const SessionView = (
                 isPaused={session.isPaused}
             />
 
+
+            <TaAnnouncements />
+
             {undoQuestionId &&
                 <div className="undoContainer">
                     <p className="undoClose" onClick={dismissUndo}>
@@ -201,6 +206,7 @@ const SessionView = (
             <SessionQuestionsContainer
                 session={session}
                 isTA={isTa}
+                isProf={isProf}
                 modality={session.modality}
                 myVirtualLocation={(sessionProfile && sessionProfile.virtualLocation) || undefined}
                 questions={session.modality === 'review' ? questions.filter(q => q.status !== 'retracted') :

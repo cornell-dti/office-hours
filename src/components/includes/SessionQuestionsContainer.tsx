@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Loader } from 'semantic-ui-react';
+import { useState } from 'react';
+import { Loader, Icon } from 'semantic-ui-react';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import SessionQuestion from './SessionQuestion';
@@ -18,6 +19,7 @@ type Props = {
     // Session used to update TAs on question answering
     readonly session: FireSession;
     readonly isTA: boolean;
+    readonly isProf: boolean;
     // Note that these questions are sorted by time asked
     readonly questions: readonly FireQuestion[];
     readonly users: { readonly [userId: string]: FireUser };
@@ -71,7 +73,7 @@ const StudentMyQuestion = ({
     setRemoveQuestionId
 }: StudentMyQuestionProps) => {
 
-    if (studentQuestion == null) {
+    if (studentQuestion === null) {
         return <div />;
     }
 
@@ -231,6 +233,10 @@ const SessionQuestionsContainer = (props: Props) => {
     const assignedQuestions = shownQuestions.filter((question) => {
         return question.status === 'assigned' && props.isTA && question.answererId === props.myUserId;
     });
+    const allAssignedQuestions = shownQuestions.filter((question) => {
+        return question.status === 'assigned' && question.answererId !== props.myUserId && props.isProf;
+    });
+    const [collapsed, setCollapsed] = useState(allAssignedQuestions.length === 0);
     const otherQuestions = shownQuestions.filter(question => question.status !== 'assigned' &&
         !assignedQuestions.includes(question));
 
@@ -270,7 +276,8 @@ const SessionQuestionsContainer = (props: Props) => {
                 </div>
             )}
             <div className={"SessionQuestionsContainer splitQuestions" +
-                ((shownQuestions && shownQuestions.length > 0 && (props.isTA || myQuestion)) ? ' whiteBackground' : '')}
+                ((shownQuestions && shownQuestions.length > 0 && (props.isTA || myQuestion)) ?
+                    ' whiteBackground' : '')}
             >
                 {!props.isTA && !myQuestion && props.isOpen && !props.isPaused && !props.haveAnotherQuestion ? (
                     props.course && props.session ? (
@@ -343,33 +350,35 @@ const SessionQuestionsContainer = (props: Props) => {
                                 Answered Questions
                             </div>
                         </div>
-                        {props.modality === 'review' && !filterByAnsweredQuestions && <div className="sortDiscussionQuestionsWrapper">
-                            <div className="discussionArrowsContainer">
-                                <img className="sortDiscussionArrow" src={SortArrows} alt="Sort by arrows" />
-                            </div>
-                            <p className="sortDiscussionQuestionsLabel">sort by</p>
-                            <div className="sortDiscussionQuestionsOptions">
-                                <div
-                                    className={'sortDiscussionsSlider' + (sortByUpvotes ? '' : ' slidedRight')}
-                                />
-                                <div
-                                    className={
-                                        'sortDiscussionQuestionsOption' + (sortByUpvotes ? ' optionChosen' : '')
-                                    }
-                                    onClick={() => setSortByUpvotes(true)}
-                                >
-                                    Most Upvotes
+                        {props.modality === 'review' && 
+                            !filterByAnsweredQuestions && 
+                            <div className="sortDiscussionQuestionsWrapper">
+                                <div className="discussionArrowsContainer">
+                                    <img className="sortDiscussionArrow" src={SortArrows} alt="Sort by arrows" />
                                 </div>
-                                <div
-                                    className={
-                                        'sortDiscussionQuestionsOption' + (sortByUpvotes ? '' : ' optionChosen')
-                                    }
-                                    onClick={() => setSortByUpvotes(false)}
-                                >
-                                    Most Recent
+                                <p className="sortDiscussionQuestionsLabel">sort by</p>
+                                <div className="sortDiscussionQuestionsOptions">
+                                    <div
+                                        className={'sortDiscussionsSlider' + (sortByUpvotes ? '' : ' slidedRight')}
+                                    />
+                                    <div
+                                        className={
+                                            'sortDiscussionQuestionsOption' + (sortByUpvotes ? ' optionChosen' : '')
+                                        }
+                                        onClick={() => setSortByUpvotes(true)}
+                                    >
+                                        Most Upvotes
+                                    </div>
+                                    <div
+                                        className={
+                                            'sortDiscussionQuestionsOption' + (sortByUpvotes ? '' : ' optionChosen')
+                                        }
+                                        onClick={() => setSortByUpvotes(false)}
+                                    >
+                                        Most Recent
+                                    </div>
                                 </div>
-                            </div>
-                        </div>}
+                            </div>}
                     </div>
                 )}
                 {filterByAnsweredQuestions ? (<>
@@ -418,6 +427,42 @@ const SessionQuestionsContainer = (props: Props) => {
                     props.modality !== 'review' &&
                     props.isTA &&
                     assignedQuestions.map((question, i: number) => (
+                        <SessionQuestion
+                            key={question.questionId}
+                            modality={props.modality}
+                            question={question}
+                            users={props.users}
+                            commentUsers={props.users}
+                            tags={props.tags}
+                            index={i}
+                            virtualLocation={props.myVirtualLocation}
+                            isTA={props.isTA}
+                            includeRemove={false}
+                            triggerUndo={props.triggerUndo}
+                            isPast={props.isPast}
+                            myUserId={props.myUserId}
+                            setShowModal={props.setShowModal}
+                            setRemoveQuestionId={props.setRemoveQuestionId}
+                        />
+                    ))}
+                    {allAssignedQuestions && allAssignedQuestions.length > 0 && props.isProf &&
+                    <>
+                        <div className="allAssignedHeader">
+                            <p className="QuestionHeader">All Assigned Questions</p>
+                            {collapsed ?
+                                <Icon name='chevron down' onClick={() => setCollapsed(false)} />
+                                :
+                                <Icon name='chevron up' onClick={() => setCollapsed(true)} />
+                            }
+                        </div>
+                    </>
+                    }
+                    {shownQuestions &&
+                    shownQuestions.length > 0 &&
+                    props.modality !== 'review' &&
+                    !collapsed &&
+                    props.isProf &&
+                    allAssignedQuestions.map((question, i: number) => (
                         <SessionQuestion
                             key={question.questionId}
                             modality={props.modality}

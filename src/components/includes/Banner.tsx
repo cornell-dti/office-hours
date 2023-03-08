@@ -1,5 +1,5 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import { updateTextPrompted } from '../../firebasefunctions/phoneNumber';
 import { removeBanner } from '../../redux/actions/announcements';
 import { RootState } from '../../redux/store';
@@ -14,14 +14,14 @@ type Props = {
     user: FireUser | undefined;
 }
 
-const Banner = ({icon, announcement, warning, global, noshow, removeBanner, user}: Props) => {
+const Banner = ({ icon, announcement, warning, global, noshow, removeBanner, user }: Props) => {
     const dontShow = () => {
         removeBanner(announcement, !global);
         updateTextPrompted(user?.userId);
     }
-    return ( <>
+    return (<>
         <div className={`banner__wrapper ${warning ? "banner__alert" : ""} ${global ? "banner__global" : ""}`} >
-            <div className="banner__left" > 
+            <div className="banner__left" >
                 <img src={icon} alt="Text icon" className="banner__icon" />
                 <div className="banner__text">{announcement}</div>
             </div>
@@ -46,7 +46,7 @@ Banner.defaultProps = {
 }
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user,
+    user: state.auth.user,
 })
 
-export default connect(mapStateToProps, {removeBanner})(Banner);
+export default connect(mapStateToProps, { removeBanner })(Banner);

@@ -1,22 +1,23 @@
-import * as React from 'react';
-import { ResponsiveLine, LineSerieData } from '@nivo/line';
+import * as React from "react";
+import { ResponsiveLine, LineSerieData } from "@nivo/line";
 
 type Props = {
     lineData: {
-        'x': string;
-        'y': number;
+        x: string;
+        y: number;
     }[];
     yMax: number;
     calcTickVals: (yMax: number) => number[];
+    legend: string;
 };
 
 const QuestionsLineChart: React.FC<Props> = (props) => {
     const data: LineSerieData[] = [
         {
-            'id': 'questions',
-            'color': 'hsl(100, 20%, 34%)',
-            'data': props.lineData
-        }
+            id: "questions",
+            color: "hsl(100, 20%, 34%)",
+            data: props.lineData,
+        },
     ];
     return (
         <div className="QuestionsLineChart" style={{ height: 300 }}>
@@ -24,38 +25,38 @@ const QuestionsLineChart: React.FC<Props> = (props) => {
                 colors="#979797"
                 data={data}
                 margin={{
-                    'top': 20,
-                    'right': 20,
-                    'bottom': 50,
-                    'left': 80
+                    top: 20,
+                    right: 20,
+                    bottom: 50,
+                    left: 80,
                 }}
                 xScale={{
-                    'type': 'point'
+                    type: "point",
                 }}
                 yScale={{
-                    'type': 'linear',
-                    'stacked': false,
-                    'min': 0,
-                    'max': props.yMax
+                    type: "linear",
+                    stacked: false,
+                    min: 0,
+                    max: props.yMax,
                 }}
                 // no custom tooltip for line yet
                 isInteractive={false}
                 axisLeft={{
-                    'legend': 'questions',
-                    'tickSize': 1,
-                    'tickPadding': 12,
-                    'tickRotation': 0,
-                    'legendOffset': -40,
-                    'legendPosition': 'end',
-                    'tickValues': props.calcTickVals(props.yMax)
+                    legend: props.legend,
+                    tickSize: 1,
+                    tickPadding: 12,
+                    tickRotation: 0,
+                    legendOffset: -40,
+                    legendPosition: "end",
+                    tickValues: props.calcTickVals(props.yMax),
                 }}
                 axisBottom={{
-                    'legend': '',
-                    'tickSize': 1,
-                    'tickPadding': 12,
-                    'tickRotation': -60,
-                    'legendOffset': 40,
-                    'legendPosition': 'end'
+                    legend: "",
+                    tickSize: 1,
+                    tickPadding: 12,
+                    tickRotation: -60,
+                    legendOffset: 40,
+                    legendPosition: "end",
                 }}
                 enableGridX={false}
                 pointSize={8}
@@ -72,6 +73,6 @@ const QuestionsLineChart: React.FC<Props> = (props) => {
             />
         </div>
     );
-}
+};
 
 export default QuestionsLineChart;

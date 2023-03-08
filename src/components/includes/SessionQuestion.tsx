@@ -417,7 +417,11 @@ class SessionQuestion extends React.Component<Props, State> {
                                         </p>
                                         :
                                         <p className="Begin" onClick={this.questionDontKnow}>
-                                            Unassign from me
+                                            {answerer &&
+                                                ('Unassign from  ' + (answerer.userId === this.props.myUserId
+                                                    ? 'me'
+                                                    : answerer.firstName + ' '
+                                                    + answerer.lastName))}
                                         </p>
                                     }
                                 </div>
