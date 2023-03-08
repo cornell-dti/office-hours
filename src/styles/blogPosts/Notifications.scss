@@ -10,11 +10,6 @@
         flex-direction: column;
         align-items: center;
     }
-    &__calendar {
-        position: relative;
-        margin-left: 2px;
-        padding-bottom: 1px;
-    }
     &__dropdown {
         position: absolute;
         z-index: 100;
