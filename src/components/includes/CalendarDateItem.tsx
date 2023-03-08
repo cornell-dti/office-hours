@@ -1,5 +1,5 @@
 import * as React from 'react';
-import notif from '../../media/notif.svg'
+import sessionIndicator from '../../media/sessionIndicator.svg'
 
 type Props = {
     index: number;
@@ -7,7 +7,8 @@ type Props = {
     day: string;
     date: number;
     handleClick: Function;
-    hasSession: boolean;
+    numSessions: number;
+    activeSession: number;
 };
 
 class CalendarDateItem extends React.PureComponent<Props> {
@@ -19,11 +20,11 @@ class CalendarDateItem extends React.PureComponent<Props> {
         return (
             <button type="button" className={'menuDate' + (this.props.active ? ' active' : '')} onClick={this._onClick}>
                 <div className="day">{this.props.day}</div>
-                <div className="notifications__calendar">
-                    {this.props.hasSession && 
-                        <img className="notifications__indicator" src={notif} alt="Notification indicator" />}
-                </div>
                 <div className="date">{this.props.date}</div>
+                <div className="indicator">
+                    {this.props.numSessions - this.props.activeSession !== 0 && 
+                        <img src={sessionIndicator} alt="session indicator" />}
+                </div>
             </button>
         );
     }
