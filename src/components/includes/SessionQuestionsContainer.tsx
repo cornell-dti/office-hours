@@ -317,7 +317,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         setRemoveQuestionId={props.setRemoveQuestionId}
                     />
                 )}
-                {shownQuestions && shownQuestions.length > 0 && (props.modality === 'review' || props.isTA) && (
+                {allQuestions && allQuestions.length > 0 && (props.modality === 'review' || props.isTA) && (
                     <div className="discussionHeaderWrapper">
                         <div className="discussionQuestionsSlider">
                             <div
@@ -343,7 +343,7 @@ const SessionQuestionsContainer = (props: Props) => {
                                 Answered Questions
                             </div>
                         </div>
-                        {props.modality === 'review' && <div className="sortDiscussionQuestionsWrapper">
+                        {props.modality === 'review' && !filterByAnsweredQuestions && <div className="sortDiscussionQuestionsWrapper">
                             <div className="discussionArrowsContainer">
                                 <img className="sortDiscussionArrow" src={SortArrows} alt="Sort by arrows" />
                             </div>
@@ -410,7 +410,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         // myQuestion={false}
                         />
                     ))}
-                    {assignedQuestions && assignedQuestions.length > 0 && props.isTA &&
+                    {assignedQuestions && assignedQuestions.length > 0 && props.modality !== 'review' && props.isTA &&
                     <p className="QuestionHeader">Assigned Questions</p>
                     }
                     {shownQuestions &&
