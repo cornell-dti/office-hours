@@ -202,7 +202,7 @@ const SessionQuestionsContainer = (props: Props) => {
 
 
     const compareUpvotes = (q1: FireDiscussionQuestion, q2: FireDiscussionQuestion) => {
-        if(!q1.upvotedUsers || !q2.upvotedUsers) return 0;
+        if(!q1 || !q1.upvotedUsers || !q2 || !q2.upvotedUsers) return 0;
         const upvoteDifference = q2.upvotedUsers.length - q1.upvotedUsers.length;
         if (upvoteDifference !== 0) return upvoteDifference;
         return q2.timeEntered.seconds - q1.timeEntered.seconds;
