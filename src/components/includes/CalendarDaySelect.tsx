@@ -49,17 +49,17 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
 
     const now = new Date(selectedWeekEpoch);
 
-    const numSessionsDays = new Array(7).fill(0);
+    const hasSessionsDays = new Array(7);
     const sessionDays = props.sessionDates
         .filter((d) => d.getTime() >= selectedWeekEpoch && d.getTime() <= selectedWeekEpoch + ONE_WEEK)
         .map((d) => d.getDay());
     for (const d of sessionDays) {
-        numSessionsDays[((d - 1) + 7) % 7] += 1;
+        hasSessionsDays[((d - 1) + 7) % 7] = true;
     }
 
-    const activeSessionDays = new Array(7).fill(0);
+    const activeSessionDays = new Array(7);
     if (props.activeSessionDay !== undefined) {
-        activeSessionDays[((props.activeSessionDay - 1) + 7) % 7] = 1;
+        activeSessionDays[((props.activeSessionDay - 1) + 7) % 7] = true;
     }
 
     return (
@@ -80,7 +80,7 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
                     date={new Date(now.getTime() + i * ONE_DAY).getDate()}
                     active={i === active}
                     handleClick={handleDateClick}
-                    numSessions={numSessionsDays[i]}
+                    hasSession={hasSessionsDays[i]}
                     activeSession={activeSessionDays[i]}
                 />)}
                 <button type="button" className="NextWeek" onClick={() => incrementWeek(true)}>

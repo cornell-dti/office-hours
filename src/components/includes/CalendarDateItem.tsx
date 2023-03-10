@@ -7,8 +7,8 @@ type Props = {
     day: string;
     date: number;
     handleClick: Function;
-    numSessions: number;
-    activeSession: number;
+    hasSession: boolean;
+    activeSession: boolean;
 };
 
 class CalendarDateItem extends React.PureComponent<Props> {
@@ -22,7 +22,7 @@ class CalendarDateItem extends React.PureComponent<Props> {
                 <div className="day">{this.props.day}</div>
                 <div className="date">{this.props.date}</div>
                 <div className="indicator">
-                    {this.props.numSessions - this.props.activeSession !== 0 && 
+                    {this.props.hasSession && !this.props.activeSession && 
                         <img src={sessionIndicator} alt="session indicator" />}
                 </div>
             </button>
