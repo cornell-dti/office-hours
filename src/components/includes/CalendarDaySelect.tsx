@@ -12,7 +12,6 @@ const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
 type Props = { 
     callback: (time: number) => void; 
     sessionDates: Date[];
-    activeSessionDay: number | undefined;
 };
 
 const CalendarDaySelect: React.FC<Props> = (props) => {
@@ -57,11 +56,6 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
         hasSessionsDays[((d - 1) + 7) % 7] = true;
     }
 
-    const activeSessionDays = new Array(7);
-    if (props.activeSessionDay !== undefined) {
-        activeSessionDays[((props.activeSessionDay - 1) + 7) % 7] = true;
-    }
-
     return (
         <div className="CalendarDaySelect">
             <p className="month">{monthNames[now.getMonth()]}</p>
@@ -81,7 +75,6 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
                     active={i === active}
                     handleClick={handleDateClick}
                     hasSession={hasSessionsDays[i]}
-                    activeSession={activeSessionDays[i]}
                 />)}
                 <button type="button" className="NextWeek" onClick={() => incrementWeek(true)}>
                     <img src={chevron} alt="Next Week" />

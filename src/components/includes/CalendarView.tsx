@@ -69,7 +69,6 @@ const CalenderView = ({
             <CalendarDaySelect 
                 callback={setSelectedDate} 
                 sessionDates={sessionDates} 
-                activeSessionDay={isActiveSession? session?.startTime.toDate().getDay() : undefined} 
             />
             {course && user && sessions ? (
                 <CalendarSessions
