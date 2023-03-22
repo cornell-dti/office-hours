@@ -151,7 +151,7 @@ export default connect(mapStateToProps, {})(({ user, courseId, isAdminView }: Pr
                                     <RoleDropdown
                                         user={u}
                                         course={course}
-                                        disabled={u.email === user?.email}
+                                        disabled={isAdminView ? false : (u.email === user?.email)}
                                     />
                                 </Table.Cell>
                             </Table.Row>
