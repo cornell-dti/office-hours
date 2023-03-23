@@ -1,5 +1,79 @@
 .AdminView {
     position: relative;
+    .popup {
+        width: 100%;
+        height: 100vh;
+        position: fixed!important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        background-color: rgba(200, 200, 200, 0.5);
+        text-align: center;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+
+        .TCNum {
+            border-radius: 8px;
+            border: 1px solid rgba(64, 60, 67, .54);
+            box-shadow: 0 1px 3px 1px rgba(64, 60, 67, .08);
+            width: 40px;
+        }
+      
+        .buttons {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            width: 100%;
+            margin-top:10px;
+            .Cancel, .Confirm {
+                cursor: pointer;
+                border-radius: 10px;
+                padding:5px;
+                margin: 0;
+                &:hover {
+                    transition: all .2s;
+                    transform:translate(-1px, -1px);
+                    box-shadow: 0 2px 5px 1px rgba(64, 60, 67, .16);
+                }
+            }
+        }
+        .popupContainer {
+          white-space: nowrap;
+          text-overflow: clip;
+          display: inline-block;
+          background-color:#FFF;
+          box-shadow:0 2px 8px 1px rgba(64, 60, 67, .24);
+          padding: 12px;
+          border-radius: 8px;
+
+          .resolvedQuestionBadge {
+            border-radius: 8px;
+            margin-left: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .resolvedQuestionText {
+              color: black;
+              font-size: 20px;
+              font-weight: 500;
+              width: auto;
+              margin: 0;
+              font-family: Roboto;
+              font-style: normal;
+              padding: 5px;
+            }
+            .resolvedCheckImage {
+              padding: 0px;
+              margin: 3px;
+              width: 40px;
+              height: 40px;
+              background: white;
+            }
+          }
+        }
+      }
     .course-container {
         width: 100%;
         display: flex;
