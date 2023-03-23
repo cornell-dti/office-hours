@@ -8,7 +8,7 @@ type Props = {
 const NewComment = ({currentUser, addCommentsHelper}: Props) => {
     const [currentComment, setCurrentComment] = useState('');
 
-    const newCommentHandler = (e : React.FormEvent) => {
+    const newCommentHandler = (e: React.FormEvent) => {
         e.preventDefault();
         addCommentsHelper(currentComment);
         setCurrentComment('');
