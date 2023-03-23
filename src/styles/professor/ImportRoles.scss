@@ -157,7 +157,7 @@
     }
     
     .CSVContainer {
-        height: 275px;
+        height: 375px;
         width: 430px;
         display: flex;
     
@@ -384,8 +384,8 @@
     }
 
     .DragDrop {
-        width: 323;
-        height: 110px;
+        width: 323px;
+        height: 210px;
         background: #F1EFEF;
         display: flex;
         justify-content: center;
@@ -412,6 +412,13 @@
             font-size: 15px;
             font-weight: 400;
             line-height: 18px;
+        }
+
+        .ExampleTypes {
+            font-size: 12px;
+            font-weight:200;
+            line-height: 8px;
+            text-align:left;
         }
 
         .FileName {

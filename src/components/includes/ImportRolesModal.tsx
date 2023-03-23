@@ -121,10 +121,10 @@ const ImportRolesModal = (
             }
 
             const reader = new FileReader(); 
-            reader.readAsText(selectedFile);
             reader.onload = (e) => {
                 const csv = e.target?.result?.toString().trim();
                 const data = csv?.split(/\r\n|\n/);
+                console.log(csv);
                 
                 if (data) {
                     const header = data[0].split(',');
@@ -135,6 +135,7 @@ const ImportRolesModal = (
                     }                    
 
                     data.slice(1).forEach(user => {
+                        console.log(user);
                         const userData = user.split(',');
                         const email = userData[0].trim();
 
@@ -150,6 +151,8 @@ const ImportRolesModal = (
 
                     const TAList = data.filter(user => user.split(',')[1] === 'TA');
                     const professorList = data.filter(user => user.split(',')[1] === 'Professor');
+                    console.log((TAList.length + professorList.length));
+                    console.log(data.length);
 
                     if (TAList.length + professorList.length !== data.length - 1) {
                         setCSVErrorMessage('*Please enter valid roles only (TA or Professor)');
@@ -161,6 +164,7 @@ const ImportRolesModal = (
                     setProfessorEmailList(professorEmailList);
                 }                
             }
+            reader.readAsText(selectedFile);
         }     
     }, [selectedFile]);
 
@@ -438,6 +442,9 @@ const ImportRolesModal = (
                                     : 
                                     <div>
                                         <p className="DropHere">Drag and drop your file here</p>
+                                        <p className="ExampleTypes">Example Formatting:</p>
+                                        <p className="ExampleTypes">Email,Role</p>
+                                        <p className="ExampleTypes">abn53@cornell.edu, TA</p>
                                         <p className="FileTypes">File Types: .csv .xlsx</p>
                                     </div>}
                             </div>   
