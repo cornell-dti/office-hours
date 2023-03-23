@@ -228,6 +228,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    overflow-wrap:anywhere;
   }
 
   .Question.Student {
@@ -237,13 +238,14 @@
   .Question.Time {
     float: right;
     font-size: 14px;
-    margin: -12px 13px 0px 0px;
+    margin: -12px 13px 0px 12px;
     padding: 4px 6px;
     color: white;
     background-color: $number-blue;
     border: solid $number-blue 0px;
     border-radius: 5px;
     text-align: center;
+    overflow-wrap: initial;
   }
 
   .CommentBox {

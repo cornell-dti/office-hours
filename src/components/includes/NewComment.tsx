@@ -8,7 +8,8 @@ type Props = {
 const NewComment = ({currentUser, addCommentsHelper}: Props) => {
     const [currentComment, setCurrentComment] = useState('');
 
-    const newCommentHandler = () => {
+    const newCommentHandler = (e : React.FormEvent) => {
+        e.preventDefault();
         addCommentsHelper(currentComment);
         setCurrentComment('');
     }
@@ -27,12 +28,14 @@ const NewComment = ({currentUser, addCommentsHelper}: Props) => {
                 </div>
 
                 }
-                <input
-                    placeholder="Type your reply here..."
-                    className="newCommentInput" 
-                    onChange={e => setCurrentComment(e.target.value)}
-                    value={currentComment}
-                />
+                <form onSubmit={newCommentHandler}>
+                    <input
+                        placeholder="Type your reply here..."
+                        className="newCommentInput" 
+                        onChange={e => setCurrentComment(e.target.value)}
+                        value={currentComment}
+                    />
+                </form>
                 <button
                     onClick={newCommentHandler}
                     className="addNewCommentButton"
