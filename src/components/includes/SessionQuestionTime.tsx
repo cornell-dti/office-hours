@@ -10,8 +10,7 @@ const SessionQuestionTime = ({ assignedTime }: Props) => {
     const formatTime = (milliseconds: number) => {
         const minutes = Math.floor(milliseconds / 60000);
         const seconds = Math.floor((milliseconds % 60000) / 1000);
-        const time = minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
-        return time;
+        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
     }
 
     useEffect(() => {
