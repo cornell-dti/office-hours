@@ -2,13 +2,23 @@ import React, { useState, useEffect } from 'react';
 import {useHistory} from 'react-router'
 import {Grid} from '@material-ui/core'
 import firebase from 'firebase/app';
-import { firestore } from '../../firebase';
+import moment from 'moment';
+import { firestore, Timestamp } from '../../firebase';
 
 import TopBar from '../includes/TopBar';
 import AdminCourseCard from '../includes/AdminCourseCard';
 import AdminCourseCreator from '../includes/AdminCourseCreator';
 import { useAllCourses, useIsAdmin } from '../../firehooks';
+import { importProfessorsOrTAsFromCSV} from '../../firebasefunctions/importProfessorsOrTAs';
 import { CURRENT_SEMESTER, START_DATE, END_DATE } from '../../constants';
+import { createSeries } from '../../firebasefunctions/series';
+
+enum Modality {
+    VIRTUAL = 'virtual',
+    HYBRID = 'hybrid',
+    INPERSON = 'in-person',
+    REVIEW = 'review',
+}
 
 
 const AdminView = () => {
@@ -24,7 +34,7 @@ const AdminView = () => {
         }
     }, [isAdmin, history])
 
-    const generateTestCourse = (num : string) => {
+    const generateTestCourse = (num: string) => {
         // create a course
         const year = (new Date(START_DATE)).getFullYear() % 100;
         const term = CURRENT_SEMESTER.substr(0, 2);
@@ -44,6 +54,57 @@ const AdminView = () => {
         firestore.collection('courses').doc(`TC00${num}-${term}-${year}`).set(course);
         setShowConfirmPopup(false);
         setTCNum("1");
+
+        // add a TA to the course
+        importProfessorsOrTAsFromCSV(course, 'TA', ['abn53@cornell.edu'])
+
+        // add a professor to the course
+        importProfessorsOrTAsFromCSV(course, 'Professor', ['abn53@cornell.edu'])
+
+        // construct a session every day
+        const virtualSeries: FireSessionSeriesDefinition = {
+            useTALink: false,
+            modality: Modality.VIRTUAL,
+            courseId: `TC00${num}-${term}-${year}`,
+            endTime: Timestamp.fromDate(moment().now().hours(24).minutes(59).seconds(59)),
+            startTime: Timestamp.fromDate(moment().now().hours(0).minutes(0).seconds(0)),
+            tas: [],
+            title: "Test Session Virtual",
+        };
+        const personSeries: FireSessionSeriesDefinition = {
+            modality: Modality.INPERSON,
+            courseId: `TC00${num}-${term}-${year}`,
+            endTime: Timestamp.fromDate(moment().now().hours(24).minutes(59).seconds(59)),
+            startTime: Timestamp.fromDate(moment().now().hours(0).minutes(0).seconds(0)),
+            tas: [],
+            title: "Test Session In Person",
+            building: 'Rhodes',
+            room: '412',
+        };
+        const reviewSeries: FireSessionSeriesDefinition = {
+            link: 'https://cornell.zoom.us/g/',
+            modality: Modality.REVIEW,
+            courseId: `TC00${num}-${term}-${year}`,
+            endTime: Timestamp.fromDate(moment().now().hours(24).minutes(59).seconds(59)),
+            startTime: Timestamp.fromDate(moment().now().hours(0).minutes(0).seconds(0)),
+            tas: [],
+            title: "Test Session Review",
+        };
+
+        // add one series for each day
+        for(let i = 0; i < 7; i++) {
+            createSeries(firestore, virtualSeries);
+            createSeries(firestore, personSeries);
+            createSeries(firestore, reviewSeries);
+            virtualSeries.startTime.add(1, 'd');
+            personSeries.startTime.add(1, 'd');
+            reviewSeries.startTime.add(1, 'd');
+            virtualSeries.endTime.add(1, 'd');
+            personSeries.endTime.add(1, 'd');
+            reviewSeries.endTime.add(1, 'd');
+        }
+
+        // can generate questions as needed during the tutorial
     }
 
     return (
@@ -73,13 +134,13 @@ const AdminView = () => {
                             />
                         </div>
                         <div className="buttons">
-                        <p className="Cancel" onClick={() => setShowConfirmPopup(false)}>
-                            Cancel
-                        </p>
-                        <p className="Confirm" onClick={() => generateTestCourse(TCNum)}>
-                            Confirm
-                        </p>
-                    </div>
+                            <p className="Cancel" onClick={() => setShowConfirmPopup(false)}>
+                                Cancel
+                            </p>
+                            <p className="Confirm" onClick={() => generateTestCourse(TCNum)}>
+                                Confirm
+                            </p>
+                        </div>
                     </div>
                 </div>
             )}
@@ -99,7 +160,8 @@ const AdminView = () => {
             <button 
                 type="button" 
                 className="create-course-btn"
-                onClick={() => setShowConfirmPopup(true)}>Generate Test Course</button>
+                onClick={() => setShowConfirmPopup(true)}
+            >Generate Test Course</button>
 
             {!inCreationMode &&
                 <button 
