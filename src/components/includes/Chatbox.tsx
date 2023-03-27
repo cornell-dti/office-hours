@@ -24,12 +24,20 @@ type Props = {
     snackbars: Announcement[];
 }
 
+type Message = {
+    message: string;
+    user: boolean;
+    name: string;
+    session: string;
+    timeSent: string;
+}
+
 const Chatbox = (props: Props) => {
     const [showChat, setShowChat] = useState(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : '/placeholder.png');
 
     const userPhotoUrl = props.user ? props.user.photoUrl : '/placeholder.png';
-    useEffect(() => setImage(userPhotoUrl), [userPhotoUrl]);
+    useEffect(() => setImage(userPhotoUrl), [userPhotoUrl]); 
 
     const user = props.user;
     const email: string | undefined = user?.email
@@ -48,11 +56,35 @@ const Chatbox = (props: Props) => {
     }
 
     const sendMessage = () => {
-      messages.push(input)
-      setInput("")
+    //   messages.push(input)
+    //   setInput("")
     }
 
-    const messages = ["test1","test2"]
+    var message1 : Message = {
+        message: "this is the first message you sent",
+        user: true,
+        name: "Lily Pham",
+        session: "",
+        timeSent: ""
+    }
+
+    var message2 : Message = {
+        message: "this was sent by someone else",
+        user: false,
+        name: "John Doe",
+        session: "",
+        timeSent: ""
+    }
+
+    var message3 : Message = {
+        message: "this very very very very super long message was sent by someone else but not sure if it will overflow",
+        user: false,
+        name: "John Doe",
+        session: "",
+        timeSent: ""
+    }
+
+    const messages = [message1, message2, message3, message3]
 
     return (
         <div className="ChatBox" onBlur={() => setShowChat(false)}>
@@ -61,7 +93,12 @@ const Chatbox = (props: Props) => {
                 <img className="dropdownIcon" src={Dropdown} alt="" />
             </div>
             <div className="chatMessages">
-                {chatMessages && chatMessages.map(msg => <ChatMessage msg={msg}/>)}
+                {/* {chatMessages && chatMessages.map(msg => <ChatMessage msg={msg} sentBySelf={true}/>)} */}
+                {messages && messages.map(msg => <ChatMessage 
+                    msg={msg.message} 
+                    sentBySelf={msg.user}
+                    name={msg.name}
+                />)}
             </div>
             <div className="send">
                 <img className="sendIcon" src={SendIcon} alt="" onClick={sendMessage}/>
