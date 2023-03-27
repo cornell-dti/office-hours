@@ -1,13 +1,27 @@
 import React, { useEffect, useState } from 'react';
+import '../../styles/Chatbox.scss';
+
 
 type Prop = {
   msg: string;
+  sentBySelf: boolean;
+  name: string;
 }
 
 const ChatMessage = (props: Prop) => {
-  return (
-    <header className='chatMessagesDisplayed'>{props.msg}</header>
-  );
+    return (
+        <div className='chatMessage'>
+            <p className='displayName'>{props.name}</p>
+
+            <div>
+                {props.sentBySelf ? 
+                <header className='chatMessagesSelf'>{props.msg}</header> : 
+                <header className='chatMessagesOther'>{props.msg}</header>}
+            </div>
+
+        </div>
+      
+    );
 }
 
 

@@ -9,6 +9,11 @@
   background: #FFFFFF;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
   border-radius: 8px 8px 8px 8px;
+
+  input {
+    border: 1px solid gray;
+    border-radius: 3px;
+  }
 }
 
 .ChatBoxTop {
@@ -45,8 +50,6 @@
   
 }
 
-
-
 .TextBox {
   position: fixed;
   bottom: 25px;
@@ -75,15 +78,35 @@
 }
 
 .chatMessages {
-  position: inherit;
+  position: relative;
   border: 5px;
-  bottom: 50px;
-  
+  top: 20px;
+  height: auto;
 
+  .chatMessage {
+    overflow-y:auto
+  }
+
+
+  .displayName {
+    font-size: 10px;
+  }
+  
+  .chatMessagesSelf {
+    // border: 1px solid gray;
+    align-items: right;
+  }
+
+  .chatMessagesOther {
+    background: #E6E6E6;
+    .displayName {
+      left: 0px;
+    }
+  }
   
   header {
-    padding: 3px 6px;  
-    margin: 15px 9px;
+    padding: 3px 0px;  
+    margin: 0px 8px;
     border-radius: 6px;
     background: #D6EAFE;
     font-size: 12px;
