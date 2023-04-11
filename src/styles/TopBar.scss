@@ -47,14 +47,30 @@
 
     .triggerArea {
         width: 100%;
-        padding: 8px;
+        // padding: 8px;
         display: flex;
+        height: 48px;
 
         .viewToggles {
+            padding-top: 8px;
+            padding-bottom: 8px;
             display: flex;
             flex-wrap: wrap;
             align-self: center;
             justify-content: center;
+            width: 60%;
+            height: 100%;
+
+            .Header {
+                height: 100%;
+
+                .CalendarHeader,
+                .CalendarHeaderProfessorView {
+                    height: 100%;
+                    padding: 0;
+                    margin-bottom: 0;
+                }
+            }
         }
 
         .QMILogo {
@@ -63,16 +79,42 @@
             width: 30px;
             margin-left: 46px;
         }
+
+        .leftContentWrapper,
         .rightContentWrapper {
             width: 20%;
+            max-width: 150px;
             display: flex;
             justify-content: center;
             align-items: center;
+
+            img {
+                margin-bottom: 0;
+            }
+
+            .notifications__top {
+                width: 45%;
+                padding: 0;
+                // margin: 0;
+            }
+
         }
 
+        .leftContentWrapper {
+            justify-content: left;
+        }
+
+        // .rightContentWrapper {
+        //     margin-right: 46px;
+        // }
+
         .userProfile {
+
             align-self: right;
             padding-bottom: 10px;
+            padding-top: 10px;
+            // width: 45%;
+            // overflow-x: hidden;
             transition-duration: 0.2s;
             transition-property: box-shadow, color;
             transition-timing-function: $curve-standard;
@@ -110,6 +152,8 @@
 @media only screen and (max-width: $mobile-breakpoint) {
     .userProfile {
         padding-right: 15px;
+        width: 30px !important;
+        margin-right: 15px;
     }
 
     .topBar {
