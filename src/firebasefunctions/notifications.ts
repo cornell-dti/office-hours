@@ -40,7 +40,7 @@ export const addDBNotification =
                     }
 
                     trackerRef.update(updatedTracker);
-                } else {
+                } else { // constructing the object 
                     const newTracker: NotificationTracker = {
                         id: email,
                         notificationList: [newNotification],
