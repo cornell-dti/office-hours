@@ -66,6 +66,14 @@ class QuestionsBarChart extends React.Component<Props> {
                             <span className="tool-stat"> {percent}% </span>
                             <br /> answered
                         </div>
+                        <div className="tool-flex">
+                            <span className="tool-stat">{session.questions*(percent/100)} </span>
+                            <br /> resolved
+                        </div>
+                        <div className="tool-flex">
+                            <span className="tool-stat">{session.questions*(1-percent/100)} </span>
+                            <br /> unresolved
+                        </div>
                     </div>
                 </div>
             );
