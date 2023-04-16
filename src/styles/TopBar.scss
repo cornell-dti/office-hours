@@ -47,7 +47,6 @@
 
     .triggerArea {
         width: 100%;
-        // padding: 8px;
         display: flex;
         height: 48px;
 
@@ -95,7 +94,6 @@
             .notifications__top {
                 width: 45%;
                 padding: 0;
-                // margin: 0;
             }
 
         }
@@ -104,17 +102,10 @@
             justify-content: left;
         }
 
-        // .rightContentWrapper {
-        //     margin-right: 46px;
-        // }
-
         .userProfile {
-
             align-self: right;
             padding-bottom: 10px;
             padding-top: 10px;
-            // width: 45%;
-            // overflow-x: hidden;
             transition-duration: 0.2s;
             transition-property: box-shadow, color;
             transition-timing-function: $curve-standard;
