@@ -12,6 +12,7 @@ import { useAllCourses, useIsAdmin } from '../../firehooks';
 import { importProfessorsOrTAsFromCSV} from '../../firebasefunctions/importProfessorsOrTAs';
 import { CURRENT_SEMESTER, START_DATE, END_DATE } from '../../constants';
 import { createSeries } from '../../firebasefunctions/series';
+import { createAssignment } from '../../firebasefunctions/tags';
 
 enum Modality {
     VIRTUAL = 'virtual',
@@ -38,7 +39,7 @@ const AdminView = () => {
         // create a course
         const year = (new Date(START_DATE)).getFullYear() % 100;
         const term = CURRENT_SEMESTER.substr(0, 2);
-        const course: Omit<FireCourse, 'courseId'> = {
+        const course: FireCourse = {
             name: `Test Course ${num}`,
             code: `TC 00${num}`,
             semester: `${term}${year}`,
@@ -49,35 +50,74 @@ const AdminView = () => {
             startDate: firebase.firestore.Timestamp.fromDate(new Date(START_DATE)),
             endDate: firebase.firestore.Timestamp.fromDate(new Date(END_DATE)),
             professors: [],
-            tas: []
+            tas: [],
+            courseId: `TC00${num}-${term}-${year}`
         };
         firestore.collection('courses').doc(`TC00${num}-${term}-${year}`).set(course);
         setShowConfirmPopup(false);
         setTCNum("1");
+        interface FireTag {
+            active: boolean;
+            courseId: string;
+            level: number;
+            tagId: string;
+            name: string;
+            parentTag?: string;
+        }
+
+        // create tags
+        const hw: Omit<FireTag, 'tagId' | 'level'> = {
+            active: true,
+            courseId: `TC00${num}-${term}-${year}`,
+            name: 'HW'
+        }
+        const hw1: NewTag = {
+            name: 'HW1',
+            id: "a9asaf67dfs"
+        };
+        const hw2: NewTag = {
+            name: 'HW2',
+            id: "2354jhi3g54y"
+        };
+        createAssignment(hw, [hw1, hw2])
+        const lab: Omit<FireTag, 'tagId' | 'level'> = {
+            active: true,
+            courseId: `TC00${num}-${term}-${year}`,
+            name: 'HW'
+        }
+        const lab1: NewTag = {
+            name: 'Lab 3',
+            id: "2634uyoy151f"
+        };
+        const lab2: NewTag = {
+            name: 'Lab 2',
+            id: "675j354ih7utfg"
+        };
+        createAssignment(lab, [lab1, lab2])
 
         // add a TA to the course
-        importProfessorsOrTAsFromCSV(course, 'TA', ['abn53@cornell.edu'])
+        importProfessorsOrTAsFromCSV(course, 'ta', ['abn53@cornell.edu']);
 
         // add a professor to the course
-        importProfessorsOrTAsFromCSV(course, 'Professor', ['abn53@cornell.edu'])
+        importProfessorsOrTAsFromCSV(course, 'professor', ['abn53@cornell.edu']);
 
         // construct a session every day
         const virtualSeries: FireSessionSeriesDefinition = {
             useTALink: false,
             modality: Modality.VIRTUAL,
             courseId: `TC00${num}-${term}-${year}`,
-            endTime: Timestamp.fromDate(moment().now().hours(24).minutes(59).seconds(59)),
-            startTime: Timestamp.fromDate(moment().now().hours(0).minutes(0).seconds(0)),
+            endTime: Timestamp.fromDate(moment().hours(24).minutes(59).seconds(59).toDate()),
+            startTime: Timestamp.fromDate(moment().hours(0).minutes(0).seconds(0).toDate()),
             tas: [],
-            title: "Test Session Virtual",
+            title: "Virtual Session",
         };
         const personSeries: FireSessionSeriesDefinition = {
             modality: Modality.INPERSON,
             courseId: `TC00${num}-${term}-${year}`,
-            endTime: Timestamp.fromDate(moment().now().hours(24).minutes(59).seconds(59)),
-            startTime: Timestamp.fromDate(moment().now().hours(0).minutes(0).seconds(0)),
+            endTime: Timestamp.fromDate(moment().hours(24).minutes(59).seconds(59).toDate()),
+            startTime: Timestamp.fromDate(moment().hours(0).minutes(0).seconds(0).toDate()),
             tas: [],
-            title: "Test Session In Person",
+            title: "In Person Session",
             building: 'Rhodes',
             room: '412',
         };
@@ -85,10 +125,10 @@ const AdminView = () => {
             link: 'https://cornell.zoom.us/g/',
             modality: Modality.REVIEW,
             courseId: `TC00${num}-${term}-${year}`,
-            endTime: Timestamp.fromDate(moment().now().hours(24).minutes(59).seconds(59)),
-            startTime: Timestamp.fromDate(moment().now().hours(0).minutes(0).seconds(0)),
+            endTime: Timestamp.fromDate(moment().hours(24).minutes(59).seconds(59).toDate()),
+            startTime: Timestamp.fromDate(moment().hours(0).minutes(0).seconds(0).toDate()),
             tas: [],
-            title: "Test Session Review",
+            title: "Review Session",
         };
 
         // add one series for each day
@@ -96,15 +136,13 @@ const AdminView = () => {
             createSeries(firestore, virtualSeries);
             createSeries(firestore, personSeries);
             createSeries(firestore, reviewSeries);
-            virtualSeries.startTime.add(1, 'd');
-            personSeries.startTime.add(1, 'd');
-            reviewSeries.startTime.add(1, 'd');
-            virtualSeries.endTime.add(1, 'd');
-            personSeries.endTime.add(1, 'd');
-            reviewSeries.endTime.add(1, 'd');
+            virtualSeries.startTime = Timestamp.fromDate(moment(virtualSeries.startTime.toDate()).add(1, 'd').toDate());
+            personSeries.startTime = virtualSeries.startTime;
+            reviewSeries.startTime = virtualSeries.startTime;
+            virtualSeries.endTime = Timestamp.fromDate(moment(virtualSeries.endTime.toDate()).add(1, 'd').toDate());
+            personSeries.endTime = virtualSeries.endTime;
+            reviewSeries.endTime = virtualSeries.endTime;
         }
-
-        // can generate questions as needed during the tutorial
     }
 
     return (
