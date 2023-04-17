@@ -107,7 +107,7 @@ const AdminView = () => {
             modality: Modality.VIRTUAL,
             courseId: `TC00${num}-${term}-${year}`,
             endTime: Timestamp.fromDate(moment().hours(24).minutes(59).seconds(59).toDate()),
-            startTime: Timestamp.fromDate(moment().hours(0).minutes(0).seconds(0).toDate()),
+            startTime: Timestamp.fromDate(moment().startOf('day').toDate()),
             tas: [],
             title: "Virtual Session",
         };
@@ -115,7 +115,7 @@ const AdminView = () => {
             modality: Modality.INPERSON,
             courseId: `TC00${num}-${term}-${year}`,
             endTime: Timestamp.fromDate(moment().hours(24).minutes(59).seconds(59).toDate()),
-            startTime: Timestamp.fromDate(moment().hours(0).minutes(0).seconds(0).toDate()),
+            startTime: Timestamp.fromDate(moment().startOf('day').toDate()),
             tas: [],
             title: "In Person Session",
             building: 'Rhodes',
@@ -126,7 +126,7 @@ const AdminView = () => {
             modality: Modality.REVIEW,
             courseId: `TC00${num}-${term}-${year}`,
             endTime: Timestamp.fromDate(moment().hours(24).minutes(59).seconds(59).toDate()),
-            startTime: Timestamp.fromDate(moment().hours(0).minutes(0).seconds(0).toDate()),
+            startTime: Timestamp.fromDate(moment().startOf('day').toDate()),
             tas: [],
             title: "Review Session",
         };
