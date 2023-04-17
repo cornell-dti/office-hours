@@ -1,7 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { Twilio } from 'twilio';
-import { TaskRouterGrant } from 'twilio/lib/jwt/AccessToken';
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
@@ -489,7 +488,7 @@ exports.onQuestionUpdate = functions.firestore
 
 exports.addQuestionsTutorial = functions.pubsub.schedule('30 23 * * *')
     .timeZone('America/New_York')
-    .onRun(async (context) => {
+    .onRun(async () => {
         const year = admin.firestore.Timestamp.now().toDate().getFullYear() % 100;
         const term = admin.firestore.Timestamp.now().toDate().getMonth() > 6 ? 'FA': 'SP';
         
@@ -504,15 +503,20 @@ exports.addQuestionsTutorial = functions.pubsub.schedule('30 23 * * *')
             .where('startTime', '>=', day)
             .where('startTime', '<=', endDate)
             .where('courseId', '==', `TC00${1}-${term}-${year}`);
-        const virtualSession = (await sessionsQuery.where('modality', '==', 'virtual').get()).docs[0].data() as FireSession;
-        const inPersonSession = (await sessionsQuery.where('modality', '==', 'in-person').get()).docs[0].data() as FireSession;
-        const reviewSession = (await sessionsQuery.where('modality', '==', 'review').get()).docs[0].data() as FireSession;
+        const virtualSession = (await sessionsQuery.where('modality', '==', 'virtual').get())
+            .docs[0].data() as FireSession;
+        const inPersonSession = (await sessionsQuery.where('modality', '==', 'in-person').get())
+            .docs[0].data() as FireSession;
+        const reviewSession = (await sessionsQuery.where('modality', '==', 'review').get())
+            .docs[0].data() as FireSession;
         const sessions = [virtualSession, inPersonSession, reviewSession];
 
 
         // get tags for questions
-        const hwtag = (await db.collection('tags').where('courseId', '==', `TC00${1}-${term}-${year}`).where('level', '==', 1).get()).docs[0].data() as FireTag;
-        const subtag = (await db.collection('tags').where('courseId', '==', `TC00${1}-${term}-${year}`).where('level', '==', 2).get()).docs[0].data() as FireTag;
+        const hwtag = (await db.collection('tags').where('courseId', '==', `TC00${1}-${term}-${year}`)
+            .where('level', '==', 1).get()).docs[0].data() as FireTag;
+        const subtag = (await db.collection('tags').where('courseId', '==', `TC00${1}-${term}-${year}`)
+            .where('level', '==', 2).get()).docs[0].data() as FireTag;
 
         // generate questions
         sessions.forEach(session => {
