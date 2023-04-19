@@ -21,6 +21,7 @@ import CommentsContainer from './CommentsContainer';
 import { RootState } from '../../redux/store';
 import CommentBubble from '../../media/chat_bubble.svg';
 import LatestCommentContainer from './LatestCommentContainer';
+import SessionQuestionTime from './SessionQuestionTime';
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -392,7 +393,12 @@ class SessionQuestion extends React.Component<Props, State> {
                         </div>
                     </div>
                     {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
-                        <p className={'Question' + studentCSS}>{question.content}</p>}
+                        <p className={'Question' + studentCSS}>
+                            {question.content}
+                            {this.props.isTA && question.status === 'assigned' && question.timeAssigned !== undefined 
+                            && !this.props.isPast &&
+                                <SessionQuestionTime assignedTime={question.timeAssigned.toDate().getTime()}/>}
+                        </p>}
                     {
                         this.props.isTA &&
                         <div className="Buttons">

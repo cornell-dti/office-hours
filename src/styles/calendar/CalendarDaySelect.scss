@@ -38,6 +38,7 @@ $red: #f67d7d;
     background-color: #fcd9d9;
     border-radius: 50%;
     margin: auto;
+    margin-left: -2px;
     height: 30px;
     width: 30px;
 }
@@ -48,7 +49,7 @@ $red: #f67d7d;
 
 .menuDate {
     cursor: pointer;
-    height: 54px;
+    height: 64px;
     width: 30px;
     background-color: transparent;
     border-color: transparent;
@@ -62,6 +63,7 @@ $red: #f67d7d;
             background-color: $red;
             border-radius: 50%;
             margin: auto;
+            margin-left: -2px;
             height: 30px;
             width: 30px;
         }
@@ -76,6 +78,10 @@ $red: #f67d7d;
     &>.date {
         font-size: 15px;
         padding: 6px 0px;
+    }
+
+    &>.indicator {
+        height: 15px;
     }
 
     &>.notification {
