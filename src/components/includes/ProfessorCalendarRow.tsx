@@ -81,7 +81,7 @@ const ProfessorCalendarRow = (props: {
                                 className="Delete"
                                 onClick={() => updateDeleteInfo(props.dayNumber, i)}
                             >
-                                <Icon name="x" />
+                                <Icon name="trash alternate outline" />
                             </button>
                         </td>
                     </tr>

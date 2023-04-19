@@ -1,3 +1,16 @@
+.commentPreview {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.expandPreview {
+  width: 2%;
+  margin: 1%;
+}
+
 .userComment {
   position: relative;
   width: 98%;
@@ -12,6 +25,13 @@
     background-color: #d6eafe;
     z-index: 100;
   }
+  &.Preview {
+    width: 96%;
+    background-color: white;
+    &.newComment {
+      background-color: #f2e4cf;
+    }
+  }
   &:last-child {
     margin-bottom: 0px;
   }
@@ -21,11 +41,20 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      &.Preview {
+        margin-left: -20px;
+        margin-bottom: 10px;
+      }
       .commentNameAndProfile {
         display: flex;
         padding: 0;
         align-items: center;
         margin-top: 10px;
+        &.Preview {
+          margin-top: 0px;
+          width: auto;
+          min-width: max-content;
+        }
         .commenterProfile {
           width: 25px;
           height: 25px;
@@ -37,10 +66,26 @@
           font-size: 13px;
         }
       }
+      .previewCommentBody {
+        color: #595959;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 300;
+        padding-left: 20px;
+        padding-right: 45px;
+        flex-grow: 1;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
       .commentTime {
         color: #6f6f6f;
         font-weight: 300;
         font-size: 12px;
+        &.Preview {
+          width: auto;
+          min-width: max-content;
+        }
       }
     }
     .commentBody {

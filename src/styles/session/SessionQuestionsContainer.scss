@@ -30,6 +30,19 @@
       margin-bottom: 16px;
     }
 
+    .allAssignedHeader {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+      padding-right: 10px;
+
+      .icon {
+        cursor: pointer;
+      }
+    }
+
     .Queue,
     .QuestionHeader {
       text-align: left;

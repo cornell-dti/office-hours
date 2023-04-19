@@ -25,6 +25,7 @@ $mobile-breakpoint: 920px;
 @import "./session/SessionPopularQuestion";
 @import "./session/SessionPopularQuestionsContainer";
 @import "./session/SessionQuestionsComponent";
+@import "./session/TaAnnouncements";
 @import "./session/SessionQuestionsContainer";
 @import "./session/TASessionView";
 @import "./session/SessionAlertModal";
@@ -82,6 +83,7 @@ $mobile-breakpoint: 920px;
 @import "./blogPosts/Notifications.scss";
 
 @import "./Announcements.scss";
+
 #root {
   height: 100%;
 }

@@ -18,17 +18,13 @@ const CommentsContainer = ({ users, currentUser, addCommentsHelper, questionId,
     switchCommentsVisible, deleteCommentsHelper, showNewComment, isPast }: Props) => {
 
     const comments = useParameterizedComments(questionId);
-    const sortedComments = [...comments].sort((c1, c2) => c2.timePosted.seconds - c1.timePosted.seconds);
+    const sortedComments = [...comments].sort((c1, c2) => c1.timePosted.seconds - c2.timePosted.seconds);
     return (
         <div className="commentsContainer">
             {(showNewComment || comments.length > 0) &&
                 <div className="commentsLine" onClick={switchCommentsVisible} />
             }
             <div className="allCommentsWrapper">
-                {showNewComment && !isPast && <NewComment
-                    currentUser={currentUser}
-                    addCommentsHelper={addCommentsHelper}
-                />}
                 {sortedComments.map((comment) => {
                     const poster = users[comment.commenterId];
                     return <UserComment
@@ -41,6 +37,10 @@ const CommentsContainer = ({ users, currentUser, addCommentsHelper, questionId,
                         isPast={isPast}
                     />
                 })}
+                {showNewComment && !isPast && <NewComment
+                    currentUser={currentUser}
+                    addCommentsHelper={addCommentsHelper}
+                />}
             </div>
         </div>
 

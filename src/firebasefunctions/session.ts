@@ -1,3 +1,4 @@
+import firebase from 'firebase/app';
 import { firestore } from '../firebase';
 
 export const addSession = (session: Omit<FireSession, 'sessionId'>) => {
@@ -28,4 +29,38 @@ export const getUsersFromSessions = async (sessions: FireSession[]): Promise<Fir
         userId: document.id,
         ...(document.data() as Omit<FireUser, 'userId'>)
     }));
+}
+
+export const addTaAnnouncement = (
+    oldSession: FireSession, 
+    user: FireUser, 
+    announcement: string) => {
+    const taAnnouncement: TaAnnouncement = {
+        ta: user, 
+        announcement, 
+        uploadTime: firebase.firestore.Timestamp.now()
+    }
+    const newSession: FireSession = {
+        ...oldSession, 
+        taAnnouncemements: 
+                oldSession.taAnnouncemements 
+                    ? [taAnnouncement, ...oldSession.taAnnouncemements]
+                    : [taAnnouncement] 
+    }
+    firestore.collection('sessions').doc(oldSession.sessionId).update(newSession);
+}
+
+export const deleteTaAnnouncement = (
+    oldSession: FireSession, 
+    user: FireUser, 
+    announcement: string, 
+    uploadTime: FireTimestamp,
+) => {
+    const newTaAnnouncements = oldSession.taAnnouncemements?.filter(
+            a => !((a.ta.userId === user.userId) && (a.announcement === announcement) && (a.uploadTime === uploadTime)))
+    const newSession: FireSession = {
+        ...oldSession, 
+        taAnnouncemements: newTaAnnouncements
+    }
+    firestore.collection('sessions').doc(oldSession.sessionId).update(newSession);
 }
