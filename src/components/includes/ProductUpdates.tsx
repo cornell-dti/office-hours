@@ -1,19 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import ProductUpdate from './ProductUpdate'
 import ProductUpdatesModal from './ProductUpdatesModal'
 import bugFix from '../../media/bugFix.svg';
 import notif from '../../media/notif.svg'
-import {viewedTrackable} from '../../firebasefunctions/notifications'
-import {useNotificationTracker, useProductUpdate} from '../../firehooks';
+import { viewedTrackable } from '../../firebasefunctions/notifications'
+import { useNotificationTracker, useProductUpdate } from '../../firehooks';
 import { RootState } from '../../redux/store';
 
 type ProductProps = {
     user: FireUser | undefined;
 }
 
-const ProductUpdates = ({user}: ProductProps) => {
+const ProductUpdates = ({ user }: ProductProps) => {
     const [singleUpdate, toggleSingleUpdate] = useState(false);
     const [seeAll, toggleSeeAll] = useState(false);
 
@@ -22,7 +22,15 @@ const ProductUpdates = ({user}: ProductProps) => {
 
     const productUpdate = useProductUpdate();
 
+    const [width, setWidth] = useState<number>(window.innerWidth);
+    const MOBILE_BREAKPOINT = 920;
+
     useEffect(() => {
+        const updateWindowDimensions = () => {
+            setWidth(window.innerWidth);
+        };
+
+        window.addEventListener('resize', updateWindowDimensions);
         toggleHasViewed(notificationTracker === undefined ||
             productUpdate === undefined || notificationTracker.productUpdates === undefined ||
             notificationTracker.productUpdates.toDate() >= productUpdate.timeEntered.toDate())
@@ -70,14 +78,16 @@ const ProductUpdates = ({user}: ProductProps) => {
 
     return (
         <div className="pruductUpdate__wrapper" ref={singleRef}>
-            <div className="productUpdates__singleToggler" onClick={() => iconClicked()}>
-                <img className="productUpdates__bugIcon" src={bugFix} alt="Bug fix icon" />
-                {!hasViewed && <img
-                    className="productUpdates__notification"
-                    src={notif}
-                    alt="Notification indicator"
-                />}
-            </div>
+            {width >= MOBILE_BREAKPOINT &&
+                (<div className="productUpdates__singleToggler" onClick={() => iconClicked()}>
+                    <img className="productUpdates__bugIcon" src={bugFix} alt="Bug fix icon" />
+                    {!hasViewed && <img
+                        className="productUpdates__notification"
+                        src={notif}
+                        alt="Notification indicator"
+                    />}
+                </div>)
+            }
             <div
                 className={`productUpdates__singleDisplay productUpdates__${singleUpdate ? "visible" : "hidden"}`}
                 onClick={e => e.stopPropagation()}
@@ -101,7 +111,7 @@ const ProductUpdates = ({user}: ProductProps) => {
 }
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
 

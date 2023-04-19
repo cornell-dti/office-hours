@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useHistory } from 'react-router';
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import { useMyCourses, useIsAdmin } from '../../firehooks';
 
 import { CURRENT_SEMESTER } from '../../constants';
-import {updateSession} from '../../redux/actions/course'
+import { updateSession } from '../../redux/actions/course'
 
 import Toggle from '../../media/Toggle.svg';
 
@@ -38,7 +38,15 @@ const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): Reac
         history.push(`/${page}`);
     };
 
+    const [width, setWidth] = React.useState<number>(window.innerWidth);
+    const MOBILE_BREAKPOINT = 920;
+
     React.useEffect(() => {
+        const updateWindowDimensions = () => {
+            setWidth(window.innerWidth);
+        };
+
+        window.addEventListener('resize', updateWindowDimensions);
         document.addEventListener('mousedown', handleClick);
         return () => {
             document.removeEventListener('mousedown', handleClick);
@@ -72,20 +80,20 @@ const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): Reac
                             <>
                                 <li>
                                     <div className="editClasses" onClick={() => navClicked('edit')}>
-                                    Edit Classes
+                                        Edit Classes
                                     </div>
                                 </li>
                             </>
                         )}
-                        {isAdmin && <>
+                        {width >= MOBILE_BREAKPOINT && isAdmin && <>
                             <li>
                                 <div className="blogNav editClasses" onClick={() => navClicked('blog')}>
-                              Product Updates
+                                    Product Updates
                                 </div>
                             </li>
                             <li>
                                 <div className="adminNav editClasses" onClick={() => navClicked('admin')}>
-                                Admin
+                                    Admin
                                 </div>
                             </li>
                         </>}
@@ -101,4 +109,4 @@ CalendarHeader.defaultProps = {
     // avatar: undefined
 }
 
-export default connect(null, {updateSession})(CalendarHeader);
+export default connect(null, { updateSession })(CalendarHeader);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import addNotification from 'react-push-notification';
 import { Icon } from 'semantic-ui-react';
 import { logOut } from '../../firebasefunctions/user';
@@ -8,7 +8,7 @@ import Logo from '../../media/QLogo2.svg';
 import CalendarHeader from './CalendarHeader';
 import ProfessorStudentToggle from './ProfessorStudentToggle';
 import TopBarNotifications from './TopBarNotifications'
-import {useNotificationTracker} from '../../firehooks';
+import { useNotificationTracker } from '../../firehooks';
 import { RootState } from '../../redux/store';
 import { updateLastSent } from '../../firebasefunctions/notifications';
 import Snackbar from "./Snackbar"
@@ -41,15 +41,23 @@ const TopBar = (props: Props) => {
     const email: string | undefined = user?.email
     const notificationTracker = useNotificationTracker(email);
 
+    const [width, setWidth] = useState<number>(window.innerWidth);
+    const MOBILE_BREAKPOINT = 920;
+
     useEffect(() => {
-        if(notificationTracker!== undefined && notificationTracker.notificationList !== undefined) {
-            for(let i = 0; i < notificationTracker.notificationList.length; i++) {
+        const updateWindowDimensions = () => {
+            setWidth(window.innerWidth);
+        };
+
+        window.addEventListener('resize', updateWindowDimensions);
+        if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
+            for (let i = 0; i < notificationTracker.notificationList.length; i++) {
                 const notif = notificationTracker.notificationList[i];
                 // checks that the notification was created after the last time notifications were sent
                 // adds 1000 to lastSent time because client and server TimeStamps seems to be slightly
                 // misaligned
-                if(notificationTracker.lastSent === undefined || 
-                    notif.createdAt.toDate().getTime() > 
+                if (notificationTracker.lastSent === undefined ||
+                    notif.createdAt.toDate().getTime() >
                     notificationTracker?.lastSent.toDate().getTime() + 2000) {
                     updateLastSent(user, notificationTracker);
                     addNotification({
@@ -59,7 +67,7 @@ const TopBar = (props: Props) => {
                         native: true
                     });
                     // hacky fix for duplicate notifs--server update to lastSent doesn't occur quickly enough
-                    setTimeout(() => {}, 100);
+                    setTimeout(() => { }, 100);
                 } else {
                     break;
                 }
@@ -84,7 +92,9 @@ const TopBar = (props: Props) => {
         <div className="MenuBox" onBlur={() => setShowMenu(false)} ref={ref}>
             <header className="topBar">
                 <div className="triggerArea">
-                    <img src={Logo} className="QMILogo" alt="Queue Me In Logo" />
+                    <div className="leftContentWrapper">
+                        <img src={Logo} className="QMILogo" alt="Queue Me In Logo" />
+                    </div>
                     <div className="viewToggles">
                         <CalendarHeader
                             currentCourseCode={(props.course && props.course.code) || 'Courses'}
@@ -94,7 +104,7 @@ const TopBar = (props: Props) => {
                                 (props.user.roles[props.course.courseId] || 'student' || props.admin)
                             }
                         />
-                        {props.role === 'professor' && (
+                        {width >= MOBILE_BREAKPOINT && props.role === 'professor' && (
                             <ProfessorStudentToggle courseId={props.courseId} context={props.context} />
                         )}
                     </div>
@@ -107,9 +117,9 @@ const TopBar = (props: Props) => {
                                 onError={() => setImage('/placeholder.png')}
                                 alt="User Profile"
                             />
-                            <span className="name">
+                            {width >= MOBILE_BREAKPOINT && (<span className="name">
                                 {props.user ? props.user.firstName + ' ' + props.user.lastName : 'Loading...'}
-                            </span>
+                            </span>)}
                         </div>
                     </div>
                 </div>
@@ -152,7 +162,7 @@ const TopBar = (props: Props) => {
                 setShowTextModal={setShowTextModal}
                 user={user}
             />
-            {props.snackbars.map(snackbar => (<Snackbar icon={snackbar.icon} announcement={snackbar.text}  />))}
+            {props.snackbars.map(snackbar => (<Snackbar icon={snackbar.icon} announcement={snackbar.text} />))}
         </div>
     );
 };
@@ -163,8 +173,8 @@ TopBar.defaultProps = {
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user,
-    snackbars : state.announcements.snackbars
+    user: state.auth.user,
+    snackbars: state.announcements.snackbars
 })
 
 
