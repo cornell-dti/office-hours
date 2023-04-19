@@ -20,6 +20,7 @@ import {
 import CommentsContainer from './CommentsContainer';
 import { RootState } from '../../redux/store';
 import CommentBubble from '../../media/chat_bubble.svg';
+import LatestCommentContainer from './LatestCommentContainer';
 import SessionQuestionTime from './SessionQuestionTime';
 
 // TODO_ADD_SERVER_CHECK
@@ -523,6 +524,14 @@ class SessionQuestion extends React.Component<Props, State> {
                         </div>
                     )}
                 </div >
+                {!this.state.areCommentsVisible &&
+                    <LatestCommentContainer
+                        users={this.props.commentUsers}
+                        questionId={question.questionId}
+                        reply={this.handleReplyButton}
+                        newComment={this.props.isTA ? question.taNew : question.studentNew}
+                    />
+                }
                 {
                     this.state.areCommentsVisible ?
                         < CommentsContainer
