@@ -74,6 +74,7 @@
             border-radius: 5px;
             background-color: white;
             z-index: 1;
+            animation: fadeIn 0.5s;
 
             .editClasses {
                 border-top: solid 0.5px #d4d4d4;
@@ -101,6 +102,10 @@
                     color: #699ce9;
                     font-weight: 500;
                 }
+            }
+
+            li:hover {
+                background: #eaeaea;
             }
         }
 
@@ -145,6 +150,11 @@
             a {
                 color: #909090;
             }
+        }
+
+        .UnselectedProfessorViewDashboard:hover,
+        .UnselectedProfessorViewQueue:hover {
+            background: #eaeaea;
         }
 
         .UnselectedProfessorViewDashboard {
