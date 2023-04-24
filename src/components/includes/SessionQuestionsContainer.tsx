@@ -121,6 +121,7 @@ const usePrev = <T extends unknown>(val: T): T | undefined => {
 
 const SessionQuestionsContainer = (props: Props) => {
     const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
+    const [filterByTagQuestions, setFilterByTagQuestions] = React.useState(false);
     const [sortByUpvotes, setSortByUpvotes] = React.useState(true);
     const [timeoutId, setTimeoutId] = React.useState<any>(undefined);
     const [warningTimeoutId, setWarningTimeoutId] = React.useState<any>(undefined);
@@ -348,6 +349,31 @@ const SessionQuestionsContainer = (props: Props) => {
                                 onClick={() => setFilterByAnsweredQuestions(true)}
                             >
                                 Answered Questions
+                            </div>
+                        </div>
+                        <br/>
+                        <div className="discussionQuestionsSlider">
+                            <div
+                                className={
+                                    'discussionSliderSelector' +
+                                    (filterByTagQuestions ? ' isSlidedRight' : '')
+                                }
+                            />
+                            <div
+                                className={
+                                    'discussionSliderOption' + (filterByTagQuestions ? '' : ' isSelected')
+                                }
+                                onClick={() => setFilterByTagQuestions(false)}
+                            >
+                                Unfiltered Questions
+                            </div>
+                            <div
+                                className={
+                                    'discussionSliderOption' + (filterByTagQuestions ? ' isSelected' : '')
+                                }
+                                onClick={() => setFilterByTagQuestions(true)}
+                            >
+                                Filtered Questions
                             </div>
                         </div>
                         {props.modality === 'review' && 
