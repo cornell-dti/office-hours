@@ -70,7 +70,7 @@ const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): Reac
                             ))}
                         {role && (
                             <>
-                                <div className="editClasses"></div>
+                                <div className="editClasses" />
                                 <li>
                                     <div onClick={() => navClicked('edit')}>
                                     Edit Classes
@@ -79,13 +79,13 @@ const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): Reac
                             </>
                         )}
                         {isAdmin && <>
-                            <div className="editClasses"></div>
+                            <div className="editClasses" />
                             <li>
                                 <div className="blogNav" onClick={() => navClicked('blog')}>
                               Product Updates
                                 </div>
                             </li>
-                            <div className="editClasses"></div>
+                            <div className="editClasses" />
                             <li>
                                 <div className="adminNav" onClick={() => navClicked('admin')}>
                                 Admin
