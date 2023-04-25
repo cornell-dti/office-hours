@@ -141,8 +141,10 @@ const TopBar = (props: Props) => {
                             countdownZero={countdownZero}
                             setDisplayWrapped={setDisplayWrapped}
                         />
-                        <div className={"userProfile " + (showMenu ? ' selected' : '')} 
-                            onClick={() => setShowMenu(!showMenu)}>
+                        <div 
+                            className={"userProfile " + (showMenu ? ' selected' : '')} 
+                            onClick={() => setShowMenu(!showMenu)}
+                        >
                             <img
                                 src={image}
                                 className="profilePic"
