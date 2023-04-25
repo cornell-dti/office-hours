@@ -248,7 +248,8 @@ const SessionQuestionsContainer = (props: Props) => {
     
     const filteredQuestions = filterByTagQuestions && selectedTag
         ? filteredQuestionsByAnswer.slice(0, Math.min(filteredQuestionsByAnswer.length, NUM_QUESTIONS_SHOWN))
-            .filter(question => question.primaryTag === selectedTag.tagId || question.secondaryTag === selectedTag.tagId)
+            .filter(question => 
+                question.primaryTag === selectedTag.tagId || question.secondaryTag === selectedTag.tagId)
         : filteredQuestionsByAnswer;
 
     const assignedQuestions = shownQuestions.filter((question) => {
@@ -402,7 +403,9 @@ const SessionQuestionsContainer = (props: Props) => {
                             <div className="filter-tag">
                                 {selectedTag ?
                                     (<div>
-                                        <p className={"tag " + (selectedTag.level === 1 ? 'primaryTag' : 'secondaryTag')}>
+                                        <p className={"tag " + 
+                                            (selectedTag.level === 1 ? 'primaryTag' : 'secondaryTag')}
+                                        >
                                             {selectedTag.name}
                                         </p>
                                     </div>) :
