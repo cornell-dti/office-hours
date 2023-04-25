@@ -179,6 +179,76 @@
   }
 }
 
+.filter-box {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background-color: white;
+  margin-top: 12px;
+  border-radius: 10px;
+  padding: 12px;
+
+  .filter-title {
+    margin: 12px 0px;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 21px;
+    color: #484848;
+    height: fit-content;
+  }
+
+  .filter-tag {
+    margin: 12px 20px;
+    height: fit-content;
+
+    .no-tag {
+      font-size: 14px;
+      line-height: 21px;
+    }
+  }
+
+  .dropdown-box {
+    margin-left: auto;
+    margin-right: 12px;
+
+    .filter-search {
+      font-weight: 500;
+      font-size: 14px;
+      color: #484848;
+      height: fit-content;
+      margin-bottom: 2px;
+    }
+  }
+
+  .filter-results::-webkit-scrollbar:horizontal {
+    display: none;
+  }
+
+  .filter-results {
+    margin-top: 5px;
+    text-align: left;
+    max-height: 50%;
+    overflow: auto;
+    border-radius: 6px;
+    width: 100%;
+    box-shadow: 1px 1px 1px 1px #e1e2e3;
+
+    .filter-result {
+      text-align: left;
+      padding: 10px 10px 10px 10px;
+      width: 100%;
+      color: rgba(0, 0, 0, .87);
+      background-color: white;
+      box-shadow: 0px 0px 2px 0px #e1e2e3;
+      border: 0px;
+    }
+
+    .filter-result:hover {
+      background-color: #e4efff;
+    }
+  }
+}
+
 @media only screen and (max-width: $mobile-breakpoint) {
   .sessionQuestionsWrapper {
     .SessionClosedMessage {

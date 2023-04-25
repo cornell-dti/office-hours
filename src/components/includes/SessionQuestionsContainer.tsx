@@ -10,6 +10,7 @@ import SortArrows from '../../media/sortbyarrows.svg';
 import { RootState } from '../../redux/store';
 import { addBanner, removeBanner } from '../../redux/actions/announcements';
 import Chalkboard from '../../media/chalkboard-teacher.svg';
+import { getTagsQuery, useQuery } from '../../firehooks';
 
 // Maximum number of questions to be shown to user
 const NUM_QUESTIONS_SHOWN = 20;
@@ -122,12 +123,18 @@ const usePrev = <T extends unknown>(val: T): T | undefined => {
 const SessionQuestionsContainer = (props: Props) => {
     const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
     const [filterByTagQuestions, setFilterByTagQuestions] = React.useState(false);
+    const [filteredTags, setFilteredTags] = useState<FireTag[]>([])
+    const [tagSearch, setTagSearch] = useState("")
+    const [selectedTag, setSelectedTag] = useState<FireTag>()
+    const [showTagDropdown, setShowTagDropdown] = useState(false)
     const [sortByUpvotes, setSortByUpvotes] = React.useState(true);
     const [timeoutId, setTimeoutId] = React.useState<any>(undefined);
     const [warningTimeoutId, setWarningTimeoutId] = React.useState<any>(undefined);
     // eslint-disable-next-line
     const [audio, setAudio] = React.useState<HTMLAudioElement>(new Audio("../../../qmijinglefinal.mp3"));
     const prevQuestion = usePrev<FireQuestion | null>(props.myQuestion);
+
+    const tags = useQuery<FireTag>(props.course.courseId, getTagsQuery, 'tagId');
 
     // Handles student side of time limit
     React.useEffect(() => {
@@ -140,8 +147,16 @@ const SessionQuestionsContainer = (props: Props) => {
                 newQuestionAssigned();
             }
         }
+
+        if (tagSearch.length !== 0) {
+            const filtered = tags.filter((tag) =>
+                tag.name.toLowerCase().startsWith(tagSearch))
+            setFilteredTags(filtered);
+        } else {
+            setFilteredTags([]);
+        }
         // eslint-disable-next-line
-    }, [props.myQuestion])
+    }, [props.myQuestion, tagSearch])
 
 
     const questionWarning = () => {
@@ -225,11 +240,16 @@ const SessionQuestionsContainer = (props: Props) => {
     const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN))
         .filter(q => q.status !== 'resolved');
 
-    const filteredQuestions = filterByAnsweredQuestions
+    const filteredQuestionsByAnswer = filterByAnsweredQuestions
         ? allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN))
             .filter(question => question.status === 'resolved')
         : allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN))
             .filter(question => question.status !== 'resolved');
+    
+    const filteredQuestions = filterByTagQuestions && selectedTag
+        ? filteredQuestionsByAnswer.slice(0, Math.min(filteredQuestionsByAnswer.length, NUM_QUESTIONS_SHOWN))
+            .filter(question => question.primaryTag === selectedTag.tagId || question.secondaryTag === selectedTag.tagId)
+        : filteredQuestionsByAnswer;
 
     const assignedQuestions = shownQuestions.filter((question) => {
         return question.status === 'assigned' && props.isTA && question.answererId === props.myUserId;
@@ -376,6 +396,44 @@ const SessionQuestionsContainer = (props: Props) => {
                                 Filtered Questions
                             </div>
                         </div>
+                        {filterByTagQuestions &&
+                        <div className="filter-box">
+                            <p className="filter-title">Selected Tag:</p>
+                            <div className="filter-tag">
+                                {selectedTag ?
+                                    (<div>
+                                        <p className={"tag " + (selectedTag.level === 1 ? 'primaryTag' : 'secondaryTag')}>
+                                            {selectedTag.name}
+                                        </p>
+                                    </div>) :
+                                    (<div>
+                                        <p className="no-tag">No Tag Selected </p>
+                                    </div>)
+                                }
+                            </div>
+                            <div className="dropdown-box">
+                                <p className="filter-search">Search for a Tag</p>
+                                <input
+                                    placeholder={"Enter Tag"}
+                                    onChange={(e) => setTagSearch(e.target.value.toLowerCase())}
+                                    onFocus={() => setShowTagDropdown(true)}
+                                    onBlur={() => setShowTagDropdown(false)}
+                                />
+                                {showTagDropdown && filteredTags.length !== 0 &&
+                                    (<div className="filter-results">
+                                        {filteredTags.map((tag) => (
+                                            <button
+                                                key={tag.tagId}
+                                                type="button"
+                                                className="filter-result"
+                                                onMouseDown={() => setSelectedTag(tag)}
+                                            >
+                                                {tag.name}
+                                            </button>
+                                        ))}
+                                    </div>)}
+                            </div>
+                        </div>}
                         {props.modality === 'review' && 
                             !filterByAnsweredQuestions && 
                             <div className="sortDiscussionQuestionsWrapper">
