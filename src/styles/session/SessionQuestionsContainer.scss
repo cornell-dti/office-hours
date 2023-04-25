@@ -211,6 +211,15 @@
     margin-left: auto;
     margin-right: 12px;
 
+    input {
+      width: 100%;
+      background-color: #eaeaea;
+      border: 0px;
+      border-radius: 6px;
+      padding: 5px;
+      font-size: 14px;
+    }
+
     .filter-search {
       font-weight: 500;
       font-size: 14px;
