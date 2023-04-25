@@ -64,6 +64,7 @@
         display: flex;
         position: relative;
         align-items: center;
+        margin-bottom: 20px;
 
         &:hover {
           cursor: pointer;
@@ -185,6 +186,7 @@
   width: 100%;
   background-color: white;
   margin-top: 12px;
+  margin-bottom: 12px;
   border-radius: 10px;
   padding: 12px;
 

@@ -372,7 +372,6 @@ const SessionQuestionsContainer = (props: Props) => {
                                 Answered Questions
                             </div>
                         </div>
-                        <br/>
                         <div className="discussionQuestionsSlider">
                             <div
                                 className={
