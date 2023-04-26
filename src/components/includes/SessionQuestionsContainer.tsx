@@ -122,11 +122,15 @@ const usePrev = <T extends unknown>(val: T): T | undefined => {
 
 const SessionQuestionsContainer = (props: Props) => {
     const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
-    const [filterByTagQuestions, setFilterByTagQuestions] = React.useState(false);
-    const [filteredTags, setFilteredTags] = useState<FireTag[]>([])
-    const [tagSearch, setTagSearch] = useState("")
-    const [selectedTag, setSelectedTag] = useState<FireTag>()
-    const [showTagDropdown, setShowTagDropdown] = useState(false)
+    const [filteredPrimaryTags, setFilteredPrimaryTags] = useState<FireTag[]>([]);
+    const [primaryTagSearch, setPrimaryTagSearch] = useState("");
+    const [selectedPrimaryTag, setSelectedPrimaryTag] = useState<FireTag>();
+    const [showPrimaryTagDropdown, setShowPrimaryTagDropdown] = useState(false);
+    const [filteredSecondaryTags, setFilteredSecondaryTags] = useState<FireTag[]>([]);
+    const [secondaryTagSearch, setSecondaryTagSearch] = useState("");
+    const [selectedSecondaryTag, setSelectedSecondaryTag] = useState<FireTag>();
+    const [showSecondaryTagDropdown, setShowSecondaryTagDropdown] = useState(false);
+    const [showSecondaryTagSearch, setShowSecondaryTagSearch] = useState(false);
     const [sortByUpvotes, setSortByUpvotes] = React.useState(true);
     const [timeoutId, setTimeoutId] = React.useState<any>(undefined);
     const [warningTimeoutId, setWarningTimeoutId] = React.useState<any>(undefined);
@@ -135,6 +139,8 @@ const SessionQuestionsContainer = (props: Props) => {
     const prevQuestion = usePrev<FireQuestion | null>(props.myQuestion);
 
     const tags = useQuery<FireTag>(props.course.courseId, getTagsQuery, 'tagId');
+    const primaryTags = tags.filter((tag) => tag.level === 1);
+    const secondaryTags = tags.filter((tag) => tag.level === 2);
 
     // Handles student side of time limit
     React.useEffect(() => {
@@ -148,16 +154,53 @@ const SessionQuestionsContainer = (props: Props) => {
             }
         }
 
+        filterTags(primaryTagSearch, primaryTags, setFilteredPrimaryTags);
+
+        if (selectedPrimaryTag) {
+            const filtered = secondaryTags.filter((tag) =>
+                tag.parentTag?.startsWith(selectedPrimaryTag.tagId));
+            filterTags(secondaryTagSearch, filtered, setFilteredSecondaryTags);
+        }
+
+        // eslint-disable-next-line
+    }, [props.myQuestion, primaryTagSearch, secondaryTagSearch])
+
+    const filterTags = (tagSearch: string, tags: FireTag[], 
+        setFilteredTags: (value: React.SetStateAction<FireTag[]>) => void) => {
         if (tagSearch.length !== 0) {
             const filtered = tags.filter((tag) =>
                 tag.name.toLowerCase().startsWith(tagSearch))
-            setFilteredTags(filtered);
+                setFilteredTags(filtered);
         } else {
-            setFilteredTags([]);
+            setFilteredTags(tags);
         }
-        // eslint-disable-next-line
-    }, [props.myQuestion, tagSearch])
+    }
 
+    const setPrimaryTag = (tag: FireTag) => {
+        setSelectedPrimaryTag(tag);
+        setPrimaryTagSearch(tag.name);
+        setSelectedSecondaryTag(undefined);
+        setSecondaryTagSearch("");
+        setShowSecondaryTagSearch(true);
+    }
+
+    const setSecondaryTag = (tag: FireTag) => {
+        setSelectedSecondaryTag(tag);
+        setSecondaryTagSearch(tag.name);
+    }
+
+    const clearPrimaryTag = () => {
+        setSelectedPrimaryTag(undefined);
+        setPrimaryTagSearch("");
+        setSelectedSecondaryTag(undefined);
+        setSecondaryTagSearch("");
+        setShowSecondaryTagSearch(false);
+    }
+
+    const clearSecondaryTag = () => {
+        setSelectedSecondaryTag(undefined);
+        setSecondaryTagSearch("");
+    }
 
     const questionWarning = () => {
         audio.play().catch((e) => {
@@ -246,11 +289,15 @@ const SessionQuestionsContainer = (props: Props) => {
         : allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN))
             .filter(question => question.status !== 'resolved');
     
-    const filteredQuestions = filterByTagQuestions && selectedTag
+    const filteredQuestionsByAnswerAndTag = selectedPrimaryTag
         ? filteredQuestionsByAnswer.slice(0, Math.min(filteredQuestionsByAnswer.length, NUM_QUESTIONS_SHOWN))
-            .filter(question => 
-                question.primaryTag === selectedTag.tagId || question.secondaryTag === selectedTag.tagId)
+            .filter(question => question.primaryTag === selectedPrimaryTag.tagId)
         : filteredQuestionsByAnswer;
+
+        const filteredQuestions = selectedSecondaryTag
+        ? filteredQuestionsByAnswerAndTag.slice(0, Math.min(filteredQuestionsByAnswerAndTag.length, NUM_QUESTIONS_SHOWN))
+            .filter(question => question.secondaryTag === selectedSecondaryTag.tagId)
+        : filteredQuestionsByAnswerAndTag;
 
     const assignedQuestions = shownQuestions.filter((question) => {
         return question.status === 'assigned' && props.isTA && question.answererId === props.myUserId;
@@ -372,69 +419,82 @@ const SessionQuestionsContainer = (props: Props) => {
                                 Answered Questions
                             </div>
                         </div>
-                        <div className="discussionQuestionsSlider">
-                            <div
-                                className={
-                                    'discussionSliderSelector' +
-                                    (filterByTagQuestions ? ' isSlidedRight' : '')
-                                }
-                            />
-                            <div
-                                className={
-                                    'discussionSliderOption' + (filterByTagQuestions ? '' : ' isSelected')
-                                }
-                                onClick={() => setFilterByTagQuestions(false)}
-                            >
-                                Unfiltered Questions
-                            </div>
-                            <div
-                                className={
-                                    'discussionSliderOption' + (filterByTagQuestions ? ' isSelected' : '')
-                                }
-                                onClick={() => setFilterByTagQuestions(true)}
-                            >
-                                Filtered Questions
-                            </div>
-                        </div>
-                        {filterByTagQuestions &&
-                        <div className="filter-box">
-                            <p className="filter-title">Selected Tag:</p>
+                        {<div className="filter-box">
+                            <p className="filter-title">Selected Tags:</p>
                             <div className="filter-tag">
-                                {selectedTag ?
+                                {selectedPrimaryTag ?
+                                    (<div className="tag primaryTag">
+                                        <p className="tag-name">{selectedPrimaryTag.name}</p>
+                                        <button type="button" className="close primary" onClick={() => clearPrimaryTag()}>
+                                            <p>&times;</p>
+                                        </button>
+                                    </div>) :
                                     (<div>
-                                        <p className={"tag " + 
-                                            (selectedTag.level === 1 ? 'primaryTag' : 'secondaryTag')}
-                                        >
-                                            {selectedTag.name}
-                                        </p>
+                                        <p className="no-tag">No Category Selected </p>
+                                    </div>)
+                                }
+                            </div>
+                            {selectedPrimaryTag && <div className="filter-tag">
+                                {selectedSecondaryTag ?
+                                    (<div className="tag secondaryTag">
+                                        <p className="tag-name">{selectedSecondaryTag.name}</p>
+                                        <button type="button" className="close secondary" onClick={() => clearSecondaryTag()}>
+                                            <p>&times;</p>
+                                        </button>
                                     </div>) :
                                     (<div>
                                         <p className="no-tag">No Tag Selected </p>
                                     </div>)
                                 }
-                            </div>
+                            </div>}
                             <div className="dropdown-box">
-                                <p className="filter-search">Search for a Tag</p>
+                                <p className="filter-search-title">Search for a Category</p>
                                 <input
-                                    placeholder={"Enter Tag"}
-                                    onChange={(e) => setTagSearch(e.target.value.toLowerCase())}
-                                    onFocus={() => setShowTagDropdown(true)}
-                                    onBlur={() => setShowTagDropdown(false)}
+                                    type="search"
+                                    placeholder={"Enter Category"}
+                                    value={primaryTagSearch}
+                                    onChange={(e) => setPrimaryTagSearch(e.target.value.toLowerCase())}
+                                    onFocus={() => setShowPrimaryTagDropdown(true)}
+                                    onBlur={() => setShowPrimaryTagDropdown(false)}
                                 />
-                                {showTagDropdown && filteredTags.length !== 0 &&
+                                {showPrimaryTagDropdown && filteredPrimaryTags.length !== 0 &&
                                     (<div className="filter-results">
-                                        {filteredTags.map((tag) => (
+                                        {filteredPrimaryTags.map((tag) => (
                                             <button
                                                 key={tag.tagId}
                                                 type="button"
                                                 className="filter-result"
-                                                onMouseDown={() => setSelectedTag(tag)}
+                                                onMouseDown={() => setPrimaryTag(tag)}
                                             >
                                                 {tag.name}
                                             </button>
                                         ))}
                                     </div>)}
                             </div>
+                            {showSecondaryTagSearch && <div className="dropdown-box">
+                                <p className="filter-search-title">Search for a Tag</p>
+                                <input
+                                    type="search"
+                                    placeholder={"Enter Tag"}
+                                    value={secondaryTagSearch}
+                                    onChange={(e) => setSecondaryTagSearch(e.target.value.toLowerCase())}
+                                    onFocus={() => setShowSecondaryTagDropdown(true)}
+                                    onBlur={() => setShowSecondaryTagDropdown(false)}
+                                />
+                                {showSecondaryTagDropdown && filteredSecondaryTags.length !== 0 &&
+                                    (<div className="filter-results">
+                                        {filteredSecondaryTags.map((tag) => (
+                                            <button
+                                                key={tag.tagId}
+                                                type="button"
+                                                className="filter-result"
+                                                onMouseDown={() => setSecondaryTag(tag)}
+                                            >
+                                                {tag.name}
+                                            </button>
+                                        ))}
+                                    </div>)}
+                            </div>}
                         </div>}
                         {props.modality === 'review' && 
                             !filterByAnsweredQuestions && 
