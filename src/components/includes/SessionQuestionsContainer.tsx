@@ -181,7 +181,7 @@ const SessionQuestionsContainer = (props: Props) => {
         setPrimaryTagSearch(tag.name);
         setSelectedSecondaryTag(undefined);
         setSecondaryTagSearch("");
-        setShowSecondaryTagSearch(true);
+        setShowSecondaryTagSearch(false);
     }
 
     const setSecondaryTag = (tag: FireTag) => {
@@ -200,6 +200,7 @@ const SessionQuestionsContainer = (props: Props) => {
     const clearSecondaryTag = () => {
         setSelectedSecondaryTag(undefined);
         setSecondaryTagSearch("");
+        setShowSecondaryTagSearch(false);
     }
 
     const questionWarning = () => {
@@ -480,6 +481,14 @@ const SessionQuestionsContainer = (props: Props) => {
                                         ))}
                                     </div>)}
                             </div>
+                            {selectedPrimaryTag && !showSecondaryTagSearch && <button 
+                                type="button"
+                                className="filter-button"
+                                onMouseDown={() => setShowSecondaryTagSearch(true)}
+                            >
+                                <Icon name="plus" />
+                                Filter by Tag
+                            </button>}
                             {showSecondaryTagSearch && <div className="dropdown-box">
                                 <p className="filter-search-title">Search for a Tag</p>
                                 <input

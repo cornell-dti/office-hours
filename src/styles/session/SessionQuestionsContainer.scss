@@ -201,6 +201,25 @@
     cursor: default;
   }
 
+  .filter-button {
+    margin: 10px 20px;
+    height: fit-content;
+    padding: 5px 8px;
+    background-color: white;
+    border: 0px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-weight: 500;
+    font-size: 14px;
+    color: #484848;
+    font-family: "Roboto", "Lato", "Helvetica Neue", Arial, Helvetica, sans-serif !important;
+    cursor: pointer;
+    box-shadow: 2px 2px 4px 2px rgba(158, 158, 158, 0.3)
+  }
+  .filter-button:hover {
+    background-color: #e4efff;
+  }
+
   .filter-tag {
     margin: 10px 0px 10px 20px;
     height: fit-content;
@@ -220,7 +239,7 @@
       padding: 0px 0px 0px 10px;
       background-color: white;
       border: 0px;
-      font-weight: bold;
+      font-weight: bolder;
       font-size: 15px;
       height: fit-content;
       cursor: pointer;
@@ -244,7 +263,7 @@
 
   .dropdown-box {
     margin-left: auto;
-    margin-right: 12px;
+    padding: 0px 20px;
 
     input {
       width: 100%;
