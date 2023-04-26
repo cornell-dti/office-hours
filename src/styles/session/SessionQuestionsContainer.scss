@@ -298,18 +298,20 @@
   }
 
   .filter-results {
-    margin-top: 5px;
+    position: absolute;
+    width: 16%;
+    display: flex;
+    flex-direction: column;
     text-align: left;
     max-height: 50%;
     overflow: auto;
     border-radius: 6px;
-    width: 100%;
     box-shadow: 1px 1px 1px 1px #e1e2e3;
+    z-index: 2;
 
     .filter-result {
       text-align: left;
       padding: 10px 10px 10px 10px;
-      width: 100%;
       color: rgba(0, 0, 0, .87);
       background-color: white;
       box-shadow: 0px 0px 2px 0px #e1e2e3;
