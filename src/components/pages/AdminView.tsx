@@ -7,6 +7,7 @@ import { Icon } from 'semantic-ui-react'
 import TopBar from '../includes/TopBar';
 import AdminCourseCard from '../includes/AdminCourseCard';
 import AdminCourseCreator from '../includes/AdminCourseCreator';
+import AdminPendingCourseCard from '../includes/AdminPendingCourseCard';
 import { useAllCourses, useIsAdmin } from '../../firehooks';
 import { CURRENT_SEMESTER, ALL_SEMESTERS } from '../../constants';
 import  AnalyticsView from './AnalyticsView';
@@ -49,6 +50,19 @@ const AdminView = () => {
                 // This field is only necessary for professors, but we are always student/TA here.
                 courseId="DUMMY_COURSE_ID"
             />
+
+            <h2>New Course Requests</h2>
+            <div className="course-container" >
+                <Grid container direction="row" alignItems={'stretch'} spacing={3}>
+                    {/* change to pending courses */}
+                    {courses.filter(course => course.semester === CURRENT_SEMESTER).map(course => (
+                        <Grid item xl={3} lg={4} md={6} xs={12}>
+                            <AdminPendingCourseCard key={course.courseId} course={course} />
+                        </Grid>
+                    ))}
+                </Grid>
+            </div>
+
 
             <h2><br />Queue Me In Product Analytics</h2>   
                   

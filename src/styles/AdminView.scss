@@ -1,6 +1,10 @@
 .AdminView {
     position: relative;
 
+    h2 {
+        padding-top: 1.5em;
+    }
+
     .course-container {
         width: 100%;
         display: flex;
@@ -80,6 +84,64 @@
             background-color: #5599DB;
             color: white;
 
+        }
+
+        .pending-button {
+            display: inline-block;
+            background-color: white;
+            border: solid 1px #484848;
+            border-radius: 4px;
+            text-decoration: none;
+            padding: .5em 2em;
+            margin: .25em;
+            cursor: pointer;
+
+            &.reject {
+                border-color: #F67D7D;
+                color: #F67D7D;
+            }
+
+            &.reject:hover {
+                background-color: #FFEEEE;
+            }
+
+            &.confirm {
+                border-color: #19B861;
+                color: #19B861;
+            }
+
+            &.confirm:hover {
+                background-color: #EEFFF6;
+            }
+        }
+
+        .pending-button {
+            display: inline-block;
+            background-color: white;
+            border: solid 1px #484848;
+            border-radius: 4px;
+            text-decoration: none;
+            padding: .5em 2em;
+            margin: .25em;
+            cursor: pointer;
+
+            &.reject {
+                border-color: #F67D7D;
+                color: #F67D7D;
+            }
+
+            &.reject:hover {
+                background-color: #FFEEEE;
+            }
+
+            &.confirm {
+                border-color: #19B861;
+                color: #19B861;
+            }
+
+            &.confirm:hover {
+                background-color: #EEFFF6;
+            }
         }
     }
 }
