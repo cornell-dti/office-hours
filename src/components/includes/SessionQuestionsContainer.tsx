@@ -170,7 +170,7 @@ const SessionQuestionsContainer = (props: Props) => {
         if (tagSearch.length !== 0) {
             const filtered = tags.filter((tag) =>
                 tag.name.toLowerCase().startsWith(tagSearch))
-                setFilteredTags(filtered);
+            setFilteredTags(filtered);
         } else {
             setFilteredTags(tags);
         }
@@ -294,8 +294,9 @@ const SessionQuestionsContainer = (props: Props) => {
             .filter(question => question.primaryTag === selectedPrimaryTag.tagId)
         : filteredQuestionsByAnswer;
 
-        const filteredQuestions = selectedSecondaryTag
-        ? filteredQuestionsByAnswerAndTag.slice(0, Math.min(filteredQuestionsByAnswerAndTag.length, NUM_QUESTIONS_SHOWN))
+    const filteredQuestions = selectedSecondaryTag
+        ? filteredQuestionsByAnswerAndTag
+            .slice(0, Math.min(filteredQuestionsByAnswerAndTag.length, NUM_QUESTIONS_SHOWN))
             .filter(question => question.secondaryTag === selectedSecondaryTag.tagId)
         : filteredQuestionsByAnswerAndTag;
 
@@ -425,7 +426,11 @@ const SessionQuestionsContainer = (props: Props) => {
                                 {selectedPrimaryTag ?
                                     (<div className="tag primaryTag">
                                         <p className="tag-name">{selectedPrimaryTag.name}</p>
-                                        <button type="button" className="close primary" onClick={() => clearPrimaryTag()}>
+                                        <button 
+                                            type="button" 
+                                            className="close primary" 
+                                            onClick={() => clearPrimaryTag()}
+                                        >
                                             <p>&times;</p>
                                         </button>
                                     </div>) :
@@ -438,7 +443,11 @@ const SessionQuestionsContainer = (props: Props) => {
                                 {selectedSecondaryTag ?
                                     (<div className="tag secondaryTag">
                                         <p className="tag-name">{selectedSecondaryTag.name}</p>
-                                        <button type="button" className="close secondary" onClick={() => clearSecondaryTag()}>
+                                        <button 
+                                            type="button" 
+                                            className="close secondary" 
+                                            onClick={() => clearSecondaryTag()}
+                                        >
                                             <p>&times;</p>
                                         </button>
                                     </div>) :
