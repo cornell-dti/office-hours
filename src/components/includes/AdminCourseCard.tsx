@@ -11,7 +11,7 @@ const AdminCourseCard = ({ course }: { readonly course: FireCourse }) => {
     const [showRolesTable, setShowRolesTable] = useState(false);
     return (
         <Card className="course">
-            {!isEditingMode && <AdminReadOnlyCourseCard course={course} />}
+            {!isEditingMode && <AdminReadOnlyCourseCard course={course} showSettings={true} />}
             {isEditingMode && <AdminEditableCourseCard course={course} />}
             <div>
                 <button type="button" className="editing-button" onClick={() => setIsEditingMode(prev => !prev)}>
