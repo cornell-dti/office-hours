@@ -13,8 +13,8 @@ const ProfessorTagsTable = (props: { courseId: string }) => {
                 <table className='Tags'>
                     <tbody>
                         <tr>
-                            <th>Assignment</th>
-                            <th>Tags</th>
+                            <th>Category</th>
+                            <th>Subtags</th>
                             <th id='statusColumn'>Status</th>
                             <th>Edit</th>
                         </tr>

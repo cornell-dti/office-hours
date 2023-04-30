@@ -45,7 +45,7 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
 
     const now = new Date(selectedWeekEpoch);
     return (
-        <div className="CalendarDaySelect">
+        <div className="CalendarDaySelect" id="CalendarDaySelect">
             <p className="month">{monthNames[now.getMonth()]}</p>
             <div className="selector">
                 <button 

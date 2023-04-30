@@ -13,6 +13,7 @@ import { RootState } from '../../redux/store';
 import { updateLastSent } from '../../firebasefunctions/notifications';
 import Snackbar from "./Snackbar"
 import TextNotificationModal from './TextNotificationModal';
+import Tutorial from './Tutorial';
 
 type Props = {
     courseId: string;
@@ -40,6 +41,9 @@ const TopBar = (props: Props) => {
     const user = props.user;
     const email: string | undefined = user?.email
     const notificationTracker = useNotificationTracker(email);
+
+    // TODO change this to a user flag
+    const [tutorialVisible, setTutorialVisible] = useState(true);
 
     useEffect(() => {
         if(notificationTracker!== undefined && notificationTracker.notificationList !== undefined) {
@@ -85,6 +89,7 @@ const TopBar = (props: Props) => {
             <header className="topBar">
                 <div className="triggerArea">
                     <img src={Logo} className="QMILogo" alt="Queue Me In Logo" />
+                    <Tutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible}/>
                     <div className="viewToggles">
                         <CalendarHeader
                             currentCourseCode={(props.course && props.course.code) || 'Courses'}
