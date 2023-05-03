@@ -72,20 +72,20 @@ const Tutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
         const term = CURRENT_SEMESTER.substr(0, 2);
     const course = useCourse(`TC00${1}-${term}-${year}`);
     // Creates a question during the tutorial to demonstrate how the screen appears when this happens
-    const createQuestion = () => {}
+    // const createQuestion = () => {}
     // Makes the user a TA so they can see TA view
-    const makeRole = (role: ('professor' | 'ta')) => {
-        if(user !== undefined && course !== undefined) {
-            importProfessorsOrTAsFromCSV(course, role, [user?.userId]);
-        }
-    }
+    // const makeRole = (role: ('professor' | 'ta')) => {
+    //     if(user !== undefined && course !== undefined) {
+    //         importProfessorsOrTAsFromCSV(course, role, [user?.userId]);
+    //     }
+    // }
     const clearTutorial = () => {
         setTutorialState(1);
         // undo user flag
     }
     
     return (<>
-            {tutorialState == 0 && (<div className="tutorial__wrapper">
+            {tutorialState === 0 && (<div className="tutorial__wrapper">
                 <div className="tutorial__content">
                     <img src={Logo} className="tutorial__logo" alt="Queue Me In Logo" />
                     <div className="tutorial__title">Welcome</div>
