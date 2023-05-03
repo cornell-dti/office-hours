@@ -237,12 +237,20 @@ interface SessionNotification {
     createdAt: FireTimestamp;
 }
 
+interface FireNotification {
+    notifId: string;
+    title: string;
+    subtitle: string;
+    message: string;
+    createdAt: FireTimestamp;
+    wasSent: boolean;
+}
+
 interface NotificationTracker {
     id: string;
     notifications: FireTimestamp;
     productUpdates: FireTimestamp;
-    notificationList: SessionNotification[];
-    lastSent: FireTimestamp;
+    notificationList?: SessionNotification[];
 }
 
 interface Announcement {
