@@ -1,5 +1,10 @@
 .AdminView {
     position: relative;
+
+    h2 {
+        padding-top: 1.5em;
+    }
+
     .course-container {
         width: 100%;
         display: flex;
