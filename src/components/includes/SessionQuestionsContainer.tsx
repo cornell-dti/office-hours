@@ -308,7 +308,7 @@ const SessionQuestionsContainer = (props: Props) => {
         return question.status === 'assigned' && question.answererId !== props.myUserId && props.isProf;
     });
     const [collapsed, setCollapsed] = useState(allAssignedQuestions.length === 0);
-    const otherQuestions = shownQuestions.filter(question => question.status !== 'assigned' &&
+    const otherQuestions = filteredQuestions.filter(question => question.status !== 'assigned' &&
         !assignedQuestions.includes(question));
 
     let filteredSortedQuestions: FireDiscussionQuestion[] = [];
