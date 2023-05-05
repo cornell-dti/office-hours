@@ -70,21 +70,24 @@ const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): Reac
                             ))}
                         {role && (
                             <>
+                                <div className="editClasses" />
                                 <li>
-                                    <div className="editClasses" onClick={() => navClicked('edit')}>
+                                    <div onClick={() => navClicked('edit')}>
                                     Edit Classes
                                     </div>
                                 </li>
                             </>
                         )}
                         {isAdmin && <>
+                            <div className="editClasses" />
                             <li>
-                                <div className="blogNav editClasses" onClick={() => navClicked('blog')}>
+                                <div className="blogNav" onClick={() => navClicked('blog')}>
                               Product Updates
                                 </div>
                             </li>
+                            <div className="editClasses" />
                             <li>
-                                <div className="adminNav editClasses" onClick={() => navClicked('admin')}>
+                                <div className="adminNav" onClick={() => navClicked('admin')}>
                                 Admin
                                 </div>
                             </li>

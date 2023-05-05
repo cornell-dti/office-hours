@@ -33,6 +33,7 @@
         margin: 0px 0px 10px 10px;
         position: relative;
         min-width: 150px;
+        cursor: pointer;
 
         .courseCode {
             align-self: center;
@@ -67,21 +68,24 @@
         }
 
         .courseMenu {
-            width: 100%;
+            width: 110%;
             position: absolute;
             top: 36px;
             border: solid 1px #e5e5e5;
             border-radius: 5px;
+            padding: 10px 20px;
             background-color: white;
             z-index: 1;
+            animation: fadeIn 0.5s;
 
             .editClasses {
+                margin: 8px -20px;
                 border-top: solid 0.5px #d4d4d4;
             }
 
             li {
                 border: none;
-                padding: 0;
+                padding: 5px;
                 cursor: pointer;
                 width: 100%;
                 font-size: 15px;
@@ -91,16 +95,21 @@
                 div {
                     color: #494949;
                     width: 100%;
-                    padding: 10px;
-                    display: inline-block;
                     margin: auto;
-                    text-align: center;
                 }
 
                 .thisCourse {
                     color: #699ce9;
                     font-weight: 500;
                 }
+            }
+
+            li:hover {
+                background: #e1f0fe;
+                padding: 3px;
+                border: 2px solid #3594f1;
+                border-radius: 5px;
+                box-sizing: border-box;
             }
         }
 
@@ -145,6 +154,11 @@
             a {
                 color: #909090;
             }
+        }
+
+        .UnselectedProfessorViewDashboard:hover,
+        .UnselectedProfessorViewQueue:hover {
+            background: #eaeaea;
         }
 
         .UnselectedProfessorViewDashboard {
