@@ -457,7 +457,7 @@ const SessionQuestionsContainer = (props: Props) => {
                                     </div>)
                                 }
                             </div>}
-                            <div className="dropdown-box">
+                            <div className="dropdown-box one">
                                 <p className="filter-search-title">Search for a Category</p>
                                 <input
                                     type="search"

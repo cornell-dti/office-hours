@@ -262,8 +262,11 @@
   }
 
   .dropdown-box {
-    margin-left: auto;
     padding: 0px 20px;
+
+    &.one {
+      margin-left: auto;
+    }
 
     input {
       width: 100%;
