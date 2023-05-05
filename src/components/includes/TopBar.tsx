@@ -81,7 +81,7 @@ const TopBar = (props: Props) => {
     });
 
     return (
-        <div className="MenuBox" onBlur={() => setShowMenu(false)} ref={ref}>
+        <div className="MenuBox" onBlur={() => setShowMenu(false)}>
             <header className="topBar">
                 <div className="triggerArea">
                     <img src={Logo} className="QMILogo" alt="Queue Me In Logo" />
@@ -118,7 +118,7 @@ const TopBar = (props: Props) => {
                 </div>
             </header>
             {showMenu && (
-                <>
+                <div ref={ref}>
                     <ul className="desktop logoutMenu">
                         <li onMouseDown={() => logOut()}>
                             <span>
@@ -148,7 +148,7 @@ const TopBar = (props: Props) => {
                             SMS Settings
                         </li>
                     </ul>
-                </>
+                </div>
             )}
             <TextNotificationModal
                 showTextModal={showTextModal}
