@@ -9,6 +9,7 @@ import CourseCard from './CourseCard';
 import { CURRENT_SEMESTER } from '../../constants';
 import { updateCourses } from '../../firebasefunctions/courses';
 import { RootState } from '../../redux/store';
+import CourseCreatePopup from './CourseCreatePopup';
 
 
 type Props = {
@@ -209,12 +210,23 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         history.push("/home");
     };
 
+    const onCreateCourse = () => {
+
+    }
+
+    const [courseCreatePopup, setCourseCreatePopup] = useState(false);
+
     // changed guard from selectedCourses.length + numCoursesWithRoles === 0 to selectedCourses.length === 0
     //  so that when you cannot unenroll from a course, it says No Classes Chosen instead of an empty box
     const selectedCoursesString = selectedCourses.length === 0 ? "" : selectedCourses.map((c) => c.code).join(", ");
 
     /* eslint-disable max-len */
     return (
+        courseCreatePopup ? 
+        <div>
+            {CourseCreatePopup && <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} />}
+        </div> 
+        :
         <div>
             <div className="CourseSelection">
                 <TopBar
@@ -344,6 +356,12 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                 </div>
                 
                 <div className="EnrollBar">
+                    <div className="EnrolledCourses web">
+                        {isEdit && selectedCoursesString}
+                        <button type="button" className='createNewCourseButton' onClick={() => setCourseCreatePopup(true)}>
+                            Create a Class
+                        </button>
+                    </div>
                     <div className="buttons">
                         {!isEdit && (
                             <button
@@ -374,7 +392,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     </div>
                 </div>
             </div>
+            {/* {CourseCreatePopup && <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} />} */}
         </div>
+        
     );
 }
 const mapStateToProps = (state: RootState) => ({
