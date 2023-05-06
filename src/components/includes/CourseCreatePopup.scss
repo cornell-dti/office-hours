@@ -1,0 +1,219 @@
+.courseCreatePopupBackground {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(112, 112, 112, 0.8);;
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.createCoursePopupContinueContainer {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    left: 32.81%;
+    right: 32.81%;
+    top: 10%;
+    bottom: 10%;
+    background: white;
+    align-items: center;
+    padding: 15px 0px;
+    // justify-content: center;
+
+    img {
+      // position: relative;
+      width: 40px;
+      height: 40px;
+      margin: 15px 30px;
+    }
+
+    .submit {
+        
+        border: none;
+        padding: 8px 21px;
+        translate: 0px 50px;
+        gap: 10px;
+        width: 160px;
+        height: 40px;
+        background: #5DA9F2;
+        color: white;
+        border-radius: 4px;
+
+    }
+
+    .role_input {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        input {
+          translate: -10px -8px;
+        }
+    }
+
+    .inputs {
+        // position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+
+        .input_component {
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+
+            input {
+                width: 320px;
+                height: 36px;
+                border: 1px solid #6F6F6F;
+                border-radius: 4px;
+            }
+            
+        }
+    }
+
+    .dropdownSection {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+
+      select {
+        height: 36px;
+        cursor: pointer;
+        width: 150px;
+        padding: 0px 12px;
+        border: 1px solid #6F6F6F;
+        border-radius: 4px;
+        /* needed */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        /* SVG background image */
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Ctitle%3Edown-arrow%3C%2Ftitle%3E%3Cg%20fill%3D%22%23000000%22%3E%3Cpath%20d%3D%22M10.293%2C3.293%2C6%2C7.586%2C1.707%2C3.293A1%2C1%2C0%2C0%2C0%2C.293%2C4.707l5%2C5a1%2C1%2C0%2C0%2C0%2C1.414%2C0l5-5a1%2C1%2C0%2C1%2C0-1.414-1.414Z%22%20fill%3D%22%23000000%22%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+        background-size: .6em;
+        background-position: calc(100% - 0.9em) center;
+        background-repeat: no-repeat;
+      }
+
+      // select option {
+      //   background-color: white;
+      //   color: gray;
+      //   width: 310px;
+      //   padding: 10px 15px;
+      //   height: 20px;
+      //   cursor: pointer;
+      // }
+      select option {
+        background-color: white;
+        color: gray;
+        width: 310px;
+        padding: 10px 15px;
+        height: 20px;
+        cursor: pointer;
+      }
+      
+      select option:hover {
+        padding-left: 25px;
+        width: 270px;
+        color: #EC6F66;
+      }
+
+    }
+
+}
+
+.createCoursePopupContainer {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    left: 32.81%;
+    right: 32.81%;
+    top: 30%;
+    bottom: 25%;
+    background: white;
+    align-items: center;
+    justify-content: center;
+    
+    img {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      translate: 0px -25px;
+    }
+
+
+    h1 {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        position: relative;
+        width: 192px;
+        height: 28px;
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 22px;
+        line-height: 28px;
+        color: #484848;
+    }
+
+    p {
+        position: relative;
+        margin-left: auto;
+        margin-right: auto;
+        width: 346px;
+        height: 40px;
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+        color: #484848;
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        padding: 0px;
+        gap: 8px;
+        position: absolute;
+        width: 328px;
+        height: 40px;
+        bottom: 25px;
+
+      .cancel {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 8px 16px;
+        gap: 10px;
+        width: 160px;
+        height: 40px;
+        border: 1px solid #5DA9F2;
+        color: #5DA9F2;
+        background-color: white;
+        border-radius: 4px;
+      }
+  
+      .continue {
+        border: none;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 8px 21px;
+        gap: 10px;
+        width: 160px;
+        height: 40px;
+        background: #5DA9F2;
+        color: white;
+        border-radius: 4px;
+      }
+  }
+}
+
