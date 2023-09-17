@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Icon, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
+import Linkify from 'react-linkify'
 import { connect } from 'react-redux';
 import notif from '../../media/notif.svg'
 import SelectedTags from './SelectedTags';
@@ -253,6 +254,13 @@ class SessionQuestion extends React.Component<Props, State> {
         });
     }
 
+    // use componentDecorator in Linkify component to make links open in new tab
+    componentDecorator = (href: string, text: string, key: React.Key) => (
+        <a href={href} key={key} target="_blank" rel="noopener noreferrer">
+            {text}
+        </a>
+    );
+
     render() {
         const question = this.props.question;
         const studentCSS = this.props.isTA ? '' : ' Student';
@@ -394,7 +402,8 @@ class SessionQuestion extends React.Component<Props, State> {
                     </div>
                     {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
                         <p className={'Question' + studentCSS}>
-                            {question.content}
+                            {/* any links in the question content will become clickable and open in new tab */}
+                            <Linkify componentDecorator={this.componentDecorator}>{question.content}</Linkify>
                             {this.props.isTA && question.status === 'assigned' && question.timeAssigned !== undefined 
                             && !this.props.isPast &&
                                 <SessionQuestionTime assignedTime={question.timeAssigned.toDate().getTime()}/>}
