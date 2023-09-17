@@ -1,6 +1,6 @@
 .banner {
   &__wrapper {
-    position: absolute;
+    // position: absolute;
     left: 50%;
     transform: translateX(-50%);
     bottom: 30px;
@@ -17,12 +17,14 @@
     padding-right: 40px;
     z-index: 100;
   }
+
   &__left {
     display: flex;
     justify-content: center;
     padding: 10px;
     align-items: center;
   }
+
   &__icon {
     width: 12.59px;
     height: 16px;
@@ -30,6 +32,7 @@
     margin-left: 10px;
     margin-right: 10px;
   }
+
   &__text {
     font-family: Roboto;
     font-style: normal;
@@ -38,6 +41,7 @@
     line-height: 16px;
     color: #484848;
   }
+
   &__close {
     font-family: Roboto;
     font-style: normal;
@@ -46,6 +50,7 @@
     line-height: 16px;
     color: #5599db;
     cursor: pointer;
+
     &:hover {
       color: darken(#5599db, 10%);
     }
