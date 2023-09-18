@@ -99,8 +99,11 @@ const TopBar = (props: Props) => {
                         )}
                     </div>
                     <div className="rightContentWrapper" >
-                        <TopBarNotifications notificationTracker={notificationTracker} 
-                         iconClick={() => setShowMenu(!showMenu)} showMenu={showMenu}/>
+                        <TopBarNotifications 
+                            notificationTracker={notificationTracker} 
+                            iconClick={() => setShowMenu(!showMenu)} 
+                            showMenu={showMenu}
+                        />
                         <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
                             <img
                                 src={image}
