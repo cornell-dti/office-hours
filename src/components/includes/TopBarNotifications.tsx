@@ -7,11 +7,17 @@ import {viewedTrackable, periodicClearNotifications} from '../../firebasefunctio
 import { RootState } from '../../redux/store';
 
 type Props = {
+    /** Notification Tracker keeps track of the list of notifications for a user */
     notificationTracker: NotificationTracker | undefined;
+    /** User that is currently using QMI */
     user: FireUser | undefined;
+    /** Function that sets showMenu to false or true */
+    iconClick: Function;
+    /** Determines whether the profile menu should be shown or not */
+    showMenu: boolean;
 }
 
-const TopBarNotifications = ({notificationTracker, user}: Props) => {
+const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick}: Props) => {
     const [dropped, toggleDropped] = useState(false);
 
     const notifications = notificationTracker?.notificationList?.sort((a, b) => {
@@ -65,7 +71,10 @@ const TopBarNotifications = ({notificationTracker, user}: Props) => {
     })
 
     const iconClicked = () => {
-        if(dropped) {
+        if (showMenu) {
+            iconClick();
+        }
+        if (dropped) {
             updateTrackable();
         }
         toggleDropped(!dropped);
