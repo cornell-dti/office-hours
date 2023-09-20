@@ -108,7 +108,8 @@ const TopBar = (props: Props) => {
                                 alt="User Profile"
                             />
                             <span className="name">
-                                {props.user ? props.user.firstName + ' ' + props.user.lastName : 'Loading...'}
+                                {props.user ? props.user.firstName + ' ' + props.user.lastName + ' (' + 
+                                props.user.email.substring(0,props.user.email.indexOf('@')) + ')' : 'Loading...'}
                             </span>
                         </div>
                     </div>
