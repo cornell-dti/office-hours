@@ -140,6 +140,9 @@ const ProfessorOHInfo = (props: {
         setLocationBuildingSelected('');
         setLocationRoomNumSelected('');
         setTitle('');
+        setTALink("");
+        setUseTALink(false);
+        setIsSeriesMutation(false);
     };
 
     const incAddTA = () => {

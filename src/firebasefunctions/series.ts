@@ -44,7 +44,8 @@ export const createSeries = async (
 
             if (typeof sessionSeries.useTALink !== 'undefined') {
                 virtualProperty = {
-                    useTALink: sessionSeries.useTALink
+                    useTALink: sessionSeries.useTALink,
+                    TALink: sessionSeries.TALink,
                 }
             }
 
@@ -64,7 +65,6 @@ export const createSeries = async (
                 totalResolveTime: 0,
                 isPaused: false,
             };
-
             batch.set(db.collection('sessions').doc(), derivedSession);
         } else if (sessionSeries.modality === "review") {
             const derivedSession: Omit<FireReviewSession, 'sessionId'> = {
@@ -83,14 +83,14 @@ export const createSeries = async (
                 link: sessionSeries.link,
                 isPaused: false,
             };
-
             batch.set(db.collection('sessions').doc(), derivedSession);
         } else {
             let hybridProperty = {}
 
             if (sessionSeries.modality === 'hybrid' && typeof sessionSeries.useTALink !== 'undefined') {
                 hybridProperty = {
-                    useTALink: sessionSeries.useTALink
+                    useTALink: sessionSeries.useTALink,
+                    TALink: sessionSeries.TALink
                 }
             }
 
@@ -113,7 +113,6 @@ export const createSeries = async (
                 totalResolveTime: 0,
                 isPaused: false,
             };
-
             batch.set(db.collection('sessions').doc(), derivedSession);
         }
     })
@@ -159,7 +158,8 @@ export const updateSeries = async (
 
             if (typeof sessionSeries.useTALink !== 'undefined') {
                 virtualProperty = {
-                    useTALink: sessionSeries.useTALink
+                    useTALink: sessionSeries.useTALink,
+                    TALink: sessionSeries.TALink
                 }
             }
 
@@ -204,7 +204,8 @@ export const updateSeries = async (
 
             if (sessionSeries.modality === 'hybrid' && typeof sessionSeries.useTALink !== 'undefined') {
                 hybridProperty = {
-                    useTALink: sessionSeries.useTALink
+                    useTALink: sessionSeries.useTALink,
+                    TALink: sessionSeries.TALink
                 }
             }
 
