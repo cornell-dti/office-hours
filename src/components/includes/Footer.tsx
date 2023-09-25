@@ -1,5 +1,5 @@
 import * as React from "react";
-import DTILogo from "../../media/dti_logo.svg";
+import DTILogo from "../../media/dti_logo_glyph.svg";
 
 const Footer = () => {
     return (
