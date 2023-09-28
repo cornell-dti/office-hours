@@ -27,6 +27,18 @@ _Screenshots showing major parts of app_
 
 ## Contributors
 
+### 2023-24
+* **Benjamin Tang** - Product Manager
+* **Lily Pham** - Technical Project Manager
+* **Erin Xu** - Software Developer
+* **Jessica Wang** - Software Developer
+* **Sydney Tran** - Software Developer
+* **Sophie Wang** - Software Developer
+* **Richard Gu** - Software Developer
+* **Brandon Lee** - Designer
+* **Jenny Zhang** - Designer
+* **Raissa Ji** - Product Marketing Manager
+
 ### 2022-23
 * **Pranavi Gupta** - Product Manager
 * **Alex Nagel** - Technical Project Manager
