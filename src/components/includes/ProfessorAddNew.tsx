@@ -8,6 +8,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import { createSeries } from '../../firebasefunctions/series';
 import { firestore, Timestamp } from '../../firebase';
+import { getQuery } from '../../firebasefunctions/calendar'
+import { useQueryWithLoading } from '../../firehooks';
+import { deleteSession } from '../../firebasefunctions/session';
 
 
 enum Modality {
@@ -24,15 +27,6 @@ const ProfessorAddNew = (props: { courseId: string; taOptions?: DropdownItemProp
     const text = props.taOptions ? 'Add New Office Hour' : 'Add New Assignment';
 
     const generateTestSessions = () => {
-        // const virtualSeries: FireSessionSeriesDefinition = {
-        //     useTALink: false,
-        //     modality: Modality.VIRTUAL,
-        //     courseId: props.courseId,
-        //     endTime: Timestamp.fromDate(moment().endOf('day').toDate()),
-        //     startTime: Timestamp.fromDate(moment().startOf('day').toDate()),
-        //     tas: [],
-        //     title: "Virtual Session",
-        // };
         let s = Timestamp.fromDate(moment().startOf('day').toDate());
         let e = Timestamp.fromDate(moment().endOf('day').toDate())
 
@@ -46,11 +40,22 @@ const ProfessorAddNew = (props: { courseId: string; taOptions?: DropdownItemProp
                 tas: [],
                 title: "Virtual Session",
             };
-            console.log(virtualSeries.startTime);
             createSeries(firestore, virtualSeries);
             s = Timestamp.fromDate(moment(s.toDate()).add(1, 'd').toDate());
             e = Timestamp.fromDate(moment(e.toDate()).add(1, 'd').toDate());
         }
+    }
+
+    const sessions = useQueryWithLoading<FireSession>(
+        props.courseId || '',
+        getQuery,
+        'sessionId'
+    );
+
+    const deleteAllSessions = () => {
+        sessions != null && sessions.forEach((session) => {
+            deleteSession(session.sessionId)
+        });
     }
 
     return (
@@ -73,6 +78,12 @@ const ProfessorAddNew = (props: { courseId: string; taOptions?: DropdownItemProp
                 <button type="button" className="NewOHButton" onClick={generateTestSessions}>
                     <Icon name="plus" />
                     {"Auto Populate Sessions"}
+                </button>
+            </div>
+            <div className={'Add ' + (!editVisible && !discussVisible)}>
+                <button type="button" className="NewOHButton" onClick={deleteAllSessions}>
+                    <Icon name="minus" />
+                    {"Delete All Sessions"}
                 </button>
             </div>
 
