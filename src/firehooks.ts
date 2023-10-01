@@ -90,6 +90,11 @@ export const useBatchQueryWithLoading = <T, P = string>(
     return result;
 };
 
+/**
+ * This function retrieves the sessions for a given course during a given week.
+ * @param courseId: courseId of the course to retrieve sessions for
+ * @param selectedWeekEpoch: the start of the week to retrieve session for
+ */
 export const useProfessorViewSessions = (
     courseId: string,
     selectedWeekEpoch: number
