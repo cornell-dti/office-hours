@@ -53,8 +53,9 @@
         .viewToggles {
             display: flex;
             flex-wrap: wrap;
-            align-self: center;
-            justify-content: center;
+            justify-content: left;
+            flex: 1;
+            margin-left: 2%;
         }
 
         .QMILogo {

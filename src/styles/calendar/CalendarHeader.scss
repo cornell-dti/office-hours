@@ -25,18 +25,16 @@
         font-weight: 500;
         display: flex;
         flex-direction: row;
-        justify-content: center;
-        align-items: center;
+        justify-content: left;
+        align-items: left;
         border-radius: 5px;
         width: fit-content;
         padding: 2px 8px;
         margin: 0px 0px 10px 10px;
         position: relative;
-        min-width: 150px;
 
         .courseCode {
-            align-self: center;
-            color: white;
+            color: black;
             margin-right: 5px;
         }
 
@@ -58,6 +56,7 @@
         .Toggle {
             width: 8px;
             margin-left: 5px;
+            margin-bottom: 7px;
         }
 
         .logoutMenu {
@@ -67,40 +66,59 @@
         }
 
         .courseMenu {
-            width: 100%;
+            width: fit-content;
             position: absolute;
             top: 36px;
-            border: solid 1px #e5e5e5;
+            border: 1px solid #AFAFAF;
             border-radius: 5px;
             background-color: white;
             z-index: 1;
-
-            .editClasses {
-                border-top: solid 0.5px #d4d4d4;
-            }
+            display: flex;
+            flex-direction: row;
+            box-shadow: 5px 5px 20px #AFAFAF;
 
             li {
                 border: none;
-                padding: 0;
+                border-right: 1px solid #DDDDDD;
+                margin: 20px 28px 28px 20px;
+                padding-right: 10px;
                 cursor: pointer;
                 width: 100%;
                 font-size: 15px;
-                font-weight: 300;
+                color: black;
                 display: block;
 
+                .courseName {
+                    margin-bottom: 10px;
+                }
+
                 div {
-                    color: #494949;
                     width: 100%;
-                    padding: 10px;
-                    display: inline-block;
+                    padding: 5px 20px 5px 20px;
                     margin: auto;
-                    text-align: center;
+                    font-weight: 400;
+                }
+
+                div:hover {
+                    border: 1px solid #77BBFA;
+                    border-radius: 4px;
+                    background-color: #EDF6FF;
                 }
 
                 .thisCourse {
-                    color: #699ce9;
-                    font-weight: 500;
+                    color: white;
+                    border: 1px solid #002177;
+                    border-radius: 4px;
+                    background-color: #5599DB;
                 }
+
+                .dashboard {
+                    color: #5599DB;
+                }
+            }
+
+            li:last-child {
+                border-right: none;
             }
         }
 
@@ -127,11 +145,14 @@
     }
 
     .CalendarHeader {
-        background: #7ab7fe;
-        background-image: linear-gradient(80deg, #668ae9, #6db9ea);
+        background: white;
+        border: solid 1px #AFAFAF;
         color: white;
     }
 
+    .CalendarHeader:hover{
+        background-color: #E2E2E2;
+    }
     .CalendarHeaderProfessorView {
         background: white;
         background-image: none;
@@ -142,6 +163,7 @@
             border: 2px solid #d2d2d2;
             box-sizing: border-box;
             padding: 4px 10px;
+
             a {
                 color: #909090;
             }
