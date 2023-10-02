@@ -63,18 +63,18 @@ const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): Reac
                         {courses
                             .filter(c => c.semester === CURRENT_SEMESTER)
                             .map(course => (
-                                    <li key={course.courseId}>
-                                        <p className="courseName">{course.code}</p>
-                                        <div
-                                            className={course.code === currentCourseCode ? 'thisCourse' : ''}
-                                            onClick={() => courseClicked(course)}
-                                        >
-                                            Queue {course.code === currentCourseCode}
-                                        </div>
-                                        <div className="dashboard">
-                                            Dashboard
-                                        </div>
-                                    </li>
+                                <li key={course.courseId}>
+                                    <p className="courseName">{course.code}</p>
+                                    <div
+                                        className={course.code === currentCourseCode ? 'thisCourse' : ''}
+                                        onClick={() => courseClicked(course)}
+                                    >
+                                    Queue {course.code === currentCourseCode}
+                                    </div>
+                                    <div className="dashboard">
+                                        Dashboard
+                                    </div>
+                                </li>
                             ))}
                         {role && (
                             <>
