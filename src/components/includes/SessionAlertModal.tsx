@@ -1,9 +1,9 @@
-import React, { useState, ReactElement } from 'react';
-import moment from 'moment';
-import { Icon } from 'semantic-ui-react';
+import React, { useState, ReactElement } from "react";
+import moment from "moment";
+import { Icon } from "semantic-ui-react";
 // eslint-disable-next-line import/no-unresolved
-import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
-import { useSessionTANames } from '../../firehooks';
+import { SemanticICONS } from "semantic-ui-react/dist/commonjs/generic";
+import { useSessionTANames } from "../../firehooks";
 
 type Props = {
     readonly header?: string;
@@ -44,14 +44,14 @@ const SessionAlertModal = ({
         <button
             key={i}
             type="button"
-            className={buttons.length - 1 === i ? 'last' : ''}
+            className={buttons.length - 1 === i ? "last" : ""}
             onClick={() => (buttons.length - 1 === i ? main() : cancel())}
         >
             {button}
         </button>
     ));
 
-    const shadeDisplay = displayShade ? 'shade' : '';
+    const shadeDisplay = displayShade ? "shade" : "";
 
     // Copied over from ProfessorOHInfoDelete
     const taList = OHSession ? tas : [];
@@ -62,9 +62,9 @@ const SessionAlertModal = ({
 
     return (
         <div className="SessionAlertModal">
-            <div className={'modalShadeAlert ' + shadeDisplay} onClick={() => cancel()} />
-            <div className={'modalContent ' + shadeDisplay}>
-                <div className={'text ' + color}>
+            <div className={"modalShadeAlert " + shadeDisplay} onClick={() => cancel()} />
+            <div className={"modalContent " + shadeDisplay}>
+                <div className={"text " + color}>
                     {header && <div className="title">{header}</div>}
                     {icon && (
                         <div className="Icon">
@@ -77,15 +77,15 @@ const SessionAlertModal = ({
                 {OHSession && (
                     <div className="info">
                         <div className="ta">
-                            {taList.join(', ')}
-                            {taList.length === 0 && '(No TA Assigned)'}
+                            {taList.join(", ")}
+                            {taList.length === 0 && "(No TA Assigned)"}
                         </div>
                         <div>
                             <span>
-                                {moment(OHSession.startTime).format('h:mm A')}&nbsp; to{' '}
-                                {moment(OHSession.endTime).format('h:mm A')}
+                                {moment(OHSession.startTime).format("h:mm A")}&nbsp; to{" "}
+                                {moment(OHSession.endTime).format("h:mm A")}
                             </span>
-                            {'building' in OHSession ? (
+                            {"building" in OHSession ? (
                                 <span>
                                     {OHSession.building} {OHSession.room}
                                 </span>
