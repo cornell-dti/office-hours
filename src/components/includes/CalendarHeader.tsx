@@ -28,6 +28,10 @@ const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): Reac
         }
     };
 
+    /**
+     * Navigates to a course's page when the course is clicked in the menu
+     * @param course the course to navigate to
+     */
     const courseClicked = (course: FireCourse) => {
         updateSession(undefined);
         history.push('/course/' + course.courseId);
