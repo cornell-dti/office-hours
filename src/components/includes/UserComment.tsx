@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import Moment from 'react-moment';
+import Linkify from 'react-linkify'
 import { updateCurrentComment } from '../../firebasefunctions/sessionQuestion';
 import Dots from '../../media/dots.svg';
-import Linkify from 'react-linkify'
+
 
 type Props = FireComment & {
     poster: FireUser;
