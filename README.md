@@ -1,5 +1,5 @@
 # Queue Me In
-by [Cornell Design & Tech Initiative](http://cornelldti.org)
+by [Cornell Digital Technology & Innovation](http://cornelldti.org)
 
 #### Contents
   - [About](#about)
@@ -27,11 +27,33 @@ _Screenshots showing major parts of app_
 
 ## Contributors
 
+### 2023-24
+* **Benjamin Tang** - Product Manager
+* **Lily Pham** - Technical Project Manager
+* **Richard Gu** - Software Developer
+* **Sydney Tran** - Software Developer
+* **Jessica Wang** - Software Developer
+* **Sophie Wang** - Software Developer
+* **Erin Xu** - Software Developer
+* **Brandon Lee** - Designer
+* **Jenny Zhang** - Designer
+* **Raissa Ji** - Product Marketing Manager
+
+### 2022-23
+* **Pranavi Gupta** - Product Manager
+* **Alex Nagel** - Technical Project Manager
+* **Dana Kim** - Software Developer
+* **Sung Woo Min** - Software Developer
+* **Erin Xu** - Software Developer
+* **Lily Pham** - Software Developer
+* **Sydney Tran** - Software Developer
+
 ### 2021-22
 * **Nada Attia** - Software Developer
 * **Pooja Kanumalla** - Software Developer
 * **Alex Nagel** - Software Developer
 * **Dana Kim** - Software Developer
+* **Sung Woo Min** - Software Developer
 * **Erin Xu** - Software Developer
 * **Archit Mehta** - Software Developer
 * **Lily Pham** - Software Developer

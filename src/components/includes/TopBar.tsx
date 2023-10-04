@@ -99,7 +99,11 @@ const TopBar = (props: Props) => {
                         )}
                     </div>
                     <div className="rightContentWrapper" >
-                        <TopBarNotifications notificationTracker={notificationTracker} />
+                        <TopBarNotifications 
+                            notificationTracker={notificationTracker} 
+                            iconClick={() => setShowMenu(!showMenu)} 
+                            showMenu={showMenu}
+                        />
                         <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
                             <img
                                 src={image}
@@ -108,7 +112,8 @@ const TopBar = (props: Props) => {
                                 alt="User Profile"
                             />
                             <span className="name">
-                                {props.user ? props.user.firstName + ' ' + props.user.lastName : 'Loading...'}
+                                {props.user ? props.user.firstName + ' ' + props.user.lastName + ' (' + 
+                                props.user.email.substring(0,props.user.email.indexOf('@')) + ')' : 'Loading...'}
                             </span>
                         </div>
                     </div>

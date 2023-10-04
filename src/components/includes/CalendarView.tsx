@@ -61,10 +61,15 @@ const CalenderView = ({
             const bStart = b.startTime;
             return aStart.toDate().getTime() - bStart.toDate().getTime();
         });
+    
+    const sessionDates = sessions === null ? [] : sessions.map((s) => s.startTime.toDate());
 
     return (
         <aside className='CalendarView'>
-            <CalendarDaySelect callback={setSelectedDate} />
+            <CalendarDaySelect 
+                callback={setSelectedDate} 
+                sessionDates={sessionDates} 
+            />
             {course && user && sessions ? (
                 <CalendarSessions
                     activeSession={isActiveSession? session : undefined}
