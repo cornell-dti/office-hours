@@ -225,13 +225,15 @@
     margin: 0em;
     color: #595959;
     font-weight: 300;
-    display: flex;
+    // display: flex;
     align-items: center;
     justify-content: space-between;
   }
 
   .Question.Student {
+    // color: red;
     padding-top: 16px;
+    // display: left;
   }
 
   .Question.Time {
