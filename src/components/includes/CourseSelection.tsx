@@ -210,8 +210,8 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         history.push("/home");
     };
 
-    const onCreateCourse = () => {
-
+    const onCreateCourse = () => { 
+        
     }
 
     const [courseCreatePopup, setCourseCreatePopup] = useState(false);
@@ -222,11 +222,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     /* eslint-disable max-len */
     return (
-        courseCreatePopup ? 
-        <div>
-            {CourseCreatePopup && <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} />}
-        </div> 
-        :
         <div>
             <div className="CourseSelection">
                 <TopBar
@@ -392,7 +387,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     </div>
                 </div>
             </div>
-            {/* {CourseCreatePopup && <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} />} */}
+            {courseCreatePopup && <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} />}
         </div>
         
     );
