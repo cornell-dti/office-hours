@@ -210,10 +210,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         history.push("/home");
     };
 
-    const onCreateCourse = () => { 
-        
-    }
-
     const [courseCreatePopup, setCourseCreatePopup] = useState(false);
 
     // changed guard from selectedCourses.length + numCoursesWithRoles === 0 to selectedCourses.length === 0
@@ -389,7 +385,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
             </div>
             {courseCreatePopup && <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} />}
         </div>
-        
     );
 }
 const mapStateToProps = (state: RootState) => ({
