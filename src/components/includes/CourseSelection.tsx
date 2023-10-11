@@ -131,7 +131,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         history.push('/home');
     };
 
-    const onCreateCourse = () => {
+    const onCreateCourse = () => { 
         
     }
 
@@ -142,11 +142,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         : selectedCourses.map(c => c.code).join(', '));
 
     return (
-        courseCreatePopup ? 
-        <div>
-            {CourseCreatePopup && <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} />}
-        </div> 
-        :
         <div>
             <div className="CourseSelection">
                 <TopBar
@@ -260,7 +255,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     )}
                 </div>
             </div>
-            {/* {CourseCreatePopup && <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} />} */}
+            {courseCreatePopup && <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} />}
         </div>
         
     );
