@@ -5,7 +5,7 @@ import { RootState } from '../../../redux/store';
 import {connect} from 'react-redux'
 import { CURRENT_SEMESTER, START_DATE } from '../../../constants';
 import {importProfessorsOrTAsFromCSV} from '../../../firebasefunctions/importProfessorsOrTAs';
-import Logo from '../../media/QLogo2.svg';
+import Logo from '../../../media/QLogo2.svg';
 import { useCourse } from '../../../firehooks';
 import Next from '../../media/tutorial-next.svg';
 import Prev from '../../media/tutorial-prev.svg';
@@ -16,7 +16,7 @@ type Props = {
     setTutorialVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Tutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
+const StudentTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
     const [tutorialState, setTutorialState] = useState(0);
     const driver = new Driver({allowClose: false, animate: true, opacity: 0.4, padding: 0});
     const startTutorial = () => {
@@ -104,4 +104,4 @@ const mapStateToProps = (state: RootState) => ({
 })
 
 
-export default connect(mapStateToProps, {})(Tutorial);
+export default connect(mapStateToProps, {})(StudentTutorial);
