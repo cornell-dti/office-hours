@@ -383,7 +383,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     </div>
                 </div>
             </div>
-            {courseCreatePopup && <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} />}
+            {courseCreatePopup && (
+                <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} userId={user.userId} />
+            )}
         </div>
     );
 }
