@@ -8,6 +8,24 @@ export const updateCourses = (
 };
 
 /**
+ * This function adds the course to the pendingCourses collection if the courseId does not
+ * already exist in the pendingCourses or courses collection. Otherwise, it throws an error.
+ * @param courseId: courseId of the course to be added to pendingCourses
+ * @param course: course to be added to pendingCourses
+ */
+export const addPendingCourse = async (
+    courseId: string,
+    course: FireCourse,
+): Promise<void> => {
+    if ((await firestore.collection('pendingCourses').where('courseId', '==', courseId).get()).empty
+        && (await firestore.collection('courses').where('courseId', '==', courseId).get()).empty) {
+        return firestore.collection('pendingCourses').doc(courseId).set(course);
+    } else {
+        throw new Error('courseId already exists in pendingCourses or courses');
+    }
+};
+
+/**
  * This function removes a course from the pendingCourses collection
  * (i.e. rejects the request to add the course)
  * @param courseId: courseId of the course to be removed from pendingCourses
