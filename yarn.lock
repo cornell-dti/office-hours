@@ -6175,6 +6175,11 @@ dotenv@^6.1.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-6.2.0.tgz#941c0410535d942c8becf28d3f357dbd9d476064"
   integrity sha512-HygQCKUBSFl8wKQZBSemMywRWcEDNidvNbjGVyZu3nbZ8qq9ubiPoGLMdRDpfSrpkkm9BXYFkpKxxFX38o/76w==
 
+driver.js@^0.9.8:
+  version "0.9.8"
+  resolved "https://registry.yarnpkg.com/driver.js/-/driver.js-0.9.8.tgz#4b327f4537b1c9b9fb19419de86174be821ae32a"
+  integrity sha512-bczjyKdX6XmFyCDkwtRmlaORDwfBk1xXmRO0CAe5VwNQTM98aWaG2LAIiIdTe53iV/B7W5lXlIy2xYtf0JRb7Q==
+
 duplexer2@~0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/duplexer2/-/duplexer2-0.1.4.tgz#8b12dab878c0d69e3e7891051662a32fc6bddcc1"

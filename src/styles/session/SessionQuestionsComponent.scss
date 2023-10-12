@@ -234,18 +234,6 @@
     padding-top: 16px;
   }
 
-  .Question.Time {
-    float: right;
-    font-size: 14px;
-    margin: -12px 13px 0px 0px;
-    padding: 4px 6px;
-    color: white;
-    background-color: $number-blue;
-    border: solid $number-blue 0px;
-    border-radius: 5px;
-    text-align: center;
-  }
-
   .CommentBox {
     margin-top: 12px;
     padding-top: 18px;
@@ -312,7 +300,6 @@
 
   .LocationPin {
     display: inline-block;
-    float: right;
     padding: 14px;
     padding-right: 0px;
 

@@ -57,7 +57,7 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
     }
 
     return (
-        <div className="CalendarDaySelect">
+        <div className="CalendarDaySelect" id="CalendarDaySelect">
             <p className="month">{monthNames[now.getMonth()]}</p>
             <div className="selector">
                 <button 

@@ -8,7 +8,7 @@ const ProfessorAddNew = (props: { courseId: string; taOptions?: DropdownItemProp
     const [editVisible, setEditVisible] = useState(false);
     const [discussVisible, setDiscussVisible] = useState(false);
 
-    const text = props.taOptions ? 'Add New Office Hour' : 'Add New Assignment';
+    const text = props.taOptions ? 'Add New Office Hour' : 'Add New Category';
     return (
         <div className="ProfessorAddNew">
             <div className={'Add ' + (!editVisible && !discussVisible)}>

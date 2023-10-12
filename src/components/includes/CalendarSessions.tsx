@@ -99,7 +99,7 @@ const CalendarSessions = ({
     }
 
     return (
-        <div className='CalendarSessions'>
+        <div className='CalendarSessions' id='CalendarSessions'>
             {sessions.length === 0 && (
                 <>
                     <p className='noHoursHeading'>No Office Hours</p>
