@@ -18,12 +18,60 @@ type Props = {
 
 const ProfessorTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
     const [tutorialState, setTutorialState] = useState(0);
-    const driver = new Driver({ allowClose: false, animate: true, opacity: 0.4, padding: 0 });
+    const driver = new Driver({ allowClose: false, animate: false, opacity: 0.4, padding: 0 });
     const startTutorial = () => {
         setTutorialState(tutorialState + 1);
         driver.defineSteps([
-
+            {
+                element: "#ProfessorQueue",
+                popover: {
+                    title: ' ',
+                    description: 'To select a student on the queue to assist, click on "Assign to me". This will take them off the section for unassigned queue questions.',
+                    position: 'bottom'
+                }
+            },
+            {
+                element: "#ProfessorDashboard",
+                popover: {
+                    title: ' ',
+                    description: '[dashboard info]',
+                    position: 'bottom'
+                }
+            },
+            {
+                element: "#AddOHButton",
+                popover: {
+                    title: ' ',
+                    description: '[add new oh]',
+                    position: 'bottom'
+                }
+            },
+            {
+                element: "#profSettings",
+                popover: {
+                    title: ' ',
+                    description: 'Click on settings to change queue functionality',
+                    position: 'left'
+                }
+            },
+            {
+                element: "#ManageHours",
+                popover: {
+                    title: ' ',
+                    description: '[manage hours placeholder]',
+                    position: 'right'
+                }
+            },
+            {
+                element: "#ManageTags",
+                popover: {
+                    title: ' ',
+                    description: '[manage tags placeholder]',
+                    position: 'right'
+                }
+            },
         ]);
+
         driver.start();
     }
     const year = (new Date(START_DATE)).getFullYear() % 100;

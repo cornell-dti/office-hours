@@ -100,9 +100,9 @@ const TopBar = (props: Props) => {
                                 (props.user.roles[props.course.courseId] || 'student' || props.admin)
                             }
                         />
-                        {props.role === 'professor' && (
+                        {props.role === 'professor' && [(<ProfessorTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} />), (
                             <ProfessorStudentToggle courseId={props.courseId} context={props.context} />
-                        ) && (<ProfessorTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} />)}
+                        )]}
                     </div>
                     <div className="rightContentWrapper" >
                         <TopBarNotifications

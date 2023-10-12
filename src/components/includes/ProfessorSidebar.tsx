@@ -9,7 +9,7 @@ type Props = {
 }
 
 const ProfessorSidebar = ({ courseId, code, selected }: Props) => {
-    const css = (condition: boolean) => condition ? 'selected' : ''; 
+    const css = (condition: boolean) => condition ? 'selected' : '';
     return (
         <div className="ProfessorSidebar">
             <div className="nav">
@@ -20,33 +20,33 @@ const ProfessorSidebar = ({ courseId, code, selected }: Props) => {
                 </div>
                 <div className="actions">
                     <Link to={'/professor/course/' + courseId}>
-                        <button type="button" className={css(selected === 'hours')}>
+                        <button id="ManageHours" type="button" className={css(selected === 'hours')}>
                             <Icon name="setting" />
-                                Manage Hours
+                            Manage Hours
                         </button>
                     </Link>
                     <Link to={'/professor-tags/course/' + courseId}>
-                        <button type="button" className={css(selected === 'tags')}>
+                        <button id="ManageTags" type="button" className={css(selected === 'tags')}>
                             <Icon name="settings" />
-                                Manage Tags
+                            Manage Tags
                         </button>
                     </Link>
                     <Link to={'/professor-dashboard/course/' + courseId}>
                         <button type="button" className={css(selected === 'dashboard')}>
                             <Icon name="line graph" />
-                                Tag Analytics
+                            Tag Analytics
                         </button>
                     </Link>
                     <Link to={'/professor-people/course/' + courseId}>
                         <button type="button" className={css(selected === 'people')}>
                             <Icon name="users" />
-                                Question Analytics
+                            Question Analytics
                         </button>
                     </Link>
                     <Link to={'/professor-roles/course/' + courseId}>
                         <button type="button" className={css(selected === 'roles')}>
                             <Icon name="id card outline" />
-                                Manage Roles
+                            Manage Roles
                         </button>
                     </Link>
                 </div>

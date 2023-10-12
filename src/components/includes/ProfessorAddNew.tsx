@@ -12,7 +12,7 @@ const ProfessorAddNew = (props: { courseId: string; taOptions?: DropdownItemProp
     return (
         <div className="ProfessorAddNew">
             <div className={'Add ' + (!editVisible && !discussVisible)}>
-                <button type="button" className="NewOHButton" onClick={() => setEditVisible(true)}>
+                <button id="AddOHButton" type="button" className="NewOHButton" onClick={() => setEditVisible(true)}>
                     <Icon name="plus" />
                     {text}
                 </button>
