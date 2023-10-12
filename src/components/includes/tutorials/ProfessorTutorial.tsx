@@ -5,10 +5,10 @@ import { RootState } from '../../../redux/store';
 import { connect } from 'react-redux'
 import { CURRENT_SEMESTER, START_DATE } from '../../../constants';
 import { importProfessorsOrTAsFromCSV } from '../../../firebasefunctions/importProfessorsOrTAs';
-import Logo from '../../media/QLogo2.svg';
+import Logo from '../../../media/QLogo2.svg';
 import { useCourse } from '../../../firehooks';
-import Next from '../../media/tutorial-next.svg';
-import Prev from '../../media/tutorial-prev.svg';
+import Next from '../../../media/tutorial-next.svg';
+import Prev from '../../../media/tutorial-prev.svg';
 
 type Props = {
     user: FireUser | undefined;

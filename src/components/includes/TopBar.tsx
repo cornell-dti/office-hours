@@ -14,6 +14,7 @@ import { updateLastSent } from '../../firebasefunctions/notifications';
 import Snackbar from "./Snackbar"
 import TextNotificationModal from './TextNotificationModal';
 import StudentTutorial from './tutorials/StudentTutorial';
+import ProfessorTutorial from './tutorials/ProfessorTutorial';
 
 type Props = {
     courseId: string;
@@ -89,7 +90,7 @@ const TopBar = (props: Props) => {
             <header className="topBar">
                 <div className="triggerArea">
                     <img src={Logo} className="QMILogo" alt="Queue Me In Logo" />
-                    <StudentTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} />
+                    {props.role === 'student' && (<StudentTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} />)}
                     <div className="viewToggles">
                         <CalendarHeader
                             currentCourseCode={(props.course && props.course.code) || 'Courses'}
@@ -101,7 +102,7 @@ const TopBar = (props: Props) => {
                         />
                         {props.role === 'professor' && (
                             <ProfessorStudentToggle courseId={props.courseId} context={props.context} />
-                        )}
+                        ) && (<ProfessorTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} />)}
                     </div>
                     <div className="rightContentWrapper" >
                         <TopBarNotifications
