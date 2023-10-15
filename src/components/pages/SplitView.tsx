@@ -148,6 +148,14 @@ const SplitView = ({
         setDisplayFeedbackPrompt(true);
     };
 
+    const submitFeedback = (rating?: number, feedback?: string) => {
+        const feedback = {
+            rating,
+            writtenFeedback: feedback,
+        };
+        firestore.collection();
+    };
+
     useEffect(() => {
         // Add a banner prompting the user to enable browser notifications
         if ("Notification" in window && Notification.permission === "default") {
@@ -213,7 +221,9 @@ const SplitView = ({
                 currentExportSessions={currentExportSessions}
                 course={course}
             />
-            {displayFeedbackPrompt ? <FeedbackPrompt questionId={removeQuestionId || ""} /> : null}
+            {displayFeedbackPrompt ? (
+                <FeedbackPrompt questionId={removeQuestionId || ""} isOpen={displayFeedbackPrompt} onClose={() => {}} />
+            ) : null}
 
             {(width > MOBILE_BREAKPOINT || activeView !== "calendar") &&
                 (course && user ? (

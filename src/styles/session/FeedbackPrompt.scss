@@ -1,0 +1,34 @@
+.boxStyle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400;
+  background-color: gray;
+  border: 2px solid #000;
+  box-shadow: 24;
+  padding: 4;
+}
+
+.body {
+  display: flex;
+  width: 100%;
+  text-align: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.header {
+  font-size: 40px;
+  font-weight: bold;
+  color: #CB4548;
+  width: 100%;
+  margin: 0;
+  font: TT Norms Pro;
+}
