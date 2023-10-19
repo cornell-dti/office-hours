@@ -85,7 +85,9 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                 <form className="inputs">
                     <h1>Create a New Class</h1>
                     <div className="role_input">
-                        <p>I'm a...*</p>
+                        <p className="input_label">
+                            I'm a... <span className="required">*</span>
+                        </p>
                         <p>Professor</p>
                         <input
                             type="radio"
@@ -98,8 +100,9 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                         <input type="radio" id="ta" name="fav_language" value="HTML" onClick={() => setIsProf(false)} />
                     </div>
                     <label htmlFor="course_code" className="input_component">
-                        {" "}
-                        Course Code*
+                        <p className="input_label">
+                            Course Code <span className="required">*</span>
+                        </p>
                         <input
                             id="course_code"
                             type="text"
@@ -110,8 +113,9 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                         <p />
                     </label>
                     <label htmlFor="course_code" className="input_component">
-                        {" "}
-                        Course Name*
+                        <p className="input_label">
+                            Course Name <span className="required">*</span>
+                        </p>
                         <input
                             id="course_name"
                             type="text"
@@ -122,8 +126,9 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                     </label>
                     <div className="dropdownSection">
                         <label htmlFor="year" className="input_component">
-                            {" "}
-                            Year*
+                            <p className="input_label">
+                                Year <span className="required">*</span>
+                            </p>
                             <select id="year" value={year} onChange={(e) => handleSelect(e, setYear)}>
                                 <option value="23">2023</option>
                                 <option value="24">2024</option>
@@ -131,8 +136,9 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                             </select>
                         </label>
                         <label htmlFor="term" className="input_component">
-                            {" "}
-                            Term*
+                            <p className="input_label">
+                                Term <span className="required">*</span>
+                            </p>
                             <select id="term" value={term} onChange={(e) => handleSelect(e, setTerm)}>
                                 <option value="SP">Spring</option>
                                 <option value="FA">Fall</option>
@@ -152,7 +158,7 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                     <Icon link name="close" onClick={() => setCourseCreatePopup(false)} />
                     <div className="createNewClassHeader">
                         <img className="createCourseImg" src={CreateCourseImg} alt="logo" />
-                        <h1>Welcome to Create a New Class!</h1>
+                        <h1>Create a New Class</h1>
                     </div>
                     <p>
                         Please proceed only if you are a professor or authorized TA. The QMI team will verify your
