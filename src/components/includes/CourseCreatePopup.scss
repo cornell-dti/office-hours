@@ -31,10 +31,9 @@
 
     img {
       position: absolute;
-      top: 40px;
-      width: 40px;
-      height: 40px;
-      margin: 15px 30px;
+      top: 50px;
+      width: 30px;
+      height: 30px;
     }
 
     h1 {
@@ -45,6 +44,10 @@
       font-style: normal;
       font-weight: 500;
       line-height: 20px;
+    }
+
+    .required {
+      color: red;
     }
 
     .submit {
@@ -74,11 +77,15 @@
         flex-direction: column;
 
         .input_component {
-            margin-top: 25px;
+            margin-top: 20px;
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
             text-align: left;
+
+            .input_label {
+              margin: 5px 0px;
+            }
 
             input {
                 width: 320px;
@@ -126,22 +133,10 @@
     background: white;
     align-items: center;
     justify-content: center;
-    // border: 5px solid teal;
-
-    
-    img {
-      position: relative;
-      translate: 0px 50px;
-      width: 60px;
-      height: 60px;
-      translate: -25px 23px;
-    }
-
 
     h1 {
         text-align: center;
-        margin-left: auto;
-        margin-right: auto;
+        margin: 5px;
         position: relative;
         width: 192px;
         height: 28px;
@@ -172,8 +167,16 @@
       margin-top: 20px;
       display: flex;
       position: absolute;
-      flex-direction: row;
+      flex-direction: column;
+      align-items: center;
       top: 0px;
+
+      img {
+        margin: 10px;
+        width: 40px;
+        height: 40px;
+      }
+
     }
 
     .buttons {
