@@ -33,6 +33,10 @@ const RoleDropdown = ({
                         changeRole(user, course, newValueRole);
                     }
                 }}
+                /**
+                 * Dropdown alignment left ensures the component expands to the
+                 * left and doesn't overlap with the right sie of the table.
+                 */
                 direction="left"
             />
         </div>
