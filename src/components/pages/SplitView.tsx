@@ -153,7 +153,7 @@ const SplitView = ({
             rating,
             writtenFeedback: feedback,
         };
-        firestore.collection();
+        firestore.collection("courses");
     };
 
     useEffect(() => {
