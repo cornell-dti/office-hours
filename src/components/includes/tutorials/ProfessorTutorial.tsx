@@ -86,6 +86,10 @@ const ProfessorTutorial = ({ user, tutorialVisible, setTutorialVisible, courseId
             }
         ]
     });
+
+    /**
+     * This function starts the tutorial by setting the tutorial state so the start tutorial component stops showing and starting the driver object with the steps for the tutorial
+     */
     const startTutorial = () => {
         setTutorialState(tutorialState + 1);
         driverObj.drive();
