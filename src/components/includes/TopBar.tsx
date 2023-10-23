@@ -100,7 +100,7 @@ const TopBar = (props: Props) => {
                                 (props.user.roles[props.course.courseId] || 'student' || props.admin)
                             }
                         />
-                        {props.role === 'professor' && [(<ProfessorTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} />), (
+                        {props.role === 'professor' && [(<ProfessorTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} courseId={props.courseId} />), (
                             <ProfessorStudentToggle courseId={props.courseId} context={props.context} />
                         )]}
                     </div>

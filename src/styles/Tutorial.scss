@@ -4,10 +4,11 @@
         height: 100vh;
         z-index: 1000000;
         position: fixed;
-        top:0;
+        top: 0;
         left: 0;
         background-color: rgba(0, 0, 0, .34);
     }
+
     &__content {
         background-color: #FFFFFF;
         position: absolute;
@@ -23,10 +24,12 @@
         justify-content: center;
         align-items: center;
     }
+
     &__logo {
         width: 168px;
         height: 167px;
     }
+
     &__title {
         font-family: 'Roboto';
         font-style: normal;
@@ -37,6 +40,7 @@
         color: #000000;
         padding: 10px 0px;
     }
+
     &__caption {
         font-family: 'Roboto';
         font-style: normal;
@@ -47,6 +51,7 @@
         color: #484848;
         padding: 10px 0px 10px 0px;
     }
+
     &__start {
         background: linear-gradient(45deg, #668AE9 0%, #6DB9EA 100%);
         border-radius: 3px;
@@ -62,10 +67,12 @@
         text-align: center;
         color: #FFFFFF;
         cursor: pointer;
+
         &:hover {
             box-shadow: 0 2px 5px 1px rgba(64, 60, 67, .24);
         }
     }
+
     &__skiptext {
         margin: 10px 0px 10px 0px;
         font-family: 'Roboto';
@@ -78,86 +85,84 @@
         text-align: center;
         color: #484848;
     }
+
     &__skip {
         text-decoration: underline;
         cursor: pointer;
+
         &:hover {
             color: darken(#484848, 30%);
         }
     }
 }
 
-#driver-popover-item {
-    margin-left: 30px!important;
-    margin-top: 10px!important;
-    padding: 20px 40px 20px 40px!important;
+.driver-popover-item {
+    margin-left: 30px !important;
+    margin-top: 10px !important;
+    padding: 20px 40px 20px 40px !important;
     filter: drop-shadow(0px 0px 5px #5599DB);
-    min-width: 300px!important;
-    max-width: 330px!important;
+    min-width: 300px !important;
+    max-width: 330px !important;
 }
 
 .driver-popover-description {
-    font-family: 'Roboto'!important;
-    font-style: normal!important;
-    font-weight: 400!important;
-    font-size: 16px!important;
-    line-height: 19px!important;
-    color: #333333!important;
+    font-family: 'Roboto' !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    font-size: 16px !important;
+    line-height: 19px !important;
+    color: #333333 !important;
 }
 
-.driver-popover-tip {
-    //width:20px;
-}
-
-.driver-next-btn {
+.driver-popover-next-btn {
     content: "";
     background-image: url("../media/tutorial-next.svg");
+    background-size: cover;
     background-repeat: no-repeat;
-    background-color: #fff!important;
-    border:none!important;
-    font-size: 0!important;
-    height: 20px!important;
-    width: 20px!important;
+    background-color: #fff !important;
+    border: none !important;
+    font-size: 0 !important;
+    height: 20px !important;
+    width: 20px !important;
 }
 
-.driver-prev-btn {
+.driver-popover-prev-btn {
     content: "";
     background-image: url("../media/tutorial-prev.svg");
     background-repeat: no-repeat;
-    background-color: #fff!important;
-    border:none!important;
-    font-size: 0!important;
+    background-size: cover;
+    background-color: #fff !important;
+    border: none !important;
+    font-size: 0 !important;
     margin: 0px 50px 0px 20px;
     cursor: pointer;
-    height: 20px!important;
-    width: 20px!important;
-}
-.driver-disabled {
-    background-image: url("../media/tutorial-prev-disabled.svg")!important;
+    height: 20px !important;
+    width: 20px !important;
 }
 
-.driver-close-btn {
+.driver-popover-disabled {
+    background-image: url("../media/tutorial-prev-disabled.svg") !important;
+}
+
+.driver-popover-close-btn {
     content: "";
     background-image: url("../media/tutorial-close.svg");
+    background-size: cover;
     background-repeat: no-repeat;
-    background-color: #fff!important;
-    border:none!important;
-    text-indent: 100%!important;
-    font-size: 0!important;
+    background-color: #fff !important;
+    border: none !important;
+    text-indent: 100% !important;
+    font-size: 0 !important;
     cursor: pointer;
-    height: 20px!important;
-    width: 20px!important;
-    position:absolute!important;
-    top: 10px!important;
-    right: 7px!important;
+    height: 20px !important;
+    width: 20px !important;
+    position: absolute !important;
+    top: 10px !important;
+    right: 7px !important;
 }
 
 .driver-popover-footer {
-    display: flex!important;
-    flex-direction: column!important;
-    align-items:center!important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
 }
-// .driver-popover-title {
-//     width: 0!important;
-//     height: 0!important;
-// }

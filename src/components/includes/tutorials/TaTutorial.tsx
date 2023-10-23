@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Driver from 'driver.js'
-import 'driver.js/dist/driver.min.css'
+// import Driver from 'driver.js'
+// import 'driver.js/dist/driver.min.css'
 import { RootState } from '../../../redux/store';
 import { connect } from 'react-redux'
 import { CURRENT_SEMESTER, START_DATE } from '../../../constants';
@@ -18,55 +18,10 @@ type Props = {
 
 const TaTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
     const [tutorialState, setTutorialState] = useState(0);
-    const driver = new Driver({ allowClose: false, animate: true, opacity: 0.4, padding: 0 });
+    // const driver = new Driver({ allowClose: false, animate: true, opacity: 0.4, padding: 0 });
     const startTutorial = () => {
         setTutorialState(tutorialState + 1);
-        driver.defineSteps([
-            {
-                element: "#CalendarDaySelect",
-                popover: {
-                    title: ' ',
-                    description: 'To view office hour availabilities during the week, click on a date within the calendar.',
-                    position: 'right'
-                }
-            },
-            {
-                element: "#CalendarSessions",
-                popover: {
-                    title: ' ',
-                    description: 'Once you select a date, you can view ongoing and upcoming office hours. This will display how busy the queue is. You can then click the queue you want to join.',
-                    position: 'right'
-                }
-            },
-            {
-                element: "#CalendarDaySelect",
-                popover: {
-                    title: ' ',
-                    description: 'Now, you can join the office hours queue. You can \
-                    select the category of assignment, a subtag of the category that\
-                     relates to the topic you want to discuss, and write a question th\
-                    at will be visible to TAs.',
-                    position: 'top'
-                }
-            },
-            {
-                element: "#CalendarDaySelect",
-                popover: {
-                    title: ' ',
-                    description: 'If your professor or TA has provided a zoom link, you can access it here.',
-                    position: 'right'
-                }
-            },
-            {
-                element: "#CalendarDaySelect",
-                popover: {
-                    title: ' ',
-                    description: 'You can rewatch this tutorial and find more information by clicking on the question mark.',
-                    position: 'right'
-                }
-            }
-        ]);
-        driver.start();
+       
     }
     const year = (new Date(START_DATE)).getFullYear() % 100;
     const term = CURRENT_SEMESTER.substr(0, 2);
