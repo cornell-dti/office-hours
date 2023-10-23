@@ -34,7 +34,9 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const percentUnresolved = totalQuestions ? Math.round((100 * unresolvedQuestions.length) / totalQuestions) : 100;
     const percentResolved = 100 - percentUnresolved;
 
-    // TA data needed for per TA analytics
+    /**
+     * TA data needed for per TA analytics
+     */
     type EnrichedFireUser = FireUser & { role: FireCourseRole };
     const allCourseUsers: readonly EnrichedFireUser[] = useCourseUsers(courseId).map(user => ({
         ...user,
@@ -56,7 +58,9 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         }
     }, [TAName]);
 
-    // Student data needed for per TA analytics
+    /**
+     * Student data needed for per TA analytics
+     */
     const allStudents = allCourseUsers.filter((user) => user.role === 'student')
     const [filteredStudents, setFilteredStudents] = useState<FireUser[]>([])
     const [studentName, setStudentName] = useState("")
@@ -185,7 +189,9 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         }
     }
 
-    // Per TA analytics: calculate chart data for the selected TA
+    /** 
+     * Per TA analytics: calculate chart data for the selected TA
+    */
     let taChartYMax = 8;
     const taGraphData: BarDatum[] = [];
     const taQuestionsByDay: number[] = [];
@@ -215,7 +221,9 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         }
     }
 
-    // Per student analytics: calculate chart data for the selected student
+    /**
+     * Per student analytics: calculate chart data for the selected student
+     */
     let studentChartYMax = 8;
     const studentGraphData: BarDatum[] = [];
     const studentQuestionsByDay: number[] = [];
