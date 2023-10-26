@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-// import Driver from 'driver.js'
-// import 'driver.js/dist/driver.min.css'
-import { RootState } from '../../../redux/store';
+import { driver } from 'driver.js';
+import "driver.js/dist/driver.css";
 import { connect } from 'react-redux'
+import { RootState } from '../../../redux/store';
+
 import { CURRENT_SEMESTER, START_DATE } from '../../../constants';
 import { importProfessorsOrTAsFromCSV } from '../../../firebasefunctions/importProfessorsOrTAs';
-import Logo from '../../media/QLogo2.svg';
+import Logo from '../../../media/QLogo2.svg';
 import { useCourse } from '../../../firehooks';
 import Next from '../../media/tutorial-next.svg';
 import Prev from '../../media/tutorial-prev.svg';
@@ -18,10 +19,72 @@ type Props = {
 
 const TaTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
     const [tutorialState, setTutorialState] = useState(0);
-    // const driver = new Driver({ allowClose: false, animate: true, opacity: 0.4, padding: 0 });
+    const driverObj = driver({
+        showProgress: true,
+        allowClose: false, // ends tut when click out of it....
+        animate: true,
+        overlayOpacity: 0.4,
+        stagePadding: 0,
+        popoverClass: 'tutorial-theme',
+        steps: [{
+            element: "#CalendarDaySelect",
+            popover: {
+                title: ' ',
+                description: 'To view office hour availabilities during the week, click on a date within the calendar.',
+                side: 'right'
+            }
+        },
+        {
+            element: "#CalendarSessions",
+            popover: {
+                title: ' ',
+                description: 'Once you select a date, you can view ongoing and upcoming office hours. This will display how busy the queue is. You can then click the queue you want to join.',
+                side: 'right'
+            }
+        },
+        {
+            element: "#QueueQuestions",
+            popover: {
+                title: ' ',
+                description: `To select a student on the queue to assist, click 
+                on “Assign to me.” This will take them off the section for 
+                unassigned queue questions.`,
+                side: 'top'
+            }
+        },
+        {
+            element: "#AssignedQuestionDone",
+            popover: {
+                title: ' ',
+                description: `When you finish helping a student, you can click 
+                “Done” to remove them from the queue completely.`,
+                side: 'top'
+                // TODO-sophie: figma has a learn more button here...not sure what it does
+            }
+        },
+        {
+            element: "#ZoomLink", // SessionInformationHeader doesnt work..
+            popover: {
+                title: ' ',
+                description: `If you have provided a Zoom link for office hours, 
+                you can access it here.`,
+                side: 'right'
+            }
+        },
+        {
+            element: "#notifications__top",
+            popover: {
+                title: ' ',
+                description: `You can rewatch this tutorial and find more 
+                information by clicking on the question mark.`,
+                side: 'right'
+            }
+        }]
+    });
     const startTutorial = () => {
         setTutorialState(tutorialState + 1);
-       
+        driverObj.drive();
+
     }
     const year = (new Date(START_DATE)).getFullYear() % 100;
     const term = CURRENT_SEMESTER.substr(0, 2);

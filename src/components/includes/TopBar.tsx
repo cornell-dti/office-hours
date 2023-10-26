@@ -14,6 +14,7 @@ import { updateLastSent } from '../../firebasefunctions/notifications';
 import Snackbar from "./Snackbar"
 import TextNotificationModal from './TextNotificationModal';
 import StudentTutorial from './tutorials/StudentTutorial';
+import TaTutorial from './tutorials/TaTutorial';
 import ProfessorTutorial from './tutorials/ProfessorTutorial';
 
 type Props = {
@@ -100,11 +101,14 @@ const TopBar = (props: Props) => {
                                 (props.user.roles[props.course.courseId] || 'student' || props.admin)
                             }
                         />
+                        {props.role === 'ta' && (<TaTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} />)}
                         {props.role === 'professor' && [(<ProfessorTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} courseId={props.courseId} />), (
                             <ProfessorStudentToggle courseId={props.courseId} context={props.context} />
                         )]}
+
                     </div>
                     <div className="rightContentWrapper" >
+                        {/* TODO-sophie: ADD TUTORIAL ICON HERE */}
                         <TopBarNotifications
                             notificationTracker={notificationTracker}
                             iconClick={() => setShowMenu(!showMenu)}
@@ -124,7 +128,7 @@ const TopBar = (props: Props) => {
                         </div>
                     </div>
                 </div>
-            </header>
+            </header >
             {showMenu && (
                 <>
                     <ul className="desktop logoutMenu">
@@ -164,7 +168,7 @@ const TopBar = (props: Props) => {
                 user={user}
             />
             {props.snackbars.map(snackbar => (<Snackbar icon={snackbar.icon} announcement={snackbar.text} />))}
-        </div>
+        </div >
     );
 };
 

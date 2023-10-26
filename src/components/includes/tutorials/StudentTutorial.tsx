@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { driver } from 'driver.js';
 import "driver.js/dist/driver.css";
-import { RootState } from '../../../redux/store';
 import { connect } from 'react-redux'
+import { RootState } from '../../../redux/store';
+
 import { CURRENT_SEMESTER, START_DATE } from '../../../constants';
 import { importProfessorsOrTAsFromCSV } from '../../../firebasefunctions/importProfessorsOrTAs';
 import Logo from '../../../media/QLogo2.svg';
@@ -19,6 +20,12 @@ type Props = {
 const StudentTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
     const [tutorialState, setTutorialState] = useState(0);
     const driverObj = driver({
+        showProgress: true,
+        allowClose: false, // ends tut when click out of it....
+        animate: true,
+        overlayOpacity: 0.4,
+        stagePadding: 0,
+        popoverClass: 'tutorial-theme',
         steps: [{
             element: "#CalendarDaySelect",
             popover: {
@@ -36,18 +43,19 @@ const StudentTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) =
             }
         },
         {
-            element: "#CalendarDaySelect",
+            element: "#AddQuestion",
             popover: {
                 title: ' ',
-                description: 'Now, you can join the office hours queue. You can \
-            select the category of assignment, a subtag of the category that\
-             relates to the topic you want to discuss, and write a question th\
-            at will be visible to TAs.',
+                description: `Now, you can join the office hours queue. You can 
+                    select the category of assignment, a subtag of the category that
+                    relates to the topic you want to discuss, and write a question that
+                    will be visible to TAs.`,
                 side: 'top'
+                // TODO: figma has a learn more button here...not sure what it does
             }
         },
         {
-            element: "#CalendarDaySelect",
+            element: "#ZoomLink",
             popover: {
                 title: ' ',
                 description: 'If your professor or TA has provided a zoom link, you can access it here.',
@@ -55,13 +63,13 @@ const StudentTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) =
             }
         },
         {
-            element: "#CalendarDaySelect",
+            element: "#notifications__top",
             popover: {
                 title: ' ',
                 description: 'You can rewatch this tutorial and find more information by clicking on the question mark.',
                 side: 'right'
             }
-        }], allowClose: false, animate: true, overlayOpacity: 0.4, stagePadding: 0
+        }]
     });
     const startTutorial = () => {
         setTutorialState(tutorialState + 1);
