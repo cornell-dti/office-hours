@@ -16,7 +16,15 @@ type Props = {
     tutorialVisible: boolean;
     setTutorialVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
+/**
+ * Provides an interactive tutorial for first-time student users to navigate the session webpage.
+ * Steps include selecting a date and office hours, joining the queue, viewing the zoom link, and
+ * a start tutorial button.
+ * @param user: the current user
+ * @param tutorialVisible: whether the tutorial is visible
+ * @param setTutorialVisible: function to set whether the tutorial is visible
+ * @returns the rendered StudentTutorial component
+ */
 const StudentTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
     const [tutorialState, setTutorialState] = useState(0);
     const driverObj = driver({
@@ -51,7 +59,7 @@ const StudentTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) =
                     relates to the topic you want to discuss, and write a question that
                     will be visible to TAs.`,
                 side: 'top'
-                // TODO: figma has a learn more button here...not sure what it does
+                // TODO-sophie: figma has a learn more button here...not sure what it does
             }
         },
         {
