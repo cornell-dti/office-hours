@@ -15,11 +15,13 @@ const AnalyticsView = () => {
         }
     }, [isAdmin, history]);
 
+    // queries for all semesters
     const courses = useAllCourses();
     const questions = useAllQuestions();
     const users = useAllUsers();
     const sessions = useAllSessions();
 
+    // use time to filter for current semester
     const currDate: Date = new Date();
     const currSem = currDate.getMonth() >= 8 && currDate.getMonth() < 13 ? 'FA' : 'SP';
     const currYearTwo = currDate.getFullYear() % 100;
@@ -33,7 +35,7 @@ const AnalyticsView = () => {
         startMonth = 0; // January
         endMonth = 6;  // July
     }
-
+    // Fall is Aug 01-Dec 31, Spring is Jan 01-July 31
     const startDate = new Date(currDate.getFullYear(), startMonth, 1);
     const endDate = new Date(currDate.getFullYear(), endMonth, 31);
 
@@ -51,12 +53,14 @@ const AnalyticsView = () => {
         return dateEntered >= startDate && dateEntered <= endDate;
     });
 
+    // map storing the stats for ALL semesters
     const historical: { [key: string]: any } = {
         "Courses": courses.length,
         "Questions": questions.length,
         "Users": users.length,
         "Office Hours": sessions.length,
     }
+    // map storing the stats for CURRENT semester
     const current: { [key: string]: any } = {
         "Courses": currCourses.length,
         "Questions": currQuestions.length,
@@ -66,10 +70,8 @@ const AnalyticsView = () => {
     return (
         <>
             <TopBar
-                // In admin view, it is never the case that the Dashboard section should be shown.
-                role="student"
+                role="professor"
                 context="professor"
-                // This field is only necessary for professors, but we are always student/TA here.
                 courseId="DUMMY_COURSE_ID"
             />
             <h1><br />Queue Me In Product Analytics</h1>
