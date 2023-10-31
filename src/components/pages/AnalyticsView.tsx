@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { useHistory } from 'react-router'
+import { Table } from 'semantic-ui-react';
 
 import TopBar from '../includes/TopBar';
 
@@ -50,6 +51,18 @@ const AnalyticsView = () => {
         return dateEntered >= startDate && dateEntered <= endDate;
     });
 
+    const historical: { [key: string]: any } = {
+        "Courses": courses.length,
+        "Questions": questions.length,
+        "Users": users.length,
+        "Office Hours": sessions.length,
+    }
+    const current: { [key: string]: any } = {
+        "Courses": currCourses.length,
+        "Questions": currQuestions.length,
+        "Users": currUsers.length,
+        "Office Hours": currSessions.length,
+    }
     return (
         <>
             <TopBar
@@ -59,25 +72,67 @@ const AnalyticsView = () => {
                 // This field is only necessary for professors, but we are always student/TA here.
                 courseId="DUMMY_COURSE_ID"
             />
-            <h2>Analytics</h2>
-            <h3>Historical</h3>
-            courses: {courses.length}
-            <br />
-            questions: {questions.length}
-            <br />
-            users: {users.length}
-            <br />
-            sessions: {sessions.length}
-            <br />
-            <h3>Current Semester</h3>
-            courses: {currCourses.length}
-            <br />
-            questions: {currQuestions.length}
-            <br />
-            users: {currUsers.length}
-            <br />
-            sessions: {currSessions.length}
-            <br />
+            <h1><br />Queue Me In Product Analytics</h1>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0px 100px',
+                gap: '50px'
+            }}>
+                <div className="rolesTable">
+                    {<Table sortable={true} celled={true} fixed={true} style={{ textAlign: 'center' }}>
+                        <Table.Header>
+                            <Table.Row>
+                                <Table.HeaderCell colspan='2'>Historical</Table.HeaderCell>
+                            </Table.Row>
+                        </Table.Header>
+                        <Table.Header>
+                            <Table.Row>
+                                <Table.HeaderCell>
+                                    Statistic
+                                </Table.HeaderCell>
+                                <Table.HeaderCell>
+                                    Count
+                                </Table.HeaderCell>
+                            </Table.Row>
+                        </Table.Header>
+                        {Object.keys(historical).map((stat) => (
+                            <Table.Row key={stat}>
+                                <Table.Cell>{stat}</Table.Cell>
+                                <Table.Cell>{historical[stat]}</Table.Cell>
+                            </Table.Row>
+                        ))}
+                    </Table>}
+                </div>
+
+                <div className="rolesTable">
+                    {<Table sortable={true} celled={true} fixed={true} style={{ textAlign: 'center' }}>
+                        <Table.Header>
+                            <Table.Row>
+                                <Table.HeaderCell colspan='2'>Current Semester</Table.HeaderCell>
+                            </Table.Row>
+                        </Table.Header>
+                        <Table.Header>
+                            <Table.Row>
+                                <Table.HeaderCell>
+                                    Statistic
+                                </Table.HeaderCell>
+                                <Table.HeaderCell>
+                                    Count
+                                </Table.HeaderCell>
+                            </Table.Row>
+                        </Table.Header>
+                        {Object.keys(current).map((stat) => (
+                            <Table.Row key={stat}>
+                                <Table.Cell>{stat}</Table.Cell>
+                                <Table.Cell>{current[stat]}</Table.Cell>
+                            </Table.Row>
+                        ))}
+                    </Table>}
+                </div>
+            </div >
         </>
     )
 }
