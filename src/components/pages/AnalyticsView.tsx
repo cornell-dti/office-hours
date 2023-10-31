@@ -13,26 +13,42 @@ const AnalyticsView = () => {
       history.push('/')
     }
   }, [isAdmin, history]);
+
   const courses = useAllCourses();
   const questions = useAllQuestions();
   const users = useAllUsers();
   const sessions = useAllSessions();
 
-  const startDate: Date = new Date('2023-08-01');
-  const endDate: Date = new Date('2023-12-31');
+  const currDate: Date = new Date();
+  const currSem = currDate.getMonth() >= 8 && currDate.getMonth() < 13 ? 'FA' : 'SP';
+  const currYearTwo = currDate.getFullYear() % 100;
 
-  const currCourses = courses.filter(course => course.semester === 'FA23');
+  let startMonth, endMonth;
+  if (currDate.getMonth() >= 7) {
+    startMonth = 7; // August
+    endMonth = 11;  // December
+  } else {
+    startMonth = 0; // January
+    endMonth = 6;  // July
+  }
+
+  const startDate = new Date(currDate.getFullYear(), startMonth, 1);
+  const endDate = new Date(currDate.getFullYear(), endMonth, 31);
+
+  const currCourses = courses.filter(course => course.semester === (currSem + currYearTwo)); // e.g. FA23
   const currQuestions = questions.filter(question => {
     const dateEntered: Date = question.timeEntered.toDate();
     return dateEntered >= startDate && dateEntered <= endDate;
   });
   const currUsers = users.filter(user => {
-    return Array.isArray(user.courses) && user.courses.some(course => course.includes('fa-23'));
+    return Array.isArray(user.courses) && user.courses.some(course =>
+      course.includes(currSem.toLowerCase() + "-" + currYearTwo)); // e.g. fa-23
   });
   const currSessions = sessions.filter(session => {
     const dateEntered: Date = session.startTime.toDate();
     return dateEntered >= startDate && dateEntered <= endDate;
   });
+
   return (
     <>
       <TopBar
