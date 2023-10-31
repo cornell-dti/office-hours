@@ -326,6 +326,16 @@ export const useCourseTAMap = (course: FireCourse): FireUserMap => useCourseCour
 
 
 const dummySession = { courseId: 'DUMMY', tas: [] };
+
+const allSessionsObservable: Observable<readonly FireSession[]> = loggedIn$.pipe(
+    switchMap(() => collectionData<FireSession>(firestore.collection('sessions')))
+);
+
+const allSessionsSingletonObservable = new SingletonObservable([], allSessionsObservable);
+
+export const useAllSessions: () => readonly FireSession[] =
+    createUseSingletonObservableHook(allSessionsSingletonObservable);
+
 export const useSessionTAs = (
     course: FireCourse,
     session: Pick<FireSession, 'courseId' | 'tas'> = dummySession,

@@ -3,22 +3,7 @@ import { useHistory } from 'react-router'
 
 import TopBar from '../includes/TopBar';
 
-import { useIsAdmin, useAllCourses, useAllQuestions, useAllUsers } from '../../firehooks';
-
-// import { collection, getCountFromServer, getFirestore } from 'firebase/firestore/';
-
-// async function fetchData() {
-//   const db = getFirestore();
-//   const questionsCol = collection(db, 'questions');
-
-//   try {
-//     const snapshot = await getCountFromServer(questionsCol);
-//     const totalCount = snapshot.data;
-//     console.log("TOTALCOUNT IS: " + totalCount);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// }
+import { useIsAdmin, useAllCourses, useAllQuestions, useAllUsers, useAllSessions } from '../../firehooks';
 
 const AnalyticsView = () => {
   const history = useHistory();
@@ -31,6 +16,23 @@ const AnalyticsView = () => {
   const courses = useAllCourses();
   const questions = useAllQuestions();
   const users = useAllUsers();
+  const sessions = useAllSessions();
+
+  const startDate: Date = new Date('2023-08-01');
+  const endDate: Date = new Date('2023-12-31');
+
+  const currCourses = courses.filter(course => course.semester === 'FA23');
+  const currQuestions = questions.filter(question => {
+    const dateEntered: Date = question.timeEntered.toDate();
+    return dateEntered >= startDate && dateEntered <= endDate;
+  });
+  const currUsers = users.filter(user => {
+    return Array.isArray(user.courses) && user.courses.some(course => course.includes('fa-23'));
+  });
+  const currSessions = sessions.filter(session => {
+    const dateEntered: Date = session.startTime.toDate();
+    return dateEntered >= startDate && dateEntered <= endDate;
+  });
   return (
     <>
       <TopBar
@@ -40,12 +42,25 @@ const AnalyticsView = () => {
         // This field is only necessary for professors, but we are always student/TA here.
         courseId="DUMMY_COURSE_ID"
       />
-      <h3>Analytics</h3>
+      <h2>Analytics</h2>
+      <h3>Historical</h3>
       courses: {courses.length}
       <br />
       questions: {questions.length}
       <br />
       users: {users.length}
+      <br />
+      sessions: {sessions.length}
+      <br />
+      <h3>Current Semester</h3>
+      courses: {currCourses.length}
+      <br />
+      questions: {currQuestions.length}
+      <br />
+      users: {currUsers.length}
+      <br />
+      sessions: {currSessions.length}
+      <br />
     </>
   )
 }
