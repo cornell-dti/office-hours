@@ -138,7 +138,8 @@ export const useCoursesBetweenDates = (
                                 firestore.collection('questions').where('sessionId', '==', session.sessionId),
                                 'questionId'
                             )
-                        )) : EMPTY;}
+                        )) : EMPTY;
+                }
                 )
             );
 
@@ -186,7 +187,7 @@ export const usePendingUser: () => FirePendingUser | undefined =
     createUseSingletonObservableHook(needsPromotionSingletonObservable);
 
 
-const pendingUsersQuery = (courseId: string) => 
+const pendingUsersQuery = (courseId: string) =>
     firestore.collection('pendingUsers').where(`roles.${courseId}`, 'in', ['professor', 'ta']);
 
 export const usePendingUsers = (courseId: string): readonly FirePendingUser[] => {
@@ -336,6 +337,15 @@ export const useSessionTANames = (
     useSessionTAs(course, session).map(courseUser => `${courseUser.firstName} ${courseUser.lastName}`)
 );
 
+const allQuestionsObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
+    switchMap(() => collectionData<FireCourse>(firestore.collection('questions')))
+);
+
+const allQuestionsSingletonObservable = new SingletonObservable([], allQuestionsObservable);
+
+export const useAllQuestions: () => readonly FireCourse[] =
+    createUseSingletonObservableHook(allQuestionsSingletonObservable);
+
 const getSessionQuestionsQuery = (sessionId: string) => firestore.collection('questions')
     .where('sessionId', '==', sessionId)
     .orderBy('timeEntered', 'asc');
@@ -405,3 +415,17 @@ export const getTagsQuery = (courseId: string) => firestore
 export const getQuestionsQuery = (courseId: string) => firestore
     .collection('questions')
     .where('courseId', '==', courseId);
+
+export const getAllQuestions = () => firestore
+    .collection('questions');
+
+export const countQuestions = async () => {
+    const questionsCollection = getAllQuestions();
+    try {
+        const querySnapshot = await questionsCollection.get();
+        const numberOfQuestions = querySnapshot.size;
+        console.log(`Number of questions: ${numberOfQuestions}`);
+    } catch (error) {
+        console.error('Error getting questions:', error);
+    }
+};
