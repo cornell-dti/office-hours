@@ -73,19 +73,23 @@ const AnalyticsView = () => {
                 courseId="DUMMY_COURSE_ID"
             />
             <h1><br />Queue Me In Product Analytics</h1>
-            <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0px 100px',
-                gap: '50px'
-            }}>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0px 200px',
+                    gap: '50px'
+                }}
+            >
                 <div className="rolesTable">
-                    {<Table sortable={true} celled={true} fixed={true} style={{ textAlign: 'center' }}>
+                    {<Table sortable={true} celled={true} fixed={true} textAlign={'center'}>
                         <Table.Header>
                             <Table.Row>
-                                <Table.HeaderCell colspan='2'>Historical</Table.HeaderCell>
+                                <Table.HeaderCell colspan='2'>
+                                    All Semesters
+                                </Table.HeaderCell>
                             </Table.Row>
                         </Table.Header>
                         <Table.Header>
@@ -108,10 +112,12 @@ const AnalyticsView = () => {
                 </div>
 
                 <div className="rolesTable">
-                    {<Table sortable={true} celled={true} fixed={true} style={{ textAlign: 'center' }}>
+                    {<Table sortable={true} celled={true} fixed={true} textAlign={'center'}>
                         <Table.Header>
                             <Table.Row>
-                                <Table.HeaderCell colspan='2'>Current Semester</Table.HeaderCell>
+                                <Table.HeaderCell colspan='2'>
+                                    Current Semester ({currSem}{currYearTwo})
+                                </Table.HeaderCell>
                             </Table.Row>
                         </Table.Header>
                         <Table.Header>
