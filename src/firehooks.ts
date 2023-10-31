@@ -436,17 +436,3 @@ export const getTagsQuery = (courseId: string) => firestore
 export const getQuestionsQuery = (courseId: string) => firestore
     .collection('questions')
     .where('courseId', '==', courseId);
-
-export const getAllQuestions = () => firestore
-    .collection('questions');
-
-export const countQuestions = async () => {
-    const questionsCollection = getAllQuestions();
-    try {
-        const querySnapshot = await questionsCollection.get();
-        const numberOfQuestions = querySnapshot.size;
-        console.log(`Number of questions: ${numberOfQuestions}`);
-    } catch (error) {
-        console.error('Error getting questions:', error);
-    }
-};
