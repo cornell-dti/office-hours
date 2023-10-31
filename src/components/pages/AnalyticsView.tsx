@@ -3,7 +3,7 @@ import { useHistory } from 'react-router'
 
 import TopBar from '../includes/TopBar';
 
-import { useIsAdmin, useAllCourses, useAllQuestions } from '../../firehooks';
+import { useIsAdmin, useAllCourses, useAllQuestions, useAllUsers } from '../../firehooks';
 
 // import { collection, getCountFromServer, getFirestore } from 'firebase/firestore/';
 
@@ -30,6 +30,7 @@ const AnalyticsView = () => {
   }, [isAdmin, history]);
   const courses = useAllCourses();
   const questions = useAllQuestions();
+  const users = useAllUsers();
   return (
     <>
       <TopBar
@@ -43,6 +44,8 @@ const AnalyticsView = () => {
       courses: {courses.length}
       <br />
       questions: {questions.length}
+      <br />
+      users: {users.length}
     </>
   )
 }

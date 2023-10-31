@@ -172,8 +172,19 @@ const myUserObservable = loggedIn$.pipe(
         docData(firestore.doc('users/' + u.uid), 'userId') as Observable<FireUser>
     )
 );
+
 export const myUserSingletonObservable = new SingletonObservable(undefined, myUserObservable);
 export const useMyUser: () => FireUser | undefined = createUseSingletonObservableHook(myUserSingletonObservable);
+
+const allUsersObservable: Observable<readonly FireUser[]> = loggedIn$.pipe(
+    switchMap(() => collectionData<FireUser>(firestore.collection('users')))
+);
+
+const allUsersSingletonObservable = new SingletonObservable([], allUsersObservable);
+
+export const useAllUsers: () => readonly FireUser[] =
+    createUseSingletonObservableHook(allUsersSingletonObservable);
+
 
 const needsPromotionObservable = loggedIn$.pipe(
     switchMap(u =>
@@ -337,13 +348,13 @@ export const useSessionTANames = (
     useSessionTAs(course, session).map(courseUser => `${courseUser.firstName} ${courseUser.lastName}`)
 );
 
-const allQuestionsObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
-    switchMap(() => collectionData<FireCourse>(firestore.collection('questions')))
+const allQuestionsObservable: Observable<readonly FireQuestion[]> = loggedIn$.pipe(
+    switchMap(() => collectionData<FireQuestion>(firestore.collection('questions')))
 );
 
 const allQuestionsSingletonObservable = new SingletonObservable([], allQuestionsObservable);
 
-export const useAllQuestions: () => readonly FireCourse[] =
+export const useAllQuestions: () => readonly FireQuestion[] =
     createUseSingletonObservableHook(allQuestionsSingletonObservable);
 
 const getSessionQuestionsQuery = (sessionId: string) => firestore.collection('questions')
