@@ -23,7 +23,8 @@ const AnalyticsView = () => {
     const currSem = currDate.getMonth() >= 8 && currDate.getMonth() < 13 ? 'FA' : 'SP';
     const currYearTwo = currDate.getFullYear() % 100;
 
-    let startMonth, endMonth;
+    let startMonth;
+    let endMonth;
     if (currDate.getMonth() >= 7) {
         startMonth = 7; // August
         endMonth = 11;  // December
