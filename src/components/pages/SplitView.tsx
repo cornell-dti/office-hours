@@ -19,6 +19,7 @@ import Browser from '../../media/browser.svg';
 import smsNotif from '../../media/smsNotif.svg'
 import { addBanner } from '../../redux/actions/announcements';
 import Banner from '../includes/Banner';
+import FeedbackPrompt from '../includes/FeedbackPrompt';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -85,6 +86,7 @@ const SplitView = ({
     const [removeQuestionId, setRemoveQuestionId] = useState<
     string | undefined
     >(undefined);
+    const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>();
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
     const [currentExportSessions, setCurrentExportSessions] =
@@ -146,6 +148,24 @@ const SplitView = ({
 
     const removeQuestion = () => {
         removeQuestionbyID(firestore, removeQuestionId);
+    };
+
+    const removeQuestionWrapper = (action: any) => {
+        setRemoveQuestionId(action);
+        setDisplayFeedbackPrompt(true);
+    };
+
+    const submitFeedback = (rating?: number, feedback?: string) => {
+        const feedbackRecord = {
+            rating,
+            writtenFeedback: feedback,
+        };
+        
+        const courseRef = firestore.collection("courses").doc(course.courseId);
+
+        courseRef.update({
+            feedbackList: firestore.FieldValue.arrayUnion(feedbackRecord)
+        })
     };
 
     useEffect(() => {
@@ -212,6 +232,14 @@ const SplitView = ({
                 course={course}
             />
 
+            {displayFeedbackPrompt ? (
+                <FeedbackPrompt 
+                    questionId={removeQuestionId || ""} 
+                    isOpen={displayFeedbackPrompt} 
+                    onClose={submitFeedback} 
+                />
+            ) : null}
+
             {(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
                 ((course && user) ? (
                     (session) ? (
@@ -220,7 +248,7 @@ const SplitView = ({
                             backCallback={handleBackClick}
                             joinCallback={handleJoinClick}
                             setShowModal={setShowModal}
-                            setRemoveQuestionId={setRemoveQuestionId}
+                            setRemoveQuestionId={removeQuestionWrapper}
                             timeWarning={course ? course.timeWarning : 1}
                         />
                     ) : (
