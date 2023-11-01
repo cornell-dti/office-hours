@@ -9,16 +9,18 @@ import { CURRENT_SEMESTER } from "../../constants";
 import { updateCourses } from "../../firebasefunctions/courses";
 import { RootState } from "../../redux/store";
 import CourseCreatePopup from "./CourseCreatePopup";
+import CreateCourseHoverMessage from "../../media/createCourseHoverMessage.svg";
 
 type Props = {
     readonly user: FireUser;
     readonly allCourses: readonly FireCourse[];
+    readonly allPendingCourses: readonly FireCourse[];
     readonly isEdit: boolean;
 };
 
 export type PageState = "ready" | "pending";
 
-function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElement {
+function CourseSelection({ user, isEdit, allCourses, allPendingCourses }: Props): React.ReactElement {
     const history = useHistory();
     const [isWritingChanges, setIsWritingChanges] = useState(false);
     const [, setPageState] = useState<PageState>("ready");
@@ -29,6 +31,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     const [currentCourses, setCurrentCourses] = useState<FireCourse[]>([]);
     const [formerCourses, setFormerCourses] = useState<FireCourse[]>([]);
+
+    const [currentPendingCourses, setCurrentPendingCourses] = useState<FireCourse[]>([]);
+    const [createCourseHover, setCreateCourseHover] = useState<boolean>(false);
 
     useEffect(() => {
         setCurrentCourses(
@@ -42,7 +47,13 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                 return course.semester !== CURRENT_SEMESTER;
             })
         );
-    }, [allCourses]);
+
+        setCurrentPendingCourses(
+            allPendingCourses.filter((course) => {
+                return course.semester === CURRENT_SEMESTER;
+            })
+        );
+    }, [allCourses, allPendingCourses]);
 
     const [currentlyEnrolledCourseIds, setCurrentlyEnrolledCourseIds] = useState(new Set<string>());
 
@@ -144,6 +155,26 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
             ? "No Classes Chosen"
             : selectedCourses.map((c) => c.code).join(", ");
 
+    const hasCurrentCourse =
+        currentCourses
+            .map((course) => course.professors)
+            .flat()
+            .includes(user.userId) ||
+        currentCourses
+            .map((course) => course.tas)
+            .flat()
+            .includes(user.userId);
+
+    const hasCurrentPendingCourse =
+        currentPendingCourses
+            .map((course) => course.professors)
+            .flat()
+            .includes(user.userId) ||
+        currentPendingCourses
+            .map((course) => course.tas)
+            .flat()
+            .includes(user.userId);
+
     return (
         <div>
             <div className="CourseSelection">
@@ -242,7 +273,22 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
             </div>
             <div className="EnrollBar">
                 <div className="EnrolledCourses web">
-                    <button type="button" className="createNewCourseButton" onClick={() => setCourseCreatePopup(true)}>
+                    {createCourseHover && (
+                        <div className="createCourseHover">
+                            <img className="createCourseHoverImg" src={CreateCourseHoverMessage} alt="hoverImg" />
+                            <p>Your submission is pending to be reviewed by the team.</p>
+                        </div>
+                    )}
+                    <button
+                        type="button"
+                        className={
+                            "createNewCourseButton" + (hasCurrentCourse || hasCurrentPendingCourse ? " disabled" : "")
+                        }
+                        disabled={hasCurrentCourse || hasCurrentPendingCourse}
+                        onMouseOver={() => setCreateCourseHover(hasCurrentPendingCourse)}
+                        onMouseOut={() => setCreateCourseHover(false)}
+                        onClick={() => setCourseCreatePopup(true)}
+                    >
                         Create a Class
                     </button>
                 </div>
