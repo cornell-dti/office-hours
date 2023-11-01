@@ -166,6 +166,29 @@
             background-color: #5DA9F2;
             margin: 5px;
         }
+
+        .disabled {
+            background-color: #7E7E7E;
+            cursor: default;
+        }
+
+        .createCourseHover {
+            position: absolute;
+            top: -80px;
+            left: 10px;
+           
+            img {
+                width: 250px;
+            }
+
+            p {
+                position: absolute;
+                top: 10px;
+                margin: 10px 25px;
+                width: 200px;
+                font-size: 16px;
+            }
+        }
     }
 
     button:hover {
