@@ -27,8 +27,11 @@ const ProfessorTutorial = ({ user, tutorialVisible, setTutorialVisible, courseId
         // undo user flag
     }
     const driverObj = driver({
+        onPopoverRender: (popover, { config, state }) => {
+            popover.footerButtons.insertBefore(popover.progress, popover.footerButtons.childNodes[1]);
+        },
         showProgress: true,
-        allowClose: false,
+        allowClose: true,
         animate: true,
         overlayOpacity: 0.4,
         stagePadding: 0,

@@ -28,8 +28,11 @@ type Props = {
 const StudentTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
     const [tutorialState, setTutorialState] = useState(0);
     const driverObj = driver({
+        onPopoverRender: (popover, { config, state }) => {
+            popover.footerButtons.insertBefore(popover.progress, popover.footerButtons.childNodes[1]);
+        },
         showProgress: true,
-        allowClose: false, // ends tut when click out of it....
+        allowClose: true, // ends tut when click out of it....
         animate: true,
         overlayOpacity: 0.4,
         stagePadding: 0,

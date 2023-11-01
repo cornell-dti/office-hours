@@ -96,16 +96,18 @@
     }
 }
 
+
 .driver-popover-item {
     margin-left: 30px !important;
     margin-top: 10px !important;
     padding: 20px 40px 20px 40px !important;
-    filter: drop-shadow(0px 0px 5px #5599DB);
+    filter: drop-shadow(0px 0px 5px #5599DB) !important;
     min-width: 300px !important;
     max-width: 330px !important;
 }
 
 .driver-popover-description {
+    margin: 20px 20px 30px 20px !important;
     font-family: 'Roboto' !important;
     font-style: normal !important;
     font-weight: 400 !important;
@@ -116,9 +118,9 @@
 
 .driver-popover-next-btn {
     content: "";
-    background-image: url("../media/tutorial-next.svg");
+    background-image: url("../media/tutorial-next.svg") !important;
     background-size: cover;
-    background-repeat: no-repeat;
+    background-repeat: no-repeat !important;
     background-color: #fff !important;
     border: none !important;
     font-size: 0 !important;
@@ -128,13 +130,12 @@
 
 .driver-popover-prev-btn {
     content: "";
-    background-image: url("../media/tutorial-prev.svg");
-    background-repeat: no-repeat;
+    background-image: url("../media/tutorial-prev.svg") !important;
+    background-repeat: no-repeat !important;
     background-size: cover;
     background-color: #fff !important;
     border: none !important;
     font-size: 0 !important;
-    margin: 0px 50px 0px 20px;
     cursor: pointer;
     height: 20px !important;
     width: 20px !important;
@@ -142,27 +143,35 @@
 
 .driver-popover-disabled {
     background-image: url("../media/tutorial-prev-disabled.svg") !important;
+    margin-right: 10px !important;
 }
 
 .driver-popover-close-btn {
     content: "";
-    background-image: url("../media/tutorial-close.svg");
-    background-size: cover;
-    background-repeat: no-repeat;
+    background-image: url("../media/tutorial-close.svg") !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
     background-color: #fff !important;
     border: none !important;
     text-indent: 100% !important;
     font-size: 0 !important;
-    cursor: pointer;
-    height: 20px !important;
-    width: 20px !important;
+    cursor: pointer !important;
+    height: 14px !important;
+    width: 12px !important;
     position: absolute !important;
     top: 10px !important;
     right: 7px !important;
 }
 
-.driver-popover-footer {
+.driver-popover-progress-text {
+    font-family: 'Roboto' !important;
+    font-size: 12px !important;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.driver-popover-navigation-btns {
     display: flex !important;
-    flex-direction: column !important;
     align-items: center !important;
+    justify-content: center !important;
 }
