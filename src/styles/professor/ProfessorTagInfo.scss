@@ -75,13 +75,19 @@
                 right: 5px;
                 cursor: pointer;
             }
+
+            .Remove:hover {
+                color: #5f87ef;
+            }
         }
 
         .SelectedChildTag:focus-within,
         .SelectedChildTag:hover {
-            background-color: #cce2ff;
             border-color: #5f87ef;
-            color: #5f87ef;
+
+            input {
+                color: black;
+            }
         }
 
         .InputChildTag {
