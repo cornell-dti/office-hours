@@ -61,6 +61,7 @@
         background: #5DA9F2;
         color: white;
         border-radius: 4px;
+        cursor: pointer;
     }
 
     .role_input {
@@ -70,6 +71,7 @@
         input {
           translate: -10px -8px;
         }
+        margin-bottom: -10px;
     }
 
     .inputs {
@@ -114,6 +116,12 @@
                 -moz-appearance: none;
                 appearance: none;
             }
+        }
+
+        .errorMessage {
+          margin: 5px 0px -10px;
+          color: red;
+          font-size: small;
         }
     }
 
@@ -203,6 +211,7 @@
         color: #5DA9F2;
         background-color: white;
         border-radius: 4px;
+        cursor: pointer;
       }
   
       .continue {
@@ -218,6 +227,7 @@
         background: #5DA9F2;
         color: white;
         border-radius: 4px;
+        cursor: pointer;
       }
   }
 }

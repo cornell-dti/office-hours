@@ -6,6 +6,7 @@ import firebase from "firebase/app";
 import { CURRENT_SEMESTER, START_DATE, END_DATE } from "../../constants";
 import { addPendingCourse } from "../../firebasefunctions/courses";
 import CreateCourseImg from "../../media/createCourseImage.png";
+import RequestSentImg from "../../media/createCourseRequestSent.svg";
 
 const startDate = new Date(START_DATE);
 const endDate = new Date(END_DATE);
@@ -19,6 +20,7 @@ type Props = {
 
 const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
     const [courseCreatePopupContinue, setCourseCreatePopupContinue] = useState(false);
+    const [courseCreatePopupEnding, setCourseCreatePopupEnding] = useState(false);
 
     const [isProf, setIsProf] = useState(true);
     const [code, setCode] = useState("");
@@ -26,12 +28,17 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
     const [year, setYear] = useState(currentYear);
     const [term, setTerm] = useState(currentTerm);
 
+    const [showCodeError, setShowCodeError] = useState(false);
+    const [showNameError, setShowNameError] = useState(false);
+
     const handleTextField = (
         event: React.ChangeEvent<HTMLElement>,
-        setStateFunction: React.Dispatch<React.SetStateAction<string>>
+        setStateFunction: React.Dispatch<React.SetStateAction<string>>,
+        setErrorStateFunction: React.Dispatch<React.SetStateAction<boolean>>
     ) => {
         const target = event.target as HTMLTextAreaElement;
         setStateFunction(target.value);
+        setErrorStateFunction(false);
     };
 
     const handleSelect = (
@@ -42,8 +49,22 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
         setStateFunction(target.value);
     };
 
+    const checkInputs = () => {
+        if (code === "") {
+            setShowCodeError(true);
+        }
+
+        if (name === "") {
+            setShowNameError(true);
+        }
+
+        return code !== "" && name !== "";
+    };
+
     const createPendingCourse = async () => {
-        setCourseCreatePopup(false);
+        if (!checkInputs()) {
+            return;
+        }
 
         const semester = term + year;
 
@@ -69,6 +90,9 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
 
             try {
                 await addPendingCourse(courseId, course);
+
+                setCourseCreatePopupEnding(true);
+                setCourseCreatePopupContinue(false);
             } catch (error) {
                 // TODO: Handle error
             }
@@ -94,10 +118,18 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                             id="professor"
                             name="fav_language"
                             value="HTML"
+                            defaultChecked={isProf}
                             onClick={() => setIsProf(true)}
                         />
                         <p>TA</p>
-                        <input type="radio" id="ta" name="fav_language" value="HTML" onClick={() => setIsProf(false)} />
+                        <input
+                            type="radio"
+                            id="ta"
+                            name="fav_language"
+                            value="HTML"
+                            defaultChecked={!isProf}
+                            onClick={() => setIsProf(false)}
+                        />
                     </div>
                     <label htmlFor="course_code" className="input_component">
                         <p className="input_label">
@@ -108,10 +140,13 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                             type="text"
                             value={code || ""}
                             placeholder="E.g. CS 1110 (including a space)"
-                            onChange={(e) => handleTextField(e, setCode)}
+                            onChange={(e) => handleTextField(e, setCode, setShowCodeError)}
                         />
                         <p />
                     </label>
+                    {showCodeError && (
+                        <p className="errorMessage"> Please enter a valid course code to create a new class. </p>
+                    )}
                     <label htmlFor="course_code" className="input_component">
                         <p className="input_label">
                             Course Name <span className="required">*</span>
@@ -121,9 +156,12 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                             type="text"
                             value={name || ""}
                             placeholder="E.g. Introduction to Computing Using Python"
-                            onChange={(e) => handleTextField(e, setName)}
+                            onChange={(e) => handleTextField(e, setName, setShowNameError)}
                         />
                     </label>
+                    {showNameError && (
+                        <p className="errorMessage"> Please enter a valid course name to create a new class. </p>
+                    )}
                     <div className="dropdownSection">
                         <label htmlFor="year" className="input_component">
                             <p className="input_label">
@@ -151,7 +189,7 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                 </button>
             </div>
         </div>
-    ) : (
+    ) : !courseCreatePopupEnding ? (
         <>
             <div className="courseCreatePopupBackground">
                 <div className="createCoursePopupContainer">
@@ -170,6 +208,26 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                         </button>
                         <button type="button" className="continue" onClick={() => setCourseCreatePopupContinue(true)}>
                             Continue
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </>
+    ) : (
+        <>
+            <div className="courseCreatePopupBackground">
+                <div className="createCoursePopupContainer">
+                    <Icon link name="close" onClick={() => setCourseCreatePopup(false)} />
+                    <div className="createNewClassHeader">
+                        <img className="createCourseImg" src={RequestSentImg} alt="logo" />
+                        <h1>Request Sent</h1>
+                    </div>
+                    <p>
+                        The QMI team will notify you through e-mail and notification. Please wait patiently until then.
+                    </p>
+                    <div className="buttons">
+                        <button type="button" className="continue" onClick={() => setCourseCreatePopup(false)}>
+                            Close
                         </button>
                     </div>
                 </div>
