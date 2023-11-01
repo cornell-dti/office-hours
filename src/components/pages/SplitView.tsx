@@ -155,17 +155,29 @@ const SplitView = ({
         setDisplayFeedbackPrompt(true);
     };
 
-    const submitFeedback = (rating?: number, feedback?: string) => {
+    const submitFeedback = (relevantCourse: FireCourse) => (rating?: number, feedback?: string) => {
         const feedbackRecord = {
             rating,
             writtenFeedback: feedback,
         };
         
-        const courseRef = firestore.collection("courses").doc(course.courseId);
+        const courseRef = firestore.collection("courses").doc(relevantCourse.courseId);
 
-        courseRef.update({
-            feedbackList: firestore.FieldValue.arrayUnion(feedbackRecord)
+        courseRef.get().then((doc) => {
+            if (doc.exists) {
+                const existingFeedbackList = doc.data()?.feedbackList || [];
+                
+                existingFeedbackList.push(feedbackRecord);
+
+                return courseRef.update({
+                    feedbackList: existingFeedbackList
+                })
+            } 
+            // eslint-disable-next-line no-console
+            console.log("Course document does not exist.");
+            return Promise.resolve();
         })
+        
     };
 
     useEffect(() => {
@@ -236,7 +248,7 @@ const SplitView = ({
                 <FeedbackPrompt 
                     questionId={removeQuestionId || ""} 
                     isOpen={displayFeedbackPrompt} 
-                    onClose={submitFeedback} 
+                    onClose={submitFeedback(course)} 
                 />
             ) : null}
 
