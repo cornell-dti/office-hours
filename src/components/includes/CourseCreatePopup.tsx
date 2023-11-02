@@ -8,8 +8,6 @@ import { addPendingCourse } from "../../firebasefunctions/courses";
 import CreateCourseImg from "../../media/createCourseImage.png";
 import RequestSentImg from "../../media/createCourseRequestSent.svg";
 
-const startDate = new Date(START_DATE);
-const endDate = new Date(END_DATE);
 const currentTerm = CURRENT_SEMESTER.substring(0, 2);
 const currentYear = CURRENT_SEMESTER.substring(2, 4);
 
@@ -31,6 +29,9 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
     const [showCodeError, setShowCodeError] = useState(false);
     const [showNameError, setShowNameError] = useState(false);
 
+    const [courseIdError, setcourseIdError] = useState("");
+    const [showCourseIdError, setShowCourseIdError] = useState(false);
+
     const handleTextField = (
         event: React.ChangeEvent<HTMLElement>,
         setStateFunction: React.Dispatch<React.SetStateAction<string>>,
@@ -50,15 +51,14 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
     };
 
     const checkInputs = () => {
-        if (code === "") {
-            setShowCodeError(true);
-        }
+        const codeArray = code.split(" ");
+        const codeError = codeArray.length !== 2 || !/^[a-zA-Z]+$/.test(codeArray[0]) || !/^\d+$/.test(codeArray[1]);
+        const nameError = name === "";
 
-        if (name === "") {
-            setShowNameError(true);
-        }
+        setShowCodeError(codeError);
+        setShowNameError(nameError);
 
-        return code !== "" && name !== "";
+        return !codeError && !nameError;
     };
 
     const createPendingCourse = async () => {
@@ -66,38 +66,39 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
             return;
         }
 
+        const courseId = (code + "-" + term + "-" + year).replace(/\s/g, "").toLowerCase();
         const semester = term + year;
+        const professors = isProf ? [userId] : [];
+        const tas = !isProf ? [userId] : [];
 
-        if (semester === CURRENT_SEMESTER) {
-            const courseId = (code + "-" + term + "-" + year).replace(/\s/g, "").toLowerCase();
-            const professors = isProf ? [userId] : [];
-            const tas = !isProf ? [userId] : [];
+        const startMonth = term === "FA" ? "08" : "01";
+        const endMonth = term === "FA" ? "12" : "05";
+        const startDate = semester === CURRENT_SEMESTER ? START_DATE : "20" + year + "-" + startMonth + "-01";
+        const endDate = semester === CURRENT_SEMESTER ? END_DATE : "20" + year + "-" + endMonth + "-31";
 
-            const course = {
-                code,
-                endDate: firebase.firestore.Timestamp.fromDate(endDate),
-                name,
-                queueOpenInterval: 30,
-                semester: CURRENT_SEMESTER,
-                startDate: firebase.firestore.Timestamp.fromDate(startDate),
-                professors,
-                tas,
-                courseId,
-                charLimit: 140,
-                term,
-                year,
-            };
+        const course = {
+            code,
+            endDate: firebase.firestore.Timestamp.fromDate(new Date(endDate)),
+            name,
+            queueOpenInterval: 30,
+            semester,
+            startDate: firebase.firestore.Timestamp.fromDate(new Date(startDate)),
+            professors,
+            tas,
+            courseId,
+            charLimit: 140,
+            term,
+            year,
+        };
 
-            try {
-                await addPendingCourse(courseId, course);
+        try {
+            await addPendingCourse(courseId, course);
 
-                setCourseCreatePopupEnding(true);
-                setCourseCreatePopupContinue(false);
-            } catch (error) {
-                // TODO: Handle error
-            }
-        } else {
-            // TODO: Handle not adding courses for not the current semester
+            setCourseCreatePopupEnding(true);
+            setCourseCreatePopupContinue(false);
+        } catch (error) {
+            setcourseIdError(code + ", " + semester + " is already a course or pending course.");
+            setShowCourseIdError(true);
         }
     };
 
@@ -147,6 +148,7 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
                     {showCodeError && (
                         <p className="errorMessage"> Please enter a valid course code to create a new class. </p>
                     )}
+                    {showCourseIdError && <p className="errorMessage">{courseIdError}</p>}
                     <label htmlFor="course_code" className="input_component">
                         <p className="input_label">
                             Course Name <span className="required">*</span>

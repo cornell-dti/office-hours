@@ -286,7 +286,9 @@ function CourseSelection({ user, isEdit, allCourses, allPendingCourses }: Props)
                         }
                         disabled={hasCurrentCourse || hasCurrentPendingCourse}
                         onMouseOver={() => setCreateCourseHover(hasCurrentPendingCourse)}
+                        onFocus={() => setCreateCourseHover(hasCurrentPendingCourse)}
                         onMouseOut={() => setCreateCourseHover(false)}
+                        onBlur={() => setCreateCourseHover(false)}
                         onClick={() => setCourseCreatePopup(true)}
                     >
                         Create a Class
