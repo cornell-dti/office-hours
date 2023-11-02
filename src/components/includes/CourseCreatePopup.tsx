@@ -50,6 +50,12 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
         setStateFunction(target.value);
     };
 
+    /**
+     * This function checks if the course code and name are valid. Valid course codes are in the form:
+     * group of chars, space, and then a group of numbers. Valid course names are not empty strings.
+     * If either the course code or name are invalid, a corresponding error message is shown.
+     * @returns true if both the course code and name are valid, false otherwise.
+     */
     const checkInputs = () => {
         const codeArray = code.split(" ");
         const codeError = codeArray.length !== 2 || !/^[a-zA-Z]+$/.test(codeArray[0]) || !/^\d+$/.test(codeArray[1]);
