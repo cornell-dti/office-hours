@@ -5,6 +5,8 @@ import addNotification from 'react-push-notification';
 import { Icon } from 'semantic-ui-react';
 import { logOut } from '../../firebasefunctions/user';
 import Logo from '../../media/QLogo2.svg';
+import QuestionMark from '../../media/questionMark.svg';
+
 import CalendarHeader from './CalendarHeader';
 import ProfessorStudentToggle from './ProfessorStudentToggle';
 import TopBarNotifications from './TopBarNotifications'
@@ -91,7 +93,6 @@ const TopBar = (props: Props) => {
             <header className="topBar">
                 <div className="triggerArea">
                     <img src={Logo} className="QMILogo" alt="Queue Me In Logo" />
-                    {props.role === 'student' && (<StudentTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} />)}
                     <div className="viewToggles">
                         <CalendarHeader
                             currentCourseCode={(props.course && props.course.code) || 'Courses'}
@@ -101,14 +102,19 @@ const TopBar = (props: Props) => {
                                 (props.user.roles[props.course.courseId] || 'student' || props.admin)
                             }
                         />
+                        {props.role === 'student' && (<StudentTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} />)}
                         {props.role === 'ta' && (<TaTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} />)}
                         {props.role === 'professor' && [(<ProfessorTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} courseId={props.courseId} />), (
                             <ProfessorStudentToggle courseId={props.courseId} context={props.context} />
                         )]}
-
                     </div>
                     <div className="rightContentWrapper" >
-                        {/* TODO-sophie: ADD TUTORIAL ICON HERE */}
+                        <div className="tutorialIcon" onClick={() => {
+                            setTutorialVisible(true);
+                        }} >
+                            <img src={QuestionMark} className="questionMark" alt="Tutorial Icon" />
+                        </div>
+
                         <TopBarNotifications
                             notificationTracker={notificationTracker}
                             iconClick={() => setShowMenu(!showMenu)}

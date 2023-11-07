@@ -26,7 +26,6 @@ type Props = {
  * @returns the rendered StudentTutorial component
  */
 const StudentTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
-    const [tutorialState, setTutorialState] = useState(0);
     const driverObj = driver({
         onPopoverRender: (popover, { config, state }) => {
             popover.footerButtons.insertBefore(popover.progress, popover.footerButtons.childNodes[1]);
@@ -78,12 +77,23 @@ const StudentTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) =
             popover: {
                 title: ' ',
                 description: 'You can rewatch this tutorial and find more information by clicking on the question mark.',
-                side: 'right'
+                side: 'right',
+                disableButtons: ["next"],
+                onPopoverRender: (popover, { config, state }) => {
+                    popover.footerButtons.insertBefore(popover.progress, popover.footerButtons.childNodes[1]);
+                    const doneButton = document.createElement("button");
+                    doneButton.innerText = "DONE";
+                    doneButton.id = "driver-popover-done-btn";
+                    popover.footerButtons.appendChild(doneButton);
+                    doneButton.addEventListener("click", function () {
+                        driverObj.destroy();
+                    });
+                },
             }
         }]
     });
     const startTutorial = () => {
-        setTutorialState(tutorialState + 1);
+        setTutorialVisible(false);
         driverObj.drive();
     }
     const year = (new Date(START_DATE)).getFullYear() % 100;
@@ -98,12 +108,12 @@ const StudentTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) =
     //     }
     // }
     const clearTutorial = () => {
-        setTutorialState(1);
+        setTutorialVisible(false);
         // undo user flag
     }
 
     return (<>
-        {tutorialState === 0 && (<div className="tutorial__wrapper">
+        {tutorialVisible && (<div className="tutorial__wrapper">
             <div className="tutorial__content">
                 <img src={Logo} className="tutorial__logo" alt="Queue Me In Logo" />
                 <div className="tutorial__title">Welcome</div>
