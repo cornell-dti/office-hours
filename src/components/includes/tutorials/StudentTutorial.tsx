@@ -5,16 +5,12 @@ import { connect } from 'react-redux'
 import { RootState } from '../../../redux/store';
 
 import { CURRENT_SEMESTER, START_DATE } from '../../../constants';
-import { importProfessorsOrTAsFromCSV } from '../../../firebasefunctions/importProfessorsOrTAs';
+import { updateStudentTutorial } from '../../../firebasefunctions/tutorials';
 import Logo from '../../../media/QLogo2.svg';
 import { useCourse } from '../../../firehooks';
-import Next from '../../media/tutorial-next.svg';
-import Prev from '../../media/tutorial-prev.svg';
 
 type Props = {
-    user: FireUser | undefined;
-    tutorialVisible: boolean;
-    setTutorialVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    tutorialUser: FireUser | undefined;
 }
 /**
  * Provides an interactive tutorial for first-time student users to navigate the session webpage.
@@ -25,7 +21,7 @@ type Props = {
  * @param setTutorialVisible: function to set whether the tutorial is visible
  * @returns the rendered StudentTutorial component
  */
-const StudentTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
+const StudentTutorial = ({ tutorialUser }: Props) => {
     const driverObj = driver({
         onPopoverRender: (popover, { config, state }) => {
             popover.footerButtons.insertBefore(popover.progress, popover.footerButtons.childNodes[1]);
@@ -93,7 +89,7 @@ const StudentTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) =
         }]
     });
     const startTutorial = () => {
-        setTutorialVisible(false);
+        updateStudentTutorial(tutorialUser, false)
         driverObj.drive();
     }
     const year = (new Date(START_DATE)).getFullYear() % 100;
@@ -108,12 +104,11 @@ const StudentTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) =
     //     }
     // }
     const clearTutorial = () => {
-        setTutorialVisible(false);
-        // undo user flag
+        updateStudentTutorial(tutorialUser, false)
     }
 
     return (<>
-        {tutorialVisible && (<div className="tutorial__wrapper">
+        {tutorialUser!.studentTutorial && (<div className="tutorial__wrapper">
             <div className="tutorial__content">
                 <img src={Logo} className="tutorial__logo" alt="Queue Me In Logo" />
                 <div className="tutorial__title">Welcome</div>

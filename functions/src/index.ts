@@ -18,8 +18,8 @@ const client = new Twilio(accountSid, authToken);
 /**
  * Function that handles data and sends a text message to a requested phone number
  */
-async function sendSMS (user: FireUser, message: string) {
-    if(process.env.DATABASE === "staging") {
+async function sendSMS(user: FireUser, message: string) {
+    if (process.env.DATABASE === "staging") {
         return;
     }
     const userPhone = user.phoneNumber;
@@ -69,22 +69,32 @@ exports.onUserCreate = functions.firestore
             const newRoles = (doc.data() as FirePendingUser).roles;
             const taCourseIds: string[] = [];
             const profCourseIds: string[] = [];
-
+            var profTutorial = false
+            var taTutorial = false
+            var studentTutorial = true
             for (const [courseId, role] of Object.entries(newRoles)) {
 
                 if (role === 'ta') {
                     taCourseIds.push(courseId);
+                    taTutorial = true
                 } else if (role === 'professor') {
                     profCourseIds.push(courseId);
+                    profTutorial = true
                 }
             }
 
             const batch = db.batch();
-
+            const profAndTaCourses = [...taCourseIds, ...profCourseIds]
+            if (user.courses.length > profAndTaCourses.length) {
+                studentTutorial = true
+            }
             // and update the newly-created user with their new roles
             userRef.update({
-                courses: [...taCourseIds, ...profCourseIds],
-                roles: { ...currentRoles, ...newRoles }
+                courses: profAndTaCourses,
+                roles: { ...currentRoles, ...newRoles },
+                studentTutorial: studentTutorial,
+                taTutorial: taTutorial,
+                profTutorial: profTutorial
             })
 
             const taCourseDocs = await Promise.all(

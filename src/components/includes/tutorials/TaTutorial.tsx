@@ -8,17 +8,13 @@ import { CURRENT_SEMESTER, START_DATE } from '../../../constants';
 import { importProfessorsOrTAsFromCSV } from '../../../firebasefunctions/importProfessorsOrTAs';
 import Logo from '../../../media/QLogo2.svg';
 import { useCourse } from '../../../firehooks';
-import Next from '../../media/tutorial-next.svg';
-import Prev from '../../media/tutorial-prev.svg';
+import { updateTaTutorial } from '../../../firebasefunctions/tutorials';
 
 type Props = {
-    user: FireUser | undefined;
-    tutorialVisible: boolean;
-    setTutorialVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    tutorialUser: FireUser | undefined;
 }
 
-const TaTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
-    const [tutorialState, setTutorialState] = useState(0);
+const TaTutorial = ({ tutorialUser }: Props) => {
     const driverObj = driver({
         onPopoverRender: (popover, { config, state }) => {
             popover.footerButtons.insertBefore(popover.progress, popover.footerButtons.childNodes[1]);
@@ -80,12 +76,22 @@ const TaTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
                 title: ' ',
                 description: `You can rewatch this tutorial and find more 
                 information by clicking on the question mark.`,
-                side: 'right'
+                side: 'right',
+                onPopoverRender: (popover, { config, state }) => {
+                    popover.footerButtons.insertBefore(popover.progress, popover.footerButtons.childNodes[1]);
+                    const doneButton = document.createElement("button");
+                    doneButton.innerText = "DONE";
+                    doneButton.id = "driver-popover-done-btn";
+                    popover.footerButtons.appendChild(doneButton);
+                    doneButton.addEventListener("click", function () {
+                        driverObj.destroy();
+                    });
+                },
             }
         }]
     });
     const startTutorial = () => {
-        setTutorialState(tutorialState + 1);
+        updateTaTutorial(tutorialUser, false)
         driverObj.drive();
 
     }
@@ -101,12 +107,11 @@ const TaTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
     //     }
     // }
     const clearTutorial = () => {
-        setTutorialState(1);
-        // undo user flag
+        updateTaTutorial(tutorialUser, false)
     }
 
     return (<>
-        {tutorialState === 0 && (<div className="tutorial__wrapper">
+        {tutorialUser!.taTutorial && (<div className="tutorial__wrapper">
             <div className="tutorial__content">
                 <img src={Logo} className="tutorial__logo" alt="Queue Me In Logo" />
                 <div className="tutorial__title">Welcome</div>
@@ -117,7 +122,6 @@ const TaTutorial = ({ user, tutorialVisible, setTutorialVisible }: Props) => {
         </div>)}
     </>
     );
-
 }
 
 const mapStateToProps = (state: RootState) => ({

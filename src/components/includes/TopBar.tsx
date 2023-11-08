@@ -18,6 +18,7 @@ import TextNotificationModal from './TextNotificationModal';
 import StudentTutorial from './tutorials/StudentTutorial';
 import TaTutorial from './tutorials/TaTutorial';
 import ProfessorTutorial from './tutorials/ProfessorTutorial';
+import { updateProfTutorial, updateStudentTutorial, updateTaTutorial } from '../../firebasefunctions/tutorials';
 
 type Props = {
     courseId: string;
@@ -45,9 +46,6 @@ const TopBar = (props: Props) => {
     const user = props.user;
     const email: string | undefined = user?.email
     const notificationTracker = useNotificationTracker(email);
-
-    // TODO change this to a user flag
-    const [tutorialVisible, setTutorialVisible] = useState(true);
 
     useEffect(() => {
         if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
@@ -102,15 +100,23 @@ const TopBar = (props: Props) => {
                                 (props.user.roles[props.course.courseId] || 'student' || props.admin)
                             }
                         />
-                        {props.role === 'student' && (<StudentTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} />)}
-                        {props.role === 'ta' && (<TaTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} />)}
-                        {props.role === 'professor' && [(<ProfessorTutorial tutorialVisible={tutorialVisible} setTutorialVisible={setTutorialVisible} courseId={props.courseId} />), (
+                        {props.role === 'student' && (<StudentTutorial tutorialUser={props.user} />)}
+                        {props.role === 'ta' && (<TaTutorial tutorialUser={props.user} />)}
+                        {props.role === 'professor' && [(<ProfessorTutorial tutorialUser={props.user} courseId={props.courseId} />), (
                             <ProfessorStudentToggle courseId={props.courseId} context={props.context} />
                         )]}
                     </div>
                     <div className="rightContentWrapper" >
                         <div className="tutorialIcon" onClick={() => {
-                            setTutorialVisible(true);
+                            if (props.role === 'student') {
+                                updateStudentTutorial(user, true)
+                            }
+                            else if (props.role === 'ta') {
+                                updateTaTutorial(user, true)
+                            }
+                            else if (props.role === 'professor') {
+                                updateProfTutorial(user, true)
+                            }
                         }} >
                             <img src={QuestionMark} className="questionMark" alt="Tutorial Icon" />
                         </div>

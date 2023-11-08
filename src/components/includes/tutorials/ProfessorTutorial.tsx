@@ -5,26 +5,21 @@ import { RootState } from '../../../redux/store';
 import { connect } from 'react-redux'
 import { CURRENT_SEMESTER, START_DATE } from '../../../constants';
 import { importProfessorsOrTAsFromCSV } from '../../../firebasefunctions/importProfessorsOrTAs';
+import { updateProfTutorial } from '../../../firebasefunctions/tutorials';
+
 import Logo from '../../../media/QLogo2.svg';
 import { useCourse } from '../../../firehooks';
-import Next from '../../../media/tutorial-next.svg';
-import Prev from '../../../media/tutorial-prev.svg';
 import { useHistory } from 'react-router';
-import { clear } from 'console';
 
 type Props = {
-    user: FireUser | undefined;
-    tutorialVisible: boolean;
-    setTutorialVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    tutorialUser: FireUser | undefined;
     courseId: string;
 }
 
-const ProfessorTutorial = ({ user, tutorialVisible, setTutorialVisible, courseId }: Props) => {
-    const [tutorialState, setTutorialState] = useState(0);
+const ProfessorTutorial = ({ tutorialUser, courseId }: Props) => {
     const history = useHistory();
     const clearTutorial = () => {
-        setTutorialState(1);
-        // undo user flag
+        updateProfTutorial(tutorialUser, false)
     }
     const driverObj = driver({
         onPopoverRender: (popover, { config, state }) => {
@@ -44,8 +39,7 @@ const ProfessorTutorial = ({ user, tutorialVisible, setTutorialVisible, courseId
                     side: 'bottom',
                     onNextClick: () => {
                         clearTutorial();
-                        console.log("tutorial state")
-                        console.log(tutorialState);
+
                         history.push({ pathname: '/professor/course/' + courseId, state: { tutorialState: 1 } });
 
                         driverObj.moveNext();
@@ -84,9 +78,20 @@ const ProfessorTutorial = ({ user, tutorialVisible, setTutorialVisible, courseId
                 element: "#ManageTags",
                 popover: {
                     description: '\'Manage Tags\' section allows you to view, create, and manage tags and assignments. ',
-                    side: 'right'
+                    side: 'right',
+                    onPopoverRender: (popover, { config, state }) => {
+                        popover.footerButtons.insertBefore(popover.progress, popover.footerButtons.childNodes[1]);
+                        const doneButton = document.createElement("button");
+                        doneButton.innerText = "DONE";
+                        doneButton.id = "driver-popover-done-btn";
+                        popover.footerButtons.appendChild(doneButton);
+                        doneButton.addEventListener("click", function () {
+                            driverObj.destroy();
+                        });
+                    },
                 }
-            }
+            },
+
         ]
     });
 
@@ -94,7 +99,7 @@ const ProfessorTutorial = ({ user, tutorialVisible, setTutorialVisible, courseId
      * This function starts the tutorial by setting the tutorial state so the start tutorial component stops showing and starting the driver object with the steps for the tutorial
      */
     const startTutorial = () => {
-        setTutorialState(tutorialState + 1);
+        updateProfTutorial(tutorialUser, false)
         driverObj.drive();
     }
     const year = (new Date(START_DATE)).getFullYear() % 100;
@@ -104,7 +109,7 @@ const ProfessorTutorial = ({ user, tutorialVisible, setTutorialVisible, courseId
 
 
     return (<>
-        {tutorialState === 0 && (<div className="tutorial__wrapper">
+        {tutorialUser!.profTutorial && (<div className="tutorial__wrapper">
             <div className="tutorial__content">
                 <img src={Logo} className="tutorial__logo" alt="Queue Me In Logo" />
                 <div className="tutorial__title">Welcome</div>
