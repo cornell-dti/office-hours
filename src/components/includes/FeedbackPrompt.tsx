@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import "./FeedbackPrompt.scss";
 import TextField from "@material-ui/core/TextField";
 import { Button } from "semantic-ui-react";
+import Rating from '@material-ui/lab/Rating';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
 type Props = {
     questionId: string;
@@ -20,6 +23,17 @@ const FeedbackPrompt = (props: Props) => {
         <div className="submitFeedbackPopupBackground">
             <div className="submitFeedbackPopupContainer">
                 Submit Feedback!
+
+                <Box component="fieldset" mb={3} borderColor="transparent">
+                    <Typography component="legend">Rate your TA out of 5 stars!</Typography>
+                    <Rating
+                        name="simple-controlled"
+                        value={rating}
+                        onChange={(event, newValue) => {
+                            setRating(newValue);
+                        }}
+                    />
+                </Box>
                 <div className={"body"}>
                     <>
                         You can also give written feedback
