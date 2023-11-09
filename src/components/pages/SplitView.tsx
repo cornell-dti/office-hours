@@ -151,6 +151,7 @@ const SplitView = ({
     };
 
     const removeQuestionWrapper = (action: any) => {
+        console.log("removing question");
         setRemoveQuestionId(action);
         setDisplayFeedbackPrompt(true);
     };

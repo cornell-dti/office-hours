@@ -120,7 +120,6 @@ class SessionQuestion extends React.Component<Props, State> {
 
     onClickRemove = () => {
         this.props.setShowModal(true);
-        this.props.setRemoveQuestionId(this.props.question.questionId);
     };
 
     retractQuestion = (): void => {
@@ -169,7 +168,7 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({
             timeoutID: id,
         });
-
+        this.props.setRemoveQuestionId(this.props.question.questionId);
     };
 
     undoDone = () => {
