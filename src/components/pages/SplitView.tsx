@@ -86,7 +86,7 @@ const SplitView = ({
     const [removeQuestionId, setRemoveQuestionId] = useState<
     string | undefined
     >(undefined);
-    const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>();
+    const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(true);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
     const [currentExportSessions, setCurrentExportSessions] =
@@ -153,33 +153,34 @@ const SplitView = ({
     const removeQuestionWrapper = (action: any) => {
         console.log("removing question");
         setRemoveQuestionId(action);
-        setDisplayFeedbackPrompt(true);
+        setDisplayFeedbackPrompt(false);
+        // turn on feedbackprompt after your question answered
     };
 
     const submitFeedback = (relevantCourse: FireCourse) => (rating?: number, feedback?: string) => {
-        const feedbackRecord = {
-            rating,
-            writtenFeedback: feedback,
-        };
-        
-        const courseRef = firestore.collection("courses").doc(relevantCourse.courseId);
-
-        courseRef.get().then((doc) => {
-            if (doc.exists) {
-                const existingFeedbackList = doc.data()?.feedbackList || [];
+    //     const feedbackRecord = {
+    //         rating,
+    //         writtenFeedback: feedback,
+    //     };
+    //     const courseRef = firestore.collection("courses").doc(relevantCourse.courseId);
+    //     courseRef.get().then((doc) => {
+    //         if (doc.exists) {
+    //             const existingFeedbackList = doc.data()?.feedbackList || [];
                 
-                existingFeedbackList.push(feedbackRecord);
+    //             existingFeedbackList.push(feedbackRecord);
 
-                return courseRef.update({
-                    feedbackList: existingFeedbackList
-                })
-            } 
-            // eslint-disable-next-line no-console
-            console.log("Course document does not exist.");
-            return Promise.resolve();
-        })
+    //             return courseRef.update({
+    //                 feedbackList: existingFeedbackList
+    //             })
+    //         } 
+    //         // eslint-disable-next-line no-console
+    //         console.log("Course document does not exist.");
+    //         return Promise.resolve();
+    //     })
         
-    };
+    // };
+    }
+
 
     useEffect(() => {
         // Add a banner prompting the user to enable browser notifications
@@ -210,7 +211,16 @@ const SplitView = ({
 
     return (
         <>
+            
             <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
+
+            {displayFeedbackPrompt ? (
+                 <FeedbackPrompt 
+                     questionId={removeQuestionId || ""} 
+                     isOpen={displayFeedbackPrompt} 
+                     onClose={submitFeedback(course)} 
+                 />
+             ) : null}
 
             <TopBar
                 role={(user && course && user.roles[course.courseId]) || 'student'}
@@ -245,13 +255,7 @@ const SplitView = ({
                 course={course}
             />
 
-            {displayFeedbackPrompt ? (
-                <FeedbackPrompt 
-                    questionId={removeQuestionId || ""} 
-                    isOpen={displayFeedbackPrompt} 
-                    onClose={submitFeedback(course)} 
-                />
-            ) : null}
+
 
             {(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
                 ((course && user) ? (
@@ -293,6 +297,14 @@ const SplitView = ({
                     )
                 ) : <Loader active={true} content="Loading" />)}
             <ProductUpdates />
+
+            {/* {displayFeedbackPrompt ? (
+                 <FeedbackPrompt 
+                     questionId={removeQuestionId || ""} 
+                     isOpen={displayFeedbackPrompt} 
+                     onClose={submitFeedback(course)} 
+                 />
+             ) : null} */}
 
         </>
     );
