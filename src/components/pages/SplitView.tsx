@@ -156,30 +156,30 @@ const SplitView = ({
         setDisplayFeedbackPrompt(true);
     };
 
-    const submitFeedback = (relevantCourse: FireCourse) => (rating?: number, feedback?: string) => {
-        const feedbackRecord = {
-            rating,
-            writtenFeedback: feedback,
-        };
+    // const submitFeedback = (relevantCourse: FireCourse) => (rating?: number, feedback?: string) => {
+    //     const feedbackRecord = {
+    //         rating,
+    //         writtenFeedback: feedback,
+    //     };
         
-        const courseRef = firestore.collection("courses").doc(relevantCourse.courseId);
+    //     const courseRef = firestore.collection("courses").doc(relevantCourse.courseId);
 
-        courseRef.get().then((doc) => {
-            if (doc.exists) {
-                const existingFeedbackList = doc.data()?.feedbackList || [];
+    //     courseRef.get().then((doc) => {
+    //         if (doc.exists) {
+    //             const existingFeedbackList = doc.data()?.feedbackList || [];
                 
-                existingFeedbackList.push(feedbackRecord);
+    //             existingFeedbackList.push(feedbackRecord);
 
-                return courseRef.update({
-                    feedbackList: existingFeedbackList
-                })
-            } 
-            // eslint-disable-next-line no-console
-            console.log("Course document does not exist.");
-            return Promise.resolve();
-        })
+    //             return courseRef.update({
+    //                 feedbackList: existingFeedbackList
+    //             })
+    //         } 
+    //         // eslint-disable-next-line no-console
+    //         console.log("Course document does not exist.");
+    //         return Promise.resolve();
+    //     })
         
-    };
+    // };
 
     useEffect(() => {
         // Add a banner prompting the user to enable browser notifications
