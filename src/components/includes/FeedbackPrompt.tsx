@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./FeedbackPrompt.scss";
 import TextField from "@material-ui/core/TextField";
 import { Button } from "semantic-ui-react";
-import Rating from '@material-ui/lab/Rating';
+// import Rating from '@material-ui/lab/Rating';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
@@ -22,17 +22,19 @@ const FeedbackPrompt = (props: Props) => {
     return (
         <div className="submitFeedbackPopupBackground">
             <div className="submitFeedbackPopupContainer">
-                Submit Feedback!
+                Submit Feedback! Submit Feedback!Submit Feedback!Submit Feedback!Submit Feedback!
 
                 <Box component="fieldset" mb={3} borderColor="transparent">
                     <Typography component="legend">Rate your TA out of 5 stars!</Typography>
-                    <Rating
+                    {/* <Rating
                         name="simple-controlled"
                         value={rating}
-                        onChange={(event, newValue) => {
-                            setRating(newValue);
-                        }}
-                    />
+                        onChange={ 
+                            (event, newValue) => {
+                            setRating(newValue); }
+
+                        }
+                    /> */}
                 </Box>
                 <div className={"body"}>
                     <>
@@ -42,7 +44,7 @@ const FeedbackPrompt = (props: Props) => {
                             label="Multiline"
                             multiline
                             defaultValue="Write feedback for your TA's or QMI"
-                            onBlur={(event) => setFeedback(event.target.value)}
+                            // onBlur={(event) => setFeedback(event.target.value)}
                         />
                         <Button
                             variant="contained"
