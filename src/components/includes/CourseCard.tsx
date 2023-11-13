@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useHistory } from 'react-router';
 import { Icon } from 'semantic-ui-react';
-import TickCircle from '../../media/TickCircle.svg';
 
 type Props = {
     course: FireCourse;
@@ -12,7 +11,16 @@ type Props = {
     selected: boolean;
     inactive?: boolean;
 };
-
+/**
+ * Renders a course card to display in the course selection page. Displays course code, name, and role if applicable.
+ * @param course: the course to be displayed
+ * @param role: the role of the user in the course
+ * @param onSelectCourse: function to call when the course is selected
+ * @param editable: whether the course card is editable (ex if you are a ta, you cannot unselect the course)
+ * @param selected: whether the course is selected
+ * @param inactive: whether the course is inactive for the current semester
+ * @returns rendered CourseCard component
+ */
 const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive = false }: Props) => {
     const history = useHistory();
 
