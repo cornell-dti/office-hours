@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useHistory } from 'react-router';
 import { Icon } from 'semantic-ui-react';
+import TickCircle from '../../media/TickCircle.svg';
 
 type Props = {
     course: FireCourse;
@@ -35,25 +36,17 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
     }
     return (
         <div
-            className={`CourseCard ${selected && editable ? 'selected' : ''} ${
-                inactive ? 'inactive' : 'active'
-            }`}
+            className={`CourseCard ${selected && editable ? 'selected' : ''} ${inactive ? 'inactive' : 'active'
+                }`}
             onClick={selectCourse}
         >
-            <div className="courseText">
-                <div className="courseCode">
-                    {course.code}
-                    {roleString && <span className="role">{roleString}</span>}
-                </div>
-                <div className="courseName">{course.name}</div>
-            </div>
             {!inactive ? (
                 <div className="courseColor">
                     {editable ? (
                         selected ? (
-                            <Icon className="icon" name="check" />
+                            <Icon className="icon" fill="#77BBFA" name="check circle" />
                         ) : (
-                            <Icon className="icon" name="plus" />
+                            <Icon className="icon" name="circle outline" />
                         )
                     ) : (
                         <div>Go to course</div>
@@ -62,6 +55,14 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
             ) : (
                 <></>
             )}
+            <div className="courseText">
+                <div className="courseCode">
+                    {course.code}
+                    {roleString && <span className="role">{roleString}</span>}
+                </div>
+                <div className="courseName">{course.name}</div>
+            </div>
+
         </div>
     );
 };

@@ -152,20 +152,20 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                     {isEdit ? 'Edit Your Classes' : 'My Classes'}
                                 </div>
                                 <div className="subtitle">
-                                    {isEdit ? 'Add or remove classes.' : 'Select the office hours you want to view.'}
+                                    {isEdit ? 'Add or remove classes of your selection.' : 'Select the office hours you want to view.'}
                                     <div className="EnrolledCourses mobile">{selectedCoursesString}</div>
                                 </div>
                             </div>
                             <div className="CourseCards">
                                 {currentCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
-                            currentlyEnrolledCourseIds.has(course.courseId)
-                            || isEdit)
+                                    currentlyEnrolledCourseIds.has(course.courseId)
+                                    || isEdit)
                                     .map((course) => {
                                         const role = currentlyEnrolledCourseIds.has(course.courseId)
                                             ? (user.roles[course.courseId] || 'student')
                                             : undefined;
                                         const selected = selectedCourseIds.includes(course.courseId)
-                                    || (role !== undefined && role !== 'student');
+                                            || (role !== undefined && role !== 'student');
                                         return (
                                             <div key={course.courseId}>
                                                 <CourseCard
@@ -250,7 +250,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     );
 }
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
 

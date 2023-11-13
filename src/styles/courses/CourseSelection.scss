@@ -1,4 +1,6 @@
 .CourseSelection {
+    // font-family: Roboto;
+
     .QMeLogo.course {
         position: absolute;
         top: 9px;
@@ -10,19 +12,29 @@
     }
 
     .selectionContent {
+        font-family: 'Robo';
         margin-top: 46px;
         padding: 20px 0 100px;
         box-sizing: border-box;
+        font-family: 'Roboto';
 
         .description {
             .title {
+                // font-size: 50px;
+                // line-height: 50px;
+                padding-bottom: 12px;
+                color: #484848;
+                text-align: center;
+                font-family: Roboto;
                 font-size: 50px;
-                line-height: 50px;
-                padding-bottom: 40px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: normal;
             }
 
             .subtitle {
-                font-size: 20px;
+                font-size: 28px;
+                font-weight: 400;
 
                 .EnrolledCourses.mobile {
                     display: none;
@@ -36,6 +48,8 @@
             flex-shrink: 1;
             flex-wrap: wrap;
             justify-content: center;
+            border-radius: 15px;
+            // background: var(--card-color-self, #D6EAFE); - if selected
         }
     }
 }
