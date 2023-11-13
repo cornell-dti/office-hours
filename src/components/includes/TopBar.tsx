@@ -100,6 +100,7 @@ const TopBar = (props: Props) => {
                                 (props.user.roles[props.course.courseId] || 'student' || props.admin)
                             }
                         />
+                        {/* shows the tutorial if the user's role is the same as the role whose tutorial field is true*/}
                         {props.role === 'student' && (<StudentTutorial tutorialUser={props.user} />)}
                         {props.role === 'ta' && (<TaTutorial tutorialUser={props.user} />)}
                         {props.role === 'professor' && [(<ProfessorTutorial tutorialUser={props.user} courseId={props.courseId} />), (

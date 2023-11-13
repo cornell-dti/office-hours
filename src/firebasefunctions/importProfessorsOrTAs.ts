@@ -14,6 +14,8 @@ const getUserRoleUpdate = (
         courses.push(courseId);
     }
     const roles = { ...user.roles };
+    
+    //updates the firebase tutorial fields for the user based on their new role 
     if (role === 'student') {
         delete roles[courseId];
         updateStudentTutorial(user, true);
