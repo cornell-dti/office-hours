@@ -6,13 +6,11 @@
     text-align: center;
     flex: 1 1 400px;
     width: 300px;
-
-    font-family: Roboto;
+    font-family: 'Roboto';
+    height: 175px;
 
     &.selected {
-        //TODO: change so only background affected by opaacity, not also text
-        opacity: 0.4;
-        background-color: #D6EAFE;
+        background-color: rgba(214, 234, 254, 0.4);
     }
 
     &.active:hover {
@@ -24,8 +22,9 @@
         position: relative;
         top: 0;
         right: 0;
+        float: right;
         // height: 50px;
-        background-color: #D6EAFE;
+        // background-color: #D6EAFE;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -36,9 +35,17 @@
         div {
             font-size: 20px;
             padding-top: 15px;
-            padding-right: 15px;
+            padding-right: 30px;
             flex-shrink: 0;
         }
+    }
+
+    .myClasses {
+        position: relative;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .courseText {

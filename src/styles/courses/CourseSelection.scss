@@ -1,5 +1,27 @@
 .CourseSelection {
-    // font-family: Roboto;
+
+
+    .GreyBackground {
+        background-color: #F5F5F5;
+        padding: 50px;
+    }
+
+    .BlueBackground {
+        flex-shrink: 0;
+        background-color: #D6EAFE;
+        filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.25));
+        border-radius: 15px;
+        padding: 40px 60px 0 60px;
+    }
+
+    .WhiteBackground {
+        padding: 80px;
+        flex-shrink: 0;
+        background-color: white;
+        filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.25));
+        border-radius: 15px;
+        // padding-left: 60px;
+    }
 
     .QMeLogo.course {
         position: absolute;
@@ -12,20 +34,16 @@
     }
 
     .selectionContent {
-        font-family: 'Robo';
         margin-top: 46px;
-        padding: 20px 0 100px;
+        // padding: 20px 0 100px;
         box-sizing: border-box;
         font-family: 'Roboto';
 
         .description {
             .title {
-                // font-size: 50px;
-                // line-height: 50px;
-                padding-bottom: 12px;
+                padding-bottom: 20px;
                 color: #484848;
                 text-align: center;
-                font-family: Roboto;
                 font-size: 50px;
                 font-style: normal;
                 font-weight: 500;
@@ -34,7 +52,8 @@
 
             .subtitle {
                 font-size: 28px;
-                font-weight: 400;
+                font-weight: 350;
+                padding-bottom: 40px;
 
                 .EnrolledCourses.mobile {
                     display: none;

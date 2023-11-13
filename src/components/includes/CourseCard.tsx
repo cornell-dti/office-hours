@@ -49,15 +49,16 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
             onClick={selectCourse}
         >
             {!inactive ? (
-                <div className="courseColor">
+                <div>
                     {editable ? (
-                        selected ? (
-                            <Icon className="icon" fill="#77BBFA" name="check circle" />
+                        
+                        <div className="courseColor"> {selected ? (
+                            <Icon className="icon" fill="#77BBFA" color="blue" name="check circle" />
                         ) : (
                             <Icon className="icon" name="circle outline" />
-                        )
+                        )} </div>
                     ) : (
-                        <div>Go to course</div>
+                        <div className="myClasses">Go to course</div>
                     )}
                 </div>
             ) : (
