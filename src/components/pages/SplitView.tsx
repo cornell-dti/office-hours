@@ -215,8 +215,6 @@ const SplitView = ({
             
             <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
 
-            
-
             <TopBar
                 role={(user && course && user.roles[course.courseId]) || 'student'}
                 context="student"
@@ -298,6 +296,7 @@ const SplitView = ({
                     questionId={removeQuestionId || ""} 
                     isOpen={displayFeedbackPrompt} 
                     onClose={submitFeedback(course)} 
+                    closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                 />
             ) : null}
 
