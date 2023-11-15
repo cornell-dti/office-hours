@@ -18,14 +18,16 @@
 
 .submitFeedbackPopupContainer {
   border-radius: 8px;
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    margin: auto;
-    width: 440px;
-    height: 570px;
-    background: white;
-    align-items: center;
-    justify-content: center;
+  padding: 2rem;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  margin: auto;
+  width: 450px;
+  height: 385px;
+  background: white;
+  align-items: center;
+  justify-content: space-between;
+
 }

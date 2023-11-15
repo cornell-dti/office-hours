@@ -153,7 +153,8 @@ const SplitView = ({
     const removeQuestionWrapper = (action: any) => {
         console.log("removing question");
         setRemoveQuestionId(action);
-        setDisplayFeedbackPrompt(false);
+        setDisplayFeedbackPrompt(true);
+        console.log("display feedback prompt set to true");
         // turn on feedbackprompt after your question answered
     };
 
@@ -167,16 +168,16 @@ const SplitView = ({
     //         if (doc.exists) {
     //             const existingFeedbackList = doc.data()?.feedbackList || [];
                 
-    //             existingFeedbackList.push(feedbackRecord);
+        //             existingFeedbackList.push(feedbackRecord);
 
-    //             return courseRef.update({
-    //                 feedbackList: existingFeedbackList
-    //             })
-    //         } 
-    //         // eslint-disable-next-line no-console
-    //         console.log("Course document does not exist.");
-    //         return Promise.resolve();
-    //     })
+        //             return courseRef.update({
+        //                 feedbackList: existingFeedbackList
+        //             })
+        //         } 
+        //         // eslint-disable-next-line no-console
+        //         console.log("Course document does not exist.");
+        //         return Promise.resolve();
+        //     })
         
     // };
     }
@@ -214,13 +215,7 @@ const SplitView = ({
             
             <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
 
-            {displayFeedbackPrompt ? (
-                 <FeedbackPrompt 
-                     questionId={removeQuestionId || ""} 
-                     isOpen={displayFeedbackPrompt} 
-                     onClose={submitFeedback(course)} 
-                 />
-             ) : null}
+            
 
             <TopBar
                 role={(user && course && user.roles[course.courseId]) || 'student'}
@@ -298,13 +293,13 @@ const SplitView = ({
                 ) : <Loader active={true} content="Loading" />)}
             <ProductUpdates />
 
-            {/* {displayFeedbackPrompt ? (
-                 <FeedbackPrompt 
-                     questionId={removeQuestionId || ""} 
-                     isOpen={displayFeedbackPrompt} 
-                     onClose={submitFeedback(course)} 
-                 />
-             ) : null} */}
+            {displayFeedbackPrompt ? (
+                <FeedbackPrompt 
+                    questionId={removeQuestionId || ""} 
+                    isOpen={displayFeedbackPrompt} 
+                    onClose={submitFeedback(course)} 
+                />
+            ) : null}
 
         </>
     );
