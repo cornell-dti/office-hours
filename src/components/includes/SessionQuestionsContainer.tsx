@@ -39,7 +39,6 @@ type Props = {
     course: FireCourse;
     readonly myQuestion: FireQuestion | null;
     setShowModal: (show: boolean) => void;
-    setRemoveQuestionId: (newId: string | undefined) => void;
     timeWarning: number | undefined;
     addBanner: (banner: Announcement, session: boolean) => Promise<void>;
     removeBanner: (banner: string, session: boolean) => Promise<void>;
@@ -56,7 +55,6 @@ type StudentMyQuestionProps = {
     readonly studentQuestion: FireQuestion | null;
     readonly users: { readonly [userId: string]: FireUser };
     setShowModal: (show: boolean) => void;
-    setRemoveQuestionId: (newId: string | undefined) => void;
 };
 
 const StudentMyQuestion = ({
@@ -70,7 +68,6 @@ const StudentMyQuestion = ({
     studentQuestion,
     users,
     setShowModal,
-    setRemoveQuestionId
 }: StudentMyQuestionProps) => {
 
     if (studentQuestion === null) {
@@ -104,7 +101,6 @@ const StudentMyQuestion = ({
                     isPast={isPast}
                     myUserId={myUserId}
                     setShowModal={setShowModal}
-                    setRemoveQuestionId={setRemoveQuestionId}
                 />
             )}
         </div>
@@ -317,7 +313,6 @@ const SessionQuestionsContainer = (props: Props) => {
                         myUserId={props.myUserId}
                         setShowModal={props.setShowModal}
                         users={props.users}
-                        setRemoveQuestionId={props.setRemoveQuestionId}
                     />
                 )}
                 {shownQuestions && shownQuestions.length > 0 && props.modality === 'review' && (
@@ -413,7 +408,6 @@ const SessionQuestionsContainer = (props: Props) => {
                             isPast={props.isPast}
                             myUserId={props.myUserId}
                             setShowModal={props.setShowModal}
-                            setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
                 {allAssignedQuestions && allAssignedQuestions.length > 0 && props.isProf &&
@@ -449,7 +443,6 @@ const SessionQuestionsContainer = (props: Props) => {
                             isPast={props.isPast}
                             myUserId={props.myUserId}
                             setShowModal={props.setShowModal}
-                            setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
                 {otherQuestions && otherQuestions.length > 0 && props.isTA &&
@@ -475,7 +468,6 @@ const SessionQuestionsContainer = (props: Props) => {
                             isPast={props.isPast}
                             myUserId={props.myUserId}
                             setShowModal={props.setShowModal}
-                            setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
                 {shownQuestions && shownQuestions.length === 0 && (
