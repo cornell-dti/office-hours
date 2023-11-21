@@ -81,7 +81,10 @@ const FeedbackPrompt = (props: Props) => {
                
                 <Button
                     variant="contained"
-                    onClick={() => props.onClose(rating || undefined, feedback)}
+                    onClick={() => {
+                        props.onClose(rating || undefined, feedback); 
+                        props.closeFeedbackPrompt();
+                    }}
                     style={{position: "absolute", bottom: "2rem", right: "1.8rem"}}
                     color={(rating && feedback?.length > 0) ? "primary" : "default"}
           

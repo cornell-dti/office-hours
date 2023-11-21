@@ -240,3 +240,28 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
     });
     return unsubscribe;
 }
+
+export const submitFeedback = (relevantCourse: FireCourse) => (rating?: number, feedback?: string) => {
+    console.log("submitting feedback");
+    
+    const feedbackRecord = {
+        rating,
+        writtenFeedback: feedback,
+    };
+    const courseRef = firestore.collection("courses").doc(relevantCourse.courseId);
+    courseRef.get().then((doc) => {
+        if (doc.exists) {
+            const existingFeedbackList = doc.data()?.feedbackList || [];
+            
+            existingFeedbackList.push(feedbackRecord);
+
+            return courseRef.update({
+                feedbackList: existingFeedbackList
+            })
+        } 
+        // eslint-disable-next-line no-console
+        console.log("Course document does not exist.");
+        return Promise.resolve();
+    })
+    
+};

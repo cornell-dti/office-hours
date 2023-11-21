@@ -10,7 +10,7 @@ import ProductUpdates from "../includes/ProductUpdates"
 
 import { useCourse, useSession } from '../../firehooks';
 import { firestore } from '../../firebase';
-import { removeQuestionbyID } from '../../firebasefunctions/sessionQuestion';
+import { removeQuestionbyID, submitFeedback } from '../../firebasefunctions/sessionQuestion';
 import TopBar from '../includes/TopBar';
 import CalendarExportModal from '../includes/CalendarExportModal';
 import { RootState } from '../../redux/store';
@@ -160,31 +160,6 @@ const SplitView = ({
         // }
         // turn on feedbackprompt after your question answered
     };
-
-    const submitFeedback = (relevantCourse: FireCourse) => (rating?: number, feedback?: string) => {
-    //     const feedbackRecord = {
-    //         rating,
-    //         writtenFeedback: feedback,
-    //     };
-    //     const courseRef = firestore.collection("courses").doc(relevantCourse.courseId);
-    //     courseRef.get().then((doc) => {
-    //         if (doc.exists) {
-    //             const existingFeedbackList = doc.data()?.feedbackList || [];
-                
-        //             existingFeedbackList.push(feedbackRecord);
-
-        //             return courseRef.update({
-        //                 feedbackList: existingFeedbackList
-        //             })
-        //         } 
-        //         // eslint-disable-next-line no-console
-        //         console.log("Course document does not exist.");
-        //         return Promise.resolve();
-        //     })
-        
-    // };
-    }
-
 
     useEffect(() => {
         // Add a banner prompting the user to enable browser notifications
