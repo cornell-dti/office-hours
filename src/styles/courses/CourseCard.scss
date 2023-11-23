@@ -1,16 +1,20 @@
 .CourseCard {
-    margin: 25px 15px;
+    margin: 25px 45px;
     border-radius: 15px;
-    box-shadow: 5px 10px 20px gainsboro;
+    border-color: black;
     background-color: white;
     text-align: center;
     flex: 1 1 400px;
-    width: 300px;
+    width: 360px;
     font-family: 'Roboto';
-    height: 175px;
+    height: 260px;
+    font-weight: 400;
+    border: 2px solid #D8D8D8;
+    // position: relative;
 
     &.selected {
         background-color: rgba(214, 234, 254, 0.4);
+        border: 2px solid #77BBFA;
     }
 
     &.active:hover {
@@ -21,22 +25,48 @@
     .courseColor {
         position: relative;
         top: 0;
-        right: 0;
-        float: right;
-        // height: 50px;
-        // background-color: #D6EAFE;
         display: flex;
         align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
+        justify-content: space-between;
+        padding: 19px 19px;
+        width: 100%;
+
+        // .icon-container {
+        //     position: relative;
+        //     display: flex;
+        //     align-items: center;
+        // }
 
         .icon,
         div {
+            // display: flex;
+            // align-items: right;
+            // justify-content: right;
             font-size: 20px;
-            padding-top: 15px;
-            padding-right: 30px;
             flex-shrink: 0;
+            margin-left: auto;
+            // position: absolute;
+            // top: 19px;
+            // right: 19px;
+            // padding-bottom: 190px;
+        }
+
+        .courseRole {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 64px;
+            height: 32px;
+            padding: 10px;
+            text-align: center;
+            gap: 10px;
+            // flex-shrink: 0;
+            border-radius: 100px;
+            // not sure if need this var here, 
+            border: 2px solid var(--tag, #BF7913);
+            color: var(--tag, #BF7913);
+            font-size: 22px;
+            position: absolute;
         }
     }
 
@@ -52,30 +82,26 @@
         color: #484848;
         font-size: 36px;
         font-style: normal;
-        font-weight: 400;
         line-height: normal;
 
-        padding: 30px;
+        padding: 23px 40px 70px 40px;
         min-height: 150px;
+
+        // display: flex;
+        // // flex-direction: column;
+        // align-items: center;
+        // justify-content: space-between;
 
         .courseCode {
             display: inline-flex;
             align-items: center;
-            font-size: 25px;
+            font-size: 40px;
             font-weight: bold;
-            margin-bottom: 30px;
-
-            .role {
-                margin-left: 10px;
-                padding: 2px 10px;
-                border-radius: 4px;
-                border: solid 1px black;
-                font-size: 18px;
-            }
+            margin-bottom: 10px;
         }
 
         .courseName {
-            font-size: 20px;
+            font-size: 22px;
         }
     }
 

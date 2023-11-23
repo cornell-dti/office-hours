@@ -51,12 +51,16 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
             {!inactive ? (
                 <div>
                     {editable ? (
-                        
-                        <div className="courseColor"> {selected ? (
-                            <Icon className="icon" fill="#77BBFA" color="blue" name="check circle" />
-                        ) : (
-                            <Icon className="icon" name="circle outline" />
-                        )} </div>
+
+                        <div className="courseColor">
+                            {roleString && <span className="courseRole">{roleString}</span>}
+                            {selected ? (
+                                <Icon className="icon" fill="#77BBFA" color="blue" name="check circle" />
+                            ) : (
+                                <Icon className="icon" color="grey" name="circle outline" />
+                            )}
+
+                        </div>
                     ) : (
                         <div className="myClasses">Go to course</div>
                     )}
@@ -67,7 +71,6 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
             <div className="courseText">
                 <div className="courseCode">
                     {course.code}
-                    {roleString && <span className="role">{roleString}</span>}
                 </div>
                 <div className="courseName">{course.name}</div>
             </div>

@@ -149,44 +149,46 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     courseId="DUMMY_COURSE_ID"
                 />
                 <div className="GreyBackground">
-                    <div className="BlueBackground">
+                    <div className="WhiteBackground">
                         <div className="selectionContent">
                             {currentCourses.length > 0 || isEdit ?
                                 <>
                                     <div className="description">
                                         <div className="title">
                                             {/* TODO-sophie: test when isEdit is false.. */}
-                                            {isEdit ? <div><Icon className="icon" name="pencil" /> Edit Your Classes </div> : 'My Classes'}
+                                            {isEdit ? <div> Edit Your Classes </div> : 'My Classes'}
                                         </div>
                                         <div className="subtitle">
                                             {isEdit ? 'Add or remove classes of your selection.' : 'Select the office hours you want to view.'}
                                             <div className="EnrolledCourses mobile">{selectedCoursesString}</div>
                                         </div>
                                     </div>
-                                    <div className="WhiteBackground">
-                                        <div className="CourseCards">
-                                            {currentCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
-                                                currentlyEnrolledCourseIds.has(course.courseId)
-                                                || isEdit)
-                                                .map((course) => {
-                                                    const role = currentlyEnrolledCourseIds.has(course.courseId)
-                                                        ? (user.roles[course.courseId] || 'student')
-                                                        : undefined;
-                                                    const selected = selectedCourseIds.includes(course.courseId)
-                                                        || (role !== undefined && role !== 'student');
-                                                    return (
-                                                        <div key={course.courseId}>
-                                                            <CourseCard
-                                                                course={course}
-                                                                role={role}
-                                                                onSelectCourse={(addCourse) => onSelectCourse(course, addCourse)}
-                                                                editable={isEdit}
-                                                                selected={selected}
-                                                            />
-                                                        </div>
-                                                    );
-                                                })}
-                                        </div>
+                                    <hr />
+                                    <div className="EnrolledClasses">
+                                        {isEdit && selectedCoursesString}
+                                    </div>
+                                    <div className="CourseCards">
+                                        {currentCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
+                                            currentlyEnrolledCourseIds.has(course.courseId)
+                                            || isEdit)
+                                            .map((course) => {
+                                                const role = currentlyEnrolledCourseIds.has(course.courseId)
+                                                    ? (user.roles[course.courseId] || 'student')
+                                                    : undefined;
+                                                const selected = selectedCourseIds.includes(course.courseId)
+                                                    || (role !== undefined && role !== 'student');
+                                                return (
+                                                    <div key={course.courseId}>
+                                                        <CourseCard
+                                                            course={course}
+                                                            role={role}
+                                                            onSelectCourse={(addCourse) => onSelectCourse(course, addCourse)}
+                                                            editable={isEdit}
+                                                            selected={selected}
+                                                        />
+                                                    </div>
+                                                );
+                                            })}
                                     </div>
                                 </>
                                 : <><div className="description">
@@ -230,9 +232,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     </div>
                 </div>
                 <div className="EnrollBar">
-                    <div className="EnrolledCourses web">
+                    {/* <div className="EnrolledCourses web">
                         {isEdit && selectedCoursesString}
-                    </div>
+                    </div> */}
                     <div className="buttons">
                         {!isEdit && (
                             <button type="button" className="switch" onClick={() => { history.push('/edit'); }}>
