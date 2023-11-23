@@ -5,7 +5,6 @@
     }
 
     .WhiteBackground {
-        // flex-shrink: 0;
         background-color: #FFFFFF;
         box-shadow: 0px 2.362499952316284px 4.724999904632568px 0px #00000040;
         border-radius: 30px;
@@ -24,7 +23,6 @@
 
     .selectionContent {
         margin-top: 36px;
-        // padding: 20px 0 100px;
         box-sizing: border-box;
         font-family: 'Roboto';
 
@@ -52,7 +50,6 @@
         }
 
         hr {
-            // background: #F5F5F5;
             border: 2px solid #F0F0F0;
         }
 
@@ -68,7 +65,6 @@
             color: #5599DB;
             font-family: Roboto;
             font-size: 24px;
-            // font-style: normal;
             font-weight: 500;
             line-height: normal;
         }
@@ -81,7 +77,6 @@
             justify-content: center;
             border-radius: 15px;
             border-color: black;
-            // background: var(--card-color-self, #D6EAFE); - if selected
         }
     }
 }
@@ -138,6 +133,7 @@
             display: inline-block;
             background-color: white;
             border: solid 1px #484848;
+            color: #484848;
             margin: 5px;
         }
 

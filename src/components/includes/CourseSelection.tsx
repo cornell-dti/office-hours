@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
 import { connect } from 'react-redux';
-import { Icon } from 'semantic-ui-react';
 import TopBar from './TopBar';
 import CourseCard from './CourseCard';
 import { CURRENT_SEMESTER } from '../../constants';
@@ -232,9 +231,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     </div>
                 </div>
                 <div className="EnrollBar">
-                    {/* <div className="EnrolledCourses web">
-                        {isEdit && selectedCoursesString}
-                    </div> */}
                     <div className="buttons">
                         {!isEdit && (
                             <button type="button" className="switch" onClick={() => { history.push('/edit'); }}>
