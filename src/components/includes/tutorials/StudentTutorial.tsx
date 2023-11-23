@@ -8,6 +8,7 @@ import { CURRENT_SEMESTER, START_DATE } from '../../../constants';
 import { updateStudentTutorial } from '../../../firebasefunctions/tutorials';
 import Logo from '../../../media/QLogo2.svg';
 import { useCourse } from '../../../firehooks';
+import CalendarSessionCard from '../CalendarSessionCard';
 
 type Props = {
     tutorialUser: FireUser | undefined;
@@ -116,6 +117,21 @@ const StudentTutorial = ({ tutorialUser }: Props) => {
                 <div className="tutorial__start" onClick={startTutorial}>Start Tutorial</div>
                 <div className="tutorial__skiptext">Not your first time using Queue Me In?&nbsp;<span className="tutorial__skip" onClick={clearTutorial}>Skip the tutorial</span> </div>
             </div>
+            {/* <CalendarSessionCard
+                course={undefined}
+                session={session}
+                key={session.sessionId}
+                callback={callback}
+                active={
+                    activeSession
+                        ? activeSession.sessionId === session.sessionId
+                        : false
+                }
+                status={labelSession(session, course.queueOpenInterval * 1000)}
+                setShowCalendarModal={setShowCalendarModal}
+                setIsDayExport={setIsDayExport}
+                setCurrentExportSessions={setCurrentExportSessions}
+            /> */}
         </div>)}
     </>
     );
