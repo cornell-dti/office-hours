@@ -27,6 +27,14 @@ const AdminView = () => {
         }
     }, [isAdmin, history])
 
+    const courseRequestUserId = (course: FireCourse) => {
+        return course.professors.length !== 0
+            ? course.professors[0]
+            : course.tas.length !== 0
+            ? course.tas[0]
+            : undefined;
+    };
+
     const [sem, setSem] = useState(CURRENT_SEMESTER);
     const validSems = ALL_SEMESTERS;
 
@@ -57,7 +65,11 @@ const AdminView = () => {
                 <Grid container direction="row" alignItems={'stretch'} spacing={3}>
                     {pendingCourses.map(course => (
                         <Grid item xl={3} lg={4} md={6} xs={12}>
-                            <AdminPendingCourseCard key={course.courseId} course={course} />
+                            <AdminPendingCourseCard
+                                key={course.courseId}
+                                course={course}
+                                userId={courseRequestUserId(course)}
+                            />
                         </Grid>
                     ))}
                 </Grid>
