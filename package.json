@@ -4,6 +4,7 @@
   "private": true,
   "proxy": "http://localhost:3001",
   "dependencies": {
+    "@emailjs/browser": "^3.11.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@google/genai": "^1.29.1",
