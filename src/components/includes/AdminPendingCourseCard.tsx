@@ -10,6 +10,11 @@ import AdminReadOnlyCourseCard from "./AdminReadOnlyCourseCard";
 const AdminPendingCourseCard = ({ course, userId }: { readonly course: FireCourse; userId: string | undefined }) => {
     const user = useUser(userId);
 
+    /**
+     * This function uses emailjs to send the course request emails with the correct template and template variables.
+     * @param user: user to send the email to
+     * @param template: string representing end of template id (currently, only valid values for template are "rejected" or "approved")
+     */
     const sendEmail = (user: FireUser, template: string) => {
         emailjs.send(
             "qmi",
