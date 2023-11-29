@@ -16,6 +16,12 @@
   }
 }
 
+.chatIcon {
+  position: absolute;
+  bottom: 15px;
+  right: 20px;
+}
+
 .ChatBoxTop {
   /* Rectangle 167 */
   position: fixed;
@@ -80,11 +86,27 @@
 .chatMessages {
   position: relative;
   border: 5px;
-  top: 20px;
-  height: auto;
+  top: 30px;
+  height: 225px;
+  overflow-y:auto;
+  // margin-bottom: 10px;
+  // background-color:#CCC;		
+
+  p {
+    text-align: left;
+    margin: 0px 0px;
+  }
+
+
 
   .chatMessage {
-    overflow-y:auto
+    overflow-y:auto;
+    // margin-bottom: 10px;
+    // top: 0px;
+  }
+
+  .message {
+    margin-bottom: 10px;
   }
 
 
@@ -93,15 +115,15 @@
   }
   
   .chatMessagesSelf {
-    // border: 1px solid gray;
-    align-items: right;
+    // border: 1px solid black;
+    // align-items: right;
   }
 
   .chatMessagesOther {
-    background: #E6E6E6;
-    .displayName {
-      left: 0px;
-    }
+    // background: #E6E6E6;
+    // .displayName {
+    //   left: 0px;
+    // }
   }
   
   header {
@@ -111,4 +133,8 @@
     background: #D6EAFE;
     font-size: 12px;
   }
+}
+
+.ChatMessage {
+
 }

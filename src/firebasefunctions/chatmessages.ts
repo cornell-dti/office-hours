@@ -11,18 +11,28 @@ var message0 : Message = {
   timeSent: ""
 }
 
-export const getAllMessages  =
-  async function () {
-    const messages: Message[] = [];
-    const messageRef = await firestore.collection('chatmessages').get();
-    messageRef.forEach(doc => {
-      const check = doc.data();
-      const msg : Message = {message: check.message, user: check.user,
-      name: check.senderId, session: check.session, timeSent: check.timeSent}
-      messages.push(msg);
-    });
-    return messages;
-  }
+
+// WORKSSS
+export async function getAllMessages(): Promise<Message[]> {
+  const messages: Message[] = [message0];
+  const messagesRef = await firestore.collection('chatmessages').get();
+  messagesRef.forEach(doc => {
+      const data = doc.data();
+      const message: Message = {
+          message: data.message,
+          user: data.senderId,
+          name: 'fake name',// Adjust as per your data structure
+          session: data.session,
+          timeSent: data.timeSent.toDate().toString(), // Convert Firebase timestamp to string
+      };
+      messages.push(message);
+  });
+  return messages;
+}
+
+
+// DOES NOT WORK BECUSE NEED TEST
+
 
 export async function getSessionMessages(session : FireSession | undefined) {
     const messages: Message[] = [message0];

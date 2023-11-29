@@ -13,7 +13,7 @@ const ChatMessage = (props: Prop) => {
         <div className='chatMessage'>
             <p className='displayName'>{props.name}</p>
 
-            <div>
+            <div className='message'>
                 {props.sentBySelf ? 
                 <header className='chatMessagesSelf'>{props.msg}</header> : 
                 <header className='chatMessagesOther'>{props.msg}</header>}
