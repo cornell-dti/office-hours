@@ -51,10 +51,10 @@ const FeedbackPrompt = (props: Props) => {
           
                 <Typography variant="h6"> Feedback for TA</Typography>
                     
-                <Typography variant="body1"> How was your experience?</Typography>
+                <Typography variant="body1" style={{fontStyle: "roboto", fontSize: "16px"}}> How was your experience?</Typography>
                 
-                <Typography variant="body2"> Your response will remain anonymous. </Typography>
-                <Box component="fieldset" mb={3} borderColor="transparent">
+                <Typography variant="body2" style={{fontStyle: "roboto", fontSize: "14px"}}> Your response will remain anonymous. </Typography>
+                <Box component="fieldset" mb={1} borderColor="transparent">
                     {/* <Typography component="legend">Rate your TA out of 5 stars!</Typography> */}
                     <Rating
                         name="simple-controlled"
