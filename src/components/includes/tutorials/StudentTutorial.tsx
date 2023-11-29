@@ -5,9 +5,9 @@ import { connect } from 'react-redux'
 import { RootState } from '../../../redux/store';
 
 import { CURRENT_SEMESTER, START_DATE } from '../../../constants';
-import { updateStudentTutorial } from '../../../firebasefunctions/tutorials';
+import { updateStudentTutorial, updateCourse } from '../../../firebasefunctions/tutorials';
 import Logo from '../../../media/QLogo2.svg';
-import { useCourse } from '../../../firehooks';
+import { useCourse, useSession } from '../../../firehooks';
 import CalendarSessionCard from '../CalendarSessionCard';
 
 type Props = {
@@ -89,13 +89,11 @@ const StudentTutorial = ({ tutorialUser }: Props) => {
             }
         }]
     });
-    const startTutorial = () => {
-        updateStudentTutorial(tutorialUser, false)
-        driverObj.drive();
-    }
+
     const year = (new Date(START_DATE)).getFullYear() % 100;
     const term = CURRENT_SEMESTER.substr(0, 2);
-    const course = useCourse(`TC00${1}-${term}-${year}`);
+    // `TC00${1}-${term}-${year}`
+    const course = useCourse(`testnewtut`);
     // Creates a question during the tutorial to demonstrate how the screen appears when this happens
     // const createQuestion = () => {}
     // Makes the user a TA so they can see TA view
@@ -104,9 +102,36 @@ const StudentTutorial = ({ tutorialUser }: Props) => {
     //         importProfessorsOrTAsFromCSV(course, role, [user?.userId]);
     //     }
     // }
+    // const session = useSession(match.params.sessionId);
+    const startTutorial = () => {
+        updateCourse(tutorialUser, course)
+        updateStudentTutorial(tutorialUser, false)
+        driverObj.drive();
+    }
+
+
     const clearTutorial = () => {
         updateStudentTutorial(tutorialUser, false)
+        // remove student from tutorial course
     }
+
+    // const fireCourse = {
+    //     code: "tutorial-course",
+    //     endDate: FireTimestamp,
+    //     name: "course for tutorial",
+    //     queueOpenInterval: number,
+    //     semester: term,
+    //     startDate: FireTimestamp,
+    //     professors: readonly string[],
+    //     tas: readonly string[],
+    //     courseId: "tutorial-course",
+    //     charLimit: number,
+    //     term: term,
+    //     year: year,
+    //     timeLimit?: number,
+    //     timeWarning?: number,
+    //     isTimeLimit?: boolean
+    // }
 
     return (<>
         {tutorialUser!.studentTutorial && (<div className="tutorial__wrapper">
@@ -117,21 +142,21 @@ const StudentTutorial = ({ tutorialUser }: Props) => {
                 <div className="tutorial__start" onClick={startTutorial}>Start Tutorial</div>
                 <div className="tutorial__skiptext">Not your first time using Queue Me In?&nbsp;<span className="tutorial__skip" onClick={clearTutorial}>Skip the tutorial</span> </div>
             </div>
-            {/* <CalendarSessionCard
-                course={undefined}
-                session={session}
-                key={session.sessionId}
-                callback={callback}
-                active={
-                    activeSession
-                        ? activeSession.sessionId === session.sessionId
-                        : false
-                }
-                status={labelSession(session, course.queueOpenInterval * 1000)}
-                setShowCalendarModal={setShowCalendarModal}
-                setIsDayExport={setIsDayExport}
-                setCurrentExportSessions={setCurrentExportSessions}
-            /> */}
+            {/* TODO- check logic... */}
+            {/* {course != undefined ?
+                <CalendarSessionCard
+                    course={course}
+                    session={ }
+                    key={ }
+                    callback={ }
+                    active={true
+                    }
+                    status={"Ongoing"}
+                    setShowCalendarModal={setShowCalendarModal}
+                    setIsDayExport={setIsDayExport}
+                    setCurrentExportSessions={setCurrentExportSessions}
+                /> : <></>} */}
+
         </div>)}
     </>
     );

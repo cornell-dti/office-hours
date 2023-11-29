@@ -82,7 +82,6 @@ const TopBarNotifications = ({ notificationTracker, user, showMenu, iconClick }:
 
     return (
         <div ref={dropdownRef}>
-            {/* TODO-sophie: remove id="notifications__top, currently acting as placeholder for tut icon to be put on left of it" */}
             <div className="notifications__top" id="notifications__top" onClick={() => iconClicked()}>
                 <img className="notifications__icon" src={notification} alt="Notification icon" />
                 {!hasViewed && <img className="notifications__indicator" src={notif} alt="Notification indicator" />}

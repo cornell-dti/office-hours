@@ -441,7 +441,6 @@ class SessionQuestion extends React.Component<Props, State> {
                                         </p>
                                     }
                                 </div>
-                                {/* TODO-sophie: assignedbuttons for new tut only appear if you assign student to self...- also how to work button id? */}
                                 <div className="assignedButtons" id="assignedButtons">
                                     {question.status === 'assigned' &&
                                         <>

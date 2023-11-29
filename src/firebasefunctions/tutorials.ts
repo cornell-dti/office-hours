@@ -35,3 +35,14 @@ export const updateProfTutorial = (
   tutorial: boolean) => {
   firestore.collection('users').doc(user?.userId).update({ profTutorial: tutorial });
 }
+
+/**
+ * @param user - QueueMeIn user
+ * @param course - placeholder course to run the tutorial on
+ * @param tutorial - sets the student tutorial to true (will show) or false (will not show)
+ */
+export const updateCourse = (
+  user: FireUser | undefined,
+  course: FireCourse | undefined) => {
+  firestore.collection('users').doc(user?.userId).update({ courses: course });
+}
