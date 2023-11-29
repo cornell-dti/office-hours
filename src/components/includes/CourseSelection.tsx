@@ -56,7 +56,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     const [selectedCourseIds, setSelectedCourseIds] = useState<string[]>([]);
 
-    const [collapsed, setCollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(true);
 
     const coursesToEnroll: string[] = [];
     const coursesToUnenroll: string[] = [];
