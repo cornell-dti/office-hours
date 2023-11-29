@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
 import { connect } from 'react-redux';
+import { Icon } from 'semantic-ui-react';
 import TopBar from './TopBar';
 import CourseCard from './CourseCard';
 import { CURRENT_SEMESTER } from '../../constants';
@@ -153,13 +154,21 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                             {currentCourses.length > 0 || isEdit ?
                                 <>
                                     <div className="description">
-                                        <div className="title">
-                                            {/* TODO-sophie: test when isEdit is false.. */}
-                                            {isEdit ? <div> Edit Your Classes </div> : 'My Classes'}
+                                        <div className="sideblock">
+                                            <div className="title">
+                                                {/* TODO-sophie: test when isEdit is false.. */}
+                                                {isEdit ? <div> Edit Your Classes </div> : 'My Classes'}
+                                            </div>
+                                            <div className="subtitle">
+                                                {isEdit ? 'Add or remove classes of your selection.' : 'Select the office hours you want to view.'}
+                                                <div className="EnrolledCourses mobile">{selectedCoursesString}</div>
+                                            </div>
                                         </div>
-                                        <div className="subtitle">
-                                            {isEdit ? 'Add or remove classes of your selection.' : 'Select the office hours you want to view.'}
-                                            <div className="EnrolledCourses mobile">{selectedCoursesString}</div>
+                                        <div className="sideblock searchbar">
+                                            <input type="text" placeholder="Search for class name or number..." />
+                                            <div className="searchIcon">
+                                                <Icon className="icon" color="grey" name="search" />
+                                            </div>
                                         </div>
                                     </div>
                                     <hr />
