@@ -242,7 +242,6 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
 }
 
 export const submitFeedback = (relevantCourse: FireCourse) => (rating?: number, feedback?: string) => {
-    console.log("submitting feedback");
     
     const feedbackRecord = {
         rating,

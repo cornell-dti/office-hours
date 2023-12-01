@@ -3,6 +3,7 @@ import "./FeedbackPrompt.scss";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Rating from '@material-ui/lab/Rating';
+// import ReactStars from 'react-stars';
 import Typography from '@material-ui/core/Typography';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import Box from '@material-ui/core/Box';
@@ -54,17 +55,29 @@ const FeedbackPrompt = (props: Props) => {
                 <Typography variant="body1" style={{fontStyle: "roboto", fontSize: "16px"}}> How was your experience?</Typography>
                 
                 <Typography variant="body2" style={{fontStyle: "roboto", fontSize: "14px"}}> Your response will remain anonymous. </Typography>
-                <Box component="fieldset" mb={1} borderColor="transparent">
+                <Box component="fieldset" mb={3} borderColor="transparent">
                     {/* <Typography component="legend">Rate your TA out of 5 stars!</Typography> */}
                     <Rating
                         name="simple-controlled"
                         value={rating}
-                        onChange={(event, newValue) => {
+                        onChange={(event: any, newValue: React.SetStateAction<number | null>) => {
                             setRating(newValue); }
                         }
                         size="large"
                         emptyIcon={<StarBorderIcon fontSize="inherit" />}
                     />
+                    {/* <ReactStars 
+                        count={5}
+                        onChange={(newRating: React.SetStateAction<number | null>) => {
+                            setRating(newRating);
+                        }}
+                        size={36}
+                        color2={'#77BBFA'} 
+                        half={false}
+                        value={rating || 0}
+                    /> */}
+                    {/* <Rating maxRating={5} defaultRating={0} icon='star' size='large' onRate={(event, data) => setRating(event.detail)}/> */}
+                    <br />
                 </Box>
             
                     
