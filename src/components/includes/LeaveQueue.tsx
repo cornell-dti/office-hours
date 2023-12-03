@@ -40,13 +40,12 @@ const LeaveQueueModal = ({ setShowModal, showModal, removeQuestion }: Props) => 
                         </div>
                         
                         <span style={{display: "flex", justifyContent: "space-evenly", marginBottom: "15px"}}>
-                            <Box width="20px"/>
                             <Button variant="outlined" color="primary" onClick={() => setShowModal(false)}>
-                            Cancel
+                                Cancel
                             </Button>
-                            <Box width="20px"/>
+                            <Box width="10px"/>
                             <Button variant="contained" color="secondary" onClick={handleYes}>
-                            Yes, remove me
+                                Yes, remove me
                             </Button>
                         </span>
                     </div>
