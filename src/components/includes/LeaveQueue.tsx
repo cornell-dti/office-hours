@@ -1,7 +1,8 @@
 import React from 'react';
+import Button from '@material-ui/core/Button'
+import { Box } from '@material-ui/core';
 import AlertIcon from '../../media/AlertIcon.png';
 import CloseIcon from '../../media/CloseIcon.svg';
-
 
 type Props = {
     setShowModal: (show: boolean) => void;
@@ -29,23 +30,25 @@ const LeaveQueueModal = ({ setShowModal, showModal, removeQuestion }: Props) => 
                         >
                             <img src={CloseIcon} alt="Close modal" />
                         </button>
-                        <img src={AlertIcon} className="alert-icon" alt="Alert" />
-                        <h2>Are you sure you want to remove yourself from the queue?
-                        </h2>
-                        <button
-                            className="leave-queue-option yes-queue-button"
-                            type="button"
-                            onClick={handleYes}
-                        >
-                            Yes
-                        </button>
-                        <button
-                            className="leave-queue-option cancel-queue-button"
-                            type="button"
-                            onClick={() => setShowModal(false)}
-                        >
-                            Cancel & Go Back
-                        </button>
+                        <div className="leave-queue-prompt">
+                            <img src={AlertIcon} alt="Alert" />
+                            <div style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
+                                <h2>Are you sure you want to leave the queue?
+                                </h2>
+                                This action cannot be undone
+                            </div>
+                        </div>
+                        
+                        <span style={{display: "flex", justifyContent: "space-evenly", marginBottom: "15px"}}>
+                            <Box width="20px"/>
+                            <Button variant="outlined" color="primary" onClick={() => setShowModal(false)}>
+                            Cancel
+                            </Button>
+                            <Box width="20px"/>
+                            <Button variant="contained" color="secondary" onClick={handleYes}>
+                            Yes, remove me
+                            </Button>
+                        </span>
                     </div>
                 </div>
             }
