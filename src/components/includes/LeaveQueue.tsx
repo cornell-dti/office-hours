@@ -17,6 +17,12 @@ const LeaveQueueModal = ({ setShowModal, showModal, removeQuestion }: Props) => 
         setShowModal(false);
     }
 
+    /** Note that in the MUI Button - Box - Button component pattern below, we 
+     * insert a Box component between the two buttons to add spacing between them.
+     * This is a common pattern in MUI, and is used to add spacing between components.
+     * Of course, for future extensability, we could also create a custom component
+     * or change this to use margin instead. 
+     */
     return (
         <>
             {showModal &&
