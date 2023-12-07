@@ -123,11 +123,17 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     };
 
     /**
+     * Handles the search functionality of the search bar in 'edit courses'. Is called 
+     * onChange of the input element of 'searchbar'.
+     * Filters the current view of courses based on the search term, while preserving 
+     * the selected courses (shows preservation through list of courses selected under search bar).
      * 
-     * @param e 
+     * @param e = event to pass in search term
      */
     const searchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const search = e.target.value.toLowerCase();
+
+        // Filter courses based on the current semester, reset the search results (when search term is deleted, etc)
         const availableCourses = allCourses.filter((course) => {
             return course.semester === CURRENT_SEMESTER;
         })
