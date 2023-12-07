@@ -45,7 +45,7 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
     return (
         <div
             className={`CourseCard ${selected && editable ? 'selected' : ''} ${inactive ? 'inactive' : 'active'
-                }`}
+            }`}
             onClick={selectCourse}
         >
             {!inactive ? (
