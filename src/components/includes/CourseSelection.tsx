@@ -14,7 +14,7 @@ import { RootState } from '../../redux/store';
 type Props = {
     readonly user: FireUser;
     readonly allCourses: readonly FireCourse[];
-    isEdit: boolean;
+    readonly isEdit: boolean;
 };
 
 export type PageState = 'ready' | 'pending';
@@ -31,9 +31,8 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     const [currentCourses, setCurrentCourses] = useState<FireCourse[]>([]);
     const [formerCourses, setFormerCourses] = useState<FireCourse[]>([]);
 
-    // for search bar TODO-sophie: REMOVE
     // current searched courses
-    const [filteredCourses, setFilteredCourses] = useState<FireCourse[]>(currentCourses);
+    const [filteredCourses,] = useState<FireCourse[]>(currentCourses);
     useEffect(() => {
         setCurrentlyEnrolledCourseIds(new Set(user.courses));
     }, [user.courses]);
@@ -55,10 +54,15 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         setCurrentlyEnrolledCourseIds(new Set(user.courses));
     }, [user.courses]);
 
-    const [selectedCourses, setSelectedCourses] = useState<FireCourse[]>([]);
+    const preSelectedCourses: FireCourse[] = (
+        (user.courses.length > 0) ? currentCourses.filter((course) => user.roles[course.courseId] !== undefined) : []);
+
+    // TODO-sophie: ADD ALR SELECTED COURSES HERE
+    const [selectedCourses, setSelectedCourses] = useState<FireCourse[]>(preSelectedCourses);
+
 
     useEffect(() => {
-        setSelectedCourses(filteredCourses.filter(
+        setSelectedCourses(currentCourses.filter(
             ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] === undefined
         ));
     }, [user, filteredCourses, currentlyEnrolledCourseIds]);
@@ -143,7 +147,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         });
 
         setCurrentCourses(updatedCourses);
-        // setSearchTerm(search);
     };
 
     const onSubmit = () => {
@@ -195,7 +198,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                     <div className="description">
                                         <div className="sideblock">
                                             <div className="title">
-                                                {/* TODO-sophie: test when isEdit is false.. */}
                                                 {isEdit ? <div> Edit Your Classes </div> : 'My Classes'}
                                             </div>
                                             <div className="subtitle">
@@ -233,6 +235,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                                             editable={isEdit}
                                                             selected={selected}
                                                         />
+
                                                     </div>
                                                 );
                                             })}
