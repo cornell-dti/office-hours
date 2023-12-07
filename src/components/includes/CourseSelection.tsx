@@ -31,6 +31,14 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     const [currentCourses, setCurrentCourses] = useState<FireCourse[]>([]);
     const [formerCourses, setFormerCourses] = useState<FireCourse[]>([]);
 
+    // for search bar TODO-sophie: REMOVE
+    // current searched courses
+    const [filteredCourses, setFilteredCourses] = useState<FireCourse[]>(currentCourses);
+    useEffect(() => {
+        setCurrentlyEnrolledCourseIds(new Set(user.courses));
+    }, [user.courses]);
+
+
     useEffect(() => {
         setCurrentCourses(allCourses.filter((course) => {
             return course.semester === CURRENT_SEMESTER;
@@ -50,12 +58,13 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     const [selectedCourses, setSelectedCourses] = useState<FireCourse[]>([]);
 
     useEffect(() => {
-        setSelectedCourses(currentCourses.filter(
+        setSelectedCourses(filteredCourses.filter(
             ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] === undefined
         ));
-    }, [user, currentCourses, currentlyEnrolledCourseIds]);
+    }, [user, filteredCourses, currentlyEnrolledCourseIds]);
 
     const [selectedCourseIds, setSelectedCourseIds] = useState<string[]>([]);
+
 
     const coursesToEnroll: string[] = [];
     const coursesToUnenroll: string[] = [];
@@ -109,6 +118,34 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         ));
     };
 
+    /**
+     * 
+     * @param e 
+     */
+    const searchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const search = e.target.value.toLowerCase();
+        const availableCourses = allCourses.filter((course) => {
+            return course.semester === CURRENT_SEMESTER;
+        })
+
+        // Filter courses based on the search term
+        const filteredResults = availableCourses.filter((course) => {
+            return course.code.toLowerCase().includes(search) || course.name.toLowerCase().includes(search);
+        });
+
+        // Preserve the selected courses
+        const updatedCourses = filteredResults.map((course) => {
+            const isSelected = selectedCourseIds.includes(course.courseId);
+            return {
+                ...course,
+                isSelected,
+            };
+        });
+
+        setCurrentCourses(updatedCourses);
+        // setSearchTerm(search);
+    };
+
     const onSubmit = () => {
         const newCourseSet = new Set(currentlyEnrolledCourseIds);
         coursesToEnroll.forEach(courseId => newCourseSet.add(courseId));
@@ -132,7 +169,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         history.push('/home');
     };
 
-    const selectedCoursesString = (selectedCourses.length + numCoursesWithRoles === 0
+    // changed guard from selectedCourses.length + numCoursesWithRoles === 0 to selectedCourses.length === 0
+    //  so that when you cannot unenroll from a course, it says No Classes Chosen instead of an empty box
+    const selectedCoursesString = (selectedCourses.length === 0
         ? 'No Classes Chosen'
         : selectedCourses.map(c => c.code).join(', '));
 
@@ -165,7 +204,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                             </div>
                                         </div>
                                         <div className="sideblock searchbar">
-                                            <input type="text" placeholder="Search for class name or number..." />
+                                            <input type="text" placeholder="Search for class name or number..." onChange={searchInput} />
                                             <div className="searchIcon">
                                                 <Icon className="icon" color="grey" name="search" />
                                             </div>

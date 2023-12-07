@@ -61,9 +61,7 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
                             )}
 
                         </div>
-                    ) : (
-                        <div className="myClasses">Go to course</div>
-                    )}
+                    ) : (<></>)}
                 </div>
             ) : (
                 <></>
@@ -75,6 +73,8 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
                 <div className="courseName">{course.name}</div>
             </div>
 
+            {!inactive && !editable ? <div className="myClasses">Go to course</div> : <></>
+            }
         </div>
     );
 };

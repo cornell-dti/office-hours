@@ -18,7 +18,7 @@
 
     &.active:hover {
         cursor: pointer;
-        box-shadow: 5px 10px 20px gray;
+        box-shadow: 5px 10px 20px rgb(219, 219, 219);
     }
 
     .courseColor {
@@ -56,7 +56,7 @@
 
     .myClasses {
         position: relative;
-        bottom: 0;
+        bottom: 50;
         display: flex;
         align-items: center;
         justify-content: center;
