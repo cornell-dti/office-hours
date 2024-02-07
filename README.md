@@ -30,7 +30,7 @@ _Screenshots showing major parts of app_
 ### 2023-24
 * **Benjamin Tang** - Product Manager
 * **Lily Pham** - Technical Project Manager
-* **Richard Gu** - Software Developer
+* **Richard Gu** - Co-Technical Project Manager
 * **Sydney Tran** - Software Developer
 * **Jessica Wang** - Software Developer
 * **Sophie Wang** - Software Developer
