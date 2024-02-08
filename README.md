@@ -35,6 +35,7 @@ _Screenshots showing major parts of app_
 * **Jessica Wang** - Software Developer
 * **Sophie Wang** - Software Developer
 * **Erin Xu** - Software Developer
+* **Steven Yu** - Software Developer
 * **Brandon Lee** - Designer
 * **Jenny Zhang** - Designer
 * **Raissa Ji** - Product Marketing Manager
