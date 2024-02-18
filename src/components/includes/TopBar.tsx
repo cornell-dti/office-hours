@@ -88,8 +88,8 @@ const TopBar = (props: Props) => {
         <div className="MenuBox" onBlur={() => setShowMenu(false)} ref={ref}>
             <header className="topBar">
                 <div className="triggerArea">
-                    <div className="Logo" onClick={() => history.push("/home")}>
-                        <img src={Logo} className="QMILogo" alt="Queue Me In Logo" />
+                    <div className="logo" onClick={() => history.push("/home")}>
+                        <img src={Logo} className="QMILogoImage" alt="Queue Me In Logo" />
                     </div>
                     <div className="viewToggles">
                         <CalendarHeader
