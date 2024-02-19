@@ -209,6 +209,10 @@ const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
     switchMap(() => collectionData<FireCourse>(firestore.collection('courses'), 'courseId'))
 );
 
+const allPendingCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
+    switchMap(() => collectionData<FireCourse>(firestore.collection('pendingCourses'), 'courseId'))
+);
+
 const getAskerQuestionsQuery = (sessionId: string, askerId: string) => {
     return firestore.collection('questions')
         .where('sessionId', '==', sessionId)
@@ -228,6 +232,11 @@ const allCoursesSingletonObservable = new SingletonObservable([], allCoursesObse
 
 export const useAllCourses: () => readonly FireCourse[] =
     createUseSingletonObservableHook(allCoursesSingletonObservable);
+
+const allPendingCoursesSingletonObservable = new SingletonObservable([], allPendingCoursesObservable);
+
+export const useAllPendingCourses: () => readonly FireCourse[] =
+    createUseSingletonObservableHook(allPendingCoursesSingletonObservable);
 
 export const useMyCourses = (): readonly FireCourse[] => {
     const allCourses = useAllCourses();
