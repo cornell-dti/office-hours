@@ -172,7 +172,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             <>
                 <div className="ProfessorTagInfo">
                     <div className="Assignment InputSection">
-                        <div className="InputHeader">Assignment Name</div>
+                        <div className="InputHeader">Category Name</div>
                         <div className="AssignmentInput">
                             <input
                                 maxLength={30}
@@ -225,7 +225,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                             className="InputChildTag"
                             maxLength={30}
                             onChange={this.handleNewTagTextChange}
-                            placeholder="Type to add a new tag..."
+                            placeholder="Type to add a new subtag..."
                             value={this.state.newTagText}
                         />
                         <div

@@ -7,9 +7,9 @@ interface FireTimestamp {
 type FireSessionModality = 'in-person' | 'hybrid' | 'virtual' | 'review';
 
 interface TaAnnouncement {
-    ta: FireUser; 
-    announcement: string; 
-    uploadTime: FireTimestamp; 
+    ta: FireUser;
+    announcement: string;
+    uploadTime: FireTimestamp;
 }
 
 interface FireBaseSession {
@@ -26,7 +26,7 @@ interface FireBaseSession {
     resolvedQuestions: number;
     totalWaitTime: number;
     totalResolveTime: number;
-    taAnnouncemements?: TaAnnouncement[]; 
+    taAnnouncemements?: TaAnnouncement[];
     isPaused?: boolean;
 }
 
@@ -107,7 +107,7 @@ interface FireReviewSeries extends FireBaseSessionSeries, FireVirtualLocation {
 }
 
 type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries |
-FireInPersonSessionSeries | FireReviewSeries);
+    FireInPersonSessionSeries | FireReviewSeries);
 type FireSessionSeriesDefinition =
     Omit<FireVirtualSessionSeries, 'sessionSeriesId'>
     | Omit<FireHybridSessionSeries, 'sessionSeriesId'>
@@ -157,6 +157,9 @@ interface FireUser {
     phoneNumber?: string;
     textNotifsEnabled?: boolean;
     textPrompted?: boolean;
+    studentTutorial: boolean;
+    taTutorial: boolean;
+    profTutorial: boolean;
 }
 
 interface FirePendingUser {
@@ -201,7 +204,7 @@ interface FireOHQuestion extends FireQuestion {
 }
 
 type FireQuestionSlot = Pick<FireQuestion, 'askerId'
-| 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
+    | 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
 
 interface FireTag {
     active: boolean;

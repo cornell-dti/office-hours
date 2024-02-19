@@ -30,6 +30,9 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
                         firstName: firstNameDefined,
                         lastName,
                         photoUrl,
+                        studentTutorial: false,
+                        taTutorial: false,
+                        profTutorial: false
                     };
                     transaction.update(userDocumentReference, partialUserDocument);
                 } else {
@@ -42,6 +45,9 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
                         roles: {},
                         phoneNumber: "Dummy Number",
                         textNotifsEnabled: false,
+                        studentTutorial: true,
+                        taTutorial: true,
+                        profTutorial: true
                     };
                     transaction.set(userDocumentReference, fullUserDocument);
                 }

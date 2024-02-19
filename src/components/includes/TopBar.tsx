@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from 'react';
 
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import addNotification from 'react-push-notification';
 import { Icon } from 'semantic-ui-react';
 import { logOut } from '../../firebasefunctions/user';
 import Logo from '../../media/QLogo2.svg';
+import QuestionMark from '../../media/questionMark.svg';
+
 import CalendarHeader from './CalendarHeader';
 import ProfessorStudentToggle from './ProfessorStudentToggle';
 import TopBarNotifications from './TopBarNotifications'
-import {useNotificationTracker} from '../../firehooks';
+import { useNotificationTracker } from '../../firehooks';
 import { RootState } from '../../redux/store';
 import { updateLastSent } from '../../firebasefunctions/notifications';
 import Snackbar from "./Snackbar"
 import TextNotificationModal from './TextNotificationModal';
+import StudentTutorial from './tutorials/StudentTutorial';
+import TaTutorial from './tutorials/TaTutorial';
+import ProfessorTutorial from './tutorials/ProfessorTutorial';
+import { updateProfTutorial, updateStudentTutorial, updateTaTutorial } from '../../firebasefunctions/tutorials';
 
 type Props = {
     courseId: string;
@@ -42,14 +48,14 @@ const TopBar = (props: Props) => {
     const notificationTracker = useNotificationTracker(email);
 
     useEffect(() => {
-        if(notificationTracker!== undefined && notificationTracker.notificationList !== undefined) {
-            for(let i = 0; i < notificationTracker.notificationList.length; i++) {
+        if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
+            for (let i = 0; i < notificationTracker.notificationList.length; i++) {
                 const notif = notificationTracker.notificationList[i];
                 // checks that the notification was created after the last time notifications were sent
                 // adds 1000 to lastSent time because client and server TimeStamps seems to be slightly
                 // misaligned
-                if(notificationTracker.lastSent === undefined || 
-                    notif.createdAt.toDate().getTime() > 
+                if (notificationTracker.lastSent === undefined ||
+                    notif.createdAt.toDate().getTime() >
                     notificationTracker?.lastSent.toDate().getTime() + 2000) {
                     updateLastSent(user, notificationTracker);
                     addNotification({
@@ -59,7 +65,7 @@ const TopBar = (props: Props) => {
                         native: true
                     });
                     // hacky fix for duplicate notifs--server update to lastSent doesn't occur quickly enough
-                    setTimeout(() => {}, 100);
+                    setTimeout(() => { }, 100);
                 } else {
                     break;
                 }
@@ -94,14 +100,31 @@ const TopBar = (props: Props) => {
                                 (props.user.roles[props.course.courseId] || 'student' || props.admin)
                             }
                         />
-                        {props.role === 'professor' && (
+                        {/* shows the tutorial if the user's role is the same as the role whose tutorial field is true*/}
+                        {props.role === 'student' && (<StudentTutorial tutorialUser={props.user} />)}
+                        {props.role === 'ta' && (<TaTutorial tutorialUser={props.user} />)}
+                        {props.role === 'professor' && [(<ProfessorTutorial tutorialUser={props.user} courseId={props.courseId} />), (
                             <ProfessorStudentToggle courseId={props.courseId} context={props.context} />
-                        )}
+                        )]}
                     </div>
                     <div className="rightContentWrapper" >
-                        <TopBarNotifications 
-                            notificationTracker={notificationTracker} 
-                            iconClick={() => setShowMenu(!showMenu)} 
+                        <div className="tutorialIcon" onClick={() => {
+                            if (props.role === 'student') {
+                                updateStudentTutorial(user, true)
+                            }
+                            else if (props.role === 'ta') {
+                                updateTaTutorial(user, true)
+                            }
+                            else if (props.role === 'professor') {
+                                updateProfTutorial(user, true)
+                            }
+                        }} >
+                            <img src={QuestionMark} className="questionMark" alt="Tutorial Icon" />
+                        </div>
+
+                        <TopBarNotifications
+                            notificationTracker={notificationTracker}
+                            iconClick={() => setShowMenu(!showMenu)}
                             showMenu={showMenu}
                         />
                         <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
@@ -112,13 +135,13 @@ const TopBar = (props: Props) => {
                                 alt="User Profile"
                             />
                             <span className="name">
-                                {props.user ? props.user.firstName + ' ' + props.user.lastName + ' (' + 
-                                props.user.email.substring(0,props.user.email.indexOf('@')) + ')' : 'Loading...'}
+                                {props.user ? props.user.firstName + ' ' + props.user.lastName + ' (' +
+                                    props.user.email.substring(0, props.user.email.indexOf('@')) + ')' : 'Loading...'}
                             </span>
                         </div>
                     </div>
                 </div>
-            </header>
+            </header >
             {showMenu && (
                 <>
                     <ul className="desktop logoutMenu">
@@ -157,8 +180,8 @@ const TopBar = (props: Props) => {
                 setShowTextModal={setShowTextModal}
                 user={user}
             />
-            {props.snackbars.map(snackbar => (<Snackbar icon={snackbar.icon} announcement={snackbar.text}  />))}
-        </div>
+            {props.snackbars.map(snackbar => (<Snackbar icon={snackbar.icon} announcement={snackbar.text} />))}
+        </div >
     );
 };
 
@@ -168,8 +191,8 @@ TopBar.defaultProps = {
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user,
-    snackbars : state.announcements.snackbars
+    user: state.auth.user,
+    snackbars: state.announcements.snackbars
 })
 
 

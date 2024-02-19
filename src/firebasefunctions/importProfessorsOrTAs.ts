@@ -1,6 +1,7 @@
+import { update } from 'lodash';
 import { firestore } from '../firebase';
 import { blockArray } from '../firehooks';
-
+import { updateStudentTutorial, updateProfTutorial, updateTaTutorial } from './tutorials';
 const db = firestore;
 
 const getUserRoleUpdate = (
@@ -13,11 +14,20 @@ const getUserRoleUpdate = (
         courses.push(courseId);
     }
     const roles = { ...user.roles };
+    
+    //updates the firebase tutorial fields for the user based on their new role 
     if (role === 'student') {
         delete roles[courseId];
-    } else {
+        updateStudentTutorial(user, true);
+    } else if (role === 'ta') {
         roles[courseId] = role;
+        user.taTutorial = true;
+        updateTaTutorial(user, true);
+    } else if (role === 'professor') {
+        roles[courseId] = role;
+        updateProfTutorial(user, true);
     }
+
     return { courses, roles };
 };
 

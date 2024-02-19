@@ -109,6 +109,36 @@ const TextNotificationModal = ({
                             <div className="enableDialogue__split">
                                 <div className="enableDialogue__line" > </div>
                                 <div className="enableDialogue__content">
+                                    <div className="enableDialogue__phoneForm" >
+                                        <img 
+                                            src={phone} 
+                                            alt="Phone icon" 
+                                            className="enableDialogue__phoneIcon" 
+                                        />
+                                        <input
+                                            className="enableDialogue__phoneInput"
+                                            placeholder='Phone Number (ex. 1231231234)' 
+                                            value={phoneNum === 'Dummy Number' ? '' : phoneNum}
+                                            id="phoneInput"
+                                            onChange={
+                                                (e) =>  {
+                                                    setValidation(Validation.NOT_REQUESTED)
+                                                    if (e.target.value === "" || /^[0-9\b]+$/.test(e.target.value))
+                                                        setPhoneNum(e.target.value)
+                                                }
+                                            }
+                                        /> 
+                                        <div className="enableDialogue__required">*</div>
+                                        {validation === Validation.FAILURE && 
+                                        /* eslint-disable-next-line jsx-a11y/label-has-associated-control */
+                                        <label 
+                                            htmlFor="phoneInput" 
+                                            className="enableDialogue__Error enableDialogue__phoneError"
+                                        >
+                                            *Please enter a valid phone number to enable SMS Notifs
+                                        </label>
+                                        }
+                                    </div>
                                     <div className="enableDialogue__consent"  > 
                                         <Checkbox
                                             disabled={user?.textNotifsEnabled}
@@ -130,39 +160,6 @@ const TextNotificationModal = ({
                                             className="enableDialogue__Error enableDialogue__checkError"
                                         >
                                             *Please check the box to enable SMS Notifs
-                                        </label>
-                                        }
-                                    </div>
-                                    
-                                    
-                                    <div className="enableDialogue__phoneForm" >
-                                        <img 
-                                            src={phone} 
-                                            alt="Phone icon" 
-                                            className="enableDialogue__phoneIcon" 
-                                        />
-                                        <input
-                                            disabled={!phoneConsent}
-                                            className="enableDialogue__phoneInput"
-                                            placeholder='Phone Number (ex. 1231231234)' 
-                                            value={phoneNum}
-                                            id="phoneInput"
-                                            onChange={
-                                                (e) =>  {
-                                                    setValidation(Validation.NOT_REQUESTED)
-                                                    if (e.target.value === "" || /^[0-9\b]+$/.test(e.target.value))
-                                                        setPhoneNum(e.target.value)
-                                                }
-                                            }
-                                        /> 
-                                        <div className="enableDialogue__required">*</div>
-                                        {validation === Validation.FAILURE && 
-                                        /* eslint-disable-next-line jsx-a11y/label-has-associated-control */
-                                        <label 
-                                            htmlFor="phoneInput" 
-                                            className="enableDialogue__Error enableDialogue__phoneError"
-                                        >
-                                            *Please enter a valid phone number to enable SMS Notifs
                                         </label>
                                         }
                                     </div>

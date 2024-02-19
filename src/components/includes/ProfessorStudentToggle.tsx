@@ -22,14 +22,15 @@ export default ({ courseId, context }: Props): React.ReactElement => {
     return (
         <div className="Header" ref={ref}>
             <div className="CalendarHeaderProfessorView">
-                <div className={(!isProf ? "SelectedProfessorView" : "UnselectedProfessorView") + "Queue"}>
+
+                <div id="ProfessorQueue" className={(!isProf ? "SelectedProfessorView" : "UnselectedProfessorView") + "Queue"}>
                     <div
                         className={isProf ? "" : "thisCourse"}
                         onClick={() => courseClicked(courseId)}
                     > QUEUE {!isProf && <>&#10003;</>}
                     </div>
                 </div>
-                <div className={(isProf ? "SelectedProfessorView" : "UnselectedProfessorView") + "Dashboard"}>
+                <div id="ProfessorDashboard" className={(isProf ? "SelectedProfessorView" : "UnselectedProfessorView") + "Dashboard"}>
                     <div
                         onClick={() => profCourseClicked(courseId)}
                     > DASHBOARD

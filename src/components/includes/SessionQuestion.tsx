@@ -278,7 +278,7 @@ class SessionQuestion extends React.Component<Props, State> {
 
         return (
             <div className="questionWrapper">
-                <div className="QueueQuestions">
+                <div className="QueueQuestions" id="QueueQuestions">
                     <div className="TopBar">
                         {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
                         <div>
@@ -404,9 +404,9 @@ class SessionQuestion extends React.Component<Props, State> {
                         <p className={'Question' + studentCSS}>
                             {/* any links in the question content will become clickable and open in new tab */}
                             <Linkify componentDecorator={this.componentDecorator}>{question.content}</Linkify>
-                            {this.props.isTA && question.status === 'assigned' && question.timeAssigned !== undefined 
-                            && !this.props.isPast &&
-                                <SessionQuestionTime assignedTime={question.timeAssigned.toDate().getTime()}/>}
+                            {this.props.isTA && question.status === 'assigned' && question.timeAssigned !== undefined
+                                && !this.props.isPast &&
+                                <SessionQuestionTime assignedTime={question.timeAssigned.toDate().getTime()} />}
                         </p>}
                     {
                         this.props.isTA &&
@@ -441,7 +441,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                         </p>
                                     }
                                 </div>
-                                <div className="assignedButtons">
+                                <div className="assignedButtons" id="assignedButtons">
                                     {question.status === 'assigned' &&
                                         <>
                                             <button
@@ -451,6 +451,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                             >No show</button>
                                             <button
                                                 className="Done"
+                                                id="AssignedQuestionDone"
                                                 onClick={this.questionDone}
                                                 type="button"
                                             >Done</button>

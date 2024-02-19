@@ -1,0 +1,189 @@
+.tutorial {
+    &__wrapper {
+        width: 100vw;
+        height: 100vh;
+        z-index: 1000000;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, .34);
+    }
+
+    &__content {
+        background-color: #FFFFFF;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 368px;
+        height: 439px;
+        border-radius: 10px;
+        border: 1px solid rgba(0, 0, 0, 1);
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__logo {
+        width: 168px;
+        height: 167px;
+    }
+
+    &__title {
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 24px;
+        line-height: 28px;
+        text-align: center;
+        color: #000000;
+        padding: 10px 0px;
+    }
+
+    &__caption {
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 19px;
+        text-align: center;
+        color: #484848;
+        padding: 10px 0px 10px 0px;
+    }
+
+    &__start {
+        background: linear-gradient(45deg, #668AE9 0%, #6DB9EA 100%);
+        border-radius: 3px;
+        padding: 8px 10px;
+        width: 172px;
+        height: 35px;
+        margin: 20px 0px 20px 0px;
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 19px;
+        text-align: center;
+        color: #FFFFFF;
+        cursor: pointer;
+
+        &:hover {
+            box-shadow: 0 2px 5px 1px rgba(64, 60, 67, .24);
+        }
+    }
+
+    &__skiptext {
+        margin: 10px 0px 10px 0px;
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 300;
+        font-size: 12px;
+        line-height: 14px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: #484848;
+    }
+
+    &__skip {
+        text-decoration: underline;
+        cursor: pointer;
+
+        &:hover {
+            color: darken(#484848, 30%);
+        }
+    }
+}
+
+
+.driver-popover-item {
+    margin-left: 30px !important;
+    margin-top: 10px !important;
+    padding: 20px 40px 20px 40px !important;
+    filter: drop-shadow(0px 0px 5px #5599DB) !important;
+    min-width: 300px !important;
+    max-width: 330px !important;
+}
+
+.driver-popover-description {
+    margin: 20px 20px 30px 20px !important;
+    font-family: 'Roboto' !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    font-size: 16px !important;
+    line-height: 19px !important;
+    color: #333333 !important;
+}
+
+#driver-popover-done-btn {
+    font-family: Roboto !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    line-height: 19px !important;
+    letter-spacing: 0em !important;
+    text-align: center !important;
+    color: #5599DB !important;
+    background-color: #fff !important;
+    border: none !important;
+}
+
+.driver-popover-next-btn {
+    content: "";
+    background-image: url("../media/tutorial-next.svg") !important;
+    background-size: cover;
+    background-repeat: no-repeat !important;
+    background-color: #fff !important;
+    border: none !important;
+    font-size: 0 !important;
+    height: 20px !important;
+    width: 20px !important;
+}
+
+.driver-popover-prev-btn {
+    content: "";
+    background-image: url("../media/tutorial-prev.svg") !important;
+    background-repeat: no-repeat !important;
+    background-size: cover;
+    background-color: #fff !important;
+    border: none !important;
+    font-size: 0 !important;
+    cursor: pointer;
+    height: 20px !important;
+    width: 20px !important;
+}
+
+.driver-popover-disabled {
+    background-image: url("../media/tutorial-prev-disabled.svg") !important;
+    margin-right: 10px !important;
+}
+
+.driver-popover-close-btn {
+    content: "";
+    background-image: url("../media/tutorial-close.svg") !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-color: #fff !important;
+    border: none !important;
+    text-indent: 100% !important;
+    font-size: 0 !important;
+    cursor: pointer !important;
+    height: 14px !important;
+    width: 12px !important;
+    position: absolute !important;
+    top: 10px !important;
+    right: 7px !important;
+}
+
+.driver-popover-progress-text {
+    font-family: 'Roboto' !important;
+    font-size: 12px !important;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.driver-popover-navigation-btns {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}

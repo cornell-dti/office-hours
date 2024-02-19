@@ -18,8 +18,8 @@ const client = new Twilio(accountSid, authToken);
 /**
  * Function that handles data and sends a text message to a requested phone number
  */
-async function sendSMS (user: FireUser, message: string) {
-    if(process.env.DATABASE === "staging") {
+async function sendSMS(user: FireUser, message: string) {
+    if (process.env.DATABASE === "staging") {
         return;
     }
     const userPhone = user.phoneNumber;
@@ -69,22 +69,32 @@ exports.onUserCreate = functions.firestore
             const newRoles = (doc.data() as FirePendingUser).roles;
             const taCourseIds: string[] = [];
             const profCourseIds: string[] = [];
-
+            var profTutorial = false
+            var taTutorial = false
+            var studentTutorial = true
             for (const [courseId, role] of Object.entries(newRoles)) {
 
                 if (role === 'ta') {
                     taCourseIds.push(courseId);
+                    taTutorial = true
                 } else if (role === 'professor') {
                     profCourseIds.push(courseId);
+                    profTutorial = true
                 }
             }
 
             const batch = db.batch();
-
+            const profAndTaCourses = [...taCourseIds, ...profCourseIds]
+            if (user.courses.length > profAndTaCourses.length) {
+                studentTutorial = true
+            }
             // and update the newly-created user with their new roles
             userRef.update({
-                courses: [...taCourseIds, ...profCourseIds],
-                roles: { ...currentRoles, ...newRoles }
+                courses: profAndTaCourses,
+                roles: { ...currentRoles, ...newRoles },
+                studentTutorial: studentTutorial,
+                taTutorial: taTutorial,
+                profTutorial: profTutorial
             })
 
             const taCourseDocs = await Promise.all(
@@ -484,4 +494,69 @@ exports.onQuestionUpdate = functions.firestore
             totalWaitTime: admin.firestore.FieldValue.increment(waitTimeChange),
             totalResolveTime: admin.firestore.FieldValue.increment(resolveTimeChange),
         });
+    });
+
+exports.addQuestionsTutorial = functions.pubsub.schedule('30 23 * * *')
+    .timeZone('America/New_York')
+    .onRun(async () => {
+        const year = admin.firestore.Timestamp.now().toDate().getFullYear() % 100;
+        const term = admin.firestore.Timestamp.now().toDate().getMonth() > 6 ? 'FA': 'SP';
+        
+        const day = new Date();
+        day.setDate(admin.firestore.Timestamp.now().toDate().getDate() + 1);
+        day.setHours(0);
+        day.setMinutes(0);
+        const endDate = new Date(day);
+        endDate.setDate(day.getDate() + 1);
+        // get session for questions
+        const sessionsQuery = db.collection('sessions')
+            .where('startTime', '>=', day)
+            .where('startTime', '<=', endDate)
+            .where('courseId', '==', `TC00${1}-${term}-${year}`);
+        const virtualSession = (await sessionsQuery.where('modality', '==', 'virtual').get())
+            .docs[0].data() as FireSession;
+        const inPersonSession = (await sessionsQuery.where('modality', '==', 'in-person').get())
+            .docs[0].data() as FireSession;
+        const reviewSession = (await sessionsQuery.where('modality', '==', 'review').get())
+            .docs[0].data() as FireSession;
+        const sessions = [virtualSession, inPersonSession, reviewSession];
+
+
+        // get tags for questions
+        const hwtag = (await db.collection('tags').where('courseId', '==', `TC00${1}-${term}-${year}`)
+            .where('level', '==', 1).get()).docs[0].data() as FireTag;
+        const subtag = (await db.collection('tags').where('courseId', '==', `TC00${1}-${term}-${year}`)
+            .where('level', '==', 2).get()).docs[0].data() as FireTag;
+
+        // generate questions
+        sessions.forEach(session => {
+            const batch = db.batch();
+            const questionId = db.collection('questions').doc().id;
+            const finalLocation = session.modality == 'in-person' ? {} : { location: 'Back of room' };
+            const upvotedUsers = session.modality === "review" ? { upvotedUsers: ['cvLM2pAFFJMYlzZU7FEF9qYADap1'] } : {}
+            const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
+                askerId: "cvLM2pAFFJMYlzZU7FEF9qYADap1",
+                sessionId: session.sessionId,
+                status: 'unresolved',
+                timeEntered: admin.firestore.Timestamp.now()
+            };
+    
+            const newQuestion: Omit<FireOHQuestion, 'questionId'> = {
+                ...newQuestionSlot,
+                ...finalLocation,
+                ...upvotedUsers,
+                answererId: '',
+                content: "I'm having some trouble with problem 3 on the homework.",
+                primaryTag: hwtag.tagId,
+                secondaryTag: subtag.tagId,
+                wasNotified: true,
+                position: session.totalQuestions - session.assignedQuestions + 1,
+    
+            };
+            batch.set(db.collection('questionSlots').doc(questionId), newQuestionSlot);
+            batch.set(db.collection('questions').doc(questionId), newQuestion);
+            batch.commit();
+        })
+
+        return true;
     });
