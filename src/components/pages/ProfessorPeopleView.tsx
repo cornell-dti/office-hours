@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { RouteComponentProps } from "react-router";
 import moment from "moment";
 import { DateRangePicker } from "react-dates";
-import { BarDatum } from "@nivo/bar";
+import { ResponsiveBar, BarDatum } from "@nivo/bar";
 // import QuestionsBarChart from "../includes/QuestionsBarChart";
 import QuestionsBarGraph from "../includes/QuestionsBarGraph";
 import ProfessorSidebar from "../includes/ProfessorSidebar";
@@ -33,6 +33,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         return accumulator + session.totalQuestions;
     }, 0);
     const unresolvedQuestions = allQuestions.filter((q) => q.status === "unresolved");
+    const resolvedQuestions = allQuestions.filter((q) => q.status === "resolved");
     const percentUnresolved = totalQuestions ? Math.round((100 * unresolvedQuestions.length) / totalQuestions) : 100;
     const percentResolved = 100 - percentUnresolved;
 
@@ -123,9 +124,12 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     let chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
 
     const barGraphData: BarDatum[] = [];
+    const questionsData: BarDatum[] = [];
     const questionsByDay: number[] = [];
     for (let i = 0; i < sessions.length; i++) {
         const session = sessions[i];
+        questionsData.push({"session":moment(session.startTime.seconds * 1000).format("MMM D"),"total":session.totalQuestions,"resolved":session.resolvedQuestions,
+        "unresolved":session.assignedQuestions}) 
         sessionQuestionDict[session.sessionId] = {
             ta: session.tas.join(", "),
             startHour: moment(session.startTime.seconds * 1000).format("h:mm a"),
@@ -204,6 +208,53 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                         />
                                     </div>
                                 </div> */}
+                            </div>
+                            <div className="Resolved-vs-Unresolved-Box">
+                                Resolved vs Unresolved Questions Graph
+                                <div className="questions-line-container" style={{ height: 300 }}>
+                                    <ResponsiveBar 
+                                        data={questionsData}
+                                        keys={['unresolved','resolved']}
+                                        indexBy="session"
+                                        groupMode="grouped"
+                                        colors={{ scheme: 'red_blue' }}
+                                        borderWidth={2}
+                                        margin={{
+                                            top: 20,
+                                            right: 20,
+                                            bottom: 50,
+                                            left: 80,
+                                        }}
+                                        axisLeft={{
+                                            legend: "resolved vs unresolved questions",
+                                            tickSize: 1,
+                                            tickPadding: 12,
+                                            tickRotation: 0,
+                                            legendOffset: -40,
+                                            legendPosition: "end",
+                                            tickValues: chartYMax/2,
+                                        }}
+                                        axisBottom={{
+                                            legend: "",
+                                            tickSize: 1,
+                                            tickPadding: 12,
+                                            tickRotation: -60,
+                                            legendOffset: 40,
+                                            legendPosition: "end",
+                                        }}
+                                        enableLabel={false}
+                                        maxValue={chartYMax/2}
+                                        innerPadding={3}
+                                        padding={0.3}
+                                        labelSkipWidth={12}
+                                        labelSkipHeight={12}
+                                        labelTextColor="inherit:darker(1.6)"
+                                        animate={true}
+                                        motionStiffness={90}
+                                        motionDamping={15}
+                                        legends={[]}
+                                    />
+                                </div>
                             </div>
                             <div className="Most-Crowded-Box">
                                 {busiestSessionInfo && (
