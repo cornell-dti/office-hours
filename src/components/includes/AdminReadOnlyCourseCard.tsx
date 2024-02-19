@@ -1,7 +1,12 @@
 import React from 'react';
 import { useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
 
-const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) => {
+type Props = {
+    readonly course: FireCourse;
+    showSettings: boolean;
+};
+
+const AdminReadOnlyCourseCard = ({ course, showSettings }: Props) => {
     const professorMap = useCourseProfessorMap(course);
     const taMap = useCourseTAMap(course);
 
@@ -11,13 +16,13 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
                 <h3>{course.courseId} ({course.code}: {course.name})</h3>
                 <div>Semester: {course.semester}, year: {course.year}, term: {course.term}</div>
             </div>
-            <div className="course-section">
+            {showSettings && <div className="course-section">
                 <h3>Settings: </h3>
                 <div>Queue Open Interval: {course.queueOpenInterval}</div>
                 <div>Char Limit: {course.charLimit}</div>
                 <div>Start Date: {course.startDate.toDate().toLocaleDateString()}</div>
                 <div>End Date: {course.endDate.toDate().toLocaleDateString()}</div>
-            </div>
+            </div>}
             <div className="course-section">
                 <h3>Professors</h3>
                 {course.professors.length === 0 && <div>None</div>}

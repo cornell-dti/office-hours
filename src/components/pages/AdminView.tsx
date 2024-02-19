@@ -5,13 +5,15 @@ import {Grid} from '@material-ui/core'
 import TopBar from '../includes/TopBar';
 import AdminCourseCard from '../includes/AdminCourseCard';
 import AdminCourseCreator from '../includes/AdminCourseCreator';
-import { useAllCourses, useIsAdmin } from '../../firehooks';
+import AdminPendingCourseCard from '../includes/AdminPendingCourseCard';
+import { useAllCourses, useAllPendingCourses, useIsAdmin } from '../../firehooks';
 import { CURRENT_SEMESTER } from '../../constants';
 
 
 const AdminView = () => {
     const history = useHistory();
     const courses = useAllCourses();
+    const pendingCourses = useAllPendingCourses();
     const isAdmin = useIsAdmin();
     const [inCreationMode, setInCreationMode] = useState(false);
     useEffect(() => {
@@ -29,6 +31,18 @@ const AdminView = () => {
                 // This field is only necessary for professors, but we are always student/TA here.
                 courseId="DUMMY_COURSE_ID"
             />
+
+            <h2>New Course Requests</h2>
+            <div className="course-container" >
+                <Grid container direction="row" alignItems={'stretch'} spacing={3}>
+                    {pendingCourses.map(course => (
+                        <Grid item xl={3} lg={4} md={6} xs={12}>
+                            <AdminPendingCourseCard key={course.courseId} course={course} />
+                        </Grid>
+                    ))}
+                </Grid>
+            </div>
+
             <h2>Courses</h2>
             <div className="course-container" >
                 <Grid container direction="row" alignItems={'stretch'} spacing={3}>
@@ -59,12 +73,6 @@ const AdminView = () => {
                     ))}
                 </Grid>
             </div>
-            {!inCreationMode &&
-                <button 
-                    type="button" 
-                    className="create-course-btn" 
-                    onClick={() => setInCreationMode(true)}
-                >Create New Course</button>}
         </div>
     );
 };
