@@ -57,6 +57,20 @@
 
     .EnrolledCourses.web {
         display: block;
+
+        .createNewCourseButton {
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 4px;
+            border: none;
+            padding: 0;
+            width: 200px;
+            height: 40px;
+
+            color: white;
+            background-color: #5DA9F2;
+            margin: 5px;
+        }
     }
 
     button:hover {

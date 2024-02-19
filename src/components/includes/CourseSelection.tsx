@@ -8,6 +8,7 @@ import CourseCard from './CourseCard';
 import { CURRENT_SEMESTER } from '../../constants';
 import { updateCourses } from '../../firebasefunctions/courses';
 import { RootState } from '../../redux/store';
+import CourseCreatePopup from './CourseCreatePopup';
 
 type Props = {
     readonly user: FireUser;
@@ -130,6 +131,12 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         history.push('/home');
     };
 
+    const onCreateCourse = () => { 
+        
+    }
+
+    const [courseCreatePopup, setCourseCreatePopup] = useState(false)
+
     const selectedCoursesString = (selectedCourses.length + numCoursesWithRoles === 0
         ? 'No Classes Chosen'
         : selectedCourses.map(c => c.code).join(', '));
@@ -221,7 +228,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
             </div>
             <div className="EnrollBar">
                 <div className="EnrolledCourses web">
-                    {isEdit && selectedCoursesString}
+                    <button type="button" className='createNewCourseButton' onClick={() => setCourseCreatePopup(true)}>
+                        Create a Class
+                    </button>
                 </div>
                 <div className="buttons">
                     {!isEdit && (
@@ -246,7 +255,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     )}
                 </div>
             </div>
+            {courseCreatePopup && <CourseCreatePopup setCourseCreatePopup={setCourseCreatePopup} />}
         </div>
+        
     );
 }
 const mapStateToProps = (state: RootState) => ({
