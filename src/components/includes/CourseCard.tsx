@@ -11,7 +11,16 @@ type Props = {
     selected: boolean;
     inactive?: boolean;
 };
-
+/**
+ * Renders a course card to display in the course selection page. Displays course code, name, and role if applicable.
+ * @param course: the course to be displayed
+ * @param role: the role of the user in the course
+ * @param onSelectCourse: function to call when the course is selected
+ * @param editable: whether the course card is editable (ex if you are a ta, you cannot unselect the course)
+ * @param selected: whether the course is selected
+ * @param inactive: whether the course is inactive for the current semester
+ * @returns rendered CourseCard component
+ */
 const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive = false }: Props) => {
     const history = useHistory();
 
@@ -35,33 +44,37 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
     }
     return (
         <div
-            className={`CourseCard ${selected && editable ? 'selected' : ''} ${
-                inactive ? 'inactive' : 'active'
+            className={`CourseCard ${selected && editable ? 'selected' : ''} ${inactive ? 'inactive' : 'active'
             }`}
             onClick={selectCourse}
         >
-            <div className="courseText">
-                <div className="courseCode">
-                    {course.code}
-                    {roleString && <span className="role">{roleString}</span>}
-                </div>
-                <div className="courseName">{course.name}</div>
-            </div>
             {!inactive ? (
-                <div className="courseColor">
+                <div>
                     {editable ? (
-                        selected ? (
-                            <Icon className="icon" name="check" />
-                        ) : (
-                            <Icon className="icon" name="plus" />
-                        )
-                    ) : (
-                        <div>Go to course</div>
-                    )}
+
+                        <div className="courseColor">
+                            {roleString && <span className="courseRole">{roleString}</span>}
+                            {selected ? (
+                                <Icon className="icon" fill="#77BBFA" color="blue" name="check circle" />
+                            ) : (
+                                <Icon className="icon" color="grey" name="circle outline" />
+                            )}
+
+                        </div>
+                    ) : (<></>)}
                 </div>
             ) : (
                 <></>
             )}
+            <div className="courseText">
+                <div className="courseCode">
+                    {course.code}
+                </div>
+                <div className="courseName">{course.name}</div>
+            </div>
+
+            {!inactive && !editable ? <div className="myClasses">Go to course</div> : <></>
+            }
         </div>
     );
 };
