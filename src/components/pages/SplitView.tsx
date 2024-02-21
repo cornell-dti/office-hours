@@ -151,14 +151,8 @@ const SplitView = ({
     };
 
     const removeQuestionWrapper = (action: any) => {
-        console.log("removing question");
         setRemoveQuestionId(action);
-        // Check if the user is a student before setting displayFeedbackPrompt to true
-        // if (!user?.roles[course.courseId]) {
         setDisplayFeedbackPrompt(true);
-        console.log("display feedback prompt set to true");
-        // }
-        // turn on feedbackprompt after your question answered
     };
 
     useEffect(() => {
