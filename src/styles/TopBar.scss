@@ -57,12 +57,21 @@
             justify-content: center;
         }
 
-        .QMILogo {
+        .QMILogoImage {
             align-self: right;
-            margin-bottom: 10px;
+            padding-bottom: 10px;
             width: 30px;
             margin-left: 46px;
+            transition-duration: 0.2s;
+            transition-property: box-shadow, color;
+            transition-timing-function: $curve-standard;
+            cursor: pointer;
         }
+
+        .QMILogoImage:hover {
+            box-shadow: inset 0 -2px #b7bfc6;
+        }
+
         .rightContentWrapper {
             width: 20%;
             display: flex;
@@ -72,6 +81,7 @@
 
         .userProfile {
             align-self: right;
+            height: 34px;
             padding-bottom: 10px;
             transition-duration: 0.2s;
             transition-property: box-shadow, color;
@@ -110,6 +120,7 @@
 @media only screen and (max-width: $mobile-breakpoint) {
     .userProfile {
         padding-right: 15px;
+        min-height: 64px;
     }
 
     .topBar {
@@ -120,7 +131,7 @@
         padding-right: 0;
 
         .triggerArea {
-            .QMILogo {
+            .QMILogoImage {
                 margin-left: 15px;
             }
         }
