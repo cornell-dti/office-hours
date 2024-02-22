@@ -5,7 +5,7 @@ import firebase from 'firebase/app';
 import { RootState } from '../../redux/store';
 import datatime from 'react';
 
-import { getAllMessages, getSessionMessages, addMessage } from '../../firebasefunctions/chatmessages';
+import { getAllMessages, getSessionMessages } from '../../firebasefunctions/chatmessages';
 import ChatMessage from './ChatMessage';
 import ChatIcon from '../../media/chat-icon.svg'
 import SendIcon from '../../media/send_icon.svg'
@@ -24,20 +24,20 @@ export type Props = {
 
 export type Message = {
     message: string;
-    user: FireUser | undefined;
+    userId: string;
     name: string;
-    session?: FireSession | undefined;
+    sessionId: string;
     timeSent: string;
 }
 
 const Chatbox = (props: Props) => {
-    var message1 : Message = {
-        message: "this is the first message you sent",
-        user: props.user,
-        name: "Lily Pham",
-        session: props.session,
-        timeSent: ""
-    }
+    // var message1 : Message = {
+    //     message: "this is the first message you sent",
+    //     userId: 'props.user',
+    //     name: "Lily Pham",
+    //     sessionId: 'props.session',
+    //     timeSent: ""
+    // }
     
     const [showChat, setShowChat] = useState(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : '/placeholder.png');
@@ -64,20 +64,13 @@ const Chatbox = (props: Props) => {
       const sendMessage = async () => {
         var newMessage = {
                 message: input,
-                user: props.user,
+                userId: props.user?.userId,
                 name: props.user?.firstName + ' ' + props.user?.lastName,
-                session: props.session,
+                session: props.session?.sessionId,
                 timeSent: "time holder",
             }
-        chatMessages.push(newMessage)
         const messagesRef = firestore.collection('chatmessages');
-        await messagesRef.add({
-            text: input,
-            timeSent: firebase.firestore.FieldValue.serverTimestamp(),
-            courseId: props.courseId,
-            senderId: props.user,
-            session: props.session,
-        })
+        await messagesRef.add(newMessage);
         setInput("")
       }
     
@@ -95,7 +88,7 @@ const Chatbox = (props: Props) => {
                 {
                 chatMessages && chatMessages.map(msg => <ChatMessage 
                     msg={msg.message} 
-                    sentBySelf={msg.user == props.user}
+                    sentBySelf={msg.userId == props.user?.userId}
                     name={msg.name}
                 />)}
             </div>

@@ -1,0 +1,235 @@
+.courseCreatePopupBackground {
+  background-color: rgba(112, 112, 112, 0.8);;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+  
+  I {
+    position: absolute;
+    top: 12px;
+    right: 10px;
+  }
+}
+
+.createCoursePopupContinueContainer {
+    border-radius: 8px;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    margin: auto;
+    width: 440px;
+    height: 570px;
+    background: white;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      position: absolute;
+      top: 50px;
+      width: 30px;
+      height: 30px;
+    }
+
+    h1 {
+      translate: 0px -15px;
+      color: #484848;
+      font-family: 'Roboto';
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 20px;
+    }
+
+    .required {
+      color: red;
+    }
+
+    .submit {
+        border: none;
+        padding: 8px 21px;
+        position: absolute;
+        bottom: 45px;
+        gap: 10px;
+        width: 160px;
+        height: 40px;
+        background: #5DA9F2;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .role_input {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        input {
+          translate: -10px -8px;
+        }
+        margin-bottom: -10px;
+    }
+
+    .inputs {
+        display: flex;
+        flex-direction: column;
+
+        .input_component {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            text-align: left;
+
+            .input_label {
+              margin: 5px 0px;
+            }
+
+            input {
+                width: 320px;
+                height: 36px;
+                border: 1px solid #6F6F6F;
+                border-radius: 4px;
+                padding: 5px;
+            }
+            
+        }
+
+        .dropdownSection {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+
+
+            select {
+                height: 36px;
+                cursor: pointer;
+                width: 150px;
+                padding: 0px 12px;
+                border: 1px solid #6F6F6F;
+                border-radius: 4px;
+                /* needed */
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+            }
+        }
+
+        .errorMessage {
+          margin: 5px 0px -10px;
+          color: red;
+          font-size: small;
+        }
+    }
+
+}
+
+
+
+.createCoursePopupContainer {
+    border-radius: 8px;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    margin: auto;
+    width: 440px;
+    height: 260px;
+    background: white;
+    align-items: center;
+    justify-content: center;
+
+    h1 {
+        text-align: center;
+        margin: 5px;
+        position: relative;
+        width: 192px;
+        height: 28px;
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 22px;
+        line-height: 28px;
+        color: #484848;
+    }
+
+    p {
+        position: relative;
+        margin-top: 50px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 346px;
+        height: 40px;
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
+        color: #484848;
+    }
+
+    .createNewClassHeader {
+      margin-top: 20px;
+      display: flex;
+      position: absolute;
+      flex-direction: column;
+      align-items: center;
+      top: 0px;
+
+      img {
+        margin: 10px;
+        width: 40px;
+        height: 40px;
+      }
+
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        padding: 0px;
+        gap: 8px;
+        position: absolute;
+        width: 328px;
+        height: 40px;
+        bottom: 25px;
+
+      .cancel {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 8px 16px;
+        gap: 10px;
+        width: 160px;
+        height: 40px;
+        border: 1px solid #5DA9F2;
+        color: #5DA9F2;
+        background-color: white;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+  
+      .continue {
+        border: none;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 8px 21px;
+        gap: 10px;
+        width: 160px;
+        height: 40px;
+        background: #5DA9F2;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+  }
+}
+

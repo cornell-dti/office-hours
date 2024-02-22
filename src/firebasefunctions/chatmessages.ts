@@ -5,9 +5,9 @@ import { Message, Props } from '../../src/components/includes/Chatbox';
 
 var message0 : Message = {
   message: "testing firebase",
-  user: undefined,
+  userId: 'undefined',
   name: "Lily Pham",
-  session: undefined,
+  sessionId: 'undefined',
   timeSent: ""
 }
 
@@ -20,10 +20,10 @@ export async function getAllMessages(): Promise<Message[]> {
       const data = doc.data();
       const message: Message = {
           message: data.message,
-          user: data.senderId,
+          userId: data.senderId,
           name: 'fake name',// Adjust as per your data structure
-          session: data.session,
-          timeSent: data.timeSent.toDate().toString(), // Convert Firebase timestamp to string
+          sessionId: data.session,
+          timeSent: data.timeSent, // Convert Firebase timestamp to string
       };
       messages.push(message);
   });
@@ -39,37 +39,37 @@ export async function getSessionMessages(session : FireSession | undefined) {
     const messageRef = await firestore.collection('chatmessages').where('session', '==', session).get();
     messageRef.forEach(doc => {
       const check = doc.data();
-      const msg : Message = {message: check.message, user: check.user, 
-      name: check.senderId, session: check.session, timeSent: check.timeSent}
+      const msg : Message = {message: check.message, userId: check.user, 
+      name: check.senderId, sessionId: check.session, timeSent: check.timeSent}
       messages.push(msg);
     });
     return messages;
 }
 
-export const addMessage =
-    async (user: FireUser, message: Omit<Message, 'messageId' | 'createdAt'>) => {
-        if (user !== undefined) {
-            const email = user.email;
-            if (email !== null) {
-                const trackerRef = firestore.collection('notificationTrackers').doc(email);
-                const prevTracker = (await trackerRef.get()).data();
-                const notifList: SessionNotification[] =
-                    prevTracker !== undefined &&
-                        prevTracker.notificatoniList !== undefined ? prevTracker.notificationList : []
-                const newMessage: Message = {
-                    message: message.message,
-                    user: message.user,
-                    name: message.name,
-                    session: message.session,
-                    // timeSent: firebase.firestore.Timestamp.now()
-                    timeSent: message.timeSent
-                }
-                if (prevTracker === undefined) {
-                  trackerRef.set(newMessage)
-            }
-        }
-    }
-  }
+// export const addMessage =
+//     async (user: FireUser, message: Omit<Message, 'messageId' | 'createdAt'>) => {
+//         if (user !== undefined) {
+//             const email = user.email;
+//             if (email !== null) {
+//                 const trackerRef = firestore.collection('notificationTrackers').doc(email);
+//                 const prevTracker = (await trackerRef.get()).data();
+//                 const notifList: SessionNotification[] =
+//                     prevTracker !== undefined &&
+//                         prevTracker.notificatoniList !== undefined ? prevTracker.notificationList : []
+//                 const newMessage: Message = {
+//                     message: message.message,
+//                     userId: message.userId,
+//                     name: message.name,
+//                     sessionId: message.sessionId,
+//                     // timeSent: firebase.firestore.Timestamp.now()
+//                     timeSent: message.timeSent
+//                 }
+//                 if (prevTracker === undefined) {
+//                   trackerRef.set(newMessage)
+//             }
+//         }
+//     }
+//   }
  
 // use a firebase hook 
 // make a ref
@@ -86,23 +86,23 @@ export const addMessage =
 //   return firestore.collection('chatmessages').doc(userId).update(userUpdate)
 // };
 
-  export const messagesConverter = {
-    toFirestore: function (message: Message) {
-      return {
-        // id: event.id,  // Note! Not in ".data()" of the model!
-        message: message.message,
-        user: message.user,
-        name: message.name,
-        session: message.session,  
-        timeSent: message.timeSent
-      }
-    },
-    fromFirestore: function (snapshot: any, options: any) {
-      const data = snapshot.data(options)
-      const id = snapshot.id
-      // return {data.message, data.user, data.name, data.session, data.timeSent}
-    }
-  }
+  // export const messagesConverter = {
+  //   toFirestore: function (message: Message) {
+  //     return {
+  //       // id: event.id,  // Note! Not in ".data()" of the model!
+  //       message: message.message,
+  //       user: message.user,
+  //       name: message.name,
+  //       session: message.session,  
+  //       timeSent: message.timeSent
+  //     }
+  //   },
+  //   fromFirestore: function (snapshot: any, options: any) {
+  //     const data = snapshot.data(options)
+  //     const id = snapshot.id
+  //     // return {data.message, data.user, data.name, data.session, data.timeSent}
+  //   }
+  // }
     
     async function get() {
       const messages: Message[] = [];

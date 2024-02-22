@@ -253,13 +253,13 @@ const SplitView = ({
                     )
                 ) : <Loader active={true} content="Loading" />)}
             <ProductUpdates />
-            <Chatbox 
+            {(session) ? <Chatbox 
                 role={(user && course && user.roles[course.courseId]) || 'student'}
                 context="student"
                 courseId={match.params.courseId}
                 course={course}
                 session={session}
-            />
+            /> : <></>}
         </>
     );
 };
