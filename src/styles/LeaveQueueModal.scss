@@ -7,20 +7,17 @@
     justify-content: center;
     align-items: center;
     font-family: "Roboto";
-    font-weight: 400;
+    font-weight: 400px;
     background-color: rgba(112, 112, 112,0.8);
     animation: fade 0.6s;
 }
 
 .leave-queue-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
     position: relative;
     background-color: white;
     border-radius: 8px;
-    height: 180px;
-    width: 480px;
+    height: 350px;
+    width: 40%;
     animation: moveUp 0.6s;
 
     .leave-queue-button {
@@ -43,13 +40,13 @@
     }
 
     img {
+        margin-top: 100px;
         width: 50px;
         height: 50px;
-        margin: 10px;
     }
 
     h2 {
-        color: #040202;
+        color: #B41515;
         font-weight: 400;
         font-size: 18px;
     }
@@ -66,43 +63,37 @@
         transition: background-color 0.3s;
     }
 
-    .leave-queue-body {
-        display: "flex";
-        flex-direction: "column";
-
-        .leave-queue-buttons {
-            display: "flex";
-            justify-content: "center";
-            margin-bottom: "15px";
-            margin-top: "15px";
-            text-transform: "none";
-            .cancel-button {
-                font-weight: "normal";
-                border-color: "#3594F1"; 
-                color: "#6597D6"; 
-                margin-left: "0.5rem";
-                margin-right: "12.5rem";
-            }
-            
-            .remove-button {
-                font-weight: "normal";
-                background-color: "#A42921";
-            }
-        }
+    .yes-queue-button {
+        left: 0;
+        background-color: #B41515;
+        border-radius: 0 0 0 8px;
     }
-}
 
-.leave-queue-prompt {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
+    .yes-queue-button:hover {
+        background-color: #C11616;
+    }
+
+    .cancel-queue-button {
+        right: 0;
+        background-color: #5599DB;
+        border-radius: 0 0 8px 0;
+    }
+
+    .cancel-queue-button:hover {
+        background-color: #5EA7EE;
+    }
 }
 
 @media screen and (max-width: 850px) {
     .leave-queue-container {
-        height: 145px;
-        width: 380px;
+        height: 200px;
+        width: 80%;
+        .leave-queue-button {
+            img {
+                height: 10px;
+                width: 10px;
+            }
+        }
         img {
             margin-top: 50px;
             height: 30px;
@@ -113,17 +104,6 @@
         }
         .leave-queue-option {
             font-size: 12px;
-        }
-        .cancel-button {
-            font-weight: "normal";
-            border-color: "#3594F1"; 
-            color: "#6597D6"; 
-            margin-left: "0.5rem";
-            margin-right: "12.5rem";
-        }
-        .remove-button {
-            font-weight: "normal";
-            background-color: "#A42921";
         }
     }
 }
