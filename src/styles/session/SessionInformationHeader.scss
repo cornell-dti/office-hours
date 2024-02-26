@@ -95,7 +95,8 @@
     justify-content: center;
   }
 
-  .QueueInfo {
+  .QueueInfo,
+  .AssignedTAs {
     border-radius: 8px;
     box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
     border-radius: 8px;
@@ -321,7 +322,8 @@
       padding: 0;
     }
 
-    .QueueInfo {
+    .QueueInfo,
+    .AssignedTAs {
       float: left;
       padding-top: 20px;
       padding-left: 30px;
