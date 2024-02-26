@@ -474,15 +474,15 @@ const SessionInformationHeader = ({
                                                                 Join
                                                             </button>
                                                         </a>
-                                                ) : (
-                                                    <button
-                                                        type="button"
-                                                        className="JoinButton"
-                                                        onClick={() => activateError()}
-                                                    >
-                                                        Join
-                                                    </button>
-                                                )}
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            className="JoinButton"
+                                                            onClick={() => activateError()}
+                                                        >
+                                                            Join
+                                                        </button>
+                                                    )}
                                             </Grid>
                                         </Grid>
                                     </div>
