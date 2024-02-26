@@ -462,18 +462,18 @@ const SessionInformationHeader = ({
                                                 {(!(typeof session.useTALink === 'undefined' ||
                                                     session.useTALink === false) && session.TALink) ||
                                                     assignedQuestion?.answererLocation ? (
-                                                    <a
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        href={(typeof session.useTALink === 'undefined' ||
-                                                            session.useTALink === false) ?
-                                                            assignedQuestion?.answererLocation :
-                                                            session.TALink}
-                                                    >
-                                                        <button type="button" className="JoinButton">
-                                                            Join
-                                                        </button>
-                                                    </a>
+                                                        <a
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            href={(typeof session.useTALink === 'undefined' ||
+                                                                session.useTALink === false) ?
+                                                                assignedQuestion?.answererLocation :
+                                                                session.TALink}
+                                                        >
+                                                            <button type="button" className="JoinButton">
+                                                                Join
+                                                            </button>
+                                                        </a>
                                                 ) : (
                                                     <button
                                                         type="button"
