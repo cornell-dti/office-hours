@@ -184,7 +184,7 @@ const SessionInformationHeader = ({
                 <Grid container item lg={7} md={7} xs={12} justifyContent="center">
                     <div className="LeftInformationHeader">
                         <Grid container direction="row">
-                            <Grid container item lg={4} md={5} xs={4} className="Picture">
+                            {/* <Grid container item lg={4} md={5} xs={4} className="Picture">
                                 <img
                                     src={tas[0] ? tas[0].photoUrl : '/placeholder.png'}
                                     alt={
@@ -193,7 +193,7 @@ const SessionInformationHeader = ({
                                             : 'Placeholder photo url'
                                     }
                                 />
-                            </Grid>
+                            </Grid> */}
                             <Grid container item lg={8} md={7} xs={8} className="Details">
                                 {'building' in session ? (
                                     <p className="Location">
@@ -257,14 +257,32 @@ const SessionInformationHeader = ({
                                     <div>
                                         {tas.map((ta, index) => (
                                             <div key={index}>
-                                                {/* <img src={ta.} alt={ta.firstName} /> */}
-                                                <p>{ta.firstName}</p>
+                                                <div className="OneQueueInfo">
+                                                    <Grid container direction="row" justifyContent="center" alignItems={'center'}>
+                                                        <Grid item xs={2} className="Picture">
+                                                            <img
+                                                                src={ta ? ta.photoUrl : '/placeholder.png'}
+                                                                alt={
+                                                                    ta
+                                                                        ? `${ta.firstName} ${ta.lastName}'s Photo URL`
+                                                                        : 'Placeholder photo url'
+                                                                }
+                                                                width="50"
+                                                                border-radius="35px"
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={10}>
+                                                            <p>{ta.firstName + " " + ta.lastName}</p>
+                                                            <a href={`mailto:${ta.email}`} >{ta.email}</a>
+                                                        </Grid>
+                                                    </Grid>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>)
                                     :
                                     (<p>
-                                        There are no TAs assigned to this office hour.
+                                        There are no TAs assigned to this office hours session.
                                     </p>)
                                 }
                             </div>
@@ -283,7 +301,7 @@ const SessionInformationHeader = ({
                                         </Grid>
                                     </Grid>
                                 </div>
-                                {tas.length > 0 &&
+                                {/* {tas.length > 0 &&
                                     <div className="OneQueueInfo">
                                         <Grid container direction="row" justifyContent="center" alignItems={'center'}>
                                             <Grid item xs={2}>
@@ -297,7 +315,7 @@ const SessionInformationHeader = ({
                                             </Grid>
                                         </Grid>
                                     </div>
-                                }
+                                } */}
                                 <div className="OneQueueInfo">
                                     <Grid container direction="row" justifyContent="center" alignItems={'center'}>
                                         <Grid item xs={2}>
@@ -612,7 +630,7 @@ const SessionInformationHeader = ({
                         <Moment date={session.startTime.toDate()} interval={0} format={'h:mm A'} />
                         <Moment date={session.endTime.toDate()} interval={0} format={' - h:mm A'} />
                     </div>
-                    <div className="Picture">
+                    {/* <div className="Picture">
                         <img
                             src={tas[0] ? tas[0].photoUrl : '/placeholder.png'}
                             alt={
@@ -621,7 +639,7 @@ const SessionInformationHeader = ({
                                     : 'Placeholder photo url'
                             }
                         />
-                    </div>
+                    </div> */}
                 </div>
             </div>
             <div className="MoreInformation">
@@ -631,6 +649,7 @@ const SessionInformationHeader = ({
                         <div>
                             {tas.map((ta, index) => (
                                 <div key={index}>
+                                    {/* TODO-sophie: update this with whatever is above in other AssignedTAs class */}
                                     {/* <img src={ta.} alt={ta.firstName} /> */}
                                     <p>{ta.firstName}</p>
                                 </div>
