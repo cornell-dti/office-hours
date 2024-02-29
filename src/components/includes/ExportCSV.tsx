@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { Checkbox, Icon } from "semantic-ui-react";
+import { Checkbox, Form, Icon } from "semantic-ui-react";
 import CloseIcon from "../../media/CloseIcon.svg";
 import ExportIcon from "../../media/ExportIcon.svg";
 import ExportIcon2 from "../../media/ExportIcon2.svg";
@@ -10,6 +10,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import { useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
 import { use } from "chai";
+import { set } from "lodash";
 
 type Props = {
     setShowModal: (show: boolean) => void;
@@ -29,9 +30,16 @@ type sessionRowData = {
 };
 
 const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
+    const [showSemPicker, setShowSemPicker] = useState<boolean>(true); // true for semester, false for date
+    const [isFall, setIsFall] = useState<boolean>(true); // true for fall, false for spring
+
     const yearArray = Array.from({ length: new Date().getFullYear() - 2017 + 1 }, (value, index) => 2017 + index);
-    const [startDate, setStartDate] = useState<moment.Moment>(moment().subtract(1, "days"));
-    const [endDate, setEndDate] = useState<moment.Moment>(moment());
+    const [startDate, setStartDate] = useState<moment.Moment>(
+        moment(new Date()).set({ month: 7, date: 2, year: moment(new Date()).year() })
+    );
+    const [endDate, setEndDate] = useState<moment.Moment>(
+        moment(new Date()).set({ month: 11, date: 25, year: moment(new Date()).year() })
+    );
 
     const { sessions, questions } = useCoursesBetweenDates(startDate, endDate, courseId);
 
@@ -40,6 +48,10 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     const [sessionData, setSessionData] = useState<sessionRowData[]>([]);
 
     useEffect(() => {
+        console.log("START", startDate.toLocaleString(), "END", endDate.toLocaleString());
+    }, [startDate, endDate]);
+
+    const generateSessionData = () => {
         const tempSessionData: sessionRowData[] = [];
         sessions.forEach((session) => {
             const sessionTitle = session.title ?? "No Title";
@@ -78,7 +90,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
         });
         console.log(tempSessionData);
         setSessionData(tempSessionData);
-    }, [sessions]);
+    };
 
     return (
         <>
@@ -92,97 +104,132 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                         <img src={ExportIcon} className="export-icon" alt="Export" />
                         <h2>Export Queue Data</h2>
 
-                        <div className="time-interval">
-                            <p>Select time interval by</p>
+                        <Form>
+                            <div className="time-interval">
+                                <p>Select time interval by</p>
 
-                            <div className="row">
-                                <Checkbox
-                                    radio
-                                    label="Semester"
-                                    className="radioCheckbox"
-                                    value="Semester"
-                                    // checked={value === 'this'}
-                                    // onChange={(e, data) => setValue(data.value)}
-                                />
-                                <Checkbox
-                                    radio
-                                    label="Date"
-                                    className="radioCheckbox"
-                                    value="this"
-                                    // checked={value === 'this'}
-                                    // onChange={(e, data) => setValue(data.value)}
-                                />
+                                <div className="row">
+                                    <Checkbox
+                                        radio
+                                        label="Semester"
+                                        className="radioCheckbox"
+                                        value="Semester"
+                                        checked={showSemPicker}
+                                        onChange={() => setShowSemPicker(true)}
+                                    />
+                                    <Checkbox
+                                        radio
+                                        label="Date"
+                                        className="radioCheckbox"
+                                        value="Date"
+                                        checked={!showSemPicker}
+                                        onChange={() => setShowSemPicker(false)}
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="select-semester">
-                            <div className="row">
-                                <FormControl
-                                    variant="outlined"
-                                    size="small"
-                                    style={{
-                                        width: "50%",
-                                        textAlign: "left",
-                                        marginRight: 20,
-                                    }}
-                                >
-                                    <FormLabel className="label">Year</FormLabel>
-                                    <Select
-                                        value={2024}
-                                        IconComponent={() => <Icon name="chevron down" size="small" />}
-                                        MenuProps={{
-                                            anchorOrigin: {
-                                                vertical: "bottom",
-                                                horizontal: "left",
-                                            },
-                                            transformOrigin: {
-                                                vertical: "top",
-                                                horizontal: "left",
-                                            },
-                                            getContentAnchorEl: null,
-                                        }}
-                                        // onChange={() => console.log("change"}
-                                    >
-                                        {yearArray.map((year) => (
-                                            <MenuItem value={year}>{year}</MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                            {showSemPicker ? (
+                                <div className="select-semester">
+                                    <div className="row">
+                                        <FormControl
+                                            variant="outlined"
+                                            size="small"
+                                            style={{
+                                                width: "50%",
+                                                textAlign: "left",
+                                                marginRight: 20,
+                                            }}
+                                        >
+                                            <FormLabel className="label">Year</FormLabel>
+                                            <Select
+                                                value={startDate.year()}
+                                                IconComponent={() => <Icon name="chevron down" size="small" />}
+                                                MenuProps={{
+                                                    anchorOrigin: {
+                                                        vertical: "bottom",
+                                                        horizontal: "left",
+                                                    },
+                                                    transformOrigin: {
+                                                        vertical: "top",
+                                                        horizontal: "left",
+                                                    },
+                                                    getContentAnchorEl: null,
+                                                }}
+                                                onChange={(e) => {
+                                                    setStartDate(startDate.clone().year(e.target.value as number));
+                                                    setEndDate(endDate.clone().year(e.target.value as number));
+                                                }} // edit date
+                                            >
+                                                {yearArray.map((year) => (
+                                                    <MenuItem value={year}>{year}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
 
-                                <FormControl
-                                    variant="outlined"
-                                    size="small"
-                                    style={{
-                                        width: "50%",
-                                        textAlign: "left",
-                                        marginRight: 20,
-                                    }}
-                                >
-                                    <FormLabel className="label">Term</FormLabel>
-                                    <Select
-                                        value={"Fall"}
-                                        IconComponent={() => <Icon name="chevron down" size="small" />}
-                                        MenuProps={{
-                                            anchorOrigin: {
-                                                vertical: "bottom",
-                                                horizontal: "left",
-                                            },
-                                            transformOrigin: {
-                                                vertical: "top",
-                                                horizontal: "left",
-                                            },
-                                            getContentAnchorEl: null,
-                                        }}
-                                        // onChange={() => console.log("change"}
-                                    >
-                                        <MenuItem value={"Fall"}>Fall</MenuItem>
-                                        <MenuItem value={"Spring"}>Spring</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            </div>
-                        </div>
+                                        <FormControl
+                                            variant="outlined"
+                                            size="small"
+                                            style={{
+                                                width: "50%",
+                                                textAlign: "left",
+                                                marginRight: 20,
+                                            }}
+                                        >
+                                            <FormLabel className="label">Term</FormLabel>
+                                            <Select
+                                                value={isFall ? "Fall" : "Spring"}
+                                                IconComponent={() => <Icon name="chevron down" size="small" />}
+                                                MenuProps={{
+                                                    anchorOrigin: {
+                                                        vertical: "bottom",
+                                                        horizontal: "left",
+                                                    },
+                                                    transformOrigin: {
+                                                        vertical: "top",
+                                                        horizontal: "left",
+                                                    },
+                                                    getContentAnchorEl: null,
+                                                }}
+                                                onChange={(e) => {
+                                                    const fallBool = (e.target.value as string) === "Fall";
+                                                    setIsFall(fallBool);
 
-                        {/* <div className="select-date">
+                                                    if (fallBool) {
+                                                        setStartDate(
+                                                            startDate
+                                                                .clone()
+                                                                .set({ month: 7, date: 2, year: startDate.year() })
+                                                        );
+                                                        setEndDate(
+                                                            endDate
+                                                                .clone()
+                                                                .set({ month: 11, date: 25, year: endDate.year() })
+                                                        );
+                                                    } else {
+                                                        // spring
+                                                        setStartDate(
+                                                            startDate
+                                                                .clone()
+                                                                .set({ month: 0, date: 2, year: startDate.year() })
+                                                        );
+                                                        setEndDate(
+                                                            endDate
+                                                                .clone()
+                                                                .set({ month: 4, date: 25, year: endDate.year() })
+                                                        );
+                                                    }
+                                                }}
+                                            >
+                                                <MenuItem value={"Fall"}>Fall</MenuItem>
+                                                <MenuItem value={"Spring"}>Spring</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </div>
+                                </div>
+                            ) : (
+                                <p>Date picker</p>
+                                // {
+                                /* <div className="select-date">
                             <div className="datePicker">
                                 <DatePicker
                                     selected={startTime}
@@ -193,39 +240,42 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                     readOnly={true}
                                 />
                             </div>
-                        </div> */}
+                        </div> */
+                                // }
+                            )}
 
-                        <div className="select-analytics">
-                            <p>Select analytics to include</p>
+                            <div className="select-analytics">
+                                <p>Select analytics to include</p>
 
-                            <Grid container>
-                                <Grid item xs={6}>
-                                    <Checkbox label="Name" className="checkbox" value="this"></Checkbox>
+                                <Grid container>
+                                    <Grid item xs={6}>
+                                        <Checkbox label="Name" className="checkbox" value="this"></Checkbox>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Checkbox label="Question" className="checkbox" value="this"></Checkbox>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Checkbox label="NetID" className="checkbox" value="this"></Checkbox>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Checkbox label="Wait Time" className="checkbox" value="this"></Checkbox>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Checkbox label="Timestamp" className="checkbox" value="this"></Checkbox>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Checkbox label="Rating" className="checkbox" value="this"></Checkbox>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={6}>
-                                    <Checkbox label="Question" className="checkbox" value="this"></Checkbox>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Checkbox label="NetID" className="checkbox" value="this"></Checkbox>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Checkbox label="Wait Time" className="checkbox" value="this"></Checkbox>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Checkbox label="Timestamp" className="checkbox" value="this"></Checkbox>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Checkbox label="Rating" className="checkbox" value="this"></Checkbox>
-                                </Grid>
-                            </Grid>
-                        </div>
-
-                        <button onClick={() => setShowModal(false)} type="button">
-                            <div className="export-button-container">
-                                <img src={ExportIcon2} className="export-icon2" alt="Export" />
-                                <p>Export as CSV</p>
                             </div>
-                        </button>
+
+                            <button onClick={() => setShowModal(false)} type="button">
+                                <div className="export-button-container">
+                                    <img src={ExportIcon2} className="export-icon2" alt="Export" />
+                                    <p>Export as CSV</p>
+                                </div>
+                            </button>
+                        </Form>
                     </div>
                 </div>
             )}
