@@ -29,7 +29,6 @@ type sessionRowData = {
 
 const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     const [showSemPicker, setShowSemPicker] = useState<boolean>(true); // true for semester, false for date
-    const [isFall, setIsFall] = useState<boolean>(true); // true for fall, false for spring
 
     // analytics
     const [includeName, setIncludeName] = useState<boolean>(true);
@@ -40,11 +39,43 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     const [includeRating, setIncludeRating] = useState<boolean>(false);
 
     const yearArray = Array.from({ length: new Date().getFullYear() - 2017 + 1 }, (value, index) => 2017 + index);
+
+    // semester start and end dates
+    const fallStart = {
+        month: 7,
+        date: 2,
+    };
+
+    const fallEnd = {
+        month: 11,
+        date: 25,
+    };
+
+    const springStart = {
+        month: 0,
+        date: 2,
+    };
+
+    const springEnd = {
+        month: 4,
+        date: 25,
+    };
+
+    const todayIsFall = moment(new Date()).isBetween(
+        moment(new Date()).set({ ...fallStart, year: moment(new Date()).year() }),
+        moment(new Date()).set({ ...fallEnd, year: moment(new Date()).year() })
+    );
+
+    const todayStart = todayIsFall ? fallStart : springStart;
+    const todayEnd = todayIsFall ? fallEnd : springEnd;
+
+    const [isFall, setIsFall] = useState<boolean>(todayIsFall); // true for fall, false for spring
+
     const [startDate, setStartDate] = useState<moment.Moment>(
-        moment(new Date()).set({ month: 7, date: 2, year: moment(new Date()).year() })
+        moment(new Date()).set({ ...todayStart, year: moment(new Date()).year() })
     );
     const [endDate, setEndDate] = useState<moment.Moment>(
-        moment(new Date()).set({ month: 11, date: 25, year: moment(new Date()).year() })
+        moment(new Date()).set({ ...todayEnd, year: moment(new Date()).year() })
     );
 
     const { sessions, questions } = useCoursesBetweenDates(startDate, endDate, courseId);
@@ -205,24 +236,20 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                                         setStartDate(
                                                             startDate
                                                                 .clone()
-                                                                .set({ month: 7, date: 2, year: startDate.year() })
+                                                                .set({ ...fallStart, year: startDate.year() })
                                                         );
                                                         setEndDate(
-                                                            endDate
-                                                                .clone()
-                                                                .set({ month: 11, date: 25, year: endDate.year() })
+                                                            endDate.clone().set({ ...fallEnd, year: endDate.year() })
                                                         );
                                                     } else {
                                                         // spring
                                                         setStartDate(
                                                             startDate
                                                                 .clone()
-                                                                .set({ month: 0, date: 2, year: startDate.year() })
+                                                                .set({ ...springStart, year: startDate.year() })
                                                         );
                                                         setEndDate(
-                                                            endDate
-                                                                .clone()
-                                                                .set({ month: 4, date: 25, year: endDate.year() })
+                                                            endDate.clone().set({ ...springEnd, year: endDate.year() })
                                                         );
                                                     }
                                                 }}
