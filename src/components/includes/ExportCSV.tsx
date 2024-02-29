@@ -5,12 +5,10 @@ import CloseIcon from "../../media/CloseIcon.svg";
 import ExportIcon from "../../media/ExportIcon.svg";
 import ExportIcon2 from "../../media/ExportIcon2.svg";
 import { FormControl, FormLabel, Grid, MenuItem, Select, Checkbox, FormControlLabel } from "@material-ui/core";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import { useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
-import { use } from "chai";
-import { set } from "lodash";
+import { pickBy } from "lodash";
 
 type Props = {
     setShowModal: (show: boolean) => void;
@@ -20,12 +18,12 @@ type Props = {
 
 type sessionRowData = {
     sessionTitle: string;
-    sessionTimestamp: string;
-    taNames: string;
-    taNetIDs: string;
-    sessionWaitTime: string; // average wait time
-    sessionNumQuestions: string;
-    sessionPercentResolved: string;
+    sessionTimestamp?: string;
+    taNames?: string;
+    taNetIDs?: string;
+    sessionWaitTime?: string; // average wait time
+    sessionNumQuestions?: string;
+    sessionPercentResolved?: string;
     // sessionRating: string; add later when rating is implemented/merged
 };
 
@@ -86,15 +84,18 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
             const sessionWaitTime = "" + session.totalWaitTime / session.totalQuestions;
             const sessionNumQuestions = session.totalQuestions.toString();
             const sessionPercentResolved = "" + (session.resolvedQuestions / session.totalQuestions) * 100 + "%";
-            tempSessionData.push({
+
+            const sessionDataElement = {
                 sessionTitle: sessionTitle,
-                sessionTimestamp: sessionTimestamp,
-                taNames: taNames,
-                taNetIDs: taNetIDs,
-                sessionWaitTime: sessionWaitTime,
-                sessionNumQuestions: sessionNumQuestions.toString(),
-                sessionPercentResolved: sessionPercentResolved,
-            });
+                sessionTimestamp: includeTimestamp ? sessionTimestamp : undefined,
+                taNames: includeName ? taNames : undefined,
+                taNetIDs: includeNetID ? taNetIDs : undefined,
+                sessionWaitTime: includeWaitTime ? sessionWaitTime : undefined,
+                sessionNumQuestions: includeQuestion ? sessionNumQuestions.toString() : undefined,
+                sessionPercentResolved: includeQuestion ? sessionPercentResolved : undefined,
+            };
+            const sessionDataElementCleaned = pickBy(sessionDataElement, (v) => v !== undefined) as sessionRowData;
+            tempSessionData.push(sessionDataElementCleaned);
         });
         console.log(tempSessionData);
         setSessionData(tempSessionData);
@@ -335,7 +336,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                 </Grid>
                             </div>
 
-                            <button onClick={() => setShowModal(false)} type="button">
+                            <button onClick={() => generateSessionData()} type="button">
                                 <div className="export-button-container">
                                     <img src={ExportIcon2} className="export-icon2" alt="Export" />
                                     <p>Export as CSV</p>
