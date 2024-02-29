@@ -104,11 +104,18 @@
     margin-bottom: 24px;
   }
 
-  .checkbox {
+  // .checkbox {
+  //   width: 100%;
+  //   text-align: left;
+  //   font-weight: light;
+  //   margin-bottom: 16px;
+  // }
+
+  .checkboxFormLabel {
     width: 100%;
     text-align: left;
     font-weight: light;
-    margin-bottom: 16px;
+
   }
 
   .ui.radio.checkbox input:checked~.box:after, .ui.radio.checkbox input:checked~label:after {
@@ -117,6 +124,10 @@
 
   .Mui-focused .MuiOutlinedInput-notchedOutline {
     border-color: rgba(85, 153, 219, 1) !important;
+  }
+
+  .MuiCheckbox-colorSecondary.Mui-checked {
+    color: rgba(85, 153, 219, 1) !important;
   }
 
   .icon {
