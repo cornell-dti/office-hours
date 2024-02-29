@@ -194,16 +194,27 @@ const SessionInformationHeader = ({
                                     }
                                 />
                             </Grid> */}
-                            <Grid container item lg={8} md={7} xs={8} className="Details">
-                                {'building' in session ? (
+                            <Grid container item lg={12} md={12} xs={12} className="Details">
+                                {'building' in session ? (<div>
+                                    <p>In Person | 1-on-1</p>
                                     <p className="Location">
                                         {[session.building, session.room].map(s => s || '').join(' ')}
                                     </p>
+                                </div>
                                 ) : session.modality === 'virtual' ? (
                                     <p className="Location">Online</p>
                                 ) : (
                                     <p className="Location">Discussion</p>
                                 )}
+
+                                <p className="Date">
+                                    <Icon name="calendar alternate outline" />
+                                    <Moment
+                                        date={session.startTime.seconds * 1000}
+                                        interval={0}
+                                        format={'dddd, MMM D'}
+                                    />
+                                </p>
                                 <Moment
                                     date={session.startTime.seconds * 1000}
                                     interval={0}
@@ -214,15 +225,6 @@ const SessionInformationHeader = ({
                                     interval={0}
                                     format={' - h:mm A'}
                                 />
-                                <p className="Date">
-                                    <Icon name="calendar alternate outline" />
-                                    <Moment
-                                        date={session.startTime.seconds * 1000}
-                                        interval={0}
-                                        format={'dddd, MMM D'}
-                                    />
-                                </p>
-
                                 <p className="Title">
                                     {session.title || (
                                         <>
@@ -259,7 +261,7 @@ const SessionInformationHeader = ({
                                             <div key={index}>
                                                 <div className="OneQueueInfo">
                                                     <Grid container direction="row" justifyContent="center" alignItems={'center'}>
-                                                        <Grid item xs={2} className="Picture">
+                                                        <Grid item xs={2} className="Picture TAInfo">
                                                             <img
                                                                 src={ta ? ta.photoUrl : '/placeholder.png'}
                                                                 alt={
@@ -271,9 +273,17 @@ const SessionInformationHeader = ({
                                                                 border-radius="35px"
                                                             />
                                                         </Grid>
-                                                        <Grid item xs={10}>
+                                                        <Grid item xs={10} className="TAInfo">
                                                             <p>{ta.firstName + " " + ta.lastName}</p>
                                                             <a href={`mailto:${ta.email}`} >{ta.email}</a>
+                                                            {/* <Grid container direction="column">
+                                                                <Grid item>
+                                                                    <p>{ta.firstName + " " + ta.lastName}</p>
+                                                                </Grid>
+                                                                <Grid item>
+                                                                    <a href={`mailto:${ta.email}`} className="email-link">{ta.email}</a>
+                                                                </Grid>
+                                                            </Grid> */}
                                                         </Grid>
                                                     </Grid>
                                                 </div>
@@ -480,27 +490,27 @@ const SessionInformationHeader = ({
                                                 {(!(typeof session.useTALink === 'undefined' ||
                                                     session.useTALink === false) && session.TALink) ||
                                                     assignedQuestion?.answererLocation ? (
-                                                        <a
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            href={(typeof session.useTALink === 'undefined' ||
-                                                                session.useTALink === false) ?
-                                                                assignedQuestion?.answererLocation :
-                                                                session.TALink}
-                                                        >
-                                                            <button type="button" className="JoinButton">
-                                                                Join
-                                                            </button>
-                                                        </a>
-                                                    ) : (
-                                                        <button
-                                                            type="button"
-                                                            className="JoinButton"
-                                                            onClick={() => activateError()}
-                                                        >
+                                                    <a
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        href={(typeof session.useTALink === 'undefined' ||
+                                                            session.useTALink === false) ?
+                                                            assignedQuestion?.answererLocation :
+                                                            session.TALink}
+                                                    >
+                                                        <button type="button" className="JoinButton">
                                                             Join
                                                         </button>
-                                                    )}
+                                                    </a>
+                                                ) : (
+                                                    <button
+                                                        type="button"
+                                                        className="JoinButton"
+                                                        onClick={() => activateError()}
+                                                    >
+                                                        Join
+                                                    </button>
+                                                )}
                                             </Grid>
                                         </Grid>
                                     </div>
@@ -678,8 +688,6 @@ const SessionInformationHeader = ({
                         </p>
                     </div>
                     <p>
-                        testing this locatino 123
-                        {/* todo-sophie: tas info here??? */}
                         {session.title || (
                             <>
                                 Held by
