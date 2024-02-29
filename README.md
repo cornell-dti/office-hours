@@ -36,7 +36,7 @@ _Screenshots showing major parts of app_
 * **Sophie Wang** - Software Developer
 * **Erin Xu** - Software Developer
 * **Steven Yu** - Software Developer
-* **Nidhi Soma** - Software Developer
+* **Nidhi Soma** - Software Developer 
 * **Brandon Lee** - Designer
 * **Jenny Zhang** - Designer
 * **Raissa Ji** - Product Marketing Manager
