@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { Checkbox, Form, Icon } from "semantic-ui-react";
+import { Form, Icon, Radio } from "semantic-ui-react";
 import CloseIcon from "../../media/CloseIcon.svg";
 import ExportIcon from "../../media/ExportIcon.svg";
 import ExportIcon2 from "../../media/ExportIcon2.svg";
-import { FormControl, FormLabel, Grid, MenuItem, Select } from "@material-ui/core";
+import { FormControl, FormLabel, Grid, MenuItem, Select, Checkbox, FormControlLabel } from "@material-ui/core";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
@@ -32,6 +32,14 @@ type sessionRowData = {
 const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     const [showSemPicker, setShowSemPicker] = useState<boolean>(true); // true for semester, false for date
     const [isFall, setIsFall] = useState<boolean>(true); // true for fall, false for spring
+
+    // analytics
+    const [includeName, setIncludeName] = useState<boolean>(true);
+    const [includeNetID, setIncludeNetID] = useState<boolean>(true);
+    const [includeTimestamp, setIncludeTimestamp] = useState<boolean>(true);
+    const [includeQuestion, setIncludeQuestion] = useState<boolean>(true);
+    const [includeWaitTime, setIncludeWaitTime] = useState<boolean>(true);
+    const [includeRating, setIncludeRating] = useState<boolean>(false);
 
     const yearArray = Array.from({ length: new Date().getFullYear() - 2017 + 1 }, (value, index) => 2017 + index);
     const [startDate, setStartDate] = useState<moment.Moment>(
@@ -109,16 +117,14 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                 <p>Select time interval by</p>
 
                                 <div className="row">
-                                    <Checkbox
-                                        radio
+                                    <Radio
                                         label="Semester"
                                         className="radioCheckbox"
                                         value="Semester"
                                         checked={showSemPicker}
                                         onChange={() => setShowSemPicker(true)}
                                     />
-                                    <Checkbox
-                                        radio
+                                    <Radio
                                         label="Date"
                                         className="radioCheckbox"
                                         value="Date"
@@ -249,22 +255,82 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
 
                                 <Grid container>
                                     <Grid item xs={6}>
-                                        <Checkbox label="Name" className="checkbox" value="this"></Checkbox>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={includeName}
+                                                    onChange={() => setIncludeName(!includeName)}
+                                                    className="checkbox"
+                                                />
+                                            }
+                                            label="Name"
+                                            className="checkboxFormLabel"
+                                        />
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <Checkbox label="Question" className="checkbox" value="this"></Checkbox>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={includeQuestion}
+                                                    onChange={() => setIncludeQuestion(!includeQuestion)}
+                                                    className="checkbox"
+                                                />
+                                            }
+                                            label="Question"
+                                            className="checkboxFormLabel"
+                                        />
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <Checkbox label="NetID" className="checkbox" value="this"></Checkbox>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={includeNetID}
+                                                    onChange={() => setIncludeNetID(!includeNetID)}
+                                                    className="checkbox"
+                                                />
+                                            }
+                                            label="NetID"
+                                            className="checkboxFormLabel"
+                                        />
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <Checkbox label="Wait Time" className="checkbox" value="this"></Checkbox>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={includeWaitTime}
+                                                    onChange={() => setIncludeWaitTime(!includeWaitTime)}
+                                                    className="checkbox"
+                                                />
+                                            }
+                                            label="Wait Time"
+                                            className="checkboxFormLabel"
+                                        />
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <Checkbox label="Timestamp" className="checkbox" value="this"></Checkbox>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={includeTimestamp}
+                                                    onChange={() => setIncludeTimestamp(!includeTimestamp)}
+                                                    className="checkbox"
+                                                />
+                                            }
+                                            label="Timestamp"
+                                            className="checkboxFormLabel"
+                                        />
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <Checkbox label="Rating" className="checkbox" value="this"></Checkbox>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={includeRating}
+                                                    onChange={() => setIncludeRating(!includeRating)}
+                                                    className="checkbox"
+                                                />
+                                            }
+                                            label="Rating"
+                                            className="checkboxFormLabel"
+                                        />
                                     </Grid>
                                 </Grid>
                             </div>
