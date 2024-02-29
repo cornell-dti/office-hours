@@ -68,6 +68,7 @@ $mobile-breakpoint: 920px;
 @import "./professor/ProfessorTagsDelete";
 @import "./professor/ProfessorPeopleView";
 @import "./professor/ProfessorRoles";
+@import "./professor/ExportCSVModal";
 
 // Admin
 @import "./AdminView";
