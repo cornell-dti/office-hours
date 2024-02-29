@@ -69,26 +69,6 @@
     .leave-queue-body {
         display: "flex";
         flex-direction: "column";
-
-        .leave-queue-buttons {
-            display: "flex";
-            justify-content: "center";
-            margin-bottom: "15px";
-            margin-top: "15px";
-            text-transform: "none";
-            .cancel-button {
-                font-weight: "normal";
-                border-color: "#3594F1"; 
-                color: "#6597D6"; 
-                margin-left: "0.5rem";
-                margin-right: "12.5rem";
-            }
-            
-            .remove-button {
-                font-weight: "normal";
-                background-color: "#A42921";
-            }
-        }
     }
 }
 

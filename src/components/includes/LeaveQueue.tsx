@@ -47,12 +47,25 @@ const LeaveQueueModal = ({ setShowModal, showModal, removeQuestion }: Props) => 
                                 </div>
                             </div>
                         
-                            <span className="leave-queue-buttons">
+                            <span style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                marginBottom: "15px",
+                                marginTop: "15px",
+                                textTransform: "none",
+                            }}
+                            >
                                 <Button 
                                     variant="outlined" 
                                     color="primary"
                                     onClick={() => setShowModal(false)}
-                                    className='cancel-button'
+                                    style={{
+                                        fontWeight: "normal",
+                                        borderColor: "#3594F1",
+                                        color: "#6597D6",
+                                        marginLeft: "0.5rem",
+                                        marginRight: "12.5rem",
+                                    }}
                                 >
                                     Cancel
                                 </Button>
@@ -61,7 +74,10 @@ const LeaveQueueModal = ({ setShowModal, showModal, removeQuestion }: Props) => 
                                     variant="contained"
                                     color="secondary"
                                     onClick={handleYes}
-                                    className="remove-button"
+                                    style={{
+                                        fontWeight: "normal",
+                                        backgroundColor: "#A42921",
+                                    }}
                                 >
                                     Yes, remove me
                                 </Button>
