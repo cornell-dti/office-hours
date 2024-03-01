@@ -82,37 +82,48 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
 
     const courseUsers = useCourseUsersMap(courseId, true);
 
-    const [sessionData, setSessionData] = useState<sessionRowData[]>([]);
-
     useEffect(() => {
         console.log("START", startDate.toLocaleString(), "END", endDate.toLocaleString());
     }, [startDate, endDate]);
 
     const generateSessionData = () => {
-        const tempSessionData: sessionRowData[] = [];
+        const sessionData: sessionRowData[] = [];
+        // add date formatter
         sessions.forEach((session) => {
             const sessionTitle = session.title ?? "No Title";
             const sessionTimestamp =
-                session.startTime.toDate().toLocaleString() + " - " + session.endTime.toDate().toLocaleString();
-            const taNames = session.tas
-                .map((userId) => {
-                    const courseUser = courseUsers[userId];
-                    if (courseUser === undefined) {
-                        return "unknown";
-                    }
-                    return `${courseUser.firstName} ${courseUser.lastName}`;
-                })
-                .join(", ");
-            const taNetIDs = session.tas
-                .map((userId) => {
-                    const courseUser = courseUsers[userId];
-                    if (courseUser === undefined) {
-                        return "unknown";
-                    }
-                    return courseUser.email.search("@") !== -1 ? courseUser.email.split("@")[0] : courseUser.email;
-                })
-                .join(", ");
-            const sessionWaitTime = "" + session.totalWaitTime / session.totalQuestions;
+                session.startTime.toDate().toLocaleDateString() + " - " + session.endTime.toDate().toLocaleDateString();
+            const taNames =
+                session.tas.length === 0
+                    ? "N/A"
+                    : '"' +
+                      session.tas
+                          .map((userId) => {
+                              const courseUser = courseUsers[userId];
+                              if (courseUser === undefined) {
+                                  return "unknown";
+                              }
+                              return `${courseUser.firstName} ${courseUser.lastName}`;
+                          })
+                          .join(", ") +
+                      '"';
+            const taNetIDs =
+                session.tas.length === 0
+                    ? "N/A"
+                    : '"' +
+                      session.tas
+                          .map((userId) => {
+                              const courseUser = courseUsers[userId];
+                              if (courseUser === undefined) {
+                                  return "unknown";
+                              }
+                              return courseUser.email.search("@") !== -1
+                                  ? courseUser.email.split("@")[0]
+                                  : courseUser.email;
+                          })
+                          .join(", ") +
+                      '"';
+            const sessionWaitTime = "" + session.totalWaitTime / session.totalQuestions + " minutes";
             const sessionNumQuestions = session.totalQuestions.toString();
             const sessionPercentResolved = "" + (session.resolvedQuestions / session.totalQuestions) * 100 + "%";
 
@@ -126,10 +137,37 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                 sessionPercentResolved: includeQuestion ? sessionPercentResolved : undefined,
             };
             const sessionDataElementCleaned = pickBy(sessionDataElement, (v) => v !== undefined) as sessionRowData;
-            tempSessionData.push(sessionDataElementCleaned);
+            sessionData.push(sessionDataElementCleaned);
         });
-        console.log(tempSessionData);
-        setSessionData(tempSessionData);
+        return sessionData;
+    };
+
+    const convertSessionDataToCSV = (sessionData: sessionRowData[]) => {
+        if (sessionData.length === 0) {
+            return "";
+        }
+        const headerRow = Object.keys(sessionData[0]).join(",") ?? "";
+        const csvRows = sessionData.map((session) => {
+            return Object.values(pickBy(session, (v) => v !== undefined)).join(",");
+        });
+        const csvString = headerRow + "\r\n" + csvRows.join("\r\n");
+        return csvString;
+    };
+
+    const handleExportCSV = () => {
+        const sessionData = generateSessionData();
+        const csvString = convertSessionDataToCSV(sessionData);
+        console.log(csvString);
+        const blob = new Blob([csvString], { type: "text/csv;charset=utf-8," });
+
+        // download logic
+        const a = document.createElement("a");
+        a.download = "session-data.csv";
+        a.href = URL.createObjectURL(blob);
+        a.addEventListener("click", (e) => {
+            setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
+        });
+        a.click();
     };
 
     return (
@@ -363,7 +401,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                 </Grid>
                             </div>
 
-                            <button onClick={() => generateSessionData()} type="button">
+                            <button onClick={handleExportCSV} type="button">
                                 <div className="export-button-container">
                                     <img src={ExportIcon2} className="export-icon2" alt="Export" />
                                     <p>Export as CSV</p>
