@@ -95,10 +95,6 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
 
     const courseUsers = useCourseUsersMap(courseId, true);
 
-    useEffect(() => {
-        console.log("START", startDate.toLocaleString(), "END", endDate.toLocaleString());
-    }, [startDate, endDate]);
-
     const generateSessionData = () => {
         const sessionData: sessionRowData[] = [];
         // add date formatter
@@ -183,7 +179,6 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     const handleExportCSV = () => {
         const sessionData = generateSessionData();
         const csvString = convertSessionDataToCSV(sessionData);
-        console.log("CSV:\n", csvString);
         const blob = new Blob([csvString], { type: "text/csv;charset=utf-8," });
 
         // download logic
