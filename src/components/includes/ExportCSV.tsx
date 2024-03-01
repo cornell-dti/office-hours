@@ -7,7 +7,6 @@ import { useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
 import CloseIcon from "../../media/CloseIcon.svg";
 import ExportIcon from "../../media/ExportIcon.svg";
 import ExportIcon2 from "../../media/ExportIcon2.svg";
-import "react-datepicker/dist/react-datepicker.css";
 
 type Props = {
     setShowModal: (show: boolean) => void;
@@ -15,6 +14,7 @@ type Props = {
     courseId: string;
 };
 
+// csv column labels
 const sessionDataLabels: { [key: string]: string } = {
     sessionTitle: "Session Title",
     sessionStartTime: "Session Start Time",
@@ -24,9 +24,10 @@ const sessionDataLabels: { [key: string]: string } = {
     sessionWaitTime: "Average Wait Time (minutes)",
     sessionNumQuestions: "Number of Questions",
     sessionPercentResolved: "Questions Resolved (%)",
-    // sessionRating: "Rating", add later when rating is implemented/merged
+    // sessionRating: "Rating", add later when rating is implemented/merged to main
 };
 
+// csv row data
 type sessionRowData = {
     sessionTitle: string;
     sessionStartTime?: string;
@@ -39,10 +40,28 @@ type sessionRowData = {
     // sessionRating: string; add later when rating is implemented/merged
 };
 
+// semester start and end dates
+const fallStart = {
+    month: 7,
+    date: 2,
+};
+const fallEnd = {
+    month: 11,
+    date: 25,
+};
+const springStart = {
+    month: 0,
+    date: 2,
+};
+const springEnd = {
+    month: 4,
+    date: 25,
+};
+
 const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     const [showSemPicker, setShowSemPicker] = useState<boolean>(true); // true for semester, false for date
 
-    // analytics
+    // analytics options
     const [includeName, setIncludeName] = useState<boolean>(true);
     const [includeNetID, setIncludeNetID] = useState<boolean>(true);
     const [includeTimestamp, setIncludeTimestamp] = useState<boolean>(true);
@@ -50,39 +69,21 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     const [includeWaitTime, setIncludeWaitTime] = useState<boolean>(true);
     const [includeRating, setIncludeRating] = useState<boolean>(false);
 
-    const yearArray = Array.from({ length: new Date().getFullYear() - 2017 + 1 }, (value, index) => 2017 + index);
+    // years for semester picker
+    const yearArray = Array.from({ length: new Date().getFullYear() - 2017 + 1 }, (_value, index) => 2017 + index);
 
-    // semester start and end dates
-    const fallStart = {
-        month: 7,
-        date: 2,
-    };
-
-    const fallEnd = {
-        month: 11,
-        date: 25,
-    };
-
-    const springStart = {
-        month: 0,
-        date: 2,
-    };
-
-    const springEnd = {
-        month: 4,
-        date: 25,
-    };
-
+    // see if today is fall semester or spring semester
     const todayIsFall = moment(new Date()).isBetween(
         moment(new Date()).set({ ...fallStart, year: moment(new Date()).year() }),
         moment(new Date()).set({ ...fallEnd, year: moment(new Date()).year() })
     );
 
+    const [isFall, setIsFall] = useState<boolean>(todayIsFall); // true for fall, false for spring
+
     const todayStart = todayIsFall ? fallStart : springStart;
     const todayEnd = todayIsFall ? fallEnd : springEnd;
 
-    const [isFall, setIsFall] = useState<boolean>(todayIsFall); // true for fall, false for spring
-
+    // default start date is semester start, default end date is semester end
     const [startDate, setStartDate] = useState<moment.Moment>(
         moment(new Date()).set({ ...todayStart, year: moment(new Date()).year() })
     );
@@ -90,13 +91,13 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
         moment(new Date()).set({ ...todayEnd, year: moment(new Date()).year() })
     );
 
+    // analytics calculations
     const { sessions } = useCoursesBetweenDates(startDate, endDate, courseId);
-
     const courseUsers = useCourseUsersMap(courseId, true);
 
+    // calculates session data
     const generateSessionData = () => {
         const sessionData: sessionRowData[] = [];
-        // add date formatter
         sessions.forEach((session) => {
             const sessionTitle = session.title ?? "No Title";
             const formatOptions: Intl.DateTimeFormatOptions = {
@@ -153,6 +154,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                 sessionNumQuestions: includeQuestion ? sessionNumQuestions.toString() : undefined,
                 sessionPercentResolved: includeQuestion ? sessionPercentResolved : undefined,
             };
+            // filters out undefined values from row
             const sessionDataElementCleaned = pickBy(sessionDataElement, (v) => v !== undefined) as sessionRowData;
             sessionData.push(sessionDataElementCleaned);
         });
@@ -163,7 +165,6 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
         if (sessionData.length === 0) {
             return "";
         }
-        // const headerRow = Object.keys(sessionData[0]).join(",") ?? "";
         const headerRow =
             Object.keys(sessionData[0])
                 .map((key) => sessionDataLabels[key])
@@ -320,20 +321,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                 </div>
                             ) : (
                                 <p>Date picker</p>
-                                // {
-                                /* <div className="select-date">
-                            <div className="datePicker">
-                                <DatePicker
-                                    selected={startTime}
-                                    onChange={() => console.log("bruh")}
-                                    dateFormat="MM/DD/YY"
-                                    minDate={moment()}
-                                    placeholderText={moment().format("MM/DD/YY")}
-                                    readOnly={true}
-                                />
-                            </div>
-                        </div> */
-                            // }
+                                // placeholder until material-ui is upgraded from v4 to v5
                             )}
 
                             <div className="select-analytics">

@@ -9,7 +9,7 @@
   font-family: "Roboto";
   font-weight: 400px;
   background-color: rgba(112, 112, 112, 0.8);
-  // animation: fade 0.6s;
+  animation: fade 0.6s;
 }
 
 .export-csv-container {
@@ -104,18 +104,10 @@
     margin-bottom: 24px;
   }
 
-  // .checkbox {
-  //   width: 100%;
-  //   text-align: left;
-  //   font-weight: light;
-  //   margin-bottom: 16px;
-  // }
-
   .checkboxFormLabel {
     width: 100%;
     text-align: left;
     font-weight: light;
-
   }
 
   .ui.radio.checkbox input:checked~.box:after, .ui.radio.checkbox input:checked~label:after {
