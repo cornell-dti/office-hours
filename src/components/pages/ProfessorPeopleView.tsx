@@ -1,17 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { RouteComponentProps } from "react-router";
 import moment from "moment";
 import { DateRangePicker } from "react-dates";
 import { BarDatum } from "@nivo/bar";
-// import QuestionsBarChart from "../includes/QuestionsBarChart";
 import QuestionsBarGraph from "../includes/QuestionsBarGraph";
 import ProfessorSidebar from "../includes/ProfessorSidebar";
 import QuestionsPieChart from "../includes/QuestionsPieChart";
 import QuestionsLineChart from "../includes/QuestionsLineChart";
-// import QuestionsBarChart from "../includes/QuestionsBarChart";
 import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
-import { useCourse, useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
+import { useCourse, useCourseUsersMap, useCoursesBetweenDates, useCourseUsers } from "../../firehooks";
 import TopBar from "../includes/TopBar";
 
 const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) => {
@@ -35,6 +33,49 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const unresolvedQuestions = allQuestions.filter((q) => q.status === "unresolved");
     const percentUnresolved = totalQuestions ? Math.round((100 * unresolvedQuestions.length) / totalQuestions) : 100;
     const percentResolved = 100 - percentUnresolved;
+
+    /**
+     * TA data needed for per TA analytics
+     */
+    type EnrichedFireUser = FireUser & { role: FireCourseRole };
+    const allCourseUsers: readonly EnrichedFireUser[] = useCourseUsers(courseId).map(user => ({
+        ...user,
+        role: user.roles[courseId] || 'student',
+    }));
+    const allTAs = allCourseUsers.filter((user) => user.role !== 'student')
+    const [filteredTAs, setFilteredTAs] = useState<FireUser[]>([])
+    const [TAName, setTAName] = useState("")
+    const [selectedTA, setSelectedTA] = useState<FireUser>()
+    const [showTADropdown, setShowTADropdown] = useState(false)
+
+    useEffect(() => {
+        if (TAName.length !== 0) {
+            const filtered = allTAs.filter((ta) =>
+                ta && ta.email.toLowerCase().startsWith(TAName))
+            setFilteredTAs(filtered)
+        } else {
+            setFilteredTAs([])
+        }
+    }, [TAName]);
+
+    /**
+     * Student data needed for per TA analytics
+     */
+    const allStudents = allCourseUsers.filter((user) => user.role === 'student')
+    const [filteredStudents, setFilteredStudents] = useState<FireUser[]>([])
+    const [studentName, setStudentName] = useState("")
+    const [selectedStudent, setSelectedStudent] = useState<FireUser>()
+    const [showStudentDropdown, setShowStudentDropdown] = useState(false)
+
+    useEffect(() => {
+        if (studentName.length !== 0) {
+            const filtered = allStudents.filter((student) =>
+                student && student.email.toLowerCase().startsWith(studentName))
+            setFilteredStudents(filtered)
+        } else {
+            setFilteredStudents([])
+        }
+    }, [studentName]);
 
     // Busiest Session Data
     const busiestSessionIndex = questions.reduce(
@@ -112,13 +153,14 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     }, 0);
 
     // Bar Chart
-    const sessionQuestionDict: { 
+    const sessionQuestionDict: {
         [id: string]: {
             ta: string;
             location: string;
             startHour: string;
             endHour: string;
-        };} = {}
+        };
+    } = {}
 
     let chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
 
@@ -140,10 +182,68 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             questionsByDay[questionsByDay.length - 1] += y;
             chartYMax = Math.max(chartYMax, questionsByDay[questionsByDay.length - 1]);
         } else {
-            barGraphData.push({x});
+            barGraphData.push({ x });
             barGraphData[lastIndex + 1][session.sessionId] = y;
             questionsByDay.push(y);
             chartYMax = Math.max(chartYMax, y);
+        }
+    }
+
+    /** 
+     * Per TA analytics: calculate chart data for the selected TA
+    */
+    let taChartYMax = 8;
+    const taGraphData: BarDatum[] = [];
+    const taQuestionsByDay: number[] = [];
+    for (let i = 0; i < sessions.length; i++) {
+        const session = sessions[i];
+        sessionQuestionDict[session.sessionId] = {
+            ta: session.tas.join(", "),
+            startHour: moment(session.startTime.seconds * 1000).format("h:mm a"),
+            endHour: moment(session.endTime.seconds * 1000).format("h:mm a"),
+            location: (session.modality === "virtual" || session.modality === "review") ? "Online" : session.building,
+        };
+        const x = moment(session.startTime.seconds * 1000).format("MMM D");
+        const taQuestions = questions[i] ?
+            questions[i].filter((q) => selectedTA && q.answererId === selectedTA.userId)
+            : []
+        const y = taQuestions.length
+        const lastIndex = taGraphData.length - 1;
+        if (taGraphData[lastIndex]?.x === x) {
+            taGraphData[lastIndex][session.sessionId] = y;
+            taQuestionsByDay[taQuestionsByDay.length - 1] += y;
+            taChartYMax = Math.max(taChartYMax, taQuestionsByDay[taQuestionsByDay.length - 1]);
+        } else {
+            taGraphData.push({ x });
+            taGraphData[lastIndex + 1][session.sessionId] = y;
+            taQuestionsByDay.push(y);
+            taChartYMax = Math.max(taChartYMax, y);
+        }
+    }
+
+    /**
+     * Per student analytics: calculate chart data for the selected student
+     */
+    let studentChartYMax = 8;
+    const studentGraphData: BarDatum[] = [];
+    const studentQuestionsByDay: number[] = [];
+    for (let i = 0; i < sessions.length; i++) {
+        const session = sessions[i];
+        const x = moment(session.startTime.seconds * 1000).format("MMM D");
+        const studentQuestions = questions[i] ?
+            questions[i].filter((q) => selectedStudent && q.askerId === selectedStudent.userId)
+            : []
+        const y = studentQuestions.length
+        const lastIndex = studentGraphData.length - 1;
+        if (studentGraphData[lastIndex]?.x === x) {
+            studentGraphData[lastIndex][session.sessionId] = y;
+            studentQuestionsByDay[studentQuestionsByDay.length - 1] += y;
+            studentChartYMax = Math.max(studentChartYMax, studentQuestionsByDay[studentQuestionsByDay.length - 1]);
+        } else {
+            studentGraphData.push({ x });
+            studentGraphData[lastIndex + 1][session.sessionId] = y;
+            studentQuestionsByDay.push(y);
+            studentChartYMax = Math.max(studentChartYMax, y);
         }
     }
 
@@ -193,17 +293,26 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                         </p>
                                     </div>
                                 </div>
-                                {/* <div className="questions-bar-container">
-                                    <div className="bar-graph">
-                                        <QuestionsBarChart
-                                            barData={barGraphData}
-                                            sessionKeys={sessions.map((s) => s.sessionId)}
-                                            sessionDict={sessionDict}
-                                            yMax={chartYMax}
+                                <div className="Most-Crowded-Box">
+                                    <div className="most-crowded-text">
+                                        <div>
+                                            <p className="crowd-title">Average Wait Time</p>
+                                            <p className="maroon-date">
+                                                {totalAssignedQuestions ?
+                                                    `${(totalWaitTime / totalAssignedQuestions / 60).toFixed(2)} minutes`
+                                                    : "Not applicable"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="questions-line-container">
+                                        <QuestionsLineChart
+                                            lineData={averageWaitTimeLineChartQuestionsTest}
+                                            yMax={averageWaitTimeMax}
                                             calcTickVals={calcTickVals}
+                                            legend="minutes"
                                         />
                                     </div>
-                                </div> */}
+                                </div>
                             </div>
                             <div className="Most-Crowded-Box">
                                 {busiestSessionInfo && (
@@ -245,21 +354,95 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                             </div>
                             <div className="Most-Crowded-Box">
                                 <div className="most-crowded-text">
-                                    <div>
-                                        <p className="crowd-title">Average Wait Time</p>
-                                        <p className="maroon-date">
-                                            {totalAssignedQuestions ?
-                                                `${(totalWaitTime / totalAssignedQuestions / 60).toFixed(2)} minutes`
-                                                : "Not applicable"}
-                                        </p>
+                                    <p className="crown-title">TA Performance</p>
+                                    <div className="ta-info">
+                                        {selectedTA ?
+                                            (<div>
+                                                <p className="maroon-date">
+                                                    {selectedTA.firstName} {selectedTA.lastName}
+                                                </p>
+                                                <p className="maroon-descript">{selectedTA.email}</p>
+                                            </div>) :
+                                            (<div>
+                                                <p className="maroon-date">No TA Selected </p>
+                                                <p className="maroon-descript">Search for a TA using NetID</p>
+                                            </div>)
+                                        }
                                     </div>
+                                    <input
+                                        placeholder={"Enter TA NetID"}
+                                        onChange={(e) => setTAName(e.target.value.toLowerCase())}
+                                        onFocus={() => setShowTADropdown(true)}
+                                        onBlur={() => setShowTADropdown(false)}
+                                    />
+                                    {showTADropdown && filteredTAs.length !== 0 &&
+                                        (<div className="ta-results">
+                                            {filteredTAs.map((ta) => (
+                                                <button
+                                                    type="button"
+                                                    className="ta-result"
+                                                    onMouseDown={() => setSelectedTA(ta)}
+                                                >
+                                                    {ta.firstName} {ta.lastName} ({ta.email.split("@")[0]})
+                                                </button>
+                                            ))}
+                                        </div>)}
                                 </div>
                                 <div className="questions-line-container">
-                                    <QuestionsLineChart
-                                        lineData={averageWaitTimeLineChartQuestionsTest}
-                                        yMax={averageWaitTimeMax}
+                                    <QuestionsBarGraph
+                                        barData={taGraphData}
+                                        yMax={taChartYMax}
+                                        sessionKeys={sessions.map((s) => s.sessionId)}
                                         calcTickVals={calcTickVals}
-                                        legend="minutes"
+                                        legend="questions"
+                                        sessionDict={sessionQuestionDict}
+                                    />
+                                </div>
+                            </div>
+                            <div className="Most-Crowded-Box">
+                                <div className="most-crowded-text">
+                                    <p className="crown-title">Student Performance</p>
+                                    <div className="ta-info">
+                                        {selectedStudent ?
+                                            (<div>
+                                                <p className="maroon-date">
+                                                    {selectedStudent.firstName} {selectedStudent.lastName}
+                                                </p>
+                                                <p className="maroon-descript">{selectedStudent.email}</p>
+                                            </div>) :
+                                            (<div>
+                                                <p className="maroon-date">No Student Selected </p>
+                                                <p className="maroon-descript">Search for a student using NetID</p>
+                                            </div>)
+                                        }
+                                    </div>
+                                    <input
+                                        placeholder={"Enter Student NetID"}
+                                        onChange={(e) => setStudentName(e.target.value.toLowerCase())}
+                                        onFocus={() => setShowStudentDropdown(true)}
+                                        onBlur={() => setShowStudentDropdown(false)}
+                                    />
+                                    {showStudentDropdown && filteredStudents.length !== 0 &&
+                                        (<div className="ta-results">
+                                            {filteredStudents.map((student) => (
+                                                <button
+                                                    type="button"
+                                                    className="ta-result"
+                                                    onMouseDown={() => setSelectedStudent(student)}
+                                                >
+                                                    {student.firstName} {student.lastName} ({student.email.split("@")[0]})
+                                                </button>
+                                            ))}
+                                        </div>)}
+                                </div>
+                                <div className="questions-line-container">
+                                    <QuestionsBarGraph
+                                        barData={studentGraphData}
+                                        yMax={studentChartYMax}
+                                        sessionKeys={sessions.map((s) => s.sessionId)}
+                                        calcTickVals={calcTickVals}
+                                        legend="questions"
+                                        sessionDict={sessionQuestionDict}
                                     />
                                 </div>
                             </div>
