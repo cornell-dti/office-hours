@@ -1,14 +1,13 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Form, Icon, Radio } from "semantic-ui-react";
+import { FormControl, FormLabel, Grid, MenuItem, Select, Checkbox, FormControlLabel } from "@material-ui/core";
+import moment from "moment";
+import { pickBy } from "lodash";
+import { useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
 import CloseIcon from "../../media/CloseIcon.svg";
 import ExportIcon from "../../media/ExportIcon.svg";
 import ExportIcon2 from "../../media/ExportIcon2.svg";
-import { FormControl, FormLabel, Grid, MenuItem, Select, Checkbox, FormControlLabel } from "@material-ui/core";
 import "react-datepicker/dist/react-datepicker.css";
-import moment from "moment";
-import { useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
-import { pickBy } from "lodash";
 
 type Props = {
     setShowModal: (show: boolean) => void;
@@ -145,7 +144,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
             const sessionPercentResolved = "" + ((session.resolvedQuestions / session.totalQuestions) * 100).toFixed(2);
 
             const sessionDataElement = {
-                sessionTitle: sessionTitle,
+                sessionTitle,
                 sessionStartTime: includeTimestamp ? sessionStartTime : undefined,
                 sessionEndTime: includeTimestamp ? sessionEndTime : undefined,
                 taNames: includeName ? taNames : undefined,
@@ -185,7 +184,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
         const a = document.createElement("a");
         a.download = "session-data.csv";
         a.href = URL.createObjectURL(blob);
-        a.addEventListener("click", (e) => {
+        a.addEventListener("click", () => {
             setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
         });
         a.click();
