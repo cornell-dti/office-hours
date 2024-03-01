@@ -20,6 +20,9 @@ const LeaveQueueModal = ({ setShowModal, showModal, removeQuestion }: Props) => 
 
     useEffect(() => {
         const handleResize = () => {
+            // note that this is not the actual mobile view override point, but rather 
+            // just the point at which we have a styling change for smaller screen sizes
+            // generally 
             setIsMobile(window.innerWidth < 860); // Adjust breakpoint as needed
         };
 
