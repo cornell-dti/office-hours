@@ -23,7 +23,7 @@ const sessionDataLabels: { [key: string]: string } = {
     taNetIDs: "TA NetIDs",
     sessionWaitTime: "Average Wait Time (minutes)",
     sessionNumQuestions: "Number of Questions",
-    sessionPercentResolved: "Percent Resolved",
+    sessionPercentResolved: "Questions Resolved (%)",
     // sessionRating: "Rating", add later when rating is implemented/merged
 };
 
@@ -89,7 +89,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
         moment(new Date()).set({ ...todayEnd, year: moment(new Date()).year() })
     );
 
-    const { sessions, questions } = useCoursesBetweenDates(startDate, endDate, courseId);
+    const { sessions } = useCoursesBetweenDates(startDate, endDate, courseId);
 
     const courseUsers = useCourseUsersMap(courseId, true);
 
@@ -137,8 +137,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                       '"';
             const sessionWaitTime = "" + Math.round(session.totalWaitTime / session.totalQuestions);
             const sessionNumQuestions = session.totalQuestions.toString();
-            const sessionPercentResolved =
-                "" + ((session.resolvedQuestions / session.totalQuestions) * 100).toFixed(2) + "%";
+            const sessionPercentResolved = "" + ((session.resolvedQuestions / session.totalQuestions) * 100).toFixed(2);
 
             const sessionDataElement = {
                 sessionTitle: sessionTitle,
@@ -174,7 +173,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     const handleExportCSV = () => {
         const sessionData = generateSessionData();
         const csvString = convertSessionDataToCSV(sessionData);
-        console.log(csvString);
+        console.log("CSV:\n", csvString);
         const blob = new Blob([csvString], { type: "text/csv;charset=utf-8," });
 
         // download logic
