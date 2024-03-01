@@ -1,3 +1,4 @@
+import firebase from 'firebase';
 import { firestore } from '../firebase';
 import { blockArray } from '../firehooks';
 
@@ -69,6 +70,10 @@ const importProfessorsOrTAs = async (
 
     return Promise.all(emailBlocks.map(emailList => {
         return db.collection('users').where('email', 'in', emailList).get().then(taUserDocuments => {
+            // eslint-disable-next-line no-console
+            console.log("number of docs in users that match query", taUserDocuments.size)
+            // eslint-disable-next-line no-console
+            console.log("taUserDocuments (docs in users that match query)", taUserDocuments)
             // const updatedUsersThisBlock: FireUser[] = [];
             // const userUpdatesThisBlock: Partial<FireUser>[] = [];
             const updatesThisBlock: { user: FireUser; roleUpdate: Partial<FireUser> }[] = [];
@@ -82,10 +87,61 @@ const importProfessorsOrTAs = async (
                 })
             });
 
+            // creating new FireUsers for the emails that weren't found and applying the updates
+            // eslint-disable-next-line max-len
+            const missingEmails = emailList.filter(email => !taUserDocuments.docs.some(doc => doc.data().email === email));
+            // eslint-disable-next-line no-console
+            console.log("missingEmails", missingEmails);
+            missingEmails.forEach(email => {
+                const authProvider = new firebase.auth.GoogleAuthProvider();
+                authProvider.addScope('email');
+                authProvider.addScope('profile');
+
+                // firebase.auth().signInWithPopup(authProvider)
+                //     .then((result) => {
+                //         const user = result.user;
+                //         const newUser: FireUser = {
+                //             email,
+                //             roles: { [course.courseId]: role },
+                //             courses: [course.courseId],
+                //             userId: db.collection('users').doc().id,
+                //             firstName: user?.displayName?.split(' ')[0] || '',
+                //             lastName: user?.displayName?.split(' ')[1] || '',
+                //             photoUrl: user?.photoURL || ''
+                //         };
+                //         updatesThisBlock.push({
+                //             user: newUser,
+                //             roleUpdate: newUser
+                //         });
+                //     })
+                //     .catch((error): void => {
+                //         // eslint-disable-next-line no-console
+                //         console.log("user not found", error);
+                //     });
+
+                const newUser: FireUser = {
+                    email,
+                    roles: { [course.courseId]: role },
+                    courses: [course.courseId],
+                    userId: db.collection('users').doc().id,
+                    firstName: '',
+                    lastName: '',
+                    photoUrl: ''
+                };
+                updatesThisBlock.push({
+                    user: newUser,
+                    roleUpdate: newUser
+                });
+                // eslint-disable-next-line no-console
+                console.log("new user created", newUser);
+            });
+
             return updatesThisBlock;
         });
 
     })).then(updatedBlocks => {
+        // eslint-disable-next-line no-console
+        console.log("reaching then")
         const allUpdates: { user: FireUser; roleUpdate: Partial<FireUser> }[] = [];
 
         updatedBlocks.forEach(updateBlock => {
