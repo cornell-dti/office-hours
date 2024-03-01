@@ -18,7 +18,8 @@ type Props = {
 
 const sessionDataLabels: { [key: string]: string } = {
     sessionTitle: "Session Title",
-    sessionTimestamp: "Session Timestamp",
+    sessionStartTime: "Session Start Time",
+    sessionEndTime: "Session End Time",
     taNames: "TA Names",
     taNetIDs: "TA NetIDs",
     sessionWaitTime: "Average Wait Time (minutes)",
@@ -29,7 +30,8 @@ const sessionDataLabels: { [key: string]: string } = {
 
 type sessionRowData = {
     sessionTitle: string;
-    sessionTimestamp?: string;
+    sessionStartTime?: string;
+    sessionEndTime?: string;
     taNames?: string;
     taNetIDs?: string;
     sessionWaitTime?: string; // average wait time
@@ -102,11 +104,18 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
         // add date formatter
         sessions.forEach((session) => {
             const sessionTitle = session.title ?? "No Title";
-            const sessionTimestamp =
-                session.startTime.toDate().toLocaleDateString() + " - " + session.endTime.toDate().toLocaleDateString();
+            const formatOptions: Intl.DateTimeFormatOptions = {
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+            };
+            const sessionStartTime = '"' + session.startTime.toDate().toLocaleString("en-US", formatOptions) + '"';
+            const sessionEndTime = '"' + session.endTime.toDate().toLocaleString("en-US", formatOptions) + '"';
             const taNames =
                 session.tas.length === 0
-                    ? "N/A"
+                    ? ""
                     : '"' +
                       session.tas
                           .map((userId) => {
@@ -120,7 +129,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                       '"';
             const taNetIDs =
                 session.tas.length === 0
-                    ? "N/A"
+                    ? ""
                     : '"' +
                       session.tas
                           .map((userId) => {
@@ -141,7 +150,8 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
 
             const sessionDataElement = {
                 sessionTitle: sessionTitle,
-                sessionTimestamp: includeTimestamp ? sessionTimestamp : undefined,
+                sessionStartTime: includeTimestamp ? sessionStartTime : undefined,
+                sessionEndTime: includeTimestamp ? sessionEndTime : undefined,
                 taNames: includeName ? taNames : undefined,
                 taNetIDs: includeNetID ? taNetIDs : undefined,
                 sessionWaitTime: includeWaitTime ? sessionWaitTime : undefined,
