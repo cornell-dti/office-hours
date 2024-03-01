@@ -56,12 +56,16 @@ const importProfessorsOrTAs = async (
     demotedSet: Set<string>;
 }> => {
     const missingSet = new Set<string>(emailListTotal);
+    // eslint-disable-next-line no-console
+    console.log("missingSet", missingSet);
     const demotedSet = new Set<string>();
     const batch = db.batch();
     const updatedUsers: FireUser[] = [];
     const courseChange: FireCourse = { ...course };
 
     const emailBlocks = blockArray(emailListTotal, 10);
+    // eslint-disable-next-line no-console
+    console.log("emailBlocks", emailBlocks);
 
     return Promise.all(emailBlocks.map(emailList => {
         return db.collection('users').where('email', 'in', emailList).get().then(taUserDocuments => {
@@ -175,6 +179,10 @@ export const importProfessorsOrTAsFromPrompt = (
     const response = prompt(
         `Please enter a comma-separated list of ${role === 'professor' ? role : 'TA'} emails:`
     );
+
+    // eslint-disable-next-line no-console
+    console.log("response", response);
+
     if (response != null) {
         importProfessorsOrTAs(
             course,
