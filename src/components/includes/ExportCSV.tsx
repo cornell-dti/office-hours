@@ -16,6 +16,17 @@ type Props = {
     courseId: string;
 };
 
+const sessionDataLabels: { [key: string]: string } = {
+    sessionTitle: "Session Title",
+    sessionTimestamp: "Session Timestamp",
+    taNames: "TA Names",
+    taNetIDs: "TA NetIDs",
+    sessionWaitTime: "Average Wait Time (minutes)",
+    sessionNumQuestions: "Number of Questions",
+    sessionPercentResolved: "Percent Resolved",
+    // sessionRating: "Rating", add later when rating is implemented/merged
+};
+
 type sessionRowData = {
     sessionTitle: string;
     sessionTimestamp?: string;
@@ -117,15 +128,17 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                               if (courseUser === undefined) {
                                   return "unknown";
                               }
+                              // gets netid from cornell email (netid@cornell.edu)
                               return courseUser.email.search("@") !== -1
                                   ? courseUser.email.split("@")[0]
                                   : courseUser.email;
                           })
                           .join(", ") +
                       '"';
-            const sessionWaitTime = "" + session.totalWaitTime / session.totalQuestions + " minutes";
+            const sessionWaitTime = "" + Math.round(session.totalWaitTime / session.totalQuestions);
             const sessionNumQuestions = session.totalQuestions.toString();
-            const sessionPercentResolved = "" + (session.resolvedQuestions / session.totalQuestions) * 100 + "%";
+            const sessionPercentResolved =
+                "" + ((session.resolvedQuestions / session.totalQuestions) * 100).toFixed(2) + "%";
 
             const sessionDataElement = {
                 sessionTitle: sessionTitle,
@@ -146,7 +159,11 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
         if (sessionData.length === 0) {
             return "";
         }
-        const headerRow = Object.keys(sessionData[0]).join(",") ?? "";
+        // const headerRow = Object.keys(sessionData[0]).join(",") ?? "";
+        const headerRow =
+            Object.keys(sessionData[0])
+                .map((key) => sessionDataLabels[key])
+                .join(",") ?? "";
         const csvRows = sessionData.map((session) => {
             return Object.values(pickBy(session, (v) => v !== undefined)).join(",");
         });
