@@ -46,7 +46,7 @@
     "semantic-ui-react": "^0.88.1",
     "source-map-explorer": "^2.1.2",
     "ts-node": "^9.0.0",
-    "twilio": "^3.71.3",
+    "twilio": "^4.23.0",
     "yarn": "^1.22.17"
   },
   "scripts": {
@@ -87,7 +87,7 @@
     "eslint-plugin-jest": "^23.8.2",
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^3.0.0",
-    "firebase-tools": "^7.13.1",
+    "firebase-tools": "^13.4.0",
     "node-sass": "^4.13.1",
     "ts-mocha": "^8.0.0",
     "typescript": "^3.7.3"
