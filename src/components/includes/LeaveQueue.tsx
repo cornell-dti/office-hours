@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button'
 import { Box } from '@material-ui/core';
 import AlertIcon from '../../media/AlertIcon.png';
@@ -11,11 +11,29 @@ type Props = {
 }
 
 const LeaveQueueModal = ({ setShowModal, showModal, removeQuestion }: Props) => {
+    const [isMobile, setIsMobile] = useState(false);
 
     const handleYes = () => {
         removeQuestion();
         setShowModal(false);
     }
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 860); // Adjust breakpoint as needed
+        };
+
+        // Initial check
+        handleResize();
+
+        // Listen for window resize events
+        window.addEventListener("resize", handleResize);
+
+        // Cleanup
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
 
     /** Note that in the MUI Button - Box - Button component pattern below, we 
      * insert a Box component between the two buttons to add spacing between them.
@@ -39,7 +57,13 @@ const LeaveQueueModal = ({ setShowModal, showModal, removeQuestion }: Props) => 
                         <div className="leave-queue-body">
                             <div className="leave-queue-prompt">
                                 <img src={AlertIcon} alt="Alert" />
-                                <div style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
+                                <div style={{
+                                    display: "flex", 
+                                    flexDirection: "column", 
+                                    alignItems: "flex-start",
+                                    marginTop: isMobile ? "45px" : "0px", 
+                                }}
+                                >
                                     <h2 style={{marginBottom: "6px"}}>
                                         <strong>Are you sure you want to leave the queue?</strong>
                                     </h2>
@@ -50,7 +74,7 @@ const LeaveQueueModal = ({ setShowModal, showModal, removeQuestion }: Props) => 
                             <span style={{
                                 display: "flex",
                                 justifyContent: "center",
-                                marginBottom: "15px",
+                                marginBottom: isMobile ? "50px" : "15px",
                                 marginTop: "15px",
                                 textTransform: "none",
                             }}
@@ -64,7 +88,7 @@ const LeaveQueueModal = ({ setShowModal, showModal, removeQuestion }: Props) => 
                                         borderColor: "#3594F1",
                                         color: "#6597D6",
                                         marginLeft: "0.5rem",
-                                        marginRight: "12.5rem",
+                                        marginRight: isMobile ? "4rem" : "12.5rem",
                                     }}
                                 >
                                     Cancel
