@@ -1,5 +1,6 @@
 .AdminView {
     position: relative;
+
     .course-container {
         width: 100%;
         display: flex;
@@ -18,9 +19,10 @@
         border-radius: 4px;
         text-decoration: none;
         cursor: pointer;
+
         &:focus {
             outline: none;
-          }
+        }
     }
 
     .course {
@@ -38,21 +40,34 @@
             background-color: white;
             border: solid 1px #484848;
             border-radius: 4px;
+            font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
             text-decoration: none;
             padding: .5em;
             margin: .25em;
             cursor: pointer;
+            transition: 0.3s;
         }
-    
+
+        .editing-button:hover {
+            background-color: rgb(239, 255, 255);
+        }
+
         .roles-button {
             display: inline-block;
             background-color: white;
             border: solid 1px #484848;
             border-radius: 4px;
+            font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
             text-decoration: none;
             padding: .5em;
             margin: .25em;
             cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .roles-button:hover {
+            background-color: rgb(239, 255, 255);
+
         }
     }
 }

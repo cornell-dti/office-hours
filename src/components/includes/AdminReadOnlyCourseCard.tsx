@@ -29,9 +29,7 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
                         }
                         return (
                             <li key={id}>
-                                {professor.firstName}
-                                {professor.lastName}
-                                ({professor.email})
+                                {professor.firstName}  {professor.lastName} ({professor.email})
                             </li>
                         );
                     })}
@@ -48,9 +46,7 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
                         }
                         return (
                             <li key={id}>
-                                {ta.firstName} 
-                                {ta.lastName} 
-                                ({ta.email})
+                                {ta.firstName} {ta.lastName} ({ta.email})
                             </li>
                         );
                     })}
