@@ -109,7 +109,7 @@ export default connect(mapStateToProps, {})(({ user, courseId, isAdminView }: Pr
             <Table sortable={true} celled={true} fixed={true}>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell colspan='4'>Active Roles</Table.HeaderCell>
+                        <Table.HeaderCell colSpan='4'>Active Roles</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
                 <Table.Header>
