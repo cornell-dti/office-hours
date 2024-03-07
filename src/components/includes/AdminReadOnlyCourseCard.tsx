@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
+import { Icon } from 'semantic-ui-react';
 
 const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) => {
     const professorMap = useCourseProfessorMap(course);
     const taMap = useCourseTAMap(course);
+    const [collapsed, setCollapsed] = useState(true);
 
     return (
         <div>
@@ -20,7 +22,14 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
             </div>
             <div className="course-section">
                 <h3>Professors</h3>
+
+                {collapsed ? (<Icon name='chevron down' onClick={() => { setCollapsed(false) }} />) :
+                    (<Icon name='chevron up' onClick={() => setCollapsed(true)} />)}
+
                 {course.professors.length === 0 && <div>None</div>}
+
+                { /* gotta modify somewhere here*/}
+
                 <ul>
                     {course.professors.map(id => {
                         const professor = professorMap[id];
