@@ -5,7 +5,11 @@ import AdminReadOnlyCourseCard from './AdminReadOnlyCourseCard';
 import AdminEditableCourseCard from './AdminEditableCourseCard';
 import ProfessorRolesTable from './ProfessorRolesTable';
 
-
+/**
+ * Displays a course card in admin view with the option to edit/view the course and view the roles table.
+ * @param course: the course to be displayed
+ * @returns the rendered AdminCourseCard
+ */
 const AdminCourseCard = ({ course }: { readonly course: FireCourse }) => {
     const [isEditingMode, setIsEditingMode] = useState(false);
     const [showRolesTable, setShowRolesTable] = useState(false);

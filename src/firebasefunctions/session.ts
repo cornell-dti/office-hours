@@ -2,7 +2,7 @@ import firebase from 'firebase/app';
 import { firestore } from '../firebase';
 
 export const addSession = (session: Omit<FireSession, 'sessionId'>) => {
-    return firestore.collection('sessions').add(session).then(() => {});
+    return firestore.collection('sessions').add(session).then(() => { });
 }
 
 export const updateSession = (oldSession: FireSession, newSession: Omit<FireSession, 'sessionId'>) => {
@@ -32,34 +32,34 @@ export const getUsersFromSessions = async (sessions: FireSession[]): Promise<Fir
 }
 
 export const addTaAnnouncement = (
-    oldSession: FireSession, 
-    user: FireUser, 
+    oldSession: FireSession,
+    user: FireUser,
     announcement: string) => {
     const taAnnouncement: TaAnnouncement = {
-        ta: user, 
-        announcement, 
+        ta: user,
+        announcement,
         uploadTime: firebase.firestore.Timestamp.now()
     }
     const newSession: FireSession = {
-        ...oldSession, 
-        taAnnouncemements: 
-                oldSession.taAnnouncemements 
-                    ? [taAnnouncement, ...oldSession.taAnnouncemements]
-                    : [taAnnouncement] 
+        ...oldSession,
+        taAnnouncemements:
+            oldSession.taAnnouncemements
+                ? [taAnnouncement, ...oldSession.taAnnouncemements]
+                : [taAnnouncement]
     }
     firestore.collection('sessions').doc(oldSession.sessionId).update(newSession);
 }
 
 export const deleteTaAnnouncement = (
-    oldSession: FireSession, 
-    user: FireUser, 
-    announcement: string, 
+    oldSession: FireSession,
+    user: FireUser,
+    announcement: string,
     uploadTime: FireTimestamp,
 ) => {
     const newTaAnnouncements = oldSession.taAnnouncemements?.filter(
-            a => !((a.ta.userId === user.userId) && (a.announcement === announcement) && (a.uploadTime === uploadTime)))
+        a => !((a.ta.userId === user.userId) && (a.announcement === announcement) && (a.uploadTime === uploadTime)))
     const newSession: FireSession = {
-        ...oldSession, 
+        ...oldSession,
         taAnnouncemements: newTaAnnouncements
     }
     firestore.collection('sessions').doc(oldSession.sessionId).update(newSession);

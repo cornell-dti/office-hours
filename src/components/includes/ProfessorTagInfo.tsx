@@ -89,6 +89,15 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         }));
     };
 
+    handleModifyTag = (oldTag: string, newName: string): void => {
+        this.setState(prevState => ({
+            newTags: prevState.newTags.map(
+                (tag) => tag.name === oldTag ? { id: tag.id, name: newName } : tag
+            ),
+            newTagText: prevState.newTagText
+        }));
+    }
+
     clearState = (): void => {
         this.setState(
             {
@@ -139,7 +148,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         // no checking yet, like if A1 is changed to A0 but A0 already exists
 
         // deleted tags
-        const deletedTags =this.props.childTags
+        const deletedTags = this.props.childTags
             .filter(firetag => !this.state.newTags.some(t => firetag.name === t.name))
         // new tags
         const preexistingTags = this.props.childTags
@@ -148,7 +157,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         const newTags = this.state.newTags
             .filter(tag => !preexistingTags.some(t => tag.name === t.name))
 
-        
+
         editAssignment(parentTagChanged, this.state.tag, this.props.childTags, deletedTags, newTags)
     };
 
@@ -173,7 +182,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                             />
                         </div>
                     </div>
-                    { /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */ }
+                    { /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
                     <div className="Status InputSection">
                         <div className="InputHeader">Status</div>
                         <div
@@ -194,7 +203,16 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                         {this.state.newTags
                             .map((childTag) => (
                                 <div key={childTag.id} className="SelectedChildTag" >
-                                    {childTag.name}
+                                    <input
+                                        maxLength={30}
+                                        value={childTag.name}
+                                        onChange={
+                                            (event: React.ChangeEvent<HTMLInputElement>): void => {
+                                                this.handleModifyTag(childTag.name, event.currentTarget.value);
+                                            }
+                                        }
+                                        placeholder={'Example: \'Assignment 1\''}
+                                    />
                                     <Icon
                                         className="Remove"
                                         name="close"
@@ -218,10 +236,10 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                         </div>
                     </div>
                 </div>
-                {this.state.showWarning && 
-                        <div className="warningText">
-                            You need at least one tag!
-                        </div>
+                {this.state.showWarning &&
+                    <div className="warningText">
+                        You need at least one tag!
+                    </div>
                 }
                 <div className="EditButtons">
                     <button type="button" className="Bottom Cancel" onClick={() => this.props.cancelCallback()}>
@@ -233,10 +251,10 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                             className="Bottom Edit"
                             onClick={() => {
                                 if (this.state.newTags.length === 0) {
-                                    this.setState({showWarning: true});
+                                    this.setState({ showWarning: true });
                                     return;
                                 }
-                                this.setState({showWarning: false});
+                                this.setState({ showWarning: false });
                                 this.handleCreateAssignment();
                                 this.props.cancelCallback();
                             }}
@@ -249,10 +267,10 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                             className="Bottom Edit"
                             onClick={() => {
                                 if (this.state.newTags.length === 0) {
-                                    this.setState({showWarning: true});
+                                    this.setState({ showWarning: true });
                                     return;
                                 }
-                                this.setState({showWarning: false});
+                                this.setState({ showWarning: false });
                                 this.handleEditAssignment();
                                 this.props.cancelCallback();
                             }}

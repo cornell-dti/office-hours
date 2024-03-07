@@ -51,8 +51,10 @@ const importProfessorsOrTAs = async (
     course: FireCourse,
     role: 'professor' | 'ta',
     emailListTotal: readonly string[]
-): Promise<{ updatedUsers: FireUser[]; courseChange: FireCourse; missingSet: Set<string>; 
-    demotedSet: Set<string>; }> => {
+): Promise<{
+    updatedUsers: FireUser[]; courseChange: FireCourse; missingSet: Set<string>;
+    demotedSet: Set<string>;
+}> => {
     const missingSet = new Set<string>(emailListTotal);
     const demotedSet = new Set<string>();
     const batch = db.batch();
@@ -130,6 +132,13 @@ const importProfessorsOrTAs = async (
 
 };
 
+/**
+ * This function returns an updated role ID list to reflect the addition or
+ * removal of a user ID.
+ * @param isAdd: adds the user to the role ID list if true, removes the user if false
+ * @param roleIdList: the role ID list before the add or remove
+ * @param userId: the user ID to add or remove from the list
+ */
 const addOrRemoveFromRoleIdList = (
     isAdd: boolean,
     roleIdList: readonly string[],
@@ -179,8 +188,10 @@ export const importProfessorsOrTAsFromCSV = (
     course: FireCourse,
     role: 'professor' | 'ta',
     emailList: string[]
-): Promise<{ updatedUsers: FireUser[]; courseChange: FireCourse; 
-    missingSet: Set<string>; demotedSet: Set<string>; }> | undefined => {
+): Promise<{
+    updatedUsers: FireUser[]; courseChange: FireCourse;
+    missingSet: Set<string>; demotedSet: Set<string>;
+}> | undefined => {
     return importProfessorsOrTAs(
         course,
         role,
