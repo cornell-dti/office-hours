@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
 import { Icon } from 'semantic-ui-react';
+import { useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
 
 
 
@@ -25,11 +25,10 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
             </div>
             <div className="course-section">
                 <h3>Professors</h3>
+                {/* if there are any professors in the list, the collapsible option is displayed */}
                 {course.professors.length === 0 ? true :
                     profCollapsed ? (<Icon name='chevron down' onClick={() => { setProfCollapsed(false) }} />) :
                         (<Icon name='chevron up' onClick={() => setProfCollapsed(true)} />)}
-
-
 
                 {course.professors.length === 0 && <div>None</div>}
 
@@ -49,6 +48,7 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
             </div>
             <div className="course-section">
                 <h3>TAs</h3>
+                {/* if there are any TAs in the list, the collapsible option is displayed */}
                 {course.tas.length === 0 ? true :
                     taCollapsed ? (<Icon name='chevron down' onClick={() => { setTaCollapsed(false) }} />) :
                         (<Icon name='chevron up' onClick={() => setTaCollapsed(true)} />)}
