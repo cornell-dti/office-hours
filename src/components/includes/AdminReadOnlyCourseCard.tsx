@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { useCourseProfessorMap, useCourseTAMap } from '../../firehooks';
 import { Icon } from 'semantic-ui-react';
 
+
+
 const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) => {
     const professorMap = useCourseProfessorMap(course);
     const taMap = useCourseTAMap(course);
-    const [collapsed, setCollapsed] = useState(true);
+    const [profCollapsed, setProfCollapsed] = useState(true);
+    const [taCollapsed, setTaCollapsed] = useState(true);
 
     return (
         <div>
@@ -22,16 +25,16 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
             </div>
             <div className="course-section">
                 <h3>Professors</h3>
+                {course.professors.length === 0 ? true :
+                    profCollapsed ? (<Icon name='chevron down' onClick={() => { setProfCollapsed(false) }} />) :
+                        (<Icon name='chevron up' onClick={() => setProfCollapsed(true)} />)}
 
-                {collapsed ? (<Icon name='chevron down' onClick={() => { setCollapsed(false) }} />) :
-                    (<Icon name='chevron up' onClick={() => setCollapsed(true)} />)}
+
 
                 {course.professors.length === 0 && <div>None</div>}
 
-                { /* gotta modify somewhere here*/}
-
                 <ul>
-                    {course.professors.map(id => {
+                    {!profCollapsed && course.professors.map(id => {
                         const professor = professorMap[id];
                         if (professor === null || professor === undefined) {
                             return null;
@@ -46,9 +49,13 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
             </div>
             <div className="course-section">
                 <h3>TAs</h3>
+                {course.tas.length === 0 ? true :
+                    taCollapsed ? (<Icon name='chevron down' onClick={() => { setTaCollapsed(false) }} />) :
+                        (<Icon name='chevron up' onClick={() => setTaCollapsed(true)} />)}
+
                 {course.tas.length === 0 && <div>None</div>}
                 <ul>
-                    {course.tas.map(id => {
+                    {!taCollapsed && course.tas.map(id => {
                         const ta = taMap[id];
                         if (ta === null || ta === undefined) {
                             return null;
