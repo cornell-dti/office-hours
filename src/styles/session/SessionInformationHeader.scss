@@ -74,21 +74,55 @@
     }
 
     .Details {
+
       display: inline-block;
+      justify-content: center;
+      align-items: center;
+
+      button {
+        // display: inline-flex;
+        // padding: 4px 10px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        background-color: white;
+        border-radius: 5px;
+        // border: 1px solid #6399D6;
+        // color: #5599db;
+        // font-size: 14px;
+        // height: 18px;
+        margin-top: 7.5px;
+        cursor: pointer;
+
+        font-size: 14px;
+        border: 1px solid #3594f1;
+        width: fit-content;
+        height: fit-content;
+        border: 1px solid #5599db;
+        color: #5599db;
+        padding: 4px 13px;
+
+      }
 
       .Location {
-        background-color: #EAEAEA;
-        font-size: 20px;
+        // background-color: #EAEAEA;
+        font-size: 24px;
         font-weight: 500;
-        margin-bottom: 5px;
+        margin: 4px 4px 6px 0px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+
+        display: flex;
+
+        p {
+          margin-right: 14px;
+        }
       }
 
-      p time {
-        margin-bottom: 8px;
-      }
+      // p time {
+      //   margin-bottom: 8px;
+      // }
 
       // .Date {
       //   margin-bottom: 20px;
@@ -140,6 +174,12 @@
     .blue {
       color: #5599db;
     }
+  }
+
+  .AssignedTAs,
+  .LeftInformationHeader {
+    overflow-y: auto;
+    max-height: 250px;
   }
 
   @media only screen and (max-width: 1300px) {

@@ -184,29 +184,40 @@ const SessionInformationHeader = ({
                 <Grid container item lg={7} md={7} xs={12} justifyContent="center">
                     <div className="LeftInformationHeader">
                         <Grid container direction="row">
-                            {/* <Grid container item lg={4} md={5} xs={4} className="Picture">
-                                <img
-                                    src={tas[0] ? tas[0].photoUrl : '/placeholder.png'}
-                                    alt={
-                                        tas[0]
-                                            ? `${tas[0].firstName} ${tas[0].lastName}'s Photo URL`
-                                            : 'Placeholder photo url'
-                                    }
-                                />
-                            </Grid> */}
                             <Grid container item lg={12} md={12} xs={12} className="Details">
-                                {'building' in session ? (<div>
-                                    <p>In Person | 1-on-1</p>
-                                    <p className="Location">
-                                        {[session.building, session.room].map(s => s || '').join(' ')}
-                                    </p>
-                                </div>
-                                ) : session.modality === 'virtual' ? (
-                                    <p className="Location">Online</p>
-                                ) : (
-                                    <p className="Location">Discussion</p>
-                                )}
 
+                                <div className="Location">
+                                    {'building' in session ? (<div>
+                                        <p className="Location">
+                                            {[session.building, session.room].map(s => s || '').join(' ')}
+                                        </p>
+                                    </div>
+                                    ) : session.modality === 'virtual' ? (
+                                        <p className="Location">Online</p>
+                                    ) : (
+                                        <p className="Location">Discussion</p>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setZoomLinkDisplay('show'); //TODO- PLACEHOLDER
+                                        }}
+                                    >Update Location </button>
+                                </div>
+                                <p className="Title">
+                                    {session.title || (
+                                        <>
+                                            Held by
+                                            <span className="black">
+                                                {' ' +
+                                                    tas
+                                                        .map(ta => ta.firstName + ' ' + ta.lastName)
+                                                        .join(', ')}
+                                            </span>
+                                        </>
+                                    )}
+                                    <br />
+                                </p>
                                 <p className="Date">
                                     <Icon name="calendar alternate outline" />
                                     <Moment
@@ -225,20 +236,22 @@ const SessionInformationHeader = ({
                                     interval={0}
                                     format={' - h:mm A'}
                                 />
-                                <p className="Title">
-                                    {session.title || (
-                                        <>
-                                            Held by
-                                            <span className="black">
-                                                {' ' +
-                                                    tas
-                                                        .map(ta => ta.firstName + ' ' + ta.lastName)
-                                                        .join(', ')}
-                                            </span>
-                                        </>
-                                    )}
-                                    <br />
-                                </p>
+                                {/* <div className="OneQueueInfo"> */}
+                                {isTa && isOpen &&
+                                    (<Grid container direction="row" justifyContent="center" alignItems={'center'}>
+                                        <Grid item xs={2}>
+                                            <Switch
+                                                className="closeQueueSwitch"
+                                                checked={!isPaused}
+                                                onChange={handlePause}
+                                                color="primary"
+                                            />
+                                        </Grid>
+                                        <Grid item xs={10}>
+                                            <p>{`Queue is ${isPaused ? "closed" : "open"}`} </p>
+                                        </Grid>
+                                    </Grid>)}
+                                {/* </div> */}
                             </Grid>
                         </Grid>
                     </div>
@@ -311,7 +324,7 @@ const SessionInformationHeader = ({
                                         </Grid>
                                     </Grid>
                                 </div>
-                                {/* {tas.length > 0 &&
+                                {tas.length > 0 &&
                                     <div className="OneQueueInfo">
                                         <Grid container direction="row" justifyContent="center" alignItems={'center'}>
                                             <Grid item xs={2}>
@@ -325,7 +338,7 @@ const SessionInformationHeader = ({
                                             </Grid>
                                         </Grid>
                                     </div>
-                                } */}
+                                }
                                 <div className="OneQueueInfo">
                                     <Grid container direction="row" justifyContent="center" alignItems={'center'}>
                                         <Grid item xs={2}>
@@ -619,8 +632,8 @@ const SessionInformationHeader = ({
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
-        </header>
+            </Grid >
+        </header >
     ) : (
         <header className="SessionInformationHeader">
             <div className="header">
