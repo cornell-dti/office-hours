@@ -140,9 +140,11 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                           })
                           .join(", ") +
                       '"';
-            const sessionWaitTime = "" + Math.round(session.totalWaitTime / session.totalQuestions);
+            const waitTime = session.totalWaitTime / session.totalQuestions;
+            const sessionWaitTime = isNaN(waitTime) ? "" : Math.round(waitTime).toString();
             const sessionNumQuestions = session.totalQuestions.toString();
-            const sessionPercentResolved = "" + ((session.resolvedQuestions / session.totalQuestions) * 100).toFixed(2);
+            const percentResolved = (session.resolvedQuestions / session.totalQuestions) * 100;
+            const sessionPercentResolved = isNaN(percentResolved) ? "" : percentResolved.toFixed(2);
 
             const sessionDataElement = {
                 sessionTitle,
