@@ -241,11 +241,11 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
     return unsubscribe;
 }
 
-export const submitFeedback = (relevantCourse: FireCourse, session: string) => 
+export const submitFeedback = (removedQuestionId: string | undefined, relevantCourse: FireCourse, session: string) => 
     (rating?: number, feedback?: string) => {
-    
         const feedbackRecord = {
             session,
+            questionId: removedQuestionId,
             rating,
             writtenFeedback: feedback,
         };

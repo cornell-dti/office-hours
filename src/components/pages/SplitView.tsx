@@ -87,6 +87,7 @@ const SplitView = ({
     string | undefined
     >(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
+    const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
     const [currentExportSessions, setCurrentExportSessions] =
@@ -150,9 +151,12 @@ const SplitView = ({
         removeQuestionbyID(firestore, removeQuestionId);
     };
 
-    const removeQuestionWrapper = (action: any) => {
-        setRemoveQuestionId(action);
+    const removeQuestionWrapper = (questionId: string | undefined) => {
+        setRemoveQuestionId(questionId);
         setDisplayFeedbackPrompt(true);
+        setRemovedQuestionId(questionId);
+        // eslint-disable-next-line no-console
+        console.log("split view questionId: ", questionId);
     };
 
     useEffect(() => {
@@ -265,7 +269,7 @@ const SplitView = ({
 
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt 
-                    onClose={submitFeedback(course, session.sessionId)} 
+                    onClose={submitFeedback(removedQuestionId, course, session.sessionId)} 
                     closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                 />
             ) : null}

@@ -47,6 +47,10 @@ type AbsentState = {
     lastAskedQuestion: FireQuestion | null;
 };
 
+type RouteParams = {
+    courseId: string;
+};
+
 const SessionView = (
     { course, session, questions, isDesktop, backCallback, joinCallback, user, setShowModal,
         setRemoveQuestionId, timeWarning, sessionBanners }: Props
@@ -66,7 +70,7 @@ const SessionView = (
     });
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
-    const { courseId } = useParams();
+    const { courseId } = useParams<RouteParams>();
 
     const updateSessionProfile = useCallback((virtualLocation: string) => {
         updateQuestion(firestore, virtualLocation, questions, user)
@@ -117,6 +121,8 @@ const SessionView = (
                     const questionId = change.doc.id;
       
                     if (change.type === 'modified' && questionData.status === 'resolved') {
+                        // eslint-disable-next-line no-console
+                        console.log("questionid: ", questionId);
                         setRemoveQuestionId(questionId);
                     }
                 });

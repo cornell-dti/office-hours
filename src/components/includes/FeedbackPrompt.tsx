@@ -58,7 +58,6 @@ const FeedbackPrompt = (props: Props) => {
                     Your response will remain anonymous. 
                 </Typography>
                 <Box component="fieldset" mb={3} borderColor="transparent">
-                    {/* <Typography component="legend">Rate your TA out of 5 stars!</Typography> */}
                     <Rating
                         name="simple-controlled"
                         value={rating}
@@ -68,18 +67,6 @@ const FeedbackPrompt = (props: Props) => {
                         size="large"
                         emptyIcon={<StarBorderIcon fontSize="inherit" />}
                     />
-                    {/* <ReactStars 
-                        count={5}
-                        onChange={(newRating: React.SetStateAction<number | null>) => {
-                            setRating(newRating);
-                        }}
-                        size={36}
-                        color2={'#77BBFA'} 
-                        half={false}
-                        value={rating || 0}
-                    /> */}
-                    {/* <Rating maxRating={5} defaultRating={0} icon='star' 
-                    size='large' onRate={(event, data) => setRating(event.detail)}/> */}
                     <br />
                 </Box>
             
@@ -95,10 +82,12 @@ const FeedbackPrompt = (props: Props) => {
                     onChange={(event) => setFeedback(event.target.value)}
                 />
                
+                {/* Currently enable submission of blank feedback in order to not 
+                block user flow */}
                 <Button
                     variant="contained"
                     onClick={() => {
-                        props.onClose(rating || undefined, feedback); 
+                        (rating && feedback?.length > 0) ?? props.onClose(rating || undefined, feedback); 
                         props.closeFeedbackPrompt();
                     }}
                     style={{position: "absolute", bottom: "2rem", right: "1.8rem"}}
