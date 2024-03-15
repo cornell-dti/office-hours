@@ -241,7 +241,7 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
     return unsubscribe;
 }
 
-export const submitFeedback = (relevantCourse: FireCourse, session: FireSession) => 
+export const submitFeedback = (relevantCourse: FireCourse, session: string) => 
     (rating?: number, feedback?: string) => {
     
         const feedbackRecord = {

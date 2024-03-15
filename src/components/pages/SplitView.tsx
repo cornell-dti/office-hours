@@ -156,13 +156,6 @@ const SplitView = ({
     };
 
     useEffect(() => {
-        // eslint-disable-next-line no-console
-        console.log("session", session)
-        // eslint-disable-next-line no-console
-        console.log("current export sessions", currentExportSessions)
-        // eslint-disable-next-line no-console
-        console.log("match.id.sessionId", match.params.sessionId)
-
         // Add a banner prompting the user to enable browser notifications
         if ("Notification" in window && Notification.permission === 'default') {
             addBanner({
@@ -272,7 +265,7 @@ const SplitView = ({
 
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt 
-                    onClose={submitFeedback(course, session)} 
+                    onClose={submitFeedback(course, session.sessionId)} 
                     closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                 />
             ) : null}
