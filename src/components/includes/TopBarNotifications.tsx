@@ -31,6 +31,10 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick}: P
 
     const dropdownRef = useRef<HTMLDivElement>(null);
 
+    /**
+     * This function calls a firebase function that keeps track of which 
+     * notifications have been viewed and updates the firebase 
+     */
     const updateTrackable = () => {
         viewedTrackable(user, notificationTracker, true)
     }
