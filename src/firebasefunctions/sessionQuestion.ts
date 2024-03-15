@@ -243,6 +243,7 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
 
 export const submitFeedback = (removedQuestionId: string | undefined, relevantCourse: FireCourse, session: string) => 
     (rating?: number, feedback?: string) => {
+        
         const feedbackRecord = {
             session,
             questionId: removedQuestionId,
