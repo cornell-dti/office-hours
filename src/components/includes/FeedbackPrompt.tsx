@@ -11,8 +11,6 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
 type Props = {
-    questionId: string;
-    isOpen: boolean;
     onClose: (rating?: number, feedback?: string) => void;
     closeFeedbackPrompt: () => void;
 };
@@ -52,9 +50,13 @@ const FeedbackPrompt = (props: Props) => {
           
                 <Typography variant="h6"> Feedback for TA</Typography>
                     
-                <Typography variant="body1" style={{fontStyle: "roboto", fontSize: "16px"}}> How was your experience?</Typography>
+                <Typography variant="body1" style={{fontStyle: "roboto", fontSize: "16px"}}>
+                    How was your experience?
+                </Typography>
                 
-                <Typography variant="body2" style={{fontStyle: "roboto", fontSize: "14px"}}> Your response will remain anonymous. </Typography>
+                <Typography variant="body2" style={{fontStyle: "roboto", fontSize: "14px"}}> 
+                    Your response will remain anonymous. 
+                </Typography>
                 <Box component="fieldset" mb={3} borderColor="transparent">
                     {/* <Typography component="legend">Rate your TA out of 5 stars!</Typography> */}
                     <Rating
@@ -76,7 +78,8 @@ const FeedbackPrompt = (props: Props) => {
                         half={false}
                         value={rating || 0}
                     /> */}
-                    {/* <Rating maxRating={5} defaultRating={0} icon='star' size='large' onRate={(event, data) => setRating(event.detail)}/> */}
+                    {/* <Rating maxRating={5} defaultRating={0} icon='star' 
+                    size='large' onRate={(event, data) => setRating(event.detail)}/> */}
                     <br />
                 </Box>
             

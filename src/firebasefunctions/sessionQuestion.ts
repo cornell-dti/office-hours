@@ -241,24 +241,26 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
     return unsubscribe;
 }
 
-export const submitFeedback = (relevantCourse: FireCourse) => (rating?: number, feedback?: string) => {
+export const submitFeedback = (relevantCourse: FireCourse, session: FireSession) => 
+    (rating?: number, feedback?: string) => {
     
-    const feedbackRecord = {
-        rating,
-        writtenFeedback: feedback,
-    };
-    const courseRef = firestore.collection("courses").doc(relevantCourse.courseId);
-    courseRef.get().then((doc) => {
-        if (doc.exists) {
-            const existingFeedbackList = doc.data()?.feedbackList || [];
+        const feedbackRecord = {
+            session,
+            rating,
+            writtenFeedback: feedback,
+        };
+        const courseRef = firestore.collection("courses").doc(relevantCourse.courseId);
+        courseRef.get().then((doc) => {
+            if (doc.exists) {
+                const existingFeedbackList = doc.data()?.feedbackList || [];
             
-            existingFeedbackList.push(feedbackRecord);
+                existingFeedbackList.push(feedbackRecord);
 
-            return courseRef.update({
-                feedbackList: existingFeedbackList
-            })
-        } 
-        return Promise.resolve();
-    })
+                return courseRef.update({
+                    feedbackList: existingFeedbackList
+                })
+            } 
+            return Promise.resolve();
+        })
     
-};
+    };

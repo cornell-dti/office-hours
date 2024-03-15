@@ -7,6 +7,8 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.3",
+    "@material-ui/lab": "^4.0.0-alpha.61",
     "@mui/material": "^5.14.17",
     "@nivo/bar": "^0.59.2",
     "@nivo/line": "^0.59.3",
