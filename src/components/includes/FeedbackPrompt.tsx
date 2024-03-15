@@ -3,7 +3,6 @@ import "./FeedbackPrompt.scss";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Rating from '@material-ui/lab/Rating';
-// import ReactStars from 'react-stars';
 import Typography from '@material-ui/core/Typography';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import Box from '@material-ui/core/Box';
