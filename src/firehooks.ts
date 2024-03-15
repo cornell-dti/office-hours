@@ -99,7 +99,7 @@ export const useProfessorViewSessions = (
                     .collection('sessions')
                     .where('courseId', '==', courseId)
                     .where('startTime', '>=', new Date(selectedWeekEpoch))
-                    .where('startTime', '<=', new Date(selectedWeekEpoch + 7 * ONE_DAY)), 'sessionId');
+                    .where('startTime', '<', new Date(selectedWeekEpoch + 7 * ONE_DAY)), 'sessionId');
 
             const subscription = results$.subscribe(results => setResult(results));
             return () => { subscription.unsubscribe(); };
