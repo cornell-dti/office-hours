@@ -258,8 +258,6 @@ export const submitFeedback = (relevantCourse: FireCourse) => (rating?: number, 
                 feedbackList: existingFeedbackList
             })
         } 
-        // eslint-disable-next-line no-console
-        console.log("Course document does not exist.");
         return Promise.resolve();
     })
     
