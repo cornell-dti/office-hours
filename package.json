@@ -17,6 +17,7 @@
     "@types/mocha": "^8.0.3",
     "@types/node": "^12.12.15",
     "@types/react-linkify": "^1.0.1",
+    "@typescript-eslint/parser": "^6.0.0",
     "chai": "^4.2.0",
     "firebase": "^8.0.1",
     "firebase-admin": "^9.3.0",
