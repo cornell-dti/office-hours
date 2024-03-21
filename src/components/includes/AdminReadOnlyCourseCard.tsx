@@ -10,21 +10,37 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
     const [profCollapsed, setProfCollapsed] = useState(true);
     const [taCollapsed, setTaCollapsed] = useState(true);
 
-    const makeRoleList = (listType: string, collapsed: boolean) => {
+    const displayRoleList = (listType: string, collapsed: boolean, defaultSize: number) => {
         if (listType === "p") {
             return (
                 <ul>
-                    {(collapsed || course.professors.length <= 2) && course.professors.map(id => {
+                    {/* If prof list is less than or equal to default size display everything otherwise display up to the default size */}
+                    {(course.professors.length <= defaultSize) ? course.professors.map(id => {
                         const professor = professorMap[id];
                         if (professor === null || professor === undefined) {
                             return null;
                         }
+
                         return (
                             <li key={id}>
                                 {professor.firstName}  {professor.lastName} ({professor.email})
                             </li>
                         );
-                    })}
+                    })
+                        :
+                        course.professors.slice(0, defaultSize).map(id => {
+                            const professor = professorMap[id];
+                            if (professor === null || professor === undefined) {
+                                return null;
+                            }
+
+                            return (
+                                <li key={id}>
+                                    {professor.firstName}  {professor.lastName} ({professor.email})
+                                </li>
+                            );
+                        })}
+
                 </ul>
             )
         }
@@ -62,12 +78,12 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
             <div className="course-section">
                 <h3>Professors</h3>
                 {/* if there are more than 2 professors in the list, the collapsible option is displayed */}
-                {
+                {/* {
                     course.professors.length > 2 ?
                         profCollapsed ?
                             (<Icon name='chevron down' onClick={() => { setProfCollapsed(false) }} />) :
                             (<Icon name='chevron up' onClick={() => setProfCollapsed(true)} />) :
-                        null}
+                        null} */}
 
                 {course.professors.length === 0 && <div>None</div>}
 
@@ -84,7 +100,33 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
                         );
                     })}
                 </ul> */}
-                {makeRoleList("p", profCollapsed)}
+                {displayRoleList("p", profCollapsed, 2)}
+
+                <br />
+
+                {
+                    course.professors.length > 2 ?
+                        profCollapsed ?
+                            (<Icon name='chevron down' onClick={() => { setProfCollapsed(false) }} />) :
+                            (<Icon name='chevron up' onClick={() => setProfCollapsed(true)} />) :
+                        null
+                }
+                <ul>
+                    {(!profCollapsed && course.professors.length > 2)
+                        && course.professors.slice(2, course.professors.length).map(id => {
+                            const professor = professorMap[id];
+                            if (professor === null || professor === undefined) {
+                                return null;
+                            }
+                            return (
+                                <li key={id}>
+                                    {professor.firstName}  {professor.lastName} ({professor.email})
+                                </li>
+                            );
+                        })}
+                </ul>
+
+
             </div>
             <div className="course-section">
                 <h3>TAs</h3>
@@ -107,7 +149,7 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
                         );
                     })}
                 </ul> */}
-                {makeRoleList("t", taCollapsed)}
+                {displayRoleList("t", taCollapsed, 4)}
             </div>
         </div>
     );
