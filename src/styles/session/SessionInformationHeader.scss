@@ -73,6 +73,29 @@
       }
     }
 
+    .SessionType {
+      // display: inline-flex;
+      // padding: 4px 10px;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      border-radius: 50px;
+      // border: 1px solid #6399D6;
+      // color: #5599db;
+      // font-size: 14px;
+      // height: 18px;
+      // margin-top: 7.5px;
+
+      font-size: 12px;
+      background-color: #3594f1;
+      border: 1px solid #3594f1;
+      width: fit-content;
+      height: fit-content;
+      border: 1px solid #5599db;
+      color: white;
+      padding: 3px 13px;
+    }
+
     .Details {
 
       display: inline-block;
@@ -101,6 +124,7 @@
         border: 1px solid #5599db;
         color: #5599db;
         padding: 4px 13px;
+        font-family: 'roboto';
 
       }
 
