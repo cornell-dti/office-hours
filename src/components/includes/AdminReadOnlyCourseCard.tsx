@@ -9,57 +9,45 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
     const taMap = useCourseTAMap(course);
     const [profCollapsed, setProfCollapsed] = useState(true);
     const [taCollapsed, setTaCollapsed] = useState(true);
+    const profDefaultSize = 2;
+    const taDefaultSize = 4;
 
-    const displayRoleList = (listType: string, collapsed: boolean, defaultSize: number) => {
-        if (listType === "p") {
+    const displayRoleList = (list: readonly string[], roleType: string, defaultSize: number) => {
+
+        if (list.length <= defaultSize) {
             return (
                 <ul>
-                    {/* If prof list is less than or equal to default size display everything otherwise display up to the default size */}
-                    {(course.professors.length <= defaultSize) ? course.professors.map(id => {
-                        const professor = professorMap[id];
-                        if (professor === null || professor === undefined) {
+                    {list.map(id => {
+                        const role = roleType === "p" ? professorMap[id] : taMap[id];
+
+                        if (role === null || role === undefined) {
                             return null;
                         }
 
                         return (
                             <li key={id}>
-                                {professor.firstName}  {professor.lastName} ({professor.email})
+                                {role.firstName}  {role.lastName} ({role.email})
                             </li>
                         );
-                    })
-                        :
-                        course.professors.slice(0, defaultSize).map(id => {
-                            const professor = professorMap[id];
-                            if (professor === null || professor === undefined) {
-                                return null;
-                            }
-
-                            return (
-                                <li key={id}>
-                                    {professor.firstName}  {professor.lastName} ({professor.email})
-                                </li>
-                            );
-                        })}
-
+                    })}
                 </ul>
             )
         }
         return (
             <ul>
-                {!collapsed && course.tas.map(id => {
-                    const ta = taMap[id];
-                    if (ta === null || ta === undefined) {
+                {list.slice(0, defaultSize).map(id => {
+                    const role = roleType === "p" ? professorMap[id] : taMap[id];
+                    if (role === null || role === undefined) {
                         return null;
                     }
                     return (
                         <li key={id}>
-                            {ta.firstName} {ta.lastName} ({ta.email})
+                            {role.firstName}  {role.lastName} ({role.email})
                         </li>
                     );
                 })}
             </ul>
         )
-
     }
 
     return (
@@ -77,43 +65,20 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
             </div>
             <div className="course-section">
                 <h3>Professors</h3>
-                {/* if there are more than 2 professors in the list, the collapsible option is displayed */}
-                {/* {
-                    course.professors.length > 2 ?
-                        profCollapsed ?
-                            (<Icon name='chevron down' onClick={() => { setProfCollapsed(false) }} />) :
-                            (<Icon name='chevron up' onClick={() => setProfCollapsed(true)} />) :
-                        null} */}
-
                 {course.professors.length === 0 && <div>None</div>}
-
-                {/* <ul>
-                    {(!profCollapsed || course.professors.length <= 2) && course.professors.map(id => {
-                        const professor = professorMap[id];
-                        if (professor === null || professor === undefined) {
-                            return null;
-                        }
-                        return (
-                            <li key={id}>
-                                {professor.firstName}  {professor.lastName} ({professor.email})
-                            </li>
-                        );
-                    })}
-                </ul> */}
-                {displayRoleList("p", profCollapsed, 2)}
+                {displayRoleList(course.professors, "p", profDefaultSize)}
 
                 <br />
 
-                {
-                    course.professors.length > 2 ?
-                        profCollapsed ?
-                            (<Icon name='chevron down' onClick={() => { setProfCollapsed(false) }} />) :
-                            (<Icon name='chevron up' onClick={() => setProfCollapsed(true)} />) :
-                        null
+                {course.professors.length > profDefaultSize ?
+                    profCollapsed ?
+                        (<Icon name='chevron down' onClick={() => { setProfCollapsed(false) }} />) :
+                        (<Icon name='chevron up' onClick={() => setProfCollapsed(true)} />) :
+                    null
                 }
                 <ul>
-                    {(!profCollapsed && course.professors.length > 2)
-                        && course.professors.slice(2, course.professors.length).map(id => {
+                    {(!profCollapsed && course.professors.length > profDefaultSize)
+                        && course.professors.slice(profDefaultSize, course.professors.length).map(id => {
                             const professor = professorMap[id];
                             if (professor === null || professor === undefined) {
                                 return null;
@@ -125,31 +90,34 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
                             );
                         })}
                 </ul>
-
-
             </div>
             <div className="course-section">
                 <h3>TAs</h3>
-                {/* if there are any TAs in the list, the collapsible option is displayed */}
-                {course.tas.length === 0 ? true :
-                    taCollapsed ? (<Icon name='chevron down' onClick={() => { setTaCollapsed(false) }} />) :
-                        (<Icon name='chevron up' onClick={() => setTaCollapsed(true)} />)}
-
                 {course.tas.length === 0 && <div>None</div>}
-                {/* <ul>
-                    {!taCollapsed && course.tas.map(id => {
-                        const ta = taMap[id];
-                        if (ta === null || ta === undefined) {
-                            return null;
-                        }
-                        return (
-                            <li key={id}>
-                                {ta.firstName} {ta.lastName} ({ta.email})
-                            </li>
-                        );
-                    })}
-                </ul> */}
-                {displayRoleList("t", taCollapsed, 4)}
+                {displayRoleList(course.tas, "t", taDefaultSize)}
+
+                <br />
+
+                {course.tas.length > taDefaultSize ?
+                    taCollapsed ?
+                        (<Icon name='chevron down' onClick={() => { setTaCollapsed(false) }} />) :
+                        (<Icon name='chevron up' onClick={() => setTaCollapsed(true)} />) :
+                    null
+                }
+                <ul>
+                    {(!taCollapsed && course.tas.length > taDefaultSize)
+                        && course.tas.slice(taDefaultSize, course.tas.length).map(id => {
+                            const ta = taMap[id];
+                            if (ta === null || ta === undefined) {
+                                return null;
+                            }
+                            return (
+                                <li key={id}>
+                                    {ta.firstName}  {ta.lastName} ({ta.email})
+                                </li>
+                            );
+                        })}
+                </ul>
             </div>
         </div>
     );
