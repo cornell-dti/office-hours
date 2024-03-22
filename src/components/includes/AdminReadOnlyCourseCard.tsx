@@ -12,6 +12,13 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
     const profDefaultSize = 2;
     const taDefaultSize = 4;
 
+    /* creates a list for the current professors and tas, displays at most the default size 
+    e.g 2 professors and 4 TAs. 
+        - [list] is an array of professors or tas, 
+        - [roleType] should be either "p" or "t", which indicates whether this 
+        function is for displaying professors or TAs
+        - [defaultSize] is the number of professors or TAs to show by default before the icons appear
+    */
     const displayRoleList = (list: readonly string[], roleType: string, defaultSize: number) => {
 
         if (list.length <= defaultSize) {
@@ -70,6 +77,7 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
 
                 <br />
 
+                {/* Display icon only if the number of professors is greater than the default size */}
                 {course.professors.length > profDefaultSize ?
                     profCollapsed ?
                         (<Icon name='chevron down' onClick={() => { setProfCollapsed(false) }} />) :
@@ -97,7 +105,7 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
                 {displayRoleList(course.tas, "t", taDefaultSize)}
 
                 <br />
-
+                {/* Display icon only if the number of TAs is greater than the default size */}
                 {course.tas.length > taDefaultSize ?
                     taCollapsed ?
                         (<Icon name='chevron down' onClick={() => { setTaCollapsed(false) }} />) :
