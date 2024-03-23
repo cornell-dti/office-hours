@@ -10,6 +10,7 @@ import SortArrows from '../../media/sortbyarrows.svg';
 import { RootState } from '../../redux/store';
 import { addBanner, removeBanner } from '../../redux/actions/announcements';
 import Chalkboard from '../../media/chalkboard-teacher.svg';
+import { getTagsQuery, useQuery } from '../../firehooks';
 
 // Maximum number of questions to be shown to user
 const NUM_QUESTIONS_SHOWN = 20;
@@ -83,9 +84,9 @@ const StudentMyQuestion = ({
                 <DiscussionQuestion
                     question={studentQuestion as FireDiscussionQuestion}
                     users={{}}
+                    commentUsers={{}}
                     tags={tags}
                     isTA={false}
-                    includeRemove={true}
                     isPast={isPast}
                 // myQuestion={true}
                 />
@@ -121,12 +122,25 @@ const usePrev = <T extends unknown>(val: T): T | undefined => {
 
 const SessionQuestionsContainer = (props: Props) => {
     const [filterByAnsweredQuestions, setFilterByAnsweredQuestions] = React.useState(false);
+    const [filteredPrimaryTags, setFilteredPrimaryTags] = useState<FireTag[]>([]);
+    const [primaryTagSearch, setPrimaryTagSearch] = useState("");
+    const [selectedPrimaryTag, setSelectedPrimaryTag] = useState<FireTag>();
+    const [showPrimaryTagDropdown, setShowPrimaryTagDropdown] = useState(false);
+    const [filteredSecondaryTags, setFilteredSecondaryTags] = useState<FireTag[]>([]);
+    const [secondaryTagSearch, setSecondaryTagSearch] = useState("");
+    const [selectedSecondaryTag, setSelectedSecondaryTag] = useState<FireTag>();
+    const [showSecondaryTagDropdown, setShowSecondaryTagDropdown] = useState(false);
+    const [showSecondaryTagSearch, setShowSecondaryTagSearch] = useState(false);
     const [sortByUpvotes, setSortByUpvotes] = React.useState(true);
     const [timeoutId, setTimeoutId] = React.useState<any>(undefined);
     const [warningTimeoutId, setWarningTimeoutId] = React.useState<any>(undefined);
     // eslint-disable-next-line
     const [audio, setAudio] = React.useState<HTMLAudioElement>(new Audio("../../../qmijinglefinal.mp3"));
     const prevQuestion = usePrev<FireQuestion | null>(props.myQuestion);
+
+    const tags = useQuery<FireTag>(props.course.courseId, getTagsQuery, 'tagId');
+    const primaryTags = tags.filter((tag) => tag.level === 1);
+    const secondaryTags = tags.filter((tag) => tag.level === 2);
 
     // Handles student side of time limit
     React.useEffect(() => {
@@ -139,9 +153,55 @@ const SessionQuestionsContainer = (props: Props) => {
                 newQuestionAssigned();
             }
         }
-        // eslint-disable-next-line
-    }, [props.myQuestion])
 
+        filterTags(primaryTagSearch, primaryTags, setFilteredPrimaryTags);
+
+        if (selectedPrimaryTag) {
+            const filtered = secondaryTags.filter((tag) =>
+                tag.parentTag?.startsWith(selectedPrimaryTag.tagId));
+            filterTags(secondaryTagSearch, filtered, setFilteredSecondaryTags);
+        }
+
+        // eslint-disable-next-line
+    }, [props.myQuestion, primaryTagSearch, secondaryTagSearch])
+
+    const filterTags = (tagSearch: string, tags: FireTag[], 
+        setFilteredTags: (value: React.SetStateAction<FireTag[]>) => void) => {
+        if (tagSearch.length !== 0) {
+            const filtered = tags.filter((tag) =>
+                tag.name.toLowerCase().startsWith(tagSearch))
+            setFilteredTags(filtered);
+        } else {
+            setFilteredTags(tags);
+        }
+    }
+
+    const setPrimaryTag = (tag: FireTag) => {
+        setSelectedPrimaryTag(tag);
+        setPrimaryTagSearch(tag.name);
+        setSelectedSecondaryTag(undefined);
+        setSecondaryTagSearch("");
+        setShowSecondaryTagSearch(false);
+    }
+
+    const setSecondaryTag = (tag: FireTag) => {
+        setSelectedSecondaryTag(tag);
+        setSecondaryTagSearch(tag.name);
+    }
+
+    const clearPrimaryTag = () => {
+        setSelectedPrimaryTag(undefined);
+        setPrimaryTagSearch("");
+        setSelectedSecondaryTag(undefined);
+        setSecondaryTagSearch("");
+        setShowSecondaryTagSearch(false);
+    }
+
+    const clearSecondaryTag = () => {
+        setSelectedSecondaryTag(undefined);
+        setSecondaryTagSearch("");
+        setShowSecondaryTagSearch(false);
+    }
 
     const questionWarning = () => {
         audio.play().catch((e) => {
@@ -202,6 +262,7 @@ const SessionQuestionsContainer = (props: Props) => {
 
 
     const compareUpvotes = (q1: FireDiscussionQuestion, q2: FireDiscussionQuestion) => {
+        if(!q1 || !q1.upvotedUsers || !q2 || !q2.upvotedUsers) return 0;
         const upvoteDifference = q2.upvotedUsers.length - q1.upvotedUsers.length;
         if (upvoteDifference !== 0) return upvoteDifference;
         return q2.timeEntered.seconds - q1.timeEntered.seconds;
@@ -220,7 +281,25 @@ const SessionQuestionsContainer = (props: Props) => {
     );
 
     // Only display the top 10 questions on the queue
-    const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN));
+    const shownQuestions = allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN))
+        .filter(q => q.status !== 'resolved');
+
+    const filteredQuestionsByAnswer = filterByAnsweredQuestions
+        ? allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN))
+            .filter(question => question.status === 'resolved')
+        : allQuestions.slice(0, Math.min(allQuestions.length, NUM_QUESTIONS_SHOWN))
+            .filter(question => question.status !== 'resolved');
+    
+    const filteredQuestionsByAnswerAndTag = selectedPrimaryTag
+        ? filteredQuestionsByAnswer.slice(0, Math.min(filteredQuestionsByAnswer.length, NUM_QUESTIONS_SHOWN))
+            .filter(question => question.primaryTag === selectedPrimaryTag.tagId)
+        : filteredQuestionsByAnswer;
+
+    const filteredQuestions = selectedSecondaryTag
+        ? filteredQuestionsByAnswerAndTag
+            .slice(0, Math.min(filteredQuestionsByAnswerAndTag.length, NUM_QUESTIONS_SHOWN))
+            .filter(question => question.secondaryTag === selectedSecondaryTag.tagId)
+        : filteredQuestionsByAnswerAndTag;
 
     const assignedQuestions = shownQuestions.filter((question) => {
         return question.status === 'assigned' && props.isTA && question.answererId === props.myUserId;
@@ -229,12 +308,8 @@ const SessionQuestionsContainer = (props: Props) => {
         return question.status === 'assigned' && question.answererId !== props.myUserId && props.isProf;
     });
     const [collapsed, setCollapsed] = useState(allAssignedQuestions.length === 0);
-    const otherQuestions = shownQuestions.filter(question => question.status !== 'assigned' &&
+    const otherQuestions = filteredQuestions.filter(question => question.status !== 'assigned' &&
         !assignedQuestions.includes(question));
-
-    const filteredQuestions = filterByAnsweredQuestions
-        ? shownQuestions.filter(question => question.status === 'resolved')
-        : shownQuestions.filter(question => question.status !== 'resolved');
 
     let filteredSortedQuestions: FireDiscussionQuestion[] = [];
 
@@ -242,7 +317,7 @@ const SessionQuestionsContainer = (props: Props) => {
         const filteredDiscussionQuestions = filteredQuestions.map(
             question => question as FireDiscussionQuestion
         );
-        if (filteredDiscussionQuestions.length < 2) {
+        if (filteredDiscussionQuestions && filteredDiscussionQuestions.length < 2) {
             filteredSortedQuestions = filteredDiscussionQuestions;
         } else {
             filteredSortedQuestions = sortByUpvotes
@@ -320,7 +395,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         setRemoveQuestionId={props.setRemoveQuestionId}
                     />
                 )}
-                {shownQuestions && shownQuestions.length > 0 && props.modality === 'review' && (
+                {allQuestions && allQuestions.length > 0 && (props.modality === 'review' || props.isTA) && (
                     <div className="discussionHeaderWrapper">
                         <div className="discussionQuestionsSlider">
                             <div
@@ -346,36 +421,153 @@ const SessionQuestionsContainer = (props: Props) => {
                                 Answered Questions
                             </div>
                         </div>
-                        <div className="sortDiscussionQuestionsWrapper">
-                            <div className="discussionArrowsContainer">
-                                <img className="sortDiscussionArrow" src={SortArrows} alt="Sort by arrows" />
+                        {<div className="filter-box">
+                            <p className="filter-title">Selected Tags:</p>
+                            <div className="filter-tag">
+                                {selectedPrimaryTag ?
+                                    (<div className="tag primaryTag">
+                                        <p className="tag-name">{selectedPrimaryTag.name}</p>
+                                        <button 
+                                            type="button" 
+                                            className="close primary" 
+                                            onClick={() => clearPrimaryTag()}
+                                        >
+                                            <p>&times;</p>
+                                        </button>
+                                    </div>) :
+                                    (<div>
+                                        <p className="no-tag">No Category Selected </p>
+                                    </div>)
+                                }
                             </div>
-                            <p className="sortDiscussionQuestionsLabel">sort by</p>
-                            <div className="sortDiscussionQuestionsOptions">
-                                <div
-                                    className={'sortDiscussionsSlider' + (sortByUpvotes ? '' : ' slidedRight')}
+                            {selectedPrimaryTag && <div className="filter-tag">
+                                {selectedSecondaryTag ?
+                                    (<div className="tag secondaryTag">
+                                        <p className="tag-name">{selectedSecondaryTag.name}</p>
+                                        <button 
+                                            type="button" 
+                                            className="close secondary" 
+                                            onClick={() => clearSecondaryTag()}
+                                        >
+                                            <p>&times;</p>
+                                        </button>
+                                    </div>) :
+                                    (<div>
+                                        <p className="no-tag">No Tag Selected </p>
+                                    </div>)
+                                }
+                            </div>}
+                            <div className="dropdown-box one">
+                                <p className="filter-search-title">Search for a Category</p>
+                                <input
+                                    type="search"
+                                    placeholder={"Enter Category"}
+                                    value={primaryTagSearch}
+                                    onChange={(e) => setPrimaryTagSearch(e.target.value.toLowerCase())}
+                                    onFocus={() => setShowPrimaryTagDropdown(true)}
+                                    onBlur={() => setShowPrimaryTagDropdown(false)}
                                 />
-                                <div
-                                    className={
-                                        'sortDiscussionQuestionsOption' + (sortByUpvotes ? ' optionChosen' : '')
-                                    }
-                                    onClick={() => setSortByUpvotes(true)}
-                                >
-                                    Most Upvotes
-                                </div>
-                                <div
-                                    className={
-                                        'sortDiscussionQuestionsOption' + (sortByUpvotes ? '' : ' optionChosen')
-                                    }
-                                    onClick={() => setSortByUpvotes(false)}
-                                >
-                                    Most Recent
-                                </div>
+                                {showPrimaryTagDropdown && filteredPrimaryTags.length !== 0 &&
+                                    (<div className="filter-results">
+                                        {filteredPrimaryTags.map((tag) => (
+                                            <button
+                                                key={tag.tagId}
+                                                type="button"
+                                                className="filter-result"
+                                                onMouseDown={() => setPrimaryTag(tag)}
+                                            >
+                                                {tag.name}
+                                            </button>
+                                        ))}
+                                    </div>)}
                             </div>
-                        </div>
+                            {selectedPrimaryTag && !showSecondaryTagSearch && <button 
+                                type="button"
+                                className="filter-button"
+                                onMouseDown={() => setShowSecondaryTagSearch(true)}
+                            >
+                                <Icon name="plus" />
+                                Filter by Tag
+                            </button>}
+                            {showSecondaryTagSearch && <div className="dropdown-box">
+                                <p className="filter-search-title">Search for a Tag</p>
+                                <input
+                                    type="search"
+                                    placeholder={"Enter Tag"}
+                                    value={secondaryTagSearch}
+                                    onChange={(e) => setSecondaryTagSearch(e.target.value.toLowerCase())}
+                                    onFocus={() => setShowSecondaryTagDropdown(true)}
+                                    onBlur={() => setShowSecondaryTagDropdown(false)}
+                                />
+                                {showSecondaryTagDropdown && filteredSecondaryTags.length !== 0 &&
+                                    (<div className="filter-results">
+                                        {filteredSecondaryTags.map((tag) => (
+                                            <button
+                                                key={tag.tagId}
+                                                type="button"
+                                                className="filter-result"
+                                                onMouseDown={() => setSecondaryTag(tag)}
+                                            >
+                                                {tag.name}
+                                            </button>
+                                        ))}
+                                    </div>)}
+                            </div>}
+                        </div>}
+                        {props.modality === 'review' && 
+                            !filterByAnsweredQuestions && 
+                            <div className="sortDiscussionQuestionsWrapper">
+                                <div className="discussionArrowsContainer">
+                                    <img className="sortDiscussionArrow" src={SortArrows} alt="Sort by arrows" />
+                                </div>
+                                <p className="sortDiscussionQuestionsLabel">sort by</p>
+                                <div className="sortDiscussionQuestionsOptions">
+                                    <div
+                                        className={'sortDiscussionsSlider' + (sortByUpvotes ? '' : ' slidedRight')}
+                                    />
+                                    <div
+                                        className={
+                                            'sortDiscussionQuestionsOption' + (sortByUpvotes ? ' optionChosen' : '')
+                                        }
+                                        onClick={() => setSortByUpvotes(true)}
+                                    >
+                                        Most Upvotes
+                                    </div>
+                                    <div
+                                        className={
+                                            'sortDiscussionQuestionsOption' + (sortByUpvotes ? '' : ' optionChosen')
+                                        }
+                                        onClick={() => setSortByUpvotes(false)}
+                                    >
+                                        Most Recent
+                                    </div>
+                                </div>
+                            </div>}
                     </div>
                 )}
-                {filteredSortedQuestions &&
+                {filterByAnsweredQuestions ? (<>
+                    <p />
+                    {filteredQuestions.map((question, i: number) => (
+                        <SessionQuestion
+                            key={question.questionId}
+                            modality={props.modality}
+                            question={question}
+                            users={props.users}
+                            commentUsers={props.users}
+                            tags={props.tags}
+                            index={i}
+                            virtualLocation={props.myVirtualLocation}
+                            isTA={props.isTA}
+                            includeRemove={false}
+                            triggerUndo={props.triggerUndo}
+                            isPast={true}
+                            myUserId={props.myUserId}
+                            setShowModal={props.setShowModal}
+                            setRemoveQuestionId={props.setRemoveQuestionId}
+                        />
+                    ))}
+                </>) : (<>
+                    {filteredSortedQuestions &&
                     shownQuestions.length > 0 &&
                     props.modality === 'review' &&
                     filteredSortedQuestions.map(question => (
@@ -383,17 +575,18 @@ const SessionQuestionsContainer = (props: Props) => {
                             key={question.questionId}
                             question={question as FireDiscussionQuestion}
                             users={props.users}
+                            commentUsers={props.users}
                             tags={props.tags}
                             isTA={props.isTA}
-                            includeRemove={false}
                             isPast={props.isPast}
+                            virtualLocation={props.myVirtualLocation}
                         // myQuestion={false}
                         />
                     ))}
-                {assignedQuestions && assignedQuestions.length > 0 && props.isTA &&
-                    <p className="QuestionHeader">Assigned to Me</p>
-                }
-                {shownQuestions &&
+                    {assignedQuestions && assignedQuestions.length > 0 && props.modality !== 'review' && props.isTA &&
+                    <p className="QuestionHeader">Assigned Questions</p>
+                    }
+                    {shownQuestions &&
                     shownQuestions.length > 0 &&
                     props.modality !== 'review' &&
                     props.isTA &&
@@ -416,7 +609,7 @@ const SessionQuestionsContainer = (props: Props) => {
                             setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
-                {allAssignedQuestions && allAssignedQuestions.length > 0 && props.isProf &&
+                    {allAssignedQuestions && allAssignedQuestions.length > 0 && props.isProf &&
                     <>
                         <div className="allAssignedHeader">
                             <p className="QuestionHeader">All Assigned Questions</p>
@@ -427,8 +620,8 @@ const SessionQuestionsContainer = (props: Props) => {
                             }
                         </div>
                     </>
-                }
-                {shownQuestions &&
+                    }
+                    {shownQuestions &&
                     shownQuestions.length > 0 &&
                     props.modality !== 'review' &&
                     !collapsed &&
@@ -452,10 +645,11 @@ const SessionQuestionsContainer = (props: Props) => {
                             setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
-                {otherQuestions && otherQuestions.length > 0 && props.isTA &&
+                    {otherQuestions && otherQuestions.length > 0 &&
+                    props.modality !== 'review' && props.isTA &&
                     <p className="QuestionHeader">Unassigned Queue Questions</p>
-                }
-                {otherQuestions &&
+                    }
+                    {otherQuestions &&
                     otherQuestions.length > 0 &&
                     props.modality !== 'review' &&
                     props.isTA &&
@@ -478,6 +672,7 @@ const SessionQuestionsContainer = (props: Props) => {
                             setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
+                </>)} 
                 {shownQuestions && shownQuestions.length === 0 && (
                     <>
                         {

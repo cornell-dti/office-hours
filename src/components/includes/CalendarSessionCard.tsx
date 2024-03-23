@@ -81,7 +81,7 @@ const CalendarSessionCard = (props: {
                             ' Type'
                         }
                     >
-                        {session.modality !== 'review' ? 'OH' : 'Discussion'}
+                        {session.modality !== 'review' ? 'OH' : 'Forum'}
                     </div>
                     <div className={'Indicator ' + props.status}>
                         <div className='Circle' />

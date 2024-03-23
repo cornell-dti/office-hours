@@ -409,7 +409,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                 <SessionQuestionTime assignedTime={question.timeAssigned.toDate().getTime()}/>}
                         </p>}
                     {
-                        this.props.isTA &&
+                        !this.props.isPast && this.props.isTA &&
                         <div className="Buttons">
                             <hr />
                             <div className="buttonsWrapper">
