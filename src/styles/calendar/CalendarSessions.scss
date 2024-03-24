@@ -120,13 +120,12 @@ $open: #ffdba6;
             width: 14px;
         }
 
-        // Corrected Selectors
-        &.Ongoing > * {
+        &.Ongoing * > {
             background-color: $live;
             box-shadow: 0 1px 4px 1px $live;
         }
 
-        &.Open > * {
+        &.Open * > {
             background-color: $open;
             box-shadow: 0 1px 4px 1px $open;
         }
