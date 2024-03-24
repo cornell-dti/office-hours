@@ -24,7 +24,6 @@
     "history": "^4.10.1",
     "linkifyjs": "^2.1.9",
     "lodash": "^4.17.15",
-    "mailtrap": "^3.3.0",
     "mocha": "^8.2.1",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.32",
