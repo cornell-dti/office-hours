@@ -10,7 +10,7 @@ import ProductUpdates from "../includes/ProductUpdates"
 
 import { useCourse, useSession } from '../../firehooks';
 import { firestore } from '../../firebase';
-import { removeQuestionbyID } from '../../firebasefunctions/sessionQuestion';
+import { removeQuestionbyID, submitFeedback } from '../../firebasefunctions/sessionQuestion';
 import TopBar from '../includes/TopBar';
 import CalendarExportModal from '../includes/CalendarExportModal';
 import { RootState } from '../../redux/store';
@@ -19,6 +19,7 @@ import Browser from '../../media/browser.svg';
 import smsNotif from '../../media/smsNotif.svg'
 import { addBanner } from '../../redux/actions/announcements';
 import Banner from '../includes/Banner';
+import FeedbackPrompt from '../includes/FeedbackPrompt';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -85,6 +86,8 @@ const SplitView = ({
     const [removeQuestionId, setRemoveQuestionId] = useState<
     string | undefined
     >(undefined);
+    const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
+    const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
     const [currentExportSessions, setCurrentExportSessions] =
@@ -148,6 +151,14 @@ const SplitView = ({
         removeQuestionbyID(firestore, removeQuestionId);
     };
 
+    const removeQuestionWrapper = (questionId: string | undefined) => {
+        setRemoveQuestionId(questionId);
+        setDisplayFeedbackPrompt(true);
+        setRemovedQuestionId(questionId);
+        // eslint-disable-next-line no-console
+        console.log("split view questionId: ", questionId);
+    };
+
     useEffect(() => {
         // Add a banner prompting the user to enable browser notifications
         if ("Notification" in window && Notification.permission === 'default') {
@@ -177,6 +188,7 @@ const SplitView = ({
 
     return (
         <>
+            
             <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
 
             <TopBar
@@ -212,6 +224,8 @@ const SplitView = ({
                 course={course}
             />
 
+
+
             {(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
                 ((course && user) ? (
                     (session) ? (
@@ -220,7 +234,7 @@ const SplitView = ({
                             backCallback={handleBackClick}
                             joinCallback={handleJoinClick}
                             setShowModal={setShowModal}
-                            setRemoveQuestionId={setRemoveQuestionId}
+                            setRemoveQuestionId={removeQuestionWrapper}
                             timeWarning={course ? course.timeWarning : 1}
                         />
                     ) : (
@@ -252,6 +266,13 @@ const SplitView = ({
                     )
                 ) : <Loader active={true} content="Loading" />)}
             <ProductUpdates />
+
+            {displayFeedbackPrompt ? (
+                <FeedbackPrompt 
+                    onClose={submitFeedback(removedQuestionId, course, session.sessionId)} 
+                    closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
+                />
+            ) : null}
 
         </>
     );
