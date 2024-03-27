@@ -71,16 +71,6 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
                 <h3>Professors</h3>
                 {course.professors.length === 0 && <div>None</div>}
                 {displayRoleList(course.professors, "p", profDefaultSize)}
-
-                <br />
-
-                {/* Display icon only if the number of professors is greater than the default size */}
-                {course.professors.length > profDefaultSize ?
-                    profCollapsed ?
-                        (<Icon name='chevron down' onClick={() => { setProfCollapsed(false) }} />) :
-                        (<Icon name='chevron up' onClick={() => setProfCollapsed(true)} />) :
-                    null
-                }
                 <ul>
                     {(!profCollapsed && course.professors.length > profDefaultSize)
                         && course.professors.slice(profDefaultSize, course.professors.length).map(id => {
@@ -95,20 +85,21 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
                             );
                         })}
                 </ul>
+
+                <br />
+
+                {/* Display icon only if the number of professors is greater than the default size */}
+                {course.professors.length > profDefaultSize ?
+                    profCollapsed ?
+                        (<Icon name='chevron down' onClick={() => { setProfCollapsed(false) }} />) :
+                        (<Icon name='chevron up' onClick={() => setProfCollapsed(true)} />) :
+                    null
+                }
             </div>
             <div className="course-section">
                 <h3>TAs</h3>
                 {course.tas.length === 0 && <div>None</div>}
                 {displayRoleList(course.tas, "t", taDefaultSize)}
-
-                <br />
-                {/* Display icon only if the number of TAs is greater than the default size */}
-                {course.tas.length > taDefaultSize ?
-                    taCollapsed ?
-                        (<Icon name='chevron down' onClick={() => { setTaCollapsed(false) }} />) :
-                        (<Icon name='chevron up' onClick={() => setTaCollapsed(true)} />) :
-                    null
-                }
                 <ul>
                     {(!taCollapsed && course.tas.length > taDefaultSize)
                         && course.tas.slice(taDefaultSize, course.tas.length).map(id => {
@@ -123,6 +114,16 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
                             );
                         })}
                 </ul>
+
+                <br />
+
+                {/* Display icon only if the number of TAs is greater than the default size */}
+                {course.tas.length > taDefaultSize ?
+                    taCollapsed ?
+                        (<Icon name='chevron down' onClick={() => { setTaCollapsed(false) }} />) :
+                        (<Icon name='chevron up' onClick={() => setTaCollapsed(true)} />) :
+                    null
+                }
             </div>
         </div>
     );
