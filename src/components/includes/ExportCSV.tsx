@@ -7,6 +7,9 @@ import { useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
 import CloseIcon from "../../media/CloseIcon.svg";
 import ExportIcon from "../../media/ExportIcon.svg";
 import ExportIcon2 from "../../media/ExportIcon2.svg";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 type Props = {
     setShowModal: (show: boolean) => void;
@@ -194,7 +197,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     };
 
     return (
-        <>
+        <LocalizationProvider dateAdapter={AdapterMoment}>
             {showModal && (
                 <div className="export-csv-background">
                     <div className="export-csv-container">
@@ -236,7 +239,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                             style={{
                                                 width: "50%",
                                                 textAlign: "left",
-                                                marginRight: 20,
+                                                paddingRight: 16,
                                             }}
                                         >
                                             <FormLabel className="label">Year</FormLabel>
@@ -271,7 +274,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                             style={{
                                                 width: "50%",
                                                 textAlign: "left",
-                                                marginRight: 20,
+                                                paddingRight: 16,
                                             }}
                                         >
                                             <FormLabel className="label">Term</FormLabel>
@@ -322,8 +325,41 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                     </div>
                                 </div>
                             ) : (
-                                <p>Date picker</p>
-                                // placeholder until material-ui is upgraded from v4 to v5
+                                <div className="select-date">
+                                    <div className="row">
+                                        <FormControl
+                                            variant="outlined"
+                                            size="small"
+                                            style={{
+                                                width: "50%",
+                                                textAlign: "left",
+                                                paddingRight: 16,
+                                            }}
+                                        >
+                                            <FormLabel className="label">From</FormLabel>
+                                            <DatePicker
+                                                value={startDate}
+                                                onChange={(newDate) => setStartDate(newDate as moment.Moment)}
+                                            />
+                                        </FormControl>
+
+                                        <FormControl
+                                            variant="outlined"
+                                            size="small"
+                                            style={{
+                                                width: "50%",
+                                                textAlign: "left",
+                                                paddingRight: 16,
+                                            }}
+                                        >
+                                            <FormLabel className="label">To</FormLabel>
+                                            <DatePicker
+                                                value={endDate}
+                                                onChange={(newDate) => setEndDate(newDate as moment.Moment)}
+                                            />
+                                        </FormControl>
+                                    </div>
+                                </div>
                             )}
 
                             <div className="select-analytics">
@@ -421,7 +457,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                     </div>
                 </div>
             )}
-        </>
+        </LocalizationProvider>
     );
 };
 

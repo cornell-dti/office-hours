@@ -17,9 +17,9 @@
   background-color: white;
   border-radius: 8px;
   height: 525px;
-  width: 375px;
-  padding-left: 48px;
-  padding-right: 48px;
+  width: 400px;
+  padding-left: 32px;
+  padding-right: 32px;
 
   .close-button {
       position: absolute;
@@ -91,6 +91,11 @@
     .label {
       color: rgba(0, 0, 0, 0.87);
       margin-bottom: 8px;
+    }
+
+    input {
+      padding: 8px !important;
+      border: 0 !important;
     }
   }
 
