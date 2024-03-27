@@ -10,6 +10,7 @@ import ExportIcon2 from "../../media/ExportIcon2.svg";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DateValidationError } from "@mui/x-date-pickers/models";
 
 type Props = {
     setShowModal: (show: boolean) => void;
@@ -93,6 +94,23 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     const [endDate, setEndDate] = useState<moment.Moment>(
         moment(new Date()).set({ ...todayEnd, year: moment(new Date()).year() })
     );
+
+    // checks if end date is after start date
+    const [error, setError] = React.useState<DateValidationError | null>(null);
+
+    const errorMessage = React.useMemo(() => {
+        switch (error) {
+            case "maxDate":
+            case "minDate":
+            case "invalidDate": {
+                return "Please select a date after the start date";
+            }
+
+            default: {
+                return "";
+            }
+        }
+    }, [error]);
 
     // analytics calculations
     const { sessions } = useCoursesBetweenDates(startDate, endDate, courseId);
@@ -244,6 +262,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                         >
                                             <FormLabel className="label">Year</FormLabel>
                                             <Select
+                                                style={{ height: "40px" }}
                                                 value={startDate.year()}
                                                 IconComponent={() => <Icon name="chevron down" size="small" />}
                                                 MenuProps={{
@@ -279,6 +298,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                         >
                                             <FormLabel className="label">Term</FormLabel>
                                             <Select
+                                                style={{ height: "40px" }}
                                                 value={isFall ? "Fall" : "Spring"}
                                                 IconComponent={() => <Icon name="chevron down" size="small" />}
                                                 MenuProps={{
@@ -338,6 +358,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                         >
                                             <FormLabel className="label">From</FormLabel>
                                             <DatePicker
+                                                sx={{ height: "40px" }}
                                                 value={startDate}
                                                 onChange={(newDate) => setStartDate(newDate as moment.Moment)}
                                             />
@@ -354,8 +375,16 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                                         >
                                             <FormLabel className="label">To</FormLabel>
                                             <DatePicker
+                                                sx={{ height: "40px" }}
                                                 value={endDate}
                                                 onChange={(newDate) => setEndDate(newDate as moment.Moment)}
+                                                minDate={startDate}
+                                                onError={(newError) => setError(newError)}
+                                                slotProps={{
+                                                    textField: {
+                                                        helperText: errorMessage,
+                                                    },
+                                                }}
                                             />
                                         </FormControl>
                                     </div>
