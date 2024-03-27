@@ -15,7 +15,7 @@ We make it easier for students to get help because they don't have to wait in cr
 ## Getting Started
 View the [setup documentation](./docs/setup.md) for instructions on setting up and getting started with development!
 
-_Last updated **04/01/2019**_.
+_Last updated **02/29/2024**_.
 
 ## Screenshots
 
@@ -35,8 +35,12 @@ _Screenshots showing major parts of app_
 * **Jessica Wang** - Software Developer
 * **Sophie Wang** - Software Developer
 * **Erin Xu** - Software Developer
+* **Steven Yu** - Software Developer
+* **Nidhi Soma** - Software Developer
 * **Brandon Lee** - Designer
 * **Jenny Zhang** - Designer
+* **Lucy Yang** - Designer
+* **Sia Harisingani** - Designer
 * **Raissa Ji** - Product Marketing Manager
 
 ### 2022-23
