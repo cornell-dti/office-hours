@@ -21,26 +21,23 @@ const AdminReadOnlyCourseCard = ({ course }: { readonly course: FireCourse }) =>
     */
     const displayRoleList = (list: readonly string[], roleType: string, defaultSize: number) => {
 
-        if (list.length <= defaultSize) {
-            return (
-                <ul>
-                    {list.map(id => {
-                        const role = roleType === "p" ? professorMap[id] : taMap[id];
+        return (list.length <= defaultSize) ? (
+            <ul>
+                {list.map(id => {
+                    const role = roleType === "p" ? professorMap[id] : taMap[id];
 
-                        if (role === null || role === undefined) {
-                            return null;
-                        }
+                    if (role === null || role === undefined) {
+                        return null;
+                    }
 
-                        return (
-                            <li key={id}>
-                                {role.firstName}  {role.lastName} ({role.email})
-                            </li>
-                        );
-                    })}
-                </ul>
-            )
-        }
-        return (
+                    return (
+                        <li key={id}>
+                            {role.firstName}  {role.lastName} ({role.email})
+                        </li>
+                    );
+                })}
+            </ul>
+        ) : (
             <ul>
                 {list.slice(0, defaultSize).map(id => {
                     const role = roleType === "p" ? professorMap[id] : taMap[id];
