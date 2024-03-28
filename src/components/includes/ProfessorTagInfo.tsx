@@ -50,7 +50,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         };
     }
 
-    UNSAFE_componentWillReceiveProps(props: PropTypes) {
+    UNSAFEcomponentWillReceiveProps(props: PropTypes) {
         if (props.tag) {
             this.setState({
                 tag: props.tag,
