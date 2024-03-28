@@ -65,9 +65,7 @@
   },
   "resolutions": {
     "@types/react": "^16.8.4",
-    "@types/react-dom": "^16.8.4",
-    "**/@typescript-eslint/eslint-plugin": "^4.1.1",
-    "**/@typescript-eslint/parser": "^4.1.1"
+    "@types/react-dom": "^16.8.4"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.12.1",
