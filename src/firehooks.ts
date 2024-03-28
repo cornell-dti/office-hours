@@ -196,13 +196,13 @@ export const usePendingUsers = (courseId: string): readonly FirePendingUser[] =>
 
 const isAdminObservable = loggedIn$.pipe(
     switchMap(u =>
-        docData(firestore.doc('admins/' + u.email)) as Observable<{}>
+        docData(firestore.doc('admins/' + u.email)) as Observable<unknown>
     )
 )
 
 export const isAdminSingletonObservable = new SingletonObservable(undefined, isAdminObservable);
 
-export const useIsAdmin: () => {} | undefined =
+export const useIsAdmin: () => unknown =
     createUseSingletonObservableHook(isAdminSingletonObservable);
 
 const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
