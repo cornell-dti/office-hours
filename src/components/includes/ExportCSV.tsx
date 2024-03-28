@@ -3,14 +3,14 @@ import { Form, Icon, Radio } from "semantic-ui-react";
 import { FormControl, FormLabel, Grid, MenuItem, Select, Checkbox, FormControlLabel } from "@material-ui/core";
 import moment from "moment";
 import { pickBy } from "lodash";
-import { useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
-import CloseIcon from "../../media/CloseIcon.svg";
-import ExportIcon from "../../media/ExportIcon.svg";
-import ExportIcon2 from "../../media/ExportIcon2.svg";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DateValidationError } from "@mui/x-date-pickers/models";
+import { useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
+import CloseIcon from "../../media/CloseIcon.svg";
+import ExportIcon from "../../media/ExportIcon.svg";
+import ExportIcon2 from "../../media/ExportIcon2.svg";
 
 type Props = {
     setShowModal: (show: boolean) => void;
