@@ -161,7 +161,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
                           })
                           .join(", ") +
                       '"';
-            const waitTime = session.totalWaitTime / session.totalQuestions;
+            const waitTime = session.totalWaitTime / 60 / session.totalQuestions; // minutes
             const sessionWaitTime = isNaN(waitTime) ? "" : Math.round(waitTime).toString();
             const sessionNumQuestions = session.totalQuestions.toString();
             const percentResolved = (session.resolvedQuestions / session.totalQuestions) * 100;
