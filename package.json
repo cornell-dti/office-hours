@@ -65,7 +65,9 @@
   },
   "resolutions": {
     "@types/react": "^16.8.4",
-    "@types/react-dom": "^16.8.4"
+    "@types/react-dom": "^16.8.4",
+    "**/@typescript-eslint/eslint-plugin": "^4.1.1",
+    "**/@typescript-eslint/parser": "^4.1.1"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.12.1",
@@ -81,8 +83,6 @@
     "@types/react-numeric-input": "^2.2.3",
     "@types/react-router": "^5.1.1",
     "@types/react-router-dom": "^5.1.0",
-    "@typescript-eslint/eslint-plugin": "^4.18.0",
-    "@typescript-eslint/parser": "^4.18.0",
     "babel-preset-react-app-babel-7": "^4.0.2-0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.5",
