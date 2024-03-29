@@ -39,7 +39,7 @@ type Props = {
     modality: FireSessionModality;
     myUserId: string;
     virtualLocation?: string;
-    triggerUndo: Function;
+    triggerUndo: (questionId: string, action: string, name: string) => void;
     isPast: boolean;
     readonly user: FireUser;
     setShowModal: (show: boolean) => void;

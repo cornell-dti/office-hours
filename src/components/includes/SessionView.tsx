@@ -36,7 +36,7 @@ type Props = {
 type UndoState = {
     undoAction?: string;
     undoName?: string;
-    undoQuestionId?: number;
+    undoQuestionId?: string;
     timeoutId: NodeJS.Timeout | null;
 };
 
@@ -107,7 +107,7 @@ const SessionView = (
         });
     };
 
-    const triggerUndo = (questionId: number, action: string, name: string) => {
+    const triggerUndo = (questionId: string, action: string, name: string) => {
         if (timeoutId) {
             clearTimeout(timeoutId);
         }

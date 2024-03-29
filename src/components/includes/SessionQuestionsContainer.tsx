@@ -28,7 +28,7 @@ type Props = {
     readonly myVirtualLocation?: string;
     // eslint-disable-next-line react/no-unused-prop-types
     readonly handleJoinClick: () => void;
-    readonly triggerUndo: (questionId: number, action: string, name: string) => void;
+    readonly triggerUndo: (questionId: string, action: string, name: string) => void;
     readonly isOpen: boolean;
     readonly isPast: boolean;
     readonly isPaused: boolean | undefined;
@@ -49,7 +49,7 @@ type StudentMyQuestionProps = {
     readonly questionId: string;
     readonly tags: { readonly [tagId: string]: FireTag };
     readonly index: number;
-    readonly triggerUndo: (questionId: number, action: string, name: string) => void;
+    readonly triggerUndo: (questionId: string, action: string, name: string) => void;
     readonly isPast: boolean;
     readonly myUserId: string;
     readonly modality: FireSessionModality;
