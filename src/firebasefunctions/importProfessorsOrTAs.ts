@@ -1,5 +1,6 @@
 import { firestore } from '../firebase';
 import { blockArray } from '../firehooks';
+import { sendEmailInvite } from './sendEmailInvite';
 
 const db = firestore;
 
@@ -101,6 +102,7 @@ const importProfessorsOrTAs = async (
 
         });
 
+        // missingSet at this point contains the emails of all users who were not found in the database
         // add missing user to pendingUsers collection
         missingSet.forEach(email => {
             const pendingUsersRef = db.collection('pendingUsers').doc(email);
@@ -113,6 +115,9 @@ const importProfessorsOrTAs = async (
                         pendingUsersRef.set({ email, roles: { [course.courseId]: role } });
                     }
                 });
+
+            // send email invite to user prompting them to join QMI 
+            sendEmailInvite(email)
         })
         // update course's ta/professor roles
         const updates = getCourseRoleUpdates(
