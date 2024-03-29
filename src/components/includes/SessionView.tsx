@@ -24,7 +24,7 @@ type Props = {
     session: FireSession;
     questions: readonly FireQuestion[];
     isDesktop: boolean;
-    backCallback: Function;
+    backCallback: () => void;
     joinCallback: () => void;
     user: FireUser;
     setShowModal: (show: boolean) => void;
