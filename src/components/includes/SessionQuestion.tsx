@@ -204,7 +204,7 @@ class SessionQuestion extends React.Component<Props, State> {
         }));
     };
 
-    _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
+    _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: (variables: any) => void, status: string) => {
         updateQuestion({
             variables: {
                 questionId: this.props.question.questionId,

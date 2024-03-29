@@ -9,7 +9,7 @@ interface NewTag {
 
 type PropTypes = {
     isNew: boolean;
-    cancelCallback: Function;
+    cancelCallback: () => void;
     tag?: FireTag;
     courseId: string;
     childTags: FireTag[];
@@ -166,7 +166,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             });
         }
     }
-    
+
     render() {
         return (
             <>
