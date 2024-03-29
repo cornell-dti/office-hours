@@ -50,15 +50,6 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         };
     }
 
-    UNSAFEcomponentWillReceiveProps(props: PropTypes) {
-        if (props.tag) {
-            this.setState({
-                tag: props.tag,
-                newTags: props.childTags.map(firetag => ({ id: firetag.tagId, name: firetag.name }))
-            });
-        }
-    }
-
     handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const name = event.currentTarget.value;
         this.setState((state) => ({ tag: { ...state.tag, name } }));
@@ -167,6 +158,15 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
         }
     };
 
+    UNSAFEcomponentWillReceiveProps(props: PropTypes) {
+        if (props.tag) {
+            this.setState({
+                tag: props.tag,
+                newTags: props.childTags.map(firetag => ({ id: firetag.tagId, name: firetag.name }))
+            });
+        }
+    }
+    
     render() {
         return (
             <>
