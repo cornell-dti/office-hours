@@ -216,8 +216,8 @@ const DiscussionQuestion = (props: Props) => {
 
 type EditCommentProps = {
     readonly initComment: string;
-    readonly onValueChange: Function;
-    readonly onCancel: Function;
+    readonly onValueChange: (newComment: string) => void;
+    readonly onCancel: () => void;
 };
 
 const EditComment = (props: EditCommentProps) => {
