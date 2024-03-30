@@ -39,6 +39,8 @@ _Screenshots showing major parts of app_
 * **Nidhi Soma** - Software Developer
 * **Brandon Lee** - Designer
 * **Jenny Zhang** - Designer
+* **Lucy Yang** - Designer
+* **Sia Harisingani** - Designer
 * **Raissa Ji** - Product Marketing Manager
 
 ### 2022-23
