@@ -1,6 +1,5 @@
 import { firestore } from '../firebase';
 import { blockArray } from '../firehooks';
-import { sendEmailInvite } from './sendEmailInvite';
 
 const db = firestore;
 
@@ -115,9 +114,6 @@ const importProfessorsOrTAs = async (
                         pendingUsersRef.set({ email, roles: { [course.courseId]: role } });
                     }
                 });
-
-            // send email invite to user prompting them to join QMI 
-            sendEmailInvite(email)
         })
         // update course's ta/professor roles
         const updates = getCourseRoleUpdates(
