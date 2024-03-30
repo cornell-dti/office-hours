@@ -156,6 +156,7 @@
         color: white;
         text-decoration: underline;
       }
+      
     }
 
     .Title {
@@ -204,6 +205,8 @@
   .LeftInformationHeader {
     overflow-y: auto;
     max-height: 250px;
+    padding-right: 15px;
+    box-sizing: content-box;
   }
 
   @media only screen and (max-width: 1300px) {
