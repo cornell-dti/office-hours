@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { Twilio } from 'twilio';
+import { MailtrapClient } from 'mailtrap';
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
@@ -484,4 +485,27 @@ exports.onQuestionUpdate = functions.firestore
             totalWaitTime: admin.firestore.FieldValue.increment(waitTimeChange),
             totalResolveTime: admin.firestore.FieldValue.increment(resolveTimeChange),
         });
+    });
+
+exports.onPendingUserCreate = functions.firestore
+    .document('pendingUsers/{userEmail}')
+    .onCreate(async (snap, context) => {
+        const userEmail = context.params.userEmail
+        const mailtrapClient = new MailtrapClient({ token: process.env.MAILTRAP_TOKEN as string });
+        const sender = {
+            email: "mailtrap@queueme.in",
+            name: "QueueMeIn Team"
+        }
+        const recipient = [{
+            email: userEmail
+        }]
+
+        mailtrapClient.send({
+            from: sender,
+            to: recipient,
+            subject: "You've been invited to QueueMeIn!",
+            text: "You've been invited to QueueMeIn! Click here to sign up: https://queueme.in",
+            category: "QMI Invite – Test",
+        })
+
     });
