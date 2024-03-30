@@ -10,12 +10,12 @@
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "^18.20.0"
+    "node": "18"
   },
   "main": "lib/index.js",
   "dependencies": {
     "firebase-admin": "^8.10.0",
-    "firebase-functions": "^3.17.1",
+    "firebase-functions": "^4.8.2",
     "mailtrap": "^3.3.0",
     "twilio": "^3.71.3"
   },
