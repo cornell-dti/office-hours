@@ -54,12 +54,12 @@
     "yarn": "^1.22.17"
   },
   "scripts": {
-    "build": "react-scripts build",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
     "build:staging": "REACT_APP_IS_STAGING=true react-scripts build",
     "deploy": "firebase deploy",
-    "start": "react-scripts start",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "s": "yarn start",
-    "test": "NODE_ENV=test firebase emulators:exec --only firestore \"./test.sh\"",
+    "test": "NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=test firebase emulators:exec --only firestore \"./test.sh\"",
     "lint": "eslint . --ext tsx --ext ts",
     "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
