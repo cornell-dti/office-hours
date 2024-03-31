@@ -9,7 +9,7 @@ interface NewTag {
 
 type PropTypes = {
     isNew: boolean;
-    cancelCallback: Function;
+    cancelCallback: () => void;
     tag?: FireTag;
     courseId: string;
     childTags: FireTag[];
@@ -48,15 +48,6 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             newTags: [],
             showWarning: false
         };
-    }
-
-    UNSAFE_componentWillReceiveProps(props: PropTypes) {
-        if (props.tag) {
-            this.setState({
-                tag: props.tag,
-                newTags: props.childTags.map(firetag => ({ id: firetag.tagId, name: firetag.name }))
-            });
-        }
     }
 
     handleNameChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -166,6 +157,15 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
             this.handleNewTagEnter();
         }
     };
+
+    UNSAFEcomponentWillReceiveProps(props: PropTypes) {
+        if (props.tag) {
+            this.setState({
+                tag: props.tag,
+                newTags: props.childTags.map(firetag => ({ id: firetag.tagId, name: firetag.name }))
+            });
+        }
+    }
 
     render() {
         return (

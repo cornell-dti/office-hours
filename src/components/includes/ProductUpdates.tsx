@@ -49,7 +49,7 @@ const ProductUpdates = ({user}: ProductProps) => {
             if (seeAll) {
                 toggleSingleUpdate(false);
                 updateTrackable();
-            };
+            }
         }
     }
 

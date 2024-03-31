@@ -12,8 +12,8 @@ const ProfessorCalendarRow = (props: {
     taOptions: DropdownItemProps[];
     isExpanded: boolean[];
     handleEditToggle: (day: number, row: number, forceClose?: boolean) => void;
-    updateDeleteInfo: Function;
-    updateDeleteVisible: Function;
+    updateDeleteInfo: (day: number, row: number) => void;
+    updateDeleteVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
 
     const toggleEdit = (row: number, close?: boolean) => {

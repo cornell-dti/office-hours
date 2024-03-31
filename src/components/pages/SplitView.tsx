@@ -156,7 +156,7 @@ const SplitView = ({
                 icon: Browser,
                 global: true
             });
-        };
+        }
         try {
             // Request permission to send desktop notifications
             if (Notification.permission === 'default') {

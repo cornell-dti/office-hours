@@ -6,7 +6,7 @@ type Props = {
     active: boolean;
     day: string;
     date: number;
-    handleClick: Function;
+    handleClick: (item: number) => void;
     hasSession: boolean;
 };
 

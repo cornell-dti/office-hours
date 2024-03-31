@@ -174,5 +174,5 @@ export const updateLastSent =
                     }
                 })
             }
-        };
+        }
     }

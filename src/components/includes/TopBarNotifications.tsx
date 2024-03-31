@@ -12,7 +12,7 @@ type Props = {
     /** User that is currently using QMI */
     user: FireUser | undefined;
     /** Function that sets showMenu to false or true */
-    iconClick: Function;
+    iconClick: () => void;
     /** Determines whether the profile menu should be shown or not */
     showMenu: boolean;
 }

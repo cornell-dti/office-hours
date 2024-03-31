@@ -32,7 +32,7 @@ const ProfessorOHInfo = (props: {
     isNewOH: boolean;
     taOptions: DropdownItemProps[];
     // taUserIdsDefault?: number[];
-    toggleEdit: Function;
+    toggleEdit: () => void;
     isOfficeHour: boolean;
 }) => {
     const session = props.session || undefined;
