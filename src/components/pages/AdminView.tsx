@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {useHistory} from 'react-router'
-import {Grid} from '@material-ui/core'
+import { useHistory } from 'react-router'
+import { Grid } from '@material-ui/core'
+import { FormControl, Select, MenuItem, InputLabel } from '@mui/material';
 
 import TopBar from '../includes/TopBar';
 import AdminCourseCard from '../includes/AdminCourseCard';
@@ -15,10 +16,14 @@ const AdminView = () => {
     const isAdmin = useIsAdmin();
     const [inCreationMode, setInCreationMode] = useState(false);
     useEffect(() => {
-        if(isAdmin === undefined) {
+        if (isAdmin === undefined) {
             history.push('/')
         }
     }, [isAdmin, history])
+
+
+    const stupidVal = "1"
+    //courses.at(0)?.semester
 
     return (
         <div className="AdminView">
@@ -30,6 +35,34 @@ const AdminView = () => {
                 courseId="DUMMY_COURSE_ID"
             />
             <h2>Courses</h2>
+            <FormControl>
+                <InputLabel id="course-select-label">Semester</InputLabel>
+                <Select
+                    labelId="course-select-label"
+                    id="course-select"
+                    value={stupidVal}
+                    defaultValue={CURRENT_SEMESTER}
+                    onChange={() => "ayo?"}
+                    fullWidth
+                    className="formControl"
+                    sx={{
+                        width: "100%",
+                    }}
+                >
+                    <MenuItem value={CURRENT_SEMESTER}>*default*</MenuItem>
+                    <MenuItem value="FA20">FA20</MenuItem>
+                    <MenuItem value="SP20">SP20</MenuItem>
+                    <MenuItem value="FA21">FA21</MenuItem>
+                    <MenuItem value="SP21">SP21</MenuItem>
+                    <MenuItem value="FA22">FA22</MenuItem>
+                    <MenuItem value="SP22">SP22</MenuItem>
+                    <MenuItem value="FA23">FA23</MenuItem>
+                    <MenuItem value="SP23">SP23</MenuItem>
+                    <MenuItem value="FA24">FA24</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
+                </Select>
+            </FormControl>
+
             <div className="course-container" >
                 <Grid container direction="row" alignItems={'stretch'} spacing={3}>
                     {courses.filter(course => course.semester === CURRENT_SEMESTER).map(course => (
@@ -43,9 +76,9 @@ const AdminView = () => {
             {inCreationMode && <AdminCourseCreator onSubmit={() => setInCreationMode(false)} />}
 
             {!inCreationMode &&
-                <button 
-                    type="button" 
-                    className="create-course-btn" 
+                <button
+                    type="button"
+                    className="create-course-btn"
                     onClick={() => setInCreationMode(true)}
                 >Create New Course</button>}
 
@@ -60,9 +93,9 @@ const AdminView = () => {
                 </Grid>
             </div>
             {!inCreationMode &&
-                <button 
-                    type="button" 
-                    className="create-course-btn" 
+                <button
+                    type="button"
+                    className="create-course-btn"
                     onClick={() => setInCreationMode(true)}
                 >Create New Course</button>}
         </div>
