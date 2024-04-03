@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router'
 import { Grid } from '@material-ui/core'
-import { FormControl, Select, MenuItem, InputLabel } from '@mui/material';
+import { FormControl, Select, SelectChangeEvent, MenuItem, InputLabel } from '@mui/material';
 
 import TopBar from '../includes/TopBar';
 import AdminCourseCard from '../includes/AdminCourseCard';
@@ -21,10 +21,15 @@ const AdminView = () => {
         }
     }, [isAdmin, history])
 
+    const [sem, setSem] = useState(CURRENT_SEMESTER);
 
-    const stupidVal = "1"
     //courses.at(0)?.semester
+    const handleChange = (event: SelectChangeEvent) => {
+        setSem(event.target.value);
+    };
 
+
+    //make menu scrollable if list of sems gets super long
     return (
         <div className="AdminView">
             <TopBar
@@ -40,16 +45,14 @@ const AdminView = () => {
                 <Select
                     labelId="course-select-label"
                     id="course-select"
-                    value={stupidVal}
-                    defaultValue={CURRENT_SEMESTER}
-                    onChange={() => "ayo?"}
+                    value={sem}
+                    onChange={handleChange}
                     fullWidth
                     className="formControl"
                     sx={{
                         width: "100%",
                     }}
                 >
-                    <MenuItem value={CURRENT_SEMESTER}>*default*</MenuItem>
                     <MenuItem value="FA20">FA20</MenuItem>
                     <MenuItem value="SP20">SP20</MenuItem>
                     <MenuItem value="FA21">FA21</MenuItem>
@@ -59,7 +62,7 @@ const AdminView = () => {
                     <MenuItem value="FA23">FA23</MenuItem>
                     <MenuItem value="SP23">SP23</MenuItem>
                     <MenuItem value="FA24">FA24</MenuItem>
-                    <MenuItem value="Other">Other</MenuItem>
+                    <MenuItem value="">Other</MenuItem>
                 </Select>
             </FormControl>
 
