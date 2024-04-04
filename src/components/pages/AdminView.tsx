@@ -22,6 +22,8 @@ const AdminView = () => {
     }, [isAdmin, history])
 
     const [sem, setSem] = useState(CURRENT_SEMESTER);
+    const validSems = ["FA20", "SP20", "FA21", "SP21", "FA22", "SP22",
+        "FA23", "SP23", "FA24", "SP24"]
 
     //courses.at(0)?.semester
     const handleChange = (event: SelectChangeEvent) => {
@@ -53,22 +55,20 @@ const AdminView = () => {
                         width: "100%",
                     }}
                 >
-                    <MenuItem value="FA20">FA20</MenuItem>
-                    <MenuItem value="SP20">SP20</MenuItem>
-                    <MenuItem value="FA21">FA21</MenuItem>
-                    <MenuItem value="SP21">SP21</MenuItem>
-                    <MenuItem value="FA22">FA22</MenuItem>
-                    <MenuItem value="SP22">SP22</MenuItem>
-                    <MenuItem value="FA23">FA23</MenuItem>
-                    <MenuItem value="SP23">SP23</MenuItem>
-                    <MenuItem value="FA24">FA24</MenuItem>
+                    {validSems.map(semester => {
+                        return (
+                            <MenuItem value={semester}>{semester}</MenuItem>
+
+                        );
+                    })}
                     <MenuItem value="">Other</MenuItem>
                 </Select>
             </FormControl>
 
+
             <div className="course-container" >
                 <Grid container direction="row" alignItems={'stretch'} spacing={3}>
-                    {courses.filter(course => course.semester === CURRENT_SEMESTER).map(course => (
+                    {courses.filter(course => course.semester === sem).map(course => (
                         <Grid item xl={3} lg={4} md={6} xs={12}>
                             <AdminCourseCard key={course.courseId} course={course} />
                         </Grid>
@@ -85,10 +85,10 @@ const AdminView = () => {
                     onClick={() => setInCreationMode(true)}
                 >Create New Course</button>}
 
-            <h2>Archived Courses</h2>
+            {/* <h2>Archived Courses</h2>
             <div className="course-container">
                 <Grid container direction="row" alignItems={'stretch'} spacing={3}>
-                    {courses.filter(course => course.semester !== CURRENT_SEMESTER).map(course => (
+                    {courses.filter(course => course.semester !== sem).map(course => (
                         <Grid item xl={3} lg={4} md={6} xs={12}>
                             <AdminCourseCard key={course.courseId} course={course} />
                         </Grid>
@@ -100,7 +100,7 @@ const AdminView = () => {
                     type="button"
                     className="create-course-btn"
                     onClick={() => setInCreationMode(true)}
-                >Create New Course</button>}
+                >Create New Course</button>} */}
         </div>
     );
 };
