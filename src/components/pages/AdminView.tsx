@@ -85,23 +85,29 @@ const AdminView = () => {
                     onClick={() => setInCreationMode(true)}
                 >Create New Course</button>}
 
-            {/* <h2>Archived Courses</h2>
-            <div className="course-container">
-                <Grid container direction="row" alignItems={'stretch'} spacing={3}>
-                    {courses.filter(course => course.semester !== sem).map(course => (
-                        <Grid item xl={3} lg={4} md={6} xs={12}>
-                            <AdminCourseCard key={course.courseId} course={course} />
+            {sem === CURRENT_SEMESTER ?
+                <div>
+                    <h2>Archived Courses</h2>
+                    <div className="course-container">
+                        <Grid container direction="row" alignItems={'stretch'} spacing={3}>
+                            {courses.filter(course => course.semester !== sem).map(course => (
+                                <Grid item xl={3} lg={4} md={6} xs={12}>
+                                    <AdminCourseCard key={course.courseId} course={course} />
+                                </Grid>
+                            ))}
                         </Grid>
-                    ))}
-                </Grid>
-            </div>
-            {!inCreationMode &&
-                <button
-                    type="button"
-                    className="create-course-btn"
-                    onClick={() => setInCreationMode(true)}
-                >Create New Course</button>} */}
+                    </div>
+                    {!inCreationMode &&
+                        <button
+                            type="button"
+                            className="create-course-btn"
+                            onClick={() => setInCreationMode(true)}
+                        >Create New Course</button>}
+                </div> : null}
+
         </div>
+
+
     );
 };
 
