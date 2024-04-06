@@ -26,12 +26,14 @@
       text-overflow: clip;
       display: inline-block;
       padding: 0px;
+
       .resolvedQuestionBadge {
         border-radius: 8px;
         margin-left: 0px;
         display: flex;
         align-items: center;
         justify-content: center;
+
         .resolvedQuestionText {
           color: black;
           font-size: 20px;
@@ -42,6 +44,7 @@
           font-style: normal;
           padding: 5px;
         }
+
         .resolvedCheckImage {
           padding: 0px;
           margin: 3px;
@@ -51,6 +54,7 @@
         }
       }
     }
+
     .Undo {
       background: #ffffff;
       border: 1px solid #b41515;
@@ -171,9 +175,11 @@
     display: inline-block;
     padding: 0px 5px;
     margin-right: 5px;
+
     &.virtual {
       background-color: #ec4339;
     }
+
     &.inPerson {
       background-color: #5599db;
     }
@@ -186,6 +192,7 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
+
     p {
       font-size: 12px;
     }
@@ -344,6 +351,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+
     .taLocationInfo {
       display: flex;
       flex-direction: row;
@@ -482,12 +490,14 @@
       margin: 0px 10px;
       padding: 0;
     }
+
     .studentButtons {
       display: flex;
       align-items: center;
       justify-content: flex-end;
       position: relative;
       padding: 12px 12px 12px 0px;
+
       .Remove {
         margin: 0;
         color: #5599db;
@@ -497,6 +507,7 @@
         background-color: transparent;
         cursor: pointer;
       }
+
       .replyButton {
         position: absolute;
         top: 50%;
@@ -506,12 +517,15 @@
         display: flex;
         flex-direction: row;
         align-items: center;
+
         &.hideReply {
           opacity: 0;
         }
+
         .replyIcon {
           width: 22px;
         }
+
         .indicator {
           position: absolute;
           top: 0;
@@ -526,6 +540,7 @@
       justify-content: space-between;
       padding: 0px 12px;
       position: relative;
+
       .replyButton {
         display: flex;
         cursor: pointer;
@@ -535,15 +550,18 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+
         .replyText {
           margin-left: 5px;
           color: #5599db;
           text-decoration: underline;
           font-size: 15px;
         }
+
         .replyIcon {
           width: 22px;
         }
+
         .indicator {
           position: absolute;
           top: 0;
@@ -567,6 +585,7 @@
         border: 0.5px solid $tag-blue;
         color: $tag-blue;
       }
+      float: right;
 
       .Undo {
         background: #ffffff;
@@ -585,7 +604,9 @@
         size: 50px;
         font-weight: 800;
       }
+
       .assignedButtons {
+
         .Delete {
           margin-left: 5px;
           color: #5599db;
@@ -595,6 +616,7 @@
           background-color: transparent;
           cursor: pointer;
         }
+
         .Done {
           margin-left: 5px;
           color: #5599db;
@@ -607,11 +629,13 @@
       }
 
       .TAButtons {
+        // float: right;
         display: flex;
         flex-direction: row;
         align-items: center;
         padding: 12px 0;
         user-select: none;
+
         p {
           display: inline-block;
           border-radius: 5px;
@@ -668,8 +692,10 @@
       }
     }
   }
+
   .buttonsAndCantRemove {
     position: relative;
+
     .cantRemove {
       position: absolute;
       top: 50%;
@@ -703,18 +729,21 @@
   display: flex;
   align-items: center;
   height: 60.5px;
+
   .expandImage {
     width: 14px;
     height: 14px;
     margin: 0px 8px;
     cursor: pointer;
   }
+
   .expandProfile {
     width: 28.5px;
     height: 28.5px;
     border-radius: 50%;
     margin-right: 8px;
   }
+
   .expandName {
     margin: 0;
     font-weight: 300;

@@ -1,9 +1,28 @@
+input {
+  background: #f3f5fc;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  outline: none;
+  border: none;
+  width: 75%;
+  height: 31px;
+  padding: 6px;
+  color: #474747;
+  font-size: 14px;
+  font-family: 'roboto';
+  margin: '4px';
+}
+
 .DesktopSessionInformationHeader {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 25px 48px;
+
+  .sessionType {
+    margin-bottom: 10px;
+  }
 
   .OneQueueInfo {
     padding: 5px 0;
@@ -49,7 +68,7 @@
     letter-spacing: 0.6px;
     border-radius: 8px;
     box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
-    height: 100%;
+    // height: 100%;
     width: 100%;
     padding: 6% 10%;
     display: flex;
@@ -94,6 +113,7 @@
       border: 1px solid #5599db;
       color: white;
       padding: 3px 13px;
+      margin-bottom: 10px;
     }
 
     .Details {
@@ -114,7 +134,7 @@
         // color: #5599db;
         // font-size: 14px;
         // height: 18px;
-        margin-top: 7.5px;
+        // margin-top: 7.5px;
         cursor: pointer;
 
         font-size: 14px;
@@ -126,6 +146,10 @@
         padding: 4px 13px;
         font-family: 'roboto';
 
+      }
+
+      .Date {
+        margin-bottom: 7.5px;
       }
 
       .Location {
@@ -144,19 +168,13 @@
         }
       }
 
-      // p time {
-      //   margin-bottom: 8px;
-      // }
 
-      // .Date {
-      //   margin-bottom: 20px;
-      // }
 
       a {
         color: white;
         text-decoration: underline;
       }
-      
+
     }
 
     .Title {
@@ -268,18 +286,7 @@
         padding: 4px 13px;
       }
 
-      input {
-        background: #f3f5fc;
-        border-top-left-radius: 8px;
-        border-bottom-left-radius: 8px;
-        outline: none;
-        border: none;
-        width: 75%;
-        height: 31px;
-        padding: 6px;
-        color: #474747;
-        font-size: 14px;
-      }
+
 
       p {
         width: 100%;
@@ -312,16 +319,16 @@
           background-color: transparent;
         }
       }
-
-      .SaveZoomLink {
-        width: fit-content;
-        height: fit-content;
-        font-size: 14px;
-        color: #3594f1;
-        border: 1px solid #3594f1;
-      }
     }
   }
+}
+
+.SaveEdit {
+  width: fit-content;
+  height: fit-content;
+  font-size: 14px;
+  color: #3594f1;
+  border: 1px solid #3594f1;
 }
 
 .SessionInformationHeader {
@@ -329,6 +336,10 @@
   font-size: 15px;
   width: 100%;
   border-bottom: solid 1px #e3e3e3;
+
+  .sessionType {
+    margin: 10px;
+  }
 
   .header {
     padding: 10px 25px 10px 20px;

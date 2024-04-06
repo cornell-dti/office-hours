@@ -3,6 +3,7 @@ import { Icon, Button } from 'semantic-ui-react';
 import Moment from 'react-moment';
 import Linkify from 'react-linkify'
 import { connect } from 'react-redux';
+import { Grid } from '@material-ui/core';
 import notif from '../../media/notif.svg'
 import SelectedTags from './SelectedTags';
 import GreenCheck from '../../media/greenCheck.svg';
@@ -23,6 +24,7 @@ import { RootState } from '../../redux/store';
 import CommentBubble from '../../media/chat_bubble.svg';
 import LatestCommentContainer from './LatestCommentContainer';
 import SessionQuestionTime from './SessionQuestionTime';
+
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;
@@ -261,6 +263,18 @@ class SessionQuestion extends React.Component<Props, State> {
         </a>
     );
 
+    // selectQuestion = (e) => {
+    //     if (question.status !== 'unresolved') {
+    //         e.target.checked = false;
+    //         // document.getElementsByName("selectQuestion").checked = false;
+    //         // $("#selectQuestion").prop('checked', false);
+    //         this.questionDontKnow();
+    //     } else {
+    //         this.assignQuestion();
+    //     }
+
+    // }
+
     render() {
         const question = this.props.question;
         const studentCSS = this.props.isTA ? '' : ' Student';
@@ -277,142 +291,201 @@ class SessionQuestion extends React.Component<Props, State> {
             : undefined;
 
         return (
-            <div className="questionWrapper">
-                <div className="QueueQuestions">
-                    <div className="TopBar">
-                        {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
-                        <div>
-                            <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
-                                {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
-                            </p>
-                        </div>
-                        {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) &&
-                            (
-                                <div className="LocationPin">
-                                    <Icon
-                                        onClick={this.toggleLocationTooltip}
-                                        name="map marker alternate"
-                                        size='large'
-                                    />
-                                    <div
-                                        className="LocationTooltip"
-                                        style={{
-                                            visibility: this.state.showLocation ? 'visible' : 'hidden',
-                                        }}
-                                    >
-                                        <p>
-                                            Edit Location &nbsp;{' '}
-                                            <span
-                                                className={
-                                                    'characterCount ' +
-                                                    (this.state.location.length >= 40 ? 'warn' : '')
-                                                }
-                                            >
-                                                {this.state.location.length}/{LOCATION_CHAR_LIMIT}
-                                            </span>
+            <Grid container className="questionWrapper QueueQuestions">
+                <Grid item md={1} xs={1}>
+                    <input
+                        type="radio"
+                        id="selectQuestion"
+                        onClick={(e) => {
+                            // selectQuestion(e)
+                            if (question.status !== 'unresolved') {
+                                // e.target.checked = false;
+                                // document.getElementsByName("selectQuestion").checked = false;
+                                // $("#selectQuestion").prop('checked', false);
+                                this.questionDontKnow();
+                            } else {
+                                this.assignQuestion();
+                            }
+                        }}
+                    />
+                    {/* {question.status === 'unresolved' ?
+                                        <p className="Begin" onClick={this.assignQuestion}>
+                                            Assign to me
                                         </p>
-                                        <textarea
-                                            className="TextInput question"
-                                            value={this.state.location}
-                                            onChange={e => this.handleUpdateLocation(e)}
-                                        />
-                                        <Icon name="check" onClick={this.toggleLocationTooltip} />
-                                    </div>
-                                </div>
-                            )}
-                        <div className="QuestionInfo">
-                            {this.props.isTA && asker &&
-                                <div className="studentInformation">
-                                    <img
-                                        className="userInformationImg"
-                                        src={asker.photoUrl || '/placeholder.png'}
-                                        alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
-                                    />
-                                    <span className="userInformationName">
-                                        {asker.firstName + ' ' + asker.lastName +
-                                            ' (' + asker.email.slice(0, asker.email.indexOf('@')) + ')'}
-                                        {question.status === 'assigned' &&
-                                            <>
-                                                <span className="assigned"> is assigned
-                                                    {answerer &&
-                                                        (' to ' + (answerer.userId === this.props.myUserId
-                                                            ? 'you'
-                                                            : answerer.firstName + ' '
-                                                            + answerer.lastName))}
-                                                </span>
-                                            </>
-                                        }
-                                    </span>
-                                </div>
-                            }
-                            {!this.props.isTA && user &&
-                                <div className="studentInformation">
-                                    <img
-                                        className="userInformationImg"
-                                        src={user.photoUrl || '/placeholder.png'}
-                                        alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
-                                    />
-                                    <span className="userInformationName">
-                                        {user.firstName + ' ' + user.lastName +
-                                            ' (You)'}
-                                    </span>
-                                </div>
-                            }
-                            <div className="Location">
-                                {this.props.isTA && this.props.modality === 'hybrid' &&
-                                    typeof this.props.question.isVirtual !== 'undefined' &&
-                                    <div className={`hybridBadge ${this.props.question.isVirtual ?
-                                        'virtual' : 'inPerson'}`}
-                                    >
-                                        {this.props.question.isVirtual ? 'Virtual' : 'In-person'}
-                                    </div>
-                                }
-                                {
-                                    (
+                                        :
+                                        <p className="Begin" onClick={this.questionDontKnow}>
+                                            {answerer &&
+                                                ('Unassign from  ' + (answerer.userId === this.props.myUserId
+                                                    ? 'me'
+                                                    : answerer.firstName + ' '
+                                                    + answerer.lastName))}
+                                        </p>
+                                    } */}
+                </Grid>
+                <Grid item md={1} xs={1}>
+                    {/* user image */}
+                    <div className="QuestionInfo">
+                        {this.props.isTA && asker &&
+                            <div className="studentInformation">
+                                <img
+                                    className="userInformationImg"
+                                    src={asker.photoUrl || '/placeholder.png'}
+                                    alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
+                                />
+                            </div>
+                        }
+                        {!this.props.isTA && user &&
+                            <div className="studentInformation">
+                                <img
+                                    className="userInformationImg"
+                                    src={user.photoUrl || '/placeholder.png'}
+                                    alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
+                                /></div>}
+                    </div>
+                </Grid>
+                <Grid item md={2} xs={3}>
+                    <div className="QuestionInfo">
+                        {this.props.isTA && asker &&
+                            <div className="studentInformation">
+                                <span className="userInformationName">
+                                    {asker.firstName + ' ' + asker.lastName +
+                                        ' (' + asker.email.slice(0, asker.email.indexOf('@')) + ')'}
+                                    {question.status === 'assigned' &&
                                         <>
-                                            {this.props.isTA &&
-                                                question.location &&
-                                                question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
-                                                <a href={question.location} target="_blank" rel="noopener noreferrer">
-                                                    Zoom Link
-                                                </a>
-                                            }
-                                            {this.props.isTA &&
-                                                question.location &&
-                                                question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
-                                                (<div className="taLocationInfo">
-                                                    <Icon name="map marker alternate" size='small' />
-                                                    <p>{question.location}</p>
-                                                </div>)
-                                            }
+                                            <span className="assigned">
+                                                <img
+                                                    className="userInformationImg"
+                                                    src={answerer?.photoUrl || '/placeholder.png'}
+                                                    alt={answerer ? `${answerer.firstName} ${answerer.lastName}` : 'unknown user'}
+                                                />
+
+                                                {/* TODO- modify so that this enabled the finish helping button if the user is the one assigned to the q
+                                                {answerer &&
+                                                    (' img of  ' + (answerer.userId === this.props.myUserId
+                                                        ? 'you'
+                                                        : answerer.firstName + ' '
+                                                        + answerer.lastName))} */}
+
+                                            </span>
                                         </>
-                                    )}
+                                    }
+                                </span>
+                            </div>}
+                        {!this.props.isTA && user &&
+                            <div className="studentInformation">
+                                <p className="userInformationName">
+                                    {user.firstName + ' ' + user.lastName +
+                                        ' (You)'}
+                                </p>
                             </div>
+                        }
+                    </div>
+                    <div>
+                        <div className="Tags">
+                            {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} />}
+                            {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} />}
                         </div>
-                        <div className="RightBar">
-                            <div className="Tags">
-                                {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} />}
-                                {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} />}
+
+                    </div>
+                    possible attachments
+
+                    {/* location? */}
+                    {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) &&
+                        (
+                            <div className="LocationPin">
+                                <Icon
+                                    onClick={this.toggleLocationTooltip}
+                                    name="map marker alternate"
+                                    size='large'
+                                />
+                                <div
+                                    className="LocationTooltip"
+                                    style={{
+                                        visibility: this.state.showLocation ? 'visible' : 'hidden',
+                                    }}
+                                >
+                                    <p>
+                                        Edit Location &nbsp;{' '}
+                                        <span
+                                            className={
+                                                'characterCount ' +
+                                                (this.state.location.length >= 40 ? 'warn' : '')
+                                            }
+                                        >
+                                            {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+                                        </span>
+                                    </p>
+                                    <textarea
+                                        className="TextInput question"
+                                        value={this.state.location}
+                                        onChange={e => this.handleUpdateLocation(e)}
+                                    />
+                                    <Icon name="check" onClick={this.toggleLocationTooltip} />
+                                </div>
                             </div>
-                            {question.timeEntered != null &&
-                                <p className="Time">
-                                    {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
-                                </p>}
+                        )}
+
+                    {/* TODO- need this? if role is TA, can see location that student put in question */}
+                    <div className="QuestionInfo">
+                        <div className="Location">
+                            {this.props.isTA && this.props.modality === 'hybrid' &&
+                                typeof this.props.question.isVirtual !== 'undefined' &&
+                                <div className={`hybridBadge ${this.props.question.isVirtual ?
+                                    'virtual' : 'inPerson'}`}
+                                >
+                                    {this.props.question.isVirtual ? 'Virtual' : 'In-person'}
+                                </div>
+                            }
+                            {
+                                (
+                                    <>
+                                        {this.props.isTA &&
+                                            question.location &&
+                                            question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
+                                            <a href={question.location} target="_blank" rel="noopener noreferrer">
+                                                Zoom Link
+                                            </a>
+                                        }
+                                        {this.props.isTA &&
+                                            question.location &&
+                                            question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
+                                            (<div className="taLocationInfo">
+                                                <Icon name="map marker alternate" size='small' />
+                                                <p>{question.location}</p>
+                                            </div>)
+                                        }
+                                    </>
+                                )}
                         </div>
                     </div>
-                    {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
-                        <p className={'Question' + studentCSS}>
-                            {/* any links in the question content will become clickable and open in new tab */}
-                            <Linkify componentDecorator={this.componentDecorator}>{question.content}</Linkify>
-                            {this.props.isTA && question.status === 'assigned' && question.timeAssigned !== undefined 
-                            && !this.props.isPast &&
-                                <SessionQuestionTime assignedTime={question.timeAssigned.toDate().getTime()}/>}
-                        </p>}
-                    {
+                </Grid>
+                <Grid container md={8} xs={6}>
+                    <Grid item md={10}>
+                        {/* ^TODO- turn 10 into var so resizable if ta not assigned?^ */}
+
+                        {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
+                            <p className={'Question' + studentCSS}>
+                                {/* any links in the question content will become clickable and open in new tab */}
+                                <Linkify componentDecorator={this.componentDecorator}>{question.content}</Linkify>
+                                {this.props.isTA && question.status === 'assigned' && question.timeAssigned !== undefined
+                                    && !this.props.isPast &&
+                                    <SessionQuestionTime assignedTime={question.timeAssigned.toDate().getTime()} />}
+                            </p>}
+                    </Grid>
+                    <Grid item md={2}>
+                        ta assigned if there is one
+                        {/* TODO- put time question asked here? */}
+                        {question.timeEntered != null &&
+                            <p className="Time">
+                                {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
+                            </p>}
+                    </Grid>
+                    <Grid item md={12}> {
                         this.props.isTA &&
                         <div className="Buttons">
                             <hr />
                             <div className="buttonsWrapper">
+                                {/* TODO- move reply button */}
                                 <div className="replyButton">
                                     {!this.state.areCommentsVisible && question.taNew && <img
                                         className="indicator"
@@ -442,7 +515,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                     }
                                 </div>
                                 <div className="assignedButtons">
-                                    {question.status === 'assigned' &&
+                                    {question.status === 'unresolved' &&
                                         <>
                                             <button
                                                 className="Delete"
@@ -459,103 +532,299 @@ class SessionQuestion extends React.Component<Props, State> {
                                 </div>
                             </div>
                         </div>
-                    }
+                    }</Grid>
+                </Grid>
+            </Grid>
 
-                    {
-                        question.answererLocation && this.state.width < MOBILE_BREAKPOINT && <>
-                            <Button className="JoinButton" target="_blank" href={question.answererLocation}>
-                                Join Session
-                            </Button>
-                        </>
-                    }
 
-                    {
-                        this.props.includeRemove && !this.props.isPast &&
-                        <div className="Buttons">
-                            <hr />
-                            <div className="studentButtons">
-                                <p className="Remove" onClick={this.onClickRemove}>
-                                    Remove
-                                </p>
-                                <div className="replyButton">
-                                    {!this.state.areCommentsVisible && question.studentNew && <img
-                                        className="indicator"
-                                        src={notif}
-                                        alt="Notification indicator"
-                                    />}
-                                    <img
-                                        className="replyIcon"
-                                        src={CommentBubble}
-                                        alt="Reply icon"
-                                        onClick={this.handleReplyButton}
-                                    />
-                                </div>
-                            </div>
 
-                        </div>
-                    }
-                    {this.state.showNoShowPopup && (
-                        <div className="popup">
-                            <div className="popupContainer">
-                                <div className="resolvedQuestionBadge">
-                                    <img
-                                        className="resolvedCheckImage"
-                                        alt="Green check"
-                                        src={GreenCheck}
-                                    />
-                                    <p className="resolvedQuestionText">
-                                        Student Marked as No Show
-                                    </p>
-                                </div>
-                            </div>
-                            <p className="Undo" onClick={this.undoNoShow}>
-                                Undo
-                            </p>
-                        </div>
-                    )}
-                    {this.state.showUndoPopup && (
-                        <div className="popup">
-                            <div className="popupContainer">
-                                <div className="resolvedQuestionBadge">
-                                    <img
-                                        className="resolvedCheckImage"
-                                        alt="Green check"
-                                        src={GreenCheck}
-                                    />
-                                    <p className="resolvedQuestionText">
-                                        Question Marked as Done
-                                    </p>
-                                </div>
-                            </div>
-                            <p className="Undo" onClick={this.undoDone}>
-                                Undo
-                            </p>
-                        </div>
-                    )}
-                </div >
-                {!this.state.areCommentsVisible &&
-                    <LatestCommentContainer
-                        users={this.props.commentUsers}
-                        questionId={question.questionId}
-                        reply={this.handleReplyButton}
-                        newComment={this.props.isTA ? question.taNew : question.studentNew}
-                    />
-                }
-                {
-                    this.state.areCommentsVisible ?
-                        < CommentsContainer
-                            users={this.props.commentUsers}
-                            currentUser={this.props.user}
-                            addCommentsHelper={this.addCommentsHelper}
-                            questionId={question.questionId}
-                            switchCommentsVisible={this.switchCommentsVisible}
-                            deleteCommentsHelper={this.deleteCommentsHelper}
-                            showNewComment={this.state.showNewComment}
-                            isPast={this.props.isPast}
-                        /> :
-                        <></>
-                }
-            </div>
+
+
+
+
+
+
+
+
+        // <div className="questionWrapper">
+        //     <div className="QueueQuestions">
+        //         <div className="TopBar">
+        //             {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
+        //             <div>
+        //                 <p className={'Order ' + (question.status === 'assigned' ? 'assigned' : '')}>
+        //                     {question.status === 'assigned' ? '•••' : this.getDisplayText(this.props.index)}
+        //                 </p>
+        //             </div>
+        //             {this.props.includeRemove && !['virtual', 'review'].includes(this.props.modality) &&
+        //                 (
+        //                     <div className="LocationPin">
+        //                         <Icon
+        //                             onClick={this.toggleLocationTooltip}
+        //                             name="map marker alternate"
+        //                             size='large'
+        //                         />
+        //                         <div
+        //                             className="LocationTooltip"
+        //                             style={{
+        //                                 visibility: this.state.showLocation ? 'visible' : 'hidden',
+        //                             }}
+        //                         >
+        //                             <p>
+        //                                 Edit Location &nbsp;{' '}
+        //                                 <span
+        //                                     className={
+        //                                         'characterCount ' +
+        //                                         (this.state.location.length >= 40 ? 'warn' : '')
+        //                                     }
+        //                                 >
+        //                                     {this.state.location.length}/{LOCATION_CHAR_LIMIT}
+        //                                 </span>
+        //                             </p>
+        //                             <textarea
+        //                                 className="TextInput question"
+        //                                 value={this.state.location}
+        //                                 onChange={e => this.handleUpdateLocation(e)}
+        //                             />
+        //                             <Icon name="check" onClick={this.toggleLocationTooltip} />
+        //                         </div>
+        //                     </div>
+        //                 )}
+        //             <div className="QuestionInfo">
+        //                 {this.props.isTA && asker &&
+        //                     <div className="studentInformation">
+        //                         <img
+        //                             className="userInformationImg"
+        //                             src={asker.photoUrl || '/placeholder.png'}
+        //                             alt={asker ? `${asker.firstName} ${asker.lastName}` : 'unknown user'}
+        //                         />
+        //                         <span className="userInformationName">
+        //                             {asker.firstName + ' ' + asker.lastName +
+        //                                 ' (' + asker.email.slice(0, asker.email.indexOf('@')) + ')'}
+        //                             {question.status === 'assigned' &&
+        //                                 <>
+        //                                     <span className="assigned"> is assigned
+        //                                         {answerer &&
+        //                                             (' to ' + (answerer.userId === this.props.myUserId
+        //                                                 ? 'you'
+        //                                                 : answerer.firstName + ' '
+        //                                                 + answerer.lastName))}
+        //                                     </span>
+        //                                 </>
+        //                             }
+        //                         </span>
+        //                     </div>
+        //                 }
+        //                 {!this.props.isTA && user &&
+        //                     <div className="studentInformation">
+        //                         <img
+        //                             className="userInformationImg"
+        //                             src={user.photoUrl || '/placeholder.png'}
+        //                             alt={user ? `${user.firstName} ${user.lastName}` : 'unknown user'}
+        //                         />
+        //                         <span className="userInformationName">
+        //                             {user.firstName + ' ' + user.lastName +
+        //                                 ' (You)'}
+        //                         </span>
+        //                     </div>
+        //                 }
+        //                 <div className="Location">
+        //                     {this.props.isTA && this.props.modality === 'hybrid' &&
+        //                         typeof this.props.question.isVirtual !== 'undefined' &&
+        //                         <div className={`hybridBadge ${this.props.question.isVirtual ?
+        //                             'virtual' : 'inPerson'}`}
+        //                         >
+        //                             {this.props.question.isVirtual ? 'Virtual' : 'In-person'}
+        //                         </div>
+        //                     }
+        //                     {
+        //                         (
+        //                             <>
+        //                                 {this.props.isTA &&
+        //                                     question.location &&
+        //                                     question.location.substr(0, 25) === 'https://cornell.zoom.us/j' &&
+        //                                     <a href={question.location} target="_blank" rel="noopener noreferrer">
+        //                                         Zoom Link
+        //                                     </a>
+        //                                 }
+        //                                 {this.props.isTA &&
+        //                                     question.location &&
+        //                                     question.location.substr(0, 25) !== 'https://cornell.zoom.us/j' &&
+        //                                     (<div className="taLocationInfo">
+        //                                         <Icon name="map marker alternate" size='small' />
+        //                                         <p>{question.location}</p>
+        //                                     </div>)
+        //                                 }
+        //                             </>
+        //                         )}
+        //                 </div>
+        //             </div>
+        //             <div >
+        //                 <div className="Tags">
+        //                     {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} />}
+        //                     {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} />}
+        //                 </div>
+        //                 {question.timeEntered != null &&
+        //                     <p className="Time">
+        //                         {<Moment date={question.timeEntered.toDate()} interval={0} format={'hh:mm A'} />}
+        //                     </p>}
+        //             </div>
+        //         </div>
+        //         {(this.props.isTA || includeBookmark || this.props.includeRemove) &&
+        //             <p className={'Question' + studentCSS}>
+        //                 {/* any links in the question content will become clickable and open in new tab */}
+        //                 <Linkify componentDecorator={this.componentDecorator}>{question.content}</Linkify>
+        //                 {this.props.isTA && question.status === 'assigned' && question.timeAssigned !== undefined 
+        //                 && !this.props.isPast &&
+        //                     <SessionQuestionTime assignedTime={question.timeAssigned.toDate().getTime()}/>}
+        //             </p>}
+        //         {
+        //             this.props.isTA &&
+        //             <div className="Buttons">
+        //                 <hr />
+        //                 <div className="buttonsWrapper">
+        //                     <div className="replyButton">
+        //                         {!this.state.areCommentsVisible && question.taNew && <img
+        //                             className="indicator"
+        //                             src={notif}
+        //                             alt="Notification indicator"
+        //                         />}
+        //                         <img
+        //                             className="replyIcon"
+        //                             src={CommentBubble}
+        //                             alt="Reply icon"
+        //                             onClick={this.handleReplyButton}
+        //                         />
+        //                     </div>
+        //                     <div className="TAButtons">
+        //                         {question.status === 'unresolved' ?
+        //                             <p className="Begin" onClick={this.assignQuestion}>
+        //                                 Assign to me
+        //                             </p>
+        //                             :
+        //                             <p className="Begin" onClick={this.questionDontKnow}>
+        //                                 {answerer &&
+        //                                     ('Unassign from  ' + (answerer.userId === this.props.myUserId
+        //                                         ? 'me'
+        //                                         : answerer.firstName + ' '
+        //                                         + answerer.lastName))}
+        //                             </p>
+        //                         }
+        //                     </div>
+        //                     <div className="assignedButtons">
+        //                         {question.status === 'assigned' &&
+        //                             <>
+        //                                 <button
+        //                                     className="Delete"
+        //                                     onClick={this.studentNoShow}
+        //                                     type="button"
+        //                                 >No show</button>
+        //                                 <button
+        //                                     className="Done"
+        //                                     onClick={this.questionDone}
+        //                                     type="button"
+        //                                 >Done</button>
+        //                             </>
+        //                         }
+        //                     </div>
+        //                 </div>
+        //             </div>
+        //         }
+
+        //         {
+        //             question.answererLocation && this.state.width < MOBILE_BREAKPOINT && <>
+        //                 <Button className="JoinButton" target="_blank" href={question.answererLocation}>
+        //                     Join Session
+        //                 </Button>
+        //             </>
+        //         }
+
+        //         {
+        //             this.props.includeRemove && !this.props.isPast &&
+        //             <div className="Buttons">
+        //                 <hr />
+        //                 <div className="studentButtons">
+        //                     <p className="Remove" onClick={this.onClickRemove}>
+        //                         Remove
+        //                     </p>
+        //                     <div className="replyButton">
+        //                         {!this.state.areCommentsVisible && question.studentNew && <img
+        //                             className="indicator"
+        //                             src={notif}
+        //                             alt="Notification indicator"
+        //                         />}
+        //                         <img
+        //                             className="replyIcon"
+        //                             src={CommentBubble}
+        //                             alt="Reply icon"
+        //                             onClick={this.handleReplyButton}
+        //                         />
+        //                     </div>
+        //                 </div>
+
+        //             </div>
+        //         }
+        //         {this.state.showNoShowPopup && (
+        //             <div className="popup">
+        //                 <div className="popupContainer">
+        //                     <div className="resolvedQuestionBadge">
+        //                         <img
+        //                             className="resolvedCheckImage"
+        //                             alt="Green check"
+        //                             src={GreenCheck}
+        //                         />
+        //                         <p className="resolvedQuestionText">
+        //                             Student Marked as No Show
+        //                         </p>
+        //                     </div>
+        //                 </div>
+        //                 <p className="Undo" onClick={this.undoNoShow}>
+        //                     Undo
+        //                 </p>
+        //             </div>
+        //         )}
+        //         {this.state.showUndoPopup && (
+        //             <div className="popup">
+        //                 <div className="popupContainer">
+        //                     <div className="resolvedQuestionBadge">
+        //                         <img
+        //                             className="resolvedCheckImage"
+        //                             alt="Green check"
+        //                             src={GreenCheck}
+        //                         />
+        //                         <p className="resolvedQuestionText">
+        //                             Question Marked as Done
+        //                         </p>
+        //                     </div>
+        //                 </div>
+        //                 <p className="Undo" onClick={this.undoDone}>
+        //                     Undo
+        //                 </p>
+        //             </div>
+        //         )}
+        //     </div >
+        //     {!this.state.areCommentsVisible &&
+        //         <LatestCommentContainer
+        //             users={this.props.commentUsers}
+        //             questionId={question.questionId}
+        //             reply={this.handleReplyButton}
+        //             newComment={this.props.isTA ? question.taNew : question.studentNew}
+        //         />
+        //     }
+        //     {
+        //         this.state.areCommentsVisible ?
+        //             < CommentsContainer
+        //                 users={this.props.commentUsers}
+        //                 currentUser={this.props.user}
+        //                 addCommentsHelper={this.addCommentsHelper}
+        //                 questionId={question.questionId}
+        //                 switchCommentsVisible={this.switchCommentsVisible}
+        //                 deleteCommentsHelper={this.deleteCommentsHelper}
+        //                 showNewComment={this.state.showNewComment}
+        //                 isPast={this.props.isPast}
+        //             /> :
+        //             <></>
+        //     }
+        // </div>
         );
     }
 }

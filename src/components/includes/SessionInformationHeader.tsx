@@ -221,6 +221,7 @@ const SessionInformationHeader = ({
                                     location={initialLocation}
                                     isTa={isTa}
                                     onLocationChange={(newLocation: string) => { setInitialLocation(newLocation) }}
+                                    session={session}
                                 />
                                 {/* {isTa && <button
                                     type="button"
@@ -257,18 +258,18 @@ const SessionInformationHeader = ({
                                     date={session.startTime.seconds * 1000}
                                     interval={0}
                                     format={'dddd, MMM D'}
+                                /> <br />
+                                <Moment
+                                    date={session.startTime.seconds * 1000}
+                                    interval={0}
+                                    format={'h:mm A'}
+                                />
+                                <Moment
+                                    date={session.endTime.seconds * 1000}
+                                    interval={0}
+                                    format={' - h:mm A'}
                                 />
                             </p>
-                            <Moment
-                                date={session.startTime.seconds * 1000}
-                                interval={0}
-                                format={'h:mm A'}
-                            />
-                            <Moment
-                                date={session.endTime.seconds * 1000}
-                                interval={0}
-                                format={' - h:mm A'}
-                            />
                             {/* <div className="OneQueueInfo"> */}
                             {isTa && isOpen &&
                                 (<Grid container direction="row" justifyContent="center" alignItems={'center'}>
@@ -285,6 +286,7 @@ const SessionInformationHeader = ({
                                             setZoomLinkDisplay('show'); // TODO- PLACEHOLDER
                                         }}
                                     >
+                                        {/* TODO how to pause queue: props.isPaused -look at sessionsquestionscontainer.tsx */}
                                         Open Queue
                                     </button>
                                 </Grid>)}
@@ -450,7 +452,7 @@ const SessionInformationHeader = ({
                                                             >
                                                                 <button
                                                                     type="button"
-                                                                    className="SaveZoomLink"
+                                                                    className="SaveEdit"
                                                                     onClick={saveZoomLink}
                                                                 >
                                                                     Save
@@ -535,27 +537,27 @@ const SessionInformationHeader = ({
                                                     {(!(typeof session.useTALink === 'undefined' ||
                                                         session.useTALink === false) && session.TALink) ||
                                                         assignedQuestion?.answererLocation ? (
-                                                        <a
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            href={(typeof session.useTALink === 'undefined' ||
+                                                            <a
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                href={(typeof session.useTALink === 'undefined' ||
                                                                 session.useTALink === false) ?
                                                                 assignedQuestion?.answererLocation :
-                                                                session.TALink}
-                                                        >
-                                                            <button type="button" className="JoinButton">
+                                                                    session.TALink}
+                                                            >
+                                                                <button type="button" className="JoinButton">
                                                                 Join
-                                                            </button>
-                                                        </a>
-                                                    ) : (
-                                                        <button
-                                                            type="button"
-                                                            className="JoinButton"
-                                                            onClick={() => activateError()}
-                                                        >
+                                                                </button>
+                                                            </a>
+                                                        ) : (
+                                                            <button
+                                                                type="button"
+                                                                className="JoinButton"
+                                                                onClick={() => activateError()}
+                                                            >
                                                             Join
-                                                        </button>
-                                                    )}
+                                                            </button>
+                                                        )}
                                                 </Grid>
                                             </Grid>
                                         </div>
@@ -658,13 +660,19 @@ const SessionInformationHeader = ({
                 </p>
                 <div className="CourseInfo">
                     <div className="CourseDetails">
-                        {'building' in session ? (
+                        {/* {'building' in session ? (
                             <span>
                                 <p className="Location">{`${session.building} ${session.room}`}</p>
                             </span>
                         ) : (
                             <span>Online</span>
-                        )}
+                        )} TODO- check if works.. */}
+                        <LocationEditor
+                            location={initialLocation}
+                            isTa={isTa}
+                            onLocationChange={(newLocation: string) => { setInitialLocation(newLocation) }}
+                            session={session}
+                        />
                         <Moment date={session.startTime.toDate()} interval={0} format={'h:mm A'} />
                         <Moment date={session.endTime.toDate()} interval={0} format={' - h:mm A'} />
                     </div>
