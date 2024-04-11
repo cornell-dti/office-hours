@@ -509,7 +509,7 @@
       }
 
       .replyButton {
-        position: absolute;
+        position: relative;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
@@ -541,33 +541,33 @@
       padding: 0px 12px;
       position: relative;
 
-      .replyButton {
-        display: flex;
-        cursor: pointer;
-        align-items: flex-start;
-        margin: auto;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+      // .replyButton {
+      //   display: flex;
+      //   cursor: pointer;
+      //   align-items: flex-start;
+      //   margin: auto;
+      //   position: absolute;
+      //   top: 50%;
+      //   left: 50%;
+      //   transform: translate(-50%, -50%);
 
-        .replyText {
-          margin-left: 5px;
-          color: #5599db;
-          text-decoration: underline;
-          font-size: 15px;
-        }
+      //   .replyText {
+      //     margin-left: 5px;
+      //     color: #5599db;
+      //     text-decoration: underline;
+      //     font-size: 15px;
+      //   }
 
-        .replyIcon {
-          width: 22px;
-        }
+      //   .replyIcon {
+      //     width: 22px;
+      //   }
 
-        .indicator {
-          position: absolute;
-          top: 0;
-          left: 16px;
-        }
-      }
+      //   .indicator {
+      //     position: absolute;
+      //     top: 0;
+      //     left: 16px;
+      //   }
+      // }
 
       .Delete {
         margin-left: 5px;
@@ -585,6 +585,7 @@
         border: 0.5px solid $tag-blue;
         color: $tag-blue;
       }
+
       float: right;
 
       .Undo {
