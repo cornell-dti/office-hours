@@ -79,7 +79,7 @@ class CalendarWeekSelect extends React.Component<Props, State> {
 
         const thisWeekEpoch = this.state.selectedWeekEpoch;
         const nextWeekEpoch = this.state.selectedWeekEpoch +
-            7 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
+            6 /* days */ * 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 
         return (
             <div className="CalendarWeekSelect">
