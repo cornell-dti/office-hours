@@ -46,10 +46,10 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const busiestSessionInfo = busiestSession && {
         ...("building" in busiestSession
             ? {
-                building: busiestSession.building,
-                room: busiestSession.room,
-                online: false as const,
-            }
+                  building: busiestSession.building,
+                  room: busiestSession.room,
+                  online: false as const,
+              }
             : { online: true as const }),
         ohDate: moment(busiestSession.startTime.seconds * 1000).format("MMMM Do"),
         startHour: moment(busiestSession.startTime.seconds * 1000).format("h:mm a"),
@@ -84,7 +84,25 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         return tickVals;
     };
 
-    const calculateAverageWaitTime = (session: FireSession) => {
+    const formatAvgTime = (rawTimeSecs: number) => {
+        const timeSecs = Math.floor(rawTimeSecs);
+        const timeMins = Math.floor(timeSecs / 60);
+        const timeHours = Math.floor(timeMins / 60);
+        const timeDispSecs = timeSecs - timeMins * 60;
+        const timeDispMins = timeMins - timeHours * 60;
+        if (isNaN(timeSecs)) {
+            return "No information available";
+        }
+        if (timeMins === 0) {
+            return timeDispSecs + " s";
+        }
+        if (timeHours === 0) {
+            return timeDispMins + " mins " + timeDispSecs + " s";
+        }
+        return timeHours + " h " + timeDispMins + " mins";
+    };
+
+    const calculateAverageWaitMinutes = (session: FireSession) => {
         return session.assignedQuestions === 0 ? 0 : session.totalWaitTime / session.assignedQuestions / 60;
     };
 
@@ -92,7 +110,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     let averageWaitTimeMax = 0;
     for (const session of sessions) {
         const x = moment(session.startTime.seconds * 1000).format("MMM D");
-        const y = calculateAverageWaitTime(session);
+        const y = calculateAverageWaitMinutes(session);
         const lastIndex = averageWaitTimeLineChartQuestionsTest.length - 1;
         if (averageWaitTimeLineChartQuestionsTest[lastIndex]?.x === x) {
             averageWaitTimeLineChartQuestionsTest[lastIndex].y += y;
@@ -111,14 +129,19 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         return accumulator + session.assignedQuestions;
     }, 0);
 
+    const formattedAverageWaitTime = () => {
+        return formatAvgTime(totalWaitTime / totalAssignedQuestions);
+    };
+
     // Bar Chart
-    const sessionQuestionDict: { 
+    const sessionQuestionDict: {
         [id: string]: {
             ta: string;
             location: string;
             startHour: string;
             endHour: string;
-        };} = {}
+        };
+    } = {};
 
     let chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
 
@@ -130,7 +153,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             ta: session.tas.join(", "),
             startHour: moment(session.startTime.seconds * 1000).format("h:mm a"),
             endHour: moment(session.endTime.seconds * 1000).format("h:mm a"),
-            location: (session.modality === "virtual" || session.modality === "review") ? "Online" : session.building,
+            location: session.modality === "virtual" || session.modality === "review" ? "Online" : session.building,
         };
         const x = moment(session.startTime.seconds * 1000).format("MMM D");
         const y = questions[i] ? questions[i].length : 0;
@@ -140,7 +163,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             questionsByDay[questionsByDay.length - 1] += y;
             chartYMax = Math.max(chartYMax, questionsByDay[questionsByDay.length - 1]);
         } else {
-            barGraphData.push({x});
+            barGraphData.push({ x });
             barGraphData[lastIndex + 1][session.sessionId] = y;
             questionsByDay.push(y);
             chartYMax = Math.max(chartYMax, y);
@@ -248,9 +271,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                     <div>
                                         <p className="crowd-title">Average Wait Time</p>
                                         <p className="maroon-date">
-                                            {totalAssignedQuestions ?
-                                                `${(totalWaitTime / totalAssignedQuestions / 60).toFixed(2)} minutes`
-                                                : "Not applicable"}
+                                            {totalAssignedQuestions ? formattedAverageWaitTime() : "Not applicable"}
                                         </p>
                                     </div>
                                 </div>
