@@ -102,15 +102,16 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         return timeHours + " h " + timeDispMins + " mins";
     };
 
-    const calculateAverageWaitMinutes = (session: FireSession) => {
-        return session.assignedQuestions === 0 ? 0 : session.totalWaitTime / session.assignedQuestions / 60;
+    // average wait time in seconds
+    const calculateAverageWaitTime = (session: FireSession) => {
+        return session.assignedQuestions === 0 ? 0 : session.totalWaitTime / session.assignedQuestions;
     };
 
     const averageWaitTimeLineChartQuestionsTest: { x: string; y: number }[] = [];
     let averageWaitTimeMax = 0;
     for (const session of sessions) {
         const x = moment(session.startTime.seconds * 1000).format("MMM D");
-        const y = calculateAverageWaitMinutes(session);
+        const y = calculateAverageWaitTime(session) / 60;
         const lastIndex = averageWaitTimeLineChartQuestionsTest.length - 1;
         if (averageWaitTimeLineChartQuestionsTest[lastIndex]?.x === x) {
             averageWaitTimeLineChartQuestionsTest[lastIndex].y += y;
@@ -140,6 +141,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             location: string;
             startHour: string;
             endHour: string;
+            avgWaitTime: string;
         };
     } = {};
 
@@ -154,6 +156,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             startHour: moment(session.startTime.seconds * 1000).format("h:mm a"),
             endHour: moment(session.endTime.seconds * 1000).format("h:mm a"),
             location: session.modality === "virtual" || session.modality === "review" ? "Online" : session.building,
+            avgWaitTime: formatAvgTime(calculateAverageWaitTime(session)),
         };
         const x = moment(session.startTime.seconds * 1000).format("MMM D");
         const y = questions[i] ? questions[i].length : 0;
