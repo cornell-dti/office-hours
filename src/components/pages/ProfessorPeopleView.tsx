@@ -122,6 +122,32 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         }
     }
 
+    const calculateAverageResolveTime = (session: FireSession) => {
+        return session.assignedQuestions === 0 ? 0 : session.totalResolveTime / session.assignedQuestions;
+    };
+
+    const averageResolveTimeLineChartQuestionsTest: { x: string; y: number }[] = [];
+    let averageResolveTimeMax = 0;
+    for (const session of sessions) {
+        const x = moment(session.startTime.seconds * 1000).format("MMM D");
+        const y = calculateAverageResolveTime(session) / 60;
+        const lastIndex = averageResolveTimeLineChartQuestionsTest.length - 1;
+        if (averageResolveTimeLineChartQuestionsTest[lastIndex]?.x === x) {
+            averageResolveTimeLineChartQuestionsTest[lastIndex].y += y;
+            averageResolveTimeMax = Math.max(
+                averageResolveTimeMax,
+                averageResolveTimeLineChartQuestionsTest[lastIndex].y
+            );
+        } else {
+            averageResolveTimeLineChartQuestionsTest.push({ x, y });
+            averageResolveTimeMax = Math.max(averageResolveTimeMax, y);
+        }
+    }
+
+    const totalResolveTime = sessions.reduce((accumulator, session) => {
+        return accumulator + session.totalResolveTime;
+    }, 0);
+
     const totalWaitTime = sessions.reduce((accumulator, session) => {
         return accumulator + session.totalWaitTime;
     }, 0);
@@ -132,6 +158,10 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
 
     const formattedAverageWaitTime = () => {
         return formatAvgTime(totalWaitTime / totalAssignedQuestions);
+    };
+
+    const formattedAverageResolveTime = () => {
+        return formatAvgTime(totalResolveTime / totalAssignedQuestions);
     };
 
     // Bar Chart
@@ -282,6 +312,24 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                     <QuestionsLineChart
                                         lineData={averageWaitTimeLineChartQuestionsTest}
                                         yMax={averageWaitTimeMax}
+                                        calcTickVals={calcTickVals}
+                                        legend="minutes"
+                                    />
+                                </div>
+                            </div>
+                            <div className="Most-Crowded-Box">
+                                <div className="most-crowded-text">
+                                    <div>
+                                        <p className="crowd-title">Average Resolve Time</p>
+                                        <p className="maroon-date">
+                                            {totalAssignedQuestions ? formattedAverageResolveTime() : "Not applicable"}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="questions-line-container">
+                                    <QuestionsLineChart
+                                        lineData={averageResolveTimeLineChartQuestionsTest}
+                                        yMax={averageResolveTimeMax}
                                         calcTickVals={calcTickVals}
                                         legend="minutes"
                                     />
