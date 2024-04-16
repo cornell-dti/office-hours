@@ -9,7 +9,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v1
         with:
-          node-version: "^14.17.3"
+          node-version: "^16.20.2"
       - name: Install
         run: |
           yarn install
