@@ -21,7 +21,7 @@ import { RootState } from '../../redux/store';
 type Props = {
     session: FireSession;
     course: FireCourse;
-    callback: Function;
+    callback: () => void;
     user: FireUser;
     isDesktop: boolean;
     isTa: boolean;

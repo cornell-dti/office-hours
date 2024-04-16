@@ -25,8 +25,8 @@ type Props = {
     session: FireSession;
     questions: readonly FireQuestion[];
     isDesktop: boolean;
-    backCallback: Function;
-    joinCallback: Function;
+    backCallback: () => void;
+    joinCallback: () => void;
     user: FireUser;
     setShowModal: (show: boolean) => void;
     setRemoveQuestionId: (newId: string | undefined) => void;
@@ -37,7 +37,7 @@ type Props = {
 type UndoState = {
     undoAction?: string;
     undoName?: string;
-    undoQuestionId?: number;
+    undoQuestionId?: string;
     timeoutId: NodeJS.Timeout | null;
 };
 
@@ -148,7 +148,7 @@ const SessionView = (
         });
     };
 
-    const triggerUndo = (questionId: number, action: string, name: string) => {
+    const triggerUndo = (questionId: string, action: string, name: string) => {
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
