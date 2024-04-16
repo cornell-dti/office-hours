@@ -43,7 +43,6 @@ type Props = {
     isPast: boolean;
     readonly user: FireUser;
     setShowModal: (show: boolean) => void;
-    setRemoveQuestionId: (newId: string | undefined) => void;
 };
 
 type State = {
@@ -120,7 +119,6 @@ class SessionQuestion extends React.Component<Props, State> {
 
     onClickRemove = () => {
         this.props.setShowModal(true);
-        this.props.setRemoveQuestionId(this.props.question.questionId);
     };
 
     retractQuestion = (): void => {
@@ -169,7 +167,6 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({
             timeoutID: id,
         });
-
     };
 
     undoDone = () => {
