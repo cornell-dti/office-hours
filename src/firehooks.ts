@@ -15,6 +15,7 @@ import {
 
 export const useDoc = <T>(collection: string, id: string | undefined, idField: string) => {
     const [doc, setDoc] = useState<T | undefined>();
+
     useEffect(
         () => {
             if (id) {
@@ -25,7 +26,8 @@ export const useDoc = <T>(collection: string, id: string | undefined, idField: s
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             return () => { };
         },
-        [collection, id, idField]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [collection, id, idField, docData, firestore]
     );
     return doc;
 };
@@ -49,7 +51,8 @@ export const useQueryWithLoading = <T, P = string>(
             const subscription = results$.subscribe(results => setResult(results));
             return () => { subscription.unsubscribe(); };
         },
-        [queryParameter, getQuery, idField]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [queryParameter, getQuery, idField, collectionData]
     );
     return result;
 };
@@ -80,7 +83,8 @@ export const useBatchQueryWithLoading = <T, P = string>(
             }
 
         },
-        [queryParameter, getQueries, idField]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [queryParameter, getQueries, idField, collectionData]
     );
     return result;
 };
@@ -208,13 +212,13 @@ export const usePendingUsers = (courseId: string): readonly FirePendingUser[] =>
 
 const isAdminObservable = loggedIn$.pipe(
     switchMap(u =>
-        docData(firestore.doc('admins/' + u.email)) as Observable<{}>
+        docData(firestore.doc('admins/' + u.email)) as Observable<unknown>
     )
 )
 
 export const isAdminSingletonObservable = new SingletonObservable(undefined, isAdminObservable);
 
-export const useIsAdmin: () => {} | undefined =
+export const useIsAdmin: () => unknown =
     createUseSingletonObservableHook(isAdminSingletonObservable);
 
 const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(

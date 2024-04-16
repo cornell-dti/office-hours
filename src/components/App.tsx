@@ -138,7 +138,7 @@ const useRouteActionWithPermissionCheck = (
 };
 
 // Since the type is too polymorphic, we have to use the any type in the next few lines.
-type PrivateRouteProps<P extends {}> = {
+type PrivateRouteProps<P extends { [K in keyof P]?: any}> = {
     component: React.ComponentType<RouteComponentProps<P>>;
     requireProfessor: boolean;
     path: string;
@@ -147,7 +147,7 @@ type PrivateRouteProps<P extends {}> = {
     [restKey: string]: any;
 };
 
-const PrivateRoute = <P extends {}>({
+const PrivateRoute = <P extends { [K in keyof P]?: any}>({
     component,
     requireProfessor,
     ...rest

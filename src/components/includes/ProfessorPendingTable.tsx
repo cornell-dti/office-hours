@@ -41,7 +41,7 @@ const ProfessorPendingTable = ({courseId}: Props) => {
         <Table sortable={true} celled={true} fixed={true}>
             <Table.Header>
                 <Table.Row>
-                    <Table.HeaderCell colspan='2'>Pending Account Creation</Table.HeaderCell>
+                    <Table.HeaderCell colSpan='2'>Pending Account Creation</Table.HeaderCell>
                 </Table.Row>
             </Table.Header>
             <Table.Header>
