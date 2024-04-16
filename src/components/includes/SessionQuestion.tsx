@@ -39,11 +39,10 @@ type Props = {
     modality: FireSessionModality;
     myUserId: string;
     virtualLocation?: string;
-    triggerUndo: Function;
+    triggerUndo: (questionId: string, action: string, name: string) => void;
     isPast: boolean;
     readonly user: FireUser;
     setShowModal: (show: boolean) => void;
-    setRemoveQuestionId: (newId: string | undefined) => void;
 };
 
 type State = {
@@ -120,7 +119,6 @@ class SessionQuestion extends React.Component<Props, State> {
 
     onClickRemove = () => {
         this.props.setShowModal(true);
-        this.props.setRemoveQuestionId(this.props.question.questionId);
     };
 
     retractQuestion = (): void => {
@@ -169,7 +167,6 @@ class SessionQuestion extends React.Component<Props, State> {
         this.setState({
             timeoutID: id,
         });
-
     };
 
     undoDone = () => {
@@ -204,7 +201,7 @@ class SessionQuestion extends React.Component<Props, State> {
         }));
     };
 
-    _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: Function, status: string) => {
+    _onClick = (event: React.MouseEvent<HTMLElement>, updateQuestion: (variables: any) => void, status: string) => {
         updateQuestion({
             variables: {
                 questionId: this.props.question.questionId,
