@@ -5,6 +5,7 @@ import { of, combineLatest, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { docData } from 'rxfire/firestore';
 
+import { doc } from 'firebase/firestore';
 import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
 import ProfessorDelete from '../includes/ProfessorDelete';
@@ -45,7 +46,7 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
 
             const users$ = courseStaffIds$.pipe<FireUser[]>(switchMap(courseStaffIds =>
                 combineLatest(...courseStaffIds.map(courseStaffId =>
-                    docData<FireUser>(firestore.doc(`users/${courseStaffId}`), 'userId')
+                    docData<FireUser>(doc(firestore, `users/${courseStaffId}`), 'userId')
                 ))
             ));
 

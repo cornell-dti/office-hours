@@ -1,96 +1,95 @@
 
-import firebase from 'firebase/app';
+import { doc, writeBatch, DocumentReference } from 'firebase/firestore';
 import { firestore } from '../firebase';
 
-
 const createTag = (
-    batch: firebase.firestore.WriteBatch,
+    batch: ReturnType<typeof writeBatch>,
     tagInfo: Omit<FireTag, 'tagId' | 'level'>,
-    parentTagDocId?: string) => {
-
-    // need to create this first so the child tags have the doc reference
-    const tag = firestore.collection('tags').doc();
+    parentTagDocId?: string
+): DocumentReference => {
+    const tagRef = doc(firestore, 'tags');
     
     const tagDocInfo: Omit<FireTag, 'tagId'> = {
         active: tagInfo.active,
         courseId: tagInfo.courseId,
         level: parentTagDocId ? 2 : 1,
-        name: tagInfo.name
+        name: tagInfo.name,
+        parentTag: parentTagDocId ?? undefined
     };
-    if (parentTagDocId) {
-        tagDocInfo.parentTag = parentTagDocId;
-    }
-    batch.set(tag, tagDocInfo);
 
-    return tag;
-}
+    batch.set(tagRef, tagDocInfo);
+
+    return tagRef;
+};
 
 export const createAssignment = (currentTag: Omit<FireTag, 'tagId' | 'level'>, newTags: NewTag[]) => {
-    
-    const batch = firestore.batch();
+    const batch = writeBatch(firestore);
+    const parentTagRef = createTag(batch, currentTag);
 
-
-    // need to create this first so the child tags have the doc reference
-    const parentTag = createTag(batch, currentTag)
-
-    // below is essentially add new child a bunch of times
-    newTags.map(tagText =>
+    newTags.forEach(tagText => {
         createTag(batch, {
             active: currentTag.active,
             courseId: currentTag.courseId,
             name: tagText.name
-        }, parentTag.id)
+        }, parentTagRef.id);
+    });
 
-    );
     batch.commit();
     
-    return parentTag;
-}
+    return parentTagRef;
+};
 
-const editParentTag = (batch: firebase.firestore.WriteBatch,
-    thisTag: FireTag, childTags: FireTag[]) => {
-    const parentTag = firestore.collection('tags').doc(thisTag.tagId);
-    batch.update(parentTag, {
+const editParentTag = (
+    batch: ReturnType<typeof writeBatch>,
+    thisTag: FireTag,
+    childTags: FireTag[]
+) => {
+    const parentTagRef = doc(firestore, 'tags', thisTag.tagId);
+
+    batch.update(parentTagRef, {
         name: thisTag.name, 
         active: thisTag.active
     });
+
     childTags.forEach(childTag => {
-        const childTagDoc = firestore.collection('tags').doc(childTag.tagId);
-        batch.update(childTagDoc, {
+        const childTagRef = doc(firestore, 'tags', childTag.tagId);
+        batch.update(childTagRef, {
             active: thisTag.active
         });
-    })
-}
+    });
+};
 
-export const editAssignment = (cond: boolean, tag: FireTag,
-    childTags: FireTag[], deletedTags: FireTag[], newTags: NewTag[]) => {
-    const batch = firestore.batch();
-
-    const parentTag = firestore.collection('tags').doc(tag.tagId);
+export const editAssignment = (
+    cond: boolean,
+    tag: FireTag,
+    childTags: FireTag[],
+    deletedTags: FireTag[],
+    newTags: NewTag[]
+) => {
+    const batch = writeBatch(firestore);
+    const parentTagRef = doc(firestore, 'tags', tag.tagId);
 
     if (cond) {
-        editParentTag(batch, tag, childTags)
+        editParentTag(batch, tag, childTags);
     }
 
-    deletedTags
-        .forEach(firetag =>
-            batch.delete(firestore.collection('tags').doc(firetag.tagId)));
+    deletedTags.forEach(fireTag => {
+        const deleteRef = doc(firestore, 'tags', fireTag.tagId);
+        batch.delete(deleteRef);
+    });
 
     newTags.forEach(tagText => {
-        const childTag = firestore.collection('tags').doc();
-
+        const childTagRef = doc(firestore, 'tags');
         const childTagUpdate: Omit<FireTag, 'tagId'> = {
             active: tag.active,
             courseId: tag.courseId,
             level: 2,
             name: tagText.name,
-            parentTag: parentTag.id
+            parentTag: parentTagRef.id
         };
 
-        batch.set(childTag, childTagUpdate);
+        batch.set(childTagRef, childTagUpdate);
     });
 
-    
     batch.commit();
-
-}
+};

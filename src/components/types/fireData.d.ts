@@ -9,7 +9,7 @@ type FireSessionModality = 'in-person' | 'hybrid' | 'virtual' | 'review';
 interface TaAnnouncement {
     ta: FireUser; 
     announcement: string; 
-    uploadTime: FireTimestamp; 
+    uploadTime: Timestamp; 
 }
 
 interface FireBaseSession {
@@ -26,7 +26,7 @@ interface FireBaseSession {
     resolvedQuestions: number;
     totalWaitTime: number;
     totalResolveTime: number;
-    taAnnouncemements?: TaAnnouncement[]; 
+    taAnnouncements?: TaAnnouncement[]; 
     isPaused?: boolean;
 }
 

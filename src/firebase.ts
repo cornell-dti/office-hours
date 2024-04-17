@@ -1,7 +1,6 @@
-import 'firebase/auth';
-import 'firebase/firestore';
-
-import firebase from 'firebase/app';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, Timestamp, connectFirestoreEmulator } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import { authState } from 'rxfire/auth';
 import { collectionData } from 'rxfire/firestore';
 import { filter } from 'rxjs/operators';
@@ -29,19 +28,15 @@ if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !=
     };
 }
 
-const app = firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-
-const firestore = firebase.firestore(app); // Initialize firestore
-// Use emulator for test mode
+const firestore = getFirestore(app); // Initialize Firestore
 if (process.env.NODE_ENV === 'test') {
-    firestore.useEmulator('localhost', 8080);
+    connectFirestoreEmulator(firestore, 'localhost', 8080);
 }
 
-const auth = firebase.auth(app); // Initialize firebase auth
-const loggedIn$ = authState(auth).pipe(filter((user) => !!user)); // Observable only return when user is logged in.
-
-const Timestamp = firebase.firestore.Timestamp;
+const auth = getAuth(app); // Initialize Firebase Auth
+const loggedIn$ = authState(auth).pipe(filter((user) => !!user)); // Observable that only returns when user is logged in
 
 export {
     app,
@@ -51,5 +46,3 @@ export {
     loggedIn$,
     Timestamp
 };
-
-export default firebase;

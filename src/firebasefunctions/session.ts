@@ -1,30 +1,26 @@
-import firebase from 'firebase/app';
+import { doc, collection, addDoc, updateDoc, deleteDoc, getDoc, Timestamp } from 'firebase/firestore';
 import { firestore } from '../firebase';
 
 export const addSession = (session: Omit<FireSession, 'sessionId'>) => {
-    return firestore.collection('sessions').add(session).then(() => { });
+    return addDoc(collection(firestore, 'sessions'), session);
 }
 
 export const updateSession = (oldSession: FireSession, newSession: Omit<FireSession, 'sessionId'>) => {
-    return firestore.collection('sessions').doc(oldSession.sessionId).update(newSession);
+    return updateDoc(doc(firestore, 'sessions', oldSession.sessionId), newSession);
 }
 
 export const pauseSession = (oldSession: FireSession, isPaused: boolean) => {
-    const newSession: FireSession = {
-        ...oldSession,
-        isPaused,
-    }
-    return firestore.collection('sessions').doc(oldSession.sessionId).update(newSession)
+    return updateDoc(doc(firestore, 'sessions', oldSession.sessionId), { ...oldSession, isPaused });
 }
 
 export const deleteSession = (sessionId: string) => {
-    firestore.collection('sessions').doc(sessionId).delete();
+    return deleteDoc(doc(firestore, 'sessions', sessionId));
 }
 
 export const getUsersFromSessions = async (sessions: FireSession[]): Promise<FireUser[]> => {
     const taSet = new Set<string>();
     sessions.forEach(session => session.tas.forEach(ta => taSet.add(ta)));
-    const userDocuments = await Promise.all(Array.from(taSet).map(id => firestore.collection('users').doc(id).get()));
+    const userDocuments = await Promise.all(Array.from(taSet).map(id => getDoc(doc(firestore, 'users', id))));
     return userDocuments.map(document => ({
         userId: document.id,
         ...(document.data() as Omit<FireUser, 'userId'>)
@@ -34,33 +30,35 @@ export const getUsersFromSessions = async (sessions: FireSession[]): Promise<Fir
 export const addTaAnnouncement = (
     oldSession: FireSession,
     user: FireUser,
-    announcement: string) => {
+    announcement: string
+) => {
     const taAnnouncement: TaAnnouncement = {
-        ta: user,
+        ta: user, 
         announcement,
-        uploadTime: firebase.firestore.Timestamp.now()
-    }
-    const newSession: FireSession = {
-        ...oldSession,
-        taAnnouncemements:
-            oldSession.taAnnouncemements
-                ? [taAnnouncement, ...oldSession.taAnnouncemements]
-                : [taAnnouncement]
-    }
-    firestore.collection('sessions').doc(oldSession.sessionId).update(newSession);
+        uploadTime: Timestamp.now()
+    };
+
+    const updates = {
+        taAnnouncemements: oldSession.taAnnouncements 
+            ? [taAnnouncement, ...oldSession.taAnnouncements] 
+            : [taAnnouncement]
+    };
+
+    return updateDoc(doc(firestore, 'sessions', oldSession.sessionId), updates);
 }
+
 
 export const deleteTaAnnouncement = (
     oldSession: FireSession,
     user: FireUser,
     announcement: string,
-    uploadTime: FireTimestamp,
+    uploadTime: Timestamp  // Ensure this is using Firestore's Timestamp type
 ) => {
-    const newTaAnnouncements = oldSession.taAnnouncemements?.filter(
-        a => !((a.ta.userId === user.userId) && (a.announcement === announcement) && (a.uploadTime === uploadTime)))
-    const newSession: FireSession = {
-        ...oldSession,
-        taAnnouncemements: newTaAnnouncements
-    }
-    firestore.collection('sessions').doc(oldSession.sessionId).update(newSession);
+    const newTaAnnouncements = oldSession.taAnnouncements?.filter(
+        (a: TaAnnouncement) =>  // Directly use TaAnnouncement if it's correctly typed
+            !(a.ta.userId === user.userId && a.announcement === announcement 
+            && a.uploadTime.toMillis() === uploadTime.toMillis())
+    );
+
+    return updateDoc(doc(firestore, 'sessions', oldSession.sessionId), { taAnnouncements: newTaAnnouncements });
 }

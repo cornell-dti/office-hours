@@ -1,9 +1,7 @@
-import firebase from 'firebase/app';
+import { getAuth, signOut, User } from 'firebase/auth';
+import { Firestore, runTransaction, doc } from 'firebase/firestore';
 
-
-const auth = firebase.auth;
-
-export const userUpload = (user: firebase.User | null, db: firebase.firestore.Firestore) => {
+export const userUpload = (user: User | null, db: Firestore) => {
     if (user != null) {
         const uid = user.uid;
         const email = user.email || undefined;
@@ -19,21 +17,22 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
                 lastName = displayName.substring(stringSplit + 1);
             }
         }
+
         if(uid && email && displayName && photoUrl && firstName && lastName) {
             const firstNameDefined = firstName || "";
-            db.runTransaction(async (transaction) => {
-                const userDocumentReference = db.collection('users').doc(uid);
-                const userDocument = await transaction.get(userDocumentReference);
-                if (userDocument.exists) {
-                    const partialUserDocument: Partial<FireUser> = {
+            runTransaction(db, async (transaction) => {
+                const userDocRef = doc(db, 'users', uid);
+                const userDoc = await transaction.get(userDocRef);
+                if (userDoc.exists()) {
+                    const partialUserDoc: Partial<FireUser> = {
                         email,
                         firstName: firstNameDefined,
                         lastName,
                         photoUrl,
                     };
-                    transaction.update(userDocumentReference, partialUserDocument);
+                    transaction.update(userDocRef, partialUserDoc);
                 } else {
-                    const fullUserDocument: Omit<FireUser, 'userId'> = {
+                    const fullUserDoc: Omit<FireUser, 'userId'> = {
                         email,
                         firstName: firstNameDefined,
                         lastName,
@@ -43,17 +42,17 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
                         phoneNumber: "Dummy Number",
                         textNotifsEnabled: false,
                     };
-                    transaction.set(userDocumentReference, fullUserDocument);
+                    transaction.set(userDocRef, fullUserDoc);
                 }
-                // eslint-disable-next-line no-console
+            // eslint-disable-next-line no-console
             }).catch(() => console.error('Unable to upload user.'));
         }
     }
 };
 
 export const logOut = () => {
-    auth()
-        .signOut()
+    const auth = getAuth();
+    signOut(auth)
         .then(() => {
             // Success
         })

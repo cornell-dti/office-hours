@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import firebase from 'firebase/app';
+import React, { useState } from 'react';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
 
 import { firestore } from '../../firebase';
 import { CURRENT_SEMESTER, START_DATE, END_DATE } from '../../constants';
@@ -9,6 +9,7 @@ const endDate = new Date(END_DATE);
 const currentTerm = CURRENT_SEMESTER.substring(0, 2);
 const currentYear = CURRENT_SEMESTER.substring(2, 4);
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => {
     const [courseId, setCourseId] = useState('');
     const [name, setName] = useState('');
@@ -26,14 +27,16 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
 
     const onSave = () => {
         if (term !== 'FA' && term !== 'SP') {
+            // eslint-disable-next-line no-alert
             alert('Incorrect term format: enter FA or SP');
             return;
         }
-        if (isNaN(year as unknown as number) || year as unknown as number < 0) {
+        if (isNaN(Number(year)) || Number(year) < 0) {
+            // eslint-disable-next-line no-alert
             alert('Please ensure the year is a positive integer!');
             return;
         }
-        const course: Omit<FireCourse, 'courseId'> = {
+        const courseDoc: Omit<FireCourse, 'courseId'> = {
             name,
             code,
             semester,
@@ -41,12 +44,18 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
             term,
             queueOpenInterval: 30,
             charLimit: 140,
-            startDate: firebase.firestore.Timestamp.fromDate(startDate),
-            endDate: firebase.firestore.Timestamp.fromDate(endDate),
+            startDate: Timestamp.fromDate(startDate),
+            endDate: Timestamp.fromDate(endDate),
             professors: [],
             tas: []
         };
-        firestore.collection('courses').doc(courseId).set(course).then(onSubmit);
+        const courseRef = doc(firestore, 'courses', courseId);
+        setDoc(courseRef, courseDoc).then(onSubmit).catch((error) => {
+            // eslint-disable-next-line no-console
+            console.error("Error saving course: ", error);
+            // eslint-disable-next-line no-alert
+            alert("Failed to save the course.");
+        });
     };
 
     return (

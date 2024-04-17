@@ -9,7 +9,6 @@ import LeaveQueue from '../includes/LeaveQueue';
 import ProductUpdates from "../includes/ProductUpdates"
 
 import { useCourse, useSession } from '../../firehooks';
-import { firestore } from '../../firebase';
 import { removeQuestionbyID, submitFeedback } from '../../firebasefunctions/sessionQuestion';
 import TopBar from '../includes/TopBar';
 import CalendarExportModal from '../includes/CalendarExportModal';
@@ -148,7 +147,7 @@ const SplitView = ({
     };
 
     const removeQuestion = () => {
-        removeQuestionbyID(firestore, removeQuestionId);
+        removeQuestionbyID(removeQuestionId);
     };
 
     const removeQuestionWrapper = (questionId: string | undefined) => {
