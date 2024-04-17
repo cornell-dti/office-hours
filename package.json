@@ -17,7 +17,7 @@
     "@types/enzyme": "^3.10.8",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/mocha": "^8.0.3",
-    "@types/node": "^16.0.0",
+    "@types/node": "^12.12.15",
     "@types/react-linkify": "^1.0.1",
     "chai": "^4.2.0",
     "firebase": "^8.0.1",
