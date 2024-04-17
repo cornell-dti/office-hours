@@ -40,7 +40,7 @@ const AdminView = () => {
                 courseId="DUMMY_COURSE_ID"
             />
             <h2>Courses</h2>
-            <FormControl>
+            <FormControl sx={{ m: 1, width: "8%", backgroundColor: "#FFFFFF" }}>
                 <InputLabel id="course-select-label">Semester</InputLabel>
                 <Select
                     labelId="course-select-label"
