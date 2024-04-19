@@ -61,10 +61,32 @@
             padding-right: 25px;
             padding-left: 10px;
 
+            input {
+                background-color: transparent;
+            }
+
+            input:hover,
+            input:focus {
+                color: #5f87ef;
+            }
+
             .Remove {
                 position: absolute;
                 right: 5px;
                 cursor: pointer;
+            }
+
+            .Remove:hover {
+                color: #5f87ef;
+            }
+        }
+
+        .SelectedChildTag:focus-within,
+        .SelectedChildTag:hover {
+            border-color: #5f87ef;
+
+            input {
+                color: black;
             }
         }
 
@@ -93,7 +115,8 @@
     }
 }
 
-.ExpandedEdit, .ExpandedAdd {
+.ExpandedEdit,
+.ExpandedAdd {
     .Bottom {
         font-size: 14px;
         padding: 10px 0px;

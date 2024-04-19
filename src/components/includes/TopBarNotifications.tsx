@@ -12,7 +12,7 @@ type Props = {
     /** User that is currently using QMI */
     user: FireUser | undefined;
     /** Function that sets showMenu to false or true */
-    iconClick: Function;
+    iconClick: () => void;
     /** Determines whether the profile menu should be shown or not */
     showMenu: boolean;
 }
@@ -31,6 +31,10 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick}: P
 
     const dropdownRef = useRef<HTMLDivElement>(null);
 
+    /**
+     * This function calls a firebase function that keeps track of which 
+     * notifications have been viewed and updates the firebase 
+     */
     const updateTrackable = () => {
         viewedTrackable(user, notificationTracker, true)
     }

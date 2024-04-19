@@ -7,17 +7,20 @@
     justify-content: center;
     align-items: center;
     font-family: "Roboto";
-    font-weight: 400px;
+    font-weight: 400;
     background-color: rgba(112, 112, 112,0.8);
     animation: fade 0.6s;
 }
 
 .leave-queue-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
     position: relative;
     background-color: white;
     border-radius: 8px;
-    height: 350px;
-    width: 40%;
+    height: 180px;
+    width: 480px;
     animation: moveUp 0.6s;
 
     .leave-queue-button {
@@ -40,13 +43,13 @@
     }
 
     img {
-        margin-top: 100px;
         width: 50px;
         height: 50px;
+        margin: 10px;
     }
 
     h2 {
-        color: #B41515;
+        color: #040202;
         font-weight: 400;
         font-size: 18px;
     }
@@ -63,37 +66,23 @@
         transition: background-color 0.3s;
     }
 
-    .yes-queue-button {
-        left: 0;
-        background-color: #B41515;
-        border-radius: 0 0 0 8px;
+    .leave-queue-body {
+        display: "flex";
+        flex-direction: "column";
     }
+}
 
-    .yes-queue-button:hover {
-        background-color: #C11616;
-    }
-
-    .cancel-queue-button {
-        right: 0;
-        background-color: #5599DB;
-        border-radius: 0 0 8px 0;
-    }
-
-    .cancel-queue-button:hover {
-        background-color: #5EA7EE;
-    }
+.leave-queue-prompt {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
 }
 
 @media screen and (max-width: 850px) {
     .leave-queue-container {
-        height: 200px;
-        width: 80%;
-        .leave-queue-button {
-            img {
-                height: 10px;
-                width: 10px;
-            }
-        }
+        height: 145px;
+        width: 380px;
         img {
             margin-top: 50px;
             height: 30px;
@@ -104,6 +93,17 @@
         }
         .leave-queue-option {
             font-size: 12px;
+        }
+        .cancel-button {
+            font-weight: "normal";
+            border-color: "#3594F1"; 
+            color: "#6597D6"; 
+            margin-left: "0.5rem";
+            margin-right: "12.5rem";
+        }
+        .remove-button {
+            font-weight: "normal";
+            background-color: "#A42921";
         }
     }
 }

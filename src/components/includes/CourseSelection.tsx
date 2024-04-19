@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
 import { connect } from 'react-redux';
+import { Icon } from 'semantic-ui-react'
 import TopBar from './TopBar';
 import CourseCard from './CourseCard';
 import { CURRENT_SEMESTER } from '../../constants';
@@ -54,6 +55,8 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     }, [user, currentCourses, currentlyEnrolledCourseIds]);
 
     const [selectedCourseIds, setSelectedCourseIds] = useState<string[]>([]);
+
+    const [collapsed, setCollapsed] = useState(true);
 
     const coursesToEnroll: string[] = [];
     const coursesToUnenroll: string[] = [];
@@ -158,14 +161,14 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                             </div>
                             <div className="CourseCards">
                                 {currentCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
-                            currentlyEnrolledCourseIds.has(course.courseId)
-                            || isEdit)
+                                    currentlyEnrolledCourseIds.has(course.courseId)
+                                    || isEdit)
                                     .map((course) => {
                                         const role = currentlyEnrolledCourseIds.has(course.courseId)
                                             ? (user.roles[course.courseId] || 'student')
                                             : undefined;
                                         const selected = selectedCourseIds.includes(course.courseId)
-                                    || (role !== undefined && role !== 'student');
+                                            || (role !== undefined && role !== 'student');
                                         return (
                                             <div key={course.courseId}>
                                                 <CourseCard
@@ -192,10 +195,21 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                         <div className="description">
                             <div className="subtitle">
                                 Former Classes
+                                {collapsed ? (
+                                    <Icon
+                                        name='chevron down'
+                                        onClick={() => { setCollapsed(false) }}
+                                    />
+                                ) : (
+                                    <Icon
+                                        name='chevron up'
+                                        onClick={() => setCollapsed(true)}
+                                    />
+                                )}
                             </div>
                         </div>
                         <div className="CourseCards CourseCardsInactive">
-                            {formerCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
+                            {!collapsed && formerCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
                                 currentlyEnrolledCourseIds.has(course.courseId))
                                 .map((course, index) => {
                                     const role = currentlyEnrolledCourseIds.has(course.courseId)
@@ -250,7 +264,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     );
 }
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
 
