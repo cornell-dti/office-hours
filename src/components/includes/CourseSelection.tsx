@@ -57,13 +57,18 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     const preSelectedCourses: FireCourse[] = (
         (user.courses.length > 0) ? currentCourses.filter((course) => user.roles[course.courseId] !== undefined) : []);
 
-    // TODO-sophie: ADD ALR SELECTED COURSES HERE
     const [selectedCourses, setSelectedCourses] = useState<FireCourse[]>(preSelectedCourses);
+
+    // courses in which role is defined (TA or Prof)
+    const [unchangeableCourses, setUnchangableCourses] = useState<FireCourse[]>(preSelectedCourses);
 
 
     useEffect(() => {
         setSelectedCourses(currentCourses.filter(
             ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] === undefined
+        ));
+        setUnchangableCourses(currentCourses.filter(
+            ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] !== undefined
         ));
     }, [user, filteredCourses, currentlyEnrolledCourseIds]);
 
@@ -184,13 +189,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         ? 'No Classes Chosen'
         : selectedCourses.map(c => c.code).join(', '));
 
-    // for courses that the user cannot unselect (ta and prof roles)
-    const unChangeableCoursesString = (selectedCourses.length === 0
-        ? ''
-        : selectedCourses.map(c => c.code).join(', '));
-
-
-    // isEdit = false;
     return (
         <div>
             <div className="CourseSelection">
@@ -225,9 +223,15 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                     </div>
                                     <hr />
                                     {isEdit && selectedCoursesString.length > 0 ?
-                                        <div className="EnrolledClasses">
-                                            {isEdit && selectedCoursesString}
-                                        </div>
+                                        <>
+                                            <div className="EnrolledClasses">
+                                                {isEdit && selectedCoursesString}
+                                            </div>
+                                            <br />
+                                            <div className="EnrolledClasses">
+                                                {isEdit && unchangeableCourses.map(course => course.code).join(', ')}
+                                            </div>
+                                        </>
                                         : <div />
                                     }
                                     <div className="CourseCards">
