@@ -17,7 +17,6 @@
     "firebase": "^8.0.1",
     "firebase-admin": "^9.3.0",
     "firebase-functions": "^3.11.0",
-    "twilio": "^3.71.3", 
     "history": "^4.10.1",
     "linkifyjs": "^2.1.9",
     "lodash": "^4.17.15",
@@ -41,10 +40,12 @@
     "redux-thunk": "^2.4.0",
     "rxfire": "^3.9.4",
     "rxjs": "^6.5.3",
+    "sass": "^1.75.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.1",
     "source-map-explorer": "^2.1.2",
     "ts-node": "^9.0.0",
+    "twilio": "^3.71.3",
     "yarn": "^1.22.17"
   },
   "scripts": {
@@ -86,7 +87,6 @@
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^3.0.0",
     "firebase-tools": "^7.13.1",
-    "node-sass": "^4.13.1",
     "ts-mocha": "^8.0.0",
     "typescript": "^3.7.3"
   },
