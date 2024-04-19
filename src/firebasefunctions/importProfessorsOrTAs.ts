@@ -51,11 +51,15 @@ const importProfessorsOrTAs = async (
     course: FireCourse,
     role: 'professor' | 'ta',
     emailListTotal: readonly string[]
-): Promise<{ updatedUsers: FireUser[]; courseChange: FireCourse; missingSet: Set<string>}> => {
+): Promise<{
+    updatedUsers: FireUser[]; courseChange: FireCourse; missingSet: Set<string>;
+    demotedSet: Set<string>;
+}> => {
     const missingSet = new Set<string>(emailListTotal);
+    const demotedSet = new Set<string>();
     const batch = db.batch();
     const updatedUsers: FireUser[] = [];
-    const courseChange: FireCourse = {...course};
+    const courseChange: FireCourse = { ...course };
 
     const emailBlocks = blockArray(emailListTotal, 10);
 
@@ -83,11 +87,16 @@ const importProfessorsOrTAs = async (
         updatedBlocks.forEach(updateBlock => {
             updateBlock.forEach(({ user, roleUpdate }) => {
                 const { email } = user;
-                updatedUsers.push(user);
                 missingSet.delete(email);
-                allUpdates.push({ user, roleUpdate });
-                // update user's roles table
-                batch.update(db.collection('users').doc(user.userId), roleUpdate);
+                if (user.roles[course.courseId] !== 'professor') {
+                    updatedUsers.push(user);
+                    allUpdates.push({ user, roleUpdate });
+                    // update user's roles table
+                    batch.update(db.collection('users').doc(user.userId), roleUpdate);
+                } else if (role !== 'professor') {
+                    demotedSet.add(email);
+                }
+
             })
 
         });
@@ -118,11 +127,18 @@ const importProfessorsOrTAs = async (
         );
         batch.commit();
     }).then(() => {
-        return { updatedUsers, courseChange, missingSet};
+        return { updatedUsers, courseChange, missingSet, demotedSet };
     });
 
 };
 
+/**
+ * This function returns an updated role ID list to reflect the addition or
+ * removal of a user ID.
+ * @param isAdd: adds the user to the role ID list if true, removes the user if false
+ * @param roleIdList: the role ID list before the add or remove
+ * @param userId: the user ID to add or remove from the list
+ */
 const addOrRemoveFromRoleIdList = (
     isAdd: boolean,
     roleIdList: readonly string[],
@@ -172,7 +188,10 @@ export const importProfessorsOrTAsFromCSV = (
     course: FireCourse,
     role: 'professor' | 'ta',
     emailList: string[]
-): Promise<{ updatedUsers: FireUser[]; courseChange: FireCourse; missingSet: Set<string> }> | undefined => {
+): Promise<{
+    updatedUsers: FireUser[]; courseChange: FireCourse;
+    missingSet: Set<string>; demotedSet: Set<string>;
+}> | undefined => {
     return importProfessorsOrTAs(
         course,
         role,

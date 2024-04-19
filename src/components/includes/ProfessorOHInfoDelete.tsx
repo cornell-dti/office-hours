@@ -79,7 +79,6 @@ const ProfessorOHInfoDelete = ({ course, session, toggleDelete, toggleEdit }: Pr
                     toggleDelete();
                     toggleEdit();
                 }}
-                disabled={disable}
             >
                 Delete
             </button>

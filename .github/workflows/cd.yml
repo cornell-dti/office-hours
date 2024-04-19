@@ -12,12 +12,13 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v1
         with:
-          node-version: 10.x
+          node-version: "^16.20.2"
       - name: Install
         run: yarn install
       - name: Build Client
         env:
           REACT_APP_API_KEY: ${{ secrets.REACT_TEST_API_KEY }}
+          NODE_OPTIONS: "--max-old-space-size=2048"
         run: yarn build:staging
       - name: Deploy Client
         env:

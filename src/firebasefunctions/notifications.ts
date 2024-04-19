@@ -54,6 +54,8 @@ export const addDBNotification =
         }
     }
 
+// Clears any notifications older than 24 hours, with the intended side effects 
+// of initializing any uninitialized notificationTracker/list
 export const periodicClearNotifications =
     (user: FireUser | undefined, notificationTracker: NotificationTracker | undefined) => {
         if (user !== undefined) {
@@ -71,6 +73,7 @@ export const periodicClearNotifications =
                     }
                     trackerRef.update(updatedTracker);
                 } else if (
+                    // If a user does not have an initialized notificationList, initialize it
                     notificationTracker !== undefined &&
                     notificationTracker.notificationList === undefined
                 ) {
@@ -80,6 +83,7 @@ export const periodicClearNotifications =
                     }
                     trackerRef.update(updatedTracker);
                 } else {
+                    // If a user does not have an initialized notificationTracker, initialize it
                     const updatedTracker: Partial<NotificationTracker> = {
                         notificationList: [],
                         id: email,
@@ -94,6 +98,7 @@ export const periodicClearNotifications =
 
     }
 
+// Clears the entire set of notifications
 export const clearNotifications = async (user: firebase.User | null) => {
     if (user !== null) {
         const email = user.email;
@@ -169,5 +174,5 @@ export const updateLastSent =
                     }
                 })
             }
-        };
+        }
     }

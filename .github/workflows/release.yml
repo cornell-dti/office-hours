@@ -18,6 +18,7 @@ jobs:
       - name: Build Client
         env: 
           REACT_APP_API_KEY: ${{ secrets.REACT_PROD_API_KEY }}
+          NODE_OPTIONS: "--max-old-space-size=2048"
         run: yarn build
       - name: Deploy
         env:

@@ -240,3 +240,28 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
     });
     return unsubscribe;
 }
+
+export const submitFeedback = (removedQuestionId: string | undefined, relevantCourse: FireCourse, session: string) => 
+    (rating?: number, feedback?: string) => {
+        
+        const feedbackRecord = {
+            session,
+            questionId: removedQuestionId,
+            rating,
+            writtenFeedback: feedback,
+        };
+        const courseRef = firestore.collection("courses").doc(relevantCourse.courseId);
+        courseRef.get().then((doc) => {
+            if (doc.exists) {
+                const existingFeedbackList = doc.data()?.feedbackList || [];
+            
+                existingFeedbackList.push(feedbackRecord);
+
+                return courseRef.update({
+                    feedbackList: existingFeedbackList
+                })
+            } 
+            return Promise.resolve();
+        })
+    
+    };

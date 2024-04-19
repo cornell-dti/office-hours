@@ -10,15 +10,16 @@ import ProductUpdates from "../includes/ProductUpdates"
 
 import { useCourse, useSession } from '../../firehooks';
 import { firestore } from '../../firebase';
-import { removeQuestionbyID } from '../../firebasefunctions/sessionQuestion';
+import { removeQuestionbyID, submitFeedback } from '../../firebasefunctions/sessionQuestion';
 import TopBar from '../includes/TopBar';
 import CalendarExportModal from '../includes/CalendarExportModal';
 import { RootState } from '../../redux/store';
-import {updateCourse, updateSession} from "../../redux/actions/course";
+import { updateCourse, updateSession } from "../../redux/actions/course";
 import Browser from '../../media/browser.svg';
 import smsNotif from '../../media/smsNotif.svg'
 import { addBanner } from '../../redux/actions/announcements';
 import Banner from '../includes/Banner';
+import FeedbackPrompt from '../includes/FeedbackPrompt';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -65,14 +66,14 @@ type SplitViewProps = {
 }
 
 const SplitView = ({
-    history, 
-    match, 
-    user, 
-    course, 
-    session, 
-    updateCourse, 
-    updateSession, 
-    addBanner, 
+    history,
+    match,
+    user,
+    course,
+    session,
+    updateCourse,
+    updateSession,
+    addBanner,
     banners
 }: SplitViewProps) => {
     const [activeView, setActiveView] = useState(
@@ -85,6 +86,8 @@ const SplitView = ({
     const [removeQuestionId, setRemoveQuestionId] = useState<
     string | undefined
     >(undefined);
+    const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
+    const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
     const [currentExportSessions, setCurrentExportSessions] =
@@ -114,7 +117,7 @@ const SplitView = ({
     useEffect(() => {
         updateSession(sessionHook);
     }, [sessionHook, updateSession])
-    
+
     // Handle browser back button
     history.listen((location) => {
         setActiveView(
@@ -148,15 +151,23 @@ const SplitView = ({
         removeQuestionbyID(firestore, removeQuestionId);
     };
 
+    const removeQuestionWrapper = (questionId: string | undefined) => {
+        setRemoveQuestionId(questionId);
+        setDisplayFeedbackPrompt(true);
+        setRemovedQuestionId(questionId);
+        // eslint-disable-next-line no-console
+        console.log("split view questionId: ", questionId);
+    };
+
     useEffect(() => {
         // Add a banner prompting the user to enable browser notifications
-        if("Notification" in window && Notification.permission === 'default') {
+        if ("Notification" in window && Notification.permission === 'default') {
             addBanner({
-                text: "Enable browser notifications to receive notification updates.", 
-                icon: Browser, 
+                text: "Enable browser notifications to receive notification updates.",
+                icon: Browser,
                 global: true
             });
-        };
+        }
         try {
             // Request permission to send desktop notifications
             if (Notification.permission === 'default') {
@@ -165,10 +176,10 @@ const SplitView = ({
         } catch (error) {
             // Do nothing. iOS crashes because Notification isn't defined
         }
-        if(!user?.textPrompted) {
+        if (!user?.textPrompted) {
             addBanner({
-                text: "Enable text notifications under [Profile -> SMS Settings].", 
-                icon: smsNotif, 
+                text: "Enable text notifications under [Profile -> SMS Settings].",
+                icon: smsNotif,
                 noshow: true,
                 global: true
             });
@@ -177,20 +188,21 @@ const SplitView = ({
 
     return (
         <>
-            <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion}/>
             
+            <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
+
             <TopBar
                 role={(user && course && user.roles[course.courseId]) || 'student'}
                 context="student"
                 courseId={match.params.courseId}
                 course={course}
             />
-            {banners.map((banner, index) => 
-                (<Banner 
+            {banners.map((banner, index) =>
+                (<Banner
                     key={index}
-                    icon={banner.icon} 
-                    announcement={banner.text} 
-                    global={banner.global} 
+                    icon={banner.icon}
+                    announcement={banner.text}
+                    global={banner.global}
                     noshow={banner.noshow}
                 />))}
             {(width > MOBILE_BREAKPOINT || activeView === 'calendar') && (
@@ -212,6 +224,8 @@ const SplitView = ({
                 course={course}
             />
 
+
+
             {(width > MOBILE_BREAKPOINT || activeView !== 'calendar') &&
                 ((course && user) ? (
                     (session) ? (
@@ -220,7 +234,7 @@ const SplitView = ({
                             backCallback={handleBackClick}
                             joinCallback={handleJoinClick}
                             setShowModal={setShowModal}
-                            setRemoveQuestionId={setRemoveQuestionId}
+                            setRemoveQuestionId={removeQuestionWrapper}
                             timeWarning={course ? course.timeWarning : 1}
                         />
                     ) : (
@@ -237,7 +251,7 @@ const SplitView = ({
                                 {'Notification' in window &&
                                     window?.Notification !== undefined &&
                                     window?.Notification.permission !==
-                                        'granted' && (
+                                    'granted' && (
                                     <div className='warningArea'>
                                         <div>&#9888;</div>
                                         <div>
@@ -252,16 +266,23 @@ const SplitView = ({
                     )
                 ) : <Loader active={true} content="Loading" />)}
             <ProductUpdates />
-           
+
+            {displayFeedbackPrompt ? (
+                <FeedbackPrompt 
+                    onClose={submitFeedback(removedQuestionId, course, session.sessionId)} 
+                    closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
+                />
+            ) : null}
+
         </>
     );
 };
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user,
-    course : state.course.course,
+    user: state.auth.user,
+    course: state.course.course,
     session: state.course.session,
     banners: state.announcements.banners
 })
 
 
-export default connect(mapStateToProps, {updateCourse, updateSession, addBanner})(SplitView);
+export default connect(mapStateToProps, { updateCourse, updateSession, addBanner })(SplitView);

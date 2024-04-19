@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Loader } from 'semantic-ui-react';
+import { useState } from 'react';
+import { Loader, Icon } from 'semantic-ui-react';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import SessionQuestion from './SessionQuestion';
@@ -18,6 +19,7 @@ type Props = {
     // Session used to update TAs on question answering
     readonly session: FireSession;
     readonly isTA: boolean;
+    readonly isProf: boolean;
     // Note that these questions are sorted by time asked
     readonly questions: readonly FireQuestion[];
     readonly users: { readonly [userId: string]: FireUser };
@@ -25,8 +27,8 @@ type Props = {
     readonly myUserId: string;
     readonly myVirtualLocation?: string;
     // eslint-disable-next-line react/no-unused-prop-types
-    readonly handleJoinClick: Function;
-    readonly triggerUndo: Function;
+    readonly handleJoinClick: () => void;
+    readonly triggerUndo: (questionId: string, action: string, name: string) => void;
     readonly isOpen: boolean;
     readonly isPast: boolean;
     readonly isPaused: boolean | undefined;
@@ -37,7 +39,6 @@ type Props = {
     course: FireCourse;
     readonly myQuestion: FireQuestion | null;
     setShowModal: (show: boolean) => void;
-    setRemoveQuestionId: (newId: string | undefined) => void;
     timeWarning: number | undefined;
     addBanner: (banner: Announcement, session: boolean) => Promise<void>;
     removeBanner: (banner: string, session: boolean) => Promise<void>;
@@ -47,14 +48,13 @@ type StudentMyQuestionProps = {
     readonly questionId: string;
     readonly tags: { readonly [tagId: string]: FireTag };
     readonly index: number;
-    readonly triggerUndo: Function;
+    readonly triggerUndo: (questionId: string, action: string, name: string) => void;
     readonly isPast: boolean;
     readonly myUserId: string;
     readonly modality: FireSessionModality;
     readonly studentQuestion: FireQuestion | null;
     readonly users: { readonly [userId: string]: FireUser };
     setShowModal: (show: boolean) => void;
-    setRemoveQuestionId: (newId: string | undefined) => void;
 };
 
 const StudentMyQuestion = ({
@@ -68,10 +68,9 @@ const StudentMyQuestion = ({
     studentQuestion,
     users,
     setShowModal,
-    setRemoveQuestionId
 }: StudentMyQuestionProps) => {
 
-    if (studentQuestion == null) {
+    if (studentQuestion === null) {
         return <div />;
     }
 
@@ -102,7 +101,6 @@ const StudentMyQuestion = ({
                     isPast={isPast}
                     myUserId={myUserId}
                     setShowModal={setShowModal}
-                    setRemoveQuestionId={setRemoveQuestionId}
                 />
             )}
         </div>
@@ -223,6 +221,10 @@ const SessionQuestionsContainer = (props: Props) => {
     const assignedQuestions = shownQuestions.filter((question) => {
         return question.status === 'assigned' && props.isTA && question.answererId === props.myUserId;
     });
+    const allAssignedQuestions = shownQuestions.filter((question) => {
+        return question.status === 'assigned' && question.answererId !== props.myUserId && props.isProf;
+    });
+    const [collapsed, setCollapsed] = useState(allAssignedQuestions.length === 0);
     const otherQuestions = shownQuestions.filter(question => question.status !== 'assigned' &&
         !assignedQuestions.includes(question));
 
@@ -266,7 +268,8 @@ const SessionQuestionsContainer = (props: Props) => {
                 </div>
             )}
             <div className={"SessionQuestionsContainer splitQuestions" +
-                ((shownQuestions && shownQuestions.length > 0 && (props.isTA || myQuestion)) ? ' whiteBackground' : '')}
+                ((shownQuestions && shownQuestions.length > 0 && (props.isTA || myQuestion)) ?
+                    ' whiteBackground' : '')}
             >
                 {!props.isTA && !myQuestion && props.isOpen && !props.isPaused && !props.haveAnotherQuestion ? (
                     props.course && props.session ? (
@@ -310,7 +313,6 @@ const SessionQuestionsContainer = (props: Props) => {
                         myUserId={props.myUserId}
                         setShowModal={props.setShowModal}
                         users={props.users}
-                        setRemoveQuestionId={props.setRemoveQuestionId}
                     />
                 )}
                 {shownQuestions && shownQuestions.length > 0 && props.modality === 'review' && (
@@ -384,7 +386,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         />
                     ))}
                 {assignedQuestions && assignedQuestions.length > 0 && props.isTA &&
-                    <p className="QuestionHeader">Assigned Questions</p>
+                    <p className="QuestionHeader">Assigned to Me</p>
                 }
                 {shownQuestions &&
                     shownQuestions.length > 0 &&
@@ -406,7 +408,41 @@ const SessionQuestionsContainer = (props: Props) => {
                             isPast={props.isPast}
                             myUserId={props.myUserId}
                             setShowModal={props.setShowModal}
-                            setRemoveQuestionId={props.setRemoveQuestionId}
+                        />
+                    ))}
+                {allAssignedQuestions && allAssignedQuestions.length > 0 && props.isProf &&
+                    <>
+                        <div className="allAssignedHeader">
+                            <p className="QuestionHeader">All Assigned Questions</p>
+                            {collapsed ?
+                                <Icon name='chevron down' onClick={() => setCollapsed(false)} />
+                                :
+                                <Icon name='chevron up' onClick={() => setCollapsed(true)} />
+                            }
+                        </div>
+                    </>
+                }
+                {shownQuestions &&
+                    shownQuestions.length > 0 &&
+                    props.modality !== 'review' &&
+                    !collapsed &&
+                    props.isProf &&
+                    allAssignedQuestions.map((question, i: number) => (
+                        <SessionQuestion
+                            key={question.questionId}
+                            modality={props.modality}
+                            question={question}
+                            users={props.users}
+                            commentUsers={props.users}
+                            tags={props.tags}
+                            index={i}
+                            virtualLocation={props.myVirtualLocation}
+                            isTA={props.isTA}
+                            includeRemove={false}
+                            triggerUndo={props.triggerUndo}
+                            isPast={props.isPast}
+                            myUserId={props.myUserId}
+                            setShowModal={props.setShowModal}
                         />
                     ))}
                 {otherQuestions && otherQuestions.length > 0 && props.isTA &&
@@ -432,7 +468,6 @@ const SessionQuestionsContainer = (props: Props) => {
                             isPast={props.isPast}
                             myUserId={props.myUserId}
                             setShowModal={props.setShowModal}
-                            setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
                 {shownQuestions && shownQuestions.length === 0 && (
