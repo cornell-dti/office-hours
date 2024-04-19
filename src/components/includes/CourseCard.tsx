@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useHistory } from 'react-router';
 import { Icon } from 'semantic-ui-react';
+import { Grid } from '@material-ui/core';
 
 type Props = {
     course: FireCourse;
@@ -37,48 +38,77 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
     };
 
     let roleString = '';
+    let roleColor = '';
     if (role === 'ta') {
         roleString = 'TA';
+        roleColor = "#BF7913";
     } else if (role === 'professor') {
         roleString = 'PROF';
+        roleColor = "green"; // a purple thats closer to our brand colors- #726CFF
+    }
+
+    let courseTextBottomPadding = '70px';
+    if (!inactive && !editable) {
+        courseTextBottomPadding = '30px';
     }
     return (
         <div
             className={`CourseCard ${selected && editable ? 'selected' : ''} ${inactive ? 'inactive' : 'active'}`}
             onClick={selectCourse}
         >
-            {!inactive ? (
-                <div>
-                    {editable ? (
+            <Grid container direction="row" justifyContent='space-between' style={{ height: '58px' }}>
+                {roleString ? <Grid container item className="courseColor" xs={6}><span
+                    className="courseRole"
+                    style={{
+                        border: '2px solid ' + roleColor,
+                        color: roleColor
+                    }}
+                >
+                    {roleString}</span> </Grid> : <Grid container item className="courseColor" xs={6} />}
+                {
+                    !inactive ? (
+                        <div>
+                            {editable ? (
+                                <Grid container item xs={6} justify-self="end">
+                                    <div className="courseColor">
+                                        {/* {roleString && <span
+                                        className="courseRole"
+                                        style={{
+                                            border: '2px solid ' + roleColor,
+                                            color: roleColor
+                                        }}
+                                    >{roleString}</span>} */}
+                                        {selected ? (
+                                            <Icon className="icon" fill="#77BBFA" color="blue" name="check circle" />
+                                        ) : (
+                                            <Icon className="icon" color="grey" name="circle outline" />
+                                        )}
 
-                        <div className="courseColor">
-                            {roleString && <span className="courseRole">{roleString}</span>}
-                            {selected ? (
-                                <Icon className="icon" fill="#77BBFA" color="blue" name="check circle" />
-                            ) : (
-                                <Icon className="icon" color="grey" name="circle outline" />
-                            )}
-
+                                    </div>
+                                </Grid>
+                            ) : (<Grid container item xs={6} justify-self="end" />)}
                         </div>
-                    ) : (<></>)}
-                </div>
-            ) : (
-                <></>
-            )}
-            <div className="courseText">
+                    ) : (
+                        <></>
+                    )
+                }
+            </Grid >
+            <div className="courseText" style={{ paddingBottom: courseTextBottomPadding }} >
                 <div className="courseCode">
                     {course.code}
                 </div>
                 <div className="courseName">{course.name}</div>
             </div>
 
-            {!inactive && !editable ?
-                <div className="myClasses">
-                    <div className="myClassesText">Go to course</div>
-                </div>
-                : <></>
+            {
+                !inactive && !editable ?
+
+                    <div className="myClasses">
+                        <div className="myClassesText">Go to course</div>
+                    </div>
+                    : <></>
             }
-        </div>
+        </div >
     );
 };
 

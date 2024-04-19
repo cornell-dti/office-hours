@@ -184,6 +184,11 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         ? 'No Classes Chosen'
         : selectedCourses.map(c => c.code).join(', '));
 
+    // for courses that the user cannot unselect (ta and prof roles)
+    const unChangeableCoursesString = (selectedCourses.length === 0
+        ? ''
+        : selectedCourses.map(c => c.code).join(', '));
+
 
     // isEdit = false;
     return (
