@@ -45,7 +45,7 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
     return (
         <div
             className={`CourseCard ${selected && editable ? 'selected' : ''} ${inactive ? 'inactive' : 'active'
-            }`}
+                }`}
             onClick={selectCourse}
         >
             {!inactive ? (
@@ -73,7 +73,11 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
                 <div className="courseName">{course.name}</div>
             </div>
 
-            {!inactive && !editable ? <div className="myClasses"> <div className="myClassesText">Go to course</div></div> : <></>
+            {!inactive && !editable ?
+                <div className="myClasses">
+                    <div className="myClassesText">Go to course</div>
+                </div>
+                : <></>
             }
         </div>
     );
