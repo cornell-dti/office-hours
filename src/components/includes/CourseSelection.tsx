@@ -212,16 +212,19 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                             </div>
                                         </div>
                                         <div className="sideblock searchbar">
-                                            <input type="text" placeholder="Search for class name or number..." onChange={searchInput} />
+                                            <input type="text" placeholder="Search for class name or number..." onChange={searchInput} size={2} />
                                             <div className="searchIcon">
                                                 <Icon className="icon" color="grey" name="search" />
                                             </div>
                                         </div>
                                     </div>
                                     <hr />
-                                    <div className="EnrolledClasses">
-                                        {isEdit && selectedCoursesString}
-                                    </div>
+                                    {isEdit && selectedCoursesString.length > 0 ?
+                                        <div className="EnrolledClasses">
+                                            {isEdit && selectedCoursesString}
+                                        </div>
+                                        : <div />
+                                    }
                                     <div className="CourseCards">
                                         {currentCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
                                             currentlyEnrolledCourseIds.has(course.courseId)
@@ -253,6 +256,12 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                     </div>
                                     <div className="subtitle">
                                         {"You are not enrolled in any courses. Click 'Edit' to enroll in courses."}
+                                    </div>
+                                    <div className="sideblock searchbar">
+                                        <input type="text" placeholder="Search for class name or number..." onChange={searchInput} size={2} />
+                                        <div className="searchIcon">
+                                            <Icon className="icon" color="grey" name="search" />
+                                        </div>
                                     </div>
                                 </div></>}
                             {!isEdit && formerCourses.length > 0 ? <>

@@ -40,7 +40,7 @@
             }
 
             .title {
-                padding-bottom: 4px;
+                padding-bottom: 8px;
                 font-size: 36px;
                 font-weight: 600;
                 line-height: normal;
@@ -186,20 +186,18 @@
     }
 }
 
-@media only screen and (max-width: $mobile-breakpoint) {
+@media only screen and (max-width: 1062px) {
     .App {
         background-color: white;
     }
 
+
+
     .CourseSelection {
         background-color: white;
 
-        .QMeLogo.course {
-            display: none;
-        }
-
-        .topBar {
-            display: none;
+        .GreyBackground {
+            padding: 20px;
         }
 
         .selectionContent {
@@ -210,21 +208,38 @@
             }
 
             .description {
+                padding-left: 50px;
                 padding-bottom: 25px;
                 border-bottom: solid 2px #e2e2e2;
 
                 .title {
-                    font-size: 24px;
                     padding-bottom: 20px;
                     font-weight: bold;
                 }
 
                 .subtitle {
-                    font-size: 18px;
 
                     .EnrolledCourses.mobile {
                         display: none; // Change to block
                     }
+                }
+
+                .searchbar {
+                    // font-size: 18px;
+                    // display: flex;
+                    width: 70%;
+                    float: left;
+                    margin-right: 30px;
+
+                    .input {
+                        font-size: 1px;
+                        min-width: 30;
+                    }
+
+                    // .searchIcon {
+                    //     margin-right: 0;
+                    // }
+
                 }
             }
         }

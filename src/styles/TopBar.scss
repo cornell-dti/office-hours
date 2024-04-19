@@ -52,7 +52,7 @@
 
         .viewToggles {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             align-self: center;
             justify-content: center;
         }
@@ -63,6 +63,7 @@
             width: 30px;
             margin-left: 46px;
         }
+
         .rightContentWrapper {
             width: 20%;
             display: flex;
@@ -109,7 +110,10 @@
 
 @media only screen and (max-width: $mobile-breakpoint) {
     .userProfile {
-        padding-right: 15px;
+        margin: 0 12px 0 0;
+        padding-right: 10px;
+        box-sizing: border-box;
+        max-width: 100%;
     }
 
     .topBar {
@@ -118,11 +122,19 @@
         align-items: center;
         justify-content: center;
         padding-right: 0;
+        width: 100%;
 
         .triggerArea {
+            width: 100%;
+
             .QMILogo {
-                margin-left: 15px;
+                margin-left: 10px;
             }
+
+            .profilePic {
+                margin-right: 6px;
+            }
+
         }
     }
 }

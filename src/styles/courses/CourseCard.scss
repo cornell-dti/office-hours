@@ -10,6 +10,7 @@
     height: 260px;
     font-weight: 400;
     border: 2px solid #D8D8D8;
+    overflow-wrap: anywhere;
 
     &.selected {
         background-color: rgba(214, 234, 254, 0.4);
@@ -60,6 +61,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        font-size: 18px;
+
+        .myClassesText {
+            background: #F5F5F5;
+            border-radius: 15px;
+            align-items: center;
+            max-width: 50%;
+            padding: 10px 15px;
+        }
     }
 
     .courseText {
@@ -87,9 +97,28 @@
 
 }
 
-@media only screen and (max-width: $mobile-breakpoint) {
+@media only screen and (max-width: 1062px) {
     .CourseCard {
         // min-width: 200px;
-        // max-width: 200px;
+        max-width: 300px;
+        // padding: 
+    }
+}
+
+@media only screen and (max-width: 550px) {
+    .CourseCard {
+        min-width: 200px;
+        // max-width: 300px;
+        // padding: 
+    }
+}
+
+@media only screen and (max-width: 430px) {
+    .CourseCard {
+        max-width: 200px;
+
+        .courseText {
+            padding: 20px 20px 10px 20px;
+        }
     }
 }
