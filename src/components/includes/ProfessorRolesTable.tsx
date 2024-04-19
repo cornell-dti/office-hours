@@ -158,15 +158,7 @@ export default connect(
                                 <Table.Cell>{u.lastName}</Table.Cell>
                                 <Table.Cell>{u.email}</Table.Cell>
                                 <Table.Cell textAlign="right" className="dropdownCell">
-<<<<<<< HEAD
-                                    <RoleDropdown
-                                        user={u}
-                                        course={course}
-                                        disabled={isAdminView ? false : (u.email === user?.email)}
-                                    />
-=======
                                     <RoleDropdown user={u} course={course} disabled={u.email === user?.email} />
->>>>>>> 55f962fe26aceb4f2e116639d6757aa28db2d686
                                 </Table.Cell>
                             </Table.Row>
                         ))}
