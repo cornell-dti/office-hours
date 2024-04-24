@@ -100,12 +100,11 @@ const CalendarSessionCard = (props: {
                     ) : (
                         <div className='Location'>Online</div>
                     )}
-                    <img
-                        src={CalendarExport}
-                        alt='Export to calendar'
-                        className='CalendarExportIcon'
-                        onClick={showCalendarExportModal}
-                    />
+                    <button
+                        type="button"
+                        className="cal-btn"
+                    // onClick={() => setInCreationMode(true)}
+                    >+ Add to Cal</button>
                 </div>
                 <div className='Tas'>
                     {session.title ||
@@ -142,7 +141,7 @@ const CalendarSessionCard = (props: {
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
 

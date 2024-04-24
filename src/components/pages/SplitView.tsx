@@ -84,7 +84,7 @@ const SplitView = ({
     const [showModal, setShowModal] = useState(false);
 
     const [removeQuestionId, setRemoveQuestionId] = useState<
-    string | undefined
+        string | undefined
     >(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
@@ -188,7 +188,7 @@ const SplitView = ({
 
     return (
         <>
-            
+
             <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
 
             <TopBar
@@ -198,13 +198,13 @@ const SplitView = ({
                 course={course}
             />
             {banners.map((banner, index) =>
-                (<Banner
-                    key={index}
-                    icon={banner.icon}
-                    announcement={banner.text}
-                    global={banner.global}
-                    noshow={banner.noshow}
-                />))}
+            (<Banner
+                key={index}
+                icon={banner.icon}
+                announcement={banner.text}
+                global={banner.global}
+                noshow={banner.noshow}
+            />))}
             {(width > MOBILE_BREAKPOINT || activeView === 'calendar') && (
                 <CalendarView
                     course={course}
@@ -252,15 +252,15 @@ const SplitView = ({
                                     window?.Notification !== undefined &&
                                     window?.Notification.permission !==
                                     'granted' && (
-                                    <div className='warningArea'>
-                                        <div>&#9888;</div>
-                                        <div>
+                                        <div className='warningArea'>
+                                            <div>&#9888;</div>
+                                            <div>
                                                 Please make sure to enable
                                                 browser notifications in your
                                                 system settings.
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
                             </div>
                         </section>
                     )
@@ -268,8 +268,8 @@ const SplitView = ({
             <ProductUpdates />
 
             {displayFeedbackPrompt ? (
-                <FeedbackPrompt 
-                    onClose={submitFeedback(removedQuestionId, course, session.sessionId)} 
+                <FeedbackPrompt
+                    onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
                     closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                 />
             ) : null}

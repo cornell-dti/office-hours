@@ -49,7 +49,7 @@ const CalendarExportModal = ({
     }
 
     const getDateString = (): string => {
-        const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const months = [
             'January',
             'February',
@@ -65,7 +65,7 @@ const CalendarExportModal = ({
             'December'
         ];
         const dateStr = (
-            `${days[currentExportSessions[0].startTime.toDate().getDay()]}, ` + 
+            `${days[currentExportSessions[0].startTime.toDate().getDay()]}, ` +
             `${months[currentExportSessions[0].startTime.toDate().getMonth()]} ` +
             `${currentExportSessions[0].startTime.toDate().getDate()}`);
         return dateStr;
@@ -144,7 +144,7 @@ const CalendarExportModal = ({
                         >
                             <Icon name='x' />
                         </button>
-                        {isDayExport ? 
+                        {isDayExport ?
                             <div className='Title'>{getDateString()} Office Hours</div> :
                             <div className='Title'>{currentExportSessions[0].title ?
                                 course?.code + ` ` + currentExportSessions[0].title : ``} Office Hours</div>
