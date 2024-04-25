@@ -26,9 +26,10 @@
   margin: auto;
   width: 825px;
   height: 475px;
-  background: white;
+  color: #FFFFFF;
+  background: #80B0DE;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 
 }
 
@@ -38,4 +39,59 @@
   position: "absolute";
   bottom: "2rem";
   right: "1.8rem";
+}
+
+.navigateStage {
+  position: absolute;
+  top: 50%; 
+  transform: translateY(-50%);
+  width: 50px;
+  height: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0);
+  &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+  }
+  .MuiSvgIcon-root {
+      font-size: 2rem; 
+  }
+}
+
+.prev {
+  left: 0;
+  justify-content: flex-start; 
+  padding-left: 10px; 
+}
+
+.next {
+  right: 0;
+  justify-content: flex-end; 
+  padding-right: 10px;
+}
+
+.dotsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 15px; // Adjust as needed for your modal
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #bbb;
+  margin: 0 5px;
+  transition: background-color 0.3s;
+}
+
+.dot.active {
+  background-color: #FFFF; 
 }
