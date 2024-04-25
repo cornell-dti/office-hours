@@ -66,7 +66,16 @@ const Wrapped: React.FC<Props> = (props: Props) => {
                     </Typography>
                 </div>
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                    <img src={People} style={{ width: "24rem", position: "absolute", left: "2rem", bottom: "0.5rem" }} alt=""/>
+                    <img 
+                        src={People}
+                        style={{ 
+                            width: "24rem", 
+                            position: "absolute", 
+                            left: "2rem", 
+                            bottom: "0.5rem" 
+                        }}
+                        alt=""
+                    />
                     <div 
                         style={{ 
                             display: "flex", 

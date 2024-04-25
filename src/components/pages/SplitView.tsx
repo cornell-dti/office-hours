@@ -88,7 +88,11 @@ const SplitView = ({
     string | undefined
     >(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
-    const [displayWrapped, setDisplayWrapped] = useState<boolean>(true);
+    const [displayWrapped, setDisplayWrapped] = useState<boolean>(
+        true
+        // user?.wrapped === true 
+        // && firestore.collection("Wrapped").doc(user.userId)
+    );
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
