@@ -40,6 +40,7 @@ type Props = {
     myUserId: string;
     virtualLocation?: string;
     triggerUndo: (questionId: string, action: string, name: string) => void;
+    triggerUndo: (questionId: string, action: string, name: string) => void;
     isPast: boolean;
     readonly user: FireUser;
     setShowModal: (show: boolean) => void;
