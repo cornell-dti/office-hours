@@ -22,6 +22,7 @@ import Banner from "../includes/Banner";
 import FeedbackPrompt from "../includes/FeedbackPrompt";
 import WrappedCountdown from "../includes/WrappedCountdown";
 import { WRAPPED_START_DATE, WRAPPED_LAUNCH_DATE } from "../../constants";
+import Wrapped from '../includes/Wrapped';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -281,6 +282,10 @@ const SplitView = ({
                     onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
                     closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                 />
+            ) : null}
+
+            {displayWrapped ? (
+                <Wrapped onClose={() => setDisplayWrapped(false)} />
             ) : null}
         </>
     );
