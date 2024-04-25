@@ -1,0 +1,41 @@
+.wrappedBackground {
+  background-color: rgba(112, 112, 112, 0.8);;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+
+  I {
+    position: absolute;
+    top: 12px;
+    right: 10px;
+  }
+}
+
+.wrappedContainer {
+  border-radius: 8px;
+  padding: 2rem;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  margin: auto;
+  width: 825px;
+  height: 475px;
+  background: white;
+  align-items: center;
+  justify-content: space-between;
+
+}
+
+.closeButtonContainer {
+  margin: 0;
+  padding: 0;
+  position: "absolute";
+  bottom: "2rem";
+  right: "1.8rem";
+}
