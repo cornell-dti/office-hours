@@ -103,7 +103,7 @@ const CalendarSessionCard = (props: {
                     <button
                         type="button"
                         className="cal-btn"
-                    // onClick={() => setInCreationMode(true)}
+                        onClick={showCalendarExportModal}
                     >+ Add to Cal</button>
                 </div>
                 <div className='Tas'>
