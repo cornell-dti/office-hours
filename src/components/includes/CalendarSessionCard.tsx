@@ -84,7 +84,7 @@ const CalendarSessionCard = (props: {
                         {session.modality !== 'review' ? 'OH' : 'Discussion'}
                     </div>
                     <div className={'Indicator ' + props.status}>
-                        <div className='Circle' />
+                        {/* <div className='Circle' /> */}
                     </div>
                 </div>
             </div>
@@ -100,6 +100,11 @@ const CalendarSessionCard = (props: {
                     ) : (
                         <div className='Location'>Online</div>
                     )}
+
+                    {numAhead > 0 ? (<div className={'Indicator ' + props.status}>
+                        <div className='Circle' />
+                    </div>) : null}
+
                     <button
                         type="button"
                         className="cal-btn"

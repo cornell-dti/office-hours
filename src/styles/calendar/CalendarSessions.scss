@@ -135,13 +135,17 @@ $open: #ffdba6;
     }
 
     .Indicator {
-        margin: 9px 0 0 8px;
+        //margin: 9px 0 0 8px;
+        margin-top: 6px;
 
         .Circle {
-            border: solid 1.5px white;
+            border: solid 0.5px white;
             border-radius: 14px;
-            height: 14px;
-            width: 14px;
+            // height: 14px;
+            // width: 14px;
+            height: 8px;
+            width: 8px;
+            background-color: #F67D7D;
         }
 
         &.Ongoing>* {
@@ -157,9 +161,11 @@ $open: #ffdba6;
         &.Past,
         &.Upcoming {
             .Circle {
-                background-color: $interior-color;
-                border-color: $border-color;
-                box-shadow: none;
+                // background-color: $interior-color;
+                // border-color: $border-color;
+                // box-shadow: none;
+                background-color: #F67D7D;
+                border-color: #F67D7D
             }
         }
     }
