@@ -94,6 +94,7 @@ $open: #ffdba6;
 
     .Wrapper {
         display: flex;
+        justify-content: space-between;
     }
 
     .cal-btn {
@@ -106,7 +107,7 @@ $open: #ffdba6;
         padding-top: 3.63px;
         padding-bottom: 3.63px;
         gap: 8.53px;
-        // text-decoration: none;
+        text-decoration: none;
         margin-left: 140px;
         cursor: pointer;
         font-family: Roboto, sans-serif;
@@ -168,15 +169,12 @@ $open: #ffdba6;
         border-radius: 5px;
         padding-bottom: 15px;
         text-align: left;
+        margin-right: 0px;
 
         .Location {
             color: $text-grey;
             font-size: 14px;
             font-weight: 500;
-        }
-
-        .CalendarExportIcon {
-            margin-left: 7px;
         }
 
         .Tas {
@@ -210,5 +208,6 @@ $open: #ffdba6;
         margin-top: 35px;
         padding-bottom: 10px;
         padding-right: 10px;
+        margin-left: 0px;
     }
 }
