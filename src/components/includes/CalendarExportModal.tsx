@@ -1,7 +1,8 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { Icon } from 'semantic-ui-react';
+import CloseIcon from '@mui/icons-material/Close';
 import GoogleIcon from '../../media/google_icon.svg';
 import AppleIcon from '../../media/apple_icon.svg';
+import CalIcon from '../../media/cal_icon.svg';
 
 type Props = {
     showCalendarModal: boolean;
@@ -142,12 +143,15 @@ const CalendarExportModal = ({
                             className='closeButton'
                             onClick={closeModal}
                         >
-                            <Icon name='x' />
+                            <CloseIcon fontSize="large" sx={{
+                                color: "black"
+                            }} />
                         </button>
+                        <img src={CalIcon} alt='Calendar export icon' />
                         {isDayExport ?
                             <div className='Title'>{getDateString()} Office Hours</div> :
                             <div className='Title'>{currentExportSessions[0].title ?
-                                course?.code + ` ` + currentExportSessions[0].title : ``} Office Hours</div>
+                                course?.code + ` ` + currentExportSessions[0].title : ``}</div>
                         }
                         <div className='CalendarContainer'>
                             {!isDayExport &&

@@ -7,7 +7,6 @@ import {
     filterAndpartitionQuestions,
     computeNumberAheadFromFilterAndpartitionQuestions,
 } from '../../utilities/questions';
-import CalendarExport from '../../media/calendar_export.svg';
 import { RootState } from '../../redux/store';
 
 const CalendarSessionCard = (props: {
@@ -41,7 +40,7 @@ const CalendarSessionCard = (props: {
         userQuestions
     );
 
-    const includeBookmark = userQuestions.length > 0;
+    //const includeBookmark = userQuestions.length > 0;
 
     const tas = useSessionTANames(props.course, session);
 
@@ -58,7 +57,7 @@ const CalendarSessionCard = (props: {
             className={(props.active && 'active') + ' CalendarSessionCard'}
             onClick={handleOnClick}
         >
-            {includeBookmark && <div className='Bookmark' />}
+            {/* {includeBookmark && <div className='Bookmark' />} */}
             <div className='TimeInfo'>
                 <div className='StartTime'>
                     <Moment
@@ -82,9 +81,6 @@ const CalendarSessionCard = (props: {
                         }
                     >
                         {session.modality !== 'review' ? 'OH' : 'Discussion'}
-                    </div>
-                    <div className={'Indicator ' + props.status}>
-                        {/* <div className='Circle' /> */}
                     </div>
                 </div>
             </div>
