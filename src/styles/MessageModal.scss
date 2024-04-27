@@ -16,9 +16,9 @@
 }
 
 .NotificationModalVisible {
-    img {
-        top: 95px;
-    }
+  img {
+    top: 95px;
+  }
 }
 
 .CalendarExportModalVisible,
@@ -61,13 +61,16 @@
     right: 24.61%;
     top: calc(50% - 45px / 2 - 209.5px);
     font-size: 20px;
-    line-height: 48px;
+    //line-height: 48px;
     color: #484848;
     float: right;
     outline: none;
     background-color: transparent;
     border: none;
+    padding-top: 8px;
+    padding-right: 8px;
   }
+
 }
 
 .CalendarExportModalVisible {
@@ -89,6 +92,7 @@
     width: 450px;
     height: 300px;
   }
+
   img {
     height: 45px;
     width: 45px;
@@ -201,6 +205,7 @@
   text-align: center;
   flex-direction: column;
   align-items: center;
+
   .closeButton {
     align-self: flex-end;
     height: 20px;
@@ -220,6 +225,7 @@
 .textNotifModalExtended {
   width: 475px;
   height: 550px;
+
   .textNotifModal__enableDialogue {
     height: 48%;
   }
@@ -238,12 +244,14 @@
     align-self: center;
     padding: 15px;
   }
+
   &__header {
     display: flex;
     flex-direction: row;
     justify-content: center;
     width: 100%;
   }
+
   &__title {
     margin-left: 25%;
     font-family: Roboto;
@@ -253,6 +261,7 @@
     line-height: 20px;
     color: #484848;
   }
+
   &__status {
     padding-left: 9%;
     font-family: Roboto;
@@ -262,13 +271,16 @@
     line-height: 20px;
     justify-self: flex-end;
     color: #6f6f6f;
+
     .off {
       color: red;
     }
+
     .on {
       color: #5599db;
     }
   }
+
   &__enableDialogue {
     width: 100%;
     height: 65%;
@@ -277,6 +289,7 @@
     padding-left: 30px;
     padding-right: 30px;
   }
+
   &__disableDialogue {
     width: 100%;
     height: 21.5%;
@@ -284,6 +297,7 @@
     padding-right: 30px;
     padding-top: 10px;
   }
+
   &__confirm {
     width: 368px;
     height: 36px;
@@ -297,11 +311,13 @@
     box-shadow: 0 2px 5px 1px rgba(64, 60, 67, 0.16);
     transition-duration: 0.3s;
     transition-property: transform, box-shadow;
+
     &:hover {
       // -webkit-transform: translateY(-1px);
       // transform: translateY(-1px);
       box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
     }
+
     .settingsSubmit:active {
       -webkit-transform: translateY(1px);
       transform: translateY(1px);
@@ -322,6 +338,7 @@
     text-align: left;
     padding-bottom: 10px;
   }
+
   &__split {
     display: flex;
     flex-direction: row;
@@ -329,23 +346,27 @@
     align-items: stretch;
     height: 90%;
   }
+
   &__line {
     border-left: 2px solid #979797;
     padding: 5px;
     height: 100%;
     width: 2px;
   }
+
   &__consent {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     justify-content: flex-start;
     position: relative;
+
     .checkbox {
       margin-right: 10px;
       margin-top: 3px;
     }
   }
+
   &__consentDialogue {
     font-family: Roboto;
     font-style: normal;
@@ -355,11 +376,13 @@
     color: #484848;
     text-align: left;
   }
+
   &__content {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
+
   &__phoneForm {
     display: flex;
     flex-direction: row;
@@ -367,6 +390,7 @@
     align-items: center;
     position: relative;
   }
+
   &__phoneIcon {
     margin-bottom: 3px;
     color: #484848;
@@ -374,11 +398,13 @@
     height: 12px;
     margin: 10px;
   }
+
   &__phoneInput {
     position: relative;
     height: 36px;
     width: 280px;
   }
+
   &__required {
     font-family: Roboto;
     font-style: normal;
@@ -389,6 +415,7 @@
     height: 90%;
     margin-left: 3px;
   }
+
   &__Error {
     position: absolute;
     bottom: -25px;
@@ -396,12 +423,14 @@
     text-align: left;
     color: #ec4339;
   }
+
   &__checkError {
     bottom: -35px;
     margin-top: 5px;
     margin-bottom: 10px;
     margin-left: 28px;
   }
+
   &__phoneError {
     margin-left: 35px;
   }
@@ -415,12 +444,14 @@
     align-items: stretch;
     height: 100%;
   }
+
   &__line {
     border-left: 2px solid #979797;
     padding: 5px;
     height: 100%;
     width: 2px;
   }
+
   &__warning {
     font-family: Roboto;
     font-style: normal;
@@ -431,6 +462,7 @@
     text-align: left;
     margin-bottom: 10px;
   }
+
   &__title {
     font-family: Roboto;
     font-style: normal;
@@ -441,6 +473,7 @@
     text-align: left;
     padding-bottom: 10px;
   }
+
   &__confirm {
     width: 368px;
     height: 36px;
@@ -454,12 +487,14 @@
     box-shadow: 0 2px 5px 1px rgba(64, 60, 67, 0.16);
     transition-duration: 0.3s;
     transition-property: transform, box-shadow;
+
     &:hover {
       // -webkit-transform: translateY(-1px);
       // transform: translateY(-1px);
       box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
       background: #C41B12;
     }
+
     .settingsSubmit:active {
       -webkit-transform: translateY(1px);
       transform: translateY(1px);

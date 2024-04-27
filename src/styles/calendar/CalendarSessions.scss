@@ -82,9 +82,9 @@ $open: #ffdba6;
         margin: 0px 10px;
     }
 
-    .Bookmark {
-        right: 35px;
-    }
+    // .Bookmark {
+    //     right: 35px;
+    // }
 
     .TimeInfo {
         display: inline-block;
@@ -111,7 +111,7 @@ $open: #ffdba6;
         margin-left: 140px;
         cursor: pointer;
         font-family: Roboto, sans-serif;
-        font-weight: 400;
+        font-weight: 300;
         font-size: 11.94px;
         background: #5599DB;
         background-image: linear-gradient(45deg, #668ae9, #6db9ea);
@@ -141,10 +141,8 @@ $open: #ffdba6;
         .Circle {
             border: solid 0.5px white;
             border-radius: 14px;
-            // height: 14px;
-            // width: 14px;
-            height: 8px;
-            width: 8px;
+            height: 8.719px;
+            width: 8.719px;
             background-color: #F67D7D;
         }
 
