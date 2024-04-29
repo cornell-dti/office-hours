@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Moment from 'react-moment';
+import Linkify from 'react-linkify'
 import { updateCurrentComment } from '../../firebasefunctions/sessionQuestion';
 import Dots from '../../media/dots.svg';
 
@@ -58,7 +59,7 @@ const UserComment = ({ content, poster, timePosted, isTA, commenterId, commentId
                     <div className={(currentUser && currentUser.userId === commenterId)
                         ? "commentBody" : "commentBody notUserComment"}
                     >
-                        {commentContent}
+                        <Linkify>{commentContent}</Linkify>
                     </div>
                 }
                 {currentUser && currentUser.userId === commenterId &&
