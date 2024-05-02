@@ -1,8 +1,9 @@
 import admin from "firebase-admin";
-import serviceAccount from "./serviceAccountKey.json";
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+    credential: admin.credential.applicationDefault(),
+    databaseURL: 'https://qmi-test.firebaseio.com'
+
 });
 
 // eslint-disable-next-line no-console
@@ -66,8 +67,8 @@ const getWrapped = async () => {
         }
 
         // Office hour visits
-        if (!userStats[askerId].officeHourVisits.includes(sessionId)) {
-            userStats[askerId].officeHourVisits.push(sessionId);
+        if (!userStats[askerId].officeHourVisits?.includes(sessionId)) {
+            userStats[askerId].officeHourVisits?.push(sessionId);
         }
 
         // Minutes spent at office hours
@@ -81,8 +82,8 @@ const getWrapped = async () => {
             }
         }
 
-        if (!TAsessions[answererId].includes(sessionId)) {
-            TAsessions[answererId].push(sessionId);
+        if (!TAsessions[answererId]?.includes(sessionId)) {
+            TAsessions[answererId]?.push(sessionId);
         }
     }
 
@@ -126,13 +127,26 @@ const getWrapped = async () => {
     // Update the wrapped collection
     const batch = db.batch();
 
-    Object.entries(userStats).forEach(([userId, stats]) => {
-        const wrappedDocRef = wrappedRef.doc(userId);
-        batch.set(wrappedDocRef, stats);
+    Object.entries(userStats).forEach(async ([userId, stats]) => {
+        if (userId) {
+            const wrappedDocRef = wrappedRef.doc(userId);
+            batch.set(wrappedDocRef, stats);
 
-        usersRef.doc(userId).update({
-            wrapped: true,
-        });
+            const userDoc = await usersRef.doc(userId).get();
+            if (userDoc.exists) {
+                usersRef.doc(userId).update({
+                    wrapped: true,
+                });
+            } else {
+            // Handle the case where the document does not exist
+            // eslint-disable-next-line no-console
+                console.log(`No document found for user ID ${userId}, skipping update.`);
+            }
+        } else {
+            // eslint-disable-next-line no-console
+            console.log("User ID is undefined, skipping update.")
+        }
+       
     });
 
     await batch.commit();
