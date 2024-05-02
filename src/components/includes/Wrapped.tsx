@@ -5,7 +5,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import "../../styles/Wrapped.scss";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import People from "../../media/ppl.svg"
 import Bus from "../../media/bus.svg"
 
@@ -23,7 +23,16 @@ const Dot: React.FC<DotProps> = ({ active }) => (
 
 const Wrapped: React.FC<Props> = (props: Props) => {
     const [stage, setStage] = useState<number>(0);
+    const [showBanner, setShowBanner] = useState(false);
     const totalStages = 5;
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowBanner(true);
+        }, 1000); 
+    
+        return () => clearTimeout(timer);
+    }, []);
 
     const navigateStage = (direction: 'prev' | 'next') => {
         setStage(currentStage => {
@@ -52,6 +61,18 @@ const Wrapped: React.FC<Props> = (props: Props) => {
                 </div>
                 <div style={{ alignSelf: "flex-end" }}>
                     <Typography variant="h1" style={{ fontWeight: "bold" }}> Wrapped</Typography>
+                </div>
+                <div className="animationContainer">
+                    {showBanner && (
+                        <>
+                            <div className="banner top-right">
+                                SPRING 2024 SPRING 2024 SPRING 2024
+                            </div>
+                            <div className="banner bottom-left">
+                                SPRING 2024 SPRING 2024 SPRING 2024
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

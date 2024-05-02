@@ -95,3 +95,61 @@
 .dot.active {
   background-color: #FFFF; 
 }
+
+@keyframes slideInTopRight {
+  0% {
+      right: -50%;
+      opacity: 0;
+  }
+  100% {
+      right: 0;
+      opacity: 1;
+  }
+}
+
+@keyframes slideInBottomLeft {
+  0% {
+      left: -50%;
+      opacity: 0;
+  }
+  100% {
+      left: 0;
+      opacity: 1;
+  }
+}
+
+.banner {
+  position: absolute;
+  background-color: #7a57d1; 
+  color: white;
+  font-weight: bold;
+  padding: 5px 20px;
+  font-size: 1rem;
+  white-space: nowrap;
+  opacity: 0;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+
+  &.top-right {
+      top: 9rem;
+      right: -50%; // Start from outside the right edge
+      transform: rotate(25deg);
+      transform-origin: top right;
+      animation: slideInTopRight 2s forwards;
+  }
+
+  &.bottom-left {
+      bottom: 6rem;
+      left: -50%; // Start from outside the left edge
+      transform: rotate(15deg);
+      transform-origin: bottom left;
+      animation: slideInBottomLeft 2s forwards;
+  }
+}
+
+
+.banner.visible {
+  display: block;
+  animation: slideIn 1s ease forwards; /* 1 second duration */
+}
+
