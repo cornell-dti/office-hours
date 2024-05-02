@@ -9,6 +9,7 @@ node_modules
 # production
 build
 src/styles/index.min.css
+src/scripts/serviceAccountKey.json
 functions/lib
 
 # misc
