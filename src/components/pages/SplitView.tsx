@@ -281,7 +281,7 @@ const SplitView = ({
             ) : null}
 
             {displayWrapped ? (
-                <Wrapped onClose={() => setDisplayWrapped(false)} />
+                <Wrapped user={user} onClose={() => setDisplayWrapped(false)} />
             ) : null}
         </>
     );

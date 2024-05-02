@@ -6,10 +6,12 @@ import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import "../../styles/Wrapped.scss";
 import React, { useEffect, useState } from "react";
+import firebase from '../../firebase';
 import People from "../../media/ppl.svg"
 import Bus from "../../media/bus.svg"
 
 type Props = {
+    user: FireUser | undefined;
     onClose: () => void;
 };
 
@@ -22,9 +24,45 @@ const Dot: React.FC<DotProps> = ({ active }) => (
 );
 
 const Wrapped: React.FC<Props> = (props: Props) => {
+    const [loading, setLoading] = useState<boolean>(true);
     const [stage, setStage] = useState<number>(0);
+    const [wrappedData, setWrappedData] = useState({
+        officeHourVisits: [],
+        personalityType: "",
+        timeHelpingStudents: 0,
+        totalMinutes: 0
+    });
     const [showBanner, setShowBanner] = useState(false);
     const totalStages = 5;
+
+    useEffect(() => {
+
+        const wrappedRef = firebase.firestore().collection('wrapped');
+
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const doc = await wrappedRef.doc(props.user?.userId).get();
+                if (doc.exists) {
+                    setWrappedData(doc.data() as { 
+                        officeHourVisits: never[]; 
+                        personalityType: string; 
+                        timeHelpingStudents: number; 
+                        totalMinutes: number; 
+                    });  
+                } else {
+                    // eslint-disable-next-line no-console
+                    console.log('No such document!');
+                }
+            } catch (error) {
+                // eslint-disable-next-line no-console
+                console.error("Error fetching data: ", error);
+            }
+            setLoading(false);
+        };
+
+        fetchData();
+    }, [props.user]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -107,7 +145,7 @@ const Wrapped: React.FC<Props> = (props: Props) => {
                         }}
                     >
                         <Typography variant="h3"> 
-                            YOU VISITED OFFICE HOURS X TIMES
+                            YOU VISITED OFFICE HOURS {wrappedData.officeHourVisits.length} TIMES
                         </Typography>
                     </div>
                 </div>
@@ -118,7 +156,7 @@ const Wrapped: React.FC<Props> = (props: Props) => {
     const TimeSpent: React.FC = () => (
         <>
             <Typography variant="h2" style={{ fontWeight: "bold" }}> 
-                YOU SPENT X MINUTES AT OFFICE HOURS
+                YOU SPENT {wrappedData.totalMinutes} MINUTES AT OFFICE HOURS
             </Typography>
         </>
     )
@@ -127,7 +165,7 @@ const Wrapped: React.FC<Props> = (props: Props) => {
         <>
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <Typography variant="h3" style={{ fontWeight: "bold"}}> 
-                    Your office hour personality type is...
+                    Your office hour personality type is {wrappedData.personalityType}
                 </Typography>
             </div>
         </>
