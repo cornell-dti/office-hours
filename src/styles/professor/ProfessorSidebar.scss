@@ -40,6 +40,18 @@ $selectsecondary: #e4efff;
             padding: 0 30px;
         }
 
+        .viewIconContainer {
+            padding: 0 30px;
+        }
+
+        .viewIconContainer {
+            height: 1em;
+            width: 1.18em;
+            float: left;
+            margin: 0 .25rem 0 0;
+            color: $deselect;
+        }
+
         button {
             margin-right: auto;
             display: block;
@@ -52,6 +64,10 @@ $selectsecondary: #e4efff;
         button:hover {
             background-color: $selectsecondary;
             color: $selectprimary;
+
+            .viewIconContainer {
+                color: $selectprimary;
+            }
         }
 
         .selected {
@@ -64,7 +80,16 @@ $selectsecondary: #e4efff;
             i.icon {
                 padding-left: 25px;
             }
+
+            .viewIconContainer {
+                color: $selectprimary;
+            }
+
+            .viewIconContainer {
+                padding-left: 25px;
+            }
         }
+
     }
 
     .divider {
