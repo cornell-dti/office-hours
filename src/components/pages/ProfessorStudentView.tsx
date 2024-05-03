@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as H from "history";
+import { connect } from "react-redux";
+import { Loader } from "semantic-ui-react";
 import ProfessorSidebar from "../includes/ProfessorSidebar";
 import TopBar from "../includes/TopBar";
 import LeaveQueue from "../includes/LeaveQueue";
@@ -9,9 +11,7 @@ import { firestore } from "../../firebase";
 import { removeQuestionbyID, submitFeedback } from "../../firebasefunctions/sessionQuestion";
 import CalendarExportModal from "../includes/CalendarExportModal";
 import CalendarView from "../includes/CalendarView";
-import { connect } from "react-redux";
 import { RootState } from "../../redux/store";
-import { Loader } from "semantic-ui-react";
 import FeedbackPrompt from "../includes/FeedbackPrompt";
 import ProductUpdates from "../includes/ProductUpdates";
 import SessionView from "../includes/SessionView";
@@ -199,14 +199,14 @@ const ProfessorStudentView = ({
                                     {"Notification" in window &&
                                         window?.Notification !== undefined &&
                                         window?.Notification.permission !== "granted" && (
-                                            <div className="warningArea">
-                                                <div>&#9888;</div>
-                                                <div>
+                                        <div className="warningArea">
+                                            <div>&#9888;</div>
+                                            <div>
                                                     Please make sure to enable browser notifications in your system
                                                     settings.
-                                                </div>
                                             </div>
-                                        )}
+                                        </div>
+                                    )}
                                 </div>
                             </section>
                         )

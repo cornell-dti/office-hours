@@ -327,25 +327,25 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             primaryTags.length === 0 ||
                             secondaryTags.length === 0 ||
                             activeTags.length === 0 ? (
-                                <textarea
-                                    className="TextInput question"
-                                    value={question}
-                                    onChange={handleUpdateQuestion}
-                                    placeholder="What's your question about?"
-                                />
-                            ) : (
-                                <textarea
-                                    disabled
-                                    className="TextInput question"
-                                    value={question}
-                                    onChange={handleUpdateQuestion}
-                                    placeholder={
-                                        !("building" in session)
-                                            ? "First select a category and a tag"
-                                            : "Enter your location..."
-                                    }
-                                />
-                            )}
+                                    <textarea
+                                        className="TextInput question"
+                                        value={question}
+                                        onChange={handleUpdateQuestion}
+                                        placeholder="What's your question about?"
+                                    />
+                                ) : (
+                                    <textarea
+                                        disabled
+                                        className="TextInput question"
+                                        value={question}
+                                        onChange={handleUpdateQuestion}
+                                        placeholder={
+                                            !("building" in session)
+                                                ? "First select a category and a tag"
+                                                : "Enter your location..."
+                                        }
+                                    />
+                                )}
                         </div>
                         <div className="addButtonWrapper">
                             {stage > LOCATION_INPUTTED || primaryTags.length === 0 || secondaryTags.length === 0 ? (
