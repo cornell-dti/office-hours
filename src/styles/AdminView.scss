@@ -14,14 +14,24 @@
         background-color: white;
         border: solid 1px #484848;
         margin: 5px;
+        margin-bottom: 20px;
         width: 150px;
         height: 40px;
         border-radius: 4px;
         text-decoration: none;
         cursor: pointer;
+        font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        transition: 0.3s;
 
         &:focus {
             outline: none;
+        }
+
+        &:hover {
+            background: #5599DB;
+            background-image: linear-gradient(80deg, #668ae9, #6db9ea);
+            color: white;
+            border: none;
         }
     }
 

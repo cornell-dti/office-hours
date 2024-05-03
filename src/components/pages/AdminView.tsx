@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {useHistory} from 'react-router'
-import {Grid} from '@material-ui/core'
+import { useHistory } from 'react-router'
+import { Grid } from '@material-ui/core'
+import { FormControl, Select, SelectChangeEvent, MenuItem, InputLabel } from '@mui/material';
 
 import TopBar from '../includes/TopBar';
 import AdminCourseCard from '../includes/AdminCourseCard';
@@ -15,10 +16,19 @@ const AdminView = () => {
     const isAdmin = useIsAdmin();
     const [inCreationMode, setInCreationMode] = useState(false);
     useEffect(() => {
-        if(isAdmin === undefined) {
+        if (isAdmin === undefined) {
             history.push('/')
         }
     }, [isAdmin, history])
+
+    const [sem, setSem] = useState(CURRENT_SEMESTER);
+    const validSems = ["FA20", "SP20", "FA21", "SP21", "FA22", "SP22",
+        "FA23", "SP23", "FA24", "SP24"]
+
+
+    const handleChange = (event: SelectChangeEvent) => {
+        setSem(event.target.value);
+    };
 
     return (
         <div className="AdminView">
@@ -30,42 +40,80 @@ const AdminView = () => {
                 courseId="DUMMY_COURSE_ID"
             />
             <h2>Courses</h2>
+            <FormControl sx={{ m: 1, width: "8%", backgroundColor: "#FFFFFF" }}>
+                <InputLabel id="course-select-label">Semester</InputLabel>
+                <Select
+                    labelId="course-select-label"
+                    id="course-select"
+                    value={sem}
+                    label="Semester"
+                    onChange={handleChange}
+                    fullWidth
+                    className="formControl"
+                    sx={{
+                        width: "100%",
+                    }}
+                >
+                    {validSems.map(semester => {
+                        return (
+                            <MenuItem value={semester}>{semester}</MenuItem>
+
+                        );
+                    })}
+                    <MenuItem value="Other">Other</MenuItem>
+                </Select>
+            </FormControl>
+
+
             <div className="course-container" >
                 <Grid container direction="row" alignItems={'stretch'} spacing={3}>
-                    {courses.filter(course => course.semester === CURRENT_SEMESTER).map(course => (
+
+                    {/* Handles courses that are not in valid semesters to be shown in the "Other" menu option. */}
+                    {validSems.includes(sem, 0) ? courses.filter(course => course.semester === sem).map(course => (
+                        <Grid item xl={3} lg={4} md={6} xs={12}>
+                            <AdminCourseCard key={course.courseId} course={course} />
+                        </Grid>
+                    )) : courses.filter(course => !validSems.includes(course.semester, 0)).map(course => (
                         <Grid item xl={3} lg={4} md={6} xs={12}>
                             <AdminCourseCard key={course.courseId} course={course} />
                         </Grid>
                     ))}
+
                 </Grid>
             </div>
 
             {inCreationMode && <AdminCourseCreator onSubmit={() => setInCreationMode(false)} />}
 
             {!inCreationMode &&
-                <button 
-                    type="button" 
-                    className="create-course-btn" 
+                <button
+                    type="button"
+                    className="create-course-btn"
                     onClick={() => setInCreationMode(true)}
                 >Create New Course</button>}
 
-            <h2>Archived Courses</h2>
-            <div className="course-container">
-                <Grid container direction="row" alignItems={'stretch'} spacing={3}>
-                    {courses.filter(course => course.semester !== CURRENT_SEMESTER).map(course => (
-                        <Grid item xl={3} lg={4} md={6} xs={12}>
-                            <AdminCourseCard key={course.courseId} course={course} />
+            {sem === CURRENT_SEMESTER ?
+                <div>
+                    <h2>Archived Courses</h2>
+                    <div className="course-container">
+                        <Grid container direction="row" alignItems={'stretch'} spacing={3}>
+                            {courses.filter(course => course.semester !== sem).map(course => (
+                                <Grid item xl={3} lg={4} md={6} xs={12}>
+                                    <AdminCourseCard key={course.courseId} course={course} />
+                                </Grid>
+                            ))}
                         </Grid>
-                    ))}
-                </Grid>
-            </div>
-            {!inCreationMode &&
-                <button 
-                    type="button" 
-                    className="create-course-btn" 
-                    onClick={() => setInCreationMode(true)}
-                >Create New Course</button>}
+                    </div>
+                    {!inCreationMode &&
+                        <button
+                            type="button"
+                            className="create-course-btn"
+                            onClick={() => setInCreationMode(true)}
+                        >Create New Course</button>}
+                </div> : null}
+
         </div>
+
+
     );
 };
 
