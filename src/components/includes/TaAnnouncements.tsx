@@ -77,8 +77,8 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
                 <div className="AnnouncementIcons">
                     {!showProfessorStudentView &&
                         (user.roles[session.courseId] === "professor" || user.roles[session.courseId] === "ta") && (
-                            <img src={plusCircle} alt="Add New Announcement" onClick={clickCircleIcon} />
-                        )}
+                        <img src={plusCircle} alt="Add New Announcement" onClick={clickCircleIcon} />
+                    )}
                     <img src={showBody ? chevronUp : chevronDown} alt="View Announcements" onClick={collapseBody} />
                 </div>
             </div>

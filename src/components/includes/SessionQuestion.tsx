@@ -363,31 +363,31 @@ class SessionQuestion extends React.Component<Props, State> {
                                 {this.props.isTA &&
                                     this.props.modality === "hybrid" &&
                                     typeof this.props.question.isVirtual !== "undefined" && (
-                                        <div
-                                            className={`hybridBadge ${
-                                                this.props.question.isVirtual ? "virtual" : "inPerson"
-                                            }`}
-                                        >
-                                            {this.props.question.isVirtual ? "Virtual" : "In-person"}
-                                        </div>
-                                    )}
+                                    <div
+                                        className={`hybridBadge ${
+                                            this.props.question.isVirtual ? "virtual" : "inPerson"
+                                        }`}
+                                    >
+                                        {this.props.question.isVirtual ? "Virtual" : "In-person"}
+                                    </div>
+                                )}
                                 {
                                     <>
                                         {this.props.isTA &&
                                             question.location &&
                                             question.location.substr(0, 25) === "https://cornell.zoom.us/j" && (
-                                                <a href={question.location} target="_blank" rel="noopener noreferrer">
+                                            <a href={question.location} target="_blank" rel="noopener noreferrer">
                                                     Zoom Link
-                                                </a>
-                                            )}
+                                            </a>
+                                        )}
                                         {this.props.isTA &&
                                             question.location &&
                                             question.location.substr(0, 25) !== "https://cornell.zoom.us/j" && (
-                                                <div className="taLocationInfo">
-                                                    <Icon name="map marker alternate" size="small" />
-                                                    <p>{question.location}</p>
-                                                </div>
-                                            )}
+                                            <div className="taLocationInfo">
+                                                <Icon name="map marker alternate" size="small" />
+                                                <p>{question.location}</p>
+                                            </div>
+                                        )}
                                     </>
                                 }
                             </div>
@@ -412,8 +412,8 @@ class SessionQuestion extends React.Component<Props, State> {
                                 question.status === "assigned" &&
                                 question.timeAssigned !== undefined &&
                                 !this.props.isPast && (
-                                    <SessionQuestionTime assignedTime={question.timeAssigned.toDate().getTime()} />
-                                )}
+                                <SessionQuestionTime assignedTime={question.timeAssigned.toDate().getTime()} />
+                            )}
                         </p>
                     )}
                     {this.props.isTA && (

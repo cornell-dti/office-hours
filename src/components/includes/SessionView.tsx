@@ -99,8 +99,8 @@ const SessionView = ({
         const lastAskedQuestion =
             myQuestions.length > 0
                 ? myQuestions.reduce((prev, current) =>
-                      prev.timeEntered.toDate() > current.timeEntered.toDate() ? prev : current
-                  )
+                    prev.timeEntered.toDate() > current.timeEntered.toDate() ? prev : current
+                )
                 : null;
 
         setAbsentState((currentState) => {
@@ -271,8 +271,8 @@ const SessionView = ({
                     session.modality === "review"
                         ? questions.filter((q) => q.status !== "retracted")
                         : questions
-                              .filter((q) => q.status === "unresolved" || q.status === "assigned")
-                              .sort((a, b) => (a.timeEntered > b.timeEntered ? 1 : -1))
+                            .filter((q) => q.status === "unresolved" || q.status === "assigned")
+                            .sort((a, b) => (a.timeEntered > b.timeEntered ? 1 : -1))
                 }
                 users={users}
                 tags={tags}
