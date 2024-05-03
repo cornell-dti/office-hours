@@ -38,7 +38,7 @@ const Wrapped: React.FC<Props> = (props: Props) => {
     useEffect(() => {
 
         const wrappedRef = firebase.firestore().collection('wrapped');
-
+        // eslint-disable-next-line no-console
         const fetchData = async () => {
             setLoading(true);
             try {
