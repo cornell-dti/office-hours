@@ -61,7 +61,6 @@
     right: 24.61%;
     top: calc(50% - 45px / 2 - 209.5px);
     font-size: 20px;
-    //line-height: 48px;
     color: #484848;
     float: right;
     outline: none;
@@ -109,8 +108,6 @@
     height: 35px;
     justify-content: center;
     margin-bottom: 30px;
-
-
 
     .export-btn {
       background-color: #77BBFA;
@@ -174,17 +171,6 @@
     display: flex;
     justify-content: center;
 
-  }
-
-  .ExportText {
-    font-size: 16px;
-    text-align: center;
-    text-decoration-line: underline;
-    color: #5599db;
-    margin-top: 80px;
-    width: 150px;
-    line-height: 25px;
-    cursor: pointer;
   }
 
 }
