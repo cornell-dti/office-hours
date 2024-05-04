@@ -1,7 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import GIcon from '../../media/google_icon.svg';
-import AIcon from '../../media/apple_icon.svg';
 import CalIcon from '../../media/cal_icon.svg';
 import { Button, Icon } from 'semantic-ui-react';
 
@@ -154,7 +152,7 @@ const CalendarExportModal = ({
                         </button>
                         <img src={CalIcon} alt='Calendar export icon' id="calIcon" />
                         {isDayExport ?
-                            <div className='Title'>{getDateString()} Office Hours where is this</div> :
+                            <div className='Title'>{getDateString()} Office Hours </div> :
                             <div className='Title'>{currentExportSessions[0].title ?
                                 <div>
                                     {course?.courseId + " : " + currentExportSessions[0].title}
@@ -173,7 +171,6 @@ const CalendarExportModal = ({
                                 </Button.Content>
                             </Button>
                         </div>
-
 
                         <div className='CalendarContainer' id="last">
                             <Button onClick={exportToAppleCalendar} className="export-btn">
