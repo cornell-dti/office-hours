@@ -75,22 +75,80 @@
 
 .CalendarExportModalVisible {
   width: 450px;
-  height: 300px;
+  height: auto;
 }
 
 .CalendarExportModalScreen {
   .Title {
     font-weight: 500;
-    font-size: 20px;
-    line-height: 20px;
-    color: #484848;
-    margin: 0px 0 45px 0;
+    font-size: 25px;
+    line-height: 30px;
+    color: #000;
+    position: relative;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 32px;
+    overflow-wrap: break-word;
+
+    .Subtitle {
+      font-weight: 300;
+      font-size: 18px;
+      padding-top: 15px;
+      line-height: 0px;
+    }
+
+  }
+
+  .CalendarContainer#last {
+    margin-bottom: 5em;
   }
 
   .CalendarContainer {
     display: flex;
-    width: 450px;
-    height: 300px;
+    width: 100%;
+    height: 35px;
+    justify-content: center;
+    margin-bottom: 30px;
+
+
+
+    .export-btn {
+      background-color: #77BBFA;
+      color: white;
+      font-size: 25px;
+      font-weight: 400;
+      font-family: Roboto;
+      display: inline-block;
+      border-radius: 10px;
+      border: none;
+      text-decoration: none;
+      padding: 1em;
+      margin: .25em;
+      margin-left: auto;
+      margin-right: auto;
+      height: 40px;
+      width: 50%;
+      cursor: pointer;
+      text-align: center;
+
+      .content {
+        position: relative;
+        top: -11px;
+      }
+
+    }
+
+    .export-btn:hover,
+    .export-btn::selection {
+      background-color: #77BBFA;
+      color: white;
+    }
+
+    .ui.button.export-btn {
+      background-color: #77BBFA;
+      color: white;
+    }
+
   }
 
   img {
@@ -99,17 +157,23 @@
     top: 120px;
   }
 
+  img#calIcon {
+    height: 45px;
+    width: 45px;
+    display: flex;
+    position: relative;
+    top: 0px;
+    margin-bottom: 24px;
+  }
+
   .CalendarItem {
     flex: 1;
     text-align: center;
-    width: 35%;
-    height: 250px;
+    width: 100%;
+    height: 100px;
     display: flex;
     justify-content: center;
 
-    img {
-      margin-top: 0px;
-    }
   }
 
   .ExportText {
@@ -123,10 +187,6 @@
     cursor: pointer;
   }
 
-  .Line {
-    border: 1px solid #484848;
-    height: 140px;
-  }
 }
 
 .JoinErrorMessageVisible {
