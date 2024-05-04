@@ -155,7 +155,7 @@ const CalendarExportModal = ({
                             <div className='Title'>{getDateString()} Office Hours </div> :
                             <div className='Title'>{currentExportSessions[0].title ?
                                 <div>
-                                    {course?.courseId + " : " + currentExportSessions[0].title}
+                                    {course?.code + " : " + currentExportSessions[0].title}
                                     <div className='Subtitle'> {getDateString() + " @ " +
                                         getTimeString(currentExportSessions[0].startTime.toDate().toLocaleTimeString()) + "-" +
                                         getTimeString(currentExportSessions[0].endTime.toDate().toLocaleTimeString())} </div>
