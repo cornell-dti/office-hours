@@ -1,7 +1,8 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import CalIcon from '../../media/cal_icon.svg';
 import { Button, Icon } from 'semantic-ui-react';
+import CalIcon from '../../media/cal_icon.svg';
+
 
 type Props = {
     showCalendarModal: boolean;
@@ -73,7 +74,9 @@ const CalendarExportModal = ({
 
     /** Returns a string of the time in hours:minutes AM/PM.
      * Ex: Returns 2:20:23 PM-3:20:23 PM as 2:20 PM-3:20 PM */
-    const getTimeString = (localeTime: string): string => localeTime.substring(0, localeTime.lastIndexOf(":")) + " " + localeTime.substring(localeTime.length - 2)
+    const getTimeString = (localeTime: string): string => 
+        localeTime.substring(0, localeTime.lastIndexOf(":")) + " " + 
+        localeTime.substring(localeTime.length - 2)
 
 
     const createIcs = () => {
@@ -146,9 +149,12 @@ const CalendarExportModal = ({
                             className='closeButton'
                             onClick={closeModal}
                         >
-                            <CloseIcon fontSize="large" sx={{
-                                color: "black"
-                            }} />
+                            <CloseIcon 
+                                fontSize="large" 
+                                sx={{
+                                    color: "black"
+                                }} 
+                            />
                         </button>
                         <img src={CalIcon} alt='Calendar export icon' id="calIcon" />
                         {isDayExport ?
@@ -157,8 +163,13 @@ const CalendarExportModal = ({
                                 <div>
                                     {course?.code + " : " + currentExportSessions[0].title}
                                     <div className='Subtitle'> {getDateString() + " @ " +
-                                        getTimeString(currentExportSessions[0].startTime.toDate().toLocaleTimeString()) + "-" +
-                                        getTimeString(currentExportSessions[0].endTime.toDate().toLocaleTimeString())} </div>
+                                        getTimeString(
+                                            currentExportSessions[0].startTime
+                                                .toDate().toLocaleTimeString()) 
+                                                + "-" +
+                                        getTimeString(currentExportSessions[0].
+                                            endTime.toDate().toLocaleTimeString())} 
+                                    </div>
                                 </div>
                                 : ``}</div>
                         }
