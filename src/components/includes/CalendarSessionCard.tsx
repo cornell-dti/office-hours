@@ -40,8 +40,6 @@ const CalendarSessionCard = (props: {
         userQuestions
     );
 
-    //const includeBookmark = userQuestions.length > 0;
-
     const tas = useSessionTANames(props.course, session);
 
     const timeDesc = '';
@@ -57,7 +55,6 @@ const CalendarSessionCard = (props: {
             className={(props.active && 'active') + ' CalendarSessionCard'}
             onClick={handleOnClick}
         >
-            {/* {includeBookmark && <div className='Bookmark' />} */}
             <div className='TimeInfo'>
                 <div className='StartTime'>
                     <Moment

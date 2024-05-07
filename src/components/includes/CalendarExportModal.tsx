@@ -167,15 +167,18 @@ const CalendarExportModal = ({
                                             currentExportSessions[0].startTime
                                                 .toDate().toLocaleTimeString()) 
                                                 + "-" +
-                                        getTimeString(currentExportSessions[0].
-                                            endTime.toDate().toLocaleTimeString())} 
+                                        getTimeString(currentExportSessions[0]
+                                            .endTime.toDate().toLocaleTimeString())} 
                                     </div>
                                 </div>
                                 : ``}</div>
                         }
                         <div className='CalendarContainer'>
 
-                            <Button href={getGoogleCalendarLink()} className="export-btn" >
+                            <Button 
+                                onClick={() => window.open(getGoogleCalendarLink(), "_blank")} 
+                                className="export-btn" 
+                            >
                                 <Button.Content icon>
                                     <Icon name='google' />
                                     Add to GCal
