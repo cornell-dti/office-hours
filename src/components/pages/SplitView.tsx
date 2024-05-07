@@ -188,7 +188,7 @@ const SplitView = ({
 
     return (
         <>
-            
+
             <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
 
             <TopBar
@@ -268,8 +268,8 @@ const SplitView = ({
             <ProductUpdates />
 
             {displayFeedbackPrompt ? (
-                <FeedbackPrompt 
-                    onClose={submitFeedback(removedQuestionId, course, session.sessionId)} 
+                <FeedbackPrompt
+                    onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
                     closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                 />
             ) : null}
