@@ -9,6 +9,9 @@ import React, { useEffect, useState } from "react";
 import firebase from '../../firebase';
 import People from "../../media/ppl.svg"
 import Bus from "../../media/bus.svg"
+import ConsistentPersonality from "../../media/consistent_personality.svg"
+import ResourcefulPersonality from "../../media/resourceful_personality.svg"
+import IndependentPersonality from "../../media/independent_personality.svg"
 
 type Props = {
     user: FireUser | undefined;
@@ -145,7 +148,8 @@ const Wrapped: React.FC<Props> = (props: Props) => {
                         }}
                     >
                         <Typography variant="h3"> 
-                            YOU VISITED OFFICE HOURS {wrappedData.officeHourVisits.length} TIMES
+                            YOU VISITED OFFICE HOURS {wrappedData.officeHourVisits.length} 
+                            {wrappedData.officeHourVisits.length === 1 ? "TIME" : "TIMES" }
                         </Typography>
                     </div>
                 </div>
@@ -161,15 +165,30 @@ const Wrapped: React.FC<Props> = (props: Props) => {
         </>
     )
 
-    const PersonalityType: React.FC = () => (
-        <>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-                <Typography variant="h3" style={{ fontWeight: "bold"}}> 
+    const PersonalityType: React.FC = () => {
+        let PersonalitySVG: JSX.Element | null = null;
+
+        if (wrappedData.personalityType === "consistent") {
+            PersonalitySVG = <img src={ConsistentPersonality} alt="Consistent Personality" />;
+        } else if (wrappedData.personalityType === "resourceful") {
+            PersonalitySVG = <img src={ResourcefulPersonality} alt="Resourceful Personality" />;
+        } else if (wrappedData.personalityType === "independent") {
+            PersonalitySVG = <img src={IndependentPersonality} alt="Independent Personality" />;
+        }
+        // eslint-disable-next-line no-console
+        console.log(PersonalitySVG)
+
+        return (
+            <>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                    <Typography variant="h3" style={{ fontWeight: "bold" }}> 
                     Your office hour personality type is {wrappedData.personalityType}
-                </Typography>
-            </div>
-        </>
-    )
+                    </Typography>
+                    {PersonalitySVG}
+                </div>
+            </>
+        )
+    }
 
     const Conclusion: React.FC = () => (
         <>
