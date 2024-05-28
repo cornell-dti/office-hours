@@ -165,30 +165,40 @@ const Wrapped: React.FC<Props> = (props: Props) => {
         </>
     )
 
-    const PersonalityType: React.FC = () => {
-        let PersonalitySVG: JSX.Element | null = null;
+    const PersonalityType: React.FC = () => (
+        <>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center"}}>
+                <Typography variant="h3" style={{ fontWeight: "bold" }}> 
+                    Your office hour personality type is 
+                    <div className="personalityType">{wrappedData.personalityType}</div>
+                </Typography>
+                {wrappedData.personalityType === "Consistent" ? 
+                    <img 
+                        src={ConsistentPersonality} 
+                        className="personalityIcon" 
+                        alt="Consistent Personality" 
+                    /> : null
+                }
+                {wrappedData.personalityType === "Resourceful" ? 
+                    <img 
+                        src={ResourcefulPersonality} 
+                        className="personalityIcon" 
+                        alt="Resourceful Personality" 
+                    /> : null
+                }
+                {wrappedData.personalityType === "Independent" ? 
+                    <img 
+                        src={IndependentPersonality}
+                        className="personalityIcon" 
+                        alt="Consistent Personality" 
+                    /> : null
+                }
+                            
+            </div>
+        </> 
+    )
 
-        if (wrappedData.personalityType === "consistent") {
-            PersonalitySVG = <img src={ConsistentPersonality} alt="Consistent Personality" />;
-        } else if (wrappedData.personalityType === "resourceful") {
-            PersonalitySVG = <img src={ResourcefulPersonality} alt="Resourceful Personality" />;
-        } else if (wrappedData.personalityType === "independent") {
-            PersonalitySVG = <img src={IndependentPersonality} alt="Independent Personality" />;
-        }
-        // eslint-disable-next-line no-console
-        console.log(PersonalitySVG)
-
-        return (
-            <>
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                    <Typography variant="h3" style={{ fontWeight: "bold" }}> 
-                    Your office hour personality type is {wrappedData.personalityType}
-                    </Typography>
-                    {PersonalitySVG}
-                </div>
-            </>
-        )
-    }
+    
 
     const Conclusion: React.FC = () => (
         <>
