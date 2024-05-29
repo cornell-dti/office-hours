@@ -122,7 +122,14 @@ const Wrapped: React.FC<Props> = (props: Props) => {
     const Visits: React.FC = () => (
         <div>
             <div style={{ display: "flex", flexDirection: "column", width: "750px", justifyContent: "space-between" }}>
-                <div style={{ fontWeight: "bold", alignSelf: "flex-start"}}>
+                <div style={{ 
+                    position: "absolute",
+                    top: "3rem",
+                    left: "3rem",
+                    width: "370px",
+                    textAlign: "left",
+                }}
+                >
                     <Typography variant="h3">
                         You worked so hard this semester!
                     </Typography>
@@ -139,12 +146,26 @@ const Wrapped: React.FC<Props> = (props: Props) => {
                         alt=""
                     />
                     <div 
+                        style={{
+                            position: "absolute",
+                            bottom: "11rem",
+                            right: "8rem",
+                            fontSize: "32rem",
+                            color: "#F67D7D",
+                            opacity: 0.6,
+                            zIndex: 0,
+                        }}
+                    >
+                        {wrappedData.officeHourVisits.length} 
+                    </div>
+                    <div 
                         style={{ 
-                            display: "flex", 
+                            position: "absolute",
+                            bottom: "8rem",
+                            right: "5rem",
                             fontWeight: "bold", 
                             width: "300px",
-                            alignSelf: "flex-end", 
-                            alignContent: "flex-start"
+                            zIndex: 1,
                         }}
                     >
                         <Typography variant="h3"> 
@@ -234,6 +255,7 @@ const Wrapped: React.FC<Props> = (props: Props) => {
     return (
         <div className="wrappedBackground">
             <div className="wrappedContainer">
+                {loading && <div>Loading...</div>}
                 {stage !== 0 && 
                     <div className="navigateStage prev" onClick={() => navigateStage('prev')}> 
                         <ArrowBackIosIcon />
