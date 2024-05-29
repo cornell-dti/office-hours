@@ -157,6 +157,7 @@ interface FireUser {
     phoneNumber?: string;
     textNotifsEnabled?: boolean;
     textPrompted?: boolean;
+    wrapped?: boolean;
 }
 
 interface FirePendingUser {
