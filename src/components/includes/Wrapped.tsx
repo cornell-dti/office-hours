@@ -7,7 +7,8 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import "../../styles/Wrapped.scss";
 import React, { useEffect, useState } from "react";
 import firebase from '../../firebase';
-import People from "../../media/ppl.svg"
+import Couple from "../../media/couple.svg"
+import Girl from "../../media/girl.svg"
 import Bus from "../../media/bus.svg"
 import ConsistentPersonality from "../../media/consistent_personality.svg"
 import ResourcefulPersonality from "../../media/resourceful_personality.svg"
@@ -122,55 +123,74 @@ const Wrapped: React.FC<Props> = (props: Props) => {
     const Visits: React.FC = () => (
         <div>
             <div style={{ display: "flex", flexDirection: "column", width: "750px", justifyContent: "space-between" }}>
-                <div style={{ 
-                    position: "absolute",
-                    top: "3rem",
-                    left: "3rem",
-                    width: "370px",
-                    textAlign: "left",
-                }}
-                >
-                    <Typography variant="h3">
-                        You worked so hard this semester!
-                    </Typography>
-                </div>
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                    <img 
-                        src={People}
-                        style={{ 
-                            width: "24rem", 
-                            position: "absolute", 
-                            left: "2rem", 
-                            bottom: "0.5rem" 
-                        }}
-                        alt=""
-                    />
+                
+                <div style={{ display: "flex", justifyContent: "flex-end", fontWeight: "bold" }}>
+                    <div style={{ 
+                        position: "absolute",
+                        top: "3rem",
+                        left: "3rem",
+                        fontSize: "2.5rem",
+                        color: "#080680",
+                    }}
+                    >
+                        YOU WORKED SO HARD THIS SEMESTER!
+                    </div>
+                    <div style={{ 
+                        position: "absolute",
+                        top: "8rem",
+                        left: "3rem",
+                    }}
+                    >
+                        <Typography variant="h3"> 
+                            WITH...
+                        </Typography>
+                    </div>
                     <div 
                         style={{
                             position: "absolute",
-                            bottom: "11rem",
-                            right: "8rem",
-                            fontSize: "32rem",
+                            bottom: "40%",
+                            right: "50%",
+                            fontSize: "24rem",
                             color: "#F67D7D",
-                            opacity: 0.6,
+                            opacity: 0.7,
                             zIndex: 0,
                         }}
                     >
                         {wrappedData.officeHourVisits.length} 
                     </div>
+                    <img 
+                        src={Couple}
+                        style={{ 
+                            width: "12rem", 
+                            position: "absolute", 
+                            right: "11rem", 
+                            bottom: "12rem" 
+                        }}
+                        alt=""
+                    />
+                    <img 
+                        src={Girl}
+                        style={{ 
+                            width: "6rem", 
+                            position: "absolute", 
+                            right: "6rem", 
+                            bottom: "9rem" 
+                        }}
+                        alt=""
+                    />
                     <div 
                         style={{ 
                             position: "absolute",
-                            bottom: "8rem",
-                            right: "5rem",
+                            bottom: "5rem",
+                            right: "4rem",
                             fontWeight: "bold", 
                             width: "300px",
-                            zIndex: 1,
+                            textAlign: "left",
                         }}
                     >
                         <Typography variant="h3"> 
-                            YOU VISITED OFFICE HOURS {wrappedData.officeHourVisits.length} 
-                            {wrappedData.officeHourVisits.length === 1 ? "TIME" : "TIMES" }
+                            {wrappedData.officeHourVisits.length === 1 ? "VISIT " : "VISITS " }
+                            TO OFFICE HOURS
                         </Typography>
                     </div>
                 </div>
@@ -180,19 +200,77 @@ const Wrapped: React.FC<Props> = (props: Props) => {
 
     const TimeSpent: React.FC = () => (
         <>
-            <Typography variant="h2" style={{ fontWeight: "bold" }}> 
-                YOU SPENT {wrappedData.totalMinutes} MINUTES AT OFFICE HOURS
-            </Typography>
+            <div style={{ 
+                position: "absolute",
+                top: "3rem",
+                left: "3rem",
+                fontWeight: "bold", 
+                fontSize: "2.5rem",
+            }}
+            > 
+                SPENDING A TOTAL OF...
+            </div>
+            <div style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                fontSize: "18rem",
+                color: "#080680",
+            }}
+            >
+                {wrappedData.totalMinutes}
+            </div>
+            <div style={{ 
+                position: "absolute",
+                bottom: "8rem",
+                right: "3rem",
+                fontWeight: "bold", 
+                fontSize: "2.5rem",
+                textAlign: "right",
+                width: "300px",
+            }}
+            > 
+                MINUTES
+            </div>
+            <div style={{ 
+                position: "absolute",
+                bottom: "5rem",
+                right: "3rem",
+                fontWeight: "bold", 
+                fontSize: "2.5rem",
+                textAlign: "right",
+                width: "300px",
+            }}
+            > 
+                AT OFFICE HOURS
+            </div>
         </>
     )
 
     const PersonalityType: React.FC = () => (
         <>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center"}}>
-                <Typography variant="h3" style={{ fontWeight: "bold" }}> 
-                    Your office hour personality type is 
-                    <div className="personalityType">{wrappedData.personalityType}</div>
-                </Typography>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-evenly",}}>
+                <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "45%",
+                }}
+                >
+                    <div style={{
+                        fontWeight: "bold",
+                        fontSize: "2rem",
+                        marginBottom: "2rem",
+                        lineHeight: "2.5rem",
+                    }}
+                    >
+                    YOUR OFFICE HOUR PERSONALITY TYPE IS...
+                    </div>
+                
+                    <Typography variant="h3" style={{ fontWeight: "bold" }}>  
+                        <div className="personalityType">{wrappedData.personalityType}</div>
+                    </Typography>
+                </div>
                 {wrappedData.personalityType === "Consistent" ? 
                     <img 
                         src={ConsistentPersonality} 
