@@ -102,7 +102,7 @@ $open: #ffdba6;
         padding-bottom: 3.63px;
         gap: 8.53px;
         text-decoration: none;
-        margin-left: 140px;
+        //margin-left: 140px;
         cursor: pointer;
         font-family: Roboto, sans-serif;
         font-weight: 300;
@@ -172,10 +172,12 @@ $open: #ffdba6;
             color: $text-grey;
             font-size: 14px;
             font-weight: 500;
+            width: 160px;
         }
 
         .Tas {
             color: #207981;
+            width: 160px;
         }
 
         .Queue {
