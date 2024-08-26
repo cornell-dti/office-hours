@@ -75,9 +75,22 @@
 .CalendarExportModalVisible {
   width: 450px;
   height: auto;
+
+}
+
+@keyframes modalFadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 .CalendarExportModalScreen {
+  animation: 0.15s linear both modalFadeIn;
+
   .Title {
     font-weight: 500;
     font-size: 25px;
@@ -200,6 +213,7 @@
 
   .CalendarExportModalVisible {
     width: 80%;
+    animation: 10s ease-in both modalFadeIn;
 
     .ExportText {
       font-size: 15px;
