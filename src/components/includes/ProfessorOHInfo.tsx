@@ -85,6 +85,10 @@ const ProfessorOHInfo = (props: {
                             ? Modality.HYBRID
                             : Modality.INPERSON
             );
+
+            // Update TALink and useTALink states based on session data
+            setUseTALink(session.modality === "virtual" || session.modality === "hybrid" ? session.useTALink : false);
+            setTALink(session.modality === "virtual" || session.modality === "hybrid" ? session.TALink : "");
         }
     }, [session]);
 
