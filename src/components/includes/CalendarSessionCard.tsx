@@ -94,9 +94,9 @@ const CalendarSessionCard = (props: {
                         <div className='Location'>Online</div>
                     )}
 
-                    {numAhead > 0 ? (<div className={'Indicator ' + props.status}>
+                    {numAhead > 0 && (<div className={'Indicator ' + props.status}>
                         <div className='Circle' />
-                    </div>) : null}
+                    </div>)}
 
                     <button
                         type="button"

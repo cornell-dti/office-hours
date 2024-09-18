@@ -74,8 +74,8 @@ const CalendarExportModal = ({
 
     /** Returns a string of the time in hours:minutes AM/PM.
      * Ex: Returns 2:20:23 PM-3:20:23 PM as 2:20 PM-3:20 PM */
-    const getTimeString = (localeTime: string): string => 
-        localeTime.substring(0, localeTime.lastIndexOf(":")) + " " + 
+    const getTimeString = (localeTime: string): string =>
+        localeTime.substring(0, localeTime.lastIndexOf(":")) + " " +
         localeTime.substring(localeTime.length - 2)
 
 
@@ -132,11 +132,30 @@ const CalendarExportModal = ({
         const finalLink = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
             `&text=${title}&dates=${dates}&ctz=${ctz}&location=${location}`;
         return finalLink;
-    }
+    };
 
     const exportToAppleCalendar = () => {
         const icsData = createIcs();
         downloadFile(icsData);
+    };
+
+    const dayExport = () => { return <div className='Title'>{getDateString()} Office Hours </div> };
+
+    const sessionExport = (session: FireSession) => {
+        return (
+            <div className='Title'>{session.title &&
+                <div>
+                    {course?.code + " : " + session.title}
+                    <div className='Subtitle'> {getDateString() + " @ " +
+                        getTimeString(
+                            session.startTime
+                                .toDate().toLocaleTimeString())
+                        + "-" +
+                        getTimeString(session
+                            .endTime.toDate().toLocaleTimeString())}
+                    </div>
+                </div>}
+            </div>)
     };
 
     return (
@@ -149,35 +168,22 @@ const CalendarExportModal = ({
                             className='closeButton'
                             onClick={closeModal}
                         >
-                            <CloseIcon 
-                                fontSize="large" 
+                            <CloseIcon
+                                fontSize="large"
                                 sx={{
                                     color: "black"
-                                }} 
+                                }}
                             />
                         </button>
                         <img src={CalIcon} alt='Calendar export icon' id="calIcon" />
                         {isDayExport ?
-                            <div className='Title'>{getDateString()} Office Hours </div> :
-                            <div className='Title'>{currentExportSessions[0].title ?
-                                <div>
-                                    {course?.code + " : " + currentExportSessions[0].title}
-                                    <div className='Subtitle'> {getDateString() + " @ " +
-                                        getTimeString(
-                                            currentExportSessions[0].startTime
-                                                .toDate().toLocaleTimeString()) 
-                                                + "-" +
-                                        getTimeString(currentExportSessions[0]
-                                            .endTime.toDate().toLocaleTimeString())} 
-                                    </div>
-                                </div>
-                                : ``}</div>
+                            dayExport() : sessionExport(currentExportSessions[0])
                         }
                         <div className='CalendarContainer'>
 
-                            <Button 
-                                onClick={() => window.open(getGoogleCalendarLink(), "_blank")} 
-                                className="export-btn" 
+                            <Button
+                                onClick={() => window.open(getGoogleCalendarLink(), "_blank")}
+                                className="export-btn"
                             >
                                 <Button.Content icon>
                                     <Icon name='google' />
