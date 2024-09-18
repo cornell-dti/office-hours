@@ -46,10 +46,10 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const busiestSessionInfo = busiestSession && {
         ...("building" in busiestSession
             ? {
-                  building: busiestSession.building,
-                  room: busiestSession.room,
-                  online: false as const,
-              }
+                building: busiestSession.building,
+                room: busiestSession.room,
+                online: false as const,
+            }
             : { online: true as const }),
         ohDate: moment(busiestSession.startTime.seconds * 1000).format("MMMM Do"),
         startHour: moment(busiestSession.startTime.seconds * 1000).format("h:mm a"),
