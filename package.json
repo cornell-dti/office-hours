@@ -10,6 +10,7 @@
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@mui/material": "^5.15.13",
+    "@mui/x-date-pickers": "6.19.8",
     "@nivo/bar": "^0.59.2",
     "@nivo/line": "^0.59.3",
     "@nivo/pie": "^0.59.1",
