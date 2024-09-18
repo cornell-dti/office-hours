@@ -1,4 +1,4 @@
-export const CURRENT_SEMESTER = 'SP23';
+export const CURRENT_SEMESTER = 'FA24';
 
-export const START_DATE = '2023-01-23'
-export const END_DATE = '2023-05-20'
+export const START_DATE = '2024-08-19'
+export const END_DATE = '2024-12-20'
