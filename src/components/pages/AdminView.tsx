@@ -7,7 +7,7 @@ import TopBar from '../includes/TopBar';
 import AdminCourseCard from '../includes/AdminCourseCard';
 import AdminCourseCreator from '../includes/AdminCourseCreator';
 import { useAllCourses, useIsAdmin } from '../../firehooks';
-import { CURRENT_SEMESTER } from '../../constants';
+import { CURRENT_SEMESTER, ALL_SEMESTERS } from '../../constants';
 
 
 const AdminView = () => {
@@ -22,8 +22,7 @@ const AdminView = () => {
     }, [isAdmin, history])
 
     const [sem, setSem] = useState(CURRENT_SEMESTER);
-    const validSems = ["FA20", "SP20", "FA21", "SP21", "FA22", "SP22",
-        "FA23", "SP23", "FA24", "SP24"]
+    const validSems = ALL_SEMESTERS;
 
 
     const handleChange = (event: SelectChangeEvent) => {
@@ -67,18 +66,18 @@ const AdminView = () => {
 
             <div className="course-container" >
                 <Grid container direction="row" alignItems={'stretch'} spacing={3}>
-
                     {/* Handles courses that are not in valid semesters to be shown in the "Other" menu option. */}
-                    {validSems.includes(sem, 0) ? courses.filter(course => course.semester === sem).map(course => (
-                        <Grid item xl={3} lg={4} md={6} xs={12}>
-                            <AdminCourseCard key={course.courseId} course={course} />
-                        </Grid>
-                    )) : courses.filter(course => !validSems.includes(course.semester, 0)).map(course => (
-                        <Grid item xl={3} lg={4} md={6} xs={12}>
-                            <AdminCourseCard key={course.courseId} course={course} />
-                        </Grid>
-                    ))}
-
+                    {courses
+                        .filter(course => validSems.includes(sem, 0)
+                            ? course.semester === sem
+                            : !validSems.includes(course.semester, 0)
+                        )
+                        .map(course => (
+                            <Grid item xl={3} lg={4} md={6} xs={12} key={course.courseId}>
+                                <AdminCourseCard course={course} />
+                            </Grid>
+                        ))
+                    }
                 </Grid>
             </div>
 
