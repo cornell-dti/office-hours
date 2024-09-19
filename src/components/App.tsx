@@ -22,6 +22,7 @@ import { updateAuthStatus, updateUser } from '../redux/actions/auth'
 import { store } from '../redux/store'
 
 import AdminView from './pages/AdminView';
+import AnalyticsView from './pages/AnalyticsView';
 import BlogCMS from './pages/BlogCMS';
 import LoginView from './pages/LoginView';
 import ProfessorView from './pages/ProfessorView';
@@ -225,6 +226,11 @@ export default connect(null, { updateUser, updateAuthStatus })(({ updateUser, up
                         <PrivateRoute
                             path="/home"
                             component={CourseSelectionView}
+                            requireProfessor={false}
+                        />
+                        <PrivateRoute
+                            path="/analytics"
+                            component={AnalyticsView}
                             requireProfessor={false}
                         />
                         <PrivateRoute
