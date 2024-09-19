@@ -39,7 +39,7 @@ const AdminView = () => {
                 courseId="DUMMY_COURSE_ID"
             />
             <h2>Courses</h2>
-            <FormControl sx={{ m: 1, width: "8%", backgroundColor: "#FFFFFF" }}>
+            <FormControl sx={{ m: 1, minWidth: "8%", backgroundColor: "#FFFFFF" }}>
                 <InputLabel id="course-select-label">Semester</InputLabel>
                 <Select
                     labelId="course-select-label"
@@ -47,7 +47,7 @@ const AdminView = () => {
                     value={sem}
                     label="Semester"
                     onChange={handleChange}
-                    fullWidth
+                    autoWidth
                     className="formControl"
                     sx={{
                         width: "100%",
