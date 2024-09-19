@@ -53,11 +53,10 @@ const AdminView = () => {
                         width: "100%",
                     }}
                 >
+                    <MenuItem value={CURRENT_SEMESTER}>Current Semester: {CURRENT_SEMESTER}</MenuItem>
                     {validSems.map(semester => {
-                        return (
-                            <MenuItem value={semester}>{semester}</MenuItem>
-
-                        );
+                        return semester !== CURRENT_SEMESTER &&
+                            (<MenuItem value={semester}>{semester}</MenuItem>);
                     })}
                     <MenuItem value="Other">Other</MenuItem>
                 </Select>
