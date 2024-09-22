@@ -38,16 +38,31 @@ const WrappedAnimationModal = ({
           */}
                             <svg className="red-circle" width="300" height="300">
                                 {/* this creates the color gradients on the qmi logo */}
-                                <linearGradient id="red-gradient" x1="24.4251" y1="-52.6352" x2="112.279" y2="143.659" gradientUnits="userSpaceOnUse">
+                                <linearGradient 
+                                    id="red-gradient" 
+                                    x1="24.4251" 
+                                    y1="-52.6352" 
+                                    x2="112.279" 
+                                    y2="143.659" 
+                                    gradientUnits="userSpaceOnUse"
+                                >
                                     <stop stopColor="#FF9399" />
                                     <stop offset="1" stopColor="#FF5A60" />
                                 </linearGradient>
-                                {/* this is the actual circle part. cx and cy are centers so shld be half of height/width. r is radius */}
+                                {/* this is the actual circle part. 
+                                cx and cy are centers so shld be half of height/width. r is radius */}
                                 <circle cx='150' cy='150' r='115'> </circle>
                             </svg>
                             <svg className="blue-circle" width="400" height="400">
                                 <defs>
-                                    <linearGradient id="blue-gradient" x1="36.7649" y1="66.8832" x2="134.326" y2="192.278" gradientUnits="userSpaceOnUse">
+                                    <linearGradient 
+                                        id="blue-gradient" 
+                                        x1="36.7649" 
+                                        y1="66.8832" 
+                                        x2="134.326" 
+                                        y2="192.278" 
+                                        gradientUnits="userSpaceOnUse"
+                                    >
                                         <stop stopColor="#B2D9FF" />
                                         <stop offset="1" stopColor="#78B6F4" />
                                     </linearGradient>
