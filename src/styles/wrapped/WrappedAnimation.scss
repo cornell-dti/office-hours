@@ -2,7 +2,7 @@
   text-align: center;
   background-color: whitesmoke;
   height: 70vh;
-  width: 70vw;
+  width: 60vw;
   overflow: hidden;
   margin: 0;
   display: flex;
@@ -19,19 +19,20 @@
     right: 24.61%;
     top: calc(50% - 45px / 2 - 209.5px);
     font-size: 20px;
-    line-height: 48px;
     color: #484848;
     float: right;
     outline: none;
     background-color: transparent;
     border: none;
+    padding-top: 8px;
+    padding-right: 8px;
   }
 
 }
 
 .qmi-container {
   z-index: 0;
-  margin-top: 2em;
+  margin-top: -10px;
   background-color: whitesmoke;
   position: relative;
   display: flex;
@@ -50,6 +51,7 @@
 
 .blue-circle {
   position: absolute;
+  // top: 20%;
 }
 
 /* stroke array is length of path, so circumference. recalculate if radius changes.

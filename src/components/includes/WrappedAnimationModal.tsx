@@ -30,6 +30,7 @@ const WrappedAnimationModal = ({
                             <Icon name='x' />
                         </button>
                         <div className='qmi-container'>
+                            
                             {/* creates first red svg circle. need linear gradient tags here 
           since didn't import this svg.
           make note that width and height are basically the box containing the circle,
