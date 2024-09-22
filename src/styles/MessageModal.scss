@@ -1,6 +1,7 @@
 .CalendarExportModalScreen,
 .NotifModalScreen,
-.JoinErrorMessageScreen {
+.JoinErrorMessageScreen,
+.WrappedModalScreen {
   position: fixed;
   display: flex;
   align-items: center;
@@ -23,7 +24,8 @@
 
 .CalendarExportModalVisible,
 .NotificationModalVisible,
-.JoinErrorMessageVisible {
+.JoinErrorMessageVisible
+{
   width: 450px;
   height: 300px;
   border-radius: 8px;
@@ -73,6 +75,19 @@
 .CalendarExportModalVisible {
   width: 450px;
   height: 300px;
+}
+
+@keyframes modalFadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+.WrappedModalScreen{
+  animation: 0.15s linear both modalFadeIn;
 }
 
 .CalendarExportModalScreen {

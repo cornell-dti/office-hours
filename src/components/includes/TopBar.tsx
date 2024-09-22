@@ -15,6 +15,9 @@ import { RootState } from "../../redux/store";
 import { updateLastSent } from "../../firebasefunctions/notifications";
 import Snackbar from "./Snackbar";
 import TextNotificationModal from "./TextNotificationModal";
+import WrappedPlus from "../../media/plus.svg";
+import WrappedModal from "./WrappedAnimationModal";
+
 
 type Props = {
     courseId: string;
@@ -34,6 +37,14 @@ const TopBar = (props: Props) => {
     const [showMenu, setShowMenu] = useState(false);
     const [showTextModal, setShowTextModal] = useState<boolean>(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : "/placeholder.png");
+    const [showWrappedModal, setShowWrappedModal] = useState<boolean>(false);
+
+
+    const whoops = () => {
+        setShowWrappedModal(true);
+    };
+
+
     const ref = React.useRef<HTMLDivElement>(null);
     const history = useHistory();
 
@@ -104,7 +115,15 @@ const TopBar = (props: Props) => {
                             <ProfessorStudentToggle courseId={props.courseId} context={props.context} />
                         )}
                     </div>
+                    {/* Temporary location for testing */}
+                    <img
+                        src={WrappedPlus}
+                        alt='Temp place for QMI Wrapped'
+                        className='QMILogoImage'
+                        onClick={whoops}
+                    />
                     <div className="rightContentWrapper">
+                        
                         <TopBarNotifications
                             notificationTracker={notificationTracker}
                             iconClick={() => setShowMenu(!showMenu)}
@@ -160,6 +179,10 @@ const TopBar = (props: Props) => {
                     </ul>
                 </>
             )}
+            <WrappedModal
+                showWrappedModal={showWrappedModal}
+                setShowWrappedModal={setShowWrappedModal}
+            />
             <TextNotificationModal showTextModal={showTextModal} setShowTextModal={setShowTextModal} user={user} />
             {props.snackbars.map((snackbar) => (
                 <Snackbar icon={snackbar.icon} announcement={snackbar.text} />

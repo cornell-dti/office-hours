@@ -13,6 +13,7 @@ import { firestore } from '../../firebase';
 import { removeQuestionbyID, submitFeedback } from '../../firebasefunctions/sessionQuestion';
 import TopBar from '../includes/TopBar';
 import CalendarExportModal from '../includes/CalendarExportModal';
+
 import { RootState } from '../../redux/store';
 import { updateCourse, updateSession } from "../../redux/actions/course";
 import Browser from '../../media/browser.svg';
@@ -89,6 +90,7 @@ const SplitView = ({
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
+
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
     const [currentExportSessions, setCurrentExportSessions] =
         useState<FireSession[]>([{
