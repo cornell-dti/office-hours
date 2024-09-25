@@ -19,7 +19,8 @@ const endDate = admin.firestore.Timestamp.fromDate(new Date('2024-05-19'));
 const getWrapped = async () => {
     // Refs
     const questionsRef = db.collection('questions');
-    const sessionsRef = db.collection('sessions')
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const sessionsRef = db.collection('sessions');
     const wrappedRef = db.collection('wrapped');
     const usersRef = db.collection('users');
 
@@ -84,24 +85,6 @@ const getWrapped = async () => {
 
         if (!TAsessions[answererId]?.includes(sessionId)) {
             TAsessions[answererId]?.push(sessionId);
-        }
-    }
-
-    for (const TAid in TAsessions) {
-        // eslint-disable-next-line no-prototype-builtins
-        if (TAsessions.hasOwnProperty(TAid)) {
-            const uniqueSessions = TAsessions[TAid]
-            uniqueSessions.forEach(async session => {
-                const sessionDoc = sessionsRef.doc(session).get();
-                const sessionData = (await sessionDoc).data() as {
-                    startTime: admin.firestore.Timestamp;
-                    endTime: admin.firestore.Timestamp;
-                }
-                const sessionLength = (
-                    sessionData.endTime.toDate().getTime() - sessionData.startTime.toDate().getTime()
-                ) / 60000;
-                userStats[TAid].timeHelpingStudents = (userStats[TAid].timeHelpingStudents ?? 0) + sessionLength;
-            })
         }
     }
 
