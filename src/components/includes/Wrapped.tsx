@@ -23,11 +23,11 @@ type DotProps = {
     active: boolean;
 };
   
-const Dot: React.FC<DotProps> = ({ active }) => (
+const Dot = ({active} : DotProps) => (
     <div className={`dot ${active ? 'active' : ''}`} />
 );
 
-const Wrapped: React.FC<Props> = (props: Props) => {
+const Wrapped = (props: Props) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [stage, setStage] = useState<number>(0);
     const [wrappedData, setWrappedData] = useState({
@@ -86,16 +86,16 @@ const Wrapped: React.FC<Props> = (props: Props) => {
         });
     };
 
-    const DotsIndicator: React.FC<{ stage: number }> = ({ stage }) => (
+    const DotsIndicator = () => (
         <div className="dotsContainer">
             {[...Array(totalStages)].map((_, index) => ( 
-                <Dot key={index} active={index === stage} />
+                <Dot active={index === stage} />
             ))}
         </div>
     );
       
 
-    const Welcome: React.FC = () => (
+    const Welcome = () => (
         <div>
             <div style={{ display: "flex", flexDirection: "column", width: "400px", justifyContent: "space-between" }}>
                 <div style={{ alignSelf: "flex-start" }}>
@@ -120,7 +120,7 @@ const Wrapped: React.FC<Props> = (props: Props) => {
         </div>
     )
 
-    const Visits: React.FC = () => (
+    const Visits = () => (
         <div>
             <div style={{ display: "flex", flexDirection: "column", width: "750px", justifyContent: "space-between" }}>
                 
@@ -198,7 +198,7 @@ const Wrapped: React.FC<Props> = (props: Props) => {
         </div>
     )
 
-    const TimeSpent: React.FC = () => (
+    const TimeSpent = () => (
         <>
             <div style={{ 
                 position: "absolute",
@@ -248,7 +248,7 @@ const Wrapped: React.FC<Props> = (props: Props) => {
         </>
     )
 
-    const PersonalityType: React.FC = () => (
+    const PersonalityType = () => (
         <>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-evenly",}}>
                 <div style={{
@@ -299,7 +299,7 @@ const Wrapped: React.FC<Props> = (props: Props) => {
 
     
 
-    const Conclusion: React.FC = () => (
+    const Conclusion = () => (
         <>
             <div style={{ display: "flex", flexDirection: "column" }}>
                 <Typography 
@@ -345,7 +345,7 @@ const Wrapped: React.FC<Props> = (props: Props) => {
                 {stage === 2 && <TimeSpent />}
                 {stage === 3 && <PersonalityType />}
                 {stage === 4 && <Conclusion />}
-                <DotsIndicator stage={stage} />
+                <DotsIndicator />
                 {stage !== totalStages - 1 && 
                     <div className="navigateStage next" onClick={() => navigateStage('next')}>
                         <ArrowForwardIosIcon />

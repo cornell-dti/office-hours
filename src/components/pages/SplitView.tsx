@@ -88,11 +88,7 @@ const SplitView = ({
     string | undefined
     >(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
-    const [displayWrapped, setDisplayWrapped] = useState<boolean>(
-        true
-        // user?.wrapped === true 
-        // && firestore.collection("Wrapped").doc(user.userId)
-    );
+    const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
@@ -123,6 +119,26 @@ const SplitView = ({
     useEffect(() => {
         updateSession(sessionHook);
     }, [sessionHook, updateSession])
+
+    useEffect(() => {
+        if (user && user.wrapped) {
+            const userDocRef = firestore.collection("Wrapped").doc(user.userId);
+
+            userDocRef.get().then((doc) => {
+                if (doc.exists) {
+                    setDisplayWrapped(true);
+                } else {
+                    setDisplayWrapped(false);
+                }
+            }).catch(() => {
+                // eslint-disable-next-line no-console
+                console.log("Wrapped document does not exist for this user");
+                setDisplayWrapped(false);
+            });
+        } else {
+            setDisplayWrapped(false);
+        }
+    }, [user])
 
     // Handle browser back button
     history.listen((location) => {
