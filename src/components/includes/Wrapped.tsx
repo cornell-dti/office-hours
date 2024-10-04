@@ -7,12 +7,12 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import "../../styles/Wrapped.scss";
 import React, { useEffect, useState } from "react";
 import firebase from '../../firebase';
-import Couple from "../../media/couple.svg"
-import Girl from "../../media/girl.svg"
-import Bus from "../../media/bus.svg"
-import ConsistentPersonality from "../../media/consistent_personality.svg"
-import ResourcefulPersonality from "../../media/resourceful_personality.svg"
-import IndependentPersonality from "../../media/independent_personality.svg"
+import Couple from "../../media/wrapped/couple.svg"
+import Girl from "../../media/wrapped/girl.svg"
+import Bus from "../../media/wrapped/bus.svg"
+import ConsistentPersonality from "../../media/wrapped/consistent_personality.svg"
+import ResourcefulPersonality from "../../media/wrapped/resourceful_personality.svg"
+import IndependentPersonality from "../../media/wrapped/independent_personality.svg"
 
 type Props = {
     user: FireUser | undefined;
