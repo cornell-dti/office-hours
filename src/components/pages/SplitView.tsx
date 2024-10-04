@@ -122,19 +122,7 @@ const SplitView = ({
 
     useEffect(() => {
         if (user && user.wrapped) {
-            const userDocRef = firestore.collection("Wrapped").doc(user.userId);
-
-            userDocRef.get().then((doc) => {
-                if (doc.exists) {
-                    setDisplayWrapped(true);
-                } else {
-                    setDisplayWrapped(false);
-                }
-            }).catch(() => {
-                // eslint-disable-next-line no-console
-                console.log("Wrapped document does not exist for this user");
-                setDisplayWrapped(false);
-            });
+            setDisplayWrapped(true);
         } else {
             setDisplayWrapped(false);
         }
