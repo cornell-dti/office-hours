@@ -20,6 +20,7 @@ import smsNotif from '../../media/smsNotif.svg'
 import { addBanner } from '../../redux/actions/announcements';
 import Banner from '../includes/Banner';
 import FeedbackPrompt from '../includes/FeedbackPrompt';
+import Wrapped from '../includes/Wrapped';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -87,6 +88,7 @@ const SplitView = ({
     string | undefined
     >(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
+    const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
@@ -117,6 +119,14 @@ const SplitView = ({
     useEffect(() => {
         updateSession(sessionHook);
     }, [sessionHook, updateSession])
+
+    useEffect(() => {
+        if (user && user.wrapped) {
+            setDisplayWrapped(true);
+        } else {
+            setDisplayWrapped(false);
+        }
+    }, [user])
 
     // Handle browser back button
     history.listen((location) => {
@@ -274,6 +284,9 @@ const SplitView = ({
                 />
             ) : null}
 
+            {displayWrapped ? (
+                <Wrapped user={user} onClose={() => setDisplayWrapped(false)} />
+            ) : null}
         </>
     );
 };
