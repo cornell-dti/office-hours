@@ -1,59 +1,60 @@
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import firebase from 'firebase/app';
-import plusCircle from '../../media/plus-circle.svg';
-import chevronUp from '../../media/chevron-up.svg';
-import chevronDown from '../../media/chevron-down.svg';
-import announcement from '../../media/announcement.svg';
-import { addTaAnnouncement, deleteTaAnnouncement } from '../../firebasefunctions/session';
-import { RootState } from '../../redux/store';
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import firebase from "firebase/app";
+import plusCircle from "../../media/plus-circle.svg";
+import chevronUp from "../../media/chevron-up.svg";
+import chevronDown from "../../media/chevron-down.svg";
+import announcement from "../../media/announcement.svg";
+import { addTaAnnouncement, deleteTaAnnouncement } from "../../firebasefunctions/session";
+import { RootState } from "../../redux/store";
 
 type Props = {
     user: FireUser;
     session: FireSession;
-}
+    showProfessorStudentView: boolean;
+};
 
-const TaAnnouncements = ({ user, session }: Props) => {
-    const [showBody, setShowBody] = useState(false)
-    const [showAnnouncements, setShowAnnouncements] = useState(false)
-    const [showNewAnnouncement, setShowNewAnnouncement] = useState(false)
-    const [announcementContent, setAnnouncementContent] = useState("")
+const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => {
+    const [showBody, setShowBody] = useState(false);
+    const [showAnnouncements, setShowAnnouncements] = useState(false);
+    const [showNewAnnouncement, setShowNewAnnouncement] = useState(false);
+    const [announcementContent, setAnnouncementContent] = useState("");
     const [taAnnouncements, setTaAnnouncements] = useState(session.taAnnouncemements);
 
     const clickCircleIcon = () => {
-        setShowBody(true)
+        setShowBody(true);
         setShowAnnouncements(false);
         setShowNewAnnouncement(true);
-    }
+    };
 
     const collapseBody = () => {
         if (!showBody) {
             setShowAnnouncements(true);
             setShowNewAnnouncement(false);
         }
-        setShowBody(state => !state)
+        setShowBody((state) => !state);
         setShowAnnouncements(true);
-    }
+    };
 
     const enterAnnouncement = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAnnouncementContent(e.target.value);
-    }
+    };
 
     const onClickCancelButton = () => {
-        setAnnouncementContent("")
+        setAnnouncementContent("");
         collapseBody();
-    }
+    };
 
     const onClickPostButton = () => {
         addTaAnnouncement(session, user, announcementContent);
         setAnnouncementContent("");
         setShowNewAnnouncement(false);
         setShowAnnouncements(true);
-    }
+    };
 
     const deleteAnnouncement = (announcement: string, uploadTime: FireTimestamp) => {
-        deleteTaAnnouncement(session, user, announcement, uploadTime)
-    }
+        deleteTaAnnouncement(session, user, announcement, uploadTime);
+    };
 
     const getTimeDifference = (announcement: TaAnnouncement) => {
         const announcementTime = announcement.uploadTime.toDate().getTime();
@@ -61,11 +62,11 @@ const TaAnnouncements = ({ user, session }: Props) => {
         const difference = currentTime - announcementTime;
         const minutes = Math.round(difference / 60000);
         return [Math.floor(minutes / 60), minutes % 60];
-    }
+    };
 
     useEffect(() => {
         setTaAnnouncements(session.taAnnouncemements);
-    }, [session])
+    }, [session]);
 
     return (
         <div className="AnnouncementContainer">
@@ -74,57 +75,63 @@ const TaAnnouncements = ({ user, session }: Props) => {
                     TA announcements ({taAnnouncements == null ? 0 : taAnnouncements.length})
                 </div>
                 <div className="AnnouncementIcons">
-                    {((user.roles[session.courseId]) === "professor" || (user.roles[session.courseId]) === "ta")
-                        && <img src={plusCircle} alt="Add New Announcement" onClick={clickCircleIcon} />}
+                    {!showProfessorStudentView &&
+                        (user.roles[session.courseId] === "professor" || user.roles[session.courseId] === "ta") && (
+                        <img src={plusCircle} alt="Add New Announcement" onClick={clickCircleIcon} />
+                    )}
                     <img src={showBody ? chevronUp : chevronDown} alt="View Announcements" onClick={collapseBody} />
                 </div>
             </div>
-            {showBody &&
+            {showBody && (
                 <div className="AnnouncementBottom">
-                    {showAnnouncements &&
+                    {showAnnouncements && (
                         <div>
-                            {(taAnnouncements == null || taAnnouncements?.length === 0)
-                                && <span className="NoAnnouncement">
-                                    No announcements yet.
-                                </span>}
-                            {taAnnouncements && <span>
-                                {taAnnouncements?.map((a, i) =>
-                                    <div className="Announcement" key={i}>
-                                        <div className="AnnouncementHeading">
-                                            <div>
-                                                <img 
-                                                    alt="Announcement Icon" 
-                                                    src={announcement} 
-                                                    className="AnnouncementIcon" 
-                                                />
-                                                <img
-                                                    src={user ? user.photoUrl : '/placeholder.png'}
-                                                    alt="Profile"
-                                                    className="AnnouncementTaPhoto"
-                                                />
-                                                {a.ta.firstName}
-                                                {a.ta.lastName}
-                                                {(a.ta.userId === user.userId) && "(You)"}
+                            {(taAnnouncements == null || taAnnouncements?.length === 0) && (
+                                <span className="NoAnnouncement">No announcements yet.</span>
+                            )}
+                            {taAnnouncements && (
+                                <span>
+                                    {taAnnouncements?.map((a, i) => (
+                                        <div className="Announcement" key={i}>
+                                            <div className="AnnouncementHeading">
+                                                <div>
+                                                    <img
+                                                        alt="Announcement Icon"
+                                                        src={announcement}
+                                                        className="AnnouncementIcon"
+                                                    />
+                                                    <img
+                                                        src={user ? user.photoUrl : "/placeholder.png"}
+                                                        alt="Profile"
+                                                        className="AnnouncementTaPhoto"
+                                                    />
+                                                    {a.ta.firstName}
+                                                    {a.ta.lastName}
+                                                    {a.ta.userId === user.userId && "(You)"}
+                                                </div>
+                                                <div>
+                                                    {getTimeDifference(a)[0] !== 0 && getTimeDifference(a)[0] + ` hour`}
+                                                    {getTimeDifference(a)[1]} min ago
+                                                </div>
                                             </div>
-                                            <div>{getTimeDifference(a)[0] !== 0 && getTimeDifference(a)[0] + ` hour`}
-                                                {getTimeDifference(a)[1]} min ago</div>
+                                            <div className="AnnouncementContent">
+                                                {a.announcement}
+                                                {a.ta.userId === user.userId && (
+                                                    <span
+                                                        onClick={() => deleteAnnouncement(a.announcement, a.uploadTime)}
+                                                    >
+                                                        DELETE
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="AnnouncementContent">
-                                            {a.announcement}
-                                            {(a.ta.userId === user.userId) && <span onClick={() =>
-                                                deleteAnnouncement(a.announcement, a.uploadTime)}
-                                            >DELETE</span>}
-                                        </div>
-
-
-
-                                    </div>
-                                )}
-                            </span>}
+                                    ))}
+                                </span>
+                            )}
                         </div>
-                    }
+                    )}
 
-                    {showNewAnnouncement &&
+                    {showNewAnnouncement && (
                         <div className="NewAnnouncement">
                             <div className="NewAnnouncementTop">
                                 <img src={announcement} alt="Announcements" />
@@ -142,9 +149,7 @@ const TaAnnouncements = ({ user, session }: Props) => {
                                         maxLength={45}
                                     />
                                 </div>
-                                <div className="NewAnnouncementLength">
-                                    {announcementContent.length} / 45
-                                </div>
+                                <div className="NewAnnouncementLength">{announcementContent.length} / 45</div>
                             </div>
                             <div className="NewAnnouncementBottom">
                                 <span className="CancelButton" onClick={onClickCancelButton}>
@@ -154,18 +159,22 @@ const TaAnnouncements = ({ user, session }: Props) => {
                                     Post
                                 </span>
                             </div>
-                        </div>}
-                </div>}
-
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
-    )
-}
+    );
+};
 
 const mapStateToProps = (state: RootState) => ({
     user: state.auth.user,
     session: state.course.session,
-})
+});
 
-export default connect(mapStateToProps, {})((props: Props) => {
-    return <TaAnnouncements {...props} />
-})
+export default connect(
+    mapStateToProps,
+    {}
+)((props: Props) => {
+    return <TaAnnouncements {...props} />;
+});
