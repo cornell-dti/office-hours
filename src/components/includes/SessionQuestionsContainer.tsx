@@ -125,7 +125,7 @@ const SessionQuestionsContainer = (props: Props) => {
     const [timeoutId, setTimeoutId] = React.useState<any>(undefined);
     const [warningTimeoutId, setWarningTimeoutId] = React.useState<any>(undefined);
     // eslint-disable-next-line
-    const [audio, setAudio] = React.useState<HTMLAudioElement>(new Audio("../../../qmijinglefinal.mp3"));
+    const [audio, setAudio] = React.useState<HTMLAudioElement>(new Audio("/qmijinglefinal.mp3"));
     const prevQuestion = usePrev<FireQuestion | null>(props.myQuestion);
 
     // Handles student side of time limit
