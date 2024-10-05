@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
-import { Icon } from 'semantic-ui-react';
+import { Icon } from "semantic-ui-react";
 
 type Props = {
     barData: BarDatum[];
@@ -8,13 +8,15 @@ type Props = {
     sessionKeys: string[];
     calcTickVals: (yMax: number) => number[];
     legend: string;
-    sessionDict: { 
+    sessionDict: {
         [id: string]: {
             ta: string;
             location: string;
             startHour: string;
             endHour: string;
-        };};
+            avgWaitTime: string;
+        };
+    };
 };
 
 const QuestionsBarGraph: React.FC<Props> = (props) => {
@@ -24,7 +26,7 @@ const QuestionsBarGraph: React.FC<Props> = (props) => {
                 data={props.barData}
                 indexBy="x"
                 keys={props.sessionKeys}
-                colors={{ scheme: 'red_blue' }}
+                colors={{ scheme: "red_blue" }}
                 borderWidth={2}
                 margin={{
                     top: 20,
@@ -40,6 +42,7 @@ const QuestionsBarGraph: React.FC<Props> = (props) => {
                         </strong>
                         <Icon name="clock" />
                         {props.sessionDict[id].startHour} - {props.sessionDict[id].endHour} <br />
+                        <Icon name="hourglass half" /> {props.sessionDict[id].avgWaitTime} <br />
                         {value} Question(s)
                     </div>
                 )}

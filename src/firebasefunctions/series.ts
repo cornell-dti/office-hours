@@ -62,6 +62,7 @@ export const createSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
+                TALink: sessionSeries.TALink,
                 isPaused: false,
             };
 
@@ -177,6 +178,7 @@ export const updateSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
+                TALink: sessionSeries.TALink,
                 isPaused: false,
             };
             batch.set(db.collection('sessions').doc(sessionId), newSession);

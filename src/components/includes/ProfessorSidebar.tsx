@@ -2,15 +2,20 @@ import * as React from "react";
 import { Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { ReactComponent as ViewIcon } from "../../media/ViewIcon.svg";
+import { useState } from "react";
+import ExportCSVModal from "./ExportCSV";
 
 type Props = {
     courseId: number | string;
     code: string;
-    selected: "hours" | "tags" | "dashboard" | "people" | "roles" | "student";
+    selected: "hours" | "tags" | "dashboard" | "people" | "roles" | "student" | "export";
 };
 
 const ProfessorSidebar = ({ courseId, code, selected }: Props) => {
     const css = (condition: boolean) => (condition ? "selected" : "");
+
+    const [showModal, setShowModal] = useState(false);
+
     return (
         <div className="ProfessorSidebar">
             <div className="nav">
@@ -56,9 +61,15 @@ const ProfessorSidebar = ({ courseId, code, selected }: Props) => {
                             Student View
                         </button>
                     </Link>
+                    <button type="button" onClick={() => setShowModal(true)} className={css(selected === "export")}>
+                        <Icon name="download" />
+                        Export Data
+                    </button>
                 </div>
             </div>
-        </div>
+
+            <ExportCSVModal setShowModal={setShowModal} showModal={showModal} courseId={"" + courseId} />
+        </>
     );
 };
 
