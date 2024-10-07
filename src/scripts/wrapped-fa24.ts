@@ -111,7 +111,11 @@ const getWrapped = async () => {
             if (sessionDoc.exists && userStats[answererId].timeHelpingStudents !== undefined ) {
                 // again using Math.ceil to try to get integer time values. This is to add a total session time to the minutes TA has helped
                 const timeHelping = Math.ceil((sessionDoc.get('endTime').toDate().getTime()  - sessionDoc.get('startTime').toDate().getTime())/ 60000);
-                userStats[answererId].timeHelpingStudents += timeHelping;
+                // this should never be less than 0 (or 0, really)
+                if (timeHelping >= 0) {
+                    userStats[answererId].timeHelpingStudents += timeHelping;
+                }
+                
             } 
 
 
@@ -141,7 +145,8 @@ const getWrapped = async () => {
     const batch = db.batch();
 
     Object.entries(userStats).forEach(async ([userId, stats]) => {
-        if (userId) {
+        // Only want to make wrapped changes for a user if they have an ID and are active 
+        if (userId && stats.officeHourVisits.length > 0) {
             const wrappedDocRef = wrappedRef.doc(userId);
             batch.set(wrappedDocRef, stats);
 
