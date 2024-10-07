@@ -1,9 +1,9 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Icon } from 'semantic-ui-react';
-import arrow from '../../media/arrow.svg';
-import smallPlus from '../../media/plus.svg';
-import bigPlus from '../../media/plus2.svg';
-import "../../styles/wrapped/WrappedAnimation.scss";
+import arrow from '../../media/wrapped/arrow.svg';
+import smallPlus from '../../media/wrapped/plus.svg';
+import bigPlus from '../../media/wrapped/plus2.svg';
+import "../../styles/WrappedAnimation.scss";
 
 type Props = {
     showWrappedModal: boolean;
@@ -38,17 +38,20 @@ const WrappedAnimationModal = ({
           */}
                             <svg className="red-circle" width="300" height="300">
                                 {/* this creates the color gradients on the qmi logo */}
-                                <linearGradient 
-                                    id="red-gradient" 
-                                    x1="24.4251" 
-                                    y1="-52.6352" 
-                                    x2="112.279" 
-                                    y2="143.659" 
-                                    gradientUnits="userSpaceOnUse"
-                                >
-                                    <stop stopColor="#FF9399" />
-                                    <stop offset="1" stopColor="#FF5A60" />
-                                </linearGradient>
+                                <defs>
+                                    <linearGradient 
+                                        id="red-gradient" 
+                                        x1="24.4251" 
+                                        y1="-52.6352" 
+                                        x2="112.279" 
+                                        y2="143.659" 
+                                        gradientUnits="userSpaceOnUse"
+                                    >
+                                        <stop stopColor="#FF9399" />
+                                        <stop offset="1" stopColor="#FF5A60" />
+                                    </linearGradient>
+                                </defs>
+                                
                                 {/* this is the actual circle part. 
                                 cx and cy are centers so shld be half of height/width. r is radius */}
                                 <circle cx='150' cy='150' r='115'> </circle>

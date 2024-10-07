@@ -15,7 +15,7 @@ import { RootState } from "../../redux/store";
 import { updateLastSent } from "../../firebasefunctions/notifications";
 import Snackbar from "./Snackbar";
 import TextNotificationModal from "./TextNotificationModal";
-import WrappedPlus from "../../media/plus.svg";
+import WrappedPlus from "../../media/wrapped/plus.svg";
 import WrappedModal from "./WrappedAnimationModal";
 
 
@@ -40,7 +40,7 @@ const TopBar = (props: Props) => {
     const [showWrappedModal, setShowWrappedModal] = useState<boolean>(false);
 
 
-    const whoops = () => {
+    const displayWrappedModal = () => {
         setShowWrappedModal(true);
     };
 
@@ -115,12 +115,12 @@ const TopBar = (props: Props) => {
                             <ProfessorStudentToggle courseId={props.courseId} context={props.context} />
                         )}
                     </div>
-                    {/* Temporary location for testing */}
+                    {/* Temporary location for testing. Change the WrappedPlus icon also to whatever designers decide */}
                     <img
                         src={WrappedPlus}
-                        alt='Temp place for QMI Wrapped'
+                        alt='Placeholder button for QMI Wrapped'
                         className='QMILogoImage'
-                        onClick={whoops}
+                        onClick={displayWrappedModal}
                     />
                     <div className="rightContentWrapper">
                         
