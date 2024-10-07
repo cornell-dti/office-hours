@@ -7,7 +7,6 @@ import {
     filterAndpartitionQuestions,
     computeNumberAheadFromFilterAndpartitionQuestions,
 } from '../../utilities/questions';
-import CalendarExport from '../../media/calendar_export.svg';
 import { RootState } from '../../redux/store';
 
 const CalendarSessionCard = (props: {
@@ -41,8 +40,6 @@ const CalendarSessionCard = (props: {
         userQuestions
     );
 
-    const includeBookmark = userQuestions.length > 0;
-
     const tas = useSessionTANames(props.course, session);
 
     const timeDesc = '';
@@ -58,7 +55,6 @@ const CalendarSessionCard = (props: {
             className={(props.active && 'active') + ' CalendarSessionCard'}
             onClick={handleOnClick}
         >
-            {includeBookmark && <div className='Bookmark' />}
             <div className='TimeInfo'>
                 <div className='StartTime'>
                     <Moment
@@ -83,9 +79,6 @@ const CalendarSessionCard = (props: {
                     >
                         {session.modality !== 'review' ? 'OH' : 'Discussion'}
                     </div>
-                    <div className={'Indicator ' + props.status}>
-                        <div className='Circle' />
-                    </div>
                 </div>
             </div>
 
@@ -100,12 +93,16 @@ const CalendarSessionCard = (props: {
                     ) : (
                         <div className='Location'>Online</div>
                     )}
-                    <img
-                        src={CalendarExport}
-                        alt='Export to calendar'
-                        className='CalendarExportIcon'
+
+                    {numAhead > 0 && (<div className={'Indicator ' + props.status}>
+                        <div className='Circle' />
+                    </div>)}
+
+                    <button
+                        type="button"
+                        className="cal-btn"
                         onClick={showCalendarExportModal}
-                    />
+                    >+ Add to Cal</button>
                 </div>
                 <div className='Tas'>
                     {session.title ||
@@ -142,7 +139,7 @@ const CalendarSessionCard = (props: {
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
 
