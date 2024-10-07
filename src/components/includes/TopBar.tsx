@@ -115,7 +115,8 @@ const TopBar = (props: Props) => {
                             <ProfessorStudentToggle courseId={props.courseId} context={props.context} />
                         )}
                     </div>
-                    {/* Temporary location for testing. Change the WrappedPlus icon also to whatever designers decide */}
+                    {/* Temporary location for testing. 
+                    Change the WrappedPlus icon also to whatever designers decide */}
                     <img
                         src={WrappedPlus}
                         alt='Placeholder button for QMI Wrapped'
