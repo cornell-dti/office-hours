@@ -13,6 +13,9 @@ console.log('Firebase admin initialized!');
 const db = admin.firestore();
 
 // Firestore Timestamps for the query range
+// EDIT: possibly make these dates as new constants in constants.ts, 
+// would make it easier to edit for other years
+
 const startDate = admin.firestore.Timestamp.fromDate(new Date('2023-08-20'));
 const endDate = admin.firestore.Timestamp.fromDate(new Date('2024-05-19'));
 
@@ -38,7 +41,7 @@ const getWrapped = async () => {
     }} = {};
 
     const TAsessions: { [userId: string]: string[]} = {};
-
+    // looking at each question - what session was it? who asked and answered?
     for (const doc of questionsSnapshot.docs) {
         const question = doc.data() as {
             answererId: string;
@@ -50,6 +53,7 @@ const getWrapped = async () => {
 
         const { answererId, askerId, sessionId, timeEntered, timeAddressed } = question;
 
+        // if a mapping doesn't exist yet for the user, we are creating one
         if (!userStats[askerId]) {
             userStats[askerId] = {
                 officeHourVisits: [],
@@ -66,6 +70,10 @@ const getWrapped = async () => {
                 timeHelpingStudents: 0,
             };
         }
+        // officehoursvisits is a string array of all the string "sessionIDs" 
+        /* officehourvists starts out empty for each user. as we go through
+        each sessionId for each question, if an asker active in a session then
+        that session gets added to the array of total visits */
 
         // Office hour visits
         if (!userStats[askerId].officeHourVisits?.includes(sessionId)) {
@@ -75,9 +83,17 @@ const getWrapped = async () => {
         // Minutes spent at office hours
         if (timeEntered) {
             if (timeAddressed) {
-                const minutesSpent = (timeAddressed.toDate().getTime() - 
-            timeEntered.toDate().getTime()) / 60000; // convert ms to minutes
+                // Using Math.ceil for the edge case of addressed-entered < 60000 ms, 
+                // which would result in a decimal number of minutes
+                const minutesSpent = Math.ceil((timeAddressed.toDate().getTime() - 
+            timeEntered.toDate().getTime()) / 60000); // convert ms to minutes
                 userStats[askerId].totalMinutes += minutesSpent;
+
+                if (minutesSpent <= 0) {
+                    // eslint-disable-next-line no-console
+                    console.log("ISSUE: Minutes spent is a 0 or less");
+                }
+    
             } else {
                 userStats[askerId].totalMinutes += 60; // assume 60 minutes if not addressed
             }
@@ -85,6 +101,20 @@ const getWrapped = async () => {
 
         if (!TAsessions[answererId]?.includes(sessionId)) {
             TAsessions[answererId]?.push(sessionId);
+            /* Since TA was active during this session and this is the first 
+            time encountering the session, we add it to their timeHelped */
+
+            // eslint-disable-next-line no-await-in-loop
+            const sessionDoc = await sessionsRef.doc(sessionId).get();
+            // check if this session for a sessionId doesn't exist for some reason 
+            // check if endTime and startTime exist? would assume they always have to
+            if (sessionDoc.exists && userStats[answererId].timeHelpingStudents !== undefined ) {
+                // again using Math.ceil to try to get integer time values. This is to add a total session time to the minutes TA has helped
+                const timeHelping = Math.ceil((sessionDoc.get('endTime').toDate().getTime()  - sessionDoc.get('startTime').toDate().getTime())/ 60000);
+                userStats[answererId].timeHelpingStudents += timeHelping;
+            } 
+
+
         }
     }
 
