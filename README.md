@@ -27,6 +27,20 @@ _Screenshots showing major parts of app_
 
 ## Contributors
 
+### 2024-2025
+* **Valerie Wong** - Product Manager
+* **Lily Pham** - Developer Advisor
+* **Benjamin Tang** - Product Manager Advisor
+* **Alisha Lin** - Product Manager Advisor
+* **Richard Gu** - Technical Product Manager
+* **Sophie Wang** - Software Developer
+* **Nidhi Soma** - Software Developer
+* **Annie Chen** - Software Developer
+* **Eric Weng** - Software Developer
+* **Lucy Yang** - Designer
+* **Sia Harisingani** - Designer
+* **Maddie Hsia** - Product Marketing Manager
+
 ### 2023-24
 * **Benjamin Tang** - Product Manager
 * **Lily Pham** - Technical Project Manager
