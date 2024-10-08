@@ -28,6 +28,10 @@ const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): Reac
         }
     };
 
+    /**
+     * Navigates to a course's page when the course is clicked in the menu
+     * @param course the course to navigate to
+     */
     const courseClicked = (course: FireCourse) => {
         updateSession(undefined);
         history.push('/course/' + course.courseId);
@@ -60,31 +64,35 @@ const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): Reac
                             .filter(c => c.semester === CURRENT_SEMESTER)
                             .map(course => (
                                 <li key={course.courseId}>
+                                    <p className="courseName">{course.code}</p>
                                     <div
                                         className={course.code === currentCourseCode ? 'thisCourse' : ''}
                                         onClick={() => courseClicked(course)}
                                     >
-                                        {course.code} {course.code === currentCourseCode && <>&#10003;</>}
+                                    Queue {course.code === currentCourseCode}
+                                    </div>
+                                    <div className="dashboard">
+                                        Dashboard
                                     </div>
                                 </li>
                             ))}
                         {role && (
                             <>
                                 <li>
-                                    <div className="editClasses" onClick={() => navClicked('edit')}>
-                                    Edit Classes
+                                    <div className="courseName" onClick={() => navClicked('edit')}>
+                                        Edit Classes
                                     </div>
                                 </li>
                             </>
                         )}
                         {isAdmin && <>
                             <li>
-                                <div className="blogNav editClasses" onClick={() => navClicked('blog')}>
-                              Product Updates
+                                <div className="courseName" onClick={() => navClicked('blog')}>
+                                    Product Updates
                                 </div>
                             </li>
                             <li>
-                                <div className="adminNav editClasses" onClick={() => navClicked('admin')}>
+                                <div className="courseName" onClick={() => navClicked('admin')}>
                                 Admin
                                 </div>
                             </li>
@@ -101,4 +109,4 @@ CalendarHeader.defaultProps = {
     // avatar: undefined
 }
 
-export default connect(null, {updateSession})(CalendarHeader);
+export default connect(null, { updateSession })(CalendarHeader);
