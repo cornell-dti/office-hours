@@ -40,7 +40,22 @@ const getWrapped = async () => {
         timeHelpingStudents?: number;
     }} = {};
 
-    const TAsessions: { [userId: string]: string[]} = {};
+    // need to make new field- favTa
+    /* ideas:
+        - make a dictionary with key userId and values where it's a taID and a count of how many times user has met them
+        cannot just do session ids because some sessions have multiple TAs
+        this feels like a lot of new storage and work, not sure if it could be more efficient? 
+        - make a count field in TA sessions
+        issue is most frequent session might not match most common TA
+        consider a case where a session may not have TA (maybe it's professors oh)
+        - if we're going with sessions, 
+    */
+
+    // mapping taID to the count of times user met with them
+    const taCounts: {[taID: string]: int} = {};
+    // will have data for the session for each ta that people actually asked questions in
+    // CONSIDER: for students we are checking they had at least one OH, we should check the same for TA
+    const TAsessions: { [taID: string]: string[]} = {};
     // looking at each question - what session was it? who asked and answered?
     for (const doc of questionsSnapshot.docs) {
         const question = doc.data() as {
@@ -60,7 +75,7 @@ const getWrapped = async () => {
                 totalMinutes: 0,
                 personalityType: '',
             };
-        }
+        } 
 
         if (!userStats[answererId]) {
             userStats[answererId] = {
@@ -146,20 +161,29 @@ const getWrapped = async () => {
 
     Object.entries(userStats).forEach(async ([userId, stats]) => {
         // Only want to make wrapped changes for a user if they have an ID and are active 
-        if (userId && stats.officeHourVisits.length > 0) {
-            const wrappedDocRef = wrappedRef.doc(userId);
-            batch.set(wrappedDocRef, stats);
-
-            const userDoc = await usersRef.doc(userId).get();
-            if (userDoc.exists) {
-                usersRef.doc(userId).update({
-                    wrapped: true,
-                });
+        if (userId) {
+            // case that user is only a student, they need to have at least one OH visit
+            if ((stats.timeHelpingStudents === undefined && stats.officeHourVisits.length <= 0)
+                || (stats.timeHelpingStudents !== undefined && TAsessions[userId].length <= 0)
+            ) {
+                // eslint-disable-next-line no-console
+                console.log("User is not an active student/TA.")
             } else {
-            // Handle the case where the document does not exist
-            // eslint-disable-next-line no-console
-                console.log(`No document found for user ID ${userId}, skipping update.`);
+                const wrappedDocRef = wrappedRef.doc(userId);
+                batch.set(wrappedDocRef, stats);
+
+                const userDoc = await usersRef.doc(userId).get();
+                if (userDoc.exists) {
+                    usersRef.doc(userId).update({
+                        wrapped: true,
+                    });
+                } else {
+                    // Handle the case where the document does not exist
+                    // eslint-disable-next-line no-console
+                    console.log(`No document found for user ID ${userId}, skipping update.`);
+                }
             }
+            
         } else {
             // eslint-disable-next-line no-console
             console.log("User ID is undefined, skipping update.")
