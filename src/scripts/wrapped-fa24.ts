@@ -45,8 +45,6 @@ const getWrapped = async () => {
         timeHelpingStudents?: number;
     }} = {};
 
-    // will have data for the session for each ta that people actually asked questions in
-    // CONSIDER: for students we are checking they had at least one OH, we should check the same for TA
     const TAsessions: { [taID: string]: string[]} = {};
     // looking at each question - what session was it? who asked and answered?
     for (const doc of questionsSnapshot.docs) {
@@ -60,7 +58,7 @@ const getWrapped = async () => {
 
         const { answererId, askerId, sessionId, timeEntered, timeAddressed } = question;
 
-        // if a mapping doesn't exist yet for the user, we are creating one
+        // if an instance doesn't exist yet for the user, creating one
         if (!userStats[askerId]) {
             userStats[askerId] = {
                 // officeHourVisits: [],
@@ -85,10 +83,6 @@ const getWrapped = async () => {
                 timeHelpingStudents: 0,
             };
         }
-        // officeHourVisits is a string array of all the string "sessionIDs" 
-        /* officeHourVisits starts out empty for each user. as we go through
-        each sessionId for each question, if an asker active in a session then
-        that session gets added to the array of total visits */
 
         // Office hour visits
         if (!userStats[askerId].officeHourCounts?.has(sessionId)) {
