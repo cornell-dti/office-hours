@@ -34,25 +34,17 @@ const getWrapped = async () => {
         .get();
 
     const userStats: { [userId: string]: {
-        officeHourVisits: string[];
+        // officeHourVisits: string[];
+        // if efficency is bad, could convert to a max heap
+        officeHourCounts: Map<string, number>;
+        taCounts: Map<string, number>;
+        favOfficeHourId: string;
+        favTaId: string;
         totalMinutes: number;
         personalityType: string;
         timeHelpingStudents?: number;
     }} = {};
 
-    // need to make new field- favTa
-    /* ideas:
-        - make a dictionary with key userId and values where it's a taID and a count of how many times user has met them
-        cannot just do session ids because some sessions have multiple TAs
-        this feels like a lot of new storage and work, not sure if it could be more efficient? 
-        - make a count field in TA sessions
-        issue is most frequent session might not match most common TA
-        consider a case where a session may not have TA (maybe it's professors oh)
-        - if we're going with sessions, 
-    */
-
-    // mapping taID to the count of times user met with them
-    const taCounts: {[taID: string]: int} = {};
     // will have data for the session for each ta that people actually asked questions in
     // CONSIDER: for students we are checking they had at least one OH, we should check the same for TA
     const TAsessions: { [taID: string]: string[]} = {};
@@ -71,7 +63,11 @@ const getWrapped = async () => {
         // if a mapping doesn't exist yet for the user, we are creating one
         if (!userStats[askerId]) {
             userStats[askerId] = {
-                officeHourVisits: [],
+                // officeHourVisits: [],
+                officeHourCounts: new Map<string, number>(),
+                taCounts: new Map<string, number>(),
+                favOfficeHourId: '',
+                favTaId: '',
                 totalMinutes: 0,
                 personalityType: '',
             };
@@ -79,20 +75,37 @@ const getWrapped = async () => {
 
         if (!userStats[answererId]) {
             userStats[answererId] = {
-                officeHourVisits: [],
+                // officeHourVisits: [],
+                officeHourCounts: new Map<string, number>(),
+                taCounts: new Map<string, number>(), 
+                favOfficeHourId: '',
+                favTaId: '',
                 totalMinutes: 0,
                 personalityType: '',
                 timeHelpingStudents: 0,
             };
         }
-        // officehoursvisits is a string array of all the string "sessionIDs" 
-        /* officehourvists starts out empty for each user. as we go through
+        // officeHourVisits is a string array of all the string "sessionIDs" 
+        /* officeHourVisits starts out empty for each user. as we go through
         each sessionId for each question, if an asker active in a session then
         that session gets added to the array of total visits */
 
         // Office hour visits
-        if (!userStats[askerId].officeHourVisits?.includes(sessionId)) {
-            userStats[askerId].officeHourVisits?.push(sessionId);
+        if (!userStats[askerId].officeHourCounts?.has(sessionId)) {
+            // userStats[askerId].officeHourVisits?.push(sessionId);
+            userStats[askerId].officeHourCounts?.set(sessionId, 1);
+        } else if (userStats[askerId].officeHourCounts?.has(sessionId)) {
+            const ohAmt = userStats[askerId].officeHourCounts?.get(askerId);
+            ohAmt && userStats[askerId].taCounts.set(answererId, ohAmt + 1 );
+        }
+
+        if (userStats[askerId].taCounts && answererId !== undefined && answererId !== "") {
+            if(userStats[askerId].taCounts?.has(answererId)) {
+                userStats[askerId].taCounts?.set(answererId, 1);
+            } else {
+                const taAmt =  userStats[askerId].taCounts?.get(answererId);
+                taAmt && userStats[askerId].taCounts.set(answererId, taAmt + 1 );
+            } 
         }
 
         // Minutes spent at office hours
@@ -121,8 +134,6 @@ const getWrapped = async () => {
 
             // eslint-disable-next-line no-await-in-loop
             const sessionDoc = await sessionsRef.doc(sessionId).get();
-            // check if this session for a sessionId doesn't exist for some reason 
-            // check if endTime and startTime exist? would assume they always have to
             if (sessionDoc.exists && userStats[answererId].timeHelpingStudents !== undefined ) {
                 // again using Math.ceil to try to get integer time values. This is to add a total session time to the minutes TA has helped
                 const timeHelping = Math.ceil((sessionDoc.get('endTime').toDate().getTime()  - sessionDoc.get('startTime').toDate().getTime())/ 60000);
@@ -142,7 +153,7 @@ const getWrapped = async () => {
 
     // Process personality type
     for (const [, stats] of Object.entries(userStats)) {
-        const sessionCount = stats.officeHourVisits.length;
+        const sessionCount = stats.officeHourCounts.entries.length;
         const weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
         / (1000 * 60 * 60 * 24 * 7); // convert ms to weeks
         const averageSessionsPerWeek = sessionCount / weeksInRange;
@@ -154,7 +165,12 @@ const getWrapped = async () => {
         } else {
             stats.personalityType = 'Independent';
         }
+        // Get the ids in the map that have the highest counts
+        stats.favOfficeHourId = Array.from(stats.officeHourCounts.entries()).reduce((a, b) => a[1] < b[1] ? b : a)[0];
+        stats.favTaId = Array.from(stats.taCounts.entries()).reduce((a, b) => a[1] < b[1] ? b : a)[0];
     }
+
+    
 
     // Update the wrapped collection
     const batch = db.batch();
@@ -162,13 +178,16 @@ const getWrapped = async () => {
     Object.entries(userStats).forEach(async ([userId, stats]) => {
         // Only want to make wrapped changes for a user if they have an ID and are active 
         if (userId) {
-            // case that user is only a student, they need to have at least one OH visit
-            if ((stats.timeHelpingStudents === undefined && stats.officeHourVisits.length <= 0)
-                || (stats.timeHelpingStudents !== undefined && TAsessions[userId].length <= 0)
+            /* Defition of active: 
+                If a user is only a student, they need to have at least one OH visit. 
+                If a user is a TA, they need to have at least one TA session OR at least one OH visit as a student.
+            */
+            if ((stats.officeHourCounts.keys.length > 0)
+                || (stats.timeHelpingStudents !== undefined && TAsessions[userId].length > 0)
             ) {
                 // eslint-disable-next-line no-console
-                console.log("User is not an active student/TA.")
-            } else {
+                console.log("User is an active student/TA.")
+
                 const wrappedDocRef = wrappedRef.doc(userId);
                 batch.set(wrappedDocRef, stats);
 
@@ -182,6 +201,9 @@ const getWrapped = async () => {
                     // eslint-disable-next-line no-console
                     console.log(`No document found for user ID ${userId}, skipping update.`);
                 }
+            } else {
+                // eslint-disable-next-line no-console
+                console.log("User is NOT an active student/TA.")
             }
             
         } else {
