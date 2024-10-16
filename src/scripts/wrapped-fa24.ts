@@ -129,8 +129,10 @@ const getWrapped = async () => {
             // eslint-disable-next-line no-await-in-loop
             const sessionDoc = await sessionsRef.doc(sessionId).get();
             if (sessionDoc.exists && userStats[answererId].timeHelpingStudents !== undefined ) {
-                // again using Math.ceil to try to get integer time values. This is to add a total session time to the minutes TA has helped
-                const timeHelping = Math.ceil((sessionDoc.get('endTime').toDate().getTime()  - sessionDoc.get('startTime').toDate().getTime())/ 60000);
+                /* again using Math.ceil to try to get integer time values. 
+                This is to add a total session time to the min TA helped */
+                const timeHelping = Math.ceil((sessionDoc.get('endTime').toDate().getTime() 
+                 - sessionDoc.get('startTime').toDate().getTime())/ 60000);
                 // this should never be less than 0 (or 0, really)
                 if (timeHelping >= 0) {
                     userStats[answererId].timeHelpingStudents += timeHelping;
