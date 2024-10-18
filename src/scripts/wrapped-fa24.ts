@@ -34,10 +34,7 @@ const getWrapped = async () => {
         .get();
 
     const userStats: { [userId: string]: {
-        // officeHourVisits: string[];
-        // if efficency is bad, could convert to a max heap
-        officeHourCounts: Map<string, number>;
-        taCounts: Map<string, number>;
+        numVisits: number;
         favOfficeHourId: string;
         favTaId: string;
         totalMinutes: number;
@@ -45,6 +42,8 @@ const getWrapped = async () => {
         timeHelpingStudents?: number;
     }} = {};
 
+    const officeHourCounts: {[userId: string] : Map<string, number>} = {}
+    const taCounts: {[userId: string] : Map<string, number>} = {}
     const TAsessions: { [taID: string]: string[]} = {};
     // looking at each question - what session was it? who asked and answered?
     for (const doc of questionsSnapshot.docs) {
@@ -56,49 +55,78 @@ const getWrapped = async () => {
             timeAddressed: admin.firestore.Timestamp | undefined;
         };
 
+        
+
         const { answererId, askerId, sessionId, timeEntered, timeAddressed } = question;
+
+        // eslint-disable-next-line no-await-in-loop
+        const person = await usersRef.doc(askerId).get();
+        // eslint-disable-next-line no-console
+        console.log("asker (" + askerId + ") is " + person.get("firstName"));
 
         // if an instance doesn't exist yet for the user, creating one
         if (!userStats[askerId]) {
             userStats[askerId] = {
-                // officeHourVisits: [],
-                officeHourCounts: new Map<string, number>(),
-                taCounts: new Map<string, number>(),
+                numVisits: 0,
                 favOfficeHourId: '',
                 favTaId: '',
                 totalMinutes: 0,
                 personalityType: '',
             };
+            officeHourCounts[askerId] = new Map<string, number>();
+            taCounts[askerId] = new Map<string, number>();
         } 
+
+        
 
         if (!userStats[answererId]) {
             userStats[answererId] = {
-                // officeHourVisits: [],
-                officeHourCounts: new Map<string, number>(),
-                taCounts: new Map<string, number>(), 
+                numVisits: 0,
                 favOfficeHourId: '',
                 favTaId: '',
                 totalMinutes: 0,
                 personalityType: '',
                 timeHelpingStudents: 0,
             };
+            officeHourCounts[answererId] = new Map<string, number>();
+            taCounts[answererId] = new Map<string, number>();
+            // Checking if ta already showed up as student and now as an answerer
+        } else if (userStats[answererId] && userStats[answererId]?.timeHelpingStudents === undefined) {
+            userStats[answererId] = {
+                numVisits: userStats[answererId].numVisits,
+                favOfficeHourId: userStats[answererId].favOfficeHourId,
+                favTaId: userStats[answererId].favTaId,
+                totalMinutes: userStats[answererId].totalMinutes,
+                personalityType: userStats[answererId].personalityType,
+                timeHelpingStudents: 0,
+            };
+            // eslint-disable-next-line no-console
+            console.log("updating map for ta");
         }
 
         // Office hour visits
-        if (!userStats[askerId].officeHourCounts?.has(sessionId)) {
+
+        /* if you ask multiple questions during the same session id, what does that do? */
+        
+        if (!officeHourCounts[askerId]?.has(sessionId)) {
             // userStats[askerId].officeHourVisits?.push(sessionId);
-            userStats[askerId].officeHourCounts?.set(sessionId, 1);
-        } else if (userStats[askerId].officeHourCounts?.has(sessionId)) {
-            const ohAmt = userStats[askerId].officeHourCounts?.get(askerId);
-            ohAmt && userStats[askerId].taCounts.set(answererId, ohAmt + 1 );
+            officeHourCounts[askerId]?.set(sessionId, 1);
+        
+
+        } else if (officeHourCounts[askerId]?.has(sessionId)) {
+            const ohAmt = officeHourCounts[askerId]?.get(sessionId);
+            ohAmt && officeHourCounts[askerId]?.set(sessionId, ohAmt + 1 );
+            
         }
 
-        if (userStats[askerId].taCounts && answererId !== undefined && answererId !== "") {
-            if(userStats[askerId].taCounts?.has(answererId)) {
-                userStats[askerId].taCounts?.set(answererId, 1);
-            } else {
-                const taAmt =  userStats[askerId].taCounts?.get(answererId);
-                taAmt && userStats[askerId].taCounts.set(answererId, taAmt + 1 );
+        
+
+        if (taCounts[askerId] && answererId !== undefined && answererId !== "") {
+            if(!taCounts[askerId]?.has(answererId)) {
+                taCounts[askerId]?.set(answererId, 1);
+            } else if (taCounts[askerId]?.has(answererId)){
+                const taAmt =  taCounts[askerId]?.get(answererId);
+                taAmt && taCounts[askerId]?.set(answererId, taAmt + 1 );
             } 
         }
 
@@ -148,8 +176,8 @@ const getWrapped = async () => {
     
 
     // Process personality type
-    for (const [, stats] of Object.entries(userStats)) {
-        const sessionCount = stats.officeHourCounts.entries.length;
+    for (const [userId, stats] of Object.entries(userStats)) {
+        const sessionCount = officeHourCounts[userId].size;
         const weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
         / (1000 * 60 * 60 * 24 * 7); // convert ms to weeks
         const averageSessionsPerWeek = sessionCount / weeksInRange;
@@ -162,8 +190,21 @@ const getWrapped = async () => {
             stats.personalityType = 'Independent';
         }
         // Get the ids in the map that have the highest counts
-        stats.favOfficeHourId = Array.from(stats.officeHourCounts.entries()).reduce((a, b) => a[1] < b[1] ? b : a)[0];
-        stats.favTaId = Array.from(stats.taCounts.entries()).reduce((a, b) => a[1] < b[1] ? b : a)[0];
+        if (officeHourCounts[userId].size !== 0) {
+            stats.favOfficeHourId = 
+            Array.from(officeHourCounts[userId].entries()).reduce((a, b) => a[1] < b[1] ? b : a)[0];
+        }
+        if (taCounts[userId].size !== 0) {
+            stats.favTaId = Array.from(taCounts[userId].entries()).reduce((a, b) => a[1] < b[1] ? b : a)[0];
+        }
+        stats.numVisits = officeHourCounts[userId].size;
+
+        // eslint-disable-next-line no-console
+        console.log(`for user ${userId} fav oh is ` + stats.favOfficeHourId + " and fav ta is " + stats.favTaId);
+        // eslint-disable-next-line no-console
+        console.log("oh size" + officeHourCounts[userId].size + " and ta size " + taCounts[userId].size);
+        
+        
     }
 
     
@@ -176,13 +217,13 @@ const getWrapped = async () => {
         if (userId) {
             /* Defition of active: 
                 If a user is only a student, they need to have at least one OH visit. 
-                If a user is a TA, they need to have at least one TA session OR at least one OH visit as a student.
+                If a user is a TA, they need to have at least one TA session AND at least one OH visit as a student.
             */
-            if ((stats.officeHourCounts.keys.length > 0)
-                || (stats.timeHelpingStudents !== undefined && TAsessions[userId].length > 0)
+            if ((officeHourCounts[userId].size > 0)
+                && (stats.timeHelpingStudents === undefined ||TAsessions[userId]?.length > 0)
             ) {
                 // eslint-disable-next-line no-console
-                console.log("User is an active student/TA.")
+                console.log("User " + userId + " is an active student/TA.")
 
                 const wrappedDocRef = wrappedRef.doc(userId);
                 batch.set(wrappedDocRef, stats);
