@@ -22,7 +22,7 @@ const getWrapped = async () => {
     const questionsRef = db.collection('questions');
     const sessionsRef = db.collection('sessions');
     const wrappedRef = db.collection('wrapped-fa24');
-    // const usersRef = db.collection('users-test');
+    const usersRef = db.collection('users-test');
 
     // Query all questions asked between FA23 and SP24
     const questionsSnapshot = await questionsRef
@@ -40,7 +40,6 @@ const getWrapped = async () => {
         timeHelpingStudents?: number;
     }} = {};
 
-    const officeHourCounts: {[userId: string] : Map<string, number>} = {};
     const taCounts: {[userId: string] : Map<string, number>} = {};
     const officeHourSessions: { [userId: string]: string[]} = {};
     // Every taID has an array of objects, where the objects store a sessionId and askerId
@@ -70,7 +69,7 @@ const getWrapped = async () => {
                 totalMinutes: 0,
                 personalityType: '',
             };
-            officeHourCounts[askerId] = new Map<string, number>();
+
             taCounts[askerId] = new Map<string, number>();
             officeHourSessions[askerId] = [];
         } 
@@ -85,7 +84,7 @@ const getWrapped = async () => {
                 personalityType: '',
                 timeHelpingStudents: 0,
             };
-            officeHourCounts[answererId] = new Map<string, number>();
+
             taCounts[answererId] = new Map<string, number>();
             officeHourSessions[answererId] = [];
             TAsessions[answererId] = [];
@@ -100,12 +99,10 @@ const getWrapped = async () => {
                 personalityType: userStats[answererId].personalityType,
                 timeHelpingStudents: 0,
             };
-            officeHourCounts[answererId] = new Map<string, number>();
+
             taCounts[answererId] = new Map<string, number>();
             officeHourSessions[answererId] = [];
             TAsessions[answererId] = [];
-            // eslint-disable-next-line no-console
-            console.log("updating map for ta");
         }
 
         // Office hour visits
@@ -135,17 +132,7 @@ const getWrapped = async () => {
             officeHourSessions[askerId]?.push(sessionId);
         }
 
-        if (sessionId !== undefined && sessionId !== "" && answererId !== "") {
-            if (!officeHourCounts[askerId]?.has(sessionId)) {
-                officeHourCounts[askerId]?.set(sessionId, 1);
-            } else if (officeHourCounts[askerId]?.has(sessionId)) {
-                const ohAmt = officeHourCounts[askerId]?.get(sessionId);
-                ohAmt && officeHourCounts[askerId]?.set(sessionId, ohAmt + 1 );
-            }
-        }
-
         if (answererId !== undefined && answererId !== "") {
-            // always push the question info to the array if ta answered
             TAsessions[answererId]?.push({
                 session: sessionId,
                 asker: askerId
@@ -168,8 +155,6 @@ const getWrapped = async () => {
             timeEntered.toDate().getTime()) / 60000); // convert ms to minutes
                 if (minutesSpent < 0) {
                     userStats[askerId].totalMinutes += 0;
-                    // eslint-disable-next-line no-console
-                    console.log("ISSUE: Minutes spent is less than 0");
                 }
                 userStats[askerId].totalMinutes += minutesSpent;
             } else {
@@ -204,9 +189,6 @@ const getWrapped = async () => {
         if (stats.favTaId && stats.favTaId !== "") {
             const resSession = TAsessions[stats.favTaId]?.filter( (elem) => 
                 officeHourSessions[userId].includes(elem.session));
-            // eslint-disable-next-line no-console
-            console.log(`for user ${userId} og arr was 
-${officeHourSessions[userId]} and for ta ${stats.favTaId} filtering now ${resSession}`);
             if (resSession?.length === 1) {
                 // eslint-disable-next-line no-await-in-loop
                 const sessionsDoc = await sessionsRef.doc(resSession[0].session).get()
@@ -217,7 +199,6 @@ ${officeHourSessions[userId]} and for ta ${stats.favTaId} filtering now ${resSes
                 // finding session that occurs the most
                 const sessionFrequency: { [sessionId: string]: number } = {};
     
-                // Count occurrences of each sessionId in resSession
                 resSession.filter((elem) => elem.asker === userId).forEach((elem) => {
                     if (!sessionFrequency[elem.session]) {
                         sessionFrequency[elem.session] = 1;
@@ -226,7 +207,6 @@ ${officeHourSessions[userId]} and for ta ${stats.favTaId} filtering now ${resSes
                     }
                 });
 
-                // Find the session with the highest frequency
                 const modeSessionId = Object.keys(sessionFrequency).reduce((a, b) =>
                     sessionFrequency[a] > sessionFrequency[b] ? a : b);
                 // eslint-disable-next-line no-await-in-loop
@@ -235,19 +215,7 @@ ${officeHourSessions[userId]} and for ta ${stats.favTaId} filtering now ${resSes
                 stats.favTitle = sessionsDoc.get("title");
             }
         }
-        
-        // if (officeHourCounts[userId].size !== 0) {
-        //     stats.favClass = 
-        //     Array.from(officeHourCounts[userId].entries()).reduce((a, b) => a[1] < b[1] ? b : a)[0];
-        // }
-
-        // eslint-disable-next-line no-console
-        console.log(`for user ${userId} fav class is ` + stats.favClass + " and fav ta is " + stats.favTaId);
-        
-        
     }
-
-    
 
     // Update the wrapped collection
     const batch = db.batch();
@@ -263,28 +231,22 @@ ${officeHourSessions[userId]} and for ta ${stats.favTaId} filtering now ${resSes
                 && (stats.timeHelpingStudents === undefined ||TAsessions[userId]?.length > 0)
                && stats.favTaId !== ""
             ) {
-                // eslint-disable-next-line no-console
-                console.log("User " + userId + ` is an active student/TA  with ${stats.numVisits} visits`);
-                // eslint-disable-next-line no-console
-                TAsessions[userId] && console.log(`if ta, length of session 
-                    is ${TAsessions[userId].length} and object is ${TAsessions[userId]}`);
-
                 const wrappedDocRef = wrappedRef.doc(userId);
                 batch.set(wrappedDocRef, stats);
 
-                // const userDoc = await usersRef.doc(userId).get();
-                // if (userDoc.exists) {
-                //     usersRef.doc(userId).update({
-                //         wrapped: true,
-                //     });
-                // } else {
-                //     // Handle the case where the document does not exist
-                //     // eslint-disable-next-line no-console
-                //     console.log(`No document found for user ID ${userId}, skipping update.`);
-                // }
+                const userDoc = await usersRef.doc(userId).get();
+                if (userDoc.exists) {
+                    usersRef.doc(userId).update({
+                        wrapped: true,
+                    });
+                } else {
+                    // Handle the case where the document does not exist
+                    // eslint-disable-next-line no-console
+                    console.log(`No document found for user ID ${userId}, skipping update.`);
+                }
             } else {
                 // eslint-disable-next-line no-console
-                console.log(`User ${userId} is NOT an active student/TA.`)
+                console.log(`User is not an active student/TA.`)
             }
             
         } else {
