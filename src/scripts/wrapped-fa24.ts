@@ -19,8 +19,8 @@ const endDate = admin.firestore.Timestamp.fromDate(new Date('2024-12-21'));
 
 const getWrapped = async () => {
     // Refs
-    const questionsRef = db.collection('questions-test');
-    const sessionsRef = db.collection('sessions-test');
+    const questionsRef = db.collection('questions');
+    const sessionsRef = db.collection('sessions');
     const wrappedRef = db.collection('wrapped-fa24');
     // const usersRef = db.collection('users-test');
 
@@ -60,12 +60,6 @@ const getWrapped = async () => {
 
         const { answererId, askerId, sessionId, timeEntered, timeAddressed } = question;
 
-        // eslint-disable-next-line no-await-in-loop
-        // const person = await usersRef.doc(askerId).get();
-        // eslint-disable-next-line no-console
-        console.log (`asker is ${askerId}`);
-        // console.log("asker (" + askerId + ") is " + person.get("firstName"));
-
         // if an instance doesn't exist yet for the user, creating one
         if (!userStats[askerId]) {
             userStats[askerId] = {
@@ -80,8 +74,6 @@ const getWrapped = async () => {
             taCounts[askerId] = new Map<string, number>();
             officeHourSessions[askerId] = [];
         } 
-
-        
 
         if (!userStats[answererId]) {
             userStats[answererId] = {
@@ -132,7 +124,8 @@ const getWrapped = async () => {
                  - sessionDoc.get('startTime').toDate().getTime())/ 60000);
                 // this should never be less than 0 (or 0, really)
                 if (timeHelping >= 0) {
-                    userStats[answererId].timeHelpingStudents += timeHelping;
+                    userStats[answererId].timeHelpingStudents = 
+            (userStats[answererId].timeHelpingStudents ?? 0) + timeHelping;
                 }
                 
             } 
@@ -209,7 +202,8 @@ const getWrapped = async () => {
         }
 
         if (stats.favTaId && stats.favTaId !== "") {
-            const resSession = TAsessions[stats.favTaId]?.filter( (elem) => officeHourSessions[userId].includes(elem.session));
+            const resSession = TAsessions[stats.favTaId]?.filter( (elem) => 
+                officeHourSessions[userId].includes(elem.session));
             // eslint-disable-next-line no-console
             console.log(`for user ${userId} og arr was 
 ${officeHourSessions[userId]} and for ta ${stats.favTaId} filtering now ${resSession}`);
@@ -233,7 +227,8 @@ ${officeHourSessions[userId]} and for ta ${stats.favTaId} filtering now ${resSes
                 });
 
                 // Find the session with the highest frequency
-                const modeSessionId = Object.keys(sessionFrequency).reduce((a, b) => sessionFrequency[a] > sessionFrequency[b] ? a : b);
+                const modeSessionId = Object.keys(sessionFrequency).reduce((a, b) =>
+                    sessionFrequency[a] > sessionFrequency[b] ? a : b);
                 // eslint-disable-next-line no-await-in-loop
                 const sessionsDoc = await sessionsRef.doc(modeSessionId).get()
                 stats.favClass =  sessionsDoc.get("courseId");
