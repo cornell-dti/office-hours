@@ -49,27 +49,27 @@ var db = firebase_admin_1["default"].firestore();
 var startDate = firebase_admin_1["default"].firestore.Timestamp.fromDate(new Date('2024-01-22'));
 var endDate = firebase_admin_1["default"].firestore.Timestamp.fromDate(new Date('2024-12-21'));
 var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var questionsRef, sessionsRef, wrappedRef, questionsSnapshot, userStats, officeHourCounts, taCounts, officeHourSessions, TAsessions, _loop_1, _i, _a, doc, _loop_2, _b, _c, _d, userId, stats, batch;
-    var _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
-    return __generator(this, function (_x) {
-        switch (_x.label) {
+    var questionsRef, sessionsRef, wrappedRef, usersRef, questionsSnapshot, userStats, taCounts, officeHourSessions, TAsessions, _loop_1, _i, _a, doc, _loop_2, _b, _c, _d, userId, stats, batch;
+    var _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+    return __generator(this, function (_s) {
+        switch (_s.label) {
             case 0:
                 questionsRef = db.collection('questions');
                 sessionsRef = db.collection('sessions');
                 wrappedRef = db.collection('wrapped-fa24');
+                usersRef = db.collection('users-test');
                 return [4 /*yield*/, questionsRef
                         .where('timeEntered', '>=', startDate)
                         .where('timeEntered', '<=', endDate)
                         .get()];
             case 1:
-                questionsSnapshot = _x.sent();
+                questionsSnapshot = _s.sent();
                 userStats = {};
-                officeHourCounts = {};
                 taCounts = {};
                 officeHourSessions = {};
                 TAsessions = {};
                 _loop_1 = function (doc) {
-                    var question, answererId, askerId, sessionId, timeEntered, timeAddressed, sessionDoc, timeHelping, ohAmt, taAmt, minutesSpent;
+                    var question, answererId, askerId, sessionId, timeEntered, timeAddressed, sessionDoc, timeHelping, taAmt, minutesSpent;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
@@ -85,7 +85,6 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                         totalMinutes: 0,
                                         personalityType: ''
                                     };
-                                    officeHourCounts[askerId] = new Map();
                                     taCounts[askerId] = new Map();
                                     officeHourSessions[askerId] = [];
                                 }
@@ -99,7 +98,6 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                         personalityType: '',
                                         timeHelpingStudents: 0
                                     };
-                                    officeHourCounts[answererId] = new Map();
                                     taCounts[answererId] = new Map();
                                     officeHourSessions[answererId] = [];
                                     TAsessions[answererId] = [];
@@ -115,7 +113,6 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                         personalityType: userStats[answererId].personalityType,
                                         timeHelpingStudents: 0
                                     };
-                                    officeHourCounts[answererId] = new Map();
                                     taCounts[answererId] = new Map();
                                     officeHourSessions[answererId] = [];
                                     TAsessions[answererId] = [];
@@ -125,8 +122,8 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                             case 1:
                                 sessionDoc = _a.sent();
                                 if (sessionDoc.exists && userStats[answererId].timeHelpingStudents !== undefined) {
-                                    timeHelping = Math.ceil((sessionDoc.get('endTime').toDate().getTime()
-                                        - sessionDoc.get('startTime').toDate().getTime()) / 60000);
+                                    timeHelping = (sessionDoc.get('endTime').toDate().getTime()
+                                        - sessionDoc.get('startTime').toDate().getTime()) / 60000;
                                     // this should never be less than 0 (or 0, really)
                                     if (timeHelping >= 0) {
                                         userStats[answererId].timeHelpingStudents =
@@ -138,37 +135,27 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                 if (!((_g = officeHourSessions[askerId]) === null || _g === void 0 ? void 0 : _g.includes(sessionId))) {
                                     (_h = officeHourSessions[askerId]) === null || _h === void 0 ? void 0 : _h.push(sessionId);
                                 }
-                                if (sessionId !== undefined && sessionId !== "" && answererId !== "") {
-                                    if (!((_j = officeHourCounts[askerId]) === null || _j === void 0 ? void 0 : _j.has(sessionId))) {
-                                        (_k = officeHourCounts[askerId]) === null || _k === void 0 ? void 0 : _k.set(sessionId, 1);
-                                    }
-                                    else if ((_l = officeHourCounts[askerId]) === null || _l === void 0 ? void 0 : _l.has(sessionId)) {
-                                        ohAmt = (_m = officeHourCounts[askerId]) === null || _m === void 0 ? void 0 : _m.get(sessionId);
-                                        ohAmt && ((_o = officeHourCounts[askerId]) === null || _o === void 0 ? void 0 : _o.set(sessionId, ohAmt + 1));
-                                    }
-                                }
                                 if (answererId !== undefined && answererId !== "") {
-                                    (_p = TAsessions[answererId]) === null || _p === void 0 ? void 0 : _p.push({
+                                    (_j = TAsessions[answererId]) === null || _j === void 0 ? void 0 : _j.push({
                                         session: sessionId,
                                         asker: askerId
                                     });
-                                    if (!((_q = taCounts[askerId]) === null || _q === void 0 ? void 0 : _q.has(answererId))) {
-                                        (_r = taCounts[askerId]) === null || _r === void 0 ? void 0 : _r.set(answererId, 1);
+                                    if (!((_k = taCounts[askerId]) === null || _k === void 0 ? void 0 : _k.has(answererId))) {
+                                        (_l = taCounts[askerId]) === null || _l === void 0 ? void 0 : _l.set(answererId, 1);
                                     }
-                                    else if (answererId !== undefined && ((_s = taCounts[askerId]) === null || _s === void 0 ? void 0 : _s.has(answererId))) {
-                                        taAmt = (_t = taCounts[askerId]) === null || _t === void 0 ? void 0 : _t.get(answererId);
-                                        taAmt && ((_u = taCounts[askerId]) === null || _u === void 0 ? void 0 : _u.set(answererId, taAmt + 1));
+                                    else if (answererId !== undefined && ((_m = taCounts[askerId]) === null || _m === void 0 ? void 0 : _m.has(answererId))) {
+                                        taAmt = (_o = taCounts[askerId]) === null || _o === void 0 ? void 0 : _o.get(answererId);
+                                        taAmt && ((_p = taCounts[askerId]) === null || _p === void 0 ? void 0 : _p.set(answererId, taAmt + 1));
                                     }
                                 }
                                 // Minutes spent at office hours
                                 if (timeEntered) {
                                     if (timeAddressed) {
-                                        minutesSpent = Math.ceil((timeAddressed.toDate().getTime() -
-                                            timeEntered.toDate().getTime()) / 60000);
-                                        if (minutesSpent < 0) {
-                                            userStats[askerId].totalMinutes += 0;
+                                        minutesSpent = (timeAddressed.toDate().getTime() -
+                                            timeEntered.toDate().getTime()) / 60000;
+                                        if (minutesSpent >= 0) {
+                                            userStats[askerId].totalMinutes += minutesSpent;
                                         }
-                                        userStats[askerId].totalMinutes += minutesSpent;
                                     }
                                     else {
                                         userStats[askerId].totalMinutes += 60; // assume 60 minutes if not addressed
@@ -179,14 +166,14 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                     });
                 };
                 _i = 0, _a = questionsSnapshot.docs;
-                _x.label = 2;
+                _s.label = 2;
             case 2:
                 if (!(_i < _a.length)) return [3 /*break*/, 5];
                 doc = _a[_i];
                 return [5 /*yield**/, _loop_1(doc)];
             case 3:
-                _x.sent();
-                _x.label = 4;
+                _s.sent();
+                _s.label = 4;
             case 4:
                 _i++;
                 return [3 /*break*/, 2];
@@ -196,7 +183,11 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
-                                stats.numVisits = (_v = officeHourSessions[userId]) === null || _v === void 0 ? void 0 : _v.length;
+                                stats.numVisits = (_q = officeHourSessions[userId]) === null || _q === void 0 ? void 0 : _q.length;
+                                stats.totalMinutes = Math.ceil(stats.totalMinutes);
+                                if (stats.timeHelpingStudents !== undefined) {
+                                    stats.timeHelpingStudents = Math.ceil(stats.timeHelpingStudents);
+                                }
                                 weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
                                     / (1000 * 60 * 60 * 24 * 7);
                                 averageSessionsPerWeek = stats.numVisits / weeksInRange;
@@ -214,7 +205,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                     stats.favTaId = Array.from(taCounts[userId].entries()).reduce(function (a, b) { return a[1] < b[1] ? b : a; })[0];
                                 }
                                 if (!(stats.favTaId && stats.favTaId !== "")) return [3 /*break*/, 4];
-                                resSession = (_w = TAsessions[stats.favTaId]) === null || _w === void 0 ? void 0 : _w.filter(function (elem) {
+                                resSession = (_r = TAsessions[stats.favTaId]) === null || _r === void 0 ? void 0 : _r.filter(function (elem) {
                                     return officeHourSessions[userId].includes(elem.session);
                                 });
                                 if (!((resSession === null || resSession === void 0 ? void 0 : resSession.length) === 1)) return [3 /*break*/, 2];
@@ -249,14 +240,14 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                     });
                 };
                 _b = 0, _c = Object.entries(userStats);
-                _x.label = 6;
+                _s.label = 6;
             case 6:
                 if (!(_b < _c.length)) return [3 /*break*/, 9];
                 _d = _c[_b], userId = _d[0], stats = _d[1];
                 return [5 /*yield**/, _loop_2(userId, stats)];
             case 7:
-                _x.sent();
-                _x.label = 8;
+                _s.sent();
+                _s.label = 8;
             case 8:
                 _b++;
                 return [3 /*break*/, 6];
@@ -306,7 +297,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                 });
                 return [4 /*yield*/, batch.commit()];
             case 10:
-                _x.sent();
+                _s.sent();
                 return [2 /*return*/];
         }
     });

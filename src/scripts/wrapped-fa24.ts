@@ -115,10 +115,9 @@ const getWrapped = async () => {
             // eslint-disable-next-line no-await-in-loop
             const sessionDoc = await sessionsRef.doc(sessionId).get();
             if (sessionDoc.exists && userStats[answererId].timeHelpingStudents !== undefined ) {
-                /* again using Math.ceil to try to get integer time values. 
-                This is to add a total session time to the min TA helped */
-                const timeHelping = Math.ceil((sessionDoc.get('endTime').toDate().getTime() 
-                 - sessionDoc.get('startTime').toDate().getTime())/ 60000);
+                /* Add a total session time to the min TA helped */
+                const timeHelping = (sessionDoc.get('endTime').toDate().getTime() 
+                 - sessionDoc.get('startTime').toDate().getTime())/ 60000;
                 // this should never be less than 0 (or 0, really)
                 if (timeHelping >= 0) {
                     userStats[answererId].timeHelpingStudents = 
@@ -149,14 +148,12 @@ const getWrapped = async () => {
         // Minutes spent at office hours
         if (timeEntered) {
             if (timeAddressed) {
-                // Using Math.ceil for the edge case of addressed-entered < 60000 ms, 
-                // which would result in a decimal number of minutes
-                const minutesSpent = Math.ceil((timeAddressed.toDate().getTime() - 
-            timeEntered.toDate().getTime()) / 60000); // convert ms to minutes
-                if (minutesSpent < 0) {
-                    userStats[askerId].totalMinutes += 0;
-                }
-                userStats[askerId].totalMinutes += minutesSpent;
+                
+                const minutesSpent = (timeAddressed.toDate().getTime() - 
+            timeEntered.toDate().getTime()) / 60000; // convert ms to minutes
+                if (minutesSpent >= 0) {
+                    userStats[askerId].totalMinutes += minutesSpent;
+                }  
             } else {
                 userStats[askerId].totalMinutes += 60; // assume 60 minutes if not addressed
             }
@@ -169,6 +166,11 @@ const getWrapped = async () => {
     // Process personality type
     for (const [userId, stats] of Object.entries(userStats)) {
         stats.numVisits = officeHourSessions[userId]?.length;
+        stats.totalMinutes = Math.ceil(stats.totalMinutes);
+        if (stats.timeHelpingStudents !== undefined) {
+            stats.timeHelpingStudents = Math.ceil(stats.timeHelpingStudents);
+        }
+        
         const weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
         / (1000 * 60 * 60 * 24 * 7); // convert ms to weeks
         const averageSessionsPerWeek = stats.numVisits / weeksInRange;
