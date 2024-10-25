@@ -52,6 +52,7 @@
   align-items: center;
   justify-content: center;
   background-color: rgba(255, 255, 255, 0);
+  transition: 0.5s;
   &:hover {
       background-color: rgba(255, 255, 255, 0.1);
   }
@@ -116,6 +117,25 @@
       left: 0;
       opacity: 1;
   }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0%
+  }
+
+  100% {
+    opacity: 100%;
+  }
+}
+
+.intro-title{
+  animation: fadeIn 1s ease-in both;
+}
+
+.intro-title:nth-child(2) {
+  animation-delay: 0.75s;
+  animation-duration: 0.5s;
 }
 
 .banner {

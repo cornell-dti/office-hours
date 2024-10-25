@@ -5,6 +5,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import "../../styles/Wrapped.scss";
+import "../../styles/WrappedAnimation.scss";
 import React, { useEffect, useState } from "react";
 import firebase from '../../firebase';
 import Couple from "../../media/wrapped/couple.svg"
@@ -13,6 +14,9 @@ import Bus from "../../media/wrapped/bus.svg"
 import ConsistentPersonality from "../../media/wrapped/consistent_personality.svg"
 import ResourcefulPersonality from "../../media/wrapped/resourceful_personality.svg"
 import IndependentPersonality from "../../media/wrapped/independent_personality.svg"
+import arrow from '../../media/wrapped/arrow.svg';
+import smallPlus from '../../media/wrapped/plus.svg';
+import bigPlus from '../../media/wrapped/plus2.svg';
 
 type Props = {
     user: FireUser | undefined;
@@ -22,6 +26,7 @@ type Props = {
 type DotProps = {
     active: boolean;
 };
+
   
 const Dot = ({active} : DotProps) => (
     <div className={`dot ${active ? 'active' : ''}`} />
@@ -62,7 +67,7 @@ const Wrapped = (props: Props) => {
                 // eslint-disable-next-line no-console
                 console.error("Error fetching data: ", error);
             }
-            setLoading(false);
+            // setLoading(false);
         };
 
         fetchData();
@@ -93,32 +98,105 @@ const Wrapped = (props: Props) => {
             ))}
         </div>
     );
+
+    const WrappedAnimationModal = () =>
+        ( 
+            
+        // <div className='WrappedModalScreen'>
+        //     <div className={'WrappedModal' + isShown}>
+        /* <button type='button' className='closeButton' onClick={closeModal}>
+                                <Icon name='x' />
+                            </button> */
+                            
+            <div className='qmi-container'>
+                                
+                {/* creates first red svg circle. need linear gradient tags here 
+              since didn't import this svg.
+              make note that width and height are basically the box containing the circle,
+              so they need to be double the radius
+              */}
+                <svg className="red-circle" width="300" height="300">
+                    {/* this creates the color gradients on the qmi logo */}
+                    <defs>
+                        <linearGradient 
+                            id="red-gradient" 
+                            x1="24.4251" 
+                            y1="-52.6352" 
+                            x2="112.279" 
+                            y2="143.659" 
+                            gradientUnits="userSpaceOnUse"
+                        >
+                            <stop stopColor="#FF9399" />
+                            <stop offset="1" stopColor="#FF5A60" />
+                        </linearGradient>
+                    </defs>
+                                    
+                    {/* this is the actual circle part. 
+                                    cx and cy are centers so shld be half of height/width. r is radius */}
+                    <circle cx='150' cy='150' r='115'> </circle>
+                </svg>
+                <svg className="blue-circle" width="400" height="400">
+                    <defs>
+                        <linearGradient 
+                            id="blue-gradient" 
+                            x1="36.7649" 
+                            y1="66.8832" 
+                            x2="134.326" 
+                            y2="192.278" 
+                            gradientUnits="userSpaceOnUse"
+                        >
+                            <stop stopColor="#B2D9FF" />
+                            <stop offset="1" stopColor="#78B6F4" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx='200' cy='200' r='180'> </circle>
+                </svg>
+                {/* imported way of using svgs, so cant adjust stroke colors */}
+                <img src={arrow} className="arrow-circle" alt="dti arrow" />
+                {/* made two pluses since color gradient changes and second one needs
+               to expand outside of the container. */}
+                <img src={smallPlus} className="first-plus" alt="first plus" />
+                <img src={bigPlus} className="sec-plus" alt="second plus" onAnimationEnd={() => setLoading(false)} />
+                
+            </div>
+            
+
+            
+        //     </div>
+        // </div>
+        )
       
 
     const Welcome = () => (
-        <div>
-            <div style={{ display: "flex", flexDirection: "column", width: "400px", justifyContent: "space-between" }}>
-                <div style={{ alignSelf: "flex-start" }}>
-                    <Typography variant="h2" style={{ fontWeight: "bold" }}> Queue Me In</Typography>
-                </div>
-                <div style={{ alignSelf: "flex-end" }}>
-                    <Typography variant="h1" style={{ fontWeight: "bold" }}> Wrapped</Typography>
-                </div>
-                <div className="animationContainer">
-                    {showBanner && (
-                        <>
-                            <div className="banner top-right">
+        loading ? (<> </>) : 
+            (
+                <div>
+                    <div style={{ display: "flex", flexDirection: "column", width: "400px", justifyContent: "space-between" }}>
+                        <div style={{ alignSelf: "flex-start" }} className="intro-title">
+                            <Typography variant="h2" style={{ fontWeight: "bold" }}> Queue Me In</Typography>
+                        </div>
+                        <div style={{ alignSelf: "flex-end" }} className="intro-title">
+                            <Typography variant="h1" style={{ fontWeight: "bold" }}> Wrapped</Typography>
+                        </div>
+                        <div className="animationContainer">
+                            {showBanner && (
+                                <>
+                                    <div className="banner top-right">
                                 SPRING 2024 SPRING 2024 SPRING 2024
-                            </div>
-                            <div className="banner bottom-left">
+                                    </div>
+                                    <div className="banner bottom-left">
                                 SPRING 2024 SPRING 2024 SPRING 2024
-                            </div>
-                        </>
-                    )}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    )
+            )
+    
+    
+    
+    );
 
     const Visits = () => (
         <div>
@@ -333,7 +411,7 @@ const Wrapped = (props: Props) => {
     return (
         <div className="wrappedBackground">
             <div className="wrappedContainer">
-                {loading && <div>Loading...</div>}
+                {loading && <WrappedAnimationModal />}
                 {stage !== 0 && 
                     <div className="navigateStage prev" onClick={() => navigateStage('prev')}> 
                         <ArrowBackIosIcon />
