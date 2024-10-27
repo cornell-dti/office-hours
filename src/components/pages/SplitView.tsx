@@ -15,15 +15,12 @@ import TopBar from "../includes/TopBar";
 import CalendarExportModal from "../includes/CalendarExportModal";
 import { RootState } from "../../redux/store";
 import { updateCourse, updateSession } from "../../redux/actions/course";
-import Browser from "../../media/browser.svg";
-import smsNotif from "../../media/smsNotif.svg";
-import ribbonBall from "../../media/wrapped/ribbonBall.svg";
-import { addBanner } from "../../redux/actions/announcements";
-import Banner from "../includes/Banner";
-import FeedbackPrompt from "../includes/FeedbackPrompt";
-import Wrapped from "../includes/Wrapped";
-import WrappedCountdown from "../includes/WrappedCountdown";
-import { WRAPPED_START_DATE} from "../../constants";
+import Browser from '../../media/browser.svg';
+import smsNotif from '../../media/smsNotif.svg'
+import { addBanner } from '../../redux/actions/announcements';
+import Banner from '../includes/Banner';
+import FeedbackPrompt from '../includes/FeedbackPrompt';
+import Wrapped from '../includes/Wrapped';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -88,8 +85,6 @@ const SplitView = ({
     const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
     const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
-
-    const [countDownClicked, setCountDownClicked] = useState<boolean>(false);
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
@@ -120,7 +115,7 @@ const SplitView = ({
     }, [courseHook, updateCourse]);
     useEffect(() => {
         updateSession(sessionHook);
-    }, [sessionHook, updateSession]);
+    }, [sessionHook, updateSession])
 
     useEffect(() => {
         if (user && user.wrapped) {
@@ -128,7 +123,7 @@ const SplitView = ({
         } else {
             setDisplayWrapped(false);
         }
-    }, [user]);
+    }, [user])
 
     // Handle browser back button
     history.listen((location) => {
@@ -202,15 +197,6 @@ const SplitView = ({
             });
         }
     }, [addBanner, user]);
-
-    // Check that today is the start date, then render the countdown if true
-    const isStartDate = () => {
-        const start = new Date(WRAPPED_START_DATE)
-        const today = new Date();
-
-        return start === start
-    };
-
 
     return (
         <>
@@ -289,16 +275,6 @@ const SplitView = ({
                     <Loader active={true} content="Loading" />
                 ))}
             <ProductUpdates />
-            {!isStartDate() ? null : countDownClicked ? (
-                <div
-                    onClick={() => 
-                        setCountDownClicked(false)}
-                >
-                    <WrappedCountdown setDisplayWrapped={setDisplayWrapped} />
-                </div>
-            ) : (
-                <img className="ribbonBall" src={ribbonBall} alt="icon" onClick={() => setCountDownClicked(true)} />
-            )}
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt
                     onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
@@ -306,7 +282,9 @@ const SplitView = ({
                 />
             ) : null}
 
-            {displayWrapped ? <Wrapped user={user} onClose={() => setDisplayWrapped(false)} /> : null}
+            {displayWrapped ? (
+                <Wrapped user={user} onClose={() => setDisplayWrapped(false)} />
+            ) : null}
         </>
     );
 };
