@@ -87,6 +87,7 @@ const SplitView = ({
     const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
     const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
+
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
@@ -264,14 +265,14 @@ const SplitView = ({
                                 {"Notification" in window &&
                                     window?.Notification !== undefined &&
                                     window?.Notification.permission !== "granted" && (
-                                    <div className="warningArea">
-                                        <div>&#9888;</div>
-                                        <div>
-                                            Please make sure to enable browser notifications in your system
-                                            settings.
+                                        <div className="warningArea">
+                                            <div>&#9888;</div>
+                                            <div>
+                                                Please make sure to enable browser notifications in your system
+                                                settings.
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
                             </div>
                         </section>
                     )
