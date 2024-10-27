@@ -27,12 +27,16 @@ type DotProps = {
     active: boolean;
 };
 
+type DotIndicatorProps = {
+    showDots: string
+}
+
   
 const Dot = ({active} : DotProps) => (
     <div className={`dot ${active ? 'active' : ''}`} />
 );
 
-const Wrapped = (props: Props) => {
+const Wrapped= (props: Props): JSX.Element => {
     const [loading, setLoading] = useState<boolean>(true);
     const [stage, setStage] = useState<number>(0);
     const [wrappedData, setWrappedData] = useState({
@@ -47,7 +51,6 @@ const Wrapped = (props: Props) => {
     useEffect(() => {
 
         const wrappedRef = firebase.firestore().collection('wrapped');
-        // eslint-disable-next-line no-console
         const fetchData = async () => {
             setLoading(true);
             try {
@@ -67,7 +70,6 @@ const Wrapped = (props: Props) => {
                 // eslint-disable-next-line no-console
                 console.error("Error fetching data: ", error);
             }
-            // setLoading(false);
         };
 
         fetchData();
@@ -91,8 +93,9 @@ const Wrapped = (props: Props) => {
         });
     };
 
-    const DotsIndicator = () => (
-        <div className="dotsContainer">
+    const DotsIndicator = ({showDots} : DotIndicatorProps) => (
+        
+        <div className={"dotsContainer" + showDots}>
             {[...Array(totalStages)].map((_, index) => ( 
                 <Dot active={index === stage} />
             ))}
@@ -100,14 +103,7 @@ const Wrapped = (props: Props) => {
     );
 
     const WrappedAnimationModal = () =>
-        ( 
-            
-        // <div className='WrappedModalScreen'>
-        //     <div className={'WrappedModal' + isShown}>
-        /* <button type='button' className='closeButton' onClick={closeModal}>
-                                <Icon name='x' />
-                            </button> */
-                            
+        (                 
             <div className='qmi-container'>
                                 
                 {/* creates first red svg circle. need linear gradient tags here 
@@ -156,14 +152,19 @@ const Wrapped = (props: Props) => {
                 {/* made two pluses since color gradient changes and second one needs
                to expand outside of the container. */}
                 <img src={smallPlus} className="first-plus" alt="first plus" />
-                <img src={bigPlus} className="sec-plus" alt="second plus" onAnimationEnd={() => setLoading(false)} />
+                <img
+                    src={bigPlus}
+                    className="sec-plus"
+                    alt="second plus"
+                    onAnimationEnd={() => {
+                        const timer = setTimeout(() => {
+                            setLoading(false);
+                        }, 1000); 
+                        return () => clearTimeout(timer);
+                    }}
+                />
                 
             </div>
-            
-
-            
-        //     </div>
-        // </div>
         )
       
 
@@ -171,7 +172,10 @@ const Wrapped = (props: Props) => {
         loading ? (<> </>) : 
             (
                 <div>
-                    <div style={{ display: "flex", flexDirection: "column", width: "400px", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", flexDirection: "column", 
+                        width: "400px", justifyContent: "space-between" 
+                    }}
+                    >
                         <div style={{ alignSelf: "flex-start" }} className="intro-title">
                             <Typography variant="h2" style={{ fontWeight: "bold" }}> Queue Me In</Typography>
                         </div>
@@ -413,7 +417,10 @@ const Wrapped = (props: Props) => {
             <div className="wrappedContainer">
                 {loading && <WrappedAnimationModal />}
                 {stage !== 0 && 
-                    <div className="navigateStage prev" onClick={() => navigateStage('prev')}> 
+                    <div 
+                        className={`navigateStage${loading ? '':'Visible prev'}`} 
+                        onClick={() => navigateStage('prev')}
+                    > 
                         <ArrowBackIosIcon />
                     </div>
                 }
@@ -423,9 +430,12 @@ const Wrapped = (props: Props) => {
                 {stage === 2 && <TimeSpent />}
                 {stage === 3 && <PersonalityType />}
                 {stage === 4 && <Conclusion />}
-                <DotsIndicator />
+                <DotsIndicator showDots={loading ? "" : "Visible"} />
                 {stage !== totalStages - 1 && 
-                    <div className="navigateStage next" onClick={() => navigateStage('next')}>
+                    <div 
+                        className={`navigateStage${loading ? '':'Visible next'}`} 
+                        onClick={() => navigateStage('next')}
+                    >
                         <ArrowForwardIosIcon />
                     </div>
                 }
@@ -439,6 +449,5 @@ const Wrapped = (props: Props) => {
         </div>
     );
 };
-
 
 export default Wrapped;

@@ -27,9 +27,11 @@
   width: 825px;
   height: 475px;
   color: #FFFFFF;
-  background: #80B0DE;
+  background: linear-gradient(90deg, #80B0DE 3.12%, #93A7E4 97.75%);
   align-items: center;
   justify-content: center;
+  box-shadow: 0px 4px 4px 0px #00000040;
+
 
 }
 
@@ -41,7 +43,7 @@
   right: "1.8rem";
 }
 
-.navigateStage {
+.navigateStageVisible {
   position: absolute;
   top: 50%; 
   transform: translateY(-50%);
@@ -73,7 +75,11 @@
   padding-right: 10px;
 }
 
-.dotsContainer {
+.dotsContainer, .navigateStage {
+  display: none;
+}
+
+.dotsContainerVisible {
   display: flex;
   align-items: center;
   justify-content: center;

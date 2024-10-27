@@ -1,58 +1,27 @@
-.WrappedModalVisible {
-  text-align: center;
-  background-color: whitesmoke;
-  height: 70vh;
-  width: 60vw;
-  overflow: hidden;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-
-  .closeButton {
-    z-index: 5;
-    align-self: flex-end;
-    height: 45px;
-    left: 74.14%;
-    right: 24.61%;
-    top: calc(50% - 45px / 2 - 209.5px);
-    font-size: 20px;
-    color: #484848;
-    float: right;
-    outline: none;
-    background-color: transparent;
-    border: none;
-    padding-top: 8px;
-    padding-right: 8px;
-  }
-
-}
-
 .qmi-container {
   z-index: 0;
-  margin-top: -10px;
+  border-radius: 8px;
   background-color: whitesmoke;
-  position: relative;
+  position: absolute;
   display: flex;
+  padding: 2rem;
   width: 100%;
   height: 100%;
+  top: 0;
+  bottom: 0;
   align-content: center;
   justify-content: center;
+  overflow:clip;
+
 }
 
-/* made positons based on font-size so it should also look good for smaller screens */
-.red-circle {
+.red-circle, .blue-circle{
   position: absolute;
-  // top: 20%;
-  margin-top: 3.5em;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.blue-circle {
-  position: absolute;
-  // top: 20%;
-}
 
 /* stroke array is length of path, so circumference. recalculate if radius changes.
 dashoffset is percentage to draw of the path
@@ -66,7 +35,8 @@ dashoffset is percentage to draw of the path
   stroke-width: 17;
   transform: rotate(45deg);
   stroke: #FF5A60;
-  animation: red-spin 2s 0.5s ease-in-out both;
+  animation: red-spin 2s 0.8s ease-in-out both;
+  will-change: transform;
 }
 
 .blue-circle circle {
@@ -78,28 +48,30 @@ dashoffset is percentage to draw of the path
   transform: rotate(45deg);
   stroke: url(#blue-gradient);
   stroke-linecap: round;
-  animation: blue-spin 1.5s 1.5s ease-out both;
+  animation: blue-spin 1.5s 1.5s cubic-bezier(0.215, 0.610, 0.355, 1) both;
 }
 
 .arrow-circle {
   position: absolute;
   transform-origin: 50% 50%;
   transform-box: fill-box;
-  // top: 25%;
-  margin-top: 10em;
-  animation: spin 2.5s 0.5s ease-in-out both,
-    fadeArrow 0.5s 3s ease-in both;
+  top: 40%;
+  animation: spin 2.5s 0.8s ease-in-out both, 
+  fadeArrow 0.5s 3s ease-in both;
+  will-change: transform;
 }
+
 /* Needed two pluses since QMI plus is visibly different gradient than 
 QMI Wrapped background. First plus applied to logo part of animation, 
 second plus is used for the expanding transition into background. */
+
 .first-plus,
 .sec-plus {
   position: absolute;
-  // top: 25%;
-  margin-top: 21em;
+  top: 50%;
   left: 50%;
   margin-left: 7em;
+  margin-top: 7em;
 }
 
 /* controls when the pluses appear/disappear. in sync with each others delays*/
@@ -118,6 +90,9 @@ second plus is used for the expanding transition into background. */
 }
 
 @keyframes spin {
+  0% {
+    transform: rotate(0deg)
+  }
   100% {
     transform: rotate(360deg)
   }
@@ -135,6 +110,7 @@ second plus is used for the expanding transition into background. */
 @keyframes grow {
   100% {
     transform: scale(70);
+    background-color:none;
   }
 }
 
