@@ -11,6 +11,8 @@ import firebase from '../../firebase';
 import Couple from "../../media/wrapped/couple.svg"
 import Girl from "../../media/wrapped/girl.svg"
 import Bus from "../../media/wrapped/bus.svg"
+import Group from "../../media/wrapped/group.svg";
+import TA from "../../media/wrapped/ta.svg";
 import ConsistentPersonality from "../../media/wrapped/consistent_personality.svg"
 import ResourcefulPersonality from "../../media/wrapped/resourceful_personality.svg"
 import IndependentPersonality from "../../media/wrapped/independent_personality.svg"
@@ -43,10 +45,14 @@ const Wrapped= (props: Props): JSX.Element => {
         officeHourVisits: [],
         personalityType: "",
         timeHelpingStudents: 0,
-        totalMinutes: 0
+        totalMinutes: 0,
+        favTaId: "",
     });
     const [showBanner, setShowBanner] = useState(false);
-    const totalStages = 5;
+
+    /* TA's only see 4 slides, TA + Student see 7, Only student see 6 */  
+    const totalStages = (wrappedData.timeHelpingStudents === undefined || wrappedData.timeHelpingStudents == 0) ? 
+        (6) : (wrappedData.favTaId == "" || wrappedData.favTaId === undefined ) ? 4 : 7;
 
     useEffect(() => {
 
@@ -61,6 +67,7 @@ const Wrapped= (props: Props): JSX.Element => {
                         personalityType: string; 
                         timeHelpingStudents: number; 
                         totalMinutes: number; 
+                        favTaId: string;
                     });  
                 } else {
                     // eslint-disable-next-line no-console
@@ -346,12 +353,13 @@ const Wrapped= (props: Props): JSX.Element => {
                         fontSize: "2rem",
                         marginBottom: "2rem",
                         lineHeight: "2.5rem",
+                        textAlign: "left",
                     }}
                     >
                     YOUR OFFICE HOUR PERSONALITY TYPE IS...
                     </div>
                 
-                    <Typography variant="h3" style={{ fontWeight: "bold" }}>  
+                    <Typography variant="h3" style={{ fontWeight: 600 }}>  
                         <div className="personalityType">{wrappedData.personalityType}</div>
                     </Typography>
                 </div>
@@ -381,25 +389,189 @@ const Wrapped= (props: Props): JSX.Element => {
         </> 
     )
 
-    
+    const FavTA = () => (
+        <>
+            <div style={{ 
+                display: "flex", 
+                position: "absolute", 
+                top: "6rem", 
+                alignItems: "center", 
+                justifyContent: "space-evenly",
+            }}
+            >
+                <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "337px",
+                    height: "100%",
+                    paddingLeft: "5%",
+                }}
+                >
+                    <div style={{
+                        fontWeight: "bold",
+                        fontSize: "27px",
+                        marginBottom: "2rem",
+                        lineHeight: "2.5rem",
+                        textAlign: "left",
+                    }}
+                    >
+                    YOU SPENT THE MOST TIME WITH...
+                    </div>
+                
+                    <Typography variant="h3" style={{ fontWeight: 600 }}>  
+                        <div className="taName">TA {wrappedData.favTaId}</div>
+                    </Typography>
+                </div>
+                <img 
+                    src={TA} 
+                    style={{
+                        width: "323px",
+                    }}
+                    alt="" 
+                />       
+            </div>
+        </> 
+    )
+
+    const TATimeHelped = () => (
+        <div>
+            <div style={{ display: "flex", flexDirection: "column", width: "750px", justifyContent: "space-between" }}>
+                
+                <div style={{ display: "flex", justifyContent: "flex-end", fontWeight: "bold" }}>
+                    <div style={{ 
+                        position: "absolute",
+                        top: "3rem",
+                        left: "3rem",
+                        fontSize: "30px",
+                        color: "#080680",
+                    }}
+                    >
+                        THANK YOU FOR ALL YOUR HARD WORK! 
+                    </div>
+                    <div style={{ 
+                        position: "absolute",
+                        top: "9rem",
+                        left: "3rem",
+                        fontWeight: 700, 
+                        fontSize: "29px",
+                    }}
+                    > 
+                        YOU SPENT...
+                    </div>
+                
+                    <div 
+                        style={{
+                            position: "absolute",
+                            top: "55%",
+                            left: "50%",
+                            width: "420px",
+                            transform: "translate(-50%, -50%)",
+                            fontSize: "13rem",
+                            color: "#F1A4AB",
+                        }}
+                    >
+                        {wrappedData.timeHelpingStudents}
+                    </div>
+                    <img 
+                        src={Group}
+                        style={{ 
+                            width: "305px", 
+                            height: "239.6px",
+                            position: "absolute", 
+                            top:"17rem",
+                            left: "4rem",
+                        }}
+                        alt=""
+                    />
+                    
+                    <div 
+                        style={{ 
+                            position: "absolute",
+                            top: "26rem",
+                            right: "2rem",
+                            fontWeight: 700, 
+                            fontSize: "29px",
+                            width: "414px",
+                            textAlign: "right",
+                        }}
+                    >
+                        {wrappedData.timeHelpingStudents == 1 ? "HOUR " : "HOURS " }
+                            HELPING STUDENTS
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+
+    const TAStudentsHelped = () =>(
+        <>
+            <div style={{ 
+                position: "absolute",
+                top: "3rem",
+                left: "3rem",
+                fontWeight: "bold", 
+                fontSize: "2.5rem",
+            }}
+            > 
+                YOU MADE LIFE EASIER FOR...
+            </div>
+            <div style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                fontSize: "18rem",
+                fontWeight: 600,
+                color: "#080680",
+            }}
+            >
+                70
+                {/* replace with firebase call for num students helped */}
+            </div>
+            <div style={{ 
+                position: "absolute",
+                bottom: "8rem",
+                right: "3rem",
+                fontWeight: "bold", 
+                fontSize: "2.5rem",
+                textAlign: "right",
+                width: "300px",
+            }}
+            > 
+                STUDENTS
+            </div>
+        </>
+    )
 
     const Conclusion = () => (
         <>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-                <Typography 
-                    variant="h4" 
+            <div style={{ display: "flex", flexDirection: "column",}}>
+                <div 
                     style={{ 
-                        color: "#FFDBA6", 
-                        fontWeight: "bold", 
+                        color: "#080680", 
+                        fontWeight: 600, 
                         position: "absolute", 
-                        top: "2rem" 
+                        top: "3rem",
+                        left: "3rem",
+                        fontSize: "35px",
                     }}
                 > 
-                    Pat yourself on the back!
-                </Typography>
-                <Typography variant="h3" style={{ fontWeight: "bold" }}> 
-                    IT'S TIME FOR A WELL DESERVED BREAK
-                </Typography>
+                    PAT YOURSELF ON THE BACK
+                </div>
+                <div 
+                    style={{ 
+                        fontWeight: 600,
+                        width: "279px",
+                        height: "71px",
+                        position: "absolute",
+                        top: "14rem",
+                        left: "19rem",
+                        lineHeight: "40px",
+                        fontSize: "27px",
+                    }}
+                > 
+                    IT'S TIME FOR A WELL DESERVED BREAK!
+                </div>
                 <img 
                     src={Bus} 
                     style={{ 
@@ -426,13 +598,22 @@ const Wrapped= (props: Props): JSX.Element => {
                         <ArrowBackIosIcon />
                     </div>
                 }
-                
+
                 {stage === 0 && <Welcome />}
-                {stage === 1 && <Visits />}
-                {stage === 2 && <TimeSpent />}
-                {stage === 3 && <PersonalityType />}
-                {stage === 4 && <Conclusion />}
-                <DotsIndicator showDots={loading ? "" : "Visible"} />
+
+                {totalStages !== 4 && stage === 1 && <Visits />}
+                {totalStages !== 4 && stage === 2 && <TimeSpent />}
+                {totalStages !== 4 && stage === 3 && <PersonalityType />}
+                {totalStages !== 4 && stage === 4 && <FavTA/>}
+
+                {totalStages === 4 && stage === 1 && <TATimeHelped/>}
+                {totalStages === 4 && stage === 2 && <TAStudentsHelped/>}
+
+                {totalStages === 6 ? stage === 5 && <Conclusion /> : stage === 5 && <TATimeHelped/>}
+                {totalStages === 7 && stage === 6 && <Conclusion />}
+                {totalStages === 4 && stage === 3 && <Conclusion/>}
+
+                <DotsIndicator />
                 {stage !== totalStages - 1 && 
                     <div 
                         className={`navigateStage${loading ? '':'Visible next'}`} 

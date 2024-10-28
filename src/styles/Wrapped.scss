@@ -17,6 +17,7 @@
 }
 
 .wrappedContainer {
+  background: linear-gradient(90deg, #80B0DE 3.12%, #93A7E4 97.75%);
   border-radius: 8px;
   padding: 2rem;
   position: fixed;
@@ -27,12 +28,8 @@
   width: 825px;
   height: 475px;
   color: #FFFFFF;
-  background: linear-gradient(90deg, #80B0DE 3.12%, #93A7E4 97.75%);
   align-items: center;
   justify-content: center;
-  box-shadow: 0px 4px 4px 0px #00000040;
-
-
 }
 
 .closeButtonContainer {
@@ -180,11 +177,26 @@
 }
 
 .personalityIcon {
-  width: 150px;
+  width: 242px;
 }
 
 .personalityType {
   font-family: "Roboto";
-  font-weight: lighter;
+  font-weight: 700;
   color: #080680;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.taName {
+  font-family: "Roboto";
+  font-weight: 700;
+  color: #080680;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.conclusionText {
+  text-align: "center";
+  width: 313;
 }
