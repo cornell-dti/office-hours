@@ -11,6 +11,7 @@ import ProductUpdates from "../includes/ProductUpdates";
 import { useCourse, useSession } from "../../firehooks";
 import { firestore } from "../../firebase";
 import { removeQuestionbyID, submitFeedback } from "../../firebasefunctions/sessionQuestion";
+import { updateUserHasSeen } from "../../firebasefunctions/user"
 import TopBar from "../includes/TopBar";
 import CalendarExportModal from "../includes/CalendarExportModal";
 import { RootState } from "../../redux/store";
@@ -120,8 +121,9 @@ const SplitView = ({
     }, [sessionHook, updateSession]);
 
     useEffect(() => {
-        if (user && user.wrapped) {
+        if (user && user.wrapped && !user.hasSeen) {
             setDisplayWrapped(true);
+            updateUserHasSeen(user.userId, firestore);
         } else {
             setDisplayWrapped(false);
         }
