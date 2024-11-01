@@ -51,6 +51,16 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
     }
 };
 
+export const updateUserHasSeen = async (userId: string, db: firebase.firestore.Firestore) => {
+    const userRef = db.collection('users').doc(userId);
+    try {
+        await userRef.update({ hasSeen: true });
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error updating user 'hasSeen':", error);
+    }
+};
+
 export const logOut = () => {
     auth()
         .signOut()
