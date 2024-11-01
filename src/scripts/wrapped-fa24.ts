@@ -127,9 +127,9 @@ const getWrapped = async () => {
             } 
         }
 
-        if (!officeHourSessions[askerId]?.includes(sessionId)) {
-            officeHourSessions[askerId]?.push(sessionId);
-        }
+        officeHourSessions[askerId] = officeHourSessions[askerId] || [];  
+        if (!officeHourSessions[askerId].includes(sessionId)) { 
+            officeHourSessions[askerId].push(sessionId); }
 
         if (answererId !== undefined && answererId !== "") {
             TAsessions[answererId]?.push({
@@ -221,21 +221,23 @@ const getWrapped = async () => {
 
     // Update the wrapped collection
     const batch = db.batch();
-
-    Object.entries(userStats).forEach(async ([userId, stats]) => {
+    for (const [userId, stats] of Object.entries(userStats)) {
         // Only want to make wrapped changes for a user if they have an ID and are active 
         if (userId) {
             /* Defition of active: 
                 If a user is only a student, they need to have at least one OH visit. 
                 If a user is a TA, they need to have at least one TA session AND at least one OH visit as a student.
             */
-            if ((stats.numVisits > 0)
-                && (stats.timeHelpingStudents === undefined ||TAsessions[userId]?.length > 0)
-               && stats.favTaId !== ""
-            ) {
+
+            const hasVisits = stats.numVisits > 0;
+            // This is true if the user is either a student, or a TA who has more than one session
+            const isUserActive = stats.timeHelpingStudents === undefined || (TAsessions[userId]?.length > 0);
+            const hasFavoriteTa = stats.favTaId !== "";
+            if (hasVisits && isUserActive && hasFavoriteTa) {
                 const wrappedDocRef = wrappedRef.doc(userId);
                 batch.set(wrappedDocRef, stats);
 
+                // eslint-disable-next-line no-await-in-loop
                 const userDoc = await usersRef.doc(userId).get();
                 if (userDoc.exists) {
                     usersRef.doc(userId).update({
@@ -256,7 +258,7 @@ const getWrapped = async () => {
             console.log("User ID is undefined, skipping update.")
         }
        
-    });
+    }
 
     await batch.commit();
 }
