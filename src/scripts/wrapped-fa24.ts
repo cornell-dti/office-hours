@@ -9,6 +9,8 @@ admin.initializeApp({
 // eslint-disable-next-line no-console
 console.log('Firebase admin initialized!');
 
+
+
 // Initialize Firestore
 const db = admin.firestore();
 
@@ -17,10 +19,11 @@ const db = admin.firestore();
 const startDate = admin.firestore.Timestamp.fromDate(new Date('2024-01-22'));
 const endDate = admin.firestore.Timestamp.fromDate(new Date('2024-12-21'));
 
+
 const getWrapped = async () => {
     // Refs
-    const questionsRef = db.collection('questions');
-    const sessionsRef = db.collection('sessions');
+    const questionsRef = db.collection('questions-test');
+    const sessionsRef = db.collection('sessions-test');
     const wrappedRef = db.collection('wrapped-fa24');
     const usersRef = db.collection('users-test');
 
@@ -47,6 +50,54 @@ const getWrapped = async () => {
         session: string; 
         asker: string
     }[]} = {};
+
+    // Helper functions
+    const updateWrappedDocs = async () => {
+        // Update the wrapped collection
+        const batch = db.batch();
+        for (const [userId, stats] of Object.entries(userStats)) {
+            // Only want to make wrapped changes for a user if they have an ID and are active 
+            if (userId) {
+                /* Defition of active: 
+            If a user is only a student, they need to have at least one OH visit. 
+            If a user is a TA, they need to have at least one TA session AND at least one OH visit as a student.
+        */
+    
+                const hasVisits = stats.numVisits > 0;
+                // This is true if the user is either a student, or a TA who has more than one session
+                const isUserActive = stats.timeHelpingStudents === undefined || (TAsessions[userId]?.length > 0);
+                const hasFavoriteTa = stats.favTaId !== "";
+                if (hasVisits && isUserActive && hasFavoriteTa) {
+                    const wrappedDocRef = wrappedRef.doc(userId);
+                    batch.set(wrappedDocRef, stats);
+    
+                    // eslint-disable-next-line no-await-in-loop
+                    const userDoc = await usersRef.doc(userId).get();
+                    if (userDoc.exists) {
+                        usersRef.doc(userId).update({
+                            wrapped: true,
+                        });
+                    } else {
+                        // Handle the case where the document does not exist
+                        // eslint-disable-next-line no-console
+                        console.log(`No document found for user ID ${userId}, skipping update.`);
+                    }
+                } else {
+                    // eslint-disable-next-line no-console
+                    console.log(`User is not an active student/TA.`)
+                }
+        
+            } else {
+                // eslint-disable-next-line no-console
+                console.log("User ID is undefined, skipping update.")
+            }
+    
+        }
+    
+        await batch.commit();
+    }
+
+
 
     for (const doc of questionsSnapshot.docs) {
         const question = doc.data() as {
@@ -123,7 +174,6 @@ const getWrapped = async () => {
                     userStats[answererId].timeHelpingStudents = 
             (userStats[answererId].timeHelpingStudents ?? 0) + timeHelping;
                 }
-                
             } 
         }
 
@@ -148,9 +198,8 @@ const getWrapped = async () => {
         // Minutes spent at office hours
         if (timeEntered) {
             if (timeAddressed) {
-                
                 const minutesSpent = (timeAddressed.toDate().getTime() - 
-            timeEntered.toDate().getTime()) / 60000; // convert ms to minutes
+                timeEntered.toDate().getTime()) / 60000; // convert ms to minutes
                 if (minutesSpent >= 0) {
                     userStats[askerId].totalMinutes += minutesSpent;
                 }  
@@ -219,48 +268,9 @@ const getWrapped = async () => {
         }
     }
 
-    // Update the wrapped collection
-    const batch = db.batch();
-    for (const [userId, stats] of Object.entries(userStats)) {
-        // Only want to make wrapped changes for a user if they have an ID and are active 
-        if (userId) {
-            /* Defition of active: 
-                If a user is only a student, they need to have at least one OH visit. 
-                If a user is a TA, they need to have at least one TA session AND at least one OH visit as a student.
-            */
+    await updateWrappedDocs();
 
-            const hasVisits = stats.numVisits > 0;
-            // This is true if the user is either a student, or a TA who has more than one session
-            const isUserActive = stats.timeHelpingStudents === undefined || (TAsessions[userId]?.length > 0);
-            const hasFavoriteTa = stats.favTaId !== "";
-            if (hasVisits && isUserActive && hasFavoriteTa) {
-                const wrappedDocRef = wrappedRef.doc(userId);
-                batch.set(wrappedDocRef, stats);
-
-                // eslint-disable-next-line no-await-in-loop
-                const userDoc = await usersRef.doc(userId).get();
-                if (userDoc.exists) {
-                    usersRef.doc(userId).update({
-                        wrapped: true,
-                    });
-                } else {
-                    // Handle the case where the document does not exist
-                    // eslint-disable-next-line no-console
-                    console.log(`No document found for user ID ${userId}, skipping update.`);
-                }
-            } else {
-                // eslint-disable-next-line no-console
-                console.log(`User is not an active student/TA.`)
-            }
-            
-        } else {
-            // eslint-disable-next-line no-console
-            console.log("User ID is undefined, skipping update.")
-        }
-       
-    }
-
-    await batch.commit();
+    
 }
 
 (async () => {

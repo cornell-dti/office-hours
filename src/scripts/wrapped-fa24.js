@@ -37,6 +37,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var firebase_admin_1 = require("firebase-admin");
+// eslint-disable-next-line no-console
+console.log(process.env.GOOGLE_APPLICATION_CREDENTIALS);
 firebase_admin_1["default"].initializeApp({
     credential: firebase_admin_1["default"].credential.applicationDefault(),
     databaseURL: 'https://qmi-test.firebaseio.com'
@@ -49,13 +51,13 @@ var db = firebase_admin_1["default"].firestore();
 var startDate = firebase_admin_1["default"].firestore.Timestamp.fromDate(new Date('2024-01-22'));
 var endDate = firebase_admin_1["default"].firestore.Timestamp.fromDate(new Date('2024-12-21'));
 var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var questionsRef, sessionsRef, wrappedRef, usersRef, questionsSnapshot, userStats, taCounts, officeHourSessions, TAsessions, _loop_1, _i, _a, doc, _loop_2, _b, _c, _d, userId, stats, batch;
-    var _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
-    return __generator(this, function (_s) {
-        switch (_s.label) {
+    var questionsRef, sessionsRef, wrappedRef, usersRef, questionsSnapshot, userStats, taCounts, officeHourSessions, TAsessions, _loop_1, _i, _a, doc, _loop_2, _b, _c, _d, userId, stats, batch, _e, _f, _g, userId, stats, hasVisits, isUserActive, hasFavoriteTa, wrappedDocRef, userDoc;
+    var _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
+    return __generator(this, function (_u) {
+        switch (_u.label) {
             case 0:
-                questionsRef = db.collection('questions');
-                sessionsRef = db.collection('sessions');
+                questionsRef = db.collection('questions-test');
+                sessionsRef = db.collection('sessions-test');
                 wrappedRef = db.collection('wrapped-fa24');
                 usersRef = db.collection('users-test');
                 return [4 /*yield*/, questionsRef
@@ -63,7 +65,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                         .where('timeEntered', '<=', endDate)
                         .get()];
             case 1:
-                questionsSnapshot = _s.sent();
+                questionsSnapshot = _u.sent();
                 userStats = {};
                 taCounts = {};
                 officeHourSessions = {};
@@ -103,7 +105,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                     TAsessions[answererId] = [];
                                     // Checking if ta already showed up as student and now as an answerer
                                 }
-                                else if (userStats[answererId] && ((_e = userStats[answererId]) === null || _e === void 0 ? void 0 : _e.timeHelpingStudents) === undefined) {
+                                else if (userStats[answererId] && ((_h = userStats[answererId]) === null || _h === void 0 ? void 0 : _h.timeHelpingStudents) === undefined) {
                                     userStats[answererId] = {
                                         numVisits: userStats[answererId].numVisits,
                                         favClass: userStats[answererId].favClass,
@@ -127,25 +129,26 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                     // this should never be less than 0 (or 0, really)
                                     if (timeHelping >= 0) {
                                         userStats[answererId].timeHelpingStudents =
-                                            ((_f = userStats[answererId].timeHelpingStudents) !== null && _f !== void 0 ? _f : 0) + timeHelping;
+                                            ((_j = userStats[answererId].timeHelpingStudents) !== null && _j !== void 0 ? _j : 0) + timeHelping;
                                     }
                                 }
                                 _a.label = 2;
                             case 2:
-                                if (!((_g = officeHourSessions[askerId]) === null || _g === void 0 ? void 0 : _g.includes(sessionId))) {
-                                    (_h = officeHourSessions[askerId]) === null || _h === void 0 ? void 0 : _h.push(sessionId);
+                                officeHourSessions[askerId] = officeHourSessions[askerId] || [];
+                                if (!officeHourSessions[askerId].includes(sessionId)) {
+                                    officeHourSessions[askerId].push(sessionId);
                                 }
                                 if (answererId !== undefined && answererId !== "") {
-                                    (_j = TAsessions[answererId]) === null || _j === void 0 ? void 0 : _j.push({
+                                    (_k = TAsessions[answererId]) === null || _k === void 0 ? void 0 : _k.push({
                                         session: sessionId,
                                         asker: askerId
                                     });
-                                    if (!((_k = taCounts[askerId]) === null || _k === void 0 ? void 0 : _k.has(answererId))) {
-                                        (_l = taCounts[askerId]) === null || _l === void 0 ? void 0 : _l.set(answererId, 1);
+                                    if (!((_l = taCounts[askerId]) === null || _l === void 0 ? void 0 : _l.has(answererId))) {
+                                        (_m = taCounts[askerId]) === null || _m === void 0 ? void 0 : _m.set(answererId, 1);
                                     }
-                                    else if (answererId !== undefined && ((_m = taCounts[askerId]) === null || _m === void 0 ? void 0 : _m.has(answererId))) {
-                                        taAmt = (_o = taCounts[askerId]) === null || _o === void 0 ? void 0 : _o.get(answererId);
-                                        taAmt && ((_p = taCounts[askerId]) === null || _p === void 0 ? void 0 : _p.set(answererId, taAmt + 1));
+                                    else if (answererId !== undefined && ((_o = taCounts[askerId]) === null || _o === void 0 ? void 0 : _o.has(answererId))) {
+                                        taAmt = (_p = taCounts[askerId]) === null || _p === void 0 ? void 0 : _p.get(answererId);
+                                        taAmt && ((_q = taCounts[askerId]) === null || _q === void 0 ? void 0 : _q.set(answererId, taAmt + 1));
                                     }
                                 }
                                 // Minutes spent at office hours
@@ -166,14 +169,14 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                     });
                 };
                 _i = 0, _a = questionsSnapshot.docs;
-                _s.label = 2;
+                _u.label = 2;
             case 2:
                 if (!(_i < _a.length)) return [3 /*break*/, 5];
                 doc = _a[_i];
                 return [5 /*yield**/, _loop_1(doc)];
             case 3:
-                _s.sent();
-                _s.label = 4;
+                _u.sent();
+                _u.label = 4;
             case 4:
                 _i++;
                 return [3 /*break*/, 2];
@@ -183,7 +186,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
-                                stats.numVisits = (_q = officeHourSessions[userId]) === null || _q === void 0 ? void 0 : _q.length;
+                                stats.numVisits = (_r = officeHourSessions[userId]) === null || _r === void 0 ? void 0 : _r.length;
                                 stats.totalMinutes = Math.ceil(stats.totalMinutes);
                                 if (stats.timeHelpingStudents !== undefined) {
                                     stats.timeHelpingStudents = Math.ceil(stats.timeHelpingStudents);
@@ -205,7 +208,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                     stats.favTaId = Array.from(taCounts[userId].entries()).reduce(function (a, b) { return a[1] < b[1] ? b : a; })[0];
                                 }
                                 if (!(stats.favTaId && stats.favTaId !== "")) return [3 /*break*/, 4];
-                                resSession = (_r = TAsessions[stats.favTaId]) === null || _r === void 0 ? void 0 : _r.filter(function (elem) {
+                                resSession = (_s = TAsessions[stats.favTaId]) === null || _s === void 0 ? void 0 : _s.filter(function (elem) {
                                     return officeHourSessions[userId].includes(elem.session);
                                 });
                                 if (!((resSession === null || resSession === void 0 ? void 0 : resSession.length) === 1)) return [3 /*break*/, 2];
@@ -240,64 +243,60 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                     });
                 };
                 _b = 0, _c = Object.entries(userStats);
-                _s.label = 6;
+                _u.label = 6;
             case 6:
                 if (!(_b < _c.length)) return [3 /*break*/, 9];
                 _d = _c[_b], userId = _d[0], stats = _d[1];
                 return [5 /*yield**/, _loop_2(userId, stats)];
             case 7:
-                _s.sent();
-                _s.label = 8;
+                _u.sent();
+                _u.label = 8;
             case 8:
                 _b++;
                 return [3 /*break*/, 6];
             case 9:
                 batch = db.batch();
-                Object.entries(userStats).forEach(function (_a) {
-                    var userId = _a[0], stats = _a[1];
-                    return __awaiter(void 0, void 0, void 0, function () {
-                        var wrappedDocRef, userDoc;
-                        var _b;
-                        return __generator(this, function (_c) {
-                            switch (_c.label) {
-                                case 0:
-                                    if (!userId) return [3 /*break*/, 4];
-                                    if (!((stats.numVisits > 0)
-                                        && (stats.timeHelpingStudents === undefined || ((_b = TAsessions[userId]) === null || _b === void 0 ? void 0 : _b.length) > 0)
-                                        && stats.favTaId !== "")) return [3 /*break*/, 2];
-                                    wrappedDocRef = wrappedRef.doc(userId);
-                                    batch.set(wrappedDocRef, stats);
-                                    return [4 /*yield*/, usersRef.doc(userId).get()];
-                                case 1:
-                                    userDoc = _c.sent();
-                                    if (userDoc.exists) {
-                                        usersRef.doc(userId).update({
-                                            wrapped: true
-                                        });
-                                    }
-                                    else {
-                                        // Handle the case where the document does not exist
-                                        // eslint-disable-next-line no-console
-                                        console.log("No document found for user ID " + userId + ", skipping update.");
-                                    }
-                                    return [3 /*break*/, 3];
-                                case 2:
-                                    // eslint-disable-next-line no-console
-                                    console.log("User is not an active student/TA.");
-                                    _c.label = 3;
-                                case 3: return [3 /*break*/, 5];
-                                case 4:
-                                    // eslint-disable-next-line no-console
-                                    console.log("User ID is undefined, skipping update.");
-                                    _c.label = 5;
-                                case 5: return [2 /*return*/];
-                            }
-                        });
-                    });
-                });
-                return [4 /*yield*/, batch.commit()];
+                _e = 0, _f = Object.entries(userStats);
+                _u.label = 10;
             case 10:
-                _s.sent();
+                if (!(_e < _f.length)) return [3 /*break*/, 16];
+                _g = _f[_e], userId = _g[0], stats = _g[1];
+                if (!userId) return [3 /*break*/, 14];
+                hasVisits = stats.numVisits > 0;
+                isUserActive = stats.timeHelpingStudents === undefined || (((_t = TAsessions[userId]) === null || _t === void 0 ? void 0 : _t.length) > 0);
+                hasFavoriteTa = stats.favTaId !== "";
+                if (!(hasVisits && isUserActive && hasFavoriteTa)) return [3 /*break*/, 12];
+                wrappedDocRef = wrappedRef.doc(userId);
+                batch.set(wrappedDocRef, stats);
+                return [4 /*yield*/, usersRef.doc(userId).get()];
+            case 11:
+                userDoc = _u.sent();
+                if (userDoc.exists) {
+                    usersRef.doc(userId).update({
+                        wrapped: true
+                    });
+                }
+                else {
+                    // Handle the case where the document does not exist
+                    // eslint-disable-next-line no-console
+                    console.log("No document found for user ID " + userId + ", skipping update.");
+                }
+                return [3 /*break*/, 13];
+            case 12:
+                // eslint-disable-next-line no-console
+                console.log("User is not an active student/TA.");
+                _u.label = 13;
+            case 13: return [3 /*break*/, 15];
+            case 14:
+                // eslint-disable-next-line no-console
+                console.log("User ID is undefined, skipping update.");
+                _u.label = 15;
+            case 15:
+                _e++;
+                return [3 /*break*/, 10];
+            case 16: return [4 /*yield*/, batch.commit()];
+            case 17:
+                _u.sent();
                 return [2 /*return*/];
         }
     });
