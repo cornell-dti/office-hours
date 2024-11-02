@@ -1,12 +1,21 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { Twilio } from 'twilio';
+import posthog from 'posthog-js'
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
 admin.initializeApp();
 
 const db = admin.firestore();
+
+// PostHog Setup
+posthog.init(process.env.POSTHOG_KEY || "",
+    {
+        api_host: 'https://us.i.posthog.com',
+        person_profiles: 'identified_only'
+    }
+)
 
 // Twilio Setup
 const accountSid = functions.config().twilio.accountsid;
