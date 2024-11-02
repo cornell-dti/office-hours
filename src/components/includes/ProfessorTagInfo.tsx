@@ -200,27 +200,6 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                     </div>
                     <div className="ChildTags InputSection" onKeyDown={(e) => this.handleEnterPress(e)}>
                         <div className="InputHeader">Tags</div>
-                        {this.state.newTags
-                            .map((childTag) => (
-                                <div key={childTag.id} className="SelectedChildTag" >
-                                    <input
-                                        maxLength={30}
-                                        value={childTag.name}
-                                        onChange={
-                                            (event: React.ChangeEvent<HTMLInputElement>): void => {
-                                                this.handleModifyTag(childTag.name, event.currentTarget.value);
-                                            }
-                                        }
-                                        placeholder={'Example: \'Assignment 1\''}
-                                    />
-                                    <Icon
-                                        className="Remove"
-                                        name="close"
-                                        onClick={() => this.handleRemoveChildTag(childTag)}
-                                    />
-                                </div>
-                            ))
-                        }
                         <input
                             className="InputChildTag"
                             maxLength={30}
@@ -233,6 +212,29 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
                             onClick={this.handleNewTagEnter}
                         >
                             +
+                        </div>
+                        <div>
+                            {this.state.newTags
+                                .map((childTag) => (
+                                    <div key={childTag.id} className="SelectedChildTag" >
+                                        <input
+                                            maxLength={30}
+                                            value={childTag.name}
+                                            onChange={
+                                                (event: React.ChangeEvent<HTMLInputElement>): void => {
+                                                    this.handleModifyTag(childTag.name, event.currentTarget.value);
+                                                }
+                                            }
+                                            placeholder={'Example: \'Assignment 1\''}
+                                        />
+                                        <Icon
+                                            className="Remove"
+                                            name="close"
+                                            onClick={() => this.handleRemoveChildTag(childTag)}
+                                        />
+                                    </div>
+                                ))
+                            }
                         </div>
                     </div>
                 </div>
