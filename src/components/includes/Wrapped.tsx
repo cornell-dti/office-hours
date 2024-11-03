@@ -102,6 +102,13 @@ const Wrapped= (props: Props): JSX.Element => {
         </div>
     );
 
+    const handleAnimationEnd = () => {
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 1000); 
+        return () => clearTimeout(timer);
+    }
+
     const WrappedAnimationModal = () =>
         (                 
             <div className='qmi-container'>
@@ -156,12 +163,7 @@ const Wrapped= (props: Props): JSX.Element => {
                     src={bigPlus}
                     className="sec-plus"
                     alt="second plus"
-                    onAnimationEnd={() => {
-                        const timer = setTimeout(() => {
-                            setLoading(false);
-                        }, 1000); 
-                        return () => clearTimeout(timer);
-                    }}
+                    onAnimationEnd={handleAnimationEnd}
                 />
                 
             </div>
@@ -169,7 +171,8 @@ const Wrapped= (props: Props): JSX.Element => {
       
 
     const Welcome = () => (
-        loading ? (<> </>) : 
+        <>
+            {!loading && 
             (
                 <div>
                     <div style={{ display: "flex", flexDirection: "column", 
@@ -197,9 +200,8 @@ const Wrapped= (props: Props): JSX.Element => {
                     </div>
                 </div>
             )
-    
-    
-    
+            }
+        </>
     );
 
     const Visits = () => (
