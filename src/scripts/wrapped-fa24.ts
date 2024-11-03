@@ -13,6 +13,10 @@ console.log('Firebase admin initialized!');
 
 // Initialize Firestore
 const db = admin.firestore();
+const errorUsers: {
+    user: string,
+    error: string
+}[] = [];
 
 // Firestore Timestamps for the query range
 
@@ -48,7 +52,7 @@ const getWrapped = async () => {
     // Every taID has an array of objects, where the objects store a sessionId and askerId
     const TAsessions: {[taID:string]: {
         session: string; 
-        asker: string
+        asker: string;
     }[]} = {};
 
     // Helper functions
@@ -79,37 +83,21 @@ const getWrapped = async () => {
                         });
                     } else {
                         // Handle the case where the document does not exist
-                        // eslint-disable-next-line no-console
-                        console.log(`No document found for user ID ${userId}, skipping update.`);
+                        errorUsers.push({user: userId, error: "No document found for this user, skipping update."});
                     }
                 } else {
-                    // eslint-disable-next-line no-console
-                    console.log(`User is not an active student/TA.`)
+                    errorUsers.push({user: userId, error: "User is not an active student/TA"});
                 }
         
             } else {
-                // eslint-disable-next-line no-console
-                console.log("User ID is undefined, skipping update.")
+                errorUsers.push({user: userId, error: "User ID is undefined, skipping update."});
             }
-    
         }
     
         await batch.commit();
     }
 
-
-
-    for (const doc of questionsSnapshot.docs) {
-        const question = doc.data() as {
-            answererId: string;
-            askerId: string;
-            sessionId: string;
-            timeEntered: admin.firestore.Timestamp;
-            timeAddressed: admin.firestore.Timestamp | undefined;
-        };
-
-        const { answererId, askerId, sessionId, timeEntered, timeAddressed } = question;
-
+    const initializeUser = (answererId:string, askerId:string) => {
         // if an instance doesn't exist yet for the user, creating one
         if (!userStats[askerId]) {
             userStats[askerId] = {
@@ -156,9 +144,23 @@ const getWrapped = async () => {
             TAsessions[answererId] = [];
         }
 
+    }
+
+    for (const doc of questionsSnapshot.docs) {
+        const question = doc.data() as {
+            answererId: string;
+            askerId: string;
+            sessionId: string;
+            timeEntered: admin.firestore.Timestamp;
+            timeAddressed: admin.firestore.Timestamp | undefined;
+        };
+
+        const { answererId, askerId, sessionId, timeEntered, timeAddressed } = question;
+
+        initializeUser(answererId, askerId);
+
         // Office hour visits
         
-
         if (TAsessions[answererId].find((elem) => elem.session === sessionId) === undefined) {
             /* Since TA was active during this session and this is the first 
             time encountering the session, we add it to their timeHelped */
@@ -269,6 +271,9 @@ const getWrapped = async () => {
     }
 
     await updateWrappedDocs();
+    // debugging
+    // eslint-disable-next-line no-console
+    errorUsers.forEach((elem) => console.log(elem.user + ": " + elem.error));
 
     
 }
