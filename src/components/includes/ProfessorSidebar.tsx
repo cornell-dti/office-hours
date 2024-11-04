@@ -54,6 +54,10 @@ const ProfessorSidebar = ({ courseId, code, selected }: Props) => {
                                 Manage Roles
                             </button>
                         </Link>
+                        <button type="button" onClick={() => setShowModal(true)} className={css(selected === "export")}>
+                            <Icon name="download" />
+                            Export Data
+                        </button>
                         <Link to={"/professor-student-view/course/" + courseId}>
                             <button type="button" className={css(selected === "student")}>
                                 <div className="viewIconContainer">
@@ -62,10 +66,6 @@ const ProfessorSidebar = ({ courseId, code, selected }: Props) => {
                             Student View
                             </button>
                         </Link>
-                        <button type="button" onClick={() => setShowModal(true)} className={css(selected === "export")}>
-                            <Icon name="download" />
-                            Export Data
-                        </button>
                     </div>
                 </div>
             </div>
