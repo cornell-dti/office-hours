@@ -29,8 +29,6 @@ type Props = {
     // eslint-disable-next-line react/no-unused-prop-types
     readonly handleJoinClick: () => void;
     readonly triggerUndo: (questionId: string, action: string, name: string) => void;
-    readonly handleJoinClick: () => void;
-    readonly triggerUndo: (questionId: string, action: string, name: string) => void;
     readonly isOpen: boolean;
     readonly isPast: boolean;
     readonly isPaused: boolean | undefined;
@@ -52,7 +50,6 @@ type StudentMyQuestionProps = {
     readonly questionId: string;
     readonly tags: { readonly [tagId: string]: FireTag };
     readonly index: number;
-    readonly triggerUndo: (questionId: string, action: string, name: string) => void;
     readonly triggerUndo: (questionId: string, action: string, name: string) => void;
     readonly isPast: boolean;
     readonly myUserId: string;
@@ -107,6 +104,7 @@ const StudentMyQuestion = ({
                     isPast={isPast}
                     myUserId={myUserId}
                     setShowModal={setShowModal}
+                    setRemoveQuestionId={setRemoveQuestionId}
                 />
             )}
         </div>
@@ -330,6 +328,7 @@ const SessionQuestionsContainer = (props: Props) => {
                         myUserId={props.myUserId}
                         setShowModal={props.setShowModal}
                         users={props.users}
+                        setRemoveQuestionId={props.setRemoveQuestionId}
                     />
                 )}
                 {shownQuestions && shownQuestions.length > 0 && props.modality === "review" && (
@@ -414,6 +413,7 @@ const SessionQuestionsContainer = (props: Props) => {
                             isPast={props.isPast}
                             myUserId={props.myUserId}
                             setShowModal={props.setShowModal}
+                            setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
                 {allAssignedQuestions && allAssignedQuestions.length > 0 && props.isProf && (
@@ -449,6 +449,7 @@ const SessionQuestionsContainer = (props: Props) => {
                             isPast={props.isPast}
                             myUserId={props.myUserId}
                             setShowModal={props.setShowModal}
+                            setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
                 {otherQuestions && otherQuestions.length > 0 && props.isTA && (
@@ -474,6 +475,7 @@ const SessionQuestionsContainer = (props: Props) => {
                             isPast={props.isPast}
                             myUserId={props.myUserId}
                             setShowModal={props.setShowModal}
+                            setRemoveQuestionId={props.setRemoveQuestionId}
                         />
                     ))}
                 {shownQuestions && shownQuestions.length === 0 && (
