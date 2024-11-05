@@ -100,25 +100,142 @@
   background-color: #FFFF; 
 }
 
+.welcomeSlide{
+  display: flex;
+  flex-direction: column;
+  width: 423px;
+  justify-content: space-between;
+}
+
+.visit{
+  display: flex;
+  flex-direction: column;
+  width: 750px;
+  justify-content: space-between;
+
+  &.top-text{
+    position: absolute;
+    top: 3rem;
+    left: 0rem;
+    font-size: 35px;
+    font-weight: 600;
+    color: #080680;
+  }
+
+  &.mid-text{
+    position:absolute;
+    top: 6.7rem;
+    left: -18.67rem;
+    font-size: 27px;
+  }
+
+  &.num-visits{
+    position: absolute;
+    bottom: 13rem;
+    left: -6rem;
+    font-size: 24rem;
+    color: #FFA3A3;
+    opacity: 0.88;
+    z-index: 0,
+  }
+
+  &.couple{
+    width: 12rem; 
+    position: absolute; 
+    right: 11rem;
+    bottom: 12rem;
+  }
+
+  &.girl{
+    width: 6rem;
+    position: absolute;
+    right: 6rem;
+    bottom: 9rem;
+  }
+
+  &.bottom-text{
+    position: absolute;
+    bottom: 5rem;
+    right: 4rem;
+    font-weight: bold;
+    width: 300px;
+    text-align: left;
+  }
+}
+
+.timeSpent{
+  &.top-text{
+    position: absolute;
+    top: 3rem;
+    left: 3rem;
+    font-weight: bold;
+    font-size: 2.5rem;
+  }
+
+  &.num-text{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18rem;
+    color: #080680;
+  }
+
+  &.minutes-text{
+    position: absolute;
+    bottom: 8rem;
+    right: 3rem;
+    font-weight: bold;
+    font-size: 2.5rem;
+    text-align: right;
+    width: 300px;
+  }
+
+  &.bottom-text{
+    position: absolute;
+    bottom: 5rem;
+    right: 3rem;
+    font-weight: bold;
+    font-size: 2.5rem;
+    text-align: right;
+    width: 300px;
+  }
+}
+
 @keyframes slideInTopRight {
   0% {
+      transform: translate(-100%, -100%) rotate(18.6deg);
       right: -50%;
       opacity: 0;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+  }
+  20% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
   }
   100% {
-      right: 0;
+      transform: translate(0%, 0%) rotate(18.6deg);
+      right: -3%;
       opacity: 1;
+      clip-path: polygon(39.5% 0, 96% 0, 98.15% 100%, 20.8% 100%);
   }
 }
 
 @keyframes slideInBottomLeft {
   0% {
+      transform: translate(-100%, -100%) rotate(8.63deg);
       left: -50%;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
       opacity: 0;
   }
+  20% {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+  }
   100% {
-      left: 0;
+      transform: translate(0%, 0%) rotate(8.63deg);
+      left: -1%;
       opacity: 1;
+      clip-path: polygon(0.5% 0, 99% 0, 57% 100%, 1.2% 100%);
+
   }
 }
 
@@ -143,33 +260,61 @@
 
 .banner {
   position: absolute;
-  background-color: #7a57d1; 
-  color: white;
-  font-weight: bold;
-  padding: 5px 20px;
-  font-size: 1rem;
+  background-color: #D2D0FE; 
+  border: solid 0.3px;
+  color: #000000;
+  font-weight: 500;
+  padding: 10px 20px;
+  font-size: 15px;
   white-space: nowrap;
   opacity: 0;
   overflow: hidden;
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
 
   &.top-right {
       top: 9rem;
       right: -50%; // Start from outside the right edge
-      transform: rotate(25deg);
+      transform: rotate(18.6deg);
       transform-origin: top right;
+      clip-path: polygon(39.5% 0, 96% 0, 98.15% 100%, 20.8% 100%);
       animation: slideInTopRight 2s forwards;
   }
 
   &.bottom-left {
-      bottom: 6rem;
+      bottom: 4rem;
       left: -50%; // Start from outside the left edge
-      transform: rotate(15deg);
+      transform: rotate(8.63deg);
       transform-origin: bottom left;
+      clip-path: polygon(0.5% 0, 99% 0, 57% 100%, 1.2% 100%);
       animation: slideInBottomLeft 2s forwards;
   }
-}
 
+  &.bottom-time{
+      bottom: 4.3rem;
+      left: -1.5%;
+      opacity: 1;
+      transform: rotate(6.08deg);
+      transform-origin: bottom left;
+      clip-path: polygon(0.8% 0, 77.2% 0%, 77.3% 30%, 52% 100%, 1.2% 100%);
+  }
+
+  &.bottom-favta{
+    bottom: 4.3rem;
+    left: -1.5%;
+    opacity: 1;
+    transform: rotate(4.47deg);
+    transform-origin: bottom left;
+    clip-path: polygon(0.9% 0, 80.6% 0, 80.8% 84%, 73% 100%, 1.2% 100%);
+  }
+
+  &.bottom-conclusion{
+    bottom: 4.3rem;
+    left: -1.5%;
+    opacity: 1;
+    transform: rotate(16.45deg);
+    transform-origin: bottom left;
+    clip-path: polygon(0.6% 0, 100% 0, 60% 100%, 4% 100%);
+  }
+}
 
 .banner.visible {
   display: block;
@@ -199,4 +344,75 @@
 .conclusionText {
   text-align: "center";
   width: 313;
+
+  &.center-text {
+    font-weight: 600;
+    width: 279px;
+    height: 71px;
+    position: absolute;
+    top: 14rem;
+    left: 22.5rem;
+    line-height: 40px;
+    font-size: 27px;
+  }
+}
+
+@keyframes slideOut {
+  0%{
+    right: 1rem;
+    opacity: 1;
+  }
+  100%{
+    right: -50%;
+    opacity: 0;
+  }
+
+}
+
+.bus{
+  width: 25rem;
+  position: absolute;
+  right: 1rem;
+  bottom: 0.5rem;
+  animation: slideOut 5s forwards;
+}
+
+.head{
+  width: 15.35px;
+  height: 23.21px;
+  position: absolute;
+  bottom: 11rem;
+  left: 5.45rem;
+}
+
+.body{
+  width: 91px;
+  height: 108.9px;
+  position: absolute;
+  bottom: 4.9rem;
+  left: 1.5rem;
+  gap: 0px;
+  opacity: 0px;
+}
+
+@keyframes wave {
+  0%{
+    transform: rotate(-9.66deg);
+  }
+  100%{
+    bottom: 10.1rem;
+    transform: rotate(-90deg);
+  }
+}
+
+.arm{
+  width: 42.21px;
+  height: 33.71px;
+  position: absolute;
+  bottom: 9.11rem;
+  left: 5.12rem;
+  gap: 0px;
+  opacity: 0px;
+  transform: rotate(-9.66deg);
+  animation: wave 3s forwards;
 }

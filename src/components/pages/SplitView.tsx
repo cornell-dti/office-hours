@@ -119,13 +119,13 @@ const SplitView = ({
         updateSession(sessionHook);
     }, [sessionHook, updateSession]);
 
-    useEffect(() => {
-        if (user && user.wrapped) {
-            setDisplayWrapped(true);
-        } else {
-            setDisplayWrapped(false);
-        }
-    }, [user])
+    // useEffect(() => {
+    //     if (user && user.wrapped) {
+    //         setDisplayWrapped(true);
+    //     } else {
+    //         setDisplayWrapped(false);
+    //     }
+    // }, [user])
 
     // Handle browser back button
     history.listen((location) => {

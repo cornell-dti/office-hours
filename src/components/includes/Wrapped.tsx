@@ -13,6 +13,10 @@ import Girl from "../../media/wrapped/girl.svg"
 import Bus from "../../media/wrapped/bus.svg"
 import Group from "../../media/wrapped/group.svg";
 import TA from "../../media/wrapped/ta.svg";
+import asterik from "../../media/wrapped/asterik.svg";
+import head from "../../media/wrapped/head.svg";
+import body from "../../media/wrapped/body.svg";
+import arm from "../../media/wrapped/arm.svg";
 import ConsistentPersonality from "../../media/wrapped/consistent_personality.svg"
 import ResourcefulPersonality from "../../media/wrapped/resourceful_personality.svg"
 import IndependentPersonality from "../../media/wrapped/independent_personality.svg"
@@ -27,6 +31,7 @@ type Props = {
 
 type DotProps = {
     active: boolean;
+    onClick: () => void;
 };
 
 type DotIndicatorProps = {
@@ -34,8 +39,8 @@ type DotIndicatorProps = {
 }
 
   
-const Dot = ({active} : DotProps) => (
-    <div className={`dot ${active ? 'active' : ''}`} />
+const Dot = ({ active, onClick } : DotProps) => (
+    <div className={`dot ${active ? 'active' : ''}`} onClick={onClick}/>
 );
 
 const Wrapped= (props: Props): JSX.Element => {
@@ -47,12 +52,64 @@ const Wrapped= (props: Props): JSX.Element => {
         timeHelpingStudents: 0,
         totalMinutes: 0,
         favTaId: "",
+        favClass:"",
     });
+    const [taName, setTaName] = useState({
+        firstName: "",
+        lastName: "",
+    });
+
+    const semester =  "FALL 2024";
+    const month = "FEBRUARY";
+    const favClass = "CS 1110";
+    const favDay = "FRIDAYS";
+
+    const Asterik = () => (
+        <img style={{paddingLeft: "45px", paddingRight: "45px"}} src={asterik} alt=""/>
+    );
+
     const [showBanner, setShowBanner] = useState(false);
 
     /* TA's only see 4 slides, TA + Student see 7, Only student see 6 */  
-    const totalStages = (wrappedData.timeHelpingStudents === undefined || wrappedData.timeHelpingStudents == 0) ? 
-        (6) : (wrappedData.favTaId == "" || wrappedData.favTaId === undefined ) ? 4 : 7;
+    const totalStages = (wrappedData.timeHelpingStudents === undefined || wrappedData.timeHelpingStudents === 0) ? 
+        (6) : (wrappedData.favTaId === "" || wrappedData.favTaId === undefined ) ? 4 : 7;
+
+    const RenderStudent = () => {
+        if (loading) return null;
+
+        return (
+            <>
+                {stage === 1 && <Visits />}
+                {stage === 2 && <TimeSpent />}
+                {stage === 3 && <PersonalityType />}
+                {stage === 4 && <FavTA/>}
+                {stage === 5 && <Conclusion />}
+            </>
+        );
+    };
+
+    const RenderTA = () => (
+        <>
+            {stage === 1 && <TATimeHelped/>}
+            {stage === 2 && <TAStudentsHelped/>}
+            {stage === 3 && <Conclusion />}
+        </>
+    )
+
+    const RenderStudentTA = () => {
+        if (loading) return null;
+
+        return(
+            <>
+                {stage === 1 && <Visits />}
+                {stage === 2 && <TimeSpent />}
+                {stage === 3 && <PersonalityType />}
+                {stage === 4 && <FavTA/>}
+                {stage === 5 && <TATimeHelped/>}
+                {stage === 6 && <Conclusion />}
+            </>
+        );
+    };
 
     useEffect(() => {
 
@@ -68,6 +125,7 @@ const Wrapped= (props: Props): JSX.Element => {
                         timeHelpingStudents: number; 
                         totalMinutes: number; 
                         favTaId: string;
+                        favClass: string;
                     });  
                 } else {
                     // eslint-disable-next-line no-console
@@ -81,6 +139,33 @@ const Wrapped= (props: Props): JSX.Element => {
 
         fetchData();
     }, [props.user]);
+
+    useEffect(() => {
+
+        const usersRef = firebase.firestore().collection('users');
+        // eslint-disable-next-line no-console
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const doc = await usersRef.doc(wrappedData.favTaId).get();
+                if (doc.exists) {
+                    setTaName(doc.data() as { 
+                        firstName: string;
+                        lastName: string;
+                    });  
+                } else {
+                    // eslint-disable-next-line no-console
+                    console.log('No such document!');
+                }
+            } catch (error) {
+                // eslint-disable-next-line no-console
+                console.error("Error fetching data: ", error);
+            }
+            setLoading(false);
+        };
+
+        fetchData();
+    }, [wrappedData.favTaId]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -104,7 +189,7 @@ const Wrapped= (props: Props): JSX.Element => {
         
         <div className={"dotsContainer" + showDots}>
             {[...Array(totalStages)].map((_, index) => ( 
-                <Dot active={index === stage} />
+                <Dot active={index === stage} onClick={() => setStage(index)}/>
             ))}
         </div>
     );
@@ -175,109 +260,88 @@ const Wrapped= (props: Props): JSX.Element => {
                 
             </div>
         )
-      
+
+    const WelcomeBanner = () => (
+        <div>
+            {semester} <Asterik/> {semester} <Asterik/> {semester} <Asterik/> {semester}
+        </div>
+    );
+
+    const TimeSpentBanner = () => (
+        <div>
+            YOU SPENT THE MOST TIME AT OFFICE HOURS IN {month} <Asterik/> 
+            YOU SPENT THE MOST TIME AT OFFICE HOURS IN {month} <Asterik/>
+        </div>
+    );
+
+    const FavTABanner = () => (
+        <div>
+            {favClass} ON {favDay} <Asterik />
+            {favClass} ON {favDay} <Asterik />
+            {favClass} ON {favDay} <Asterik />
+            {favClass} ON {favDay} <Asterik />
+        </div>
+    );
+
+    const ConclusionBanner = () => (
+        <div>
+            <Asterik/> <span style={{ paddingRight: "100px"}}>SEE YOU SOON</span>
+        </div>
+    );
 
     const Welcome = () => (
-        <>
-            {!loading && 
-            (
-                <div>
-                    <div style={{ display: "flex", flexDirection: "column", 
-                        width: "400px", justifyContent: "space-between" 
-                    }}
-                    >
-                        <div style={{ alignSelf: "flex-start" }} className="intro-title">
-                            <Typography variant="h2" style={{ fontWeight: "bold" }}> Queue Me In</Typography>
-                        </div>
-                        <div style={{ alignSelf: "flex-end" }} className="intro-title">
-                            <Typography variant="h1" style={{ fontWeight: "bold" }}> Wrapped</Typography>
-                        </div>
-                        <div className="animationContainer">
-                            {showBanner && (
-                                <>
-                                    <div className="banner top-right">
-                                SPRING 2024 SPRING 2024 SPRING 2024
-                                    </div>
-                                    <div className="banner bottom-left">
-                                SPRING 2024 SPRING 2024 SPRING 2024
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
+        <div>
+            <div className="welcomeSlide">
+                <div style={{ alignSelf: "flex-start", width: "366px" }}>
+                    <Typography variant="h2" style={{ fontWeight: 700 }}> Queue Me In</Typography>
                 </div>
-            )
-            }
-        </>
-    );
+                <div style={{ alignSelf: "flex-end", width: "279px" }}>
+                    <Typography variant="h2" style={{ fontWeight: 400 }}> WRAPPED</Typography>
+                </div>
+                <div className="animationContainer">
+                    {showBanner && (
+                        <>
+                            <div className="banner top-right">
+                                <WelcomeBanner />
+                            </div>
+                            <div className="banner bottom-left">
+                                <WelcomeBanner />
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+    )
 
     const Visits = () => (
         <div>
-            <div style={{ display: "flex", flexDirection: "column", width: "750px", justifyContent: "space-between" }}>
+            <div className="visit">
                 
                 <div style={{ display: "flex", justifyContent: "flex-end", fontWeight: "bold" }}>
-                    <div style={{ 
-                        position: "absolute",
-                        top: "3rem",
-                        left: "3rem",
-                        fontSize: "2.5rem",
-                        color: "#080680",
-                    }}
-                    >
+                    <div className="visit top-text">
                         YOU WORKED SO HARD THIS SEMESTER!
                     </div>
-                    <div style={{ 
-                        position: "absolute",
-                        top: "8rem",
-                        left: "3rem",
-                    }}
-                    >
+                    <div className="visit mid-text">
                         <Typography variant="h3"> 
                             WITH...
                         </Typography>
                     </div>
-                    <div 
-                        style={{
-                            position: "absolute",
-                            bottom: "40%",
-                            right: "50%",
-                            fontSize: "24rem",
-                            color: "#F67D7D",
-                            opacity: 0.7,
-                            zIndex: 0,
-                        }}
-                    >
+                    <div className="visit num-visits">
                         {wrappedData.officeHourVisits.length} 
                     </div>
                     <img 
                         src={Couple}
-                        style={{ 
-                            width: "12rem", 
-                            position: "absolute", 
-                            right: "11rem", 
-                            bottom: "12rem" 
-                        }}
+                        className="visit couple"
                         alt=""
                     />
                     <img 
                         src={Girl}
-                        style={{ 
-                            width: "6rem", 
-                            position: "absolute", 
-                            right: "6rem", 
-                            bottom: "9rem" 
-                        }}
+                        className="visit girl"
                         alt=""
                     />
                     <div 
-                        style={{ 
-                            position: "absolute",
-                            bottom: "5rem",
-                            right: "4rem",
-                            fontWeight: "bold", 
-                            width: "300px",
-                            textAlign: "left",
-                        }}
+                        className="visit bottom-text"
                     >
                         <Typography variant="h3"> 
                             {wrappedData.officeHourVisits.length === 1 ? "VISIT " : "VISITS " }
@@ -291,50 +355,27 @@ const Wrapped= (props: Props): JSX.Element => {
 
     const TimeSpent = () => (
         <>
-            <div style={{ 
-                position: "absolute",
-                top: "3rem",
-                left: "3rem",
-                fontWeight: "bold", 
-                fontSize: "2.5rem",
-            }}
-            > 
+            <div className="timeSpent top-text"> 
                 SPENDING A TOTAL OF...
             </div>
-            <div style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                fontSize: "18rem",
-                color: "#080680",
-            }}
-            >
+            <div className="timeSpent num-text">
                 {wrappedData.totalMinutes}
             </div>
-            <div style={{ 
-                position: "absolute",
-                bottom: "8rem",
-                right: "3rem",
-                fontWeight: "bold", 
-                fontSize: "2.5rem",
-                textAlign: "right",
-                width: "300px",
-            }}
-            > 
+            <div className="timeSpent minutes-text"> 
                 MINUTES
             </div>
-            <div style={{ 
-                position: "absolute",
-                bottom: "5rem",
-                right: "3rem",
-                fontWeight: "bold", 
-                fontSize: "2.5rem",
-                textAlign: "right",
-                width: "300px",
-            }}
-            > 
+            <div className="timeSpent bottom-text"> 
                 AT OFFICE HOURS
+            </div>
+
+            <div>
+                {showBanner && (
+                    <>
+                        <div className="banner bottom-time">
+                            <TimeSpentBanner />
+                        </div>
+                    </>
+                )}
             </div>
         </>
     )
@@ -419,7 +460,7 @@ const Wrapped= (props: Props): JSX.Element => {
                     </div>
                 
                     <Typography variant="h3" style={{ fontWeight: 600 }}>  
-                        <div className="taName">TA {wrappedData.favTaId}</div>
+                        <div className="taName">TA {taName.firstName} {taName.lastName}</div>
                     </Typography>
                 </div>
                 <img 
@@ -428,8 +469,17 @@ const Wrapped= (props: Props): JSX.Element => {
                         width: "323px",
                     }}
                     alt="" 
-                />       
+                />     
             </div>
+            <div>
+                {showBanner && (
+                    <>
+                        <div className="banner bottom-favta">
+                            <FavTABanner />
+                        </div>
+                    </>
+                )}
+            </div>  
         </> 
     )
 
@@ -462,7 +512,7 @@ const Wrapped= (props: Props): JSX.Element => {
                     <div 
                         style={{
                             position: "absolute",
-                            top: "55%",
+                            top: "50%",
                             left: "50%",
                             width: "420px",
                             transform: "translate(-50%, -50%)",
@@ -479,7 +529,7 @@ const Wrapped= (props: Props): JSX.Element => {
                             height: "239.6px",
                             position: "absolute", 
                             top:"17rem",
-                            left: "4rem",
+                            left: "2rem",
                         }}
                         alt=""
                     />
@@ -558,31 +608,41 @@ const Wrapped= (props: Props): JSX.Element => {
                 > 
                     PAT YOURSELF ON THE BACK
                 </div>
-                <div 
-                    style={{ 
-                        fontWeight: 600,
-                        width: "279px",
-                        height: "71px",
-                        position: "absolute",
-                        top: "14rem",
-                        left: "19rem",
-                        lineHeight: "40px",
-                        fontSize: "27px",
-                    }}
-                > 
+                <div className="conclusionText center-text"> 
                     IT'S TIME FOR A WELL DESERVED BREAK!
                 </div>
                 <img 
                     src={Bus} 
-                    style={{ 
-                        width: "25rem", 
-                        position: "absolute", 
-                        right: "1rem", 
-                        bottom: "0.5rem" 
-                    }} 
+                    className="bus"
                     alt="" 
                 />
+                <img 
+                    src={arm}
+                    className="arm"
+                    alt=""
+                />
+
+                <img
+                    src={head}
+                    className="head"
+                    alt=""
+                />
+
+                <img
+                    src={body}
+                    className="body"
+                    alt=""
+                />
             </div>
+            <div>
+                {showBanner && (
+                    <>
+                        <div className="banner bottom-conclusion">
+                            <ConclusionBanner />
+                        </div>
+                    </>
+                )}
+            </div>  
         </>
     )
 
@@ -599,21 +659,14 @@ const Wrapped= (props: Props): JSX.Element => {
                     </div>
                 }
 
-                {stage === 0 && <Welcome />}
+                {stage === 0 && <Welcome />}    
 
-                {totalStages !== 4 && stage === 1 && <Visits />}
-                {totalStages !== 4 && stage === 2 && <TimeSpent />}
-                {totalStages !== 4 && stage === 3 && <PersonalityType />}
-                {totalStages !== 4 && stage === 4 && <FavTA/>}
-
-                {totalStages === 4 && stage === 1 && <TATimeHelped/>}
-                {totalStages === 4 && stage === 2 && <TAStudentsHelped/>}
-
-                {totalStages === 6 ? stage === 5 && <Conclusion /> : stage === 5 && <TATimeHelped/>}
-                {totalStages === 7 && stage === 6 && <Conclusion />}
-                {totalStages === 4 && stage === 3 && <Conclusion/>}
-
+                {totalStages === 4 && <RenderTA />}
+                {totalStages === 6 && <RenderStudent/>}
+                {totalStages === 7 && <RenderStudentTA/>}
+                
                 <DotsIndicator />
+
                 {stage !== totalStages - 1 && 
                     <div 
                         className={`navigateStage${loading ? '':'Visible next'}`} 
