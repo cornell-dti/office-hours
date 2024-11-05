@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
 import { Icon } from "semantic-ui-react";
 
@@ -65,6 +66,7 @@ const SessionView = ({
     user,
     setShowModal,
     setRemoveQuestionId,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     removeQuestionDisplayFeedback,
     timeWarning,
     sessionBanners,
@@ -119,40 +121,6 @@ const SessionView = ({
         });
         // setPrevQuestSet(new Set(questions.map(q => q.questionId)));
     }, [questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
-
-    /** This useEffect dictates when the TA feedback popup is displayed by monitoring the
-     * state of the current question. Firebase's [onSnapshot] method is used to monitor any
-     * changes to the questions collection, and [docChanges] filters this down to the document
-     * changes since the last snapshot. Then, we call [removeQuestionDisplayFeedback] iff a question was
-     * both modified and resolved, indicating that the TA has answered a question. !isTa and
-     * !isProf ensures that this useEffect only runs for students.
-     */
-    useEffect(() => {
-        let unsubscribe: () => void;
-
-        if (!isTa && !isProf) {
-            const questionsRef = firestore.collection("questions");
-
-            unsubscribe = questionsRef.onSnapshot((snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    const questionData = change.doc.data();
-                    const questionId = change.doc.id;
-
-                    if (change.type === "modified" && questionData.status === "resolved") {
-                        // eslint-disable-next-line no-console
-                        console.log("questionid: ", questionId);
-                        removeQuestionDisplayFeedback(questionId);
-                    }
-                });
-            });
-        }
-
-        return () => {
-            if (unsubscribe) {
-                unsubscribe();
-            }
-        };
-    }, [courseId, isProf, isTa, removeQuestionDisplayFeedback]);
 
     const dismissUndo = () => {
         if (timeoutId) {
