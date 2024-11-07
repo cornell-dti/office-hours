@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
 import { connect } from 'react-redux';
-import { Icon } from 'semantic-ui-react'
+import { Icon } from 'semantic-ui-react';
 import TopBar from './TopBar';
 import CourseCard from './CourseCard';
 import { CURRENT_SEMESTER } from '../../constants';
@@ -30,10 +30,25 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     const [currentCourses, setCurrentCourses] = useState<FireCourse[]>([]);
     const [formerCourses, setFormerCourses] = useState<FireCourse[]>([]);
 
+    // current searched courses
+    const [filteredCourses,] = useState<FireCourse[]>(currentCourses);
     useEffect(() => {
-        setCurrentCourses(allCourses.filter((course) => {
-            return course.semester === CURRENT_SEMESTER;
-        }));
+        setCurrentlyEnrolledCourseIds(new Set(user.courses));
+    }, [user.courses]);
+
+    const filterOnActiveAndRole = () => {
+        return allCourses
+            .filter((course) => course.semester === CURRENT_SEMESTER)
+            .sort((a, b) => {
+                const isUserTAorProfA = (a.tas?.includes(user.userId) || a.professors?.includes(user.userId)) ? 1 : 0;
+                const isUserTAorProfB = (b.tas?.includes(user.userId) || b.professors?.includes(user.userId)) ? 1 : 0;
+                return isUserTAorProfB - isUserTAorProfA; // Sort in descending order (1's before 0's)
+            })
+    }
+
+
+    useEffect(() => {
+        setCurrentCourses(filterOnActiveAndRole);
 
         setFormerCourses(allCourses.filter((course) => {
             return course.semester !== CURRENT_SEMESTER;
@@ -46,17 +61,26 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         setCurrentlyEnrolledCourseIds(new Set(user.courses));
     }, [user.courses]);
 
-    const [selectedCourses, setSelectedCourses] = useState<FireCourse[]>([]);
+    const preSelectedCourses: FireCourse[] = (
+        (user.courses.length > 0) ? currentCourses.filter((course) => user.roles[course.courseId] !== undefined) : []);
+
+    const [selectedCourses, setSelectedCourses] = useState<FireCourse[]>(preSelectedCourses);
+
+    // courses in which role is defined (TA or Prof)
+    const [unchangeableCourses, setUnchangableCourses] = useState<FireCourse[]>(preSelectedCourses);
+
 
     useEffect(() => {
         setSelectedCourses(currentCourses.filter(
             ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] === undefined
         ));
-    }, [user, currentCourses, currentlyEnrolledCourseIds]);
+        setUnchangableCourses(currentCourses.filter(
+            ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] !== undefined
+        ));
+    }, [user, filteredCourses, currentlyEnrolledCourseIds]);
 
     const [selectedCourseIds, setSelectedCourseIds] = useState<string[]>([]);
 
-    const [collapsed, setCollapsed] = useState(true);
 
     const coursesToEnroll: string[] = [];
     const coursesToUnenroll: string[] = [];
@@ -110,6 +134,37 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         ));
     };
 
+    /**
+     * Handles the search functionality of the search bar in 'edit courses'. Is called 
+     * onChange of the input element of 'searchbar'.
+     * Filters the current view of courses based on the search term, while preserving 
+     * the selected courses (shows preservation through list of courses selected under search bar).
+     * 
+     * @param e = event to pass in search term
+     */
+    const searchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const search = e.target.value.toLowerCase();
+
+        // Filter courses based on the current semester, reset the search results (when search term is deleted, etc)
+        const availableCourses = filterOnActiveAndRole();
+
+        // Filter courses based on the search term
+        const filteredResults = availableCourses.filter((course) => {
+            return course.code.toLowerCase().includes(search) || course.name.toLowerCase().includes(search);
+        });
+
+        // Preserve the selected courses
+        const updatedCourses = filteredResults.map((course) => {
+            const isSelected = selectedCourseIds.includes(course.courseId);
+            return {
+                ...course,
+                isSelected,
+            };
+        });
+
+        setCurrentCourses(updatedCourses);
+    };
+
     const onSubmit = () => {
         const newCourseSet = new Set(currentlyEnrolledCourseIds);
         coursesToEnroll.forEach(courseId => newCourseSet.add(courseId));
@@ -133,8 +188,10 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         history.push('/home');
     };
 
-    const selectedCoursesString = (selectedCourses.length + numCoursesWithRoles === 0
-        ? 'No Classes Chosen'
+    // changed guard from selectedCourses.length + numCoursesWithRoles === 0 to selectedCourses.length === 0
+    //  so that when you cannot unenroll from a course, it says No Classes Chosen instead of an empty box
+    const selectedCoursesString = (selectedCourses.length === 0
+        ? ''
         : selectedCourses.map(c => c.code).join(', '));
 
     return (
@@ -147,117 +204,133 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     // This field is only necessary for professors, but we are always student/TA here.
                     courseId="DUMMY_COURSE_ID"
                 />
-                <div className="selectionContent">
-                    {currentCourses.length > 0 || isEdit ?
-                        <>
-                            <div className="description">
-                                <div className="title">
-                                    {isEdit ? 'Edit Your Classes' : 'My Classes'}
-                                </div>
-                                <div className="subtitle">
-                                    {isEdit ? 'Add or remove classes.' : 'Select the office hours you want to view.'}
-                                    <div className="EnrolledCourses mobile">{selectedCoursesString}</div>
-                                </div>
-                            </div>
-                            <div className="CourseCards">
-                                {currentCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
-                                    currentlyEnrolledCourseIds.has(course.courseId)
-                                    || isEdit)
-                                    .map((course) => {
-                                        const role = currentlyEnrolledCourseIds.has(course.courseId)
-                                            ? (user.roles[course.courseId] || 'student')
-                                            : undefined;
-                                        const selected = selectedCourseIds.includes(course.courseId)
-                                            || (role !== undefined && role !== 'student');
-                                        return (
-                                            <div key={course.courseId}>
-                                                <CourseCard
-                                                    course={course}
-                                                    role={role}
-                                                    onSelectCourse={(addCourse) => onSelectCourse(course, addCourse)}
-                                                    editable={isEdit}
-                                                    selected={selected}
-                                                />
+                <div className="GreyBackground">
+                    <div className="WhiteBackground">
+                        <div className="selectionContent">
+                            {currentCourses.length > 0 || isEdit ?
+                                <>
+                                    <div className="description">
+                                        <div className="sideblock">
+                                            <div className="title">
+                                                {isEdit ? <div> Edit Your Classes </div> : 'My Classes'}
                                             </div>
-                                        );
-                                    })}
-                            </div>
-                        </>
-                        : <><div className="description">
-                            <div className="title">
-                                {'My Classes'}
-                            </div>
-                            <div className="subtitle">
-                                {"You are not enrolled in any courses. Click 'Edit' to enroll in courses."}
-                            </div>
-                        </div></>}
-                    {!isEdit && formerCourses.length > 0 ? <>
-                        <div className="description">
-                            <div className="subtitle">
-                                Former Classes
-                                {collapsed ? (
-                                    <Icon
-                                        name='chevron down'
-                                        onClick={() => { setCollapsed(false) }}
-                                    />
-                                ) : (
-                                    <Icon
-                                        name='chevron up'
-                                        onClick={() => setCollapsed(true)}
-                                    />
-                                )}
-                            </div>
-                        </div>
-                        <div className="CourseCards CourseCardsInactive">
-                            {!collapsed && formerCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
-                                currentlyEnrolledCourseIds.has(course.courseId))
-                                .map((course, index) => {
-                                    const role = currentlyEnrolledCourseIds.has(course.courseId)
-                                        ? (user.roles[course.courseId] || 'student')
-                                        : undefined;
-                                    return (
-                                        <div key={index}>
-                                            <CourseCard
-                                                key={course.courseId}
-                                                course={course}
-                                                role={role}
-                                                inactive={true}
-                                                onSelectCourse={() => { }}
-                                                editable={false}
-                                                selected={false}
-                                            />
+                                            <div className="subtitle">
+                                                {isEdit ? 'Add or remove classes of your selection.' : 'Select the office hours you want to view.'}
+                                                <div className="EnrolledCourses mobile">{selectedCoursesString}</div>
+                                            </div>
                                         </div>
-                                    );
-                                })}
+                                        <div className="sideblock searchbar">
+                                            <input type="text" placeholder="Search for class name or number..." onChange={searchInput} size={2} />
+                                            <div className="searchIcon">
+                                                <Icon className="icon" color="grey" name="search" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr className="sectionDivide" />
+                                    {isEdit && (selectedCoursesString.length > 0 || unchangeableCourses.length > 0) ?
+                                        <div className="EnrolledClasses">
+                                            {unchangeableCourses.map(course => course.code).join(', ')}
+                                            {selectedCoursesString.length > 0 && unchangeableCourses.length > 0 ? ", " : "" }
+                                            {selectedCoursesString}
+                                        </div>
+                                        : <div />
+                                    }
+                                    <div className="CourseCards">
+                                        {currentCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
+                                            currentlyEnrolledCourseIds.has(course.courseId)
+                                            || isEdit)
+                                            .map((course) => {
+                                                const role = currentlyEnrolledCourseIds.has(course.courseId)
+                                                    ? (user.roles[course.courseId] || 'student')
+                                                    : undefined;
+                                                const selected = selectedCourseIds.includes(course.courseId)
+                                                    || (role !== undefined && role !== 'student');
+                                                return (
+                                                    <div key={course.courseId}>
+                                                        <CourseCard
+                                                            course={course}
+                                                            role={role}
+                                                            onSelectCourse={(addCourse) => onSelectCourse(course, addCourse)}
+                                                            editable={isEdit}
+                                                            selected={selected}
+                                                        />
+
+                                                    </div>
+                                                );
+                                            })}
+                                    </div>
+                                </>
+                                : <><div className="description">
+                                    <div className="title">
+                                        {'My Classes'}
+                                    </div>
+                                    <div className="subtitle">
+                                        {"You are not enrolled in any courses. Click 'Edit' to enroll in courses."}
+                                    </div>
+                                    <div className="sideblock searchbar">
+                                        <input type="text" placeholder="Search for class name or number..." onChange={searchInput} size={2} />
+                                        <div className="searchIcon">
+                                            <Icon className="icon" color="grey" name="search" />
+                                        </div>
+                                    </div>
+                                </div></>}
+                            {!isEdit && formerCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
+                                        currentlyEnrolledCourseIds.has(course.courseId)).length > 0 ? <>
+                                <div className="description">
+                                    <div className="title" style={{paddingTop: '30px'}}>
+                                        Former Classes
+                                    </div>
+                                </div>
+                                <hr className="sectionDivide" />
+                                <div className="CourseCards CourseCardsInactive">
+                                    {formerCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
+                                        currentlyEnrolledCourseIds.has(course.courseId))
+                                        .map((course, index) => {
+                                            const role = currentlyEnrolledCourseIds.has(course.courseId)
+                                                ? (user.roles[course.courseId] || 'student')
+                                                : undefined;
+                                            return (
+                                                <div key={index}>
+                                                    <CourseCard
+                                                        key={course.courseId}
+                                                        course={course}
+                                                        role={role}
+                                                        inactive={true}
+                                                        onSelectCourse={() => { }}
+                                                        editable={false}
+                                                        selected={false}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+                                </div>
+                            </> : <></>}
                         </div>
-                    </> : <></>}
+                    </div>
                 </div>
-            </div>
-            <div className="EnrollBar">
-                <div className="EnrolledCourses web">
-                    {isEdit && selectedCoursesString}
-                </div>
-                <div className="buttons">
-                    {!isEdit && (
-                        <button type="button" className="switch" onClick={() => { history.push('/edit'); }}>
-                            Edit
-                        </button>
-                    )}
-                    {isEdit && (
-                        <button
-                            type="button"
-                            className={'save' + (isSaveDisabled ? ' disabled' : '')}
-                            disabled={isSaveDisabled}
-                            onClick={onSubmit}
-                        >
-                            {isNormalEditingMode ? 'Save' : 'Enroll'}
-                        </button>
-                    )}
-                    {isEdit && isNormalEditingMode && (
-                        <button type="button" className={'cancel'} onClick={onCancel}>
-                            Cancel
-                        </button>
-                    )}
+                <div className="EnrollBar">
+                    <div className="buttons">
+                        {!isEdit && (
+                            <button type="button" className="switch" onClick={() => { history.push('/edit'); }}>
+                                Edit
+                            </button>
+                        )}
+                        {isEdit && (
+                            <button
+                                type="button"
+                                className={'save' + (isSaveDisabled ? ' disabled' : '')}
+                                disabled={isSaveDisabled}
+                                onClick={onSubmit}
+                            >
+                                {isNormalEditingMode ? 'Save' : 'Enroll'}
+                            </button>
+                        )}
+                        {isEdit && isNormalEditingMode && (
+                            <button type="button" className={'cancel'} onClick={onCancel}>
+                                Cancel
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,4 +1,21 @@
 .CourseSelection {
+    .sectionDivide {
+        margin-top: 25px;
+        margin-bottom: 25px;
+    }
+    scroll-behavior: "smooth";
+    .GreyBackground {
+        background-color: #F5F5F5;
+        padding: 30px 47px 150px 47px;
+    }
+
+    .WhiteBackground {
+        background-color: #FFFFFF;
+        box-shadow: 0px 2.362499952316284px 4.724999904632568px 0px #00000040;
+        border-radius: 30px;
+        padding: 30px 0px 0 0px;
+    }
+
     .QMeLogo.course {
         position: absolute;
         top: 9px;
@@ -10,42 +27,114 @@
     }
 
     .selectionContent {
-        margin-top: 46px;
-        padding: 20px 0 100px;
+        margin-top: 30px;
         box-sizing: border-box;
+        font-family: 'Roboto';
 
         .description {
+
+            padding-left: 72px;
+            text-align: left;
+            color: #484848;
+            display: inline-block;
+            width: 100%;
+
+            .sideblock {
+                display: inline-block;
+                width: 50%;
+            }
+
             .title {
-                font-size: 50px;
-                line-height: 50px;
-                padding-bottom: 40px;
+                padding-bottom: 8px;
+                font-size: 28px;
+                font-weight: 600;
+                line-height: normal;
             }
 
             .subtitle {
-                font-size: 20px;
+                font-size: 18px;
+                font-weight: 400;
+                // padding-bottom: 30px;
 
                 .EnrolledCourses.mobile {
                     display: none;
                 }
-
                 .icon {
                     padding-left: 10px;
                     cursor: pointer;
                 }
             }
-        }
 
-        .CourseCards {
-            display: flex;
-            padding: 10px;
-            flex-shrink: 1;
-            flex-wrap: wrap;
-            justify-content: center;
+            .searchbar {
+                float: right;
+                display: flex;
+                align-items: center;
+                width: 36%;
+                // margin-bottom: 34px;
+                background-color: white;
+                border: 2px solid #D8D8D8;
+                border-radius: 15px;
+                margin-top: 8px;
+                margin-right: 72px;
+
+                input {
+                    flex: 1;
+                    border-radius: 15px;
+                    border: none;
+                    font-size: 15px;
+                    font-weight: 400;
+                    color: #7E7E7E;
+                    padding: 12px 28px;
+
+                }
+
+                .searchIcon {
+                    // margin-top: 8px;
+                    font-size: 23px;
+                    color: #484848;
+                    margin-right: 28px;
+                }
+
+
+            }
         }
+    }
+
+    hr {
+        border: 2px solid #F0F0F0;
+    }
+
+    .EnrolledClasses {
+        margin-top: 36px;
+        display: inline-flex;
+        padding: 12px 64px;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        border-radius: 15px;
+        background: #F5F5F5;
+        color: #5599DB;
+        font-family: Roboto;
+        font-size: 18px;
+        font-weight: 500;
+        line-height: normal;
+    }
+
+    .CourseCards {
+        display: flex;
+        padding: 0px 35px 0 35px;
+        flex-shrink: 1;
+        flex-wrap: wrap;
+        justify-content: center;
+        border-radius: 15px;
+        border-color: black;
     }
 }
 
+
 .EnrollBar {
+    font-family: 'Roboto';
+    float: right;
     position: fixed;
     padding: 0px 30px;
     left: 0;
@@ -56,9 +145,9 @@
     height: 100px;
     font-size: 18px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
-    // flex-wrap: wrap;
+    flex-wrap: wrap;
 
     .EnrolledCourses.web {
         display: block;
@@ -99,6 +188,7 @@
             display: inline-block;
             background-color: white;
             border: solid 1px #484848;
+            color: #484848;
             margin: 5px;
         }
 
@@ -109,10 +199,12 @@
     }
 }
 
-@media only screen and (max-width: $mobile-breakpoint) {
+@media only screen and (max-width: 1062px) {
     .App {
         background-color: white;
     }
+
+
 
     .CourseSelection {
         background-color: white;
@@ -125,6 +217,11 @@
             display: none;
         }
 
+        .GreyBackground {
+            padding: 20px;
+            padding-bottom: 120px;
+        }
+
         .selectionContent {
             margin-top: 0px;
 
@@ -133,21 +230,35 @@
             }
 
             .description {
-                padding-bottom: 25px;
-                border-bottom: solid 2px #e2e2e2;
+                padding-left: 50px;
+                // padding-bottom: 25px;
+                // border-bottom: solid 2px #e2e2e2;
 
                 .title {
-                    font-size: 24px;
                     padding-bottom: 20px;
                     font-weight: bold;
                 }
 
                 .subtitle {
-                    font-size: 18px;
 
                     .EnrolledCourses.mobile {
                         display: none; // Change to block
                     }
+                }
+
+                .searchbar {
+                    font-size: 15px;
+                    // display: flex;
+                    width: 70%;
+                    float: left;
+                    margin-right: 30px;
+                    margin-bottom: 30px;
+
+                    .input {
+                        // font-size: 1px;
+                        min-width: 30;
+                    }
+
                 }
             }
         }
