@@ -215,7 +215,8 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                                 {isEdit ? <div> Edit Your Classes </div> : 'My Classes'}
                                             </div>
                                             <div className="subtitle">
-                                                {isEdit ? 'Add or remove classes of your selection.' : 'Select the office hours you want to view.'}
+                                                {isEdit ? 'Add or remove classes of your selection.' : 
+                                                'Select the office hours you want to view.'}
                                                 <div className="EnrolledCourses mobile">{selectedCoursesString}</div>
                                             </div>
                                         </div>
@@ -275,7 +276,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                     </div>
                                 </div></>}
                             {!isEdit && formerCourses.filter(course => selectedCourseIds.includes(course.courseId) ||
-                                        currentlyEnrolledCourseIds.has(course.courseId)).length > 0 ? <>
+                            currentlyEnrolledCourseIds.has(course.courseId)).length > 0 ? <>
                                 <div className="description">
                                     <div className="title" style={{paddingTop: '30px'}}>
                                         Former Classes

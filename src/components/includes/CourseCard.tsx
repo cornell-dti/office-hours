@@ -53,15 +53,15 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
         selectedBorderColor = '#77BBFA';
     }
 
-    let courseTextBottomPadding = '70px';
-    if (!inactive && !editable) {
-        courseTextBottomPadding = '30px';
-    }
     return (
         <div
-            className={`CourseCard ${selected && editable ? 'selected' : ''} ${inactive ? 'inactive' : 'active'} ${roleString === "" ? 'editable' : 'ineditable'}`}
+            className={`CourseCard ${selected && editable ? 'selected' : ''} ${inactive ? 'inactive' : 'active'} 
+            ${roleString === "" ? 'editable' : 'ineditable'}`}
             onClick={selectCourse}
-            style={(selected && editable) ? { backgroundColor: selectedBackgroundColor, borderColor: selectedBorderColor } : {}}
+            style={
+                (selected && editable) ? 
+                { backgroundColor: selectedBackgroundColor, borderColor: selectedBorderColor } 
+                : {}}
         >
             <Grid container direction="row" justifyContent='space-between' style={{ height: '58px' }}>
                 {roleString ? <Grid container item className="courseColor" xs={6}><span
