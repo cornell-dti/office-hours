@@ -132,14 +132,12 @@ const SessionView = ({
 
             unsubscribe = questionsRef.onSnapshot((snapshot) => {
                 // eslint-disable-next-line no-console
-                console.log("onSnapshot called");
                 snapshot.docChanges().forEach((change) => {
                     const questionData = change.doc.data();
                     const questionId = change.doc.id;
 
                     if (change.type === "modified" && questionData.status === "resolved") {
                         // eslint-disable-next-line no-console
-                        console.log("questionid: ", questionId);
                         removeQuestionDisplayFeedback(questionId);
                     }
                 });
