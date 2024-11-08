@@ -144,12 +144,10 @@ const SplitView = ({
         removeQuestionbyID(firestore, removeQuestionId);
     };
 
-    // used when a student removes their own question, don't want to dispaly feedback
+    // used when a student removes their own question, don't want to display feedback
     const setRemoveQuestionWrapper = (questionId: string | undefined) => {
         setRemoveQuestionId(questionId);
         setRemovedQuestionId(questionId);
-        // eslint-disable-next-line no-console
-        console.log("split view questionId: ", questionId);
     };
 
     // used to display feedback to user once question is removed
@@ -157,8 +155,6 @@ const SplitView = ({
         setRemoveQuestionId(questionId);
         setDisplayFeedbackPrompt(true);
         setRemovedQuestionId(questionId);
-        // eslint-disable-next-line no-console
-        console.log("split view questionId: ", questionId);
     };
 
     useEffect(() => {

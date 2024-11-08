@@ -131,7 +131,6 @@ const SessionView = ({
             const questionsRef = firestore.collection("questions").where("sessionId", "==", session.sessionId);
 
             unsubscribe = questionsRef.onSnapshot((snapshot) => {
-                // eslint-disable-next-line no-console
                 snapshot.docChanges().forEach((change) => {
                     const questionData = change.doc.data();
                     const questionId = change.doc.id;
@@ -149,6 +148,7 @@ const SessionView = ({
                 unsubscribe();
             }
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const dismissUndo = () => {
