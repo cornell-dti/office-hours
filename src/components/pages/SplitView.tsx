@@ -190,6 +190,7 @@ const SplitView = ({
 
     return (
         <>
+            
             <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
             <TopBar
                 role={(user && course && user.roles[course.courseId]) || "student"}
