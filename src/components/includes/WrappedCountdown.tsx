@@ -61,7 +61,6 @@ const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, 
 
             return () => clearTimeout(delayTimeout); // Cleanup in case component unmounts
         }
-        return
     }, [isZeroCounter, confettiShown]);
 
     // Prepend the days, hours, and minutes if they're single digits
