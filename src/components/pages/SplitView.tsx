@@ -265,24 +265,25 @@ const SplitView = ({
                                 {"Notification" in window &&
                                     window?.Notification !== undefined &&
                                     window?.Notification.permission !== "granted" && (
-                                        <div className="warningArea">
-                                            <div>&#9888;</div>
-                                            <div>
+                                    <div className="warningArea">
+                                        <div>&#9888;</div>
+                                        <div>
                                             Please make sure to enable browser notifications in your system
                                             settings.
                                         </div>
-                                        </div>
-                                    )}
-                        </div>
-                    </section>
-                )
+                                    </div>
+                                )}
+                            </div>
+                        </section>
+                    )
                 ) : (
                     <Loader active={true} content="Loading" />
                 ))}
             <ProductUpdates />
-                    <WrappedCountdown
-                        setDisplayWrapped={setDisplayWrapped}
-                        wrappedDate={{ launchDate: launch, startDate: start }} />
+            <WrappedCountdown
+                setDisplayWrapped={setDisplayWrapped}
+                wrappedDate={{ launchDate: launch, startDate: start }}
+            />
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt
                     onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
