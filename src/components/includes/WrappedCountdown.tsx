@@ -55,11 +55,9 @@ const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, 
     // Trigger confetti with a delay only the first time `isZeroCounter` becomes true
     useEffect(() => {
         if (isZeroCounter && !confettiShown) {
-            const delayTimeout = setTimeout(() => {
+            setTimeout(() => {
                 setConfettiShown(true); // Show confetti after a delay
-            }, 1000); // Delay of 2 seconds
-
-            return () => clearTimeout(delayTimeout); // Cleanup in case component unmounts
+            }, 1000); // Delay of 1 second
         }
     }, [isZeroCounter, confettiShown]);
 
