@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/WrappedCountdown.scss";
+import ConfettiExplosion from "react-confetti-explosion";
 import cone from "../../media/wrapped/cone.svg";
 import ribbonBall from "../../media/wrapped/ribbonBall.svg";
-import ConfettiExplosion from 'react-confetti-explosion';
 
 type WrappedDate = {
     launchDate: Date;
@@ -61,6 +61,7 @@ const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, 
 
             return () => clearTimeout(delayTimeout); // Cleanup in case component unmounts
         }
+        return
     }, [isZeroCounter, confettiShown]);
 
     // Prepend the days, hours, and minutes if they're single digits
@@ -69,9 +70,7 @@ const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, 
     // Check that today is the start date or dates after the start date, then render the countdown if true
     const isStartDate = () => {
         const today = new Date();
-        console.log("Today in ET: " + today);
         // To get the Date object with respect to Eastern Time, we must offset
-        console.log("Today Time:" + today);
         return today.getTime() >= wrappedDate.startDate.getTime();
     };
 
