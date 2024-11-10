@@ -60,6 +60,7 @@ const getWrapped = async () => {
 
 
     const taCounts: {[userId: string] : Map<string, number>} = {};
+    const monthTimeCounts: {[userId: string]: number[]} = {};
     const officeHourSessions: { [userId: string]: string[]} = {};
     // Every taID has an array of objects, where the objects store a sessionId and askerId
     const TAsessions: {[taID:string]: {
@@ -89,24 +90,27 @@ const getWrapped = async () => {
                 const isUserActive = stats.timeHelpingStudents === undefined || (TAsessions[userId]?.length > 0);
                 const hasFavoriteTa = stats.favTaId !== "";
                 if (hasVisits && isUserActive && hasFavoriteTa) {
-                    const wrappedDocRef = wrappedRef.doc(userId);
-                    batch.set(wrappedDocRef, stats);
-    
-                    // eslint-disable-next-line no-await-in-loop
-                    // const userDoc = await usersRef.doc(userId).get();
-                    const userDoc = userDocuments[userId];
-                    if (userDoc.exists) {
-                        usersRef.doc(userId).update({
-                            wrapped: true,
-                        });
+                    if (stats.favClass && stats.favDay && stats.favMonth) {
+                        errorUsers.push({user: userId, error: "User is active and has favorite TA, but is missing either most common class, day, or month."});
                     } else {
-                        // Handle the case where the document does not exist
-                        errorUsers.push({user: userId, error: "No document found for this user, skipping update."});
+                        const wrappedDocRef = wrappedRef.doc(userId);
+                        batch.set(wrappedDocRef, stats);
+        
+                        // eslint-disable-next-line no-await-in-loop
+                        // const userDoc = await usersRef.doc(userId).get();
+                        const userDoc = userDocuments[userId];
+                        if (userDoc.exists) {
+                            usersRef.doc(userId).update({
+                                wrapped: true,
+                            });
+                        } else {
+                            // Handle the case where the document does not exist
+                            errorUsers.push({user: userId, error: "No document found for this user, skipping update."});
+                        }
                     }
                 } else {
-                    errorUsers.push({user: userId, error: "User is not an active student/TA"});
+                    errorUsers.push({user: userId, error: "User is not an active student/TA or doesn't have favorite TA."});
                 }
-        
             } else {
                 errorUsers.push({user: userId, error: "User ID is undefined, skipping update."});
             }
@@ -130,6 +134,7 @@ const getWrapped = async () => {
 
             taCounts[askerId] = new Map<string, number>();
             officeHourSessions[askerId] = [];
+            monthTimeCounts[askerId] = [0,0,0,0,0,0,0,0,0,0,0,0];
         } 
 
         if (!userStats[answererId]) {
@@ -147,6 +152,7 @@ const getWrapped = async () => {
             taCounts[answererId] = new Map<string, number>();
             officeHourSessions[answererId] = [];
             TAsessions[answererId] = [];
+            monthTimeCounts[answererId] = [0,0,0,0,0,0,0,0,0,0,0,0];
             // Checking if ta already showed up as student and now as an answerer
         } else if (userStats[answererId] && userStats[answererId]?.timeHelpingStudents === undefined) {
             userStats[answererId] = {
@@ -160,9 +166,10 @@ const getWrapped = async () => {
                 timeHelpingStudents: 0,
             };
 
-            taCounts[answererId] = new Map<string, number>();
-            officeHourSessions[answererId] = [];
+            // taCounts[answererId] = new Map<string, number>();
+            // officeHourSessions[answererId] = [];
             TAsessions[answererId] = [];
+            // monthTimeCounts[answererId] = [0,0,0,0,0,0,0,0,0,0,0,0];
         }
 
     }
@@ -206,18 +213,18 @@ const getWrapped = async () => {
         if (!officeHourSessions[askerId].includes(sessionId)) { 
             officeHourSessions[askerId].push(sessionId); }
 
-        if (answererId !== undefined && answererId !== "") {
+        if (answererId && timeAddressed) {
             TAsessions[answererId]?.push({
                 session: sessionId,
                 asker: askerId,
                 courseId: sessionDoc.get('courseId'),
-                day: sessionDoc.get('startTime').toDate().getDay(),
+                day: timeAddressed.toDate().getDay(),
                 month: sessionDoc.get('startTime').toDate().getMonth()
             });
 
             if(!taCounts[askerId]?.has(answererId)) {
                 taCounts[askerId]?.set(answererId, 1);
-            } else if (answererId !== undefined && taCounts[askerId]?.has(answererId)){
+            } else if (answererId && taCounts[askerId]?.has(answererId)){
                 const taAmt =  taCounts[askerId]?.get(answererId);
                 taAmt && taCounts[askerId]?.set(answererId, taAmt + 1 );
             } 
@@ -230,24 +237,28 @@ const getWrapped = async () => {
                 timeEntered.toDate().getTime()) / 60000; // convert ms to minutes
                 if (minutesSpent >= 0) {
                     userStats[askerId].totalMinutes += minutesSpent;
-                }  
+                } 
+                monthTimeCounts[askerId][timeEntered.toDate().getMonth()] += minutesSpent;
             } else {
                 userStats[askerId].totalMinutes += 60; // assume 60 minutes if not addressed
+                monthTimeCounts[askerId][timeEntered.toDate().getMonth()] += 60;
             }
+            // eslint-disable-next-line no-console
+            console.log(monthTimeCounts[askerId]);
         }
     }
 
     // Personality type will be calculated after processing all documents
     
 
-    // Process personality type
+    // Process stats
     for (const [userId, stats] of Object.entries(userStats)) {
         stats.numVisits = officeHourSessions[userId]?.length;
         stats.totalMinutes = Math.ceil(stats.totalMinutes);
         if (stats.timeHelpingStudents !== undefined) {
             stats.timeHelpingStudents = Math.ceil(stats.timeHelpingStudents);
         }
-        
+        // Personality type
         const weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
         / (1000 * 60 * 60 * 24 * 7); // convert ms to weeks
         const averageSessionsPerWeek = stats.numVisits / weeksInRange;
@@ -259,13 +270,18 @@ const getWrapped = async () => {
         } else {
             stats.personalityType = 'Independent';
         }
-        
+
+        // Month user spent the most time in
+        stats.favMonth = monthTimeCounts[userId]?.indexOf(Math.max(...monthTimeCounts[userId]));
         // Get the ids in the map that have the highest counts
         if (taCounts[userId].size !== 0) {
-            stats.favTaId = Array.from(taCounts[userId].entries()).reduce((a, b) => a[1] < b[1] ? b : a)[0];
+            stats.favTaId = Array.from(taCounts[userId].entries()).reduce((prev, next) => prev[1] < next[1] ? next : prev)[0];
         }
 
+        const modeElement = 0;
+
         if (stats.favTaId && stats.favTaId !== "") {
+            // only looking at the sessions from the favorite TA that match with sessions the user went to
             const resSession = TAsessions[stats.favTaId]?.filter( (TAsession) => 
                 officeHourSessions[userId].includes(TAsession.session));
             if (resSession?.length === 1) {
@@ -274,7 +290,11 @@ const getWrapped = async () => {
                 stats.favClass =  sessionsDoc.get("courseId");
 
             } else if (resSession?.length > 1) {
-                // finding session that occurs the most
+                /* filtering from general to specific:
+                    - find mode class
+                    - out of all the sessions for that class, find favorite day to go
+                */
+
                 const sessionFrequency: { [courseId: string]: number } = {};
     
                 resSession.filter((elem) => elem.asker === userId).forEach((elem) => {
