@@ -9,35 +9,165 @@ admin.initializeApp({
 // eslint-disable-next-line no-console
 console.log('Firebase admin initialized!');
 
+
+
 // Initialize Firestore
 const db = admin.firestore();
+const errorUsers: {
+    user: string,
+    error: string
+}[] = [];
 
 // Firestore Timestamps for the query range
-const startDate = admin.firestore.Timestamp.fromDate(new Date('2023-08-20'));
-const endDate = admin.firestore.Timestamp.fromDate(new Date('2024-05-19'));
+
+const startDate = admin.firestore.Timestamp.fromDate(new Date('2024-01-22'));
+const endDate = admin.firestore.Timestamp.fromDate(new Date('2024-11-22'));
 
 const getWrapped = async () => {
     // Refs
-    const questionsRef = db.collection('questions');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const sessionsRef = db.collection('sessions');
-    const wrappedRef = db.collection('wrapped');
-    const usersRef = db.collection('users');
+    const questionsRef = db.collection('questions-test');
+    const sessionsRef = db.collection('sessions-test');
+    const wrappedRef = db.collection('wrapped-fa24');
+    const usersRef = db.collection('users-test');
 
     // Query all questions asked between FA23 and SP24
     const questionsSnapshot = await questionsRef
-        .where('timeEntered', '>=', startDate)
+        .where('timeEntered', '>=', startDate) 
         .where('timeEntered', '<=', endDate)
         .get();
 
     const userStats: { [userId: string]: {
-        officeHourVisits: string[];
+        numVisits: number;
+        favClass: string;
+        favTaId: string;
+        favMonth: number;
+        favDay: number;
         totalMinutes: number;
         personalityType: string;
         timeHelpingStudents?: number;
     }} = {};
 
-    const TAsessions: { [userId: string]: string[]} = {};
+    const getWrappedUserDocs = async () => {
+        const docs: {[userId:string]: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>} = {};
+        await Promise.all(Object.keys(userStats).map(async (id) => {
+            if (id){
+                docs[id] = await usersRef.doc(id).get();
+            }
+        }
+        ));
+        return docs;
+    }
+
+
+    const taCounts: {[userId: string] : Map<string, number>} = {};
+    const officeHourSessions: { [userId: string]: string[]} = {};
+    // Every taID has an array of objects, where the objects store a sessionId and askerId
+    const TAsessions: {[taID:string]: {
+        session: string; 
+        asker: string;
+        courseId: string;
+        day: number;
+        month: number;
+        
+    }[]} = {};
+
+    // Helper functions
+    const updateWrappedDocs = async () => {
+        // Update the wrapped collection
+        const batch = db.batch();
+        const userDocuments = await getWrappedUserDocs();
+        for (const [userId, stats] of Object.entries(userStats)) {
+            // Only want to make wrapped changes for a user if they have an ID and are active 
+            if (userId) {
+                /* Defition of active: 
+            If a user is only a student, they need to have at least one OH visit. 
+            If a user is a TA, they need to have at least one TA session AND at least one OH visit as a student.
+        */
+    
+                const hasVisits = stats.numVisits > 0;
+                // This is true if the user is either a student, or a TA who has more than one session
+                const isUserActive = stats.timeHelpingStudents === undefined || (TAsessions[userId]?.length > 0);
+                const hasFavoriteTa = stats.favTaId !== "";
+                if (hasVisits && isUserActive && hasFavoriteTa) {
+                    const wrappedDocRef = wrappedRef.doc(userId);
+                    batch.set(wrappedDocRef, stats);
+    
+                    // eslint-disable-next-line no-await-in-loop
+                    // const userDoc = await usersRef.doc(userId).get();
+                    const userDoc = userDocuments[userId];
+                    if (userDoc.exists) {
+                        usersRef.doc(userId).update({
+                            wrapped: true,
+                        });
+                    } else {
+                        // Handle the case where the document does not exist
+                        errorUsers.push({user: userId, error: "No document found for this user, skipping update."});
+                    }
+                } else {
+                    errorUsers.push({user: userId, error: "User is not an active student/TA"});
+                }
+        
+            } else {
+                errorUsers.push({user: userId, error: "User ID is undefined, skipping update."});
+            }
+        }
+    
+        await batch.commit();
+    }
+
+    const initializeUser = (answererId:string, askerId:string) => {
+        // if an instance doesn't exist yet for the user, creating one
+        if (!userStats[askerId]) {
+            userStats[askerId] = {
+                numVisits: 0,
+                favClass: '',
+                favTaId: '',
+                favMonth: 0,
+                favDay: 0,
+                totalMinutes: 0,
+                personalityType: '',
+            };
+
+            taCounts[askerId] = new Map<string, number>();
+            officeHourSessions[askerId] = [];
+        } 
+
+        if (!userStats[answererId]) {
+            userStats[answererId] = {
+                numVisits: 0,
+                favClass: '',
+                favTaId: '',
+                favMonth: 0,
+                favDay: 0,
+                totalMinutes: 0,
+                personalityType: '',
+                timeHelpingStudents: 0,
+            };
+
+            taCounts[answererId] = new Map<string, number>();
+            officeHourSessions[answererId] = [];
+            TAsessions[answererId] = [];
+            // Checking if ta already showed up as student and now as an answerer
+        } else if (userStats[answererId] && userStats[answererId]?.timeHelpingStudents === undefined) {
+            userStats[answererId] = {
+                numVisits: userStats[answererId].numVisits,
+                favClass: userStats[answererId].favClass,
+                favTaId: userStats[answererId].favTaId,
+                favMonth: userStats[answererId].favMonth,
+                favDay: userStats[answererId].favMonth,
+                totalMinutes: userStats[answererId].totalMinutes,
+                personalityType: userStats[answererId].personalityType,
+                timeHelpingStudents: 0,
+            };
+
+            taCounts[answererId] = new Map<string, number>();
+            officeHourSessions[answererId] = [];
+            TAsessions[answererId] = [];
+        }
+
+    }
+
+    // do all sorting for preprocessing here
 
     for (const doc of questionsSnapshot.docs) {
         const question = doc.data() as {
@@ -50,41 +180,60 @@ const getWrapped = async () => {
 
         const { answererId, askerId, sessionId, timeEntered, timeAddressed } = question;
 
-        if (!userStats[askerId]) {
-            userStats[askerId] = {
-                officeHourVisits: [],
-                totalMinutes: 0,
-                personalityType: '',
-            };
-        }
-
-        if (!userStats[answererId]) {
-            userStats[answererId] = {
-                officeHourVisits: [],
-                totalMinutes: 0,
-                personalityType: '',
-                timeHelpingStudents: 0,
-            };
-        }
+        initializeUser(answererId, askerId);
 
         // Office hour visits
-        if (!userStats[askerId].officeHourVisits?.includes(sessionId)) {
-            userStats[askerId].officeHourVisits?.push(sessionId);
+        // TRYING TO FIX BELOW LINE
+        // eslint-disable-next-line no-await-in-loop
+        const sessionDoc = await sessionsRef.doc(sessionId).get();
+        if (TAsessions[answererId].find((TAsession) => TAsession.session === sessionId) === undefined) {
+            /* Since TA was active during this session and this is the first 
+            time encountering the session, we add it to their timeHelped */
+            
+            if (sessionDoc.exists && userStats[answererId].timeHelpingStudents !== undefined ) {
+                /* Add a total session time to the min TA helped */
+                const timeHelping = (sessionDoc.get('endTime').toDate().getTime() 
+                 - sessionDoc.get('startTime').toDate().getTime())/ 60000;
+                // this should never be less than 0 (or 0, really)
+                if (timeHelping >= 0) {
+                    userStats[answererId].timeHelpingStudents = 
+            (userStats[answererId].timeHelpingStudents ?? 0) + timeHelping;
+                }
+            } 
+        }
+
+        officeHourSessions[askerId] = officeHourSessions[askerId] || [];  
+        if (!officeHourSessions[askerId].includes(sessionId)) { 
+            officeHourSessions[askerId].push(sessionId); }
+
+        if (answererId !== undefined && answererId !== "") {
+            TAsessions[answererId]?.push({
+                session: sessionId,
+                asker: askerId,
+                courseId: sessionDoc.get('courseId'),
+                day: sessionDoc.get('startTime').toDate().getDay(),
+                month: sessionDoc.get('startTime').toDate().getMonth()
+            });
+
+            if(!taCounts[askerId]?.has(answererId)) {
+                taCounts[askerId]?.set(answererId, 1);
+            } else if (answererId !== undefined && taCounts[askerId]?.has(answererId)){
+                const taAmt =  taCounts[askerId]?.get(answererId);
+                taAmt && taCounts[askerId]?.set(answererId, taAmt + 1 );
+            } 
         }
 
         // Minutes spent at office hours
         if (timeEntered) {
             if (timeAddressed) {
                 const minutesSpent = (timeAddressed.toDate().getTime() - 
-            timeEntered.toDate().getTime()) / 60000; // convert ms to minutes
-                userStats[askerId].totalMinutes += minutesSpent;
+                timeEntered.toDate().getTime()) / 60000; // convert ms to minutes
+                if (minutesSpent >= 0) {
+                    userStats[askerId].totalMinutes += minutesSpent;
+                }  
             } else {
                 userStats[askerId].totalMinutes += 60; // assume 60 minutes if not addressed
             }
-        }
-
-        if (!TAsessions[answererId]?.includes(sessionId)) {
-            TAsessions[answererId]?.push(sessionId);
         }
     }
 
@@ -92,11 +241,16 @@ const getWrapped = async () => {
     
 
     // Process personality type
-    for (const [, stats] of Object.entries(userStats)) {
-        const sessionCount = stats.officeHourVisits.length;
+    for (const [userId, stats] of Object.entries(userStats)) {
+        stats.numVisits = officeHourSessions[userId]?.length;
+        stats.totalMinutes = Math.ceil(stats.totalMinutes);
+        if (stats.timeHelpingStudents !== undefined) {
+            stats.timeHelpingStudents = Math.ceil(stats.timeHelpingStudents);
+        }
+        
         const weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
         / (1000 * 60 * 60 * 24 * 7); // convert ms to weeks
-        const averageSessionsPerWeek = sessionCount / weeksInRange;
+        const averageSessionsPerWeek = stats.numVisits / weeksInRange;
 
         if (averageSessionsPerWeek >= 2) {
             stats.personalityType = 'Consistent';
@@ -105,34 +259,47 @@ const getWrapped = async () => {
         } else {
             stats.personalityType = 'Independent';
         }
+        
+        // Get the ids in the map that have the highest counts
+        if (taCounts[userId].size !== 0) {
+            stats.favTaId = Array.from(taCounts[userId].entries()).reduce((a, b) => a[1] < b[1] ? b : a)[0];
+        }
+
+        if (stats.favTaId && stats.favTaId !== "") {
+            const resSession = TAsessions[stats.favTaId]?.filter( (TAsession) => 
+                officeHourSessions[userId].includes(TAsession.session));
+            if (resSession?.length === 1) {
+                // eslint-disable-next-line no-await-in-loop
+                const sessionsDoc = await sessionsRef.doc(resSession[0].session).get()
+                stats.favClass =  sessionsDoc.get("courseId");
+
+            } else if (resSession?.length > 1) {
+                // finding session that occurs the most
+                const sessionFrequency: { [courseId: string]: number } = {};
+    
+                resSession.filter((elem) => elem.asker === userId).forEach((elem) => {
+                    if (!sessionFrequency[elem.session]) {
+                        sessionFrequency[elem.session] = 1;
+                    } else {
+                        sessionFrequency[elem.session] += 1;
+                    }
+                });
+
+                const modeSessionId = Object.keys(sessionFrequency).reduce((a, b) =>
+                    sessionFrequency[a] > sessionFrequency[b] ? a : b);
+                // eslint-disable-next-line no-await-in-loop
+                const sessionsDoc = await sessionsRef.doc(modeSessionId).get()
+                stats.favClass =  sessionsDoc.get("courseId");
+            }
+        }
     }
 
-    // Update the wrapped collection
-    const batch = db.batch();
+    await updateWrappedDocs();
+    // debugging console log
+    // eslint-disable-next-line no-console
+    errorUsers.forEach((errUser) => console.log(errUser.user + ": " + errUser.error));
 
-    Object.entries(userStats).forEach(async ([userId, stats]) => {
-        if (userId) {
-            const wrappedDocRef = wrappedRef.doc(userId);
-            batch.set(wrappedDocRef, stats);
-
-            const userDoc = await usersRef.doc(userId).get();
-            if (userDoc.exists) {
-                usersRef.doc(userId).update({
-                    wrapped: true,
-                });
-            } else {
-            // Handle the case where the document does not exist
-            // eslint-disable-next-line no-console
-                console.log(`No document found for user ID ${userId}, skipping update.`);
-            }
-        } else {
-            // eslint-disable-next-line no-console
-            console.log("User ID is undefined, skipping update.")
-        }
-       
-    });
-
-    await batch.commit();
+    
 }
 
 (async () => {
