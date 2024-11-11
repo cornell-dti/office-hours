@@ -15,12 +15,14 @@ import TopBar from "../includes/TopBar";
 import CalendarExportModal from "../includes/CalendarExportModal";
 import { RootState } from "../../redux/store";
 import { updateCourse, updateSession } from "../../redux/actions/course";
-import Browser from '../../media/browser.svg';
-import smsNotif from '../../media/smsNotif.svg'
-import { addBanner } from '../../redux/actions/announcements';
-import Banner from '../includes/Banner';
-import FeedbackPrompt from '../includes/FeedbackPrompt';
-import Wrapped from '../includes/Wrapped';
+import Browser from "../../media/browser.svg";
+import smsNotif from "../../media/smsNotif.svg";
+import { addBanner } from "../../redux/actions/announcements";
+import Banner from "../includes/Banner";
+import FeedbackPrompt from "../includes/FeedbackPrompt";
+import Wrapped from "../includes/Wrapped";
+import WrappedCountdown from "../includes/WrappedCountdown";
+import { WRAPPED_START_DATE, WRAPPED_LAUNCH_DATE } from "../../constants";
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -115,7 +117,7 @@ const SplitView = ({
     }, [courseHook, updateCourse]);
     useEffect(() => {
         updateSession(sessionHook);
-    }, [sessionHook, updateSession])
+    }, [sessionHook, updateSession]);
 
     useEffect(() => {
         if (user && user.wrapped) {
@@ -123,7 +125,7 @@ const SplitView = ({
         } else {
             setDisplayWrapped(false);
         }
-    }, [user])
+    }, [user]);
 
     // Handle browser back button
     history.listen((location) => {
@@ -194,6 +196,9 @@ const SplitView = ({
         }
     }, [addBanner, user]);
 
+    const start = new Date(WRAPPED_START_DATE);
+    const launch = new Date(WRAPPED_LAUNCH_DATE);
+
     return (
         <>
             <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
@@ -258,8 +263,8 @@ const SplitView = ({
                                     <div className="warningArea">
                                         <div>&#9888;</div>
                                         <div>
-                                                Please make sure to enable browser notifications in your system
-                                                settings.
+                                            Please make sure to enable browser notifications in your system
+                                            settings.
                                         </div>
                                     </div>
                                 )}
@@ -270,6 +275,10 @@ const SplitView = ({
                     <Loader active={true} content="Loading" />
                 ))}
             <ProductUpdates />
+            <WrappedCountdown
+                setDisplayWrapped={setDisplayWrapped}
+                wrappedDate={{ launchDate: launch, startDate: start }}
+            />
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt
                     onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
@@ -277,9 +286,7 @@ const SplitView = ({
                 />
             ) : null}
 
-            {displayWrapped ? (
-                <Wrapped user={user} onClose={() => setDisplayWrapped(false)} />
-            ) : null}
+            {displayWrapped ? <Wrapped user={user} onClose={() => setDisplayWrapped(false)} /> : null}
         </>
     );
 };
