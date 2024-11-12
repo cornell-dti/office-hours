@@ -20,7 +20,6 @@ import smsNotif from "../../media/smsNotif.svg";
 import { addBanner } from "../../redux/actions/announcements";
 import Banner from "../includes/Banner";
 import FeedbackPrompt from "../includes/FeedbackPrompt";
-import Wrapped from "../includes/Wrapped";
 import WrappedCountdown from "../includes/WrappedCountdown";
 import { WRAPPED_START_DATE, WRAPPED_LAUNCH_DATE } from "../../constants";
 
@@ -86,6 +85,7 @@ const SplitView = ({
 
     const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
@@ -118,14 +118,6 @@ const SplitView = ({
     useEffect(() => {
         updateSession(sessionHook);
     }, [sessionHook, updateSession]);
-
-    useEffect(() => {
-        if (user && user.wrapped) {
-            setDisplayWrapped(true);
-        } else {
-            setDisplayWrapped(false);
-        }
-    }, [user]);
 
     // Handle browser back button
     history.listen((location) => {
@@ -290,8 +282,6 @@ const SplitView = ({
                     closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                 />
             ) : null}
-
-            {displayWrapped ? <Wrapped user={user} onClose={() => setDisplayWrapped(false)} /> : null}
         </>
     );
 };
