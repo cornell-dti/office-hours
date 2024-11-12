@@ -20,7 +20,7 @@
   background: linear-gradient(90deg, #80B0DE 3.12%, #93A7E4 97.75%);
   border-radius: 8px;
   padding: 2rem;
-  position: fixed;
+  // position: fixed;
   display: flex;
   flex-direction: column;
   position: absolute;
@@ -30,6 +30,7 @@
   color: #FFFFFF;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .closeButtonContainer {
@@ -173,6 +174,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 18rem;
+    font-weight: 600;
     color: #080680;
   }
 
@@ -202,16 +204,11 @@
       transform: translate(-100%, -100%) rotate(18.6deg);
       right: -50%;
       opacity: 0;
-      clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
-  }
-  20% {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
   }
   100% {
       transform: translate(0%, 0%) rotate(18.6deg);
       right: -3%;
       opacity: 1;
-      clip-path: polygon(39.5% 0, 96% 0, 98.15% 100%, 20.8% 100%);
   }
 }
 
@@ -219,18 +216,12 @@
   0% {
       transform: translate(-100%, -100%) rotate(8.63deg);
       left: -50%;
-      clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
       opacity: 0;
-  }
-  20% {
-      clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
   }
   100% {
       transform: translate(0%, 0%) rotate(8.63deg);
       left: -1%;
       opacity: 1;
-      clip-path: polygon(0.5% 0, 99% 0, 57% 100%, 1.2% 100%);
-
   }
 }
 
@@ -251,8 +242,7 @@
       right: -50%; // Start from outside the right edge
       transform: rotate(18.6deg);
       transform-origin: top right;
-      clip-path: polygon(39.5% 0, 96% 0, 98.15% 100%, 20.8% 100%);
-      animation: slideInTopRight 2s forwards;
+      animation: slideInTopRight 2s forwards; 
   }
 
   &.bottom-left {
@@ -260,7 +250,6 @@
       left: -50%; // Start from outside the left edge
       transform: rotate(8.63deg);
       transform-origin: bottom left;
-      clip-path: polygon(0.5% 0, 99% 0, 57% 100%, 1.2% 100%);
       animation: slideInBottomLeft 2s forwards;
   }
 
@@ -270,7 +259,6 @@
       opacity: 1;
       transform: rotate(6.08deg);
       transform-origin: bottom left;
-      clip-path: polygon(0.8% 0, 77.2% 0%, 77.3% 30%, 52% 100%, 1.2% 100%);
   }
 
   &.bottom-favta{
@@ -279,7 +267,14 @@
     opacity: 1;
     transform: rotate(4.47deg);
     transform-origin: bottom left;
-    clip-path: polygon(0.9% 0, 80.6% 0, 80.8% 84%, 73% 100%, 1.2% 100%);
+  }
+
+  &.bottom-ta-helped{
+    opacity: 1;
+    bottom: 0.25rem;
+    right: -0.25rem;
+    border: 0.3px 0px 0px 0px;
+    transform: rotate(-5.62deg);
   }
 
   &.bottom-conclusion{
@@ -288,7 +283,6 @@
     opacity: 1;
     transform: rotate(16.45deg);
     transform-origin: bottom left;
-    clip-path: polygon(0.6% 0, 100% 0, 60% 100%, 4% 100%);
   }
 }
 
@@ -318,16 +312,23 @@
 }
 
 .conclusionText {
-  text-align: "center";
-  width: 313;
-
+  &.top-text{
+    color: #080680; 
+    font-weight: 600;
+    position: absolute;
+    width: 475px;
+    height: 38px;
+    top: 42px;
+    left: 40px;
+    font-size: 35px;
+  }
   &.center-text {
     font-weight: 600;
     width: 279px;
     height: 71px;
     position: absolute;
-    top: 14rem;
-    left: 22.5rem;
+    top: 195px;
+    left: 270px;
     line-height: 40px;
     font-size: 27px;
   }
@@ -340,16 +341,16 @@
   }
   100%{
     right: -50%;
-    opacity: 0;
   }
-
 }
 
 .bus{
-  width: 25rem;
+  width: 280px;
+  height: 153px;
   position: absolute;
+  top: 326.61px;
   right: 1rem;
-  bottom: 0.5rem;
+  transform: rotate(0.94deg);
   animation: slideOut 5s forwards;
 }
 
@@ -357,8 +358,9 @@
   width: 15.35px;
   height: 23.21px;
   position: absolute;
-  bottom: 11rem;
-  left: 5.45rem;
+  bottom: 12.34rem;
+  left: 6.5rem;
+  transform: rotate(4.55deg);
 }
 
 .body{
@@ -367,16 +369,14 @@
   position: absolute;
   bottom: 4.9rem;
   left: 1.5rem;
-  gap: 0px;
-  opacity: 0px;
 }
 
 @keyframes wave {
   0%{
-    transform: rotate(-9.66deg);
+    transform: rotate(9.66deg);
   }
   100%{
-    bottom: 10.1rem;
+    bottom: 10.75rem;
     transform: rotate(-90deg);
   }
 }
@@ -385,10 +385,16 @@
   width: 42.21px;
   height: 33.71px;
   position: absolute;
-  bottom: 9.11rem;
-  left: 5.12rem;
-  gap: 0px;
-  opacity: 0px;
-  transform: rotate(-9.66deg);
+  bottom: 10rem;
+  left: 5.79rem;
+  transform: rotate(9.66deg);
   animation: wave 3s forwards;
+}
+
+.smallGirl{
+  position: absolute;
+  width: 39px;
+  height: 59px;
+  bottom: 1.7rem;
+  left: 8rem;
 }
