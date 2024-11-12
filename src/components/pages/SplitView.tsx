@@ -20,6 +20,8 @@ import smsNotif from "../../media/smsNotif.svg";
 import { addBanner } from "../../redux/actions/announcements";
 import Banner from "../includes/Banner";
 import FeedbackPrompt from "../includes/FeedbackPrompt";
+import WrappedCountdown from "../includes/WrappedCountdown";
+import { WRAPPED_START_DATE, WRAPPED_LAUNCH_DATE } from "../../constants";
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -83,6 +85,8 @@ const SplitView = ({
 
     const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
@@ -188,6 +192,9 @@ const SplitView = ({
         }
     }, [addBanner, user]);
 
+    const start = new Date(WRAPPED_START_DATE);
+    const launch = new Date(WRAPPED_LAUNCH_DATE);
+
     return (
         <>
             
@@ -253,8 +260,8 @@ const SplitView = ({
                                     <div className="warningArea">
                                         <div>&#9888;</div>
                                         <div>
-                                                Please make sure to enable browser notifications in your system
-                                                settings.
+                                            Please make sure to enable browser notifications in your system
+                                            settings.
                                         </div>
                                     </div>
                                 )}
@@ -265,6 +272,10 @@ const SplitView = ({
                     <Loader active={true} content="Loading" />
                 ))}
             <ProductUpdates />
+            <WrappedCountdown
+                setDisplayWrapped={setDisplayWrapped}
+                wrappedDate={{ launchDate: launch, startDate: start }}
+            />
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt
                     onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
