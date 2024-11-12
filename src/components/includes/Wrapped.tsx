@@ -17,6 +17,7 @@ import asterik from "../../media/wrapped/asterik.svg";
 import head from "../../media/wrapped/head.svg";
 import body from "../../media/wrapped/body.svg";
 import arm from "../../media/wrapped/arm.svg";
+import smallGirl from "../../media/wrapped/small_girl.svg";
 import ConsistentPersonality from "../../media/wrapped/consistent_personality.svg"
 import ResourcefulPersonality from "../../media/wrapped/resourceful_personality.svg"
 import IndependentPersonality from "../../media/wrapped/independent_personality.svg"
@@ -48,16 +49,35 @@ const Wrapped= (props: Props): JSX.Element => {
         totalMinutes: 0,
         favTaId: "",
         favClass:"",
+        favDay: 0,
+        favMonth: 0,
+        numStudentsHelped: 0,
     });
+
     const [taName, setTaName] = useState({
         firstName: "",
         lastName: "",
     });
 
+    const [favClass, setFavClass] = useState({
+        code: "",
+    });
+
+
+    const [totalStages, setTotalStages] = useState<number>(0);
+
+    // add these to useEffect?
     const semester =  "FALL 2024";
-    const month = "FEBRUARY";
-    const favClass = "CS 1110";
-    const favDay = "FRIDAYS";
+    const months : string[] = [
+        "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", 
+        "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+    ]
+    const days : string[] = [
+        "SUNDAYS", "MONDAYS", "TUESDAYS", "WEDNESDAYS", "THURSDAYS", "FRIDAYS", "SATURDAYS"
+    ]
+    const month : string = months[wrappedData.favMonth];
+    const day : string = days[wrappedData.favDay];
+
 
     const Asterik = () => (
         <img style={{paddingLeft: "45px", paddingRight: "45px"}} src={asterik} alt=""/>
@@ -66,22 +86,18 @@ const Wrapped= (props: Props): JSX.Element => {
     const [showBanner, setShowBanner] = useState(false);
 
     /* TA's only see 4 slides, TA + Student see 7, Only student see 6 */  
-    const totalStages = (wrappedData.timeHelpingStudents === undefined || wrappedData.timeHelpingStudents === 0) ? 
-        (6) : (wrappedData.favTaId === "" || wrappedData.favTaId === undefined ) ? 4 : 7;
+    // const totalStages = (wrappedData.timeHelpingStudents === undefined || wrappedData.timeHelpingStudents == 0) ? 
+    //    (6) : (wrappedData.favTaId == "" || wrappedData.favTaId === undefined ) ? 4 : 7;
 
-    const RenderStudent = () => {
-        if (loading) return null;
-
-        return (
-            <>
-                {stage === 1 && <Visits />}
-                {stage === 2 && <TimeSpent />}
-                {stage === 3 && <PersonalityType />}
-                {stage === 4 && <FavTA/>}
-                {stage === 5 && <Conclusion />}
-            </>
-        );
-    };
+    const RenderStudent = () => (
+        <>
+            {stage === 1 && <Visits />}
+            {stage === 2 && <TimeSpent />}
+            {stage === 3 && <PersonalityType />}
+            {stage === 4 && <FavTA/>}
+            {stage === 5 && <Conclusion />}
+        </>
+    );
 
     const RenderTA = () => (
         <>
@@ -91,22 +107,19 @@ const Wrapped= (props: Props): JSX.Element => {
         </>
     )
 
-    const RenderStudentTA = () => {
-        if (loading) return null;
-
-        return(
-            <>
-                {stage === 1 && <Visits />}
-                {stage === 2 && <TimeSpent />}
-                {stage === 3 && <PersonalityType />}
-                {stage === 4 && <FavTA/>}
-                {stage === 5 && <TATimeHelped/>}
-                {stage === 6 && <Conclusion />}
-            </>
-        );
-    };
+    const RenderStudentTA = () => (
+        <>
+            {stage === 1 && <Visits />}
+            {stage === 2 && <TimeSpent />}
+            {stage === 3 && <PersonalityType />}
+            {stage === 4 && <FavTA/>}
+            {stage === 5 && <TATimeHelped/>}
+            {stage === 6 && <Conclusion />}
+        </>
+    );
 
     useEffect(() => {
+        // add usestate for totalstages calculate it in useEffect
 
         const wrappedRef = firebase.firestore().collection('wrapped');
         const fetchData = async () => {
@@ -121,7 +134,22 @@ const Wrapped= (props: Props): JSX.Element => {
                         totalMinutes: number; 
                         favTaId: string;
                         favClass: string;
+                        favDay: number;
+                        favMonth: number;
+                        numStudentsHelped: number;
                     });  
+
+                    const data = doc.data();
+                    if (data !== undefined){
+                        if (data.timeHelpingStudents === undefined || data.timeHelpingStudents == 0){
+                            setTotalStages(6);
+                        } else if (data.favTaId == "" || data.favTaId === undefined){
+                            setTotalStages(4);
+                        } else{
+                            setTotalStages(7);
+                        }
+                    }
+                    
                 } else {
                     // eslint-disable-next-line no-console
                     console.log('No such document!');
@@ -161,6 +189,30 @@ const Wrapped= (props: Props): JSX.Element => {
 
         fetchData();
     }, [wrappedData.favTaId]);
+
+    useEffect(() => {
+        const coursesRef = firebase.firestore().collection("courses");
+        // eslint-disable-next-line no-console
+        const fetchData = async () => {
+            setLoading(true);
+            try{
+                const doc = await coursesRef.doc(wrappedData.favClass).get();
+                if (doc.exists){
+                    setFavClass(doc.data() as {
+                        code: string;
+                    })
+                } else{
+                    // eslint-disable-next-line no-console
+                    console.log('No such document!');
+                }
+            } catch (error) {
+                // eslint-disable-next-line no-console
+                console.error("Error fetching data: ", error);
+            }
+            setLoading(false);
+        };
+        fetchData();
+    }, [wrappedData.favClass]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -269,10 +321,18 @@ const Wrapped= (props: Props): JSX.Element => {
 
     const FavTABanner = () => (
         <div>
-            {favClass} ON {favDay} <Asterik />
-            {favClass} ON {favDay} <Asterik />
-            {favClass} ON {favDay} <Asterik />
-            {favClass} ON {favDay} <Asterik />
+            {favClass.code} ON {day} <Asterik />
+            {favClass.code} ON {day} <Asterik />
+            {favClass.code} ON {day} <Asterik />
+            {favClass.code} ON {day} <Asterik />
+        </div>
+    );
+
+    const StudentsHelpedBanner = () => (
+        <div> 
+            <Asterik/>
+            YOU HAD THE MOST VISITS IN {month} <Asterik/>
+            YOU HAD THE MOST VISITS IN {month} <Asterik/>
         </div>
     );
 
@@ -428,7 +488,7 @@ const Wrapped= (props: Props): JSX.Element => {
             <div style={{ 
                 display: "flex", 
                 position: "absolute", 
-                top: "6rem", 
+                top: "7rem", 
                 alignItems: "center", 
                 justifyContent: "space-evenly",
             }}
@@ -505,11 +565,11 @@ const Wrapped= (props: Props): JSX.Element => {
                     <div 
                         style={{
                             position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            width: "420px",
+                            top: "52%",
+                            left: "48.5%",
                             transform: "translate(-50%, -50%)",
-                            fontSize: "13rem",
+                            fontSize: "196.57px",
+                            lineHeight: "230.36px",
                             color: "#F1A4AB",
                         }}
                     >
@@ -550,10 +610,10 @@ const Wrapped= (props: Props): JSX.Element => {
         <>
             <div style={{ 
                 position: "absolute",
-                top: "3rem",
-                left: "3rem",
+                top: "3.5rem",
+                left: "3.5rem",
                 fontWeight: "bold", 
-                fontSize: "2.5rem",
+                fontSize: "27px",
             }}
             > 
                 YOU MADE LIFE EASIER FOR...
@@ -563,42 +623,46 @@ const Wrapped= (props: Props): JSX.Element => {
                 top: "50%",
                 left: "50%",
                 transform: "translate(-50%, -50%)",
-                fontSize: "18rem",
+                fontSize: "225.97px",
                 fontWeight: 600,
                 color: "#080680",
             }}
             >
-                70
-                {/* replace with firebase call for num students helped */}
+                {wrappedData.numStudentsHelped}
             </div>
             <div style={{ 
                 position: "absolute",
-                bottom: "8rem",
-                right: "3rem",
+                bottom: "7.5rem",
+                right: "5rem",
                 fontWeight: "bold", 
-                fontSize: "2.5rem",
+                fontSize: "27px",
                 textAlign: "right",
                 width: "300px",
             }}
             > 
                 STUDENTS
             </div>
+            <div>
+                {showBanner && (
+                    <>
+                        <div className="banner bottom-ta-helped">
+                            <StudentsHelpedBanner />
+                        </div>
+                    </>
+                )}
+            </div>
+            <img
+                src={smallGirl}
+                className="smallGirl"
+                alt=""
+            />
         </>
     )
 
     const Conclusion = () => (
         <>
             <div style={{ display: "flex", flexDirection: "column",}}>
-                <div 
-                    style={{ 
-                        color: "#080680", 
-                        fontWeight: 600, 
-                        position: "absolute", 
-                        top: "3rem",
-                        left: "3rem",
-                        fontSize: "35px",
-                    }}
-                > 
+                <div className="conclusionText top-text"> 
                     PAT YOURSELF ON THE BACK
                 </div>
                 <div className="conclusionText center-text"> 
