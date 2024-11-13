@@ -99,7 +99,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                 officeHourSessions = {};
                 TAsessions = {};
                 updateWrappedDocs = function () { return __awaiter(void 0, void 0, void 0, function () {
-                    var batch, userDocuments, _i, _a, _b, userId, stats, hasVisits, isUserActive, hasFavoriteTa, wrappedDocRef, userDoc;
+                    var batch, userDocuments, _i, _a, _b, userId, stats, hasVisits, isUserActive, hasFavoriteTa, taStatsMismatched, wrappedDocRef, userDoc;
                     var _c;
                     return __generator(this, function (_d) {
                         switch (_d.label) {
@@ -115,9 +115,14 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                         hasVisits = stats.numVisits > 0;
                                         isUserActive = stats.timeHelpingStudents === undefined || (((_c = TAsessions[userId]) === null || _c === void 0 ? void 0 : _c.length) > 0);
                                         hasFavoriteTa = stats.favTaId !== "";
+                                        taStatsMismatched = (stats.timeHelpingStudents !== undefined && stats.numStudentsHelped === undefined)
+                                            || (stats.timeHelpingStudents === undefined && stats.numStudentsHelped !== undefined);
                                         if (hasVisits && isUserActive && hasFavoriteTa) {
-                                            if (stats.favClass && stats.favDay && stats.favMonth) {
-                                                errorUsers.push({ user: userId, error: "User is active and has favorite TA, but is missing either most common class, day, or month." });
+                                            if (!(stats.favClass && stats.favDay !== -1 && stats.favMonth !== -1)) {
+                                                errorUsers.push({ user: userId, error: "User is active and has favorite TA but missing one of the following:\n                             favClass: " + stats.favClass + ", favDay: " + stats.favDay + ", favMonth: " + stats.favMonth });
+                                            }
+                                            else if (taStatsMismatched) {
+                                                errorUsers.push({ user: userId, error: "Mismatch in updating ta specfic values." });
                                             }
                                             else {
                                                 wrappedDocRef = wrappedRef.doc(userId);
@@ -135,7 +140,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                             }
                                         }
                                         else {
-                                            errorUsers.push({ user: userId, error: "User is not an active student/TA" });
+                                            errorUsers.push({ user: userId, error: "User is not an active student/TA or doesn't have favorite TA." });
                                         }
                                     }
                                     else {
@@ -157,8 +162,8 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                             numVisits: 0,
                             favClass: '',
                             favTaId: '',
-                            favMonth: 0,
-                            favDay: 0,
+                            favMonth: -1,
+                            favDay: -1,
                             totalMinutes: 0,
                             personalityType: ''
                         };
@@ -171,11 +176,12 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                             numVisits: 0,
                             favClass: '',
                             favTaId: '',
-                            favMonth: 0,
-                            favDay: 0,
+                            favMonth: -1,
+                            favDay: -1,
                             totalMinutes: 0,
                             personalityType: '',
-                            timeHelpingStudents: 0
+                            timeHelpingStudents: 0,
+                            numStudentsHelped: 0
                         };
                         taCounts[answererId] = new Map();
                         officeHourSessions[answererId] = [];
@@ -189,15 +195,13 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                             favClass: userStats[answererId].favClass,
                             favTaId: userStats[answererId].favTaId,
                             favMonth: userStats[answererId].favMonth,
-                            favDay: userStats[answererId].favMonth,
+                            favDay: userStats[answererId].favDay,
                             totalMinutes: userStats[answererId].totalMinutes,
                             personalityType: userStats[answererId].personalityType,
-                            timeHelpingStudents: 0
+                            timeHelpingStudents: 0,
+                            numStudentsHelped: 0
                         };
-                        // taCounts[answererId] = new Map<string, number>();
-                        // officeHourSessions[answererId] = [];
                         TAsessions[answererId] = [];
-                        // monthTimeCounts[answererId] = [0,0,0,0,0,0,0,0,0,0,0,0];
                     }
                 };
                 _loop_1 = function (doc) {
@@ -233,8 +237,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                         session: sessionId,
                                         asker: askerId,
                                         courseId: sessionDoc.get('courseId'),
-                                        day: timeAddressed.toDate().getDay(),
-                                        month: sessionDoc.get('startTime').toDate().getMonth()
+                                        day: timeAddressed.toDate().getDay()
                                     });
                                     if (!((_g = taCounts[askerId]) === null || _g === void 0 ? void 0 : _g.has(answererId))) {
                                         (_h = taCounts[askerId]) === null || _h === void 0 ? void 0 : _h.set(answererId, 1);
@@ -259,7 +262,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                         monthTimeCounts[askerId][timeEntered.toDate().getMonth()] += 60;
                                     }
                                     // eslint-disable-next-line no-console
-                                    console.log(monthTimeCounts[askerId]);
+                                    console.log("month counts: [" + monthTimeCounts[askerId] + "]");
                                 }
                                 return [2 /*return*/];
                         }
@@ -279,81 +282,131 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                 return [3 /*break*/, 2];
             case 5:
                 _loop_2 = function (userId, stats) {
-                    var weeksInRange, averageSessionsPerWeek, modeElement, resSession, sessionsDoc, sessionFrequency_1, modeSessionId, sessionsDoc;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                stats.numVisits = (_m = officeHourSessions[userId]) === null || _m === void 0 ? void 0 : _m.length;
-                                stats.totalMinutes = Math.ceil(stats.totalMinutes);
-                                if (stats.timeHelpingStudents !== undefined) {
-                                    stats.timeHelpingStudents = Math.ceil(stats.timeHelpingStudents);
-                                }
-                                weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
-                                    / (1000 * 60 * 60 * 24 * 7);
-                                averageSessionsPerWeek = stats.numVisits / weeksInRange;
-                                if (averageSessionsPerWeek >= 2) {
-                                    stats.personalityType = 'Consistent';
-                                }
-                                else if (averageSessionsPerWeek >= 0.5) {
-                                    stats.personalityType = 'Resourceful';
+                    // eslint-disable-next-line no-console
+                    console.log("name is " + userId);
+                    stats.numVisits = (_m = officeHourSessions[userId]) === null || _m === void 0 ? void 0 : _m.length;
+                    stats.totalMinutes = Math.ceil(stats.totalMinutes);
+                    if (stats.timeHelpingStudents !== undefined) {
+                        stats.timeHelpingStudents = Math.ceil(stats.timeHelpingStudents);
+                        if (stats.numStudentsHelped !== undefined) {
+                            stats.numStudentsHelped = TAsessions[userId].length;
+                        }
+                    }
+                    // Personality type
+                    var weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
+                        / (1000 * 60 * 60 * 24 * 7); // convert ms to weeks
+                    var averageSessionsPerWeek = stats.numVisits / weeksInRange;
+                    if (averageSessionsPerWeek >= 2) {
+                        stats.personalityType = 'Consistent';
+                    }
+                    else if (averageSessionsPerWeek >= 0.5) {
+                        stats.personalityType = 'Resourceful';
+                    }
+                    else {
+                        stats.personalityType = 'Independent';
+                    }
+                    // Month user spent the most time in
+                    stats.favMonth = (_o = monthTimeCounts[userId]) === null || _o === void 0 ? void 0 : _o.indexOf(Math.max.apply(Math, monthTimeCounts[userId]));
+                    // Get the ids in the map that have the highest counts
+                    if (taCounts[userId].size !== 0) {
+                        stats.favTaId = Array.from(taCounts[userId].entries()).reduce(function (prev, next) { return prev[1] < next[1] ? next : prev; })[0];
+                    }
+                    // eslint-disable-next-line no-console
+                    console.log(userId + "'s fav ta is " + stats.favTaId + ", taCounts length is " + taCounts[userId].size);
+                    if (stats.favTaId) {
+                        // eslint-disable-next-line no-console
+                        console.log("here");
+                        // only looking at the sessions from the favorite TA that match with sessions the user went to
+                        var resSession = (_p = TAsessions[stats.favTaId]) === null || _p === void 0 ? void 0 : _p.filter(function (TAsession) {
+                            return officeHourSessions[userId].includes(TAsession.session) && TAsession.asker === userId;
+                        });
+                        if ((resSession === null || resSession === void 0 ? void 0 : resSession.length) === 1) {
+                            stats.favClass = resSession[0].courseId;
+                            stats.favDay = resSession[0].day;
+                            // eslint-disable-next-line no-console
+                            console.log("finding " + userId + "'s mode stats");
+                            // eslint-disable-next-line no-console
+                            console.log(stats.favTaId + "'s total sessions");
+                            // eslint-disable-next-line no-console
+                            console.log(TAsessions[stats.favTaId]);
+                            // eslint-disable-next-line no-console
+                            console.log(stats.favTaId + ("'s total sessions with " + userId));
+                            // eslint-disable-next-line no-console
+                            resSession.map(function (x) { return console.log(x); });
+                        }
+                        else if ((resSession === null || resSession === void 0 ? void 0 : resSession.length) > 1) {
+                            /* filtering from general to specific:
+                                - find mode class
+                                - out of all the sessions for that class, find mode day
+                            */
+                            // eslint-disable-next-line no-console
+                            console.log("finding " + userId + "'s mode stats");
+                            // eslint-disable-next-line no-console
+                            console.log(stats.favTaId + "'s total sessions");
+                            // eslint-disable-next-line no-console
+                            console.log(TAsessions[stats.favTaId]);
+                            // eslint-disable-next-line no-console
+                            console.log(stats.favTaId + ("'s total sessions with " + userId));
+                            // eslint-disable-next-line no-console
+                            resSession.map(function (x) { return console.log(x); });
+                            var classFrequency_1 = {};
+                            var dayFrequency_1 = {};
+                            /*
+                                You need to find modeDay AFTER filtering all of modeCourse
+                                because of the case where if you filter by looking at what
+                                sessions have modeCourse AND modeDay, the modeDay might be a
+                                number that doesn't exist with modeCourse.
+                            */
+                            resSession.forEach(function (TAsession) {
+                                if (!classFrequency_1[TAsession.courseId]) {
+                                    classFrequency_1[TAsession.courseId] = 1;
                                 }
                                 else {
-                                    stats.personalityType = 'Independent';
+                                    classFrequency_1[TAsession.courseId] += 1;
                                 }
-                                // Month user spent the most time in
-                                stats.favMonth = (_o = monthTimeCounts[userId]) === null || _o === void 0 ? void 0 : _o.indexOf(Math.max.apply(Math, monthTimeCounts[userId]));
-                                // Get the ids in the map that have the highest counts
-                                if (taCounts[userId].size !== 0) {
-                                    stats.favTaId = Array.from(taCounts[userId].entries()).reduce(function (prev, next) { return prev[1] < next[1] ? next : prev; })[0];
-                                }
-                                modeElement = 0;
-                                if (!(stats.favTaId && stats.favTaId !== "")) return [3 /*break*/, 4];
-                                resSession = (_p = TAsessions[stats.favTaId]) === null || _p === void 0 ? void 0 : _p.filter(function (TAsession) {
-                                    return officeHourSessions[userId].includes(TAsession.session);
-                                });
-                                if (!((resSession === null || resSession === void 0 ? void 0 : resSession.length) === 1)) return [3 /*break*/, 2];
-                                return [4 /*yield*/, sessionsRef.doc(resSession[0].session).get()];
-                            case 1:
-                                sessionsDoc = _a.sent();
-                                stats.favClass = sessionsDoc.get("courseId");
-                                return [3 /*break*/, 4];
-                            case 2:
-                                if (!((resSession === null || resSession === void 0 ? void 0 : resSession.length) > 1)) return [3 /*break*/, 4];
-                                sessionFrequency_1 = {};
-                                resSession.filter(function (elem) { return elem.asker === userId; }).forEach(function (elem) {
-                                    if (!sessionFrequency_1[elem.session]) {
-                                        sessionFrequency_1[elem.session] = 1;
+                            });
+                            var modeCourseId_1 = Object.keys(classFrequency_1).reduce(function (a, b) {
+                                return classFrequency_1[a] > classFrequency_1[b] ? a : b;
+                            });
+                            resSession.forEach(function (TAsession) {
+                                if (TAsession.courseId === modeCourseId_1) {
+                                    if (!dayFrequency_1[TAsession.day]) {
+                                        dayFrequency_1[TAsession.day] = 1;
                                     }
                                     else {
-                                        sessionFrequency_1[elem.session] += 1;
+                                        dayFrequency_1[TAsession.day] += 1;
                                     }
-                                });
-                                modeSessionId = Object.keys(sessionFrequency_1).reduce(function (a, b) {
-                                    return sessionFrequency_1[a] > sessionFrequency_1[b] ? a : b;
-                                });
-                                return [4 /*yield*/, sessionsRef.doc(modeSessionId).get()];
-                            case 3:
-                                sessionsDoc = _a.sent();
-                                stats.favClass = sessionsDoc.get("courseId");
-                                _a.label = 4;
-                            case 4: return [2 /*return*/];
+                                }
+                            });
+                            var modeDay_1 = Object.keys(dayFrequency_1).reduce(function (day1, day2) {
+                                return dayFrequency_1[parseInt(day1, 10)] > dayFrequency_1[parseInt(day2, 10)] ? day1 : day2;
+                            });
+                            // eslint-disable-next-line no-console
+                            console.log("modeCourse: " + modeCourseId_1 + " and modeDay: " + modeDay_1);
+                            var modeSessions = resSession.filter(function (TAsession) { return TAsession.courseId === modeCourseId_1
+                                && TAsession.day === parseInt(modeDay_1, 10); });
+                            // eslint-disable-next-line no-console
+                            console.log("final filtering for modeSessions");
+                            // eslint-disable-next-line no-console
+                            console.log(modeSessions);
+                            // there could be multiple ties, so just picking the first one
+                            stats.favClass = modeSessions[0].courseId;
+                            stats.favDay = modeSessions[0].day;
+                            // eslint-disable-next-line no-console
+                            console.log("favClass: " + stats.favClass + ", favDay: " + stats.favDay);
+                            // eslint-disable-next-line no-console
+                            console.log("------------");
                         }
-                    });
+                    }
                 };
-                _b = 0, _c = Object.entries(userStats);
-                _q.label = 6;
+                // Personality type will be calculated after processing all documents
+                // Process stats
+                for (_b = 0, _c = Object.entries(userStats); _b < _c.length; _b++) {
+                    _d = _c[_b], userId = _d[0], stats = _d[1];
+                    _loop_2(userId, stats);
+                }
+                return [4 /*yield*/, updateWrappedDocs()];
             case 6:
-                if (!(_b < _c.length)) return [3 /*break*/, 9];
-                _d = _c[_b], userId = _d[0], stats = _d[1];
-                return [5 /*yield**/, _loop_2(userId, stats)];
-            case 7:
-                _q.sent();
-                _q.label = 8;
-            case 8:
-                _b++;
-                return [3 /*break*/, 6];
-            case 9: return [4 /*yield*/, updateWrappedDocs()];
-            case 10:
                 _q.sent();
                 // debugging console log
                 // eslint-disable-next-line no-console

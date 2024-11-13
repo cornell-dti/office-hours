@@ -45,6 +45,7 @@ const getWrapped = async () => {
         totalMinutes: number;
         personalityType: string;
         timeHelpingStudents?: number;
+        numStudentsHelped?: number;
     }} = {};
 
     const getWrappedUserDocs = async () => {
@@ -68,8 +69,6 @@ const getWrapped = async () => {
         asker: string;
         courseId: string;
         day: number;
-        month: number;
-        
     }[]} = {};
 
     // Helper functions
@@ -89,15 +88,19 @@ const getWrapped = async () => {
                 // This is true if the user is either a student, or a TA who has more than one session
                 const isUserActive = stats.timeHelpingStudents === undefined || (TAsessions[userId]?.length > 0);
                 const hasFavoriteTa = stats.favTaId !== "";
+                const taStatsMismatched = (stats.timeHelpingStudents !== undefined && stats.numStudentsHelped === undefined)
+                || (stats.timeHelpingStudents === undefined && stats.numStudentsHelped !== undefined);
                 if (hasVisits && isUserActive && hasFavoriteTa) {
-                    if (stats.favClass && stats.favDay && stats.favMonth) {
-                        errorUsers.push({user: userId, error: "User is active and has favorite TA, but is missing either most common class, day, or month."});
+                    if (!(stats.favClass && stats.favDay !== -1 && stats.favMonth !== -1)) {
+                        errorUsers.push({user: userId, 
+                            error: `User is active and has favorite TA but missing one of the following:
+                             favClass: ${stats.favClass}, favDay: ${stats.favDay}, favMonth: ${stats.favMonth}`});
+                    } else if (taStatsMismatched) {
+                        errorUsers.push({user: userId, error: "Mismatch in updating ta specfic values."})
                     } else {
                         const wrappedDocRef = wrappedRef.doc(userId);
                         batch.set(wrappedDocRef, stats);
         
-                        // eslint-disable-next-line no-await-in-loop
-                        // const userDoc = await usersRef.doc(userId).get();
                         const userDoc = userDocuments[userId];
                         if (userDoc.exists) {
                             usersRef.doc(userId).update({
@@ -126,8 +129,8 @@ const getWrapped = async () => {
                 numVisits: 0,
                 favClass: '',
                 favTaId: '',
-                favMonth: 0,
-                favDay: 0,
+                favMonth: -1,
+                favDay: -1,
                 totalMinutes: 0,
                 personalityType: '',
             };
@@ -142,11 +145,12 @@ const getWrapped = async () => {
                 numVisits: 0,
                 favClass: '',
                 favTaId: '',
-                favMonth: 0,
-                favDay: 0,
+                favMonth: -1,
+                favDay: -1,
                 totalMinutes: 0,
                 personalityType: '',
                 timeHelpingStudents: 0,
+                numStudentsHelped: 0
             };
 
             taCounts[answererId] = new Map<string, number>();
@@ -160,16 +164,13 @@ const getWrapped = async () => {
                 favClass: userStats[answererId].favClass,
                 favTaId: userStats[answererId].favTaId,
                 favMonth: userStats[answererId].favMonth,
-                favDay: userStats[answererId].favMonth,
+                favDay: userStats[answererId].favDay,
                 totalMinutes: userStats[answererId].totalMinutes,
                 personalityType: userStats[answererId].personalityType,
                 timeHelpingStudents: 0,
+                numStudentsHelped: 0
             };
-
-            // taCounts[answererId] = new Map<string, number>();
-            // officeHourSessions[answererId] = [];
             TAsessions[answererId] = [];
-            // monthTimeCounts[answererId] = [0,0,0,0,0,0,0,0,0,0,0,0];
         }
 
     }
@@ -218,8 +219,7 @@ const getWrapped = async () => {
                 session: sessionId,
                 asker: askerId,
                 courseId: sessionDoc.get('courseId'),
-                day: timeAddressed.toDate().getDay(),
-                month: sessionDoc.get('startTime').toDate().getMonth()
+                day: timeAddressed.toDate().getDay()
             });
 
             if(!taCounts[askerId]?.has(answererId)) {
@@ -244,7 +244,7 @@ const getWrapped = async () => {
                 monthTimeCounts[askerId][timeEntered.toDate().getMonth()] += 60;
             }
             // eslint-disable-next-line no-console
-            console.log(monthTimeCounts[askerId]);
+            console.log("month counts: [" + monthTimeCounts[askerId] + "]");
         }
     }
 
@@ -253,10 +253,15 @@ const getWrapped = async () => {
 
     // Process stats
     for (const [userId, stats] of Object.entries(userStats)) {
+        // eslint-disable-next-line no-console
+        console.log(`name is ${userId}`);
         stats.numVisits = officeHourSessions[userId]?.length;
         stats.totalMinutes = Math.ceil(stats.totalMinutes);
         if (stats.timeHelpingStudents !== undefined) {
             stats.timeHelpingStudents = Math.ceil(stats.timeHelpingStudents);
+            if (stats.numStudentsHelped !== undefined) {
+                stats.numStudentsHelped = TAsessions[userId].length;
+            } 
         }
         // Personality type
         const weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
@@ -275,41 +280,99 @@ const getWrapped = async () => {
         stats.favMonth = monthTimeCounts[userId]?.indexOf(Math.max(...monthTimeCounts[userId]));
         // Get the ids in the map that have the highest counts
         if (taCounts[userId].size !== 0) {
-            stats.favTaId = Array.from(taCounts[userId].entries()).reduce((prev, next) => prev[1] < next[1] ? next : prev)[0];
+            stats.favTaId = Array.from(taCounts[userId].entries()).reduce(
+                (prev, next) => prev[1] < next[1] ? next : prev)[0];
         }
-
-        const modeElement = 0;
-
-        if (stats.favTaId && stats.favTaId !== "") {
+        // eslint-disable-next-line no-console
+        console.log(`${userId}'s fav ta is ${stats.favTaId}, taCounts length is ${taCounts[userId].size}`);
+        if (stats.favTaId) {
+            // eslint-disable-next-line no-console
+            console.log(`here`);
             // only looking at the sessions from the favorite TA that match with sessions the user went to
             const resSession = TAsessions[stats.favTaId]?.filter( (TAsession) => 
-                officeHourSessions[userId].includes(TAsession.session));
+                officeHourSessions[userId].includes(TAsession.session) && TAsession.asker === userId);
             if (resSession?.length === 1) {
-                // eslint-disable-next-line no-await-in-loop
-                const sessionsDoc = await sessionsRef.doc(resSession[0].session).get()
-                stats.favClass =  sessionsDoc.get("courseId");
-
+                stats.favClass =  resSession[0].courseId;
+                stats.favDay = resSession[0].day;
+                // eslint-disable-next-line no-console
+                console.log(`finding ${userId}'s mode stats`);
+                // eslint-disable-next-line no-console
+                console.log(stats.favTaId + "'s total sessions");
+                // eslint-disable-next-line no-console
+                console.log(TAsessions[stats.favTaId]);
+                // eslint-disable-next-line no-console
+                console.log(stats.favTaId + `'s total sessions with ${userId}`);
+                // eslint-disable-next-line no-console
+                resSession.map((x) => console.log(x));
             } else if (resSession?.length > 1) {
                 /* filtering from general to specific:
                     - find mode class
-                    - out of all the sessions for that class, find favorite day to go
+                    - out of all the sessions for that class, find mode day
                 */
 
-                const sessionFrequency: { [courseId: string]: number } = {};
-    
-                resSession.filter((elem) => elem.asker === userId).forEach((elem) => {
-                    if (!sessionFrequency[elem.session]) {
-                        sessionFrequency[elem.session] = 1;
+                // eslint-disable-next-line no-console
+                console.log(`finding ${userId}'s mode stats`);
+                // eslint-disable-next-line no-console
+                console.log(stats.favTaId + "'s total sessions");
+                // eslint-disable-next-line no-console
+                console.log(TAsessions[stats.favTaId]);
+                // eslint-disable-next-line no-console
+                console.log(stats.favTaId + `'s total sessions with ${userId}`);
+                // eslint-disable-next-line no-console
+                resSession.map((x) => console.log(x));
+
+
+                const classFrequency: { [courseId: string]: number } = {};
+                const dayFrequency: { [day: number]: number } = {};
+
+                /* 
+                    You need to find modeDay AFTER filtering all of modeCourse
+                    because of the case where if you filter by looking at what 
+                    sessions have modeCourse AND modeDay, the modeDay might be a
+                    number that doesn't exist with modeCourse.
+                */
+
+                resSession.forEach((TAsession) => {
+                    if (!classFrequency[TAsession.courseId]) {
+                        classFrequency[TAsession.courseId] = 1;
                     } else {
-                        sessionFrequency[elem.session] += 1;
+                        classFrequency[TAsession.courseId] += 1;
                     }
                 });
 
-                const modeSessionId = Object.keys(sessionFrequency).reduce((a, b) =>
-                    sessionFrequency[a] > sessionFrequency[b] ? a : b);
-                // eslint-disable-next-line no-await-in-loop
-                const sessionsDoc = await sessionsRef.doc(modeSessionId).get()
-                stats.favClass =  sessionsDoc.get("courseId");
+
+                const modeCourseId = Object.keys(classFrequency).reduce((a, b) =>
+                    classFrequency[a] > classFrequency[b] ? a : b);
+                resSession.forEach((TAsession) => {
+                    if (TAsession.courseId === modeCourseId) {
+                        if (!dayFrequency[TAsession.day]) {
+                            dayFrequency[TAsession.day] = 1;
+                        } else {
+                            dayFrequency[TAsession.day] += 1;
+                        }
+                    }
+                });
+                const modeDay = Object.keys(dayFrequency).reduce((day1, day2) =>
+                    dayFrequency[parseInt(day1, 10)] > dayFrequency[parseInt(day2,10)] ? day1 : day2);
+                // eslint-disable-next-line no-console
+                console.log(`modeCourse: ${modeCourseId} and modeDay: ${modeDay}`);
+                const modeSessions = resSession.filter((TAsession) => TAsession.courseId === modeCourseId 
+                && TAsession.day === parseInt(modeDay,10));
+                
+                // eslint-disable-next-line no-console
+                console.log("final filtering for modeSessions");
+                // eslint-disable-next-line no-console
+                console.log(modeSessions);
+                // there could be multiple ties, so just picking the first one
+                stats.favClass =  modeSessions[0].courseId;
+                stats.favDay = modeSessions[0].day;
+                // eslint-disable-next-line no-console
+                console.log(`favClass: ${stats.favClass}, favDay: ${stats.favDay}`);
+                
+                // eslint-disable-next-line no-console
+                console.log("------------");
+
+     
             }
         }
     }
