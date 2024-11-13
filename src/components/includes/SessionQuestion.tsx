@@ -266,27 +266,33 @@ class SessionQuestion extends React.Component<Props, State> {
     );
 
     render() {
-        const question = this.props.question;
-        const studentCSS = this.props.isTA ? "" : " Student";
-        const includeBookmark = this.props.question.askerId === this.props.myUserId;
+        const { question, isTA, myUserId, users, user, tags } = this.props;
 
-        const asker = this.props.users[question.askerId];
-        const answerer = question.answererId ? this.props.users[question.answererId] : undefined;
-        const user = this.props.user;
-        const primaryTag = this.props.question.primaryTag ? this.props.tags[this.props.question.primaryTag] : undefined;
-        const secondaryTag = this.props.question.secondaryTag
-            ? this.props.tags[this.props.question.secondaryTag]
-            : undefined;
+        // Add Student CSS class if user is not a TA
+        const studentCSS = isTA ? "" : " Student";
+
+        // Show bookmark icon if current user is the one who asked the question
+        const includeBookmark = question.askerId === myUserId;
+
+        // Get user info for question asker and answerer (if assigned)
+        const asker = users[question.askerId];
+        const answerer = question.answererId ? users[question.answererId] : undefined;
+
+        // Get tag info for primary and secondary tags (if they exist)
+        const primaryTag = question.primaryTag ? tags[question.primaryTag] : undefined;
+        const secondaryTag = question.secondaryTag ? tags[question.secondaryTag] : undefined;
 
         return (
             <div className="questionWrapper">
                 <div className="QueueQuestions">
+                    {isTA && asker && <img
+                        className="userInformationImg"
+                        src={asker.photoUrl || "/placeholder.png"}
+                        alt={asker ? `${asker.firstName} ${asker.lastName}` : "unknown user"}
+                    />}
                     <div className="TopBar">
                         {!this.props.includeRemove && includeBookmark && <div className="Bookmark" />}
                         <div>
-                            <p className={"Order " + (question.status === "assigned" ? "assigned" : "")}>
-                                {question.status === "assigned" ? "•••" : this.getDisplayText(this.props.index)}
-                            </p>
                         </div>
                         {this.props.includeRemove && !["virtual", "review"].includes(this.props.modality) && (
                             <div className="LocationPin">
@@ -317,13 +323,14 @@ class SessionQuestion extends React.Component<Props, State> {
                             </div>
                         )}
                         <div className="QuestionInfo">
-                            {this.props.isTA && asker && (
+                            {isTA && asker && ( <>
+                                {/* <img
+                                    className="userInformationImg"
+                                    src={asker.photoUrl || "/placeholder.png"}
+                                    alt={asker ? `${asker.firstName} ${asker.lastName}` : "unknown user"}
+                                /> */}
                                 <div className="studentInformation">
-                                    <img
-                                        className="userInformationImg"
-                                        src={asker.photoUrl || "/placeholder.png"}
-                                        alt={asker ? `${asker.firstName} ${asker.lastName}` : "unknown user"}
-                                    />
+                                    
                                     <span className="userInformationName">
                                         {asker.firstName +
                                             " " +
@@ -338,7 +345,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                                     is assigned
                                                     {answerer &&
                                                         " to " +
-                                                            (answerer.userId === this.props.myUserId
+                                                            (answerer.userId === myUserId
                                                                 ? "you"
                                                                 : answerer.firstName + " " + answerer.lastName)}
                                                 </span>
@@ -346,8 +353,9 @@ class SessionQuestion extends React.Component<Props, State> {
                                         )}
                                     </span>
                                 </div>
+                                </>
                             )}
-                            {!this.props.isTA && user && (
+                            {!isTA && user && (
                                 <div className="studentInformation">
                                     <img
                                         className="userInformationImg"
@@ -359,28 +367,32 @@ class SessionQuestion extends React.Component<Props, State> {
                                     </span>
                                 </div>
                             )}
+                            <div className="Tags">
+                                {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} />}
+                                {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} />}
+                            </div>
                             <div className="Location">
-                                {this.props.isTA &&
+                                {isTA &&
                                     this.props.modality === "hybrid" &&
-                                    typeof this.props.question.isVirtual !== "undefined" && (
+                                    typeof question.isVirtual !== "undefined" && (
                                     <div
                                         className={`hybridBadge ${
-                                            this.props.question.isVirtual ? "virtual" : "inPerson"
+                                            question.isVirtual ? "virtual" : "inPerson"
                                         }`}
                                     >
-                                        {this.props.question.isVirtual ? "Virtual" : "In-person"}
+                                        {question.isVirtual ? "Virtual" : "In-person"}
                                     </div>
                                 )}
-                                {
+                                { 
                                     <>
-                                        {this.props.isTA &&
+                                        {isTA &&
                                             question.location &&
                                             question.location.substr(0, 25) === "https://cornell.zoom.us/j" && (
                                             <a href={question.location} target="_blank" rel="noopener noreferrer">
                                                     Zoom Link
                                             </a>
                                         )}
-                                        {this.props.isTA &&
+                                        {isTA &&
                                             question.location &&
                                             question.location.substr(0, 25) !== "https://cornell.zoom.us/j" && (
                                             <div className="taLocationInfo">
@@ -393,10 +405,6 @@ class SessionQuestion extends React.Component<Props, State> {
                             </div>
                         </div>
                         <div className="RightBar">
-                            <div className="Tags">
-                                {primaryTag && <SelectedTags tag={primaryTag} isSelected={false} />}
-                                {secondaryTag && <SelectedTags tag={secondaryTag} isSelected={false} />}
-                            </div>
                             {question.timeEntered != null && (
                                 <p className="Time">
                                     {<Moment date={question.timeEntered.toDate()} interval={0} format={"hh:mm A"} />}
@@ -404,11 +412,11 @@ class SessionQuestion extends React.Component<Props, State> {
                             )}
                         </div>
                     </div>
-                    {(this.props.isTA || includeBookmark || this.props.includeRemove) && (
+                    {(isTA || includeBookmark || this.props.includeRemove) && (
                         <p className={"Question" + studentCSS}>
                             {/* any links in the question content will become clickable and open in new tab */}
                             <Linkify componentDecorator={this.componentDecorator}>{question.content}</Linkify>
-                            {this.props.isTA &&
+                            {isTA &&
                                 question.status === "assigned" &&
                                 question.timeAssigned !== undefined &&
                                 !this.props.isPast && (
@@ -416,7 +424,7 @@ class SessionQuestion extends React.Component<Props, State> {
                             )}
                         </p>
                     )}
-                    {this.props.isTA && (
+                    {isTA && (
                         <div className="Buttons">
                             <hr />
                             <div className="buttonsWrapper">
@@ -440,7 +448,7 @@ class SessionQuestion extends React.Component<Props, State> {
                                         <p className="Begin" onClick={this.questionDontKnow}>
                                             {answerer &&
                                                 "Unassign from  " +
-                                                    (answerer.userId === this.props.myUserId
+                                                    (answerer.userId === myUserId
                                                         ? "me"
                                                         : answerer.firstName + " " + answerer.lastName)}
                                         </p>
@@ -523,13 +531,13 @@ class SessionQuestion extends React.Component<Props, State> {
                         users={this.props.commentUsers}
                         questionId={question.questionId}
                         reply={this.handleReplyButton}
-                        newComment={this.props.isTA ? question.taNew : question.studentNew}
+                        newComment={isTA ? question.taNew : question.studentNew}
                     />
                 )}
                 {this.state.areCommentsVisible ? (
                     <CommentsContainer
                         users={this.props.commentUsers}
-                        currentUser={this.props.user}
+                        currentUser={user}
                         addCommentsHelper={this.addCommentsHelper}
                         questionId={question.questionId}
                         switchCommentsVisible={this.switchCommentsVisible}

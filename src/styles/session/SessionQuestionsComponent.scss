@@ -66,10 +66,10 @@
     right: 20px;
   }
 
-  .OrderTooltip {
-    position: relative;
-    cursor: pointer;
-  }
+  // .OrderTooltip {
+  //   position: relative;
+  //   cursor: pointer;
+  // }
 
   .TooltipText {
     position: absolute;
@@ -96,27 +96,11 @@
     border-color: $number-blue #0000 #0000 #0000;
   }
 
-  .OrderTooltip:hover .TooltipText {
-    top: -130%;
-    visibility: visible;
-    opacity: 1;
-  }
-
-  .Order {
-    float: left;
-    font-size: 17px;
-    width: 30px;
-    margin: 13px 0 12px 12px;
-    color: white;
-    background-color: $number-blue;
-    border: solid $number-blue 0px;
-    border-radius: 5px;
-    text-align: center;
-  }
-
-  .Order.assigned {
-    background-color: #ffcd83;
-  }
+  // .OrderTooltip:hover .TooltipText {
+  //   top: -130%;
+  //   visibility: visible;
+  //   opacity: 1;
+  // }
 
   .userInformationImg {
     display: inline-block;
@@ -311,7 +295,7 @@
 
   .LocationPin {
     display: inline-block;
-    float: right;
+    // float: right;
     padding: 14px;
     padding-right: 0px;
 
