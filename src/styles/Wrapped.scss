@@ -204,6 +204,155 @@
   }
 }
 
+.personality{
+  display: flex;
+  align-items: center; 
+  justify-content: space-evenly;
+  &.container{
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+    align-items: baseline;
+  }
+  &.text{
+    font-weight: bold;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    line-height: 2.5rem;
+    text-align: left;
+  }
+  &.personalityType {
+    font-family: "Roboto";
+    font-weight: 700;
+    color: #080680;
+    text-transform: uppercase;
+  }
+  &.personalityIcon {
+    width: 242px;
+  }
+}
+
+.favTA{
+  &.all{
+    display: flex;
+    position: absolute;
+    top: 7rem;
+    align-items: center;
+    justify-content: space-evenly;
+  }
+  &.container{
+    display: flex;
+    flex-direction: column;
+    width: 337px;
+    height: 100%;
+    padding-left: 5%;
+  }
+
+  &.top-text{
+    font-weight: bold;
+    font-size: 27px;
+    margin-bottom: 2rem;
+    line-height: 2.5rem;
+    text-align: left;
+  
+  }
+  &.taName {
+    font-family: "Roboto";
+    font-weight: 700;
+    color: #080680;
+    text-transform: uppercase;
+    text-align: left;
+  }
+  &.ta-img{
+    width: 323px;
+  }
+}
+
+.timeHelped{
+  &.all{
+    display: flex;
+    flex-direction: column;
+    width: 750px;
+    justify-content: space-between;
+  }
+  &.format{
+    display: flex;
+    justify-content: flex-end;
+    font-weight: bold;
+  }
+
+  &.top-text{
+    position: absolute;
+    top: 3rem;
+    left: 3rem;
+    font-size: 30px;
+    color: #080680;
+  }
+
+  &.mid-text{
+    position: absolute;
+    top: 9rem;
+    left:3rem;
+    font-weight: 700;
+    font-size: 29px;
+  }
+  &.num{
+    position: absolute;
+    top: 52%;
+    left: 48.5%;
+    transform: translate(-50%, -50%);
+    font-size: 196.57px;
+    line-height: 230.36px;
+    color: #F1A4AB;
+  }
+
+  &.group{
+    width: 305px;
+    height: 239.6px;
+    position: absolute;
+    top: 17rem;
+    left: 2rem;
+  }
+
+  &.bottom-text{
+    position: absolute;
+    top: 26rem;
+    right: 2rem;
+    font-weight: 700;
+    font-size: 29px;
+    width: 414px;
+    text-align: right;
+  }
+}
+
+.taStudentsHelped{
+  &.top-text{
+    position: absolute;
+    top: 3.5rem;
+    left: 3.5rem;
+    font-weight: bold;
+    font-size: 27px;
+  }
+  &.num{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 225.97px;
+    font-weight: 600;
+    color: #080680;
+  }
+  &.students{
+    position: absolute;
+    bottom: 7.5rem;
+    right: 5rem;
+    font-weight: bold;
+    font-size: 27px;
+    text-align: right;
+    width: 300px;
+  }
+}
+
 @keyframes slideInTopRight {
   0% {
       transform: translate(-100%, -100%) rotate(18.6deg);
@@ -313,26 +462,6 @@
 .banner.visible {
   display: block;
   animation: slideIn 1s ease forwards; /* 1 second duration */
-}
-
-.personalityIcon {
-  width: 242px;
-}
-
-.personalityType {
-  font-family: "Roboto";
-  font-weight: 700;
-  color: #080680;
-  text-transform: uppercase;
-  text-align: left;
-}
-
-.taName {
-  font-family: "Roboto";
-  font-weight: 700;
-  color: #080680;
-  text-transform: uppercase;
-  text-align: left;
 }
 
 .conclusionText {
