@@ -367,46 +367,34 @@ const Wrapped = (props: Props) => {
 
     const PersonalityType = () => (
         <>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-evenly",}}>
-                <div style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    width: "45%",
-                }}
-                >
-                    <div style={{
-                        fontWeight: "bold",
-                        fontSize: "2rem",
-                        marginBottom: "2rem",
-                        lineHeight: "2.5rem",
-                        textAlign: "left",
-                    }}
-                    >
+            <div className="personality">
+                <div className="personality container">
+                    <div className="personality text">
                     YOUR OFFICE HOUR PERSONALITY TYPE IS...
                     </div>
-                
+            
                     <Typography variant="h3" style={{ fontWeight: 600 }}>  
-                        <div className="personalityType">{wrappedData.personalityType}</div>
+                        <div className="personality personalityType">{wrappedData.personalityType}</div>
                     </Typography>
                 </div>
                 {wrappedData.personalityType === "Consistent" ? 
                     <img 
                         src={ConsistentPersonality} 
-                        className="personalityIcon" 
+                        className="personality personalityIcon" 
                         alt="Consistent Personality" 
                     /> : null
                 }
                 {wrappedData.personalityType === "Resourceful" ? 
                     <img 
                         src={ResourcefulPersonality} 
-                        className="personalityIcon" 
+                        className="personality personalityIcon" 
                         alt="Resourceful Personality" 
                     /> : null
                 }
                 {wrappedData.personalityType === "Independent" ? 
                     <img 
                         src={IndependentPersonality}
-                        className="personalityIcon" 
+                        className="personality personalityIcon" 
                         alt="Consistent Personality" 
                     /> : null
                 }
@@ -417,42 +405,19 @@ const Wrapped = (props: Props) => {
 
     const FavTA = () => (
         <>
-            <div style={{ 
-                display: "flex", 
-                position: "absolute", 
-                top: "7rem", 
-                alignItems: "center", 
-                justifyContent: "space-evenly",
-            }}
-            >
-                <div style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    width: "337px",
-                    height: "100%",
-                    paddingLeft: "5%",
-                }}
-                >
-                    <div style={{
-                        fontWeight: "bold",
-                        fontSize: "27px",
-                        marginBottom: "2rem",
-                        lineHeight: "2.5rem",
-                        textAlign: "left",
-                    }}
-                    >
+            <div className="favTA all">
+                <div className="favTA container">
+                    <div className="favTA top-text">
                     YOU SPENT THE MOST TIME WITH...
                     </div>
                 
                     <Typography variant="h3" style={{ fontWeight: 600 }}>  
-                        <div className="taName">TA {taName.firstName} {taName.lastName}</div>
+                        <div className="favTA taName">TA {taName.firstName} {taName.lastName}</div>
                     </Typography>
                 </div>
                 <img 
                     src={TA} 
-                    style={{
-                        width: "323px",
-                    }}
+                    className="favTA ta-img"
                     alt="" 
                 />     
             </div>
@@ -470,66 +435,26 @@ const Wrapped = (props: Props) => {
 
     const TATimeHelped = () => (
         <div>
-            <div style={{ display: "flex", flexDirection: "column", width: "750px", justifyContent: "space-between" }}>
+            <div className="timeHelped all">
                 
-                <div style={{ display: "flex", justifyContent: "flex-end", fontWeight: "bold" }}>
-                    <div style={{ 
-                        position: "absolute",
-                        top: "3rem",
-                        left: "3rem",
-                        fontSize: "30px",
-                        color: "#080680",
-                    }}
-                    >
+                <div className="timeHelped format">
+                    <div className="timeHelped top-text">
                         THANK YOU FOR ALL YOUR HARD WORK! 
                     </div>
-                    <div style={{ 
-                        position: "absolute",
-                        top: "9rem",
-                        left: "3rem",
-                        fontWeight: 700, 
-                        fontSize: "29px",
-                    }}
-                    > 
+                    <div className="timeHelped mid-text">
                         YOU SPENT...
                     </div>
                 
-                    <div 
-                        style={{
-                            position: "absolute",
-                            top: "52%",
-                            left: "48.5%",
-                            transform: "translate(-50%, -50%)",
-                            fontSize: "196.57px",
-                            lineHeight: "230.36px",
-                            color: "#F1A4AB",
-                        }}
-                    >
+                    <div className="timeHelped num">
                         {wrappedData.timeHelpingStudents}
                     </div>
                     <img 
                         src={Group}
-                        style={{ 
-                            width: "305px", 
-                            height: "239.6px",
-                            position: "absolute", 
-                            top:"17rem",
-                            left: "2rem",
-                        }}
+                        className="timeHelped group"
                         alt=""
                     />
                     
-                    <div 
-                        style={{ 
-                            position: "absolute",
-                            top: "26rem",
-                            right: "2rem",
-                            fontWeight: 700, 
-                            fontSize: "29px",
-                            width: "414px",
-                            textAlign: "right",
-                        }}
-                    >
+                    <div className="timeHelped bottom-text">
                         {wrappedData.timeHelpingStudents == 1 ? "HOUR " : "HOURS " }
                             HELPING STUDENTS
                     </div>
@@ -540,38 +465,13 @@ const Wrapped = (props: Props) => {
 
     const TAStudentsHelped = () =>(
         <>
-            <div style={{ 
-                position: "absolute",
-                top: "3.5rem",
-                left: "3.5rem",
-                fontWeight: "bold", 
-                fontSize: "27px",
-            }}
-            > 
+            <div className="taStudentsHelped top-text">
                 YOU MADE LIFE EASIER FOR...
             </div>
-            <div style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                fontSize: "225.97px",
-                fontWeight: 600,
-                color: "#080680",
-            }}
-            >
+            <div className="taStudentsHelped num">
                 {wrappedData.numStudentsHelped}
             </div>
-            <div style={{ 
-                position: "absolute",
-                bottom: "7.5rem",
-                right: "5rem",
-                fontWeight: "bold", 
-                fontSize: "27px",
-                textAlign: "right",
-                width: "300px",
-            }}
-            > 
+            <div className="taStudentsHelped students">
                 STUDENTS
             </div>
             <div>
