@@ -117,5 +117,5 @@ _Screenshots showing major parts of app_
 
 
 We are a team within **Cornell Design & Tech Initiative**. For more information, see our [website](https://cornelldti.org/).
-<img src="https://raw.githubusercontent.com/cornell-dti/design/master/Branding/Wordmark/Dark%20Text/Transparent/Wordmark-Dark%20Text-Transparent%403x.png">
+<img src="https://raw.githubusercontent.com/cornell-dti/design/main/Branding/Wordmark/Dark%20Text/Transparent/Wordmark-Dark%20Text-Transparent%403x.png">
 ​
