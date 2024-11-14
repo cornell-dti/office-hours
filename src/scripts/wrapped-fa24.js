@@ -50,21 +50,21 @@ var errorUsers = [];
 var startDate = firebase_admin_1["default"].firestore.Timestamp.fromDate(new Date('2024-01-22'));
 var endDate = firebase_admin_1["default"].firestore.Timestamp.fromDate(new Date('2024-11-22'));
 var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var questionsRef, sessionsRef, wrappedRef, usersRef, questionsSnapshot, userStats, getWrappedUserDocs, taCounts, monthTimeCounts, officeHourSessions, TAsessions, updateWrappedDocs, initializeUser, _loop_1, _i, _a, doc, _loop_2, _b, _c, _d, userId, stats;
-    var _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
-    return __generator(this, function (_q) {
-        switch (_q.label) {
+    var questionsRef, sessionsRef, wrappedRef, usersRef, questionsSnapshot, userStats, getWrappedUserDocs, getWrappedSessionDocs, taCounts, monthTimeCounts, officeHourSessions, TAsessions, updateWrappedDocs, initializeUser, processStats, sessionDocs, count, _loop_1, _i, _a, doc;
+    var _b, _c, _d, _e, _f, _g, _h;
+    return __generator(this, function (_j) {
+        switch (_j.label) {
             case 0:
-                questionsRef = db.collection('questions-test');
-                sessionsRef = db.collection('sessions-test');
+                questionsRef = db.collection('questions');
+                sessionsRef = db.collection('sessions');
                 wrappedRef = db.collection('wrapped-fa24');
-                usersRef = db.collection('users-test');
+                usersRef = db.collection('users');
                 return [4 /*yield*/, questionsRef
                         .where('timeEntered', '>=', startDate)
                         .where('timeEntered', '<=', endDate)
                         .get()];
             case 1:
-                questionsSnapshot = _q.sent();
+                questionsSnapshot = _j.sent();
                 userStats = {};
                 getWrappedUserDocs = function () { return __awaiter(void 0, void 0, void 0, function () {
                     var docs;
@@ -89,6 +89,41 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                         });
                                     }); }))];
                             case 1:
+                                _a.sent();
+                                return [2 /*return*/, docs];
+                        }
+                    });
+                }); };
+                getWrappedSessionDocs = function () { return __awaiter(void 0, void 0, void 0, function () {
+                    var docs, sessionIds;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                docs = {};
+                                sessionIds = [];
+                                questionsSnapshot.docs.map(function (doc) { return sessionIds.push(doc.get('sessionId')); });
+                                sessionIds.sort();
+                                // eslint-disable-next-line no-console
+                                // console.log(sessionIds);
+                                return [4 /*yield*/, Promise.all(sessionIds.map(function (id) { return __awaiter(void 0, void 0, void 0, function () {
+                                        var _a, _b;
+                                        return __generator(this, function (_c) {
+                                            switch (_c.label) {
+                                                case 0:
+                                                    if (!id) return [3 /*break*/, 2];
+                                                    _a = docs;
+                                                    _b = id;
+                                                    return [4 /*yield*/, sessionsRef.doc(id).get()];
+                                                case 1:
+                                                    _a[_b] = _c.sent();
+                                                    _c.label = 2;
+                                                case 2: return [2 /*return*/];
+                                            }
+                                        });
+                                    }); }))];
+                            case 1:
+                                // eslint-disable-next-line no-console
+                                // console.log(sessionIds);
                                 _a.sent();
                                 return [2 /*return*/, docs];
                         }
@@ -135,12 +170,14 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                                 }
                                                 else {
                                                     // Handle the case where the document does not exist
-                                                    errorUsers.push({ user: userId, error: "No document found for this user, skipping update." });
+                                                    errorUsers.push({ user: userId,
+                                                        error: "No document found for this user, skipping update." });
                                                 }
                                             }
                                         }
                                         else {
-                                            errorUsers.push({ user: userId, error: "User is not an active student/TA or doesn't have favorite TA." });
+                                            errorUsers.push({ user: userId,
+                                                error: "User is not an active student/TA or doesn't have favorite TA." });
                                         }
                                     }
                                     else {
@@ -202,213 +239,194 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                             numStudentsHelped: 0
                         };
                         TAsessions[answererId] = [];
-                    }
-                };
-                _loop_1 = function (doc) {
-                    var question, answererId, askerId, sessionId, timeEntered, timeAddressed, sessionDoc, timeHelping, taAmt, minutesSpent;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                question = doc.data();
-                                answererId = question.answererId, askerId = question.askerId, sessionId = question.sessionId, timeEntered = question.timeEntered, timeAddressed = question.timeAddressed;
-                                initializeUser(answererId, askerId);
-                                return [4 /*yield*/, sessionsRef.doc(sessionId).get()];
-                            case 1:
-                                sessionDoc = _a.sent();
-                                if (TAsessions[answererId].find(function (TAsession) { return TAsession.session === sessionId; }) === undefined) {
-                                    /* Since TA was active during this session and this is the first
-                                    time encountering the session, we add it to their timeHelped */
-                                    if (sessionDoc.exists && userStats[answererId].timeHelpingStudents !== undefined) {
-                                        timeHelping = (sessionDoc.get('endTime').toDate().getTime()
-                                            - sessionDoc.get('startTime').toDate().getTime()) / 60000;
-                                        // this should never be less than 0 (or 0, really)
-                                        if (timeHelping >= 0) {
-                                            userStats[answererId].timeHelpingStudents =
-                                                ((_e = userStats[answererId].timeHelpingStudents) !== null && _e !== void 0 ? _e : 0) + timeHelping;
-                                        }
-                                    }
-                                }
-                                officeHourSessions[askerId] = officeHourSessions[askerId] || [];
-                                if (!officeHourSessions[askerId].includes(sessionId)) {
-                                    officeHourSessions[askerId].push(sessionId);
-                                }
-                                if (answererId && timeAddressed) {
-                                    (_f = TAsessions[answererId]) === null || _f === void 0 ? void 0 : _f.push({
-                                        session: sessionId,
-                                        asker: askerId,
-                                        courseId: sessionDoc.get('courseId'),
-                                        day: timeAddressed.toDate().getDay()
-                                    });
-                                    if (!((_g = taCounts[askerId]) === null || _g === void 0 ? void 0 : _g.has(answererId))) {
-                                        (_h = taCounts[askerId]) === null || _h === void 0 ? void 0 : _h.set(answererId, 1);
-                                    }
-                                    else if (answererId && ((_j = taCounts[askerId]) === null || _j === void 0 ? void 0 : _j.has(answererId))) {
-                                        taAmt = (_k = taCounts[askerId]) === null || _k === void 0 ? void 0 : _k.get(answererId);
-                                        taAmt && ((_l = taCounts[askerId]) === null || _l === void 0 ? void 0 : _l.set(answererId, taAmt + 1));
-                                    }
-                                }
-                                // Minutes spent at office hours
-                                if (timeEntered) {
-                                    if (timeAddressed) {
-                                        minutesSpent = (timeAddressed.toDate().getTime() -
-                                            timeEntered.toDate().getTime()) / 60000;
-                                        if (minutesSpent >= 0) {
-                                            userStats[askerId].totalMinutes += minutesSpent;
-                                        }
-                                        monthTimeCounts[askerId][timeEntered.toDate().getMonth()] += minutesSpent;
-                                    }
-                                    else {
-                                        userStats[askerId].totalMinutes += 60; // assume 60 minutes if not addressed
-                                        monthTimeCounts[askerId][timeEntered.toDate().getMonth()] += 60;
-                                    }
-                                    // eslint-disable-next-line no-console
-                                    console.log("month counts: [" + monthTimeCounts[askerId] + "]");
-                                }
-                                return [2 /*return*/];
-                        }
-                    });
-                };
-                _i = 0, _a = questionsSnapshot.docs;
-                _q.label = 2;
-            case 2:
-                if (!(_i < _a.length)) return [3 /*break*/, 5];
-                doc = _a[_i];
-                return [5 /*yield**/, _loop_1(doc)];
-            case 3:
-                _q.sent();
-                _q.label = 4;
-            case 4:
-                _i++;
-                return [3 /*break*/, 2];
-            case 5:
-                _loop_2 = function (userId, stats) {
-                    // eslint-disable-next-line no-console
-                    console.log("name is " + userId);
-                    stats.numVisits = (_m = officeHourSessions[userId]) === null || _m === void 0 ? void 0 : _m.length;
-                    stats.totalMinutes = Math.ceil(stats.totalMinutes);
-                    if (stats.timeHelpingStudents !== undefined) {
-                        stats.timeHelpingStudents = Math.ceil(stats.timeHelpingStudents);
-                        if (stats.numStudentsHelped !== undefined) {
-                            stats.numStudentsHelped = TAsessions[userId].length;
-                        }
-                    }
-                    // Personality type
-                    var weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
-                        / (1000 * 60 * 60 * 24 * 7); // convert ms to weeks
-                    var averageSessionsPerWeek = stats.numVisits / weeksInRange;
-                    if (averageSessionsPerWeek >= 2) {
-                        stats.personalityType = 'Consistent';
-                    }
-                    else if (averageSessionsPerWeek >= 0.5) {
-                        stats.personalityType = 'Resourceful';
-                    }
-                    else {
-                        stats.personalityType = 'Independent';
-                    }
-                    // Month user spent the most time in
-                    stats.favMonth = (_o = monthTimeCounts[userId]) === null || _o === void 0 ? void 0 : _o.indexOf(Math.max.apply(Math, monthTimeCounts[userId]));
-                    // Get the ids in the map that have the highest counts
-                    if (taCounts[userId].size !== 0) {
-                        stats.favTaId = Array.from(taCounts[userId].entries()).reduce(function (prev, next) { return prev[1] < next[1] ? next : prev; })[0];
-                    }
-                    // eslint-disable-next-line no-console
-                    console.log(userId + "'s fav ta is " + stats.favTaId + ", taCounts length is " + taCounts[userId].size);
-                    if (stats.favTaId) {
                         // eslint-disable-next-line no-console
-                        console.log("here");
-                        // only looking at the sessions from the favorite TA that match with sessions the user went to
-                        var resSession = (_p = TAsessions[stats.favTaId]) === null || _p === void 0 ? void 0 : _p.filter(function (TAsession) {
-                            return officeHourSessions[userId].includes(TAsession.session) && TAsession.asker === userId;
-                        });
-                        if ((resSession === null || resSession === void 0 ? void 0 : resSession.length) === 1) {
-                            stats.favClass = resSession[0].courseId;
-                            stats.favDay = resSession[0].day;
-                            // eslint-disable-next-line no-console
-                            console.log("finding " + userId + "'s mode stats");
-                            // eslint-disable-next-line no-console
-                            console.log(stats.favTaId + "'s total sessions");
-                            // eslint-disable-next-line no-console
-                            console.log(TAsessions[stats.favTaId]);
-                            // eslint-disable-next-line no-console
-                            console.log(stats.favTaId + ("'s total sessions with " + userId));
-                            // eslint-disable-next-line no-console
-                            resSession.map(function (x) { return console.log(x); });
-                        }
-                        else if ((resSession === null || resSession === void 0 ? void 0 : resSession.length) > 1) {
-                            /* filtering from general to specific:
-                                - find mode class
-                                - out of all the sessions for that class, find mode day
-                            */
-                            // eslint-disable-next-line no-console
-                            console.log("finding " + userId + "'s mode stats");
-                            // eslint-disable-next-line no-console
-                            console.log(stats.favTaId + "'s total sessions");
-                            // eslint-disable-next-line no-console
-                            console.log(TAsessions[stats.favTaId]);
-                            // eslint-disable-next-line no-console
-                            console.log(stats.favTaId + ("'s total sessions with " + userId));
-                            // eslint-disable-next-line no-console
-                            resSession.map(function (x) { return console.log(x); });
-                            var classFrequency_1 = {};
-                            var dayFrequency_1 = {};
-                            /*
-                                You need to find modeDay AFTER filtering all of modeCourse
-                                because of the case where if you filter by looking at what
-                                sessions have modeCourse AND modeDay, the modeDay might be a
-                                number that doesn't exist with modeCourse.
-                            */
-                            resSession.forEach(function (TAsession) {
-                                if (!classFrequency_1[TAsession.courseId]) {
-                                    classFrequency_1[TAsession.courseId] = 1;
-                                }
-                                else {
-                                    classFrequency_1[TAsession.courseId] += 1;
-                                }
-                            });
-                            var modeCourseId_1 = Object.keys(classFrequency_1).reduce(function (a, b) {
-                                return classFrequency_1[a] > classFrequency_1[b] ? a : b;
-                            });
-                            resSession.forEach(function (TAsession) {
-                                if (TAsession.courseId === modeCourseId_1) {
-                                    if (!dayFrequency_1[TAsession.day]) {
-                                        dayFrequency_1[TAsession.day] = 1;
-                                    }
-                                    else {
-                                        dayFrequency_1[TAsession.day] += 1;
-                                    }
-                                }
-                            });
-                            var modeDay_1 = Object.keys(dayFrequency_1).reduce(function (day1, day2) {
-                                return dayFrequency_1[parseInt(day1, 10)] > dayFrequency_1[parseInt(day2, 10)] ? day1 : day2;
-                            });
-                            // eslint-disable-next-line no-console
-                            console.log("modeCourse: " + modeCourseId_1 + " and modeDay: " + modeDay_1);
-                            var modeSessions = resSession.filter(function (TAsession) { return TAsession.courseId === modeCourseId_1
-                                && TAsession.day === parseInt(modeDay_1, 10); });
-                            // eslint-disable-next-line no-console
-                            console.log("final filtering for modeSessions");
-                            // eslint-disable-next-line no-console
-                            console.log(modeSessions);
-                            // there could be multiple ties, so just picking the first one
-                            stats.favClass = modeSessions[0].courseId;
-                            stats.favDay = modeSessions[0].day;
-                            // eslint-disable-next-line no-console
-                            console.log("favClass: " + stats.favClass + ", favDay: " + stats.favDay);
-                            // eslint-disable-next-line no-console
-                            console.log("------------");
-                        }
+                        console.log(answererId + " was a student but now theyre a TA");
                     }
                 };
-                // Personality type will be calculated after processing all documents
-                // Process stats
-                for (_b = 0, _c = Object.entries(userStats); _b < _c.length; _b++) {
-                    _d = _c[_b], userId = _d[0], stats = _d[1];
-                    _loop_2(userId, stats);
+                processStats = function () {
+                    var _a, _b;
+                    count = 0;
+                    var _loop_2 = function (userId, stats) {
+                        if (count > 0 && count % 100 === 0) {
+                            // eslint-disable-next-line no-console
+                            console.log(count + "/" + Object.entries(userStats).length + " users processed.");
+                        }
+                        stats.numVisits = officeHourSessions[userId].length;
+                        stats.totalMinutes = Math.ceil(stats.totalMinutes);
+                        if (stats.timeHelpingStudents !== undefined) {
+                            stats.timeHelpingStudents = Math.ceil(stats.timeHelpingStudents);
+                            if (stats.numStudentsHelped !== undefined) {
+                                stats.numStudentsHelped = TAsessions[userId].length;
+                            }
+                        }
+                        // Personality type
+                        var weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
+                            / (1000 * 60 * 60 * 24 * 7); // convert ms to weeks
+                        var averageSessionsPerWeek = stats.numVisits / weeksInRange;
+                        if (averageSessionsPerWeek >= 2) {
+                            stats.personalityType = 'Consistent';
+                        }
+                        else if (averageSessionsPerWeek >= 0.5) {
+                            stats.personalityType = 'Resourceful';
+                        }
+                        else {
+                            stats.personalityType = 'Independent';
+                        }
+                        // Month user spent the most time in
+                        stats.favMonth = (_a = monthTimeCounts[userId]) === null || _a === void 0 ? void 0 : _a.indexOf(Math.max.apply(Math, monthTimeCounts[userId]));
+                        // Get the ids in the map that have the highest counts
+                        if (taCounts[userId].size !== 0) {
+                            stats.favTaId = Array.from(taCounts[userId].entries()).reduce(function (prevEntry, nextEntry) { return prevEntry[1] < nextEntry[1] ? nextEntry : prevEntry; })[0];
+                        }
+                        // eslint-disable-next-line no-console
+                        // console.log(`${userId}'s fav ta is ${stats.favTaId}, taCounts length is ${taCounts[userId].size}`);
+                        if (stats.favTaId) {
+                            // only looking at the sessions from the favorite TA that match with sessions the user went to
+                            var resSession = (_b = TAsessions[stats.favTaId]) === null || _b === void 0 ? void 0 : _b.filter(function (TAsession) {
+                                return officeHourSessions[userId].includes(TAsession.session) && TAsession.asker === userId;
+                            });
+                            if ((resSession === null || resSession === void 0 ? void 0 : resSession.length) === 1) {
+                                stats.favClass = resSession[0].courseId;
+                                stats.favDay = resSession[0].day;
+                            }
+                            else if ((resSession === null || resSession === void 0 ? void 0 : resSession.length) > 1) {
+                                /* filtering from general to specific:
+                                    - find mode class
+                                    - out of all the sessions for that class, find mode day
+                                */
+                                // eslint-disable-next-line no-console
+                                // console.log(`finding ${userId}'s mode stats`);
+                                // // eslint-disable-next-line no-console
+                                // console.log(stats.favTaId + "'s total sessions");
+                                // // eslint-disable-next-line no-console
+                                // console.log(TAsessions[stats.favTaId]);
+                                // // eslint-disable-next-line no-console
+                                // console.log(stats.favTaId + `'s total sessions with ${userId}`);
+                                // // eslint-disable-next-line no-console
+                                // resSession.map((x) => console.log(x));
+                                var classFrequency_1 = {};
+                                var dayFrequency_1 = {};
+                                resSession.forEach(function (TAsession) {
+                                    if (!classFrequency_1[TAsession.courseId]) {
+                                        classFrequency_1[TAsession.courseId] = 1;
+                                    }
+                                    else {
+                                        classFrequency_1[TAsession.courseId] += 1;
+                                    }
+                                });
+                                var modeCourseId_1 = Object.keys(classFrequency_1).reduce(function (courseId1, courseId2) {
+                                    return classFrequency_1[courseId1] > classFrequency_1[courseId2] ? courseId1 : courseId2;
+                                });
+                                resSession.forEach(function (TAsession) {
+                                    if (TAsession.courseId === modeCourseId_1) {
+                                        if (!dayFrequency_1[TAsession.day]) {
+                                            dayFrequency_1[TAsession.day] = 1;
+                                        }
+                                        else {
+                                            dayFrequency_1[TAsession.day] += 1;
+                                        }
+                                    }
+                                });
+                                var modeDay_1 = Object.keys(dayFrequency_1).reduce(function (day1, day2) {
+                                    return dayFrequency_1[parseInt(day1, 10)] > dayFrequency_1[parseInt(day2, 10)] ? day1 : day2;
+                                });
+                                // eslint-disable-next-line no-console
+                                // console.log(`modeCourse: ${modeCourseId} and modeDay: ${modeDay}`);
+                                var modeSessions = resSession.filter(function (TAsession) { return TAsession.courseId === modeCourseId_1
+                                    && TAsession.day === parseInt(modeDay_1, 10); });
+                                // eslint-disable-next-line no-console
+                                // console.log("final filtering for modeSessions");
+                                // eslint-disable-next-line no-console
+                                // console.log(modeSessions);
+                                // There could be multiple ties, so just picking the first one
+                                stats.favClass = modeSessions[0].courseId;
+                                stats.favDay = modeSessions[0].day;
+                                // eslint-disable-next-line no-console
+                                // console.log(`favClass: ${stats.favClass}, favDay: ${stats.favDay}`);
+                                // eslint-disable-next-line no-console
+                                // console.log("------------");
+                            }
+                        }
+                        count++;
+                    };
+                    for (var _i = 0, _c = Object.entries(userStats); _i < _c.length; _i++) {
+                        var _d = _c[_i], userId = _d[0], stats = _d[1];
+                        _loop_2(userId, stats);
+                    }
+                };
+                return [4 /*yield*/, getWrappedSessionDocs()];
+            case 2:
+                sessionDocs = _j.sent();
+                count = 0;
+                _loop_1 = function (doc) {
+                    // Console statement for debugging
+                    if (count > 0 && count % 100 === 0) {
+                        // eslint-disable-next-line no-console
+                        console.log(count + "/" + questionsSnapshot.docs.length + " questions processed.");
+                    }
+                    var question = doc.data();
+                    var answererId = question.answererId, askerId = question.askerId, sessionId = question.sessionId, timeEntered = question.timeEntered, timeAddressed = question.timeAddressed;
+                    initializeUser(answererId, askerId);
+                    // Office hour visits
+                    var sessionDoc = sessionDocs[sessionId];
+                    if (TAsessions[answererId].find(function (TAsession) { return TAsession.session === sessionId; }) === undefined) {
+                        /* Since TA was active during this session and this is the first
+                        time encountering the session, we add it to their timeHelped */
+                        if (sessionDoc.exists && userStats[answererId].timeHelpingStudents !== undefined) {
+                            /* Add a total session time to the min TA helped */
+                            var timeHelping = (sessionDoc.get('endTime').toDate().getTime()
+                                - sessionDoc.get('startTime').toDate().getTime()) / 60000;
+                            // this should never be less than 0 (or 0, really)
+                            if (timeHelping >= 0) {
+                                userStats[answererId].timeHelpingStudents =
+                                    ((_b = userStats[answererId].timeHelpingStudents) !== null && _b !== void 0 ? _b : 0) + timeHelping;
+                            }
+                        }
+                    }
+                    officeHourSessions[askerId] = officeHourSessions[askerId] || [];
+                    if (!officeHourSessions[askerId].includes(sessionId)) {
+                        officeHourSessions[askerId].push(sessionId);
+                    }
+                    if (answererId && timeAddressed) {
+                        (_c = TAsessions[answererId]) === null || _c === void 0 ? void 0 : _c.push({
+                            session: sessionId,
+                            asker: askerId,
+                            courseId: sessionDoc.get('courseId'),
+                            day: timeAddressed.toDate().getDay()
+                        });
+                        if (!((_d = taCounts[askerId]) === null || _d === void 0 ? void 0 : _d.has(answererId))) {
+                            (_e = taCounts[askerId]) === null || _e === void 0 ? void 0 : _e.set(answererId, 1);
+                        }
+                        else if (answererId && ((_f = taCounts[askerId]) === null || _f === void 0 ? void 0 : _f.has(answererId))) {
+                            var taAmt = (_g = taCounts[askerId]) === null || _g === void 0 ? void 0 : _g.get(answererId);
+                            taAmt && ((_h = taCounts[askerId]) === null || _h === void 0 ? void 0 : _h.set(answererId, taAmt + 1));
+                        }
+                    }
+                    // Minutes spent at office hours
+                    if (timeEntered) {
+                        if (timeAddressed) {
+                            var minutesSpent = (timeAddressed.toDate().getTime() -
+                                timeEntered.toDate().getTime()) / 60000; // convert ms to minutes
+                            if (minutesSpent >= 0) {
+                                userStats[askerId].totalMinutes += minutesSpent;
+                            }
+                            monthTimeCounts[askerId][timeEntered.toDate().getMonth()] += minutesSpent;
+                        }
+                        else {
+                            userStats[askerId].totalMinutes += 60; // assume 60 minutes if not addressed
+                            monthTimeCounts[askerId][timeEntered.toDate().getMonth()] += 60;
+                        }
+                    }
+                    count++;
+                };
+                for (_i = 0, _a = questionsSnapshot.docs; _i < _a.length; _i++) {
+                    doc = _a[_i];
+                    _loop_1(doc);
                 }
+                processStats();
                 return [4 /*yield*/, updateWrappedDocs()];
-            case 6:
-                _q.sent();
-                // debugging console log
+            case 3:
+                _j.sent();
                 // eslint-disable-next-line no-console
                 errorUsers.forEach(function (errUser) { return console.log(errUser.user + ": " + errUser.error); });
                 return [2 /*return*/];
