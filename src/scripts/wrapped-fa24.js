@@ -134,7 +134,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                 officeHourSessions = {};
                 TAsessions = {};
                 updateWrappedDocs = function () { return __awaiter(void 0, void 0, void 0, function () {
-                    var batch, userDocuments, _i, _a, _b, userId, stats, hasVisits, isUserActive, hasFavoriteTa, taStatsMismatched, wrappedDocRef, userDoc;
+                    var batch, userDocuments, _i, _a, _b, userId, stats, hasVisits, isUserActive, taHelped, hasFavoriteTa, taStatsMismatched, wrappedDocRef, userDoc;
                     var _c;
                     return __generator(this, function (_d) {
                         switch (_d.label) {
@@ -149,10 +149,12 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                     if (userId) {
                                         hasVisits = stats.numVisits > 0;
                                         isUserActive = stats.timeHelpingStudents === undefined || (((_c = TAsessions[userId]) === null || _c === void 0 ? void 0 : _c.length) > 0);
+                                        taHelped = stats.timeHelpingStudents === undefined ||
+                                            (stats.numStudentsHelped && stats.timeHelpingStudents > 0 && stats.numStudentsHelped > 0);
                                         hasFavoriteTa = stats.favTaId !== "";
                                         taStatsMismatched = (stats.timeHelpingStudents !== undefined && stats.numStudentsHelped === undefined)
                                             || (stats.timeHelpingStudents === undefined && stats.numStudentsHelped !== undefined);
-                                        if (hasVisits && isUserActive && hasFavoriteTa) {
+                                        if (hasVisits && isUserActive && hasFavoriteTa && taHelped) {
                                             if (!(stats.favClass && stats.favDay !== -1 && stats.favMonth !== -1)) {
                                                 errorUsers.push({ user: userId, error: "User is active and has favorite TA but missing one of the following:\n                             favClass: " + stats.favClass + ", favDay: " + stats.favDay + ", favMonth: " + stats.favMonth });
                                             }
