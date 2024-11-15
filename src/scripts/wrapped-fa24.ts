@@ -60,7 +60,7 @@ const getWrapped = async () => {
     }
 
     const getWrappedSessionDocs = async () => {
-        const docs: {[userId:string]: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>} = {};
+        const docs: {[sessionId:string]: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>} = {};
         const sessionIds: string[] = [];
         questionsSnapshot.docs.map((doc) => sessionIds.push(doc.get('sessionId')));
         sessionIds.sort();
