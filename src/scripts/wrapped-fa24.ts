@@ -102,11 +102,14 @@ const getWrapped = async () => {
                 const hasVisits = stats.numVisits > 0;
                 // This is true if the user is either a student, or a TA who has more than one session
                 const isUserActive = stats.timeHelpingStudents === undefined || (TAsessions[userId]?.length > 0);
+                // True if user is either a student, or TA who helped more than 0 students for more than 0 minutes
+                const taHelped = stats.timeHelpingStudents === undefined || 
+                (stats.numStudentsHelped && stats.timeHelpingStudents > 0 && stats.numStudentsHelped > 0);
                 const hasFavoriteTa = stats.favTaId !== "";
                 const taStatsMismatched = 
                 (stats.timeHelpingStudents !== undefined && stats.numStudentsHelped === undefined)
                 || (stats.timeHelpingStudents === undefined && stats.numStudentsHelped !== undefined);
-                if (hasVisits && isUserActive && hasFavoriteTa) {
+                if (hasVisits && isUserActive && hasFavoriteTa && taHelped) {
                     if (!(stats.favClass && stats.favDay !== -1 && stats.favMonth !== -1)) {
                         errorUsers.push({user: userId, 
                             error: `User is active and has favorite TA but missing one of the following:
