@@ -140,8 +140,6 @@ const Wrapped= (props: Props): JSX.Element => {
     const [showBanner, setShowBanner] = useState(false);
 
     /* TA's only see 4 slides, TA + Student see 7, Only student see 6 */  
-    // const totalStages = (wrappedData.timeHelpingStudents === undefined || wrappedData.timeHelpingStudents == 0) ? 
-    //    (6) : (wrappedData.favTaId == "" || wrappedData.favTaId === undefined ) ? 4 : 7;
 
     const RenderStudent = () => (
         <>
@@ -398,64 +396,56 @@ const Wrapped= (props: Props): JSX.Element => {
         </div>
     );
 
+    const L = [L0, L1, L2, L3, L4, L5, L6, L7, L8, L9];
+    const F = [F0, F1, F2, F3, F4, F5, F6, F7, F8, F9];
+    const S = [S0, S1, S2, S3, S4, S5, S6, S7, S8, S9];
+    const N = [N0, N1, N2, N3, N4, N5, N6, N7, N8, N9];
+
     const NumberPeople = () => {
-        const mins = wrappedData.totalMinutes;
-        const svgNames: string[] = [];
+        const digits = wrappedData.totalMinutes.toString().split('');
+        const length = digits.length;
+        const getSvgImage = (index :number, digit: number) => {
+            switch (length) {
+                case 1:
+                    // Use 'L' for single digit numbers
+                    return L[digit];
+                case 2:
+                    // 'F' for the first and 'L' for the last
+                    return index === 0 ? N[digit] : L[digit]; 
+                case 3:
+                    if (index === 0) return F[digit];
+                    if (index === 2) return L[digit];
+                    return N[digit]; // 'N' for the middle digit
+                case 4:
+                    // 'S' for the second
+                    if (index === 1) return S[digit];
+                    // 'L' for the last
+                    if (index === 3) return L[digit]; 
+                    // 'N' for first and third
+                    return N[digit]; 
+                default:
+                    return '';
+                    // Default to '' if more than four digits, case handled outside
+            }
+        };
 
-        if (mins >=0 && mins < 10){
-            // one digit numbers get people on last digit
-
-            svgNames.push("L" + mins);
-        } else if (mins >= 10 && mins < 100){
-            // two digit numbers get people on both digits
-
-            const firstNum = Math.floor(mins / 10);
-            svgNames.push("N" + firstNum);
-
-            const secNum = mins % 10;
-            svgNames.push("L" + secNum);
-
-        } else if (mins >= 100 && mins < 1000){
-            // three digit numbers get people on the 1st and 3rd digits
-
-            const firstNum = Math.floor(mins / 100);
-            svgNames.push("F" + firstNum);
-
-            const secNum = Math.floor(mins % 100 / 10);
-            svgNames.push("N" + secNum); // -0 for numbers w/no people
-
-            const thirdNum = mins % 10;
-            svgNames.push("L" +thirdNum); // -L for last number
-
-        } else if (mins >= 1000 && mins < 10000){
-            // four digit numbers get people on the 2nd and 4th digits
-
-            const firstNum = Math.floor(mins / 1000);
-            svgNames.push("N" + firstNum);
-
-            const secNum = (mins / 100) / 10 % 10;
-            svgNames.push("S" + secNum);
-
-            const thirdNum = (mins /100) % 100;
-            svgNames.push("N" + thirdNum);
-
-            const fourthNum = (mins % 1000);
-            svgNames.push("L" + fourthNum);
-        } else {
-            // more than five digit numbers get 10000+ svg
-            svgNames.push("fiveDigits");
+        if (length >= 5) {
+            return (
+                <div className="timeSpent five-nums">
+                    <img src={fiveDigits} alt="Five digits" />
+                </div>
+            );
         }
+
         return (
-            <div>
-                {svgNames.map((name : string) =>
-                    <img
-                        src={name}
-                        alt=""
-                    />
-                )}
+            <div className="timeSpent nums-container">
+                {digits.map((digit, index) => {
+                    const SvgImage = getSvgImage(index, parseInt(digit, 10));
+                    return <img key={digit} src={SvgImage} alt="" />;
+                })}
             </div>
         );
-    }
+    };
 
     const Welcome = () => (
         <div>
@@ -529,9 +519,6 @@ const Wrapped= (props: Props): JSX.Element => {
             <div>
                 <NumberPeople/>
             </div>
-            {/* <div className="timeSpent num-text">
-                {wrappedData.totalMinutes}
-            </div> */}
             <div className="timeSpent minutes-text"> 
                 MINUTES
             </div>
@@ -660,8 +647,8 @@ const Wrapped= (props: Props): JSX.Element => {
             <div className="taStudentsHelped top-text">
                 YOU MADE LIFE EASIER FOR...
             </div>
-            <div className="taStudentsHelped num">
-                {wrappedData.numStudentsHelped}
+            <div>
+                <NumberPeople/>
             </div>
             <div className="taStudentsHelped students">
                 STUDENTS
