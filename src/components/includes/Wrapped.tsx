@@ -18,9 +18,58 @@ import head from "../../media/wrapped/head.svg";
 import body from "../../media/wrapped/body.svg";
 import arm from "../../media/wrapped/arm.svg";
 import smallGirl from "../../media/wrapped/small_girl.svg";
-import ConsistentPersonality from "../../media/wrapped/consistent_personality.svg"
-import ResourcefulPersonality from "../../media/wrapped/resourceful_personality.svg"
-import IndependentPersonality from "../../media/wrapped/independent_personality.svg"
+import ConsistentPersonality from "../../media/wrapped/consistent_personality.svg";
+import ResourcefulPersonality from "../../media/wrapped/resourceful_personality.svg";
+import IndependentPersonality from "../../media/wrapped/independent_personality.svg";
+
+import N0 from "../../media/wrapped/0-0.svg";
+import N1 from "../../media/wrapped/0-1.svg";
+import N2 from "../../media/wrapped/0-2.svg";
+import N3 from "../../media/wrapped/0-3.svg";
+import N4 from "../../media/wrapped/0-4.svg";
+import N5 from "../../media/wrapped/0-5.svg";
+import N6 from "../../media/wrapped/0-6.svg";
+import N7 from "../../media/wrapped/0-7.svg";
+import N8 from "../../media/wrapped/0-8.svg";
+import N9 from "../../media/wrapped/0-9.svg";
+
+import F0 from "../../media/wrapped/1-0.svg";
+import F1 from "../../media/wrapped/1-1.svg";
+import F2 from "../../media/wrapped/1-2.svg";
+import F3 from "../../media/wrapped/1-3.svg";
+import F4 from "../../media/wrapped/1-4.svg";
+import F5 from "../../media/wrapped/1-5.svg";
+import F6 from "../../media/wrapped/1-6.svg";
+import F7 from "../../media/wrapped/1-7.svg";
+import F8 from "../../media/wrapped/1-8.svg";
+import F9 from "../../media/wrapped/1-9.svg";
+
+import S0 from "../../media/wrapped/2-0.svg";
+import S1 from "../../media/wrapped/2-1.svg";
+import S2 from "../../media/wrapped/2-2.svg";
+import S3 from "../../media/wrapped/2-3.svg";
+import S4 from "../../media/wrapped/2-4.svg";
+import S5 from "../../media/wrapped/2-5.svg";
+import S6 from "../../media/wrapped/2-6.svg";
+import S7 from "../../media/wrapped/2-7.svg";
+import S8 from "../../media/wrapped/2-8.svg";
+import S9 from "../../media/wrapped/2-9.svg";
+
+import L0 from "../../media/wrapped/L-0.svg";
+import L1 from "../../media/wrapped/L-1.svg";
+import L2 from "../../media/wrapped/L-2.svg";
+import L3 from "../../media/wrapped/L-3.svg";
+import L4 from "../../media/wrapped/L-4.svg";
+import L5 from "../../media/wrapped/L-5.svg";
+import L6 from "../../media/wrapped/L-6.svg";
+import L7 from "../../media/wrapped/L-7.svg";
+import L8 from "../../media/wrapped/L-8.svg";
+import L9 from "../../media/wrapped/L-9.svg";
+
+import fiveDigits from "../../media/wrapped/five_digits.svg";
+
+
+
 import arrow from '../../media/wrapped/arrow.svg';
 import smallPlus from '../../media/wrapped/plus.svg';
 import bigPlus from '../../media/wrapped/plus2.svg';
@@ -146,9 +195,9 @@ const Wrapped= (props: Props): JSX.Element => {
 
                     const data = doc.data();
                     if (data !== undefined){
-                        if (data.timeHelpingStudents === undefined || data.timeHelpingStudents == 0){
+                        if (data.timeHelpingStudents === undefined || data.timeHelpingStudents === 0){
                             setTotalStages(6);
-                        } else if (data.favTaId == "" || data.favTaId === undefined){
+                        } else if (data.favTaId === "" || data.favTaId === undefined){
                             setTotalStages(4);
                         } else{
                             setTotalStages(7);
@@ -349,6 +398,65 @@ const Wrapped= (props: Props): JSX.Element => {
         </div>
     );
 
+    const NumberPeople = () => {
+        const mins = wrappedData.totalMinutes;
+        const svgNames: string[] = [];
+
+        if (mins >=0 && mins < 10){
+            // one digit numbers get people on last digit
+
+            svgNames.push("L" + mins);
+        } else if (mins >= 10 && mins < 100){
+            // two digit numbers get people on both digits
+
+            const firstNum = Math.floor(mins / 10);
+            svgNames.push("N" + firstNum);
+
+            const secNum = mins % 10;
+            svgNames.push("L" + secNum);
+
+        } else if (mins >= 100 && mins < 1000){
+            // three digit numbers get people on the 1st and 3rd digits
+
+            const firstNum = Math.floor(mins / 100);
+            svgNames.push("F" + firstNum);
+
+            const secNum = Math.floor(mins % 100 / 10);
+            svgNames.push("N" + secNum); // -0 for numbers w/no people
+
+            const thirdNum = mins % 10;
+            svgNames.push("L" +thirdNum); // -L for last number
+
+        } else if (mins >= 1000 && mins < 10000){
+            // four digit numbers get people on the 2nd and 4th digits
+
+            const firstNum = Math.floor(mins / 1000);
+            svgNames.push("N" + firstNum);
+
+            const secNum = (mins / 100) / 10 % 10;
+            svgNames.push("S" + secNum);
+
+            const thirdNum = (mins /100) % 100;
+            svgNames.push("N" + thirdNum);
+
+            const fourthNum = (mins % 1000);
+            svgNames.push("L" + fourthNum);
+        } else {
+            // more than five digit numbers get 10000+ svg
+            svgNames.push("fiveDigits");
+        }
+        return (
+            <div>
+                {svgNames.map((name : string) =>
+                    <img
+                        src={name}
+                        alt=""
+                    />
+                )}
+            </div>
+        );
+    }
+
     const Welcome = () => (
         <div>
             <div className="welcomeSlide">
@@ -418,15 +526,24 @@ const Wrapped= (props: Props): JSX.Element => {
             <div className="timeSpent top-text"> 
                 SPENDING A TOTAL OF...
             </div>
-            <div className="timeSpent num-text">
-                {wrappedData.totalMinutes}
+            <div>
+                <NumberPeople/>
             </div>
+            {/* <div className="timeSpent num-text">
+                {wrappedData.totalMinutes}
+            </div> */}
             <div className="timeSpent minutes-text"> 
                 MINUTES
             </div>
             <div className="timeSpent bottom-text"> 
                 AT OFFICE HOURS
             </div>
+
+            <img
+                src={smallGirl}
+                className="timeSpent smallGirl"
+                alt=""
+            />
 
             <div>
                 {showBanner && (
