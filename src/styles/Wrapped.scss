@@ -164,33 +164,34 @@
     position: absolute;
     top: 3rem;
     left: 3rem;
-    font-weight: bold;
-    font-size: 2.5rem;
+    font-weight: 600;
+    font-size: 27px;
   }
 
   //styling for each size digit number?
-  &.nums{
+  &.nums-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: absolute;
-    bottom: 30%;
-    left: 35%;
+    top: 37%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
-  // &.num-text{
-  //   position: absolute;
-  //   top: 50%;
-  //   left: 50%;
-  //   transform: translate(-50%, -50%);
-  //   font-size: 18rem;
-  //   font-weight: 600;
-  //   color: #080680;
-  // }
+  &.five-nums{
+    position: absolute;
+    top: 50%;
+    left: 52.5%;
+    transform: translate(-50%, -50%);
+  }
 
   &.minutes-text{
     position: absolute;
-    bottom: 8rem;
+    bottom: 7.5rem;
     right: 3rem;
-    font-weight: bold;
-    font-size: 2.5rem;
+    font-weight: 600;
+    font-size: 27px;
     text-align: right;
     width: 300px;
   }
@@ -199,8 +200,8 @@
     position: absolute;
     bottom: 5rem;
     right: 3rem;
-    font-weight: bold;
-    font-size: 2.5rem;
+    font-weight: 600;
+    font-size: 27px;
     text-align: right;
     width: 300px;
   }
