@@ -94,7 +94,8 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, co
                     src={countdownZero ? ribbonNotif : notification}
                     alt="Notification icon"
                 />
-                {!hasViewed && <img className="notifications__indicator" src={notif}
+                {!hasViewed && <img className="notifications__indicator"
+                    src={notif}
                     alt="Notification indicator" />}
             </div>
             <div
