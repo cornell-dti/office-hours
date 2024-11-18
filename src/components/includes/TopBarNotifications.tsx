@@ -86,58 +86,79 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, co
         toggleDropped(!dropped);
     }
 
-    useEffect(() => {
-        if (countdownZero) {
-            const wrapped_notif: SessionNotification = {
-                title: "Queue Me In Wrapped",
-                subtitle: "Queue Me In Wrapped",
-                message:
-                    "Queue Me In Wrapped has been added to your notifications queue. You can revisit your office hour statistics any time by clicking here",
-                createdAt: {
-                    seconds: new Date().getTime(),
-                    nanoseconds: new Date().getTime() * 1e9,
-                    toDate: () => new Date(),
-                },
-            };
-            if (notifications !== undefined) {
-                notifications.push(wrapped_notif);
-            }
-        }
-    }, [countdownZero, notifications])
+    // useEffect(() => {
+    //     if (countdownZero) {
+    //         const wrapped_notif: SessionNotification = {
+    //             title: "Queue Me In Wrapped",
+    //             subtitle: "Queue Me In Wrapped",
+    //             message:
+    //                 "Queue Me In Wrapped has been added to your notifications queue. You can revisit your office hour statistics any time by clicking here",
+    //             createdAt: {
+    //                 seconds: new Date().getTime(),
+    //                 nanoseconds: new Date().getTime() * 1e9,
+    //                 toDate: () => new Date(),
+    //             },
+    //         };
+    //         if (notifications !== undefined) {
+    //             notifications.push(wrapped_notif);
+    //         }
+    //     }
+    // }, [countdownZero, notifications])
 
     return (
         <div ref={dropdownRef}>
             <div className="notifications__top" onClick={() => iconClicked()}>
-                <img className="notifications__icon" src={countdownZero ? ribbon_notif : notification} alt="Notification icon" />
+                <img
+                    className="notifications__icon"
+                    src={countdownZero ? ribbon_notif : notification}
+                    alt="Notification icon"
+                />
                 {!hasViewed && <img className="notifications__indicator" src={notif} alt="Notification indicator" />}
             </div>
-            <div  
-                className={`notifications__dropdown notifications__${dropped ? "visible": "hidden"}`} 
-                onClick={e => e.stopPropagation()}
+            <div
+                className={`notifications__dropdown notifications__${dropped ? "visible" : "hidden"}`}
+                onClick={(e) => e.stopPropagation()}
             >
-                {notifications === undefined || notifications.length === 0 ? 
-                    (<div className="notification__placeholder">You do not have any notifications</div> ):
-                    notifications.map((notific, index) => (<div 
-                        className="notifications__notification" 
-                        style={{background: getColor(notific)}} 
-                        key={index}
+                {notifications === undefined || (notifications.length === 0 && !countdownZero) ? (
+                    <div className="notification__placeholder">You do not have any notifications</div>
+                ) : (
+                    notifications.map((notific, index) => (
+                        <div
+                            className="notifications__notification"
+                            style={{ background: getColor(notific) }}
+                            key={index}
+                        >
+                            <div className="notification__header">
+                                <div className="notification__title">{notific.subtitle}</div>
+                                <Moment
+                                    className="notification__date"
+                                    date={notific.createdAt.toDate()}
+                                    interval={0}
+                                    format={"hh:mm a"}
+                                />
+                            </div>
+                            <div className="notification__content">{notific.message}</div>
+                        </div>
+                    ))
+                )}
+                {/* Additional notification when countdownZero is true */}
+                {countdownZero && (
+                    <div
+                        className="notifications__notification"
+                        style={{ backgroundColor: "#C1D4F9", padding: "20px", borderRadius: "8px" }}
                     >
                         <div className="notification__header">
-                            <div className="notification__title">{notific.subtitle}</div>
-                            <Moment 
-                                className="notification__date" 
-                                date={notific.createdAt.toDate()} 
-                                interval={0} 
-                                format={'hh:mm a'} 
-                            />
+                            <div className="notification__title">Queue Me In Wrapped</div>
                         </div>
                         <div className="notification__content">
-                            {notific.message}
+                            Queue Me In Wrapped has been added to your notifications queue. You can revisit your office
+                            hour statistics any time by clicking here!
                         </div>
-                    </div>))}
+                    </div>
+                )}
             </div>
         </div>
-    )
+    );
 }
 
 const mapStateToProps = (state: RootState) => ({
