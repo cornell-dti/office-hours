@@ -94,9 +94,11 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, co
                     src={countdownZero ? ribbonNotif : notification}
                     alt="Notification icon"
                 />
-                {!hasViewed && <img className="notifications__indicator"
+                {!hasViewed &&
+                    <img className="notifications__indicator"
                     src={notif}
-                    alt="Notification indicator" />}
+                    alt="Notification indicator" />
+                }
             </div>
             <div
                 className={`notifications__dropdown notifications__${dropped ? "visible" : "hidden"}`}
