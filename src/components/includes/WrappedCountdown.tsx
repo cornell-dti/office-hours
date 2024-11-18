@@ -17,9 +17,10 @@ type RemainingTime = {
 // Declare interface to takes in the setter setDisplayWrapped as a prop
 interface WrappedCountdownProps {
     setDisplayWrapped: React.Dispatch<React.SetStateAction<boolean>>; // Define prop type for setter
+    setCountdownZero: React.Dispatch<React.SetStateAction<boolean>>;
     wrappedDate: WrappedDate;
 }
-const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, wrappedDate }) => {
+const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, setCountdownZero, wrappedDate }) => {
     const handleButtonClick = () => {
         // Call the setter function to change the state in the parent
         setDisplayWrapped(true); // Set to true to show the modal
@@ -49,8 +50,9 @@ const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, 
         // Stop countdown and set `isZeroCounter` when time reaches zero
         if (updatedTime.total <= 0) {
             setIsZeroCounter(true);
+            setCountdownZero(true)
         }
-    }, [wrappedDate, timeRemaining]);
+    }, [wrappedDate, timeRemaining, setCountdownZero]);
 
     // Trigger confetti with a delay only the first time `isZeroCounter` becomes true
     useEffect(() => {

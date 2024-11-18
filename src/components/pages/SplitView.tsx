@@ -87,6 +87,7 @@ const SplitView = ({
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
+    const [countdownZero, setCountdownZero] = useState<boolean>(false);
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
@@ -204,6 +205,7 @@ const SplitView = ({
                 context="student"
                 courseId={match.params.courseId}
                 course={course}
+                countdownZero={countdownZero}
             />
             {banners.map((banner, index) => (
                 <Banner
@@ -274,6 +276,7 @@ const SplitView = ({
             <ProductUpdates />
             <WrappedCountdown
                 setDisplayWrapped={setDisplayWrapped}
+                setCountdownZero={setCountdownZero}
                 wrappedDate={{ launchDate: launch, startDate: start }}
             />
             {displayFeedbackPrompt ? (
