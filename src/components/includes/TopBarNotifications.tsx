@@ -16,7 +16,7 @@ type Props = {
     iconClick: () => void;
     /** Determines whether the profile menu should be shown or not */
     showMenu: boolean;
-    countdownZero: boolean | undefined;
+    countdownZero?: boolean | undefined;
 }
 
 const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, countdownZero}: Props) => {
