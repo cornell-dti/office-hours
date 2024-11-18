@@ -3,7 +3,7 @@ import Moment from 'react-moment'
 import { connect } from 'react-redux';
 import notif from '../../media/notif.svg'
 import notification from '../../media/notification.svg'
-import ribbon_notif from '../../media/ribbon_notif.svg'
+import ribbonNotif from '../../media/ribbon_notif.svg'
 import {viewedTrackable, periodicClearNotifications} from '../../firebasefunctions/notifications'
 import { RootState } from '../../redux/store';
 
@@ -86,34 +86,16 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, co
         toggleDropped(!dropped);
     }
 
-    useEffect(() => {
-        if (countdownZero) {
-            const wrapped_notif: SessionNotification = {
-                title: "Queue Me In Wrapped",
-                subtitle: "Queue Me In Wrapped",
-                message:
-                    "Queue Me In Wrapped has been added to your notifications queue. You can revisit your office hour statistics any time by clicking here",
-                createdAt: {
-                    seconds: new Date().getTime(),
-                    nanoseconds: new Date().getTime() * 1e9,
-                    toDate: () => new Date(),
-                },
-            };
-            if (notifications !== undefined) {
-                notifications.push(wrapped_notif);
-            }
-        }
-    }, [countdownZero, notifications])
-
     return (
         <div ref={dropdownRef}>
             <div className="notifications__top" onClick={() => iconClicked()}>
                 <img
                     className="notifications__icon"
-                    src={countdownZero ? ribbon_notif : notification}
+                    src={countdownZero ? ribbonNotif : notification}
                     alt="Notification icon"
                 />
-                {!hasViewed && <img className="notifications__indicator" src={notif} alt="Notification indicator" />}
+                {!hasViewed && <img className="notifications__indicator" src={notif}
+                    alt="Notification indicator" />}
             </div>
             <div
                 className={`notifications__dropdown notifications__${dropped ? "visible" : "hidden"}`}
@@ -151,7 +133,8 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, co
                             <div className="notification__title">Queue Me In Wrapped</div>
                         </div>
                         <div className="notification__content">
-                            Queue Me In Wrapped has been added to your notifications queue. You can revisit your office
+                            Queue Me In Wrapped has been added to your notifications queue.
+                            You can revisit your office
                             hour statistics any time by clicking here!
                         </div>
                     </div>
