@@ -9,8 +9,6 @@ admin.initializeApp({
 // eslint-disable-next-line no-console
 console.log('Firebase admin initialized!');
 
-
-
 // Initialize Firestore
 const db = admin.firestore();
 const errorUsers: {
@@ -74,7 +72,6 @@ const getWrapped = async () => {
         ));
         return docs;
     }
-
 
     const taCounts: {[userId: string] : Map<string, number>} = {};
     const monthTimeCounts: {[userId: string]: number[]} = {};
@@ -192,8 +189,6 @@ const getWrapped = async () => {
                 numStudentsHelped: 0
             };
             TAsessions[answererId] = [];
-            // eslint-disable-next-line no-console
-            console.log(`${answererId} was a student but now theyre a TA`)
         }
 
     }
@@ -234,8 +229,7 @@ const getWrapped = async () => {
                 stats.favTaId = Array.from(taCounts[userId].entries()).reduce(
                     (prevEntry, nextEntry) => prevEntry[1] < nextEntry[1] ? nextEntry : prevEntry)[0];
             }
-            // eslint-disable-next-line no-console
-            // console.log(`${userId}'s fav ta is ${stats.favTaId}, taCounts length is ${taCounts[userId].size}`);
+    
             if (stats.favTaId) {
             // only looking at the sessions from the favorite TA that match with sessions the user went to
                 const resSession = TAsessions[stats.favTaId]?.filter( (TAsession) => 
@@ -248,17 +242,6 @@ const getWrapped = async () => {
                     - find mode class
                     - out of all the sessions for that class, find mode day
                 */
-
-                    // eslint-disable-next-line no-console
-                    // console.log(`finding ${userId}'s mode stats`);
-                    // // eslint-disable-next-line no-console
-                    // console.log(stats.favTaId + "'s total sessions");
-                    // // eslint-disable-next-line no-console
-                    // console.log(TAsessions[stats.favTaId]);
-                    // // eslint-disable-next-line no-console
-                    // console.log(stats.favTaId + `'s total sessions with ${userId}`);
-                    // // eslint-disable-next-line no-console
-                    // resSession.map((x) => console.log(x));
 
                     const classFrequency: { [courseId: string]: number } = {};
                     const dayFrequency: { [day: number]: number } = {};
@@ -284,24 +267,14 @@ const getWrapped = async () => {
                     });
                     const modeDay = Object.keys(dayFrequency).reduce((day1, day2) =>
                         dayFrequency[parseInt(day1, 10)] > dayFrequency[parseInt(day2,10)] ? day1 : day2);
-                    // eslint-disable-next-line no-console
-                    // console.log(`modeCourse: ${modeCourseId} and modeDay: ${modeDay}`);
+
                     const modeSessions = resSession.filter((TAsession) => TAsession.courseId === modeCourseId 
                 && TAsession.day === parseInt(modeDay,10));
-                
-                    // eslint-disable-next-line no-console
-                    // console.log("final filtering for modeSessions");
-                    // eslint-disable-next-line no-console
-                    // console.log(modeSessions);
                     
                     // There could be multiple ties, so just picking the first one
                     stats.favClass =  modeSessions[0].courseId;
                     stats.favDay = modeSessions[0].day;
-                    // eslint-disable-next-line no-console
-                    // console.log(`favClass: ${stats.favClass}, favDay: ${stats.favDay}`);
-                
-                // eslint-disable-next-line no-console
-                // console.log("------------");
+
                 }
             }
             count++;
