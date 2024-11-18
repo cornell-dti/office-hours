@@ -28,7 +28,7 @@ type Props = {
     course?: FireCourse;
     admin?: boolean;
     snackbars: Announcement[];
-    countdownZero?: boolean;
+    countdownZero: boolean;
 };
 
 const TopBar = (props: Props) => {
