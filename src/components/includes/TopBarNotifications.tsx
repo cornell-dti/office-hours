@@ -86,24 +86,24 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, co
         toggleDropped(!dropped);
     }
 
-    useEffect(() => {
-        if (countdownZero) {
-            const wrapped_notif: SessionNotification = {
-                title: "Queue Me In Wrapped",
-                subtitle: "Queue Me In Wrapped",
-                message:
-                    "Queue Me In Wrapped has been added to your notifications queue. You can revisit your office hour statistics any time by clicking here",
-                createdAt: {
-                    seconds: new Date().getTime(),
-                    nanoseconds: new Date().getTime() * 1e9,
-                    toDate: () => new Date(),
-                },
-            };
-            if (notifications !== undefined) {
-                notifications.push(wrapped_notif);
-            }
-        }
-    }, [countdownZero, notifications])
+    // useEffect(() => {
+    //     if (countdownZero) {
+    //         const wrapped_notif: SessionNotification = {
+    //             title: "Queue Me In Wrapped",
+    //             subtitle: "Queue Me In Wrapped",
+    //             message:
+    //                 "Queue Me In Wrapped has been added to your notifications queue. You can revisit your office hour statistics any time by clicking here",
+    //             createdAt: {
+    //                 seconds: new Date().getTime(),
+    //                 nanoseconds: new Date().getTime() * 1e9,
+    //                 toDate: () => new Date(),
+    //             },
+    //         };
+    //         if (notifications !== undefined) {
+    //             notifications.push(wrapped_notif);
+    //         }
+    //     }
+    // }, [countdownZero, notifications])
 
     return (
         <div ref={dropdownRef}>
