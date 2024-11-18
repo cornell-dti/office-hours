@@ -3,6 +3,7 @@ import Moment from 'react-moment'
 import { connect } from 'react-redux';
 import notif from '../../media/notif.svg'
 import notification from '../../media/notification.svg'
+import ribbon_notif from '../../media/ribbon_notif.svg'
 import {viewedTrackable, periodicClearNotifications} from '../../firebasefunctions/notifications'
 import { RootState } from '../../redux/store';
 
@@ -15,9 +16,10 @@ type Props = {
     iconClick: () => void;
     /** Determines whether the profile menu should be shown or not */
     showMenu: boolean;
+    countdownZero: boolean | undefined;
 }
 
-const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick}: Props) => {
+const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, countdownZero}: Props) => {
     const [dropped, toggleDropped] = useState(false);
 
     const notifications = notificationTracker?.notificationList?.sort((a, b) => {
@@ -84,10 +86,29 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick}: P
         toggleDropped(!dropped);
     }
 
+    useEffect(() => {
+        if (countdownZero) {
+            const wrapped_notif: SessionNotification = {
+                title: "Queue Me In Wrapped",
+                subtitle: "Queue Me In Wrapped",
+                message:
+                    "Queue Me In Wrapped has been added to your notifications queue. You can revisit your office hour statistics any time by clicking here",
+                createdAt: {
+                    seconds: new Date().getTime(),
+                    nanoseconds: new Date().getTime() * 1e9,
+                    toDate: () => new Date(),
+                },
+            };
+            if (notifications !== undefined) {
+                notifications.push(wrapped_notif);
+            }
+        }
+    }, [countdownZero, notifications])
+
     return (
         <div ref={dropdownRef}>
             <div className="notifications__top" onClick={() => iconClicked()}>
-                <img className="notifications__icon" src={notification} alt="Notification icon" />
+                <img className="notifications__icon" src={countdownZero ? ribbon_notif : notification} alt="Notification icon" />
                 {!hasViewed && <img className="notifications__indicator" src={notif} alt="Notification indicator" />}
             </div>
             <div  
