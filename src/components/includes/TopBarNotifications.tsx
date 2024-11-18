@@ -96,8 +96,9 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, co
                 />
                 {!hasViewed &&
                     <img className="notifications__indicator"
-                    src={notif}
-                    alt="Notification indicator" />
+                        src={notif}
+                        alt="Notification indicator"
+                    />
                 }
             </div>
             <div
