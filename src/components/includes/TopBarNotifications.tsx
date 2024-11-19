@@ -156,3 +156,4 @@ const mapStateToProps = (state: RootState) => ({
 
 
 export default connect(mapStateToProps, {})(TopBarNotifications);
+TopBarNotifications.defaultProps = { countdownZero: false };
