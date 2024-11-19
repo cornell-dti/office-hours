@@ -16,6 +16,7 @@ type Props = {
     iconClick: () => void;
     /** Determines whether the profile menu should be shown or not */
     showMenu: boolean;
+    /** Determines whether the wrapped countdown has reached 0 */
     countdownZero?: boolean | undefined;
 }
 
@@ -132,7 +133,7 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, co
                 {countdownZero && (
                     <div
                         className="notifications__notification"
-                        style={{ backgroundColor: "#C1D4F9", padding: "20px", borderRadius: "8px" }}
+                        style={{ backgroundColor: "#DBE8FD", borderRadius: "8px" }}
                     >
                         <div className="notification__header">
                             <div className="notification__title">Queue Me In Wrapped</div>
