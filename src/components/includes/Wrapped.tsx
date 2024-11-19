@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /** Modal component for QMI Wrapped */
 
 import { IconButton, Typography } from "@material-ui/core";
@@ -96,6 +97,9 @@ const Wrapped = (props: Props) => {
         numStudentsHelped: 0,
     });
 
+    const [displayFavs, setDisplayFavs] = useState(true);
+    const [role, setRole] = useState(0); // 0 === student, 1 === student/TA, 2 === TA
+
     const [taName, setTaName] = useState({
         firstName: "",
         lastName: "",
@@ -129,15 +133,28 @@ const Wrapped = (props: Props) => {
 
     /* TA's only see 4 slides, TA + Student see 7, Only student see 6 */  
 
-    const RenderStudent = () => (
-        <>
-            {stage === 1 && <Visits />}
-            {stage === 2 && <TimeSpent />}
-            {stage === 3 && <PersonalityType />}
-            {stage === 4 && <FavTA/>}
-            {stage === 5 && <Conclusion />}
-        </>
-    );
+    const RenderStudent = () => {
+        if (displayFavs) {
+            return (
+                <>
+                    {stage === 1 && <Visits />}
+                    {stage === 2 && <TimeSpent />}
+                    {stage === 3 && <PersonalityType />}
+                    {stage === 4 && <FavTA/> }
+                    {stage === 5 && <Conclusion />}
+                </>
+            )
+        } 
+        return (
+            <>
+                {stage === 1 && <Visits />}
+                {stage === 2 && <TimeSpent />}
+                {stage === 3 && <PersonalityType />}
+                {stage === 4 && <Conclusion />}
+            </>
+        )
+        
+    }
 
     const RenderTA = () => (
         <>
@@ -147,28 +164,43 @@ const Wrapped = (props: Props) => {
         </>
     )
 
-    const RenderStudentTA = () => (
-        <>
-            {stage === 1 && <Visits />}
-            {stage === 2 && <TimeSpent />}
-            {stage === 3 && <PersonalityType />}
-            {stage === 4 && <FavTA/>}
-            {stage === 5 && <TATimeHelped/>}
-            {stage === 6 && <Conclusion />}
-        </>
-    );
+    const RenderStudentTA = () => {
+        if (displayFavs) {
+            return (
+                <>
+                    {stage === 1 && <Visits />}
+                    {stage === 2 && <TimeSpent />}
+                    {stage === 3 && <PersonalityType />}
+                    {stage === 4 && <FavTA/>}
+                    {stage === 5 && <TATimeHelped/>}
+                    {stage === 6 && <Conclusion />}
+                </>
+            )
+        } 
+        return (
+            <>
+                {stage === 1 && <Visits />}
+                {stage === 2 && <TimeSpent />}
+                {stage === 3 && <PersonalityType />}
+                {stage === 4 && <TATimeHelped/>}
+                {stage === 5 && <Conclusion />}
+            </>
+        )
+        
+    };
 
     useEffect(() => {
         // add usestate for totalstages calculate it in useEffect
+        setLoading(true);
 
         const wrappedRef = firebase.firestore().collection('wrapped');
         // eslint-disable-next-line no-console
         const fetchData = async () => {
-            setLoading(true);
+            
             try {
                 const doc = await wrappedRef.doc(props.user?.userId).get();
                 if (doc.exists) {
-                    setWrappedData(doc.data() as { 
+                    const studentData = doc.data() as { 
                         officeHourVisits: never[]; 
                         personalityType: string; 
                         timeHelpingStudents: number; 
@@ -178,18 +210,32 @@ const Wrapped = (props: Props) => {
                         favDay: number;
                         favMonth: number;
                         numStudentsHelped: number;
-                    });  
+                    }
+                    setWrappedData(studentData);  
 
                     const data = doc.data();
-                    if (data !== undefined){
+                    let numStages = 0;
+                    if (data !== undefined) {
                         if (data.timeHelpingStudents === undefined || data.timeHelpingStudents === 0){
-                            setTotalStages(6);
+                            numStages = 6;
+                            setRole(0);
                         } else if (data.favTaId === "" || data.favTaId === undefined){
-                            setTotalStages(4);
+                            numStages = 4;
+                            setRole(2);
                         } else{
-                            setTotalStages(7);
+                            numStages = 7;
+                            setRole(1);
                         }
                     }
+
+                    if (studentData.favClass === "" || studentData.favDay === -1 || studentData.favTaId === "") {
+                        setDisplayFavs(false);
+                        console.log("displayFavs", false);
+                        numStages--;
+                    } 
+
+                    setTotalStages(numStages);
+                    console.log("numStages", numStages);
                     
                 } else {
                     // eslint-disable-next-line no-console
@@ -199,10 +245,12 @@ const Wrapped = (props: Props) => {
                 // eslint-disable-next-line no-console
                 console.error("Error fetching data: ", error);
             }
-            setLoading(false);
+            
         };
 
         fetchData();
+
+        setLoading(false);
     }, [props.user]);
 
     useEffect(() => {
@@ -648,9 +696,9 @@ const Wrapped = (props: Props) => {
 
                 {stage === 0 && <Welcome />}    
 
-                {totalStages === 4 && <RenderTA />}
-                {totalStages === 6 && <RenderStudent/>}
-                {totalStages === 7 && <RenderStudentTA/>}
+                {role === 2 && <RenderTA />}
+                {role === 0 && <RenderStudent/>}
+                {role === 1 && <RenderStudentTA/>}
                 
                 <DotsIndicator />
 
