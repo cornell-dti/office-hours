@@ -35,7 +35,6 @@ _Screenshots showing major parts of app_
 * **Richard Gu** - Technical Product Manager
 * **Sophie Wang** - Software Developer
 * **Nidhi Soma** - Software Developer
-* **Annie Chen** - Software Developer
 * **Eric Weng** - Software Developer
 * **Lucy Yang** - Designer
 * **Sia Harisingani** - Designer
