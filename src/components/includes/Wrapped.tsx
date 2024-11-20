@@ -532,7 +532,7 @@ const Wrapped= (props: Props): JSX.Element => {
                     />
                     
                     <div className="timeHelped bottom-text">
-                        {wrappedData.timeHelpingStudents === 1 ? "HOUR " : "HOURS " }
+                        {wrappedData.timeHelpingStudents === 1 ? "MINUTE " : "MINUTES " }
                             HELPING STUDENTS
                     </div>
                 </div>
