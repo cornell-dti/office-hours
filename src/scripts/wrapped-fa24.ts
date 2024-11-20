@@ -248,8 +248,8 @@ const getWrapped = async () => {
                         }
                     });
 
-                    const modeCourseId = Object.keys(classFrequency).reduce((courseId1, courseId2) =>
-                        classFrequency[courseId1] > classFrequency[courseId2] ? courseId1 : courseId2);
+                    const modeCourseId = Object.keys(classFrequency).reduce(((courseId1:string, courseId2:string) =>
+                        classFrequency[courseId1] > classFrequency[courseId2] ? courseId1 : courseId2), "");
                     resSession.forEach((TAsession) => {
                         if (TAsession.courseId === modeCourseId) {
                             if (!dayFrequency[TAsession.day]) {
@@ -259,8 +259,8 @@ const getWrapped = async () => {
                             }
                         }
                     });
-                    const modeDay = Object.keys(dayFrequency).reduce((day1, day2) =>
-                        dayFrequency[parseInt(day1, 10)] > dayFrequency[parseInt(day2,10)] ? day1 : day2);
+                    const modeDay = Object.keys(dayFrequency).reduce(((day1, day2) =>
+                        dayFrequency[parseInt(day1, 10)] > dayFrequency[parseInt(day2,10)] ? day1 : day2), "");
 
                     const modeSessions = resSession.filter((TAsession) => TAsession.courseId === modeCourseId 
                 && TAsession.day === parseInt(modeDay,10));
@@ -317,12 +317,13 @@ const getWrapped = async () => {
         officeHourSessions[askerId] = officeHourSessions[askerId] || [];  
         if (!officeHourSessions[askerId].includes(sessionId)) { 
             officeHourSessions[askerId].push(sessionId); }
-
-        if (answererId && timeAddressed) {
+        
+        const course = sessionDoc.get('courseId');
+        if (answererId && timeAddressed && course) {
             TAsessions[answererId]?.push({
                 session: sessionId,
                 asker: askerId,
-                courseId: sessionDoc.get('courseId'),
+                courseId: course,
                 day: timeAddressed.toDate().getDay()
             });
 
