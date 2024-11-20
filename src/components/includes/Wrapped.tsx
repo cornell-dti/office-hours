@@ -68,9 +68,6 @@ import L8 from "../../media/wrapped/L-8.svg";
 import L9 from "../../media/wrapped/L-9.svg";
 
 import fiveDigits from "../../media/wrapped/five_digits.svg";
-
-
-
 import arrow from '../../media/wrapped/arrow.svg';
 import smallPlus from '../../media/wrapped/plus.svg';
 import bigPlus from '../../media/wrapped/plus2.svg';

@@ -6158,15 +6158,6 @@ css-jss@10.10.0:
     jss "^10.10.0"
     jss-preset-default "^10.10.0"
 
-css-jss@10.10.0:
-  version "10.10.0"
-  resolved "https://registry.yarnpkg.com/css-jss/-/css-jss-10.10.0.tgz#bd51fbd255cc24597ac0f0f32368394794d37ef3"
-  integrity sha512-YyMIS/LsSKEGXEaVJdjonWe18p4vXLo8CMA4FrW/kcaEyqdIGKCFXao31gbJddXEdIxSXFFURWrenBJPlKTgAA==
-  dependencies:
-    "@babel/runtime" "^7.3.1"
-    jss "^10.10.0"
-    jss-preset-default "^10.10.0"
-
 css-loader@3.4.2:
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/css-loader/-/css-loader-3.4.2.tgz#d3fdb3358b43f233b78501c5ed7b1c6da6133202"
