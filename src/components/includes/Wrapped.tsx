@@ -283,8 +283,6 @@ const Wrapped= (props: Props): JSX.Element => {
         };
 
         fetchData();
-
-        setLoading(false);
     }, [props.user, wrappedData.favClass, wrappedData.favTaId]);
 
     useEffect(() => {
