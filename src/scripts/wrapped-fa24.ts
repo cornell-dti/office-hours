@@ -100,11 +100,11 @@ const getWrapped = async () => {
                 // True if user is either a student, or TA who helped more than 0 students for more than 0 minutes
                 const taHelped = stats.timeHelpingStudents === undefined || 
                 (stats.numStudentsHelped && stats.timeHelpingStudents > 0 && stats.numStudentsHelped > 0);
-                const hasFavoriteTa = stats.favTaId !== "";
+                const hasMinutes = stats.favMonth !== -1 && stats.totalMinutes > 0;
                 const taStatsMismatched = 
                 (stats.timeHelpingStudents !== undefined && stats.numStudentsHelped === undefined)
                 || (stats.timeHelpingStudents === undefined && stats.numStudentsHelped !== undefined);
-                if (hasVisits && isUserActive && hasFavoriteTa && taHelped) {
+                if (hasVisits && isUserActive && hasMinutes && taHelped) {
                     if (taStatsMismatched) {
                         errorUsers.push({user: userId, error: "Mismatch in updating ta specfic values."})
                     } else {

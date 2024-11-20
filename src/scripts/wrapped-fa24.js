@@ -130,7 +130,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                 officeHourSessions = {};
                 TAsessions = {};
                 updateWrappedDocs = function () { return __awaiter(void 0, void 0, void 0, function () {
-                    var batch, userDocuments, _i, _a, _b, userId, stats, hasVisits, isUserActive, taHelped, hasFavoriteTa, taStatsMismatched, wrappedDocRef, userDoc;
+                    var batch, userDocuments, _i, _a, _b, userId, stats, hasVisits, isUserActive, taHelped, hasMinutes, taStatsMismatched, wrappedDocRef, userDoc;
                     var _c;
                     return __generator(this, function (_d) {
                         switch (_d.label) {
@@ -147,10 +147,10 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                         isUserActive = stats.timeHelpingStudents === undefined || (((_c = TAsessions[userId]) === null || _c === void 0 ? void 0 : _c.length) > 0);
                                         taHelped = stats.timeHelpingStudents === undefined ||
                                             (stats.numStudentsHelped && stats.timeHelpingStudents > 0 && stats.numStudentsHelped > 0);
-                                        hasFavoriteTa = stats.favTaId !== "";
+                                        hasMinutes = stats.favMonth !== -1 && stats.totalMinutes > 0;
                                         taStatsMismatched = (stats.timeHelpingStudents !== undefined && stats.numStudentsHelped === undefined)
                                             || (stats.timeHelpingStudents === undefined && stats.numStudentsHelped !== undefined);
-                                        if (hasVisits && isUserActive && hasFavoriteTa && taHelped) {
+                                        if (hasVisits && isUserActive && hasMinutes && taHelped) {
                                             if (taStatsMismatched) {
                                                 errorUsers.push({ user: userId, error: "Mismatch in updating ta specfic values." });
                                             }
