@@ -7,9 +7,7 @@ import { Icon } from 'semantic-ui-react'
 import TopBar from './TopBar';
 import CourseCard from './CourseCard';
 import { CURRENT_SEMESTER } from '../../constants';
-import { firestore } from "../../firebase";
 import { updateCourses } from '../../firebasefunctions/courses';
-import { updateUserHasSeen } from "../../firebasefunctions/user"
 import { RootState } from '../../redux/store';
 import Wrapped from './Wrapped';
 
@@ -107,9 +105,8 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     }, [selectedCourses]);
 
     useEffect(() => {
-        if (user && user.wrapped && !user.hasSeen) {
+        if (user && user.wrapped) {
             setDisplayWrapped(true);
-            updateUserHasSeen(user.userId, firestore);
         } else {
             setDisplayWrapped(false);
         }

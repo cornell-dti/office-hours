@@ -170,7 +170,6 @@ interface FireUser {
     textNotifsEnabled?: boolean;
     textPrompted?: boolean;
     wrapped?: boolean;
-    hasSeen?: boolean;
 }
 
 interface FirePendingUser {
