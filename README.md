@@ -27,6 +27,10 @@ _Screenshots showing major parts of app_
 
 ## Contributors
 
+### 2024-25
+* **Annie Chen** - Software Developer
+* **Layla Liu** - Software Developer
+
 ### 2023-24
 * **Benjamin Tang** - Product Manager
 * **Lily Pham** - Technical Project Manager

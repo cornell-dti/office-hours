@@ -35,6 +35,11 @@ type DotProps = {
     onClick: () => void;
 };
 
+type DotIndicatorProps = {
+    showDots: string
+}
+
+  
 const Dot = ({ active, onClick } : DotProps) => (
     <div className={`dot ${active ? 'active' : ''}`} onClick={onClick}/>
 );
@@ -176,6 +181,7 @@ const Wrapped= (props: Props): JSX.Element => {
                         firstName: string;
                         lastName: string;
                     });  
+                    
                 } else {
                     // eslint-disable-next-line no-console
                     console.log('No such document!');
@@ -232,8 +238,9 @@ const Wrapped= (props: Props): JSX.Element => {
         });
     };
 
-    const DotsIndicator = () => (
-        <div className="dotsContainer">
+    const DotsIndicator = ({showDots} : DotIndicatorProps) => (
+        
+        <div className={"dotsContainer" + showDots}>
             {[...Array(totalStages)].map((_, index) => ( 
                 <Dot active={index === stage} onClick={() => setStage(index)}/>
             ))}
@@ -622,7 +629,7 @@ const Wrapped= (props: Props): JSX.Element => {
                 {totalStages === 6 && <RenderStudent/>}
                 {totalStages === 7 && <RenderStudentTA/>}
                 
-                <DotsIndicator />
+                <DotsIndicator showDots={loading ? "" : "Visible"} />
 
                 {stage !== totalStages - 1 && 
                     <div 

@@ -20,9 +20,9 @@ import smsNotif from "../../media/smsNotif.svg";
 import { addBanner } from "../../redux/actions/announcements";
 import Banner from "../includes/Banner";
 import FeedbackPrompt from "../includes/FeedbackPrompt";
+import Wrapped from "../includes/Wrapped";
 import WrappedCountdown from "../includes/WrappedCountdown";
 import { WRAPPED_START_DATE, WRAPPED_LAUNCH_DATE } from "../../constants";
-import Wrapped from '../includes/Wrapped';
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -125,7 +125,7 @@ const SplitView = ({
         } else {
             setDisplayWrapped(false);
         }
-    }, [user])
+    }, [user]);
 
     // Handle browser back button
     history.listen((location) => {
@@ -156,12 +156,10 @@ const SplitView = ({
         removeQuestionbyID(firestore, removeQuestionId);
     };
 
-    // used when a student removes their own question, don't want to dispaly feedback
+    // used when a student removes their own question, don't want to display feedback
     const setRemoveQuestionWrapper = (questionId: string | undefined) => {
         setRemoveQuestionId(questionId);
         setRemovedQuestionId(questionId);
-        // eslint-disable-next-line no-console
-        console.log("split view questionId: ", questionId);
     };
 
     // used to display feedback to user once question is removed
@@ -169,8 +167,6 @@ const SplitView = ({
         setRemoveQuestionId(questionId);
         setDisplayFeedbackPrompt(true);
         setRemovedQuestionId(questionId);
-        // eslint-disable-next-line no-console
-        console.log("split view questionId: ", questionId);
     };
 
     useEffect(() => {
@@ -291,9 +287,7 @@ const SplitView = ({
                 />
             ) : null}
 
-            {displayWrapped ? (
-                <Wrapped user={user} onClose={() => setDisplayWrapped(false)} />
-            ) : null}
+            {displayWrapped ? <Wrapped user={user} onClose={() => setDisplayWrapped(false)} /> : null}
         </>
     );
 };
