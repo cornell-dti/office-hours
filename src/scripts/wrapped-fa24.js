@@ -295,9 +295,9 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                         classFrequency_1[TAsession.courseId] += 1;
                                     }
                                 });
-                                var modeCourseId_1 = Object.keys(classFrequency_1).reduce(function (courseId1, courseId2) {
+                                var modeCourseId_1 = Object.keys(classFrequency_1).reduce((function (courseId1, courseId2) {
                                     return classFrequency_1[courseId1] > classFrequency_1[courseId2] ? courseId1 : courseId2;
-                                });
+                                }), "");
                                 resSession.forEach(function (TAsession) {
                                     if (TAsession.courseId === modeCourseId_1) {
                                         if (!dayFrequency_1[TAsession.day]) {
@@ -308,9 +308,9 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                         }
                                     }
                                 });
-                                var modeDay_1 = Object.keys(dayFrequency_1).reduce(function (day1, day2) {
+                                var modeDay_1 = Object.keys(dayFrequency_1).reduce((function (day1, day2) {
                                     return dayFrequency_1[parseInt(day1, 10)] > dayFrequency_1[parseInt(day2, 10)] ? day1 : day2;
-                                });
+                                }), "");
                                 var modeSessions = resSession.filter(function (TAsession) { return TAsession.courseId === modeCourseId_1
                                     && TAsession.day === parseInt(modeDay_1, 10); });
                                 // There could be multiple ties, so just picking the first one
@@ -358,11 +358,12 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                     if (!officeHourSessions[askerId].includes(sessionId)) {
                         officeHourSessions[askerId].push(sessionId);
                     }
-                    if (answererId && timeAddressed) {
+                    var course = sessionDoc.get('courseId');
+                    if (answererId && timeAddressed && course) {
                         (_c = TAsessions[answererId]) === null || _c === void 0 ? void 0 : _c.push({
                             session: sessionId,
                             asker: askerId,
-                            courseId: sessionDoc.get('courseId'),
+                            courseId: course,
                             day: timeAddressed.toDate().getDay()
                         });
                         if (!((_d = taCounts[askerId]) === null || _d === void 0 ? void 0 : _d.has(answererId))) {
