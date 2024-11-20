@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Icon } from "semantic-ui-react";
 
 import { connect } from "react-redux";
-import { useParams } from "react-router-dom";
 import SessionInformationHeader from "./SessionInformationHeader";
 import SessionQuestionsContainer from "./SessionQuestionsContainer";
 
@@ -51,10 +50,6 @@ type AbsentState = {
     lastAskedQuestion: FireQuestion | null;
 };
 
-type RouteParams = {
-    courseId: string;
-};
-
 const SessionView = ({
     course,
     session,
@@ -85,7 +80,6 @@ const SessionView = ({
     });
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
-    const { courseId } = useParams<RouteParams>();
 
     const updateSessionProfile = useCallback(
         (virtualLocation: string) => {
@@ -127,11 +121,12 @@ const SessionView = ({
      * both modified and resolved, indicating that the TA has answered a question. !isTa and
      * !isProf ensures that this useEffect only runs for students.
      */
+    // TODO (richardgu): use a Firebase Cloud Function for a server-side trigger in the future
     useEffect(() => {
         let unsubscribe: () => void;
 
         if (!isTa && !isProf) {
-            const questionsRef = firestore.collection("questions");
+            const questionsRef = firestore.collection("questions").where("sessionId", "==", session.sessionId);
 
             unsubscribe = questionsRef.onSnapshot((snapshot) => {
                 snapshot.docChanges().forEach((change) => {
@@ -140,7 +135,6 @@ const SessionView = ({
 
                     if (change.type === "modified" && questionData.status === "resolved") {
                         // eslint-disable-next-line no-console
-                        console.log("questionid: ", questionId);
                         removeQuestionDisplayFeedback(questionId);
                     }
                 });
@@ -152,7 +146,8 @@ const SessionView = ({
                 unsubscribe();
             }
         };
-    }, [courseId, isProf, isTa, removeQuestionDisplayFeedback]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const dismissUndo = () => {
         if (timeoutId) {

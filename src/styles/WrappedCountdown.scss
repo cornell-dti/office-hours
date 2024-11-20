@@ -1,0 +1,128 @@
+.countdownUpdates {
+    position: fixed;
+    bottom: 35px;
+    right: 41px;
+}
+.countdownContainer {
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 413px;
+    height: 139px;
+    border-radius: 12px;
+    background: linear-gradient(63deg, #668ae9 16.65%, #6db9ea 83.35%); /* Gradient background */
+}
+.countdownContainer_boxes {
+    color: #5599db;
+    font-family: Roboto;
+    font-size: 50px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    display: flex;
+    width: 63px;
+    height: 76px;
+    border-radius: 5px;
+    background: #fff;
+}
+.textContainer {
+    align-items: center;
+}
+
+.ribbonBall {
+    position: fixed;
+    bottom: 36px;
+    right: 46.23px;
+    width: 68px;
+    height: 68px;
+    border-width: 100px;
+    cursor: pointer;
+    animation: rotation 1.3s ease-in-out infinite;
+}
+
+@keyframes rotation {
+
+    0% {
+        transform: rotate(15deg);
+    }
+    15% {
+        transform: rotate(-15deg);
+    }
+    25% {
+        transform: rotate(0deg);
+    }
+}
+
+.top {
+    margin: 0;
+    color: #fff;
+    font-family: Roboto;
+    font-size: 24.079px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+.bottom {
+    margin: 0;
+    font-family: Roboto;
+    font-size: 24.079px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    background: linear-gradient(180deg, #fff 0%, #fff 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.counter_sub {
+    margin-top: 10px;
+    color: #fff;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.6px;
+}
+.viewWrap {
+    cursor: pointer;
+    margin-top: 7px;
+    width: 154.619px;
+    height: 37.669px;
+    border-radius: 5px;
+    background: #fff;
+    color: #5599db;
+    font-family: Roboto;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.post {
+    display: flex;
+    flex-direction: column;
+}
+
+.cone {
+    z-index:10;
+    margin-top: 40px;
+    margin-right: 25px;
+}
+
+.launch{
+    margin-left: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
