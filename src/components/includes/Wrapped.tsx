@@ -200,11 +200,10 @@ const Wrapped= (props: Props): JSX.Element => {
 
     useEffect(() => {
         // add usestate for totalstages calculate it in useEffect
-        setLoading(true);
 
         const wrappedRef = firebase.firestore().collection('wrapped');
         const fetchData = async () => {
-            
+            setLoading(true);
             try {
                 const doc = await wrappedRef.doc(props.user?.userId).get();
                 const usersRef = firebase.firestore().collection('users');
@@ -469,28 +468,34 @@ const Wrapped= (props: Props): JSX.Element => {
     };
 
     const Welcome = () => (
-        <div>
-            <div className="welcomeSlide">
-                <div style={{ alignSelf: "flex-start", width: "366px" }}>
-                    <Typography variant="h2" style={{ fontWeight: 700 }}> Queue Me In</Typography>
+        <>
+            {!loading && (
+                <div>
+                    <div className="welcomeSlide">
+                        <div style={{ alignSelf: "flex-start", width: "366px" }}>
+                            <Typography variant="h2" style={{ fontWeight: 700 }}> Queue Me In</Typography>
+                        </div>
+                        <div style={{ alignSelf: "flex-end", width: "279px" }}>
+                            <Typography variant="h2" style={{ fontWeight: 400 }}> WRAPPED</Typography>
+                        </div>
+                        <div className="animationContainer">
+                            {showBanner && (
+                                <>
+                                    <div className="banner top-right">
+                                        <WelcomeBanner />
+                                    </div>
+                                    <div className="banner bottom-left">
+                                        <WelcomeBanner />
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
                 </div>
-                <div style={{ alignSelf: "flex-end", width: "279px" }}>
-                    <Typography variant="h2" style={{ fontWeight: 400 }}> WRAPPED</Typography>
-                </div>
-                <div className="animationContainer">
-                    {showBanner && (
-                        <>
-                            <div className="banner top-right">
-                                <WelcomeBanner />
-                            </div>
-                            <div className="banner bottom-left">
-                                <WelcomeBanner />
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
-        </div>
+            )
+            }
+            
+        </>
     )
 
     const Visits = () => (
