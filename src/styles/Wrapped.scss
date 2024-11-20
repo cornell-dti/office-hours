@@ -168,7 +168,6 @@
     font-size: 27px;
   }
 
-  //styling for each size digit number?
   &.nums-container{
     display: flex;
     justify-content: center;
@@ -406,7 +405,7 @@
       right: -50%; // Start from outside the right edge
       transform: rotate(18.6deg);
       transform-origin: top right;
-      animation: slideInTopRight 2s forwards; 
+      animation: slideInTopRight 1s forwards; 
   }
 
   &.bottom-left {
@@ -414,7 +413,7 @@
       left: -50%; // Start from outside the left edge
       transform: rotate(8.63deg);
       transform-origin: bottom left;
-      animation: slideInBottomLeft 2s forwards;
+      animation: slideInBottomLeft 1s forwards;
   }
 
   &.bottom-time{
