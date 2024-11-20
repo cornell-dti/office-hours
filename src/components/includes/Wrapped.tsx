@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /** Modal component for QMI Wrapped */
 
 import { IconButton, Typography } from "@material-ui/core";
@@ -18,9 +19,55 @@ import head from "../../media/wrapped/head.svg";
 import body from "../../media/wrapped/body.svg";
 import arm from "../../media/wrapped/arm.svg";
 import smallGirl from "../../media/wrapped/small_girl.svg";
-import ConsistentPersonality from "../../media/wrapped/consistent_personality.svg"
-import ResourcefulPersonality from "../../media/wrapped/resourceful_personality.svg"
-import IndependentPersonality from "../../media/wrapped/independent_personality.svg"
+import ConsistentPersonality from "../../media/wrapped/consistent_personality.svg";
+import ResourcefulPersonality from "../../media/wrapped/resourceful_personality.svg";
+import IndependentPersonality from "../../media/wrapped/independent_personality.svg";
+
+import N0 from "../../media/wrapped/0-0.svg";
+import N1 from "../../media/wrapped/0-1.svg";
+import N2 from "../../media/wrapped/0-2.svg";
+import N3 from "../../media/wrapped/0-3.svg";
+import N4 from "../../media/wrapped/0-4.svg";
+import N5 from "../../media/wrapped/0-5.svg";
+import N6 from "../../media/wrapped/0-6.svg";
+import N7 from "../../media/wrapped/0-7.svg";
+import N8 from "../../media/wrapped/0-8.svg";
+import N9 from "../../media/wrapped/0-9.svg";
+
+import F0 from "../../media/wrapped/1-0.svg";
+import F1 from "../../media/wrapped/1-1.svg";
+import F2 from "../../media/wrapped/1-2.svg";
+import F3 from "../../media/wrapped/1-3.svg";
+import F4 from "../../media/wrapped/1-4.svg";
+import F5 from "../../media/wrapped/1-5.svg";
+import F6 from "../../media/wrapped/1-6.svg";
+import F7 from "../../media/wrapped/1-7.svg";
+import F8 from "../../media/wrapped/1-8.svg";
+import F9 from "../../media/wrapped/1-9.svg";
+
+import S0 from "../../media/wrapped/2-0.svg";
+import S1 from "../../media/wrapped/2-1.svg";
+import S2 from "../../media/wrapped/2-2.svg";
+import S3 from "../../media/wrapped/2-3.svg";
+import S4 from "../../media/wrapped/2-4.svg";
+import S5 from "../../media/wrapped/2-5.svg";
+import S6 from "../../media/wrapped/2-6.svg";
+import S7 from "../../media/wrapped/2-7.svg";
+import S8 from "../../media/wrapped/2-8.svg";
+import S9 from "../../media/wrapped/2-9.svg";
+
+import L0 from "../../media/wrapped/L-0.svg";
+import L1 from "../../media/wrapped/L-1.svg";
+import L2 from "../../media/wrapped/L-2.svg";
+import L3 from "../../media/wrapped/L-3.svg";
+import L4 from "../../media/wrapped/L-4.svg";
+import L5 from "../../media/wrapped/L-5.svg";
+import L6 from "../../media/wrapped/L-6.svg";
+import L7 from "../../media/wrapped/L-7.svg";
+import L8 from "../../media/wrapped/L-8.svg";
+import L9 from "../../media/wrapped/L-9.svg";
+
+import fiveDigits from "../../media/wrapped/five_digits.svg";
 import arrow from '../../media/wrapped/arrow.svg';
 import smallPlus from '../../media/wrapped/plus.svg';
 import bigPlus from '../../media/wrapped/plus2.svg';
@@ -59,6 +106,9 @@ const Wrapped= (props: Props): JSX.Element => {
         numStudentsHelped: 0,
     });
 
+    const [displayFavs, setDisplayFavs] = useState(true);
+    const [role, setRole] = useState(0); // 0 === student, 1 === student/TA, 2 === TA
+
     const [taName, setTaName] = useState({
         firstName: "",
         lastName: "",
@@ -91,18 +141,29 @@ const Wrapped= (props: Props): JSX.Element => {
     const [showBanner, setShowBanner] = useState(false);
 
     /* TA's only see 4 slides, TA + Student see 7, Only student see 6 */  
-    // const totalStages = (wrappedData.timeHelpingStudents === undefined || wrappedData.timeHelpingStudents == 0) ? 
-    //    (6) : (wrappedData.favTaId == "" || wrappedData.favTaId === undefined ) ? 4 : 7;
 
-    const RenderStudent = () => (
-        <>
-            {stage === 1 && <Visits />}
-            {stage === 2 && <TimeSpent />}
-            {stage === 3 && <PersonalityType />}
-            {stage === 4 && <FavTA/>}
-            {stage === 5 && <Conclusion />}
-        </>
-    );
+    const RenderStudent = () => {
+        if (displayFavs) {
+            return (
+                <>
+                    {stage === 1 && <Visits />}
+                    {stage === 2 && <TimeSpent />}
+                    {stage === 3 && <PersonalityType />}
+                    {stage === 4 && <FavTA/> }
+                    {stage === 5 && <Conclusion />}
+                </>
+            )
+        } 
+        return (
+            <>
+                {stage === 1 && <Visits />}
+                {stage === 2 && <TimeSpent />}
+                {stage === 3 && <PersonalityType />}
+                {stage === 4 && <Conclusion />}
+            </>
+        )
+        
+    }
 
     const RenderTA = () => (
         <>
@@ -112,16 +173,30 @@ const Wrapped= (props: Props): JSX.Element => {
         </>
     )
 
-    const RenderStudentTA = () => (
-        <>
-            {stage === 1 && <Visits />}
-            {stage === 2 && <TimeSpent />}
-            {stage === 3 && <PersonalityType />}
-            {stage === 4 && <FavTA/>}
-            {stage === 5 && <TATimeHelped/>}
-            {stage === 6 && <Conclusion />}
-        </>
-    );
+    const RenderStudentTA = () => {
+        if (displayFavs) {
+            return (
+                <>
+                    {stage === 1 && <Visits />}
+                    {stage === 2 && <TimeSpent />}
+                    {stage === 3 && <PersonalityType />}
+                    {stage === 4 && <FavTA/>}
+                    {stage === 5 && <TATimeHelped/>}
+                    {stage === 6 && <Conclusion />}
+                </>
+            )
+        } 
+        return (
+            <>
+                {stage === 1 && <Visits />}
+                {stage === 2 && <TimeSpent />}
+                {stage === 3 && <PersonalityType />}
+                {stage === 4 && <TATimeHelped/>}
+                {stage === 5 && <Conclusion />}
+            </>
+        )
+        
+    };
 
     useEffect(() => {
         // add usestate for totalstages calculate it in useEffect
@@ -131,8 +206,9 @@ const Wrapped= (props: Props): JSX.Element => {
             setLoading(true);
             try {
                 const doc = await wrappedRef.doc(props.user?.userId).get();
+                const usersRef = firebase.firestore().collection('users');
                 if (doc.exists) {
-                    setWrappedData(doc.data() as { 
+                    const studentData = doc.data() as { 
                         officeHourVisits: never[]; 
                         personalityType: string; 
                         timeHelpingStudents: number; 
@@ -142,19 +218,59 @@ const Wrapped= (props: Props): JSX.Element => {
                         favDay: number;
                         favMonth: number;
                         numStudentsHelped: number;
-                    });  
+                    }
+                    setWrappedData(studentData);  
 
                     const data = doc.data();
-                    if (data !== undefined){
-                        if (data.timeHelpingStudents === undefined || data.timeHelpingStudents == 0){
-                            setTotalStages(6);
-                        } else if (data.favTaId == "" || data.favTaId === undefined){
-                            setTotalStages(4);
+                    let numStages = 0;
+                    if (data !== undefined) {
+                        if (data.timeHelpingStudents === undefined || data.timeHelpingStudents === 0){
+                            numStages = 6;
+                            setRole(0);
+                        } else if (data.favTaId === "" || data.favTaId === undefined){
+                            numStages = 4;
+                            setRole(2);
                         } else{
-                            setTotalStages(7);
+                            numStages = 7;
+                            setRole(1);
                         }
                     }
-                    
+
+                    const userDoc = await usersRef.doc(wrappedData.favTaId).get();
+                    let taNameExists = false;
+                    if (userDoc.exists) {
+                        setTaName(userDoc.data() as { 
+                            firstName: string;
+                            lastName: string;
+                        });  
+                        taNameExists = true;
+                    } else {
+                        // eslint-disable-next-line no-console
+                        console.log('No such document!');
+                    }
+
+                    if (studentData.favClass === "" || 
+                        studentData.favDay === -1 || 
+                        studentData.favTaId === "" || 
+                        !taNameExists
+                    ) {
+                        setDisplayFavs(false);
+                        numStages--;
+                    } 
+
+                    setTotalStages(numStages);
+
+                    const coursesRef = firebase.firestore().collection("courses");
+
+                    const coursesDoc = await coursesRef.doc(wrappedData.favClass).get();
+                    if (coursesDoc.exists){
+                        setFavClass(coursesDoc.data() as {
+                            code: string;
+                        })
+                    } else{
+                        // eslint-disable-next-line no-console
+                        console.log('No such document!');
+                    }  
                 } else {
                     // eslint-disable-next-line no-console
                     console.log('No such document!');
@@ -163,62 +279,11 @@ const Wrapped= (props: Props): JSX.Element => {
                 // eslint-disable-next-line no-console
                 console.error("Error fetching data: ", error);
             }
+            
         };
 
         fetchData();
-    }, [props.user]);
-
-    useEffect(() => {
-
-        const usersRef = firebase.firestore().collection('users');
-        // eslint-disable-next-line no-console
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const doc = await usersRef.doc(wrappedData.favTaId).get();
-                if (doc.exists) {
-                    setTaName(doc.data() as { 
-                        firstName: string;
-                        lastName: string;
-                    });  
-                    
-                } else {
-                    // eslint-disable-next-line no-console
-                    console.log('No such document!');
-                }
-            } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error("Error fetching data: ", error);
-            }
-            setLoading(false);
-        };
-
-        fetchData();
-    }, [wrappedData.favTaId]);
-
-    useEffect(() => {
-        const coursesRef = firebase.firestore().collection("courses");
-        // eslint-disable-next-line no-console
-        const fetchData = async () => {
-            setLoading(true);
-            try{
-                const doc = await coursesRef.doc(wrappedData.favClass).get();
-                if (doc.exists){
-                    setFavClass(doc.data() as {
-                        code: string;
-                    })
-                } else{
-                    // eslint-disable-next-line no-console
-                    console.log('No such document!');
-                }
-            } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error("Error fetching data: ", error);
-            }
-            setLoading(false);
-        };
-        fetchData();
-    }, [wrappedData.favClass]);
+    }, [props.user, wrappedData.favClass, wrappedData.favTaId]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -351,29 +416,86 @@ const Wrapped= (props: Props): JSX.Element => {
         </div>
     );
 
-    const Welcome = () => (
-        <div>
-            <div className="welcomeSlide">
-                <div style={{ alignSelf: "flex-start", width: "366px" }}>
-                    <Typography variant="h2" style={{ fontWeight: 700 }}> Queue Me In</Typography>
+    const L = [L0, L1, L2, L3, L4, L5, L6, L7, L8, L9];
+    const F = [F0, F1, F2, F3, F4, F5, F6, F7, F8, F9];
+    const S = [S0, S1, S2, S3, S4, S5, S6, S7, S8, S9];
+    const N = [N0, N1, N2, N3, N4, N5, N6, N7, N8, N9];
+
+    const NumberPeople = () => {
+        const digits = wrappedData.totalMinutes.toString().split('');
+        const length = digits.length;
+        const getSvgImage = (index :number, digit: number) => {
+            switch (length) {
+                case 1:
+                    // Use 'L' for single digit numbers
+                    return L[digit];
+                case 2:
+                    // 'F' for the first and 'L' for the last
+                    return index === 0 ? N[digit] : L[digit]; 
+                case 3:
+                    if (index === 0) return F[digit];
+                    if (index === 2) return L[digit];
+                    return N[digit]; // 'N' for the middle digit
+                case 4:
+                    // 'S' for the second
+                    if (index === 1) return S[digit];
+                    // 'L' for the last
+                    if (index === 3) return L[digit]; 
+                    // 'N' for first and third
+                    return N[digit]; 
+                default:
+                    return '';
+                    // Default to '' if more than four digits, case handled outside
+            }
+        };
+
+        if (length >= 5) {
+            return (
+                <div className="timeSpent five-nums">
+                    <img src={fiveDigits} alt="Five digits" />
                 </div>
-                <div style={{ alignSelf: "flex-end", width: "279px" }}>
-                    <Typography variant="h2" style={{ fontWeight: 400 }}> WRAPPED</Typography>
-                </div>
-                <div className="animationContainer">
-                    {showBanner && (
-                        <>
-                            <div className="banner top-right">
-                                <WelcomeBanner />
-                            </div>
-                            <div className="banner bottom-left">
-                                <WelcomeBanner />
-                            </div>
-                        </>
-                    )}
-                </div>
+            );
+        }
+
+        return (
+            <div className="timeSpent nums-container">
+                {digits.map((digit, index) => {
+                    const SvgImage = getSvgImage(index, parseInt(digit, 10));
+                    return <img key={digit} src={SvgImage} alt="" />;
+                })}
             </div>
-        </div>
+        );
+    };
+
+    const Welcome = () => (
+        <>
+            {!loading && (
+                <div>
+                    <div className="welcomeSlide">
+                        <div style={{ alignSelf: "flex-start", width: "366px" }}>
+                            <Typography variant="h2" style={{ fontWeight: 700 }}> Queue Me In</Typography>
+                        </div>
+                        <div style={{ alignSelf: "flex-end", width: "279px" }}>
+                            <Typography variant="h2" style={{ fontWeight: 400 }}> WRAPPED</Typography>
+                        </div>
+                        <div className="animationContainer">
+                            {showBanner && (
+                                <>
+                                    <div className="banner top-right">
+                                        <WelcomeBanner />
+                                    </div>
+                                    <div className="banner bottom-left">
+                                        <WelcomeBanner />
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )
+            }
+            
+        </>
     )
 
     const Visits = () => (
@@ -420,8 +542,8 @@ const Wrapped= (props: Props): JSX.Element => {
             <div className="timeSpent top-text"> 
                 SPENDING A TOTAL OF...
             </div>
-            <div className="timeSpent num-text">
-                {wrappedData.totalMinutes}
+            <div>
+                <NumberPeople/>
             </div>
             <div className="timeSpent minutes-text"> 
                 MINUTES
@@ -429,6 +551,12 @@ const Wrapped= (props: Props): JSX.Element => {
             <div className="timeSpent bottom-text"> 
                 AT OFFICE HOURS
             </div>
+
+            <img
+                src={smallGirl}
+                className="timeSpent smallGirl"
+                alt=""
+            />
 
             <div>
                 {showBanner && (
@@ -545,8 +673,8 @@ const Wrapped= (props: Props): JSX.Element => {
             <div className="taStudentsHelped top-text">
                 YOU MADE LIFE EASIER FOR...
             </div>
-            <div className="taStudentsHelped num">
-                {wrappedData.numStudentsHelped}
+            <div>
+                <NumberPeople/>
             </div>
             <div className="taStudentsHelped students">
                 STUDENTS
@@ -627,9 +755,9 @@ const Wrapped= (props: Props): JSX.Element => {
 
                 {stage === 0 && <Welcome />}    
 
-                {totalStages === 4 && <RenderTA />}
-                {totalStages === 6 && <RenderStudent/>}
-                {totalStages === 7 && <RenderStudentTA/>}
+                {role === 2 && <RenderTA />}
+                {role === 0 && <RenderStudent/>}
+                {role === 1 && <RenderStudentTA/>}
                 
                 <DotsIndicator showDots={loading ? "" : "Visible"} />
 
