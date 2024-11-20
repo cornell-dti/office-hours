@@ -6,6 +6,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import "../../styles/Wrapped.scss";
+import "../../styles/WrappedAnimation.scss";
 import React, { useEffect, useState } from "react";
 import firebase from '../../firebase';
 import Couple from "../../media/wrapped/couple.svg"
@@ -67,6 +68,9 @@ import L8 from "../../media/wrapped/L-8.svg";
 import L9 from "../../media/wrapped/L-9.svg";
 
 import fiveDigits from "../../media/wrapped/five_digits.svg";
+import arrow from '../../media/wrapped/arrow.svg';
+import smallPlus from '../../media/wrapped/plus.svg';
+import bigPlus from '../../media/wrapped/plus2.svg';
 
 type Props = {
     user: FireUser | undefined;
@@ -77,12 +81,17 @@ type DotProps = {
     active: boolean;
     onClick: () => void;
 };
+
+type DotIndicatorProps = {
+    showDots: string
+}
+
   
 const Dot = ({ active, onClick } : DotProps) => (
     <div className={`dot ${active ? 'active' : ''}`} onClick={onClick}/>
 );
 
-const Wrapped = (props: Props) => {
+const Wrapped= (props: Props): JSX.Element => {
     const [loading, setLoading] = useState<boolean>(true);
     const [stage, setStage] = useState<number>(0);
     const [wrappedData, setWrappedData] = useState({
@@ -194,7 +203,6 @@ const Wrapped = (props: Props) => {
         setLoading(true);
 
         const wrappedRef = firebase.firestore().collection('wrapped');
-        // eslint-disable-next-line no-console
         const fetchData = async () => {
             
             try {
@@ -283,6 +291,7 @@ const Wrapped = (props: Props) => {
                         firstName: string;
                         lastName: string;
                     });  
+                    
                 } else {
                     // eslint-disable-next-line no-console
                     console.log('No such document!');
@@ -339,13 +348,82 @@ const Wrapped = (props: Props) => {
         });
     };
 
-    const DotsIndicator = () => (
-        <div className="dotsContainer">
+    const DotsIndicator = ({showDots} : DotIndicatorProps) => (
+        
+        <div className={"dotsContainer" + showDots}>
             {[...Array(totalStages)].map((_, index) => ( 
                 <Dot active={index === stage} onClick={() => setStage(index)}/>
             ))}
         </div>
     );
+
+    const handleAnimationEnd = () => {
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 1000); 
+        return () => clearTimeout(timer);
+    }
+
+    const WrappedAnimationModal = () =>
+        (                 
+            <div className='qmi-container'>
+                                
+                {/* creates first red svg circle. need linear gradient tags here 
+              since didn't import this svg.
+              make note that width and height are basically the box containing the circle,
+              so they need to be double the radius
+              */}
+                <svg className="red-circle" width="300" height="300">
+                    {/* this creates the color gradients on the qmi logo */}
+                    <defs>
+                        <linearGradient 
+                            id="red-gradient" 
+                            x1="24.4251" 
+                            y1="-52.6352" 
+                            x2="112.279" 
+                            y2="143.659" 
+                            gradientUnits="userSpaceOnUse"
+                        >
+                            <stop stopColor="#FF9399" />
+                            <stop offset="1" stopColor="#FF5A60" />
+                        </linearGradient>
+                    </defs>
+                                    
+                    {/* this is the actual circle part. 
+                                    cx and cy are centers so shld be half of height/width. r is radius */}
+                    <circle cx='150' cy='150' r='115'> </circle>
+                </svg>
+                <svg className="blue-circle" width="400" height="400">
+                    <defs>
+                        <linearGradient 
+                            id="blue-gradient" 
+                            x1="36.7649" 
+                            y1="66.8832" 
+                            x2="134.326" 
+                            y2="192.278" 
+                            gradientUnits="userSpaceOnUse"
+                        >
+                            <stop stopColor="#B2D9FF" />
+                            <stop offset="1" stopColor="#78B6F4" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx='200' cy='200' r='180'> </circle>
+                </svg>
+                {/* imported way of using svgs, so cant adjust stroke colors */}
+                <img src={arrow} className="arrow-circle" alt="dti arrow" />
+                {/* made two pluses since color gradient changes and second one needs
+               to expand outside of the container. */}
+                <img src={smallPlus} className="first-plus" alt="first plus" />
+                <img
+                    src={bigPlus}
+                    className="sec-plus"
+                    alt="second plus"
+                    onAnimationEnd={handleAnimationEnd}
+                />
+                
+            </div>
+        )
+      
 
     const WelcomeBanner = () => (
         <div>
@@ -704,9 +782,12 @@ const Wrapped = (props: Props) => {
     return (
         <div className="wrappedBackground">
             <div className="wrappedContainer">
-                {loading && <div>Loading...</div>}
+                {loading && <WrappedAnimationModal />}
                 {stage !== 0 && 
-                    <div className="navigateStage prev" onClick={() => navigateStage('prev')}> 
+                    <div 
+                        className={`navigateStage${loading ? '':'Visible prev'}`} 
+                        onClick={() => navigateStage('prev')}
+                    > 
                         <ArrowBackIosIcon />
                     </div>
                 }
@@ -717,10 +798,13 @@ const Wrapped = (props: Props) => {
                 {role === 0 && <RenderStudent/>}
                 {role === 1 && <RenderStudentTA/>}
                 
-                <DotsIndicator />
+                <DotsIndicator showDots={loading ? "" : "Visible"} />
 
                 {stage !== totalStages - 1 && 
-                    <div className="navigateStage next" onClick={() => navigateStage('next')}>
+                    <div 
+                        className={`navigateStage${loading ? '':'Visible next'}`} 
+                        onClick={() => navigateStage('next')}
+                    >
                         <ArrowForwardIosIcon />
                     </div>
                 }
@@ -734,6 +818,5 @@ const Wrapped = (props: Props) => {
         </div>
     );
 };
-
 
 export default Wrapped;
