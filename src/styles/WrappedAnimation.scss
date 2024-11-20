@@ -143,16 +143,15 @@ second plus is used for the expanding transition into background. */
 
 @keyframes red-spin {
   30% {
-    transform: rotate(10deg);
     stroke-dashoffset: 0%;
   }
 
   35% {
-    transform: rotate(10deg);
     stroke-dashoffset: 0%;
   }
 
   40% {
+    stroke-dashoffset: 0%;
     stroke-linecap: round;
   }
 
