@@ -259,8 +259,18 @@ const Wrapped= (props: Props): JSX.Element => {
                     } 
 
                     setTotalStages(numStages);
-                    console.log("numStages", numStages);
-                    
+
+                    const coursesRef = firebase.firestore().collection("courses");
+
+                    const coursesDoc = await coursesRef.doc(wrappedData.favClass).get();
+                    if (coursesDoc.exists){
+                        setFavClass(coursesDoc.data() as {
+                            code: string;
+                        })
+                    } else{
+                        // eslint-disable-next-line no-console
+                        console.log('No such document!');
+                    }  
                 } else {
                     // eslint-disable-next-line no-console
                     console.log('No such document!');
@@ -275,57 +285,7 @@ const Wrapped= (props: Props): JSX.Element => {
         fetchData();
 
         setLoading(false);
-    }, [props.user, wrappedData.favTaId]);
-
-    useEffect(() => {
-
-        const usersRef = firebase.firestore().collection('users');
-        // eslint-disable-next-line no-console
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const doc = await usersRef.doc(wrappedData.favTaId).get();
-                if (doc.exists) {
-                    setTaName(doc.data() as { 
-                        firstName: string;
-                        lastName: string;
-                    });  
-                    
-                } else {
-                    // eslint-disable-next-line no-console
-                    console.log('No such document!');
-                }
-            } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error("Error fetching data: ", error);
-            }
-        };
-
-        fetchData();
-    }, [totalStages, wrappedData.favTaId]);
-
-    useEffect(() => {
-        const coursesRef = firebase.firestore().collection("courses");
-        // eslint-disable-next-line no-console
-        const fetchData = async () => {
-            setLoading(true);
-            try{
-                const doc = await coursesRef.doc(wrappedData.favClass).get();
-                if (doc.exists){
-                    setFavClass(doc.data() as {
-                        code: string;
-                    })
-                } else{
-                    // eslint-disable-next-line no-console
-                    console.log('No such document!');
-                }
-            } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error("Error fetching data: ", error);
-            }
-        };
-        fetchData();
-    }, [wrappedData.favClass]);
+    }, [props.user, wrappedData.favClass, wrappedData.favTaId]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
