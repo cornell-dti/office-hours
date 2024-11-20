@@ -103,8 +103,6 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                 sessionIds = [];
                                 questionsSnapshot.docs.map(function (doc) { return sessionIds.push(doc.get('sessionId')); });
                                 sessionIds.sort();
-                                // eslint-disable-next-line no-console
-                                // console.log(sessionIds);
                                 return [4 /*yield*/, Promise.all(sessionIds.map(function (id) { return __awaiter(void 0, void 0, void 0, function () {
                                         var _a, _b;
                                         return __generator(this, function (_c) {
@@ -122,8 +120,6 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                         });
                                     }); }))];
                             case 1:
-                                // eslint-disable-next-line no-console
-                                // console.log(sessionIds);
                                 _a.sent();
                                 return [2 /*return*/, docs];
                         }
@@ -155,10 +151,7 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                         taStatsMismatched = (stats.timeHelpingStudents !== undefined && stats.numStudentsHelped === undefined)
                                             || (stats.timeHelpingStudents === undefined && stats.numStudentsHelped !== undefined);
                                         if (hasVisits && isUserActive && hasFavoriteTa && taHelped) {
-                                            if (!(stats.favClass && stats.favDay !== -1 && stats.favMonth !== -1)) {
-                                                errorUsers.push({ user: userId, error: "User is active and has favorite TA but missing one of the following:\n                             favClass: " + stats.favClass + ", favDay: " + stats.favDay + ", favMonth: " + stats.favMonth });
-                                            }
-                                            else if (taStatsMismatched) {
+                                            if (taStatsMismatched) {
                                                 errorUsers.push({ user: userId, error: "Mismatch in updating ta specfic values." });
                                             }
                                             else {
@@ -241,8 +234,6 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                             numStudentsHelped: 0
                         };
                         TAsessions[answererId] = [];
-                        // eslint-disable-next-line no-console
-                        console.log(answererId + " was a student but now theyre a TA");
                     }
                 };
                 processStats = function () {
@@ -280,8 +271,6 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                         if (taCounts[userId].size !== 0) {
                             stats.favTaId = Array.from(taCounts[userId].entries()).reduce(function (prevEntry, nextEntry) { return prevEntry[1] < nextEntry[1] ? nextEntry : prevEntry; })[0];
                         }
-                        // eslint-disable-next-line no-console
-                        // console.log(`${userId}'s fav ta is ${stats.favTaId}, taCounts length is ${taCounts[userId].size}`);
                         if (stats.favTaId) {
                             // only looking at the sessions from the favorite TA that match with sessions the user went to
                             var resSession = (_b = TAsessions[stats.favTaId]) === null || _b === void 0 ? void 0 : _b.filter(function (TAsession) {
@@ -296,16 +285,6 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                     - find mode class
                                     - out of all the sessions for that class, find mode day
                                 */
-                                // eslint-disable-next-line no-console
-                                // console.log(`finding ${userId}'s mode stats`);
-                                // // eslint-disable-next-line no-console
-                                // console.log(stats.favTaId + "'s total sessions");
-                                // // eslint-disable-next-line no-console
-                                // console.log(TAsessions[stats.favTaId]);
-                                // // eslint-disable-next-line no-console
-                                // console.log(stats.favTaId + `'s total sessions with ${userId}`);
-                                // // eslint-disable-next-line no-console
-                                // resSession.map((x) => console.log(x));
                                 var classFrequency_1 = {};
                                 var dayFrequency_1 = {};
                                 resSession.forEach(function (TAsession) {
@@ -332,21 +311,11 @@ var getWrapped = function () { return __awaiter(void 0, void 0, void 0, function
                                 var modeDay_1 = Object.keys(dayFrequency_1).reduce(function (day1, day2) {
                                     return dayFrequency_1[parseInt(day1, 10)] > dayFrequency_1[parseInt(day2, 10)] ? day1 : day2;
                                 });
-                                // eslint-disable-next-line no-console
-                                // console.log(`modeCourse: ${modeCourseId} and modeDay: ${modeDay}`);
                                 var modeSessions = resSession.filter(function (TAsession) { return TAsession.courseId === modeCourseId_1
                                     && TAsession.day === parseInt(modeDay_1, 10); });
-                                // eslint-disable-next-line no-console
-                                // console.log("final filtering for modeSessions");
-                                // eslint-disable-next-line no-console
-                                // console.log(modeSessions);
                                 // There could be multiple ties, so just picking the first one
                                 stats.favClass = modeSessions[0].courseId;
                                 stats.favDay = modeSessions[0].day;
-                                // eslint-disable-next-line no-console
-                                // console.log(`favClass: ${stats.favClass}, favDay: ${stats.favDay}`);
-                                // eslint-disable-next-line no-console
-                                // console.log("------------");
                             }
                         }
                         count++;

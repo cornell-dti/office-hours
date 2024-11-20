@@ -62,8 +62,6 @@ const getWrapped = async () => {
         const sessionIds: string[] = [];
         questionsSnapshot.docs.map((doc) => sessionIds.push(doc.get('sessionId')));
         sessionIds.sort();
-        // eslint-disable-next-line no-console
-        // console.log(sessionIds);
         await Promise.all(sessionIds.map(async (id) => {
             if (id) {
                 docs[id] = await sessionsRef.doc(id).get();
@@ -107,11 +105,7 @@ const getWrapped = async () => {
                 (stats.timeHelpingStudents !== undefined && stats.numStudentsHelped === undefined)
                 || (stats.timeHelpingStudents === undefined && stats.numStudentsHelped !== undefined);
                 if (hasVisits && isUserActive && hasFavoriteTa && taHelped) {
-                    if (!(stats.favClass && stats.favDay !== -1 && stats.favMonth !== -1)) {
-                        errorUsers.push({user: userId, 
-                            error: `User is active and has favorite TA but missing one of the following:
-                             favClass: ${stats.favClass}, favDay: ${stats.favDay}, favMonth: ${stats.favMonth}`});
-                    } else if (taStatsMismatched) {
+                    if (taStatsMismatched) {
                         errorUsers.push({user: userId, error: "Mismatch in updating ta specfic values."})
                     } else {
                         const wrappedDocRef = wrappedRef.doc(userId);
