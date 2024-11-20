@@ -28,6 +28,7 @@ type Props = {
     course?: FireCourse;
     admin?: boolean;
     snackbars: Announcement[];
+    countdownZero?: boolean;
 };
 
 const TopBar = (props: Props) => {
@@ -43,6 +44,7 @@ const TopBar = (props: Props) => {
     const user = props.user;
     const email: string | undefined = user?.email;
     const notificationTracker = useNotificationTracker(email);
+    const countdownZero = props.countdownZero;
 
     useEffect(() => {
         if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
@@ -109,6 +111,7 @@ const TopBar = (props: Props) => {
                             notificationTracker={notificationTracker}
                             iconClick={() => setShowMenu(!showMenu)}
                             showMenu={showMenu}
+                            countdownZero={countdownZero}
                         />
                         <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
                             <img
@@ -179,3 +182,4 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 export default connect(mapStateToProps, {})(TopBar);
+TopBar.defaultProps = { countdownZero: false };
