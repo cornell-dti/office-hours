@@ -210,6 +210,7 @@ const Wrapped= (props: Props): JSX.Element => {
             
             try {
                 const doc = await wrappedRef.doc(props.user?.userId).get();
+                const usersRef = firebase.firestore().collection('users');
                 if (doc.exists) {
                     const studentData = doc.data() as { 
                         officeHourVisits: never[]; 
@@ -239,9 +240,25 @@ const Wrapped= (props: Props): JSX.Element => {
                         }
                     }
 
-                    if (studentData.favClass === "" || studentData.favDay === -1 || studentData.favTaId === "") {
+                    const userDoc = await usersRef.doc(wrappedData.favTaId).get();
+                    let taNameExists = false;
+                    if (userDoc.exists) {
+                        setTaName(userDoc.data() as { 
+                            firstName: string;
+                            lastName: string;
+                        });  
+                        taNameExists = true;
+                    } else {
+                        // eslint-disable-next-line no-console
+                        console.log('No such document!');
+                    }
+
+                    if (studentData.favClass === "" || 
+                        studentData.favDay === -1 || 
+                        studentData.favTaId === "" || 
+                        !taNameExists
+                    ) {
                         setDisplayFavs(false);
-                        console.log("displayFavs", false);
                         numStages--;
                     } 
 
@@ -262,7 +279,7 @@ const Wrapped= (props: Props): JSX.Element => {
         fetchData();
 
         setLoading(false);
-    }, [props.user]);
+    }, [props.user, wrappedData.favTaId]);
 
     useEffect(() => {
 
@@ -290,7 +307,7 @@ const Wrapped= (props: Props): JSX.Element => {
         };
 
         fetchData();
-    }, [wrappedData.favTaId]);
+    }, [totalStages, wrappedData.favTaId]);
 
     useEffect(() => {
         const coursesRef = firebase.firestore().collection("courses");
