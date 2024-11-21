@@ -185,4 +185,4 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 export default connect(mapStateToProps, {})(TopBar);
-TopBar.defaultProps = { countdownZero: false };
+TopBar.defaultProps = { countdownZero: false, setDisplayWrapped: () => {} };

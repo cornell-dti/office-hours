@@ -263,14 +263,14 @@ const SplitView = ({
                                 {"Notification" in window &&
                                     window?.Notification !== undefined &&
                                     window?.Notification.permission !== "granted" && (
-                                        <div className="warningArea">
-                                            <div>&#9888;</div>
-                                            <div>
+                                    <div className="warningArea">
+                                        <div>&#9888;</div>
+                                        <div>
                                                 Please make sure to enable browser notifications in your system
                                                 settings.
-                                            </div>
                                         </div>
-                                    )}
+                                    </div>
+                                )}
                             </div>
                         </section>
                     )
