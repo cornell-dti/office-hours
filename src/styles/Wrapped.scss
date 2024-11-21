@@ -44,6 +44,7 @@
   right: "1.8rem";
 }
 
+//this is the carrot thing i need to change
 .navigateStageVisible {
   position: absolute;
   top: 50%; 
@@ -98,6 +99,9 @@
   background-color: #bbb;
   margin: 0 5px;
   transition: background-color 0.3s;
+  &:hover {
+    background-color: rgb(255, 255, 255);
+}
 }
 
 .dot.active {
