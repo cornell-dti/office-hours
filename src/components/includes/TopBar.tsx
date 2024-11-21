@@ -29,6 +29,7 @@ type Props = {
     admin?: boolean;
     snackbars: Announcement[];
     countdownZero?: boolean;
+    setDisplayWrapped?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const TopBar = (props: Props) => {
@@ -45,6 +46,7 @@ const TopBar = (props: Props) => {
     const email: string | undefined = user?.email;
     const notificationTracker = useNotificationTracker(email);
     const countdownZero = props.countdownZero;
+    const setDisplayWrapped = props.setDisplayWrapped;
 
     useEffect(() => {
         if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
@@ -112,6 +114,7 @@ const TopBar = (props: Props) => {
                             iconClick={() => setShowMenu(!showMenu)}
                             showMenu={showMenu}
                             countdownZero={countdownZero}
+                            setDisplayWrapped={setDisplayWrapped}
                         />
                         <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
                             <img
