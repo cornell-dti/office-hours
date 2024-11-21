@@ -205,8 +205,11 @@ const Wrapped= (props: Props): JSX.Element => {
         const fetchData = async () => {
             setLoading(true);
             try {
+                console.log("userId: ", props.user?.userId);
+                  
                 const doc = await wrappedRef.doc(props.user?.userId).get();
                 const usersRef = firebase.firestore().collection('users');
+                console.log("usersRef: ", usersRef);
                 if (doc.exists) {
                     const studentData = doc.data() as { 
                         numVisits: number;
@@ -236,26 +239,31 @@ const Wrapped= (props: Props): JSX.Element => {
                         }
                     }
 
-                    const userDoc = await usersRef.doc(wrappedData.favTaId).get();
                     let taNameExists = false;
-                    if (userDoc.exists) {
-                        setTaName(userDoc.data() as { 
-                            firstName: string;
-                            lastName: string;
-                        });  
-                        taNameExists = true;
-                    } else {
-                        // eslint-disable-next-line no-console
-                        console.log('No such document!');
+
+                    if (wrappedData.favTaId) {
+                        const userDoc = await usersRef.doc(wrappedData.favTaId).get();
+
+                        if (userDoc.exists) {
+                            setTaName(userDoc.data() as { 
+                                firstName: string;
+                                lastName: string;
+                            });  
+                            taNameExists = true;
+                        } else {
+                            // eslint-disable-next-line no-console
+                            console.log('No such document!');
+                        }
                     }
 
                     if (studentData.favClass === "" || 
                         studentData.favDay === -1 || 
-                        studentData.favTaId === "" || 
-                        !taNameExists
+                        studentData.favTaId === "" 
                     ) {
-                        setDisplayFavs(false);
-                        numStages--;
+                        if (!taNameExists) {
+                            setDisplayFavs(false);
+                            numStages--;
+                        }
                     } 
 
                     setTotalStages(numStages);
@@ -277,7 +285,7 @@ const Wrapped= (props: Props): JSX.Element => {
                 }
             } catch (error) {
                 // eslint-disable-next-line no-console
-                console.error("Error fetching data: ", error);
+                console.error("Error fetching data (rip): ", error);
             }
             
         };
