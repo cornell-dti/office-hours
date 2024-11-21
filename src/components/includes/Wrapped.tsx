@@ -199,99 +199,99 @@ const Wrapped= (props: Props): JSX.Element => {
     };
 
     useEffect(() => {
-        // add usestate for totalstages calculate it in useEffect
-
-        const wrappedRef = firebase.firestore().collection('wrapped');
         const fetchData = async () => {
+            if (!props.user?.userId) {
+                console.error("User ID is not available.");
+                return;
+            }
+    
             setLoading(true);
+    
             try {
-                console.log("userId: ", props.user?.userId);
-                  
-                const doc = await wrappedRef.doc(props.user?.userId).get();
-                const usersRef = firebase.firestore().collection('users');
-                console.log("usersRef: ", usersRef);
-                if (doc.exists) {
-                    const studentData = doc.data() as { 
-                        numVisits: number;
-                        personalityType: string; 
-                        timeHelpingStudents: number; 
-                        totalMinutes: number; 
-                        favTaId: string;
-                        favClass: string;
-                        favDay: number;
-                        favMonth: number;
-                        numStudentsHelped: number;
-                    }
-                    setWrappedData(studentData);  
-
-                    const data = doc.data();
-                    let numStages = 0;
-                    if (data !== undefined) {
-                        if (data.timeHelpingStudents === undefined || data.timeHelpingStudents === 0){
-                            numStages = 6;
-                            setRole(0);
-                        } else if (data.favTaId === "" || data.favTaId === undefined){
-                            numStages = 4;
-                            setRole(2);
-                        } else{
-                            numStages = 7;
-                            setRole(1);
-                        }
-                    }
+                const wrappedRef = firebase.firestore().collection("wrapped");
+                const doc = await wrappedRef.doc(props.user.userId).get();
+    
+                if (!doc.exists) {
+                    console.log("No document found for the user in 'wrapped' collection.");
+                    return;
+                }
+    
+                const studentData = doc.data() as {
+                    officeHourVisits: never[];
+                    personalityType: string;
+                    timeHelpingStudents: number;
+                    totalMinutes: number;
+                    favTaId: string;
+                    favClass: string;
+                    favDay: number;
+                    favMonth: number;
+                    numStudentsHelped: number;
+                };
+    
+                // Set initial wrapped data
+                setWrappedData(studentData);
+    
+                let numStages = 0;
+    
+                // Determine the user's role and adjust stages accordingly
+                if (!studentData.timeHelpingStudents || studentData.timeHelpingStudents === 0) {
+                    numStages = 6;
+                    setRole(0);
+                } else if (!studentData.favTaId) {
+                    numStages = 4;
+                    setRole(2);
+                } else {
+                    numStages = 7;
+                    setRole(1);
+                }
+    
+                // Favorites slide
+                if (studentData.favTaId && studentData.favClass) {
+                    const usersRef = firebase.firestore().collection("users");
+                    const userDoc = await usersRef.doc(studentData.favTaId).get();
 
                     let taNameExists = false;
-
-                    if (wrappedData.favTaId) {
-                        const userDoc = await usersRef.doc(wrappedData.favTaId).get();
-
-                        if (userDoc.exists) {
-                            setTaName(userDoc.data() as { 
-                                firstName: string;
-                                lastName: string;
-                            });  
-                            taNameExists = true;
-                        } else {
-                            // eslint-disable-next-line no-console
-                            console.log('No such document!');
-                        }
+    
+                    if (userDoc.exists) {
+                        const taData = userDoc.data() as { firstName: string; lastName: string };
+                        setTaName(taData);
+                        taNameExists = true;
+                    } else {
+                        console.log("No such TA document found.");
                     }
 
-                    if (studentData.favClass === "" || 
-                        studentData.favDay === -1 || 
-                        studentData.favTaId === "" 
-                    ) {
-                        if (!taNameExists) {
-                            setDisplayFavs(false);
-                            numStages--;
-                        }
-                    } 
+                    // Check if favorite fields are valid
+                    const validFavs = studentData.favClass !== "" && studentData.favDay !== -1 && taNameExists;
 
-                    setTotalStages(numStages);
+                    setDisplayFavs(validFavs);
+    
+                    if (!validFavs) {
+                        numStages--; // Adjust total stages if favorites can't be displayed
+                    }
 
+                    // Fetch favorite class details
                     const coursesRef = firebase.firestore().collection("courses");
-
-                    const coursesDoc = await coursesRef.doc(wrappedData.favClass).get();
-                    if (coursesDoc.exists){
-                        setFavClass(coursesDoc.data() as {
-                            code: string;
-                        })
-                    } else{
-                        // eslint-disable-next-line no-console
-                        console.log('No such document!');
-                    }  
-                } else {
-                    // eslint-disable-next-line no-console
-                    console.log('No such document!');
-                }
-            } catch (error) {
-                // eslint-disable-next-line no-console
-                console.error("Error fetching data (rip): ", error);
-            }
+                    const coursesDoc = await coursesRef.doc(studentData.favClass).get();
+    
+                    if (coursesDoc.exists) {
+                        const courseData = coursesDoc.data() as { code: string };
+                        setFavClass(courseData);
+                    } else {
+                        console.log("No such course document found.");
+                    }
             
+                }
+    
+                // Update total stages
+                setTotalStages(numStages);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } 
         };
-
+    
         fetchData();
-    }, [props.user, wrappedData.favClass, wrappedData.favTaId]);
+    }, [props.user]);
+        
 
     useEffect(() => {
         const timer = setTimeout(() => {
