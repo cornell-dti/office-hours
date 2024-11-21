@@ -2,7 +2,7 @@ import admin from "firebase-admin";
 
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
-    databaseURL: 'https://qmi-test.firebaseio.com'
+    databaseURL: 'https://queue-me-in-prod.firebaseio.com'
 
 });
 
@@ -25,7 +25,7 @@ const getWrapped = async () => {
     // Refs
     const questionsRef = db.collection('questions');
     const sessionsRef = db.collection('sessions');
-    const wrappedRef = db.collection('wrapped-fa24');
+    const wrappedRef = db.collection('wrapped');
     const usersRef = db.collection('users');
 
     // Query all questions asked between FA23 and SP24
