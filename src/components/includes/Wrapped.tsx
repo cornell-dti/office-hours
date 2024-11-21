@@ -95,7 +95,7 @@ const Wrapped= (props: Props): JSX.Element => {
     const [loading, setLoading] = useState<boolean>(true);
     const [stage, setStage] = useState<number>(0);
     const [wrappedData, setWrappedData] = useState({
-        officeHourVisits: [],
+        numVisits: 0,
         personalityType: "",
         timeHelpingStudents: 0,
         totalMinutes: 0,
@@ -122,7 +122,7 @@ const Wrapped= (props: Props): JSX.Element => {
     const [totalStages, setTotalStages] = useState<number>(0);
 
     // add these to useEffect?
-    const semester =  "FALL 2024";
+    const semester =  "SPRING 2023 & FALL 2024";
     const months : string[] = [
         "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", 
         "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
@@ -209,7 +209,7 @@ const Wrapped= (props: Props): JSX.Element => {
                 const usersRef = firebase.firestore().collection('users');
                 if (doc.exists) {
                     const studentData = doc.data() as { 
-                        officeHourVisits: never[]; 
+                        numVisits: number;
                         personalityType: string; 
                         timeHelpingStudents: number; 
                         totalMinutes: number; 
@@ -502,7 +502,7 @@ const Wrapped= (props: Props): JSX.Element => {
                 
                 <div style={{ display: "flex", justifyContent: "flex-end", fontWeight: "bold" }}>
                     <div className="visit top-text">
-                        YOU WORKED SO HARD THIS SEMESTER!
+                        YOU WORKED SO HARD THIS YEAR!
                     </div>
                     <div className="visit mid-text">
                         <Typography variant="h3"> 
@@ -510,7 +510,7 @@ const Wrapped= (props: Props): JSX.Element => {
                         </Typography>
                     </div>
                     <div className="visit num-visits">
-                        {wrappedData.officeHourVisits.length} 
+                        {wrappedData.numVisits} 
                     </div>
                     <img 
                         src={Couple}
@@ -526,7 +526,7 @@ const Wrapped= (props: Props): JSX.Element => {
                         className="visit bottom-text"
                     >
                         <Typography variant="h3"> 
-                            {wrappedData.officeHourVisits.length === 1 ? "VISIT " : "VISITS " }
+                            {wrappedData.numVisits === 1 ? "VISIT " : "VISITS " }
                             TO OFFICE HOURS
                         </Typography>
                     </div>
