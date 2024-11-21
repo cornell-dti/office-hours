@@ -21,7 +21,8 @@ type Props = {
     setDisplayWrapped?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, countdownZero, setDisplayWrapped}: Props) => {
+const TopBarNotifications = (
+    { notificationTracker, user, showMenu, iconClick, countdownZero, setDisplayWrapped }: Props) => {
     const [dropped, toggleDropped] = useState(false);
 
     const notifications = notificationTracker?.notificationList?.sort((a, b) => {
@@ -139,7 +140,8 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, co
                 )}
                 {/* Additional notification when countdownZero is true */}
                 {countdownZero && (
-                    <div onClick={() => handleNotifClick()}
+                    <div
+                        onClick={() => handleNotifClick()}
                         className="notifications__notification"
                         style={{ backgroundColor: "#DBE8FD", borderRadius: "8px" }}
                     >
@@ -164,4 +166,4 @@ const mapStateToProps = (state: RootState) => ({
 
 
 export default connect(mapStateToProps, {})(TopBarNotifications);
-TopBarNotifications.defaultProps = { countdownZero: false };
+TopBarNotifications.defaultProps = { countdownZero: false, setDisplayWrapped: () => {} };
