@@ -210,6 +210,7 @@ const SplitView = ({
                 courseId={match.params.courseId}
                 course={course}
                 countdownZero={countdownZero}
+                setDisplayWrapped={setDisplayWrapped}
             />
             {banners.map((banner, index) => (
                 <Banner
@@ -263,14 +264,14 @@ const SplitView = ({
                                 {"Notification" in window &&
                                     window?.Notification !== undefined &&
                                     window?.Notification.permission !== "granted" && (
-                                    <div className="warningArea">
-                                        <div>&#9888;</div>
-                                        <div>
-                                            Please make sure to enable browser notifications in your system
-                                            settings.
+                                        <div className="warningArea">
+                                            <div>&#9888;</div>
+                                            <div>
+                                                Please make sure to enable browser notifications in your system
+                                                settings.
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
                             </div>
                         </section>
                     )
@@ -278,11 +279,13 @@ const SplitView = ({
                     <Loader active={true} content="Loading" />
                 ))}
             <ProductUpdates />
-            <WrappedCountdown
-                setDisplayWrapped={setDisplayWrapped}
-                setCountdownZero={setCountdownZero}
-                wrappedDate={{ launchDate: launch, startDate: start }}
-            />
+            {user && user.wrapped ? (
+                <WrappedCountdown
+                    setDisplayWrapped={setDisplayWrapped}
+                    setCountdownZero={setCountdownZero}
+                    wrappedDate={{ launchDate: launch, startDate: start }}
+                />
+            ) : null}
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt
                     onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
