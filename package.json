@@ -62,9 +62,8 @@
   },
   "scripts": {
     "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
-    "build:staging": "NODE_OPTIONS=--openssl-legacy-provider REACT_APP_IS_STAGING=true react-scripts build",
+    "build:staging": "REACT_APP_IS_STAGING=true react-scripts build",
     "deploy": "firebase deploy",
-    "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "s": "yarn start",
     "test": "NODE_ENV=test firebase emulators:exec --only firestore \"./test.sh\"",
