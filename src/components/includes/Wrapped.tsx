@@ -201,7 +201,7 @@ const Wrapped= (props: Props): JSX.Element => {
     useEffect(() => {
         // add usestate for totalstages calculate it in useEffect
 
-        const wrappedRef = firebase.firestore().collection('wrapped-fa24');
+        const wrappedRef = firebase.firestore().collection('wrapped');
         const fetchData = async () => {
             setLoading(true);
             try {
