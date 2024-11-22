@@ -41,6 +41,11 @@ async function validateDocuments() {
                 errors.push('totalMinutes is not positive');
             }
 
+            // Check if favTa exists for students
+            if (!data.timeHelpingStudents && data.numStudentsHelped === 0 && data.favTaId) {
+                errors.push('favTaId is missing');
+            }
+
             // If there are errors, log them with the user ID
             if (errors.length > 0) {
                 // eslint-disable-next-line no-console
