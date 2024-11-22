@@ -17,9 +17,10 @@ type RemainingTime = {
 // Declare interface to takes in the setter setDisplayWrapped as a prop
 interface WrappedCountdownProps {
     setDisplayWrapped: React.Dispatch<React.SetStateAction<boolean>>; // Define prop type for setter
+    setCountdownZero: React.Dispatch<React.SetStateAction<boolean>>;
     wrappedDate: WrappedDate;
 }
-const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, wrappedDate }) => {
+const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, setCountdownZero, wrappedDate }) => {
     const handleButtonClick = () => {
         // Call the setter function to change the state in the parent
         setDisplayWrapped(true); // Set to true to show the modal
@@ -41,16 +42,24 @@ const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, 
     const [confettiShown, setConfettiShown] = useState<boolean>(false);
     const [isZeroCounter, setIsZeroCounter] = useState<boolean>(false);
 
-    // Countdown timer effect
+    // Countdown timer effect to update every second
     useEffect(() => {
-        const updatedTime = calculateTimeRemaining(wrappedDate);
-        setTimeRemaining(updatedTime);
+        // Start a timer that updates the status of the countodwn every second, 
+        // Avoids adding `timeRemaining` in dependency array to prevent infinite render
+        const timer = setInterval(() => {
+            const updatedTime = calculateTimeRemaining(wrappedDate);
+            setTimeRemaining(updatedTime);
 
-        // Stop countdown and set `isZeroCounter` when time reaches zero
-        if (updatedTime.total <= 0) {
-            setIsZeroCounter(true);
-        }
-    }, [wrappedDate, timeRemaining]);
+            // Stop the timer if countdown reaches zero
+            if (updatedTime.total <= 0) {
+                clearInterval(timer);
+                setIsZeroCounter(true);
+                setCountdownZero(true);
+            }
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [wrappedDate, setCountdownZero]);
 
     // Trigger confetti with a delay only the first time `isZeroCounter` becomes true
     useEffect(() => {
@@ -79,15 +88,15 @@ const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, 
                         <>
                             <div>
                                 <div className="countdownContainer_boxes">{prependZero(timeRemaining.days)}</div>
-                                <p className="counter_sub">DAYS</p>
+                                <p className="counter_sub">{timeRemaining.days === 1 ? "DAY" : "DAYS"}</p>
                             </div>
                             <div>
                                 <div className="countdownContainer_boxes">{prependZero(timeRemaining.hours)}</div>
-                                <p className="counter_sub">HOURS</p>
+                                <p className="counter_sub">{timeRemaining.hours === 1 ? "HOUR" : "HOURS"}</p>
                             </div>
                             <div>
                                 <div className="countdownContainer_boxes">{prependZero(timeRemaining.minutes)}</div>
-                                <p className="counter_sub">MINUTES</p>
+                                <p className="counter_sub">{timeRemaining.minutes === 1 ? "MINUTE" : "MINUTES"}</p>
                             </div>
                             <div className="textContainer">
                                 <p className="top">Queue Me In</p>

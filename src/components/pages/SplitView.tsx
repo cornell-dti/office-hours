@@ -20,6 +20,7 @@ import smsNotif from "../../media/smsNotif.svg";
 import { addBanner } from "../../redux/actions/announcements";
 import Banner from "../includes/Banner";
 import FeedbackPrompt from "../includes/FeedbackPrompt";
+import Wrapped from "../includes/Wrapped";
 import WrappedCountdown from "../includes/WrappedCountdown";
 import { WRAPPED_START_DATE, WRAPPED_LAUNCH_DATE } from "../../constants";
 
@@ -85,8 +86,8 @@ const SplitView = ({
 
     const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
+    const [countdownZero, setCountdownZero] = useState<boolean>(false);
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
@@ -148,12 +149,10 @@ const SplitView = ({
         removeQuestionbyID(firestore, removeQuestionId);
     };
 
-    // used when a student removes their own question, don't want to dispaly feedback
+    // used when a student removes their own question, don't want to display feedback
     const setRemoveQuestionWrapper = (questionId: string | undefined) => {
         setRemoveQuestionId(questionId);
         setRemovedQuestionId(questionId);
-        // eslint-disable-next-line no-console
-        console.log("split view questionId: ", questionId);
     };
 
     // used to display feedback to user once question is removed
@@ -161,8 +160,6 @@ const SplitView = ({
         setRemoveQuestionId(questionId);
         setDisplayFeedbackPrompt(true);
         setRemovedQuestionId(questionId);
-        // eslint-disable-next-line no-console
-        console.log("split view questionId: ", questionId);
     };
 
     useEffect(() => {
@@ -204,6 +201,8 @@ const SplitView = ({
                 context="student"
                 courseId={match.params.courseId}
                 course={course}
+                countdownZero={countdownZero}
+                setDisplayWrapped={setDisplayWrapped}
             />
             {banners.map((banner, index) => (
                 <Banner
@@ -260,8 +259,8 @@ const SplitView = ({
                                     <div className="warningArea">
                                         <div>&#9888;</div>
                                         <div>
-                                            Please make sure to enable browser notifications in your system
-                                            settings.
+                                                Please make sure to enable browser notifications in your system
+                                                settings.
                                         </div>
                                     </div>
                                 )}
@@ -272,16 +271,21 @@ const SplitView = ({
                     <Loader active={true} content="Loading" />
                 ))}
             <ProductUpdates />
-            <WrappedCountdown
-                setDisplayWrapped={setDisplayWrapped}
-                wrappedDate={{ launchDate: launch, startDate: start }}
-            />
+            {user && user.wrapped ? (
+                <WrappedCountdown
+                    setDisplayWrapped={setDisplayWrapped}
+                    setCountdownZero={setCountdownZero}
+                    wrappedDate={{ launchDate: launch, startDate: start }}
+                />
+            ) : null}
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt
                     onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
                     closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                 />
             ) : null}
+
+            {displayWrapped ? <Wrapped user={user} onClose={() => setDisplayWrapped(false)} /> : null}
         </>
     );
 };

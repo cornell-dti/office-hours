@@ -9,6 +9,7 @@ import CourseCard from './CourseCard';
 import { CURRENT_SEMESTER } from '../../constants';
 import { updateCourses } from '../../firebasefunctions/courses';
 import { RootState } from '../../redux/store';
+import Wrapped from './Wrapped';
 
 type Props = {
     readonly user: FireUser;
@@ -29,6 +30,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     const [currentCourses, setCurrentCourses] = useState<FireCourse[]>([]);
     const [formerCourses, setFormerCourses] = useState<FireCourse[]>([]);
+    const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
 
     useEffect(() => {
         setCurrentCourses(allCourses.filter((course) => {
@@ -260,6 +262,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     )}
                 </div>
             </div>
+            {displayWrapped ? (
+                <Wrapped user={user} onClose={() => setDisplayWrapped(false)} />
+            ) : null}
         </div>
     );
 }

@@ -3,7 +3,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Icon } from "semantic-ui-react";
 
 import { connect } from "react-redux";
-import { useParams } from "react-router-dom";
 import SessionInformationHeader from "./SessionInformationHeader";
 import SessionQuestionsContainer from "./SessionQuestionsContainer";
 
@@ -52,10 +51,6 @@ type AbsentState = {
     lastAskedQuestion: FireQuestion | null;
 };
 
-type RouteParams = {
-    courseId: string;
-};
-
 const SessionView = ({
     course,
     session,
@@ -87,7 +82,6 @@ const SessionView = ({
     });
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
-    const { courseId } = useParams<RouteParams>();
 
     const updateSessionProfile = useCallback(
         (virtualLocation: string) => {
