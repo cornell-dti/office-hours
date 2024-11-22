@@ -24,6 +24,7 @@ type Props = {
 const TopBarNotifications = (
     { notificationTracker, user, showMenu, iconClick, countdownZero, setDisplayWrapped }: Props) => {
     const [dropped, toggleDropped] = useState(false);
+    const [hasWrapped, setHasWrapped] = useState(false);
 
     const notifications = notificationTracker?.notificationList?.sort((a, b) => {
         return b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime();
@@ -43,6 +44,14 @@ const TopBarNotifications = (
     const updateTrackable = () => {
         viewedTrackable(user, notificationTracker, true)
     }
+
+    useEffect(() => {
+        if (user && user.wrapped) {
+            setHasWrapped(true);
+        } else {
+            setHasWrapped(false);
+        }
+    }, [user]);
 
     useEffect(() => {
         if(notificationTracker !== undefined && !hasViewed && dropped) {
@@ -99,11 +108,13 @@ const TopBarNotifications = (
     return (
         <div ref={dropdownRef}>
             <div className="notifications__top" onClick={() => iconClicked()}>
-                <img
-                    className="notifications__icon"
-                    src={countdownZero ? ribbonNotif : notification}
-                    alt="Notification icon"
-                />
+                {hasWrapped && 
+                    <img
+                        className="notifications__icon"
+                        src={countdownZero ? ribbonNotif : notification}
+                        alt="Notification icon"
+                    />
+                }
                 {!hasViewed &&
                     <img
                         className="notifications__indicator"
@@ -139,7 +150,7 @@ const TopBarNotifications = (
                     ))
                 )}
                 {/* Additional notification when countdownZero is true */}
-                {countdownZero && (
+                {hasWrapped && countdownZero && (
                     <div
                         onClick={() => handleNotifClick()}
                         className="notifications__notification"
