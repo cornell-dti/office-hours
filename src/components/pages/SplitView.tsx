@@ -91,7 +91,6 @@ const SplitView = ({
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
-    const [hasWrapped, setHasWrapped] = useState<boolean>(false);
     const [currentExportSessions, setCurrentExportSessions] = useState<FireSession[]>([
         {
             modality: "virtual",
@@ -126,14 +125,6 @@ const SplitView = ({
             setDisplayWrapped(true);
         } else {
             setDisplayWrapped(false);
-        }
-    }, [user]);
-
-    useEffect(() => {
-        if (user && user.wrapped) {
-            setHasWrapped(true);
-        } else {
-            setHasWrapped(false);
         }
     }, [user]);
 
