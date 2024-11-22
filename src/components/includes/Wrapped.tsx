@@ -316,7 +316,7 @@ const Wrapped= (props: Props): JSX.Element => {
         const timer = setTimeout(() => {
             setLoading(false);
         }, 1000); 
-        return () => clearTimeout(timer);
+        return () => {clearTimeout(timer)};
     }
 
     const WrappedAnimationModal = () =>
