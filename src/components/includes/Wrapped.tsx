@@ -234,7 +234,8 @@ const Wrapped= (props: Props): JSX.Element => {
                 let numStages = 0;
     
                 // Determine the user's role and adjust stages accordingly
-                if (!studentData.timeHelpingStudents || studentData.timeHelpingStudents === 0) {
+                if ((!studentData.timeHelpingStudents || studentData.timeHelpingStudents === 0) 
+                    && studentData.favTaId) {
                     numStages = 6;
                     setRole(0);
                 } else if (!studentData.favTaId) {
