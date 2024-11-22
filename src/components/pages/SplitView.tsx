@@ -91,6 +91,7 @@ const SplitView = ({
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
+    const [hasWrapped, setHasWrapped] = useState<boolean>(false);
     const [currentExportSessions, setCurrentExportSessions] = useState<FireSession[]>([
         {
             modality: "virtual",
