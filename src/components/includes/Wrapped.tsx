@@ -470,10 +470,10 @@ const Wrapped= (props: Props): JSX.Element => {
             {!loading && (
                 <div>
                     <div className="welcomeSlide">
-                        <div style={{ alignSelf: "flex-start", width: "366px" }}>
+                        <div style={{ alignSelf: "flex-start", width: "366px" }} className="intro-title">
                             <Typography variant="h2" style={{ fontWeight: 700 }}> Queue Me In</Typography>
                         </div>
-                        <div style={{ alignSelf: "flex-end", width: "279px" }}>
+                        <div style={{ alignSelf: "flex-end", width: "279px" }} className="intro-title">
                             <Typography variant="h2" style={{ fontWeight: 400 }}> WRAPPED</Typography>
                         </div>
                         <div className="animationContainer">
