@@ -217,7 +217,7 @@ const Wrapped= (props: Props): JSX.Element => {
                 }
     
                 const studentData = doc.data() as {
-                    officeHourVisits: never[];
+                    numVisits: number;
                     personalityType: string;
                     timeHelpingStudents: number;
                     totalMinutes: number;
