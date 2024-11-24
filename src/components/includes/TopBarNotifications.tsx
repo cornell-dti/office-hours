@@ -108,13 +108,11 @@ const TopBarNotifications = (
     return (
         <div ref={dropdownRef}>
             <div className="notifications__top" onClick={() => iconClicked()}>
-                {hasWrapped && 
-                    <img
-                        className="notifications__icon"
-                        src={countdownZero ? ribbonNotif : notification}
-                        alt="Notification icon"
-                    />
-                }
+                <img
+                    className="notifications__icon"
+                    src={countdownZero && hasWrapped ? ribbonNotif : notification}
+                    alt="Notification icon"
+                />
                 {!hasViewed &&
                     <img
                         className="notifications__indicator"
