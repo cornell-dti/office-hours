@@ -54,9 +54,12 @@ firebase_admin_1["default"].initializeApp({
                 console.log('firebase worked');
                 return [4 /*yield*/, usersRef
                         .where('wrapped', '==', true)
+                        .orderBy('email')
                         .get()];
             case 1:
                 usersSnapshot = _a.sent();
+                // eslint-disable-next-line no-console
+                console.log("hi");
                 return [4 /*yield*/, Promise.all(usersSnapshot.docs.map(function (doc) { return __awaiter(void 0, void 0, void 0, function () {
                         return __generator(this, function (_a) {
                             return [2 /*return*/, doc.get('email')];
