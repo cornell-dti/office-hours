@@ -17,7 +17,7 @@
         border: 2px solid #77BBFA;
     }
 
-    &.editable:hover {
+    &.editable:hover, &.active.ineditable:not(.selected):hover {
         cursor: pointer;
         box-shadow: 5px 10px 20px rgb(219, 219, 219);
     }
