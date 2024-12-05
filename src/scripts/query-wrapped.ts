@@ -42,8 +42,29 @@ async function validateDocuments() {
             }
 
             // Check if favTa exists for students
-            if (!data.timeHelpingStudents && data.numStudentsHelped === 0 && data.favTaId) {
+            if (!data.timeHelpingStudents && !data.numStudentsHelped && !data.favTaId) {
                 errors.push('favTaId is missing');
+            }
+
+            // Check if one of the TA stats exists but the other doesn't
+            if ((data.timeHelpingStudents && !data.numStudentsHelped)
+                || (!data.timeHelpingStudents && data.numStudentsHelped)) {
+                errors.push('One of the TA stats is mismatched')
+            }
+
+            // Check if favClass is not an empty string
+            if (!data.favClass || data.favClass.trim() === '') {
+                errors.push('favClass is empty');
+            }
+            
+            // Check if favDay is not a default value
+            if (data.favDay === -1) {
+                errors.push('favDay is not valid');
+            }
+
+            // Check if favMonth is not a default value
+            if (data.favMonth === -1) {
+                errors.push('favMonth is not valid');
             }
 
             // If there are errors, log them with the user ID
