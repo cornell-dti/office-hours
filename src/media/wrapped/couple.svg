@@ -1,7 +1,14 @@
 <svg width="166" height="108" viewBox="0 0 166 108" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g clip-path="url(#clip0_5513_374)">
-<path opacity="0.5" d="M32.1852 0.783203H91.4922V105.85H32.1852V0.783203Z" fill="url(#pattern0_5513_374)"/>
-<path opacity="0.5" d="M-0.000278473 0.783203H52.4521V102.907H-0.000278473V0.783203Z" fill="url(#pattern1_5513_374)"/>
+<g style="transform: scaleX(-1) translate(74.5078px,0); transform-origin: center;">
+<path opacity="0.5" d="M-0.000278473 0.783203 H59.31 V105.85 H-0.000278473 V0.783203 Z" fill="url(#pattern0_5513_374)"/>
+<path opacity="0.5" d="M-0.000278473 0.783203 H59.31 V105.85 H-0.000278473 V0.783203 Z" fill="url(#pattern0_5513_374)"/>
+</g>
+
+<g style="transform: scaleX(-1) translate(74.5078px,0); transform-origin: center;">
+<path opacity="0.5" d="M32.1852 0.783203 H91.4922 V102.907 H39.0422 V0.783203 Z" fill="url(#pattern1_5513_374)"/>
+<path opacity="0.5" d="M32.1852 0.783203 H91.4922 V102.907 H39.0422 V0.783203 Z" fill="url(#pattern1_5513_374)"/>
+</g>
 </g>
 <defs>
 <pattern id="pattern0_5513_374" patternContentUnits="objectBoundingBox" width="1" height="1">

@@ -28,6 +28,8 @@ type Props = {
     course?: FireCourse;
     admin?: boolean;
     snackbars: Announcement[];
+    countdownZero?: boolean;
+    setDisplayWrapped?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const TopBar = (props: Props) => {
@@ -43,6 +45,8 @@ const TopBar = (props: Props) => {
     const user = props.user;
     const email: string | undefined = user?.email;
     const notificationTracker = useNotificationTracker(email);
+    const countdownZero = props.countdownZero;
+    const setDisplayWrapped = props.setDisplayWrapped;
 
     useEffect(() => {
         if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
@@ -109,6 +113,8 @@ const TopBar = (props: Props) => {
                             notificationTracker={notificationTracker}
                             iconClick={() => setShowMenu(!showMenu)}
                             showMenu={showMenu}
+                            countdownZero={countdownZero}
+                            setDisplayWrapped={setDisplayWrapped}
                         />
                         <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
                             <img
@@ -179,3 +185,4 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 export default connect(mapStateToProps, {})(TopBar);
+TopBar.defaultProps = { countdownZero: false, setDisplayWrapped: () => {} };

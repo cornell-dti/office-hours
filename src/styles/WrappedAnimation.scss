@@ -1,0 +1,179 @@
+.qmi-container {
+  z-index: 0;
+  border-radius: 8px;
+  background-color: whitesmoke;
+  position: absolute;
+  display: flex;
+  padding: 2rem;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  bottom: 0;
+  align-content: center;
+  justify-content: center;
+  overflow:clip;
+}
+
+.red-circle, .blue-circle{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+/* stroke array is length of path, so circumference. recalculate if radius changes.
+dashoffset is percentage to draw of the path
+*/
+.red-circle circle {
+  stroke-dashoffset: 60%;
+  stroke-dasharray: 725px;
+  fill: transparent;
+  transform-origin: 50% 50%;
+  transform-box: fill-box;
+  stroke-width: 17;
+  transform: rotate(45deg);
+  stroke: #FF5A60;
+  animation: red-spin 2s 0.8s ease-in-out both;
+  will-change: transform;
+}
+
+.blue-circle circle {
+  stroke-dasharray: 1135px;
+  fill: transparent;
+  transform-origin: 50% 50%;
+  transform-box: fill-box;
+  stroke-width: 20;
+  transform: rotate(45deg);
+  stroke: url(#blue-gradient);
+  stroke-linecap: round;
+  animation: blue-spin 1.5s 1.5s cubic-bezier(0.215, 0.610, 0.355, 1) both;
+}
+
+.arrow-circle {
+  position: absolute;
+  transform-origin: 50% 50%;
+  transform-box: fill-box;
+  top: 40%;
+  animation: spin 2.5s 0.8s ease-in-out both, 
+  fadeArrow 0.5s 3s ease-in both;
+  will-change: transform;
+}
+
+/* Needed two pluses since QMI plus is visibly different gradient than 
+QMI Wrapped background. First plus applied to logo part of animation, 
+second plus is used for the expanding transition into background. */
+
+.first-plus,
+.sec-plus {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: 7em;
+  margin-top: 7em;
+}
+
+/* controls when the pluses appear/disappear. in sync with each others delays*/
+.first-plus {
+  animation: appear-n-grow 1s 3.5s ease-in-out both,
+    disappear 0.01s 5s linear forwards;
+}
+
+.sec-plus {
+  width: 61px;
+  height: 61px;
+  animation: disappear 5s linear backwards,
+    grow 0.5s 5s ease-in both;
+  overflow: clip;
+
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg)
+  }
+  100% {
+    transform: rotate(360deg)
+  }
+}
+
+@keyframes disappear {
+
+  0%,
+  100% {
+    opacity: 0%;
+    display: none;
+  }
+}
+
+@keyframes grow {
+  100% {
+    transform: scale(70);
+    background-color:none;
+  }
+}
+
+@keyframes fadeArrow {
+  99% {
+    opacity: 0%
+  }
+
+  100% {
+    opacity: 0%;
+    display: none;
+  }
+}
+
+@keyframes appear-n-grow {
+  0% {
+    opacity: 0%;
+    transform: scale(0.5);
+  }
+
+  80% {
+    opacity: 100%;
+    transform: scale(1.2);
+  }
+
+  100% {
+    opacity: 100%;
+    transform: scale(1);
+  }
+}
+
+@keyframes red-spin {
+  30% {
+    stroke-dashoffset: 0%;
+  }
+
+  35% {
+    stroke-dashoffset: 0%;
+  }
+
+  40% {
+    stroke-dashoffset: 0%;
+    stroke-linecap: round;
+    stroke-dashoffset: 0%;
+  }
+
+  100% {
+    stroke: url(#red-gradient);
+    transform: rotate(90deg);
+    stroke-dashoffset: -70%;
+    stroke-linecap: round;
+    animation-timing-function: ease-out;
+  }
+}
+
+@keyframes blue-spin {
+  0% {
+    stroke-dashoffset: 270%;
+    stroke-opacity: 0%;
+  }
+
+  100% {
+    stroke-opacity: 100%;
+    stroke-dashoffset: 25%;
+    transform: rotate(60deg);
+  }
+}

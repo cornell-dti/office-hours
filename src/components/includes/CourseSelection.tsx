@@ -2,13 +2,14 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 
-import { connect } from "react-redux";
-import { Icon } from "semantic-ui-react";
-import TopBar from "./TopBar";
-import CourseCard from "./CourseCard";
-import { CURRENT_SEMESTER } from "../../constants";
-import { updateCourses } from "../../firebasefunctions/courses";
-import { RootState } from "../../redux/store";
+import { connect } from 'react-redux';
+import { Icon } from 'semantic-ui-react'
+import TopBar from './TopBar';
+import CourseCard from './CourseCard';
+import { CURRENT_SEMESTER } from '../../constants';
+import { updateCourses } from '../../firebasefunctions/courses';
+import { RootState } from '../../redux/store';
+import Wrapped from './Wrapped';
 
 type Props = {
     readonly user: FireUser;
@@ -29,6 +30,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     const [currentCourses, setCurrentCourses] = useState<FireCourse[]>([]);
     const [formerCourses, setFormerCourses] = useState<FireCourse[]>([]);
+    const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
 
     // current searched courses
     const [filteredCourses] = useState<FireCourse[]>(currentCourses);
@@ -344,37 +346,33 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                         </div>
                     </div>
                 </div>
-                <div className="EnrollBar">
-                    <div className="buttons">
-                        {!isEdit && (
-                            <button
-                                type="button"
-                                className="switch"
-                                onClick={() => {
-                                    history.push("/edit");
-                                }}
-                            >
-                                Edit
-                            </button>
-                        )}
-                        {isEdit && (
-                            <button
-                                type="button"
-                                className={"save" + (isSaveDisabled ? " disabled" : "")}
-                                disabled={isSaveDisabled}
-                                onClick={onSubmit}
-                            >
-                                {isNormalEditingMode ? "Save" : "Enroll"}
-                            </button>
-                        )}
-                        {isEdit && isNormalEditingMode && (
-                            <button type="button" className={"cancel"} onClick={onCancel}>
-                                Cancel
-                            </button>
-                        )}
-                    </div>
+                
+                <div className="buttons">
+                    {!isEdit && (
+                        <button type="button" className="switch" onClick={() => { history.push('/edit'); }}>
+                            Edit
+                        </button>
+                    )}
+                    {isEdit && (
+                        <button
+                            type="button"
+                            className={'save' + (isSaveDisabled ? ' disabled' : '')}
+                            disabled={isSaveDisabled}
+                            onClick={onSubmit}
+                        >
+                            {isNormalEditingMode ? 'Save' : 'Enroll'}
+                        </button>
+                    )}
+                    {isEdit && isNormalEditingMode && (
+                        <button type="button" className={'cancel'} onClick={onCancel}>
+                            Cancel
+                        </button>
+                    )}
                 </div>
             </div>
+            {displayWrapped ? (
+                <Wrapped user={user} onClose={() => setDisplayWrapped(false)} />
+            ) : null}
         </div>
     );
 }
