@@ -347,27 +347,35 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     </div>
                 </div>
                 
-                <div className="buttons">
-                    {!isEdit && (
-                        <button type="button" className="switch" onClick={() => { history.push('/edit'); }}>
-                            Edit
-                        </button>
-                    )}
-                    {isEdit && (
-                        <button
-                            type="button"
-                            className={'save' + (isSaveDisabled ? ' disabled' : '')}
-                            disabled={isSaveDisabled}
-                            onClick={onSubmit}
-                        >
-                            {isNormalEditingMode ? 'Save' : 'Enroll'}
-                        </button>
-                    )}
-                    {isEdit && isNormalEditingMode && (
-                        <button type="button" className={'cancel'} onClick={onCancel}>
-                            Cancel
-                        </button>
-                    )}
+                <div className="EnrollBar">
+                    <div className="buttons">
+                        {!isEdit && (
+                            <button
+                                type="button"
+                                className="switch"
+                                onClick={() => {
+                                    history.push("/edit");
+                                }}
+                            >
+                                Edit
+                            </button>
+                        )}
+                        {isEdit && (
+                            <button
+                                type="button"
+                                className={"save" + (isSaveDisabled ? " disabled" : "")}
+                                disabled={isSaveDisabled}
+                                onClick={onSubmit}
+                            >
+                                {isNormalEditingMode ? "Save" : "Enroll"}
+                            </button>
+                        )}
+                        {isEdit && isNormalEditingMode && (
+                            <button type="button" className={"cancel"} onClick={onCancel}>
+                                Cancel
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
             {displayWrapped ? (
