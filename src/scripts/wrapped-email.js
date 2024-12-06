@@ -36,16 +36,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-// import { Resend } from 'resend';
+var resend_1 = require("resend");
 var firebase_admin_1 = require("firebase-admin");
+var dotenv = require("dotenv");
 firebase_admin_1["default"].initializeApp({
     credential: firebase_admin_1["default"].credential.applicationDefault(),
     databaseURL: 'https://qmi-test.firebaseio.com'
 });
-// i think api key goes in here
-// const resend = new Resend('re_123456789');
+dotenv.config();
+// eslint-disable-next-line no-console
+console.log(process.env.RESEND_API_KEY);
+var resend = new resend_1.Resend(process.env.RESEND_API_KEY);
+var createBatches = function (totalEmails, batchSize) {
+};
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var usersRef, usersSnapshot, userEmails;
+    var usersRef, usersSnapshot, userEmails, data, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -58,8 +63,6 @@ firebase_admin_1["default"].initializeApp({
                         .get()];
             case 1:
                 usersSnapshot = _a.sent();
-                // eslint-disable-next-line no-console
-                console.log("hi");
                 return [4 /*yield*/, Promise.all(usersSnapshot.docs.map(function (doc) { return __awaiter(void 0, void 0, void 0, function () {
                         return __generator(this, function (_a) {
                             return [2 /*return*/, doc.get('email')];
@@ -69,7 +72,27 @@ firebase_admin_1["default"].initializeApp({
                 userEmails = _a.sent();
                 // eslint-disable-next-line no-console
                 console.log(userEmails);
-                return [2 /*return*/];
+                _a.label = 3;
+            case 3:
+                _a.trys.push([3, 5, , 6]);
+                return [4 /*yield*/, resend.emails.send({
+                        from: 'queuemein@cornelldti.org',
+                        to: ['ns848@cornell.edu'],
+                        bcc: ['nidhisoma@gmail.com'],
+                        subject: 'QMI testing',
+                        html: '<strong>It works!</strong>'
+                    })];
+            case 4:
+                data = _a.sent();
+                // eslint-disable-next-line no-console
+                console.log(data);
+                return [3 /*break*/, 6];
+            case 5:
+                error_1 = _a.sent();
+                // eslint-disable-next-line no-console
+                console.error(error_1);
+                return [3 /*break*/, 6];
+            case 6: return [2 /*return*/];
         }
     });
 }); })();

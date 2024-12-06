@@ -1,5 +1,6 @@
-// import { Resend } from 'resend';
+import { Resend } from 'resend';
 import admin from "firebase-admin";
+import * as dotenv from 'dotenv';
 
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
@@ -7,10 +8,26 @@ admin.initializeApp({
 
 });
 
-// i think api key goes in here (below is not a real one)
-// const resend = new Resend('re_123456789');
-const createBatches =  (totalEmails: string[], batchSize: number) => {
+dotenv.config();
+const resend = new Resend(process.env.RESEND_API_KEY);
 
+const createBatches =  (totalEmails: string[], batchSize: number) => {
+    let i = 0;
+    const emailObjs = [];
+    while (i < totalEmails.length) {
+
+        emailObjs.push(
+            {
+                from: 'queuemein@cornelldti.org',
+                to: ['ns848@cornell.edu'],
+                bcc: totalEmails.slice(i, Math.min(i+batchSize, totalEmails.length)),
+                subject: 'QMI testing batch ' + i + '!',
+                html: '<strong>It works!</strong>'
+            }
+        )
+        i+= batchSize;
+    }
+    return emailObjs;
 
 }
 
@@ -19,8 +36,7 @@ const createBatches =  (totalEmails: string[], batchSize: number) => {
     const usersRef = admin.firestore().collection('users');
     // eslint-disable-next-line no-console
     console.log('firebase worked');
-    // using orderBy for email ensure that an email exists
-    
+    // using orderBy for email field to filter out users that don't have an email
     const usersSnapshot = await usersRef
         .where('wrapped', '==',true)
         .orderBy('email')
@@ -35,21 +51,24 @@ const createBatches =  (totalEmails: string[], batchSize: number) => {
 
     // TODO: Creating batch chunks - max limit of 49 for each batch
     // TODO: Ensure we never exceed the 100 emails per day limit
-    // TODO: look more into resend api idk what's frree so once i make account:
-    // https://resend.com/docs/api-reference/emails/send-batch-emails
-    // try {
-    //     const data = await resend.emails.send({
-    //         from: 'Acme <onboarding@resend.dev>',
-    //         to: ['delivered@resend.dev'],
-    //         bcc: 
-    //         subject: 'QMI testing',
-    //         html: '<strong>It works!</strong>'
-    //     });
+    //alternate structure, could use resend.batch.send with arrray of data
+    try {
+        //ALT:
+        // const data = await resend.batch.send(
+        //     createBatches(userEmails, 49));
 
-    //     // eslint-disable-next-line no-console
-    //     console.log(data);
-    // } catch (error) {
-    //     // eslint-disable-next-line no-console
-    //     console.error(error);
-    // }
+        const data = await resend.emails.send({
+            from: 'queuemein@cornelldti.org',
+            to: ['ns848@cornell.edu'],
+            bcc: ['nidhisoma@gmail.com'],
+            subject: 'QMI testing',
+            html: '<strong>It works!</strong>'
+        });
+
+        // eslint-disable-next-line no-console
+        console.log(data);
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+    }
 })();
