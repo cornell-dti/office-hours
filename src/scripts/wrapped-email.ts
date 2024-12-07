@@ -18,6 +18,7 @@ const createBatches =  (totalEmails: string[], batchSize: number) => {
     let i = 0;
     const emailObjs = [];
     if (batchSize > 49) {
+        // eslint-disable-next-line no-console
         console.log("Batch size is too large. Must be no more than 49");
     }
     while (i < totalEmails.length && emailObjs.length <= 100) {
@@ -59,9 +60,9 @@ const createBatches =  (totalEmails: string[], batchSize: number) => {
     // eslint-disable-next-line no-console
     console.log(userEmails);
 
-    //alternate structure, could use resend.batch.send with arrray of data
+    // alternate structure, could use resend.batch.send with arrray of data
     try {
-        //ALT:
+        // ALT:
         // const data = await resend.batch.send(
         //     createBatches(userEmails, 49));
 
