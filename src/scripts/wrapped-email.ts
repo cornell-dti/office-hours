@@ -11,10 +11,16 @@ admin.initializeApp({
 dotenv.config();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+/* Returns an array of email objects to send - should be at most 100 per day. 
+totalEmails is 
+batchSize should be 49 or less to maintain free emailing */
 const createBatches =  (totalEmails: string[], batchSize: number) => {
     let i = 0;
     const emailObjs = [];
-    while (i < totalEmails.length) {
+    if (batchSize > 49) {
+        console.log("Batch size is too large. Must be no more than 49");
+    }
+    while (i < totalEmails.length && emailObjs.length <= 100) {
 
         emailObjs.push(
             {
@@ -26,6 +32,10 @@ const createBatches =  (totalEmails: string[], batchSize: number) => {
             }
         )
         i+= batchSize;
+    }
+    if (emailObjs.length == 100) {
+        // eslint-disable-next-line no-console
+        console.log("Reached email limit of 100 emails per day.")
     }
     return emailObjs;
 
@@ -49,8 +59,6 @@ const createBatches =  (totalEmails: string[], batchSize: number) => {
     // eslint-disable-next-line no-console
     console.log(userEmails);
 
-    // TODO: Creating batch chunks - max limit of 49 for each batch
-    // TODO: Ensure we never exceed the 100 emails per day limit
     //alternate structure, could use resend.batch.send with arrray of data
     try {
         //ALT:

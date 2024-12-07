@@ -44,10 +44,31 @@ firebase_admin_1["default"].initializeApp({
     databaseURL: 'https://qmi-test.firebaseio.com'
 });
 dotenv.config();
-// eslint-disable-next-line no-console
-console.log(process.env.RESEND_API_KEY);
 var resend = new resend_1.Resend(process.env.RESEND_API_KEY);
+/* Returns an array of email objects to send - should be at most 100 per day.
+totalEmails is
+batchSize should be 49 or less to maintain free emailing */
 var createBatches = function (totalEmails, batchSize) {
+    var i = 0;
+    var emailObjs = [];
+    if (batchSize > 49) {
+        console.log("Batch size is too large. Must be no more than 49");
+    }
+    while (i < totalEmails.length && emailObjs.length <= 100) {
+        emailObjs.push({
+            from: 'queuemein@cornelldti.org',
+            to: ['ns848@cornell.edu'],
+            bcc: totalEmails.slice(i, Math.min(i + batchSize, totalEmails.length)),
+            subject: 'QMI testing batch ' + i + '!',
+            html: '<strong>It works!</strong>'
+        });
+        i += batchSize;
+    }
+    if (emailObjs.length == 100) {
+        // eslint-disable-next-line no-console
+        console.log("Reached email limit of 100 emails per day.");
+    }
+    return emailObjs;
 };
 (function () { return __awaiter(void 0, void 0, void 0, function () {
     var usersRef, usersSnapshot, userEmails, data, error_1;
