@@ -134,7 +134,7 @@
   &.top-text{
     position: absolute;
     top: 3rem;
-    left: 0rem;
+    left: -3.3rem;
     font-size: 35px;
     font-weight: 600;
     color: #080680;
@@ -150,22 +150,22 @@
   &.num-visits{
     position: absolute;
     bottom: 13rem;
-    left: -6rem;
-    font-size: 24rem;
+    left: 121px;
+    font-size: 297px;
+    width: 336px;
     color: #FFA3A3;
     opacity: 0.88;
-    z-index: 0,
   }
 
   &.couple{
-    width: 12rem; 
+    width: 166px; 
     position: absolute; 
     right: 11rem;
     bottom: 12rem;
   }
 
   &.girl{
-    width: 6rem;
+    width: 68px;
     position: absolute;
     right: 6rem;
     bottom: 9rem;
