@@ -113,18 +113,27 @@ const TopBarNotifications = (
                     src={countdownZero && hasWrapped ? ribbonNotif : notification}
                     alt="Notification icon"
                 />
-                {!hasViewed &&
-                    <img
-                        className="notifications__indicator"
-                        src={notif}
-                        alt="Notification indicator"
-                    />
-                }
+                {!hasViewed && <img className="notifications__indicator" src={notif} alt="Notification indicator" />}
             </div>
             <div
                 className={`notifications__dropdown notifications__${dropped ? "visible" : "hidden"}`}
                 onClick={(e) => e.stopPropagation()}
             >
+                {/* Additional notification when countdownZero is true */}
+                {countdownZero && (
+                    <div
+                        className="notifications__notification"
+                        style={{ backgroundColor: "#DBE8FD", borderRadius: "8px" }}
+                    >
+                        <div className="notification__header">
+                            <div className="notification__title">Queue Me In Wrapped</div>
+                        </div>
+                        <div className="notification__content">
+                            Queue Me In Wrapped has been added to your notifications queue. You can revisit your office
+                            hour statistics any time by clicking here!
+                        </div>
+                    </div>
+                )}
                 {notifications === undefined || (notifications.length === 0 && !countdownZero) ? (
                     <div className="notification__placeholder">You do not have any notifications</div>
                 ) : (
