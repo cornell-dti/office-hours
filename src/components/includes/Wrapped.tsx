@@ -512,7 +512,7 @@ const Wrapped= (props: Props): JSX.Element => {
                         YOU WORKED SO HARD THIS YEAR!
                     </div>
                     <div className="visit mid-text">
-                        <Typography variant="h3"> 
+                        <Typography variant="h3" style={{ fontSize: "27px" }} > 
                             WITH...
                         </Typography>
                     </div>
@@ -532,7 +532,7 @@ const Wrapped= (props: Props): JSX.Element => {
                     <div 
                         className="visit bottom-text"
                     >
-                        <Typography variant="h3"> 
+                        <Typography variant="h3" style={{ fontSize: "27px" , width: "189px" }}> 
                             {wrappedData.numVisits === 1 ? "VISIT " : "VISITS " }
                             TO OFFICE HOURS
                         </Typography>
@@ -778,7 +778,7 @@ const Wrapped= (props: Props): JSX.Element => {
                     style={{ position: "absolute", top: "0.2rem", right: "0.2rem", color: "#FFFFFF" }}
                     onClick={props.onClose}
                 >
-                    <CloseIcon />
+                    <CloseIcon style={{ fontSize: "larger" }} />
                 </IconButton>
             </div>
         </div>
