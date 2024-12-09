@@ -142,15 +142,15 @@
 
   &.mid-text{
     position:absolute;
-    top: 6.7rem;
-    left: -18.67rem;
+    top: 7.7rem;
+    left: -20.2rem;
     font-size: 27px;
   }
 
   &.num-visits{
     position: absolute;
-    bottom: 13rem;
-    left: 121px;
+    top: 260px;
+    left: 140px;
     font-size: 297px;
     width: 336px;
     color: #FFA3A3;
@@ -160,23 +160,22 @@
   &.couple{
     width: 166px; 
     position: absolute; 
-    right: 11rem;
+    right: 9rem;
     bottom: 12rem;
   }
 
   &.girl{
     width: 68px;
     position: absolute;
-    right: 6rem;
+    right: 7rem;
     bottom: 9rem;
   }
 
   &.bottom-text{
     position: absolute;
-    bottom: 5rem;
-    right: 4rem;
+    left: 527px;
+    top: 320px;
     font-weight: bold;
-    width: 300px;
     text-align: left;
   }
 }
@@ -186,8 +185,8 @@
     position: absolute;
     top: 3rem;
     left: 3rem;
-    font-size: 35px;
-    font-weight: bold;
+    font-weight: 500;
+    font-size: 27px;
   }
 
   &.nums-container{
@@ -211,7 +210,8 @@
     position: absolute;
     bottom: 7.5rem;
     right: 3rem;
-    font-size: 35px;
+    font-weight: 500;
+    font-size: 27px;
     text-align: right;
     font-weight: bold;
     width: 300px;
@@ -221,7 +221,8 @@
     position: absolute;
     bottom: 5rem;
     right: 3rem;
-    font-size: 35px;
+    font-weight: 500;
+    font-size: 27px;
     text-align: right;
     font-weight: bold;
     width: 300px;
@@ -246,7 +247,8 @@
     align-items: baseline;
   }
   &.text{
-    font-weight: bold;
+    font-weight: 500;
+    font-size: 27px;
     margin-bottom: 2rem;
     line-height: 2.5rem;
     text-align: left;
@@ -255,6 +257,7 @@
   &.personalityType {
     font-family: "Roboto";
     font-weight: 700;
+    font-size: 35px;
     color: #080680;
     text-transform: uppercase;
   }
@@ -280,8 +283,8 @@
   }
 
   &.top-text{
-    font-weight: bold;
-    font-size: 35px;
+    font-weight: 500;
+    font-size: 27px;
     margin-bottom: 2rem;
     line-height: 2.5rem;
     text-align: left;
@@ -290,6 +293,7 @@
   &.taName {
     font-family: "Roboto";
     font-weight: 700;
+    font-size: 35px;
     color: #080680;
     text-transform: uppercase;
     text-align: left;
@@ -314,9 +318,10 @@
 
   &.top-text{
     position: absolute;
-    top: 3rem;
-    left: 3rem;
-    font-size: 30px;
+    top: 3.5rem;
+    left: 2.7rem;
+    font-size: 35px;
+    font-weight: 600;
     color: #080680;
   }
 
@@ -324,8 +329,8 @@
     position: absolute;
     top: 9rem;
     left:3rem;
-    font-weight: 700;
-    font-size: 29px;
+    font-weight: 500;
+    font-size: 27px;
   }
   &.num{
     position: absolute;
@@ -349,8 +354,8 @@
     position: absolute;
     top: 26rem;
     right: 2rem;
-    font-weight: 700;
-    font-size: 29px;
+    font-weight: 500;
+    font-size: 27px;
     width: 414px;
     text-align: right;
   }
@@ -361,7 +366,7 @@
     position: absolute;
     top: 3.5rem;
     left: 3.5rem;
-    font-weight: bold;
+    font-weight: 500;
     font-size: 27px;
   }
   &.num{
@@ -377,7 +382,7 @@
     position: absolute;
     bottom: 7.5rem;
     right: 5rem;
-    font-weight: bold;
+    font-weight: 500;
     font-size: 27px;
     text-align: right;
     width: 300px;
@@ -507,7 +512,7 @@
     font-size: 35px;
   }
   &.center-text {
-    font-weight: bold;
+    font-weight: 500;
     width: 279px;
     height: 71px;
     position: absolute;
