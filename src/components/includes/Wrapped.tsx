@@ -501,33 +501,18 @@ const Wrapped= (props: Props): JSX.Element => {
     const Visits = () => (
         <div>
             <div className="visit">
-                
                 <div style={{ display: "flex", justifyContent: "flex-end", fontWeight: "bold" }}>
-                    <div className="visit top-text">
-                        YOU WORKED SO HARD THIS SEMESTER!
-                    </div>
+                    <div className="visit top-text">YOU WORKED SO HARD THIS SEMESTER!</div>
                     <div className="visit mid-text">
-                        <Typography variant="h3"> 
+                        <Typography variant="h3" style={{ fontWeight: 700 }}>
                             WITH...
                         </Typography>
                     </div>
-                    <div className="visit num-visits">
-                        {wrappedData.officeHourVisits.length} 
-                    </div>
-                    <img 
-                        src={Couple}
-                        className="visit couple"
-                        alt=""
-                    />
-                    <img 
-                        src={Girl}
-                        className="visit girl"
-                        alt=""
-                    />
-                    <div 
-                        className="visit bottom-text"
-                    >
-                        <Typography variant="h3"> 
+                    <div className="visit num-visits"> {wrappedData.officeHourVisits.length} </div>
+                    <img src={Couple} className="visit couple" alt="" />
+                    <img src={Girl} className="visit girl" alt="" />
+                    <div className="visit bottom-text">
+                        <Typography variant="h3" style={{ fontWeight: 700 }}>
                             {wrappedData.officeHourVisits.length === 1 ? "VISIT " : "VISITS " }
                             TO OFFICE HOURS
                         </Typography>
@@ -535,7 +520,7 @@ const Wrapped= (props: Props): JSX.Element => {
                 </div>
             </div>
         </div>
-    )
+    );
 
     const TimeSpent = () => (
         <>
