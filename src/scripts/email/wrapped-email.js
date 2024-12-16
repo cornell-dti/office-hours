@@ -39,6 +39,7 @@ exports.__esModule = true;
 var resend_1 = require("resend");
 var firebase_admin_1 = require("firebase-admin");
 var dotenv = require("dotenv");
+var wrapped_html_1 = require("./wrapped-html");
 firebase_admin_1["default"].initializeApp({
     credential: firebase_admin_1["default"].credential.applicationDefault(),
     databaseURL: 'https://qmi-test.firebaseio.com'
@@ -52,6 +53,7 @@ var createBatches = function (totalEmails, batchSize) {
     var i = 0;
     var emailObjs = [];
     if (batchSize > 49) {
+        // eslint-disable-next-line no-console
         console.log("Batch size is too large. Must be no more than 49");
     }
     while (i < totalEmails.length && emailObjs.length <= 100) {
@@ -60,11 +62,11 @@ var createBatches = function (totalEmails, batchSize) {
             to: ['ns848@cornell.edu'],
             bcc: totalEmails.slice(i, Math.min(i + batchSize, totalEmails.length)),
             subject: 'QMI testing batch ' + i + '!',
-            html: '<strong>It works!</strong>'
+            html: wrapped_html_1.HTML
         });
         i += batchSize;
     }
-    if (emailObjs.length == 100) {
+    if (emailObjs.length === 100) {
         // eslint-disable-next-line no-console
         console.log("Reached email limit of 100 emails per day.");
     }
@@ -101,15 +103,19 @@ var createBatches = function (totalEmails, batchSize) {
                         to: ['ns848@cornell.edu'],
                         bcc: ['nidhisoma@gmail.com'],
                         subject: 'QMI testing',
-                        html: '<strong>It works!</strong>'
+                        html: wrapped_html_1.HTML
                     })];
             case 4:
                 data = _a.sent();
+                // eslint-disable-next-line no-console
+                console.log("Email has been sent!");
                 // eslint-disable-next-line no-console
                 console.log(data);
                 return [3 /*break*/, 6];
             case 5:
                 error_1 = _a.sent();
+                // eslint-disable-next-line no-console
+                console.log("we have an error");
                 // eslint-disable-next-line no-console
                 console.error(error_1);
                 return [3 /*break*/, 6];

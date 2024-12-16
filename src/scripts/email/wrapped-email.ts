@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 import admin from "firebase-admin";
 import * as dotenv from 'dotenv';
+import { HTML } from "./wrapped-html";
 
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
@@ -29,12 +30,12 @@ const createBatches =  (totalEmails: string[], batchSize: number) => {
                 to: ['ns848@cornell.edu'],
                 bcc: totalEmails.slice(i, Math.min(i+batchSize, totalEmails.length)),
                 subject: 'QMI testing batch ' + i + '!',
-                html: '<strong>It works!</strong>'
+                html: HTML
             }
         )
         i+= batchSize;
     }
-    if (emailObjs.length == 100) {
+    if (emailObjs.length === 100) {
         // eslint-disable-next-line no-console
         console.log("Reached email limit of 100 emails per day.")
     }
@@ -71,12 +72,15 @@ const createBatches =  (totalEmails: string[], batchSize: number) => {
             to: ['ns848@cornell.edu'],
             bcc: ['nidhisoma@gmail.com'],
             subject: 'QMI testing',
-            html: '<strong>It works!</strong>'
+            html: HTML
         });
-
+        // eslint-disable-next-line no-console
+        console.log("Email has been sent!");
         // eslint-disable-next-line no-console
         console.log(data);
     } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log("we have an error");
         // eslint-disable-next-line no-console
         console.error(error);
     }
