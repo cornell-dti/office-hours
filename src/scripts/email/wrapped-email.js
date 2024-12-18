@@ -46,19 +46,21 @@ firebase_admin_1["default"].initializeApp({
 });
 dotenv.config();
 var resend = new resend_1.Resend(process.env.RESEND_API_KEY);
-/* Returns an array of email objects to send - should be at most 100 per day.
-totalEmails is
-batchSize should be 49 or less to maintain free emailing */
+/** Returns an array of email objects to send - should be at most 100 per day.
+- totalEmails is a list of all the user emails to send to.
+- batchSize should be 49 or less to maintain free emailing.
+- Throws an error if this pre-condition is violated. */
 var createBatches = function (totalEmails, batchSize) {
     var i = 0;
     var emailObjs = [];
     if (batchSize > 49) {
-        // eslint-disable-next-line no-console
-        console.log("Batch size is too large. Must be no more than 49");
+        throw new Error("Batch size is too large. Must be no more than 49");
     }
     while (i < totalEmails.length && emailObjs.length <= 100) {
         emailObjs.push({
             from: 'queuemein@cornelldti.org',
+            // make below the dti address or something cause recievers can see
+            // but dti will not see recievers
             to: ['ns848@cornell.edu'],
             bcc: totalEmails.slice(i, Math.min(i + batchSize, totalEmails.length)),
             subject: 'QMI testing batch ' + i + '!',
@@ -98,24 +100,25 @@ var createBatches = function (totalEmails, batchSize) {
                 _a.label = 3;
             case 3:
                 _a.trys.push([3, 5, , 6]);
-                return [4 /*yield*/, resend.emails.send({
-                        from: 'queuemein@cornelldti.org',
-                        to: ['ns848@cornell.edu'],
-                        bcc: ['nidhisoma@gmail.com'],
-                        subject: 'QMI testing',
-                        html: wrapped_html_1.HTML
-                    })];
+                return [4 /*yield*/, resend.batch.send(createBatches(["nidhisoma@gmail.com"], 49))];
             case 4:
                 data = _a.sent();
+                // const data = await resend.emails.send({
+                //     from: 'queuemein@cornelldti.org',
+                //     to: ['ns848@cornell.edu'],
+                //     bcc: ['nidhisoma@gmail.com'],
+                //     subject: 'Check Out Your QMI Wrapped!',
+                //     html: HTML
+                // });
                 // eslint-disable-next-line no-console
-                console.log("Email has been sent!");
+                console.log("Emails have been sent!");
                 // eslint-disable-next-line no-console
                 console.log(data);
                 return [3 /*break*/, 6];
             case 5:
                 error_1 = _a.sent();
                 // eslint-disable-next-line no-console
-                console.log("we have an error");
+                console.log("Emails have not been sent.");
                 // eslint-disable-next-line no-console
                 console.error(error_1);
                 return [3 /*break*/, 6];
