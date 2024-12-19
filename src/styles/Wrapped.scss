@@ -180,8 +180,8 @@
     position: absolute;
     top: 3rem;
     left: 3rem;
-    font-weight: 600;
-    font-size: 27px;
+    font-size: 35px;
+    font-weight: bold;
   }
 
   &.nums-container{
@@ -205,9 +205,9 @@
     position: absolute;
     bottom: 7.5rem;
     right: 3rem;
-    font-weight: 600;
-    font-size: 27px;
+    font-size: 35px;
     text-align: right;
+    font-weight: bold;
     width: 300px;
   }
 
@@ -215,9 +215,9 @@
     position: absolute;
     bottom: 5rem;
     right: 3rem;
-    font-weight: 600;
-    font-size: 27px;
+    font-size: 35px;
     text-align: right;
+    font-weight: bold;
     width: 300px;
   }
   &.smallGirl{
@@ -241,10 +241,10 @@
   }
   &.text{
     font-weight: bold;
-    font-size: 2rem;
     margin-bottom: 2rem;
     line-height: 2.5rem;
     text-align: left;
+    font-size: 35px;
   }
   &.personalityType {
     font-family: "Roboto";
@@ -275,7 +275,7 @@
 
   &.top-text{
     font-weight: bold;
-    font-size: 27px;
+    font-size: 35px;
     margin-bottom: 2rem;
     line-height: 2.5rem;
     text-align: left;
@@ -501,14 +501,14 @@
     font-size: 35px;
   }
   &.center-text {
-    font-weight: 600;
+    font-weight: bold;
     width: 279px;
     height: 71px;
     position: absolute;
     top: 195px;
     left: 270px;
     line-height: 40px;
-    font-size: 27px;
+    font-size: 35px;
   }
 }
 

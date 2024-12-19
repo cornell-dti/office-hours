@@ -506,13 +506,12 @@ const Wrapped= (props: Props): JSX.Element => {
     const Visits = () => (
         <div>
             <div className="visit">
-                
                 <div style={{ display: "flex", justifyContent: "flex-end", fontWeight: "bold" }}>
                     <div className="visit top-text">
                         YOU WORKED SO HARD THIS YEAR!
                     </div>
                     <div className="visit mid-text">
-                        <Typography variant="h3"> 
+                        <Typography variant="h3" style={{ fontWeight: 700 }}>
                             WITH...
                         </Typography>
                     </div>
@@ -540,7 +539,7 @@ const Wrapped= (props: Props): JSX.Element => {
                 </div>
             </div>
         </div>
-    )
+    );
 
     const TimeSpent = () => (
         <>
