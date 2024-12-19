@@ -209,6 +209,7 @@ const Wrapped= (props: Props): JSX.Element => {
             setLoading(true);
     
             try {
+<<<<<<< HEAD
                 const wrappedRef = firebase.firestore().collection("wrapped");
                 const doc = await wrappedRef.doc(props.user.userId).get();
     
@@ -251,6 +252,23 @@ const Wrapped= (props: Props): JSX.Element => {
                 if (studentData.favTaId && studentData.favClass) {
                     const usersRef = firebase.firestore().collection("users");
                     const userDoc = await usersRef.doc(studentData.favTaId).get();
+=======
+                const doc = await wrappedRef.doc(props.user?.userId).get();
+                const usersRef = firebase.firestore().collection('users');
+                if (doc.exists) {
+                    const studentData = doc.data() as { 
+                        numVisits: number;
+                        personalityType: string; 
+                        timeHelpingStudents: number; 
+                        totalMinutes: number; 
+                        favTaId: string;
+                        favClass: string;
+                        favDay: number;
+                        favMonth: number;
+                        numStudentsHelped: number;
+                    }
+                    setWrappedData(studentData);  
+>>>>>>> 91c3b363 (Merge branch 'master' into eric/fix_ui)
 
                     let taNameExists = false;
     
