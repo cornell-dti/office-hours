@@ -120,14 +120,6 @@ const SplitView = ({
         updateSession(sessionHook);
     }, [sessionHook, updateSession]);
 
-    useEffect(() => {
-        if (user && user.wrapped) {
-            setDisplayWrapped(true);
-        } else {
-            setDisplayWrapped(false);
-        }
-    }, [user]);
-
     // Handle browser back button
     history.listen((location) => {
         setActiveView(
@@ -209,6 +201,7 @@ const SplitView = ({
                 courseId={match.params.courseId}
                 course={course}
                 countdownZero={countdownZero}
+                setDisplayWrapped={setDisplayWrapped}
             />
             {banners.map((banner, index) => (
                 <Banner
@@ -265,8 +258,8 @@ const SplitView = ({
                                     <div className="warningArea">
                                         <div>&#9888;</div>
                                         <div>
-                                            Please make sure to enable browser notifications in your system
-                                            settings.
+                                                Please make sure to enable browser notifications in your system
+                                                settings.
                                         </div>
                                     </div>
                                 )}
@@ -277,11 +270,13 @@ const SplitView = ({
                     <Loader active={true} content="Loading" />
                 ))}
             <ProductUpdates />
-            <WrappedCountdown
-                setDisplayWrapped={setDisplayWrapped}
-                setCountdownZero={setCountdownZero}
-                wrappedDate={{ launchDate: launch, startDate: start }}
-            />
+            {user && user.wrapped ? (
+                <WrappedCountdown
+                    setDisplayWrapped={setDisplayWrapped}
+                    setCountdownZero={setCountdownZero}
+                    wrappedDate={{ launchDate: launch, startDate: start }}
+                />
+            ) : null}
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt
                     onClose={submitFeedback(removedQuestionId, course, session.sessionId)}

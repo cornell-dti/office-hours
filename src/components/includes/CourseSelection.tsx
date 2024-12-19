@@ -104,14 +104,6 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         setSelectedCourseIds(selectedCourses.map(course => course.courseId));
     }, [selectedCourses]);
 
-    useEffect(() => {
-        if (user && user.wrapped) {
-            setDisplayWrapped(true);
-        } else {
-            setDisplayWrapped(false);
-        }
-    }, [user])
-
     const onSelectCourse = (course: FireCourse, addCourse: boolean) => {
         setSelectedCourses((previousSelectedCourses) => (
             addCourse

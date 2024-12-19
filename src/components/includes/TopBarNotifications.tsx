@@ -18,10 +18,13 @@ type Props = {
     showMenu: boolean;
     /** Determines whether the wrapped countdown has reached 0 */
     countdownZero?: boolean | undefined;
-}
+    setDisplayWrapped?: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, countdownZero}: Props) => {
+const TopBarNotifications = (
+    { notificationTracker, user, showMenu, iconClick, countdownZero, setDisplayWrapped }: Props) => {
     const [dropped, toggleDropped] = useState(false);
+    const [hasWrapped, setHasWrapped] = useState(false);
 
     const notifications = notificationTracker?.notificationList?.sort((a, b) => {
         return b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime();
@@ -41,6 +44,14 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, co
     const updateTrackable = () => {
         viewedTrackable(user, notificationTracker, true)
     }
+
+    useEffect(() => {
+        if (user && user.wrapped) {
+            setHasWrapped(true);
+        } else {
+            setHasWrapped(false);
+        }
+    }, [user]);
 
     useEffect(() => {
         if(notificationTracker !== undefined && !hasViewed && dropped) {
@@ -87,12 +98,19 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, co
         toggleDropped(!dropped);
     }
 
+    const handleNotifClick = () => {
+        if (setDisplayWrapped) {
+            // Check if the setter exists
+            setDisplayWrapped(true); // Set the state to true
+        }
+    };
+
     return (
         <div ref={dropdownRef}>
             <div className="notifications__top" onClick={() => iconClicked()}>
                 <img
                     className="notifications__icon"
-                    src={countdownZero ? ribbonNotif : notification}
+                    src={countdownZero && hasWrapped ? ribbonNotif : notification}
                     alt="Notification icon"
                 />
                 {!hasViewed && <img className="notifications__indicator" src={notif} alt="Notification indicator" />}
@@ -138,6 +156,23 @@ const TopBarNotifications = ({notificationTracker, user, showMenu, iconClick, co
                         </div>
                     ))
                 )}
+                {/* Additional notification when countdownZero is true */}
+                {hasWrapped && countdownZero && (
+                    <div
+                        onClick={() => handleNotifClick()}
+                        className="notifications__notification"
+                        style={{ backgroundColor: "#DBE8FD", borderRadius: "8px" }}
+                    >
+                        <div className="notification__header">
+                            <div className="notification__title">Queue Me In Wrapped</div>
+                        </div>
+                        <div className="notification__content">
+                            Queue Me In Wrapped has been added to your notifications queue.
+                            You can revisit your office
+                            hour statistics any time by clicking here!
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -149,4 +184,4 @@ const mapStateToProps = (state: RootState) => ({
 
 
 export default connect(mapStateToProps, {})(TopBarNotifications);
-TopBarNotifications.defaultProps = { countdownZero: false };
+TopBarNotifications.defaultProps = { countdownZero: false, setDisplayWrapped: () => {} };
