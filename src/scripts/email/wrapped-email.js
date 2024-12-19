@@ -42,11 +42,10 @@ var dotenv = require("dotenv");
 var wrapped_html_1 = require("./wrapped-html");
 firebase_admin_1["default"].initializeApp({
     credential: firebase_admin_1["default"].credential.applicationDefault(),
-    databaseURL: 'https://qmi-test.firebaseio.com'
+    databaseURL: 'https://queue-me-in-prod.firebaseio.com'
 });
 dotenv.config();
 var resend = new resend_1.Resend(process.env.RESEND_API_KEY);
-// DO NOT SEND TO ACTUAL PROD YET YOU HAVENT CHANGED SUBJECT LINE
 /** Returns an array of email objects to send - should be at most 100 per day.
 - totalEmails is a list of all the user emails to send to.
 - batchSize should be 49 or less to maintain free emailing.
@@ -60,18 +59,19 @@ var createBatches = function (totalEmails, batchSize) {
     while (i < totalEmails.length && emailObjs.length <= 100) {
         emailObjs.push({
             from: 'queuemein@cornelldti.org',
-            // make below the dti address or something cause recievers can see
-            // but dti will not see recievers
-            to: ['ns848@cornell.edu'],
+            // This is the dti address because recievers can see, but dti will not see recievers.
+            to: ['hello@cornelldti.org'],
             bcc: totalEmails.slice(i, Math.min(i + batchSize, totalEmails.length)),
-            subject: 'Check Out Your QMI Wrapped! : batch ' + i,
+            subject: 'Check Out Your QMI Wrapped!',
             html: wrapped_html_1.HTML
         });
+        // eslint-disable-next-line no-console
+        // console.log("bcc list: " + totalEmails.slice(i, Math.min(i+batchSize, totalEmails.length)));
         i += batchSize;
     }
     if (emailObjs.length === 100) {
         // eslint-disable-next-line no-console
-        console.log("Reached email limit of 100 emails per day.");
+        console.log("Reached email limit of 100 emails per day, stopped at i=" + i + ",  user " + totalEmails[i] + ". \n            Continue from this user the next day.");
     }
     return emailObjs;
 };
@@ -101,16 +101,9 @@ var createBatches = function (totalEmails, batchSize) {
                 _a.label = 3;
             case 3:
                 _a.trys.push([3, 5, , 6]);
-                return [4 /*yield*/, resend.batch.send(createBatches(["nidhisoma@gmail.com"], 49))];
+                return [4 /*yield*/, resend.batch.send(createBatches(userEmails, 49))];
             case 4:
                 data = _a.sent();
-                // const data = await resend.emails.send({
-                //     from: 'queuemein@cornelldti.org',
-                //     to: ['ns848@cornell.edu'],
-                //     bcc: ['nidhisoma@gmail.com'],
-                //     subject: 'Check Out Your QMI Wrapped!',
-                //     html: HTML
-                // });
                 // eslint-disable-next-line no-console
                 console.log("Emails have been sent!");
                 // eslint-disable-next-line no-console
