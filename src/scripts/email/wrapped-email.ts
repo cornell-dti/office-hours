@@ -12,6 +12,8 @@ admin.initializeApp({
 dotenv.config();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// DO NOT SEND TO ACTUAL PROD YET YOU HAVENT CHANGED SUBJECT LINE
+
 /** Returns an array of email objects to send - should be at most 100 per day. 
 - totalEmails is a list of all the user emails to send to. 
 - batchSize should be 49 or less to maintain free emailing.
@@ -31,7 +33,7 @@ const createBatches =  (totalEmails: string[], batchSize: number) => {
                 // but dti will not see recievers
                 to: ['ns848@cornell.edu'],
                 bcc: totalEmails.slice(i, Math.min(i+batchSize, totalEmails.length)),
-                subject: 'QMI testing batch ' + i + '!',
+                subject: 'Check Out Your QMI Wrapped! : batch ' + i,
                 html: HTML
             }
         )

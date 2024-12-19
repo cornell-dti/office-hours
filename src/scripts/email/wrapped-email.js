@@ -46,6 +46,7 @@ firebase_admin_1["default"].initializeApp({
 });
 dotenv.config();
 var resend = new resend_1.Resend(process.env.RESEND_API_KEY);
+// DO NOT SEND TO ACTUAL PROD YET YOU HAVENT CHANGED SUBJECT LINE
 /** Returns an array of email objects to send - should be at most 100 per day.
 - totalEmails is a list of all the user emails to send to.
 - batchSize should be 49 or less to maintain free emailing.
@@ -63,7 +64,7 @@ var createBatches = function (totalEmails, batchSize) {
             // but dti will not see recievers
             to: ['ns848@cornell.edu'],
             bcc: totalEmails.slice(i, Math.min(i + batchSize, totalEmails.length)),
-            subject: 'QMI testing batch ' + i + '!',
+            subject: 'Check Out Your QMI Wrapped! : batch ' + i,
             html: wrapped_html_1.HTML
         });
         i += batchSize;
