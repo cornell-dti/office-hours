@@ -96,7 +96,6 @@ const Wrapped= (props: Props): JSX.Element => {
     const [stage, setStage] = useState<number>(0);
     const [wrappedData, setWrappedData] = useState({
         numVisits: 0,
-        numVisits: 0,
         personalityType: "",
         timeHelpingStudents: 0,
         totalMinutes: 0,
@@ -209,7 +208,6 @@ const Wrapped= (props: Props): JSX.Element => {
             setLoading(true);
     
             try {
-<<<<<<< HEAD
                 const wrappedRef = firebase.firestore().collection("wrapped");
                 const doc = await wrappedRef.doc(props.user.userId).get();
     
@@ -252,26 +250,9 @@ const Wrapped= (props: Props): JSX.Element => {
                 if (studentData.favTaId && studentData.favClass) {
                     const usersRef = firebase.firestore().collection("users");
                     const userDoc = await usersRef.doc(studentData.favTaId).get();
-=======
-                const doc = await wrappedRef.doc(props.user?.userId).get();
-                const usersRef = firebase.firestore().collection('users');
-                if (doc.exists) {
-                    const studentData = doc.data() as { 
-                        numVisits: number;
-                        personalityType: string; 
-                        timeHelpingStudents: number; 
-                        totalMinutes: number; 
-                        favTaId: string;
-                        favClass: string;
-                        favDay: number;
-                        favMonth: number;
-                        numStudentsHelped: number;
-                    }
-                    setWrappedData(studentData);  
->>>>>>> 91c3b363 (Merge branch 'master' into eric/fix_ui)
 
                     let taNameExists = false;
-    
+                    
                     if (userDoc.exists) {
                         const taData = userDoc.data() as { firstName: string; lastName: string };
                         setTaName(taData);
@@ -414,7 +395,6 @@ const Wrapped= (props: Props): JSX.Element => {
 
     const TimeSpentBanner = () => (
         <div>
-            YOU SPENT THE MOST TIME AT OFFICE HOURS IN {month} <Asterik/> 
             YOU SPENT THE MOST TIME AT OFFICE HOURS IN {month} <Asterik/>
         </div>
     );
@@ -431,8 +411,6 @@ const Wrapped= (props: Props): JSX.Element => {
     const StudentsHelpedBanner = () => (
         <div> 
             <Asterik/>
-            {/* fix month to be ta month not student month */}
-            YOU HAD THE MOST VISITS IN {month} <Asterik/>
             YOU HAD THE MOST VISITS IN {month} <Asterik/>
         </div>
     );
