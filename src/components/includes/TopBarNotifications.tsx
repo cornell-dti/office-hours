@@ -120,8 +120,9 @@ const TopBarNotifications = (
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Additional notification when countdownZero is true */}
-                {countdownZero && (
+                {hasWrapped && countdownZero && (
                     <div
+                        onClick={() => handleNotifClick()}
                         className="notifications__notification"
                         style={{ backgroundColor: "#DBE8FD", borderRadius: "8px" }}
                     >
@@ -129,7 +130,8 @@ const TopBarNotifications = (
                             <div className="notification__title">Queue Me In Wrapped</div>
                         </div>
                         <div className="notification__content">
-                            Queue Me In Wrapped has been added to your notifications queue. You can revisit your office
+                            Queue Me In Wrapped has been added to your notifications queue.
+                            You can revisit your office
                             hour statistics any time by clicking here!
                         </div>
                     </div>
@@ -155,23 +157,6 @@ const TopBarNotifications = (
                             <div className="notification__content">{notific.message}</div>
                         </div>
                     ))
-                )}
-                {/* Additional notification when countdownZero is true */}
-                {hasWrapped && countdownZero && (
-                    <div
-                        onClick={() => handleNotifClick()}
-                        className="notifications__notification"
-                        style={{ backgroundColor: "#DBE8FD", borderRadius: "8px" }}
-                    >
-                        <div className="notification__header">
-                            <div className="notification__title">Queue Me In Wrapped</div>
-                        </div>
-                        <div className="notification__content">
-                            Queue Me In Wrapped has been added to your notifications queue.
-                            You can revisit your office
-                            hour statistics any time by clicking here!
-                        </div>
-                    </div>
                 )}
             </div>
         </div>
