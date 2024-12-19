@@ -96,6 +96,7 @@ const Wrapped= (props: Props): JSX.Element => {
     const [stage, setStage] = useState<number>(0);
     const [wrappedData, setWrappedData] = useState({
         numVisits: 0,
+        numVisits: 0,
         personalityType: "",
         timeHelpingStudents: 0,
         totalMinutes: 0,
