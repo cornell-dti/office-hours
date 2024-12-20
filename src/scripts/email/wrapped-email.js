@@ -46,17 +46,31 @@ firebase_admin_1["default"].initializeApp({
 });
 dotenv.config();
 var resend = new resend_1.Resend(process.env.RESEND_API_KEY);
+if (process.argv.length !== 3) {
+    throw new Error("Usage: node <script path> <index number> . Use 0 if running script for first time");
+}
+var indexStopped = process.argv[2];
+var MAX_EMAIL_LIMIT = 100;
+var MAX_BATCH_LIMIT = 49;
 /** Returns an array of email objects to send - should be at most 100 per day.
 - totalEmails is a list of all the user emails to send to.
 - batchSize should be 49 or less to maintain free emailing.
 - Throws an error if this pre-condition is violated. */
 var createBatches = function (totalEmails, batchSize) {
-    var i = 0;
+    var i = parseInt(indexStopped, 10);
+    // eslint-disable-next-line no-console
+    console.log("starting from user " + i + ": " + totalEmails[i]);
     var emailObjs = [];
-    if (batchSize > 49) {
+    if (batchSize > MAX_BATCH_LIMIT) {
         throw new Error("Batch size is too large. Must be no more than 49");
     }
-    while (i < totalEmails.length && emailObjs.length <= 100) {
+    if (totalEmails.length > MAX_BATCH_LIMIT * MAX_EMAIL_LIMIT) {
+        // eslint-disable-next-line no-console
+        console.log(
+        // eslint-disable-next-line max-len
+        "Total email length > " + MAX_BATCH_LIMIT * MAX_EMAIL_LIMIT + ". Up to " + MAX_BATCH_LIMIT * MAX_EMAIL_LIMIT + " emails will be sent, but you must run this script again the next day.");
+    }
+    while (i < totalEmails.length && emailObjs.length < MAX_EMAIL_LIMIT) {
         emailObjs.push({
             from: 'queuemein@cornelldti.org',
             // This is the dti address because recievers can see, but dti will not see recievers.
@@ -69,9 +83,9 @@ var createBatches = function (totalEmails, batchSize) {
         // console.log("bcc list: " + totalEmails.slice(i, Math.min(i+batchSize, totalEmails.length)));
         i += batchSize;
     }
-    if (emailObjs.length === 100) {
+    if (emailObjs.length === MAX_EMAIL_LIMIT) {
         // eslint-disable-next-line no-console
-        console.log("Reached email limit of 100 emails per day, stopped at i=" + i + ",  user " + totalEmails[i] + ". \n            Continue from this user the next day.");
+        console.log("Reached email limit of " + MAX_EMAIL_LIMIT + " emails per day, stopped at:\n             i=" + i + ",  user " + totalEmails[i] + "\nContinue from this user the next day by typing \"node src/scripts/email/wrapped-email.js " + i + "\"");
     }
     return emailObjs;
 };
@@ -85,6 +99,7 @@ var createBatches = function (totalEmails, batchSize) {
                 console.log('firebase worked');
                 return [4 /*yield*/, usersRef
                         .where('wrapped', '==', true)
+                        .where('email', '!=', null)
                         .orderBy('email')
                         .get()];
             case 1:
@@ -101,7 +116,7 @@ var createBatches = function (totalEmails, batchSize) {
                 _a.label = 3;
             case 3:
                 _a.trys.push([3, 5, , 6]);
-                return [4 /*yield*/, resend.batch.send(createBatches(userEmails, 49))];
+                return [4 /*yield*/, resend.batch.send(createBatches(userEmails, 2))];
             case 4:
                 data = _a.sent();
                 // eslint-disable-next-line no-console
