@@ -107,7 +107,7 @@ const TopBarNotifications = (
 
     return (
         <div ref={dropdownRef}>
-            <div className="notifications__top" onClick={() => iconClicked()}>
+            <div className="notifications__top" style={{ cursor: "grab" }} onClick={() => iconClicked()}>
                 <img
                     className="notifications__icon"
                     src={countdownZero && hasWrapped ? ribbonNotif : notification}
@@ -124,7 +124,7 @@ const TopBarNotifications = (
                     <div
                         onClick={() => handleNotifClick()}
                         className="notifications__notification"
-                        style={{ backgroundColor: "#DBE8FD", borderRadius: "8px" }}
+                        style={{ backgroundColor: "#DBE8FD", borderRadius: "8px", cursor: "grab" }}
                     >
                         <div className="notification__header">
                             <div className="notification__title">Queue Me In Wrapped</div>
