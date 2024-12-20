@@ -395,6 +395,7 @@ const Wrapped= (props: Props): JSX.Element => {
 
     const TimeSpentBanner = () => (
         <div>
+            YOU SPENT THE MOST TIME AT OFFICE HOURS IN {month} <Asterik/> 
             YOU SPENT THE MOST TIME AT OFFICE HOURS IN {month} <Asterik/>
         </div>
     );
@@ -411,6 +412,8 @@ const Wrapped= (props: Props): JSX.Element => {
     const StudentsHelpedBanner = () => (
         <div> 
             <Asterik/>
+            {/* fix month to be ta month not student month */}
+            YOU HAD THE MOST VISITS IN {month} <Asterik/>
             YOU HAD THE MOST VISITS IN {month} <Asterik/>
         </div>
     );
