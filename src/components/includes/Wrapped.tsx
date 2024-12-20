@@ -252,7 +252,7 @@ const Wrapped= (props: Props): JSX.Element => {
                     const userDoc = await usersRef.doc(studentData.favTaId).get();
 
                     let taNameExists = false;
-    
+                    
                     if (userDoc.exists) {
                         const taData = userDoc.data() as { firstName: string; lastName: string };
                         setTaName(taData);
@@ -513,13 +513,12 @@ const Wrapped= (props: Props): JSX.Element => {
     const Visits = () => (
         <div>
             <div className="visit">
-                
                 <div style={{ display: "flex", justifyContent: "flex-end", fontWeight: "bold" }}>
                     <div className="visit top-text">
                         YOU WORKED SO HARD THIS YEAR!
                     </div>
                     <div className="visit mid-text">
-                        <Typography variant="h3"> 
+                        <Typography variant="h3" style={{ fontSize: "27px" }} > 
                             WITH...
                         </Typography>
                     </div>
@@ -539,7 +538,7 @@ const Wrapped= (props: Props): JSX.Element => {
                     <div 
                         className="visit bottom-text"
                     >
-                        <Typography variant="h3"> 
+                        <Typography variant="h3" style={{ fontSize: "27px" , width: "189px" }}> 
                             {wrappedData.numVisits === 1 ? "VISIT " : "VISITS " }
                             TO OFFICE HOURS
                         </Typography>
@@ -547,7 +546,7 @@ const Wrapped= (props: Props): JSX.Element => {
                 </div>
             </div>
         </div>
-    )
+    );
 
     const TimeSpent = () => (
         <>
@@ -785,7 +784,7 @@ const Wrapped= (props: Props): JSX.Element => {
                     style={{ position: "absolute", top: "0.2rem", right: "0.2rem", color: "#FFFFFF" }}
                     onClick={props.onClose}
                 >
-                    <CloseIcon />
+                    <CloseIcon style={{ fontSize: "larger" }} />
                 </IconButton>
             </div>
         </div>
