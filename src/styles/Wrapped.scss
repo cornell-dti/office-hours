@@ -45,11 +45,13 @@
 }
 
 
+
 .navigateStageVisible {
   position: absolute;
   top: 50%; 
   transform: translateY(-50%);
   width: 50px;
+  height: 50px;
   height: 50px;
   cursor: pointer;
   display: flex;
@@ -57,6 +59,7 @@
   justify-content: center;
   background-color: rgba(255, 255, 255, 0);
   transition: 0.5s;
+  border-radius: 100%;
   border-radius: 100%;
   &:hover {
     background-color: rgba(0,0,0, 0.05);
@@ -70,6 +73,9 @@
   left: 0;
   justify-content: flex-start; 
   padding-left: 10px; 
+  .MuiSvgIcon-root {
+    margin-left: 6px;
+  }
   .MuiSvgIcon-root {
     margin-left: 6px;
   }
@@ -128,7 +134,7 @@
   &.top-text{
     position: absolute;
     top: 3rem;
-    left: 0rem;
+    left: -3.3rem;
     font-size: 35px;
     font-weight: 600;
     color: #080680;
@@ -136,41 +142,40 @@
 
   &.mid-text{
     position:absolute;
-    top: 6.7rem;
-    left: -18.67rem;
+    top: 7.7rem;
+    left: -20.2rem;
     font-size: 27px;
   }
 
   &.num-visits{
     position: absolute;
-    bottom: 13rem;
-    left: -6rem;
-    font-size: 24rem;
+    top: 260px;
+    left: 140px;
+    font-size: 297px;
+    width: 336px;
     color: #FFA3A3;
     opacity: 0.88;
-    z-index: 0,
   }
 
   &.couple{
-    width: 12rem; 
+    width: 166px; 
     position: absolute; 
-    right: 11rem;
+    right: 9rem;
     bottom: 12rem;
   }
 
   &.girl{
-    width: 6rem;
+    width: 68px;
     position: absolute;
-    right: 6rem;
+    right: 7rem;
     bottom: 9rem;
   }
 
   &.bottom-text{
     position: absolute;
-    bottom: 5rem;
-    right: 4rem;
+    left: 527px;
+    top: 320px;
     font-weight: bold;
-    width: 300px;
     text-align: left;
   }
 }
@@ -180,7 +185,7 @@
     position: absolute;
     top: 3rem;
     left: 3rem;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 27px;
   }
 
@@ -205,9 +210,10 @@
     position: absolute;
     bottom: 7.5rem;
     right: 3rem;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 27px;
     text-align: right;
+    font-weight: bold;
     width: 300px;
   }
 
@@ -215,9 +221,10 @@
     position: absolute;
     bottom: 5rem;
     right: 3rem;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 27px;
     text-align: right;
+    font-weight: bold;
     width: 300px;
   }
   &.smallGirl{
@@ -240,15 +247,17 @@
     align-items: baseline;
   }
   &.text{
-    font-weight: bold;
-    font-size: 2rem;
+    font-weight: 500;
+    font-size: 27px;
     margin-bottom: 2rem;
     line-height: 2.5rem;
     text-align: left;
+    font-size: 35px;
   }
   &.personalityType {
     font-family: "Roboto";
     font-weight: 700;
+    font-size: 35px;
     color: #080680;
     text-transform: uppercase;
   }
@@ -274,7 +283,7 @@
   }
 
   &.top-text{
-    font-weight: bold;
+    font-weight: 500;
     font-size: 27px;
     margin-bottom: 2rem;
     line-height: 2.5rem;
@@ -284,6 +293,7 @@
   &.taName {
     font-family: "Roboto";
     font-weight: 700;
+    font-size: 35px;
     color: #080680;
     text-transform: uppercase;
     text-align: left;
@@ -308,9 +318,10 @@
 
   &.top-text{
     position: absolute;
-    top: 3rem;
-    left: 3rem;
-    font-size: 30px;
+    top: 3.5rem;
+    left: 2.7rem;
+    font-size: 35px;
+    font-weight: 600;
     color: #080680;
   }
 
@@ -318,8 +329,8 @@
     position: absolute;
     top: 9rem;
     left:3rem;
-    font-weight: 700;
-    font-size: 29px;
+    font-weight: 500;
+    font-size: 27px;
   }
   &.num{
     position: absolute;
@@ -343,8 +354,8 @@
     position: absolute;
     top: 26rem;
     right: 2rem;
-    font-weight: 700;
-    font-size: 29px;
+    font-weight: 500;
+    font-size: 27px;
     width: 414px;
     text-align: right;
   }
@@ -355,7 +366,7 @@
     position: absolute;
     top: 3.5rem;
     left: 3.5rem;
-    font-weight: bold;
+    font-weight: 500;
     font-size: 27px;
   }
   &.num{
@@ -371,7 +382,7 @@
     position: absolute;
     bottom: 7.5rem;
     right: 5rem;
-    font-weight: bold;
+    font-weight: 500;
     font-size: 27px;
     text-align: right;
     width: 300px;
@@ -501,14 +512,14 @@
     font-size: 35px;
   }
   &.center-text {
-    font-weight: 600;
+    font-weight: 500;
     width: 279px;
     height: 71px;
     position: absolute;
     top: 195px;
     left: 270px;
     line-height: 40px;
-    font-size: 27px;
+    font-size: 35px;
   }
 }
 
