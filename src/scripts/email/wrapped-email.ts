@@ -57,7 +57,7 @@ const createBatches =  (totalEmails: string[], batchSize: number) => {
         // eslint-disable-next-line no-console
         console.log(`Reached email limit of ${MAX_EMAIL_LIMIT} emails per day, stopped at:
              i=${i},  user ${totalEmails[i]}
-Continue from this user the next day by typing "node src/scripts/email/wrapped-email.js ${i}"`)
+Continue from this user the next day by typing "node ${process.argv[1]} ${i}"`)
     }
     return emailObjs;
 
@@ -84,8 +84,9 @@ Continue from this user the next day by typing "node src/scripts/email/wrapped-e
 
     try {
         const data = await resend.batch.send(
-            createBatches(userEmails, 2)
+            createBatches(userEmails, 49)
         );
+    
 
         // eslint-disable-next-line no-console
         console.log("Emails have been sent!");

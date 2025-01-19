@@ -3,8 +3,9 @@ export const HTML =`
 <div style="font-family: Roboto, sans-serif; margin: 0 auto; font-size: 16px;">
 
     <div style="text-align: center; padding-top: 40px;">
-        <img src="https://i.postimg.cc/5y5RJj7c/wrappedemail.png"
-            alt="Queue Me In Wrapped Header" style="height: 25%; width: 100%;">
+    <img src='https://i.ibb.co/zXssGrC/wrappedemail.png' 
+    alt='Queue Me In Wrapped Header' style="height: 25%; width: 100%;"/>
+
     </div>
 
     <div style="padding: 20px; margin-bottom: 15px; margin-top: 15px;">
@@ -18,9 +19,9 @@ export const HTML =`
             Congratulations on all your hard work this semester!<br>
             <i>- The Queue Me In Team</i> </p>
         <div style="width: 100%; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; padding-top: 1.5em; padding-bottom: 1em; text-align: center;">
-            <img src="https://i.postimg.cc/d0CmNLLF/Notification.png" alt="Bell Icon" style="height: 50px;">
-            <img src="https://i.postimg.cc/d0CmNLLF/Notification.png" alt="Bell Icon" style="height: 50px;">
-            <img src="https://i.postimg.cc/d0CmNLLF/Notification.png" alt="Bell Icon" style="height: 50px;">
+            <img src='https://i.ibb.co/4mFzksS/Notification.png' alt="Bell Icon" style="height: 50px;"/>
+            <img src='https://i.ibb.co/4mFzksS/Notification.png' alt="Bell Icon" style="height: 50px;"/>
+            <img src='https://i.ibb.co/4mFzksS/Notification.png' alt="Bell Icon" style="height: 50px;"/>
         </div>
 
     </div>
@@ -40,7 +41,7 @@ export const HTML =`
                     </td>
                 <!-- Logo -->
                     <td rowspan="2" style="padding-left: 1.5em; padding-right: 2em; text-align: center; vertical-align: middle;">
-                        <img src="https://i.postimg.cc/Bb3cDMv1/Logo-Copy-2.png" alt="QMI Logo" style="display: block; max-height: 100%; width: auto; max-width: 80px;">
+                        <img src='https://i.ibb.co/0CgQD1g/Logo-Copy-2.png' alt="QMI Logo" style="display: block; max-height: 100%; width: auto; max-width: 80px;"/>
                     </td>
                      <!-- Links -->
                     <td style="padding: 10px 1.5em; text-align: left;">
@@ -58,6 +59,4 @@ export const HTML =`
         </td>
     </tr>
 </table>
-
-
 `

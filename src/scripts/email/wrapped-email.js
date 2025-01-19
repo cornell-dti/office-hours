@@ -85,7 +85,7 @@ var createBatches = function (totalEmails, batchSize) {
     }
     if (emailObjs.length === MAX_EMAIL_LIMIT) {
         // eslint-disable-next-line no-console
-        console.log("Reached email limit of " + MAX_EMAIL_LIMIT + " emails per day, stopped at:\n             i=" + i + ",  user " + totalEmails[i] + "\nContinue from this user the next day by typing \"node src/scripts/email/wrapped-email.js " + i + "\"");
+        console.log("Reached email limit of " + MAX_EMAIL_LIMIT + " emails per day, stopped at:\n             i=" + i + ",  user " + totalEmails[i] + "\nContinue from this user the next day by typing \"node " + process.argv[1] + " " + i + "\"");
     }
     return emailObjs;
 };
@@ -116,7 +116,7 @@ var createBatches = function (totalEmails, batchSize) {
                 _a.label = 3;
             case 3:
                 _a.trys.push([3, 5, , 6]);
-                return [4 /*yield*/, resend.batch.send(createBatches(userEmails, 2))];
+                return [4 /*yield*/, resend.batch.send(createBatches(userEmails, 49))];
             case 4:
                 data = _a.sent();
                 // eslint-disable-next-line no-console
