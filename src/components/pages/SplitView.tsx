@@ -201,7 +201,7 @@ const SplitView = ({
                 courseId={match.params.courseId}
                 course={course}
                 countdownZero={countdownZero}
-                setDisplayWrapped={setDisplayWrapped}
+                // setDisplayWrapped={setDisplayWrapped}
             />
             {banners.map((banner, index) => (
                 <Banner
@@ -270,13 +270,13 @@ const SplitView = ({
                     <Loader active={true} content="Loading" />
                 ))}
             <ProductUpdates />
-            {user && user.wrapped ? (
+            {/* {user && user.wrapped ? (
                 <WrappedCountdown
                     setDisplayWrapped={setDisplayWrapped}
                     setCountdownZero={setCountdownZero}
                     wrappedDate={{ launchDate: launch, startDate: start }}
                 />
-            ) : null}
+            ) : null} */}
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt
                     onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
@@ -284,7 +284,7 @@ const SplitView = ({
                 />
             ) : null}
 
-            {displayWrapped ? <Wrapped user={user} onClose={() => setDisplayWrapped(false)} /> : null}
+            {/* {displayWrapped ? <Wrapped user={user} onClose={() => setDisplayWrapped(false)} /> : null} */}
         </>
     );
 };
