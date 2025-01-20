@@ -20,9 +20,9 @@ import smsNotif from "../../media/smsNotif.svg";
 import { addBanner } from "../../redux/actions/announcements";
 import Banner from "../includes/Banner";
 import FeedbackPrompt from "../includes/FeedbackPrompt";
-import Wrapped from "../includes/Wrapped";
-import WrappedCountdown from "../includes/WrappedCountdown";
-import { WRAPPED_START_DATE, WRAPPED_LAUNCH_DATE } from "../../constants";
+// import Wrapped from "../includes/Wrapped";
+// import WrappedCountdown from "../includes/WrappedCountdown";
+// import { WRAPPED_START_DATE, WRAPPED_LAUNCH_DATE } from "../../constants";
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -86,8 +86,8 @@ const SplitView = ({
 
     const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
-    const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
-    const [countdownZero, setCountdownZero] = useState<boolean>(false);
+    // const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
+    // const [countdownZero, setCountdownZero] = useState<boolean>(false);
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
@@ -189,8 +189,8 @@ const SplitView = ({
         }
     }, [addBanner, user]);
 
-    const start = new Date(WRAPPED_START_DATE);
-    const launch = new Date(WRAPPED_LAUNCH_DATE);
+    // const start = new Date(WRAPPED_START_DATE);
+    // const launch = new Date(WRAPPED_LAUNCH_DATE);
 
     return (
         <>
@@ -200,7 +200,7 @@ const SplitView = ({
                 context="student"
                 courseId={match.params.courseId}
                 course={course}
-                countdownZero={countdownZero}
+                // countdownZero={countdownZero}
                 // setDisplayWrapped={setDisplayWrapped}
             />
             {banners.map((banner, index) => (
