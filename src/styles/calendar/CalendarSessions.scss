@@ -130,6 +130,7 @@ $open: #ffdba6;
 
     .Indicator {
         margin-top: 6px;
+        margin-left: 5px;
 
         .Circle {
             border: solid 0.5px white;
@@ -173,6 +174,7 @@ $open: #ffdba6;
             font-size: 14px;
             font-weight: 500;
             width: 160px;
+            display: inline-flex;
         }
 
         .Tas {

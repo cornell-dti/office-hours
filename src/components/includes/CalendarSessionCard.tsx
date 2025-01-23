@@ -84,19 +84,22 @@ const CalendarSessionCard = (props: {
 
             <div className='CalendarCard'>
                 <div className='Wrapper'>
+                <div className='Location'>
                     {'building' in session ? (
-                        <div className='Location'>
-                            {session.building + ' ' + session.room}
-                        </div>
+                        
+                            session.building + ' ' + session.room
+                        
                     ) : session.modality === 'review' ? (
-                        <div className='Location'> Zoom Discussion </div>
+                        'Zoom Discussion'
                     ) : (
-                        <div className='Location'>Online</div>
+                        'Online'
                     )}
+                
 
-                    {numAhead > 0 && (<div className={'Indicator ' + props.status}>
-                        <div className='Circle' />
-                    </div>)}
+                        {numAhead > 0 && (<div className={'Indicator'}>
+                            <div className='Circle' />
+                        </div>)}
+                </div>
 
                     <button
                         type="button"
