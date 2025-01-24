@@ -15,6 +15,7 @@ const CalendarSessionCard = (props: {
     session: FireSession;
     callback: (sessionId: string) => void;
     active: boolean;
+    // eslint-disable-next-line react/no-unused-prop-types
     status: string;
     setIsDayExport: React.Dispatch<React.SetStateAction<boolean>>;
     setShowCalendarModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -84,22 +85,18 @@ const CalendarSessionCard = (props: {
 
             <div className='CalendarCard'>
                 <div className='Wrapper'>
-                <div className='Location'>
-                    {'building' in session ? (
-                        
+                    <div className='Location'>
+                        {'building' in session ? (
                             session.building + ' ' + session.room
-                        
-                    ) : session.modality === 'review' ? (
-                        'Zoom Discussion'
-                    ) : (
-                        'Online'
-                    )}
-                
-
+                        ) : session.modality === 'review' ? (
+                            'Zoom Discussion'
+                        ) : (
+                            'Online'
+                        )}
                         {numAhead > 0 && (<div className={'Indicator'}>
                             <div className='Circle' />
                         </div>)}
-                </div>
+                    </div>
 
                     <button
                         type="button"
