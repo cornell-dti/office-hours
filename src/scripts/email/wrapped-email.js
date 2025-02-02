@@ -38,14 +38,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var resend_1 = require("resend");
 var firebase_admin_1 = require("firebase-admin");
-var dotenv = require("dotenv");
+require("dotenv/config");
 var wrapped_html_1 = require("./wrapped-html");
 firebase_admin_1["default"].initializeApp({
     credential: firebase_admin_1["default"].credential.applicationDefault(),
     databaseURL: 'https://queue-me-in-prod.firebaseio.com'
 });
-dotenv.config();
-var resend = new resend_1.Resend(process.env.RESEND_API_KEY);
+var resend = new resend_1.Resend(process.env.REACT_APP_RESEND_API_KEY);
 if (process.argv.length !== 3) {
     throw new Error("Usage: node <script path> <index number> . Use 0 if running script for first time");
 }

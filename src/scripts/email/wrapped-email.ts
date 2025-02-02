@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 import admin from "firebase-admin";
-import * as dotenv from 'dotenv';
+import 'dotenv/config'
 import { HTML } from "./wrapped-html";
 
 admin.initializeApp({
@@ -9,8 +9,7 @@ admin.initializeApp({
 
 });
 
-dotenv.config();
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.REACT_APP_RESEND_API_KEY);
 
 if (process.argv.length !== 3) {
     throw new Error("Usage: node <script path> <index number> . Use 0 if running script for first time")
