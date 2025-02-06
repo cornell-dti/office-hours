@@ -1,9 +1,18 @@
-import firebase from 'firebase/app';
+import { getAuth, signOut } from "firebase/auth";
+import { Firestore, runTransaction, doc, collection, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
-
-const auth = firebase.auth;
-
-export const userUpload = (user: firebase.User | null, db: firebase.firestore.Firestore) => {
+type FireUser = {
+    userId: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    photoUrl: string;
+    courses: string[];
+    roles: { [key: string]: boolean };
+    phoneNumber: string;
+    textNotifsEnabled: boolean;
+};
+export const userUpload = async (user: { uid: string; email: string | null; displayName: string | null; photoURL: string | null }, db: Firestore) => {
     if (user != null) {
         const uid = user.uid;
         const email = user.email || undefined;
@@ -19,45 +28,48 @@ export const userUpload = (user: firebase.User | null, db: firebase.firestore.Fi
                 lastName = displayName.substring(stringSplit + 1);
             }
         }
-        if(uid && email && displayName && photoUrl && firstName && lastName) {
+        if (uid && email && displayName && photoUrl && firstName && lastName) {
             const firstNameDefined = firstName || "";
-            db.runTransaction(async (transaction) => {
-                const userDocumentReference = db.collection('users').doc(uid);
-                const userDocument = await transaction.get(userDocumentReference);
-                if (userDocument.exists) {
-                    const partialUserDocument: Partial<FireUser> = {
-                        email,
-                        firstName: firstNameDefined,
-                        lastName,
-                        photoUrl,
-                    };
-                    transaction.update(userDocumentReference, partialUserDocument);
-                } else {
-                    const fullUserDocument: Omit<FireUser, 'userId'> = {
-                        email,
-                        firstName: firstNameDefined,
-                        lastName,
-                        photoUrl,
-                        courses: [],
-                        roles: {},
-                        phoneNumber: "Dummy Number",
-                        textNotifsEnabled: false,
-                    };
-                    transaction.set(userDocumentReference, fullUserDocument);
-                }
-                // eslint-disable-next-line no-console
-            }).catch(() => console.error('Unable to upload user.'));
+            try {
+                await runTransaction(db, async (transaction) => {
+                    const userDocumentReference = doc(db, 'users', uid);
+                    const userDocument = await transaction.get(userDocumentReference);
+                    if (userDocument.exists()) {
+                        const partialUserDocument: Partial<FireUser> = {
+                            email,
+                            firstName: firstNameDefined,
+                            lastName,
+                            photoUrl,
+                        };
+                        transaction.update(userDocumentReference, partialUserDocument);
+                    } else {
+                        const fullUserDocument: Omit<FireUser, 'userId'> = {
+                            email,
+                            firstName: firstNameDefined,
+                            lastName,
+                            photoUrl,
+                            courses: [],
+                            roles: {},
+                            phoneNumber: "Dummy Number",
+                            textNotifsEnabled: false,
+                        };
+                        transaction.set(userDocumentReference, fullUserDocument);
+                    }
+                });
+            } catch (error) {
+                console.error('Unable to upload user:', error);
+            }
         }
     }
 };
 
 export const logOut = () => {
-    auth()
-        .signOut()
+    const auth = getAuth();
+    signOut(auth)
         .then(() => {
-            // Success
+            console.log("User signed out successfully.");
         })
-        .catch(() => {
-            // Fail
+        .catch((error) => {
+            console.error("Error signing out:", error);
         });
 };

@@ -8,7 +8,8 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import "../../styles/Wrapped.scss";
 import "../../styles/WrappedAnimation.scss";
 import React, { useEffect, useState } from "react";
-import firebase from '../../firebase';
+import { firestore } from '../../firebase';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import Couple from "../../media/wrapped/couple.svg"
 import Girl from "../../media/wrapped/girl.svg"
 import Bus from "../../media/wrapped/bus.svg"
@@ -199,16 +200,17 @@ const Wrapped= (props: Props): JSX.Element => {
     };
 
     useEffect(() => {
-        // add usestate for totalstages calculate it in useEffect
-
-        const wrappedRef = firebase.firestore().collection('wrapped');
         const fetchData = async () => {
             setLoading(true);
             try {
-                const doc = await wrappedRef.doc(props.user?.userId).get();
-                const usersRef = firebase.firestore().collection('users');
-                if (doc.exists) {
-                    const studentData = doc.data() as { 
+                const docRef = doc(firestore, 'wrapped', props.user?.userId || '');
+                const docSnap = await getDoc(docRef);
+    
+                const userDocRef = doc(firestore, 'users', wrappedData.favTaId || '');
+                const userDocSnap = await getDoc(userDocRef);
+    
+                if (docSnap.exists()) {
+                    const studentData = docSnap.data() as { 
                         numVisits: number;
                         personalityType: string; 
                         timeHelpingStudents: number; 
@@ -218,38 +220,35 @@ const Wrapped= (props: Props): JSX.Element => {
                         favDay: number;
                         favMonth: number;
                         numStudentsHelped: number;
-                    }
-                    setWrappedData(studentData);  
-
-                    const data = doc.data();
+                    };
+    
+                    setWrappedData(studentData);
+    
                     let numStages = 0;
-                    if (data !== undefined) {
-                        if (data.timeHelpingStudents === undefined || data.timeHelpingStudents === 0){
-                            numStages = 6;
-                            setRole(0);
-                        } else if (data.favTaId === "" || data.favTaId === undefined){
-                            numStages = 4;
-                            setRole(2);
-                        } else{
-                            numStages = 7;
-                            setRole(1);
-                        }
+                    if (studentData.timeHelpingStudents === undefined || studentData.timeHelpingStudents === 0) {
+                        numStages = 6;
+                        setRole(0);
+                    } else if (studentData.favTaId === "" || studentData.favTaId === undefined) {
+                        numStages = 4;
+                        setRole(2);
+                    } else {
+                        numStages = 7;
+                        setRole(1);
                     }
-
-                    const userDoc = await usersRef.doc(wrappedData.favTaId).get();
+    
                     let taNameExists = false;
-                    if (userDoc.exists) {
-                        setTaName(userDoc.data() as { 
+                    if (userDocSnap.exists()) {
+                        setTaName(userDocSnap.data() as { 
                             firstName: string;
                             lastName: string;
                         });  
                         taNameExists = true;
                     } else {
-                        // eslint-disable-next-line no-console
-                        console.log('No such document!');
+                        console.log('No such TA document!');
                     }
-
-                    if (studentData.favClass === "" || 
+    
+                    if (
+                        studentData.favClass === "" || 
                         studentData.favDay === -1 || 
                         studentData.favTaId === "" || 
                         !taNameExists
@@ -257,33 +256,32 @@ const Wrapped= (props: Props): JSX.Element => {
                         setDisplayFavs(false);
                         numStages--;
                     } 
-
+    
                     setTotalStages(numStages);
-
-                    const coursesRef = firebase.firestore().collection("courses");
-
-                    const coursesDoc = await coursesRef.doc(wrappedData.favClass).get();
-                    if (coursesDoc.exists){
-                        setFavClass(coursesDoc.data() as {
+    
+                    const courseDocRef = doc(firestore, "courses", studentData.favClass);
+                    const coursesDocSnap = await getDoc(courseDocRef);
+    
+                    if (coursesDocSnap.exists()) {
+                        setFavClass(coursesDocSnap.data() as {
                             code: string;
-                        })
-                    } else{
-                        // eslint-disable-next-line no-console
-                        console.log('No such document!');
-                    }  
+                        });
+                    } else {
+                        console.log('No such course document!');
+                    }
                 } else {
-                    // eslint-disable-next-line no-console
-                    console.log('No such document!');
+                    console.log('No such wrapped document!');
                 }
             } catch (error) {
-                // eslint-disable-next-line no-console
                 console.error("Error fetching data: ", error);
+            } finally {
+                setLoading(false);
             }
-            
         };
-
+    
         fetchData();
     }, [props.user, wrappedData.favClass, wrappedData.favTaId]);
+    
 
     useEffect(() => {
         const timer = setTimeout(() => {
