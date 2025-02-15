@@ -8,6 +8,7 @@ import SessionAlertModal from "./SessionAlertModal";
 
 import { collectionData, firestore, auth } from "../../firebase";
 import { addQuestion } from "../../firebasefunctions/sessionQuestion";
+import addFiles from "../../media/AddFilesButton.svg";
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
@@ -27,6 +28,22 @@ type Props = {
     showProfessorStudentView: boolean;
 };
 
+/**
+ * `AddQuestion` Component - Displays a component that allows users ask a question
+ *  to join the queue.
+ * 
+ * @remarks
+ * This component is used within a course session to enable students to submit 
+ * questions to join the queue. The user submits information about location as well
+ * as the specific assignment. It adapts its layout based on screen size and provides different 
+ * views depending on the user's role (professor's student view or student view).
+ * 
+ * @param props - Contains:
+ *   - `course`: The course associated with the session.
+ *   - `session`: The current session where the question will be added.
+ *   - `mobileBreakpoint`: The screen width threshold for mobile layout.
+ *   - `showProfessorStudentView`: boolean to toggle ProfessorStudentView.
+ */
 const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentView }: Props) => {
     /*
      * State machine states
@@ -48,6 +65,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     const [tags, setTags] = useState<FireTag[]>([]);
     // For hybrid sessions to keep track if student is in virtual location
     const [isVirtual, setIsVirtual] = useState<boolean>(false);
+    // const [error, setError] = useState<boolean>(false);
 
     const primaryTags = tags.filter((tag) => tag.level === 1);
     const secondaryTags = tags.filter((tag) => tag.level === 2);
@@ -217,32 +235,37 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                     <div className="tagsContainer">
                         {primaryTags.length !== 0 && (
                             <>
-                                <hr />
-                                <div className="tagsMiniContainer">
-                                    <p className="header">Select a Category</p>
-                                    <div className="QuestionTags">
-                                        {tags
-                                            .filter((tag) => tag.active && tag.level === 1)
-                                            .map((tag) => (
-                                                <SelectedTags
-                                                    key={tag.tagId}
-                                                    tag={tag}
-                                                    isSelected={stage > INITIAL_STATE}
-                                                    onClick={() => handlePrimarySelected(tag)}
-                                                    check={tag.name === selectedPrimary?.name}
-                                                    isPrimary={true}
-                                                    select={true}
-                                                />
-                                            ))}
+                                <div className="topRow">
+                                    <div className="disclaimerContainer">
+                                        <p className="text"><span className="required"> * </span>Required</p>
+                                    </div>
+                                    <div className="tagsMiniContainer">
+                                        <p className="header">Select a Category<span className="required"> * </span></p>
+                                        <div className="category">
+                                            {tags
+                                                .filter((tag) => tag.active && tag.level === 1)
+                                                .map((tag) => (
+                                                    <SelectedTags
+                                                        key={tag.tagId}
+                                                        tag={tag}
+                                                        isSelected={stage > INITIAL_STATE}
+                                                        onClick={() => handlePrimarySelected(tag)}
+                                                        check={tag.name === selectedPrimary?.name}
+                                                        isPrimary={true}
+                                                        select={true}
+                                                    />
+                                                ))}
+                                        </div>
                                     </div>
                                 </div>
+                                
                             </>
                         )}
                         {secondaryTags.length !== 0 && (
                             <>
                                 <hr />
                                 <div className={"tagsMiniContainer secondaryTags " + !!selectedPrimary}>
-                                    <p className="header">Select a Tag</p>
+                                    <p className="header">Select a Tag<span className="required"> * </span></p>
                                     {selectedPrimary ? (
                                         tags
                                             .filter((tag) => tag.active && tag.level === 2)
@@ -285,6 +308,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                                     {LOCATION_CHAR_LIMIT - location.length !== 1 && "s"} left)
                                                 </span>
                                             )}
+                                            <span className="required"> * </span>
                                         </p>
                                     }
                                     {stage >= SECONDARY_SELECTED || activeTags.length === 0 ? (
@@ -308,7 +332,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                                     onChange={handleUpdateLocation}
                                                     placeholder={
                                                         session.modality === "in-person" || !isVirtual
-                                                            ? "What is your location?"
+                                                            ? "Enter where you are (room & location in room)"
                                                             : "What is your zoom link?"
                                                     }
                                                 />
@@ -318,11 +342,10 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                         <p className="placeHolder text">Finish selecting tags...</p>
                                     )}
                                 </div>
-                                <hr />
                             </>
                         )}
                         <div className="tagsMiniContainer">
-                            <p className="header">{"Question "}</p>
+                            <p className="header">{"Question "} <span className="required"> * </span></p>
                             {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||
                             secondaryTags.length === 0 ||
@@ -331,7 +354,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                         className="TextInput question"
                                         value={question}
                                         onChange={handleUpdateQuestion}
-                                        placeholder="What's your question about?"
+                                        placeholder="What would you like help or feedback on?"
                                     />
                                 ) : (
                                     <textarea
@@ -346,6 +369,11 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                         }
                                     />
                                 )}
+                        </div>
+                        <hr />
+                        <div className="tagsMiniContainer">
+                            <p className="header">Your Files<span className="required"> * </span></p>
+                            <img alt="" src={addFiles}/>
                         </div>
                         <div className="addButtonWrapper">
                             {stage > LOCATION_INPUTTED || primaryTags.length === 0 || secondaryTags.length === 0 ? (
