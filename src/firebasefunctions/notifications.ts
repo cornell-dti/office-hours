@@ -1,4 +1,3 @@
-import firebase from 'firebase/app';
 import { firestore } from '../firebase';
 import { doc, getDoc, setDoc, updateDoc, Timestamp} from 'firebase/firestore';
 import { User } from 'firebase/auth';
