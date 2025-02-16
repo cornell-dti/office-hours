@@ -15,6 +15,7 @@ import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
 import { useProfessorViewSessions, useCourse } from '../../firehooks';
 import { firestore } from '../../firebase';
+import { doc } from 'firebase/firestore';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 
@@ -45,7 +46,7 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
 
             const users$ = courseStaffIds$.pipe<FireUser[]>(switchMap(courseStaffIds =>
                 combineLatest(...courseStaffIds.map(courseStaffId =>
-                    docData<FireUser>(firestore.doc(`users/${courseStaffId}`), 'userId')
+                    docData<FireUser>(doc(firestore, 'users',courseStaffId), 'userId')
                 ))
             ));
 

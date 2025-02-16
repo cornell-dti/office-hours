@@ -16,6 +16,7 @@ import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/s
 import { filterUnresolvedQuestions } from "../../utilities/questions";
 
 import { firestore } from "../../firebase";
+import { onSnapshot, where, query, collection} from 'firebase/firestore';
 
 import { RootState } from "../../redux/store";
 import Banner from "./Banner";
@@ -126,9 +127,8 @@ const SessionView = ({
         let unsubscribe: () => void;
 
         if (!isTa && !isProf) {
-            const questionsRef = firestore.collection("questions").where("sessionId", "==", session.sessionId);
-
-            unsubscribe = questionsRef.onSnapshot((snapshot) => {
+            const questionsRef = query(collection(firestore, 'questions'), where("sessionId", "==", session.sessionId));
+            unsubscribe = onSnapshot(questionsRef, (snapshot) => {
                 snapshot.docChanges().forEach((change) => {
                     const questionData = change.doc.data();
                     const questionId = change.doc.id;

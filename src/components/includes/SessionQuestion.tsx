@@ -7,6 +7,7 @@ import notif from "../../media/notif.svg";
 import SelectedTags from "./SelectedTags";
 import GreenCheck from "../../media/greenCheck.svg";
 import { firestore } from "../../firebase";
+import { doc, updateDoc} from 'firebase/firestore';
 import {
     markStudentNoShow,
     retractStudentQuestion,
@@ -105,8 +106,8 @@ class SessionQuestion extends React.Component<Props, State> {
                 location: target.value,
             });
 
-            const question = firestore.collection("questions").doc(this.props.question.questionId);
-            question.update({
+            const question = doc(firestore, 'questions', this.props.question.questionId);
+            updateDoc(question, {
                 location: target.value,
             });
 

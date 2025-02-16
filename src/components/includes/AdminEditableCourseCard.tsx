@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import { firestore } from '../../firebase';
+import { doc, updateDoc} from 'firebase/firestore';
 
 const AdminEditableCourseCard = ({ course }: { readonly course: FireCourse }) => {
     const [name, setName] = useState(course.name);
@@ -10,7 +11,7 @@ const AdminEditableCourseCard = ({ course }: { readonly course: FireCourse }) =>
 
     const onSave = () => {
         const update: Partial<FireCourse> = { name, code, semester, year, term };
-        firestore.collection('courses').doc(course.courseId).update(update);
+        updateDoc(doc(firestore, 'courses', course.courseId), update);
     };
 
     return (

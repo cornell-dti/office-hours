@@ -7,6 +7,8 @@ import { clearNotifications } from '../../firebasefunctions/notifications';
 import userIcon from '../../media/userIcon.svg'
 import lockIcon from '../../media/lockIcon.svg'
 import QMILogo2020 from '../../media/QMILogo2020.svg';
+import { auth } from '../../firebase';
+import {signInWithEmailAndPassword } from "firebase/auth";
 
 type Props = {
     showLoginModal: boolean;
@@ -35,7 +37,7 @@ const LoginModal = ({
 
     const passLogin = (e: React.FormEvent<HTMLElement>) => {
         e.preventDefault();
-        app.auth().signInWithEmailAndPassword(formData.email, formData.password).then((response) => {
+        signInWithEmailAndPassword(auth, formData.email, formData.password).then((response) => {
             const user = response.user;
             userUpload(user, firestore);
             clearNotifications(user);

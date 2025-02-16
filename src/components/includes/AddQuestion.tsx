@@ -7,6 +7,7 @@ import SelectedTags from "./SelectedTags";
 import SessionAlertModal from "./SessionAlertModal";
 
 import { collectionData, firestore, auth } from "../../firebase";
+import { collection, query, where} from 'firebase/firestore';
 import { addQuestion } from "../../firebasefunctions/sessionQuestion";
 
 const LOCATION_CHAR_LIMIT = 40;
@@ -61,8 +62,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         window.addEventListener("resize", updateWindowDimensions);
 
         const tags$ = collectionData<FireTag>(
-            firestore.collection("tags").where("courseId", "==", course.courseId),
-            "tagId"
+            query(collection(firestore, 'tags'), where('courseId', '==', 'course.courseId')), "tagId"
         );
 
         const subscription = tags$.subscribe((newTags) => setTags(newTags));
