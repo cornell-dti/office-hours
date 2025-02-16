@@ -9,7 +9,7 @@ import "../../styles/Wrapped.scss";
 import "../../styles/WrappedAnimation.scss";
 import React, { useEffect, useState } from "react";
 import { firestore } from '../../firebase';
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import {  doc, getDoc } from 'firebase/firestore';
 import Couple from "../../media/wrapped/couple.svg"
 import Girl from "../../media/wrapped/girl.svg"
 import Bus from "../../media/wrapped/bus.svg"

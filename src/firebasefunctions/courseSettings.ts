@@ -1,6 +1,7 @@
 
 import { firestore } from '../firebase';
+import { doc, updateDoc } from 'firebase/firestore';
 
 export const updateSettingsInCourse = (courseId: string, courseUpdate: Partial<FireCourse>) => {
-    firestore.collection('courses').doc(courseId).update(courseUpdate);
+    updateDoc(doc(firestore, 'courses', courseId), courseUpdate);
 }

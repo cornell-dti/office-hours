@@ -1,5 +1,5 @@
 import { getAuth, signOut } from "firebase/auth";
-import { Firestore, runTransaction, doc, collection, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { Firestore, runTransaction, doc } from "firebase/firestore";
 
 type FireUser = {
     userId: string;

@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Icon } from 'semantic-ui-react';
-import { app, firestore } from '../../firebase';
+import { firestore } from '../../firebase';
 import { userUpload } from '../../firebasefunctions/user';
 import { clearNotifications } from '../../firebasefunctions/notifications';
 import userIcon from '../../media/userIcon.svg'

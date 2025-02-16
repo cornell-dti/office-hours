@@ -1,15 +1,15 @@
 
-import firebase from 'firebase/app';
 import { firestore } from '../firebase';
+import { doc, collection, writeBatch, WriteBatch } from 'firebase/firestore';
 
 
 const createTag = (
-    batch: firebase.firestore.WriteBatch,
+    batch: WriteBatch,
     tagInfo: Omit<FireTag, 'tagId' | 'level'>,
     parentTagDocId?: string) => {
 
     // need to create this first so the child tags have the doc reference
-    const tag = firestore.collection('tags').doc();
+    const tag = doc(collection(firestore, "tags"));
     
     const tagDocInfo: Omit<FireTag, 'tagId'> = {
         active: tagInfo.active,
@@ -27,7 +27,7 @@ const createTag = (
 
 export const createAssignment = (currentTag: Omit<FireTag, 'tagId' | 'level'>, newTags: NewTag[]) => {
     
-    const batch = firestore.batch();
+    const batch = writeBatch(firestore);
 
 
     // need to create this first so the child tags have the doc reference
@@ -47,15 +47,15 @@ export const createAssignment = (currentTag: Omit<FireTag, 'tagId' | 'level'>, n
     return parentTag;
 }
 
-const editParentTag = (batch: firebase.firestore.WriteBatch,
+const editParentTag = (batch: WriteBatch,
     thisTag: FireTag, childTags: FireTag[]) => {
-    const parentTag = firestore.collection('tags').doc(thisTag.tagId);
+    const parentTag = doc(firestore, 'tags', thisTag.tagId);
     batch.update(parentTag, {
         name: thisTag.name, 
         active: thisTag.active
     });
     childTags.forEach(childTag => {
-        const childTagDoc = firestore.collection('tags').doc(childTag.tagId);
+        const childTagDoc = doc(firestore, 'tags', childTag.tagId);
         batch.update(childTagDoc, {
             active: thisTag.active
         });
@@ -64,9 +64,9 @@ const editParentTag = (batch: firebase.firestore.WriteBatch,
 
 export const editAssignment = (cond: boolean, tag: FireTag,
     childTags: FireTag[], deletedTags: FireTag[], newTags: NewTag[]) => {
-    const batch = firestore.batch();
+    const batch = writeBatch(firestore);
 
-    const parentTag = firestore.collection('tags').doc(tag.tagId);
+    const parentTag = doc(firestore, 'tags', tag.tagId);
 
     if (cond) {
         editParentTag(batch, tag, childTags)
@@ -74,10 +74,10 @@ export const editAssignment = (cond: boolean, tag: FireTag,
 
     deletedTags
         .forEach(firetag =>
-            batch.delete(firestore.collection('tags').doc(firetag.tagId)));
+            batch.delete(doc(firestore,'tags', firetag.tagId)));
 
     newTags.forEach(tagText => {
-        const childTag = firestore.collection('tags').doc();
+        const childTag = doc(collection(firestore, "tags"));
 
         const childTagUpdate: Omit<FireTag, 'tagId'> = {
             active: tag.active,

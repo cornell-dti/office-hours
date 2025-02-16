@@ -1,6 +1,5 @@
-import firebase from 'firebase/app';
 import { firestore } from '../firebase';
-import { doc, addDoc, updateDoc, deleteDoc, getDoc, collection, query, where, Timestamp, Firestore, writeBatch, getDocs} from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, Timestamp, Firestore, writeBatch, getDocs} from 'firebase/firestore';
 import moment from 'moment-timezone';
 import { getDateRange, syncTimes } from '../utilities/date';
 
@@ -96,7 +95,7 @@ export const createSeries = async (
                     useTALink: sessionSeries.useTALink
                 }
             }
-            
+
             const derivedSession: Omit<FireInPersonSession | FireHybridSession, 'sessionId'> = {
                 ...hybridProperty,
                 sessionSeriesId,

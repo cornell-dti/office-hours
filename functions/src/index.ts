@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { Twilio } from 'twilio';
+import { onDocumentCreated, onDocumentUpdated } from 'firebase-functions/firestore';
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
@@ -44,9 +45,7 @@ async function sendSMS (user: FireUser, message: string) {
  * already in the system. (THIS CASE IS HANDLED BY NOT INCLDUING THEM IN THE
  * pendingUsers COLLECTION IN THE FIRST PLACE)
  */
-exports.onUserCreate = functions.firestore
-    .document('users/{userId}')
-    .onCreate(async (snap, context) => {
+exports.onUserCreate = onDocumentCreated('users/{userId}',async (context) => {
         const userId = context.params.userId;
 
         // get the user doc
@@ -124,9 +123,13 @@ exports.onUserCreate = functions.firestore
 
     });
 
-exports.onCommentCreate = functions.firestore
-    .document(`questions/{questionId}/comments/{commentId}`)
-    .onCreate(async (snap) => {
+exports.onCommentCreate = onDocumentCreated(`questions/{questionId}/comments/{commentId}`, async (event) => {
+    const snap = event.data;
+
+    if (!snap) {
+      console.error("Snapshot is undefined.");
+      return;
+    }
         const data = snap.data();
         const askerId = data.askerId;
         const answererId = data.answererId;
@@ -182,9 +185,12 @@ exports.onCommentCreate = functions.firestore
         }
     })
 
-exports.onSessionUpdate = functions.firestore
-    .document('sessions/{sessionId}')
-    .onUpdate(async (change) => {
+exports.onSessionUpdate = onDocumentUpdated('sessions/{sessionId}', async (event) => {
+        const change = event.data;
+        if (!change) {
+            console.error("No change detected in question update.");
+            return;
+        }
         // retrieve session id and ordered queue of active questions
         const afterSessionId = change.after.id;
         const afterQuestions = (await db.collection('questions')
@@ -233,9 +239,14 @@ exports.onSessionUpdate = functions.firestore
         }
     })
 
-exports.onQuestionCreate = functions.firestore
-    .document('questions/{questionId}')
-    .onCreate(async (snap) => {
+exports.onQuestionCreate = 
+onDocumentCreated('questions/{questionId}', async (event) => {
+        const snap = event.data;
+
+        if (!snap) {
+        console.error("Snapshot is undefined.");
+        return;
+        }
         // Get data object and obtain session/course
         const data = snap.data();
         const sessionId = data.sessionId;
@@ -310,9 +321,12 @@ questionStatusNumbers.set("retracted", [0, 0, 0]);
 questionStatusNumbers.set("unresolved", [1, 0, 0]);
 questionStatusNumbers.set("no-show", [0, 0, 0]);
 
-exports.onQuestionUpdate = functions.firestore
-    .document('questions/{questionId}')
-    .onUpdate(async (change) => {
+exports.onQuestionUpdate = onDocumentUpdated('questions/{questionId}', async (event) => {
+        const change = event.data;
+        if (!change) {
+            console.error("No change detected in question update.");
+            return;
+        }
         // retrieve old and new questions
         const newQuestion: FireQuestion = change.after.data() as FireQuestion;
         const prevQuestion: FireQuestion = change.before.data() as FireQuestion;
