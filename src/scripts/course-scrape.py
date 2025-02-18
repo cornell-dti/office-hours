@@ -64,7 +64,7 @@ for c in classesJSON:
   instructors = c['enrollGroups'][0]['classSections'][0]['meetings'][0]['instructors']
   names, emails = getProfessorInfo(instructors)
   hasProfessor = names != ""
-  isUndergrad = int(c['catalogNbr']) < 4000
+  isUndergrad = int(c['catalogNbr']) < 5000
   isNonResearch = all(word not in c['titleShort'] for word in irrelevant_courses)
   # At least 3 credits
   isCredit = c['enrollGroups'][0]['unitsMinimum'] > 2
