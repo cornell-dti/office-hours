@@ -4,7 +4,7 @@ import {Timestamp} from 'firebase/firestore';
 import plusCircle from "../../media/plus-circle.svg";
 import chevronUp from "../../media/chevron-up.svg";
 import chevronDown from "../../media/chevron-down.svg";
-import announcement from "../../media/announcement.svg";
+import announcementImg from "../../media/announcement.svg";
 import { addTaAnnouncement, deleteTaAnnouncement } from "../../firebasefunctions/session";
 import { RootState } from "../../redux/store";
 
@@ -97,7 +97,7 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
                                                 <div>
                                                     <img
                                                         alt="Announcement Icon"
-                                                        src={announcement}
+                                                        src={announcementImg}
                                                         className="AnnouncementIcon"
                                                     />
                                                     <img
@@ -134,7 +134,7 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
                     {showNewAnnouncement && (
                         <div className="NewAnnouncement">
                             <div className="NewAnnouncementTop">
-                                <img src={announcement} alt="Announcements" />
+                                <img src={announcementImg} alt="Announcements" />
                                 <div className="NewAnnouncementTaName">
                                     {`${user.firstName} ${user.lastName}`} (You)
                                 </div>

@@ -5,6 +5,7 @@ import { Icon } from 'semantic-ui-react';
 // @ts-ignore (Linkify has no typescript)
 import Linkify from 'linkifyjs/react';
 import { connect } from 'react-redux';
+import { doc, updateDoc, writeBatch} from 'firebase/firestore';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
 import Arrow from '../../media/arrow_discussion.svg';
@@ -12,7 +13,6 @@ import CommentImage from '../../media/comment_discussion.svg';
 import ResolvedIcon from '../../media/resolvedcheck.svg';
 import { markQuestionDone } from '../../firebasefunctions/sessionQuestion';
 import { RootState } from '../../redux/store';
-import { doc, updateDoc, writeBatch} from 'firebase/firestore';
 
 type Props = {
     question: FireDiscussionQuestion;

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Icon } from "semantic-ui-react";
 
 import { connect } from "react-redux";
+import { onSnapshot, where, query, collection} from 'firebase/firestore';
 import SessionInformationHeader from "./SessionInformationHeader";
 import SessionQuestionsContainer from "./SessionQuestionsContainer";
 
@@ -16,7 +17,6 @@ import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/s
 import { filterUnresolvedQuestions } from "../../utilities/questions";
 
 import { firestore } from "../../firebase";
-import { onSnapshot, where, query, collection} from 'firebase/firestore';
 
 import { RootState } from "../../redux/store";
 import Banner from "./Banner";

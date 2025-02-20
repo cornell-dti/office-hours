@@ -1,5 +1,5 @@
-import { firestore } from '../firebase';
 import { doc, addDoc, updateDoc, deleteDoc, getDoc, collection, Timestamp} from 'firebase/firestore';
+import { firestore } from '../firebase';
 
 export const addSession = (session: Omit<FireSession, 'sessionId'>) => {
     return addDoc(collection(firestore, 'sessions'), session).then(() => { });
@@ -19,9 +19,9 @@ export const pauseSession = (oldSession: FireSession, isPaused: boolean) => {
 }
 
 export const deleteSession = (sessionId: string) => {
-    //return this??
+    // return this??
     deleteDoc(doc(firestore, 'sessions', sessionId));
-    //firestore.collection('sessions').doc(sessionId).delete();
+    // firestore.collection('sessions').doc(sessionId).delete();
 }
 
 export const getUsersFromSessions = async (sessions: FireSession[]): Promise<FireUser[]> => {

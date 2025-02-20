@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import { firestore } from '../../firebase';
 import { doc, setDoc, Timestamp} from 'firebase/firestore';
+import { firestore } from '../../firebase';
 import { CURRENT_SEMESTER, START_DATE, END_DATE } from '../../constants';
 
 const startDate = new Date(START_DATE);

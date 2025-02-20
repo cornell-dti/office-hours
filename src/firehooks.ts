@@ -4,8 +4,8 @@ import { collectionData, docData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
 import { Observable, of, combineLatest, EMPTY } from 'rxjs';
 import moment from 'moment';
-import { firestore, loggedIn$ } from './firebase';
 import { collection, doc, query, where, orderBy, documentId, Query } from 'firebase/firestore';
+import { firestore, loggedIn$ } from './firebase';
 import {
     SingletonObservable,
     createUseSingletonObservableHook,
@@ -13,13 +13,13 @@ import {
 } from './utilities/singleton-observable-hook';
 
 
-export const useDoc = <T>(collection: string, id: string | undefined, idField: string) => {
+export const useDoc = <T>(collectionDoc: string, id: string | undefined, idField: string) => {
     const [document, setDocument] = useState<T | undefined>();
 
     useEffect(
         () => {
             if (id) {
-                const primaryTag$: Observable<T> = docData(doc(firestore, collection + '/' + id), idField);
+                const primaryTag$: Observable<T> = docData(doc(firestore, collectionDoc, id), idField);
                 const subscription = primaryTag$.subscribe((d: T) => setDocument(d));
                 return () => { subscription.unsubscribe(); };
             }
@@ -100,8 +100,8 @@ export const useProfessorViewSessions = (
             const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
             const sessionsRef = collection(firestore, 'sessions');
             const sessionsQuery = query(sessionsRef, where('courseId', '==', courseId),
-            where('startTime', '>=', new Date(selectedWeekEpoch)),
-            where('startTime', '<=', new Date(selectedWeekEpoch + 7 * ONE_DAY)));
+                where('startTime', '>=', new Date(selectedWeekEpoch)),
+                where('startTime', '<=', new Date(selectedWeekEpoch + 7 * ONE_DAY)));
             const results$: Observable<FireSession[]> = collectionData(sessionsQuery, 'sessionId');
 
             const subscription = results$.subscribe(results => setResult(results));
@@ -124,7 +124,7 @@ export const useCoursesBetweenDates = (
         () => {
             const sessionsRef = collection(firestore, 'sessions');
             const sessionsQuery = query(sessionsRef, where('startTime', '>=', startDate.toDate()),
-            where('startTime', '<=', endDate.add(1, 'day').toDate()),where('courseId', '==', courseId));
+                where('startTime', '<=', endDate.add(1, 'day').toDate()),where('courseId', '==', courseId));
 
             const sessions$: Observable<FireSession[]> = collectionData(sessionsQuery,'sessionId');
             const s1 = sessions$.subscribe(newSessions => setSessions(newSessions));
@@ -219,8 +219,8 @@ const getAskerQuestionsQuery = (sessionId: string, askerId: string) => {
 const useParameterizedAskerQuestions = createUseParamaterizedSingletonObservableHook(parameter => {
     const [sessionId, askerId] = parameter.split('/');
 
-    const query = getAskerQuestionsQuery(sessionId, askerId);
-    return new SingletonObservable([], collectionData<FireQuestion>(query, 'questionId'));
+    const askerQuery = getAskerQuestionsQuery(sessionId, askerId);
+    return new SingletonObservable([], collectionData<FireQuestion>(askerQuery, 'questionId'));
 });
 export const useAskerQuestions = (sessionId: string, askerId: string): null | FireQuestion[] => {
     return useParameterizedAskerQuestions(`${sessionId}/${askerId}`);
@@ -344,16 +344,16 @@ export const useSessionTANames = (
 
 const getSessionQuestionsQuery = (sessionId: string) => 
     query(collection(firestore,'questions')
-    ,where('sessionId', '==', sessionId)
-    ,orderBy('timeEntered', 'asc'));
+        ,where('sessionId', '==', sessionId)
+        ,orderBy('timeEntered', 'asc'));
 const getSessionQuestionSlotsQuery = (sessionId: string) =>     
     query(collection(firestore,'questionSlots')
-    ,where('sessionId', '==', sessionId)
-    ,orderBy('timeEntered', 'asc'));
+        ,where('sessionId', '==', sessionId)
+        ,orderBy('timeEntered', 'asc'));
 const useParameterizedSessionQuestions = createUseParamaterizedSingletonObservableHook(parameter => {
     const [sessionId, isTA] = parameter.split('/');
-    const query = isTA === 'true' ? getSessionQuestionsQuery(sessionId) : getSessionQuestionSlotsQuery(sessionId);
-    return new SingletonObservable([], collectionData<FireQuestion>(query, 'questionId'));
+    const q = isTA === 'true' ? getSessionQuestionsQuery(sessionId) : getSessionQuestionSlotsQuery(sessionId);
+    return new SingletonObservable([], collectionData<FireQuestion>(q, 'questionId'));
 });
 export const useSessionQuestions = (sessionId: string, isTA: boolean): FireQuestion[] =>
     useParameterizedSessionQuestions(`${sessionId}/${isTA}`);

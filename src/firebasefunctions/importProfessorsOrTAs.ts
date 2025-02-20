@@ -1,6 +1,6 @@
+import { doc, getDoc, getDocs, setDoc, updateDoc, query, where, collection, writeBatch } from 'firebase/firestore';
 import { firestore } from '../firebase';
 import { blockArray } from '../firehooks';
-import { doc, getDoc, getDocs, setDoc, updateDoc, query, where, collection, writeBatch } from 'firebase/firestore';
 
 const db = firestore;
 
@@ -68,8 +68,8 @@ const importProfessorsOrTAs = async (
         const usersRef = collection(db, 'users');
         const userQuery = query(usersRef, where('email', 'in', emailList));
         const taUserDocuments = await getDocs(userQuery); 
-            // const updatedUsersThisBlock: FireUser[] = [];
-            // const userUpdatesThisBlock: Partial<FireUser>[] = [];
+        // const updatedUsersThisBlock: FireUser[] = [];
+        // const userUpdatesThisBlock: Partial<FireUser>[] = [];
         const updatesThisBlock: { user: FireUser; roleUpdate: Partial<FireUser> }[] = [];
 
         taUserDocuments.forEach((document) => {
@@ -81,7 +81,7 @@ const importProfessorsOrTAs = async (
             })
         });
 
-            return updatesThisBlock;
+        return updatesThisBlock;
 
     })).then(updatedBlocks => {
         const allUpdates: { user: FireUser; roleUpdate: Partial<FireUser> }[] = [];

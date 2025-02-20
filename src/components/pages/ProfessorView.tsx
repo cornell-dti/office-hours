@@ -5,6 +5,7 @@ import { of, combineLatest, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { docData } from 'rxfire/firestore';
 
+import { doc } from 'firebase/firestore';
 import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
 import ProfessorDelete from '../includes/ProfessorDelete';
@@ -15,7 +16,6 @@ import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 
 import { useProfessorViewSessions, useCourse } from '../../firehooks';
 import { firestore } from '../../firebase';
-import { doc } from 'firebase/firestore';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
 

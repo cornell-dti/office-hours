@@ -1,6 +1,6 @@
-import { firestore } from '../firebase';
 import { doc, collection, deleteDoc, updateDoc, writeBatch, Timestamp} from 'firebase/firestore';
 import { User } from 'firebase/auth';
+import { firestore } from '../firebase';
 
 export const addBlogPost = (
     user: User | null, 

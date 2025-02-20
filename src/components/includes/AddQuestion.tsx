@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router";
 import { Checkbox } from "semantic-ui-react";
 import moment from "moment";
-
+import { collection, query, where} from 'firebase/firestore';
+import { collectionData, firestore, auth } from "../../firebase";
 import SelectedTags from "./SelectedTags";
 import SessionAlertModal from "./SessionAlertModal";
 
-import { collectionData, firestore, auth } from "../../firebase";
-import { collection, query, where} from 'firebase/firestore';
 import { addQuestion } from "../../firebasefunctions/sessionQuestion";
 
 const LOCATION_CHAR_LIMIT = 40;

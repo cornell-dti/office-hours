@@ -1,6 +1,6 @@
-import { firestore } from '../firebase';
 import { doc, getDoc, collection, query, where, Timestamp, Firestore, writeBatch, getDocs} from 'firebase/firestore';
 import moment from 'moment-timezone';
+import { firestore } from '../firebase';
 import { getDateRange, syncTimes } from '../utilities/date';
 
 
@@ -178,8 +178,8 @@ export const updateSeries = async (
                 TALink: sessionSeries.TALink,
                 isPaused: false,
             };
-            const sessionRef = doc(db, 'sessions', sessionId); 
-            batch.set(sessionRef, newSession);
+            const sessionDoc = doc(db, 'sessions', sessionId); 
+            batch.set(sessionDoc, newSession);
             // batch.set(db.collection('sessions').doc(sessionId), newSession);
         } else if (sessionSeries.modality === "review") {
             const newSession: Omit<FireReviewSession, 'sessionId'> = {
@@ -198,8 +198,8 @@ export const updateSeries = async (
                 link: sessionSeries.link,
                 isPaused: false,
             };
-            const sessionRef = doc(db, 'sessions', sessionId); 
-            batch.set(sessionRef, newSession);
+            const sessionDoc = doc(db, 'sessions', sessionId); 
+            batch.set(sessionDoc, newSession);
         } else {
 
             let hybridProperty = {}
@@ -228,8 +228,8 @@ export const updateSeries = async (
                 totalResolveTime: 0,
                 isPaused: false,
             };
-            const sessionRef = doc(db, 'sessions', sessionId); 
-            batch.set(sessionRef, newSession);
+            const sessionDoc = doc(db, 'sessions', sessionId); 
+            batch.set(sessionDoc, newSession);
         }
 
     });

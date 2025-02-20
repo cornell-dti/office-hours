@@ -1,6 +1,6 @@
 
-import { firestore } from '../firebase';
 import { doc, collection, writeBatch, WriteBatch } from 'firebase/firestore';
+import { firestore } from '../firebase';
 
 
 const createTag = (

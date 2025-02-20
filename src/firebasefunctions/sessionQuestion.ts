@@ -1,6 +1,7 @@
-import { firestore } from '../firebase';
-import { doc, updateDoc, getDoc, setDoc, collection, writeBatch, Timestamp, Firestore, onSnapshot} from 'firebase/firestore';
+import { doc, updateDoc, getDoc, setDoc, collection, 
+    writeBatch, Timestamp, Firestore, onSnapshot} from 'firebase/firestore';
 import { User } from 'firebase/auth';
+import { firestore } from '../firebase';
 
 export const updateVirtualLocation = (
     db: Firestore,
@@ -124,17 +125,17 @@ export const updateComment = (
     const update: Partial<FireOHQuestion> = isTA 
         ? { taComment: newComment } 
         : { studentComment: newComment };
-        const questionRef = doc(db,`questions/${question.questionId}`);
+    const questionRef = doc(db,`questions/${question.questionId}`);
     
-        updateDoc(questionRef, update);
+    updateDoc(questionRef, update);
 }
 
 export const clearIndicator = (question: FireQuestion, ta: boolean) => {
     const update: Partial<FireQuestion> = ta
         ? { taNew: false } 
         : { studentNew: false };
-        const questionRef = doc(firestore,`questions/${question.questionId}`);
-        updateDoc(questionRef, update)
+    const questionRef = doc(firestore,`questions/${question.questionId}`);
+    updateDoc(questionRef, update)
 }
 
 
@@ -254,9 +255,9 @@ export const submitFeedback = (removedQuestionId: string | undefined, relevantCo
         };
         const courseRef = doc(firestore, 'courses', relevantCourse.courseId);
 
-        return getDoc(courseRef).then((doc) => {
-            if (doc.exists()) {
-                const existingFeedbackList = doc.data()?.feedbackList || [];
+        return getDoc(courseRef).then((docu) => {
+            if (docu.exists()) {
+                const existingFeedbackList = docu.data()?.feedbackList || [];
             
                 existingFeedbackList.push(feedbackRecord);
 
@@ -264,7 +265,11 @@ export const submitFeedback = (removedQuestionId: string | undefined, relevantCo
                     feedbackList: existingFeedbackList
                 });
             }
+            // eslint-disable-next-line no-console
+            console.error("Doc doesn't exist"); 
+            return Promise.resolve();
         }).catch((error) => {
+            // eslint-disable-next-line no-console
             console.error("Error updating feedback:", error);
             return Promise.reject(error);
         });

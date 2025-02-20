@@ -1,14 +1,14 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Icon } from 'semantic-ui-react';
-import { firestore } from '../../firebase';
+import {signInWithEmailAndPassword } from "firebase/auth";
+import { firestore , auth } from '../../firebase';
 import { userUpload } from '../../firebasefunctions/user';
 import { clearNotifications } from '../../firebasefunctions/notifications';
 import userIcon from '../../media/userIcon.svg'
 import lockIcon from '../../media/lockIcon.svg'
 import QMILogo2020 from '../../media/QMILogo2020.svg';
-import { auth } from '../../firebase';
-import {signInWithEmailAndPassword } from "firebase/auth";
+
 
 type Props = {
     showLoginModal: boolean;

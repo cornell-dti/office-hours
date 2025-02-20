@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import { firestore } from '../../firebase';
 import { doc, updateDoc} from 'firebase/firestore';
+import { firestore } from '../../firebase';
 
 const AdminEditableCourseCard = ({ course }: { readonly course: FireCourse }) => {
     const [name, setName] = useState(course.name);

@@ -1,6 +1,6 @@
-import { firestore } from '../firebase';
 import { doc, getDoc, setDoc, updateDoc, Timestamp} from 'firebase/firestore';
 import { User } from 'firebase/auth';
+import { firestore } from '../firebase';
 
 export const createNotificationTracker = async (user: User | null) => {
     if (user !== null) {
@@ -17,8 +17,10 @@ export const createNotificationTracker = async (user: User | null) => {
 
             try {
                 await setDoc(trackerRef, newTracker);
+                // eslint-disable-next-line no-console
                 console.log("Notification tracker created successfully!");
             } catch (error) {
+                // eslint-disable-next-line no-console
                 console.error("Error creating notification tracker:", error);
             }
         }
@@ -59,8 +61,9 @@ export const addDBNotification =
                             lastSent: Timestamp.now(),
                         }
                         await setDoc(trackerRef, newTracker);
-                }
+                    }
                 } else {
+                    // eslint-disable-next-line no-console
                     console.log("No previous tracker found.");
                 }
             }
@@ -70,46 +73,46 @@ export const addDBNotification =
 // Clears any notifications older than 24 hours, with the intended side effects 
 // of initializing any uninitialized notificationTracker/list
 
-export const periodicClearNotifications = async (user: FireUser | undefined, notificationTracker: NotificationTracker | undefined) => {
-        if (user !== undefined) {
-            const email = user.email;
-            if (email !== null) {
-                const trackerRef = doc(firestore, "notificationTrackers", email);
-                if (notificationTracker !== undefined &&
+export const periodicClearNotifications = 
+async (user: FireUser | undefined, notificationTracker: NotificationTracker | undefined) => {
+    if (user !== undefined) {
+        const email = user.email;
+        if (email !== null) {
+            const trackerRef = doc(firestore, "notificationTrackers", email);
+            if (notificationTracker !== undefined &&
                     notificationTracker.notificationList !== undefined) {
-                    const day = 1000 * 60 * 60 * 24;
-                    const dayPast = Date.now() - day;
-                    const updatedTracker: Partial<NotificationTracker> = {
-                        notificationList: notificationTracker?.notificationList?.filter(notification => {
-                            return notification.createdAt.toDate().getTime() > dayPast;
-                        })
-                    }
-                    await updateDoc(trackerRef,updatedTracker);
-                } else if (
-                    // If a user does not have an initialized notificationList, initialize it
-                    notificationTracker !== undefined &&
-                    notificationTracker.notificationList === undefined
-                ) {
-                    const trackerRef = doc(firestore, 'notificationTrackers', email);
-                    const updatedTracker: Partial<NotificationTracker> = {
-                        notificationList: []
-                    }
-                    await updateDoc(trackerRef, updatedTracker);
-                } else {
-                    // If a user does not have an initialized notificationTracker, initialize it
-                    const updatedTracker: Partial<NotificationTracker> = {
-                        notificationList: [],
-                        id: email,
-                        notifications: Timestamp.now(),
-                        productUpdates: Timestamp.now(),
-                        lastSent: Timestamp.now()
-                    };
-                    await setDoc(trackerRef, updatedTracker);
+                const day = 1000 * 60 * 60 * 24;
+                const dayPast = Date.now() - day;
+                const updatedTracker: Partial<NotificationTracker> = {
+                    notificationList: notificationTracker?.notificationList?.filter(notification => {
+                        return notification.createdAt.toDate().getTime() > dayPast;
+                    })
                 }
+                await updateDoc(trackerRef,updatedTracker);
+            } else if (
+            // If a user does not have an initialized notificationList, initialize it
+                notificationTracker !== undefined &&
+                    notificationTracker.notificationList === undefined
+            ) {
+                const updatedTracker: Partial<NotificationTracker> = {
+                    notificationList: []
+                }
+                await updateDoc(trackerRef, updatedTracker);
+            } else {
+                // If a user does not have an initialized notificationTracker, initialize it
+                const updatedTracker: Partial<NotificationTracker> = {
+                    notificationList: [],
+                    id: email,
+                    notifications: Timestamp.now(),
+                    productUpdates: Timestamp.now(),
+                    lastSent: Timestamp.now()
+                };
+                await setDoc(trackerRef, updatedTracker);
             }
         }
-
     }
+
+}
 
 // Clears the entire set of notifications
 export const clearNotifications = async (user: User | null) => {

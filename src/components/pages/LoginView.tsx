@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { auth, firestore } from '../../firebase';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth, firestore } from '../../firebase';
 import { userUpload } from '../../firebasefunctions/user';
 
 import QMILogo2020 from '../../media/QMILogo2020.svg';
@@ -50,6 +50,7 @@ const LoginView: React.FC = () => {
                 history.push('/');
             })
             .catch((error) => {
+                // eslint-disable-next-line no-console
                 console.error('Google Sign-In Error:', error);
             });
     };

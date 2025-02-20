@@ -1,5 +1,5 @@
-import { firestore } from '../firebase';
 import { doc, updateDoc } from 'firebase/firestore';
+import { firestore } from '../firebase';
 
 export const updatePhoneNum = (
     userId: string | undefined,
@@ -7,11 +7,11 @@ export const updatePhoneNum = (
 ) => {
     if (userId){
         return updateDoc(doc(firestore, 'users', userId), phoneNumber);
-    } else {
-        /* eslint-disable no-console */
-        console.log('User is undefined while updating phone number');
-        return Promise.resolve();
-    }
+    } 
+    /* eslint-disable no-console */
+    console.log('User is undefined while updating phone number');
+    return Promise.resolve();
+    
 }
 
 export const updateTextPrompted = (
@@ -19,9 +19,9 @@ export const updateTextPrompted = (
 ) => {
     if (userId) {
         return updateDoc(doc(firestore, 'users', userId), {textPrompted: true});
-    } else {
-        /* eslint-disable no-console */
-        console.log('User is undefined while updating text prompted');
-        return Promise.resolve();
-    }
+    } 
+    /* eslint-disable no-console */
+    console.log('User is undefined while updating text prompted');
+    return Promise.resolve();
+    
 }
