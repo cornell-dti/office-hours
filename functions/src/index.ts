@@ -2,6 +2,9 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { Twilio } from 'twilio';
 import { onDocumentCreated, onDocumentUpdated } from 'firebase-functions/firestore';
+// UPDATE INDEX.TS FIREBASE FUNCTIONS
+// import { doc, collection, writeBatch, WriteBatch } from 'firebase/firestore';
+// import { firestore } from '../firebase';
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
@@ -46,269 +49,281 @@ async function sendSMS (user: FireUser, message: string) {
  * pendingUsers COLLECTION IN THE FIRST PLACE)
  */
 exports.onUserCreate = onDocumentCreated('users/{userId}',async (context) => {
-        const userId = context.params.userId;
+    const userId = context.params.userId;
 
-        // get the user doc
-        const userRef = db.collection('users').doc(userId);
-        const userDoc = await userRef.get();
-        const user = userDoc.data() as FireUser;
+    // get the user doc
+    const userRef = db.collection('users').doc(userId);
+    const userDoc = await userRef.get();
+    const user = userDoc.data() as FireUser;
 
-        const currentRoles = user.roles;
-        const email = user.email;
+    const currentRoles = user.roles;
+    const email = user.email;
 
-        // match this email with a user in the pendingUsers collection
-        const pendingUsersSnap = await db.collection('pendingUsers').where('email', '==', email).get();
+    // match this email with a user in the pendingUsers collection
+    const pendingUsersSnap = await db.collection('pendingUsers').where('email', '==', email).get();
 
-        pendingUsersSnap.forEach(async doc => {
+    pendingUsersSnap.forEach(async doc => {
 
-            // delete the pendingUsers entry because they now exist in QMI...
-            await db.collection('pendingUsers').doc(doc.id).delete();
+        // delete the pendingUsers entry because they now exist in QMI...
+        await db.collection('pendingUsers').doc(doc.id).delete();
 
-            // get the users's roles map as a Map<string, FireCourseRole>
-            const newRoles = (doc.data() as FirePendingUser).roles;
-            const taCourseIds: string[] = [];
-            const profCourseIds: string[] = [];
+        // get the users's roles map as a Map<string, FireCourseRole>
+        const newRoles = (doc.data() as FirePendingUser).roles;
+        const taCourseIds: string[] = [];
+        const profCourseIds: string[] = [];
 
-            for (const [courseId, role] of Object.entries(newRoles)) {
+        for (const [courseId, role] of Object.entries(newRoles)) {
 
-                if (role === 'ta') {
-                    taCourseIds.push(courseId);
-                } else if (role === 'professor') {
-                    profCourseIds.push(courseId);
-                }
+            if (role === 'ta') {
+                taCourseIds.push(courseId);
+            } else if (role === 'professor') {
+                profCourseIds.push(courseId);
+            }
+        }
+
+        const batch = db.batch();
+
+        // and update the newly-created user with their new roles
+        userRef.update({
+            courses: [...taCourseIds, ...profCourseIds],
+            roles: { ...currentRoles, ...newRoles }
+        })
+
+        const taCourseDocs = await Promise.all(
+            taCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
+
+        const profCourseDocs = await Promise.all(
+            profCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
+        taCourseDocs.forEach((taDoc, index) => {
+            if (!taDoc.exists) {
+                functions.logger.error('ta course doc does not exist.')
             }
 
-            const batch = db.batch();
+            const courseId = taCourseIds[index];
 
-            // and update the newly-created user with their new roles
-            userRef.update({
-                courses: [...taCourseIds, ...profCourseIds],
-                roles: { ...currentRoles, ...newRoles }
-            })
-
-            const taCourseDocs = await Promise.all(
-                taCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
-
-            const profCourseDocs = await Promise.all(
-                profCourseIds.map(courseId => db.collection('courses').doc(courseId).get()));
-            taCourseDocs.forEach((taDoc, index) => {
-                if (!taDoc.exists) {
-                    functions.logger.error('ta course doc does not exist.')
-                }
-
-                const courseId = taCourseIds[index];
-
-                // const course = doc.data() as FireCourse;
-                batch.update(
-                    db.collection('courses').doc(courseId),
-                    { tas: admin.firestore.FieldValue.arrayUnion(userId) }
-                );
-            });
-
-            profCourseDocs.forEach((pfDoc, index) => {
-                if (!pfDoc.exists) {
-                    functions.logger.error('prof course doc does not exist.')
-                }
-
-                const courseId = profCourseIds[index];
-                // const course = doc.data() as FireCourse;
-                batch.update(
-                    db.collection('courses').doc(courseId),
-                    { professors: admin.firestore.FieldValue.arrayUnion(userId) }
-                );
-            });
-
-            await batch.commit();
+            // const course = doc.data() as FireCourse;
+            batch.update(
+                db.collection('courses').doc(courseId),
+                { tas: admin.firestore.FieldValue.arrayUnion(userId) }
+            );
         });
 
+        profCourseDocs.forEach((pfDoc, index) => {
+            if (!pfDoc.exists) {
+                functions.logger.error('prof course doc does not exist.')
+            }
+
+            const courseId = profCourseIds[index];
+            // const course = doc.data() as FireCourse;
+            batch.update(
+                db.collection('courses').doc(courseId),
+                { professors: admin.firestore.FieldValue.arrayUnion(userId) }
+            );
+        });
+
+        await batch.commit();
     });
+
+});
 
 exports.onCommentCreate = onDocumentCreated(`questions/{questionId}/comments/{commentId}`, async (event) => {
     const snap = event.data;
 
     if (!snap) {
-      console.error("Snapshot is undefined.");
-      return;
+        // eslint-disable-next-line no-console
+        console.error("Snapshot is undefined.");
+        return;
     }
-        const data = snap.data();
-        const askerId = data.askerId;
-        const answererId = data.answererId;
-        const commenterId = data.commenterId;
-        const asker: FireUser = (await db.doc(`users/${askerId}`).get()).data() as FireUser;
-        if(askerId === commenterId && answererId !== "") {
-            const answerer: FireUser = (await db.doc(`users/${answererId}`).get()).data() as FireUser;
-            db.doc(`notificationTrackers/${answerer.email}`)
-                .update({
-                    notificationList: admin.firestore.FieldValue.arrayUnion({
+    const data = snap.data();
+    const askerId = data.askerId;
+    const answererId = data.answererId;
+    const commenterId = data.commenterId;
+    const asker: FireUser = (await db.doc(`users/${askerId}`).get()).data() as FireUser;
+    if(askerId === commenterId && answererId !== "") {
+        const answerer: FireUser = (await db.doc(`users/${answererId}`).get()).data() as FireUser;
+        db.doc(`notificationTrackers/${answerer.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'Student comment',
+                    subtitle: "New student comment",
+                    message: `${asker.firstName} commented \
+                        on your assigned question`.trim(),
+                    createdAt: admin.firestore.Timestamp.now()
+                })
+            }).catch(() => {
+                db.doc(`notificationTrackers/${answerer.email}`).create({id: answerer.email,
+                    notificationList: [{
                         title: 'Student comment',
                         subtitle: "New student comment",
                         message: `${asker.firstName} commented \
                         on your assigned question`.trim(),
                         createdAt: admin.firestore.Timestamp.now()
-                    })
-                }).catch(() => {
-                    db.doc(`notificationTrackers/${answerer.email}`).create({id: answerer.email,
-                        notificationList: [{
-                            title: 'Student comment',
-                            subtitle: "New student comment",
-                            message: `${asker.firstName} commented \
-                        on your assigned question`.trim(),
-                            createdAt: admin.firestore.Timestamp.now()
-                        }],
-                        notifications: admin.firestore.Timestamp.now(),
-                        productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
+                    }],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),})
                     
-                });
-        } else {
-            db.doc(`notificationTrackers/${asker.email}`)
-                .update({
-                    notificationList: admin.firestore.FieldValue.arrayUnion({
+            });
+    } else {
+        db.doc(`notificationTrackers/${asker.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'TA comment',
+                    subtitle: 'New TA comment',
+                    message: `A TA commented on your question`.trim(),
+                    createdAt: admin.firestore.Timestamp.now()
+                })
+            }).catch(() => {
+                db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                    notificationList: [{
                         title: 'TA comment',
                         subtitle: 'New TA comment',
                         message: `A TA commented on your question`.trim(),
                         createdAt: admin.firestore.Timestamp.now()
-                    })
-                }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
-                        notificationList: [{
-                            title: 'TA comment',
-                            subtitle: 'New TA comment',
-                            message: `A TA commented on your question`.trim(),
-                            createdAt: admin.firestore.Timestamp.now()
-                        }],
-                        notifications: admin.firestore.Timestamp.now(),
-                        productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
+                    }],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),})
                     
-                });
-        }
-    })
+            });
+    }
+})
 
 exports.onSessionUpdate = onDocumentUpdated('sessions/{sessionId}', async (event) => {
-        const change = event.data;
-        if (!change) {
-            console.error("No change detected in question update.");
-            return;
-        }
-        // retrieve session id and ordered queue of active questions
-        const afterSessionId = change.after.id;
-        const afterQuestions = (await db.collection('questions')
-            .where('sessionId', '==', afterSessionId)
-            .where('status', 'in', ['assigned', 'unresolved'])
-            .orderBy('timeEntered', 'asc').get()).docs;
+    const change = event.data;
+    if (!change) {
+        // eslint-disable-next-line no-console
+        console.error("No change detected in question update.");
+        return;
+    }
+    // retrieve session id and ordered queue of active questions
+    const afterSessionId = change.after.id;
+    const afterQuestions = (await db.collection('questions')
+        .where('sessionId', '==', afterSessionId)
+        .where('status', 'in', ['assigned', 'unresolved'])
+        .orderBy('timeEntered', 'asc').get()).docs;
 
-        const sessionName: string | undefined= (change.after.data() as FireSession).title
+    const sessionName: string | undefined= (change.after.data() as FireSession).title
 
-        const topQuestion: FireQuestion = (afterQuestions[0].data() as FireQuestion);
+    const topQuestion: FireQuestion = (afterQuestions[0].data() as FireQuestion);
 
-        // if the top active question was not notified, notify them
-        if (!topQuestion.wasNotified) {
-            const asker: FireUser = (await db.doc(`users/${topQuestion.askerId}`)
-                .get()).data() as FireUser;
-            sendSMS(asker, `Your question has reached the top of the \
+    // if the top active question was not notified, notify them
+    if (!topQuestion.wasNotified) {
+        const asker: FireUser = (await db.doc(`users/${topQuestion.askerId}`)
+            .get()).data() as FireUser;
+        sendSMS(asker, `Your question has reached the top of the \
                 ${sessionName} queue. A TA will likely help you shortly.`);
-            db.doc(`notificationTrackers/${asker.email}`)
-                .update({
-                    notificationList: admin.firestore.FieldValue.arrayUnion({
+        db.doc(`notificationTrackers/${asker.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'Your Question is Up!',
+                    subtitle: `Your question has reached the top of the \
+                     ${sessionName} queue.`,
+                    message: `Your question has reached the top of the \
+                    ${sessionName} queue. A TA will likely help you shortly.`,
+                    createdAt: admin.firestore.Timestamp.now()
+                })
+            }).catch(() => {
+                db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                    notificationList: [{
                         title: 'Your Question is Up!',
                         subtitle: `Your question has reached the top of the \
                      ${sessionName} queue.`,
                         message: `Your question has reached the top of the \
                     ${sessionName} queue. A TA will likely help you shortly.`,
                         createdAt: admin.firestore.Timestamp.now()
-                    })
-                }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
-                        notificationList: [{
-                            title: 'Your Question is Up!',
-                            subtitle: `Your question has reached the top of the \
-                     ${sessionName} queue.`,
-                            message: `Your question has reached the top of the \
-                    ${sessionName} queue. A TA will likely help you shortly.`,
-                            createdAt: admin.firestore.Timestamp.now()
-                        }],
-                        notifications: admin.firestore.Timestamp.now(),
-                        productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
+                    }],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),})
           
-                });
-            db.doc(`questions/${afterQuestions[0].id}`).update({
-                wasNotified: true
-            })
-        }
-    })
+            });
+        db.doc(`questions/${afterQuestions[0].id}`).update({
+            wasNotified: true
+        })
+    }
+})
 
 exports.onQuestionCreate = 
 onDocumentCreated('questions/{questionId}', async (event) => {
-        const snap = event.data;
+    const snap = event.data;
 
-        if (!snap) {
+    if (!snap) {
+        // eslint-disable-next-line no-console
         console.error("Snapshot is undefined.");
         return;
-        }
-        // Get data object and obtain session/course
-        const data = snap.data();
-        const sessionId = data.sessionId;
-        const session = (await db.collection('sessions').doc(sessionId).get()).data() as FireSession;
-        const course = (await db.collection('courses').doc(session.courseId).get()).data() as FireCourse;
+    }
+    // Get data object and obtain session/course
+    const data = snap.data();
+    const sessionId = data.sessionId;
 
-        // Increment total number of questions of relevant session
-        const increment = admin.firestore.FieldValue.increment(1);
+    // i feel like gpt code is the same as 'session' below and course lowk
+    const sessionRef = db.collection('sessions').doc(sessionId);
+    // const sessionSnap = await sessionRef.get();
+    // const session = sessionSnap?.data() as FireSession;
 
-        // Add new question notification for all TAs
-        course.tas.forEach(async ta => {
-            const user: FireUser = (await db.doc(`users/${ta}`).get()).data() as FireUser;
-            db.doc(`notificationTrackers/${user.email}`).update({
-                notificationList: admin.firestore.FieldValue.arrayUnion({
-                    title: 'New Question',
-                    subtitle: `A new question has been added to the ${session.title} queue`,
-                    message: `A new question has been added to the ${session.title} queue`,
-                    createdAt: admin.firestore.Timestamp.now()
-                })
-            }).catch(() => {
-                db.doc(`notificationTrackers/${user.email}`).create({id: user.email,
-                    notificationList: [{
-                        title: 'New Question',
-                        subtitle: `A new question has been added to the ${session.title} queue`,
-                        message: `A new question has been added to the ${session.title} queue`,
-                        createdAt: admin.firestore.Timestamp.now()
-                    }],
-                    notifications: admin.firestore.Timestamp.now(),
-                    productUpdates: admin.firestore.Timestamp.now(),
-                    lastSent: admin.firestore.Timestamp.now(),})
-              
-            })
-        });
 
-        // Add new question notification for all Professors
-        course.professors.forEach(async professor => {
-            const user: FireUser = (await db.doc(`users/${professor}`).get()).data() as FireUser;
-            db.doc(`notificationTrackers/${user.email}`).update({
-                notificationList: admin.firestore.FieldValue.arrayUnion({
-                    title: 'New Question',
-                    subtitle: `A new question has been added to the ${session.title} queue`,
-                    message: `A new question has been added to the ${session.title} queue`,
-                    createdAt: admin.firestore.Timestamp.now()
-                })
-            }).catch(() => {
-                db.doc(`notificationTrackers/${user.email}`).create({id: user.email,
-                    notificationList: [{
-                        title: 'New Question',
-                        subtitle: `A new question has been added to the ${session.title} queue`,
-                        message: `A new question has been added to the ${session.title} queue`,
-                        createdAt: admin.firestore.Timestamp.now()
-                    }],
-                    notifications: admin.firestore.Timestamp.now(),
-                    productUpdates: admin.firestore.Timestamp.now(),
-                    lastSent: admin.firestore.Timestamp.now(),})
-            
-            })
-        });
-        return db.doc(`sessions/${sessionId}`).update({
-            totalQuestions: increment,
-        });
+    const session = (await sessionRef.get()).data() as FireSession;
+    const course = (await db.collection('courses').doc(session.courseId).get()).data() as FireCourse;
+
+    const batch = db.batch();
+
+    // Increment total number of questions of relevant session
+    batch.update(sessionRef, {
+        totalQuestions: admin.firestore.FieldValue.increment(1)
     });
+
+    // Add new question notification for all TAs
+    course.tas.forEach(async ta => {
+        const user: FireUser = (await db.doc(`users/${ta}`).get()).data() as FireUser;
+        db.doc(`notificationTrackers/${user.email}`).update({
+            notificationList: admin.firestore.FieldValue.arrayUnion({
+                title: 'New Question',
+                subtitle: `A new question has been added to the ${session.title} queue`,
+                message: `A new question has been added to the ${session.title} queue`,
+                createdAt: admin.firestore.Timestamp.now()
+            })
+        }).catch(() => {
+            db.doc(`notificationTrackers/${user.email}`).create({id: user.email,
+                notificationList: [{
+                    title: 'New Question',
+                    subtitle: `A new question has been added to the ${session.title} queue`,
+                    message: `A new question has been added to the ${session.title} queue`,
+                    createdAt: admin.firestore.Timestamp.now()
+                }],
+                notifications: admin.firestore.Timestamp.now(),
+                productUpdates: admin.firestore.Timestamp.now(),
+                lastSent: admin.firestore.Timestamp.now(),})
+              
+        })
+    });
+
+    // Add new question notification for all Professors
+    course.professors.forEach(async professor => {
+        const user: FireUser = (await db.doc(`users/${professor}`).get()).data() as FireUser;
+        db.doc(`notificationTrackers/${user.email}`).update({
+            notificationList: admin.firestore.FieldValue.arrayUnion({
+                title: 'New Question',
+                subtitle: `A new question has been added to the ${session.title} queue`,
+                message: `A new question has been added to the ${session.title} queue`,
+                createdAt: admin.firestore.Timestamp.now()
+            })
+        }).catch(() => {
+            db.doc(`notificationTrackers/${user.email}`).create({id: user.email,
+                notificationList: [{
+                    title: 'New Question',
+                    subtitle: `A new question has been added to the ${session.title} queue`,
+                    message: `A new question has been added to the ${session.title} queue`,
+                    createdAt: admin.firestore.Timestamp.now()
+                }],
+                notifications: admin.firestore.Timestamp.now(),
+                productUpdates: admin.firestore.Timestamp.now(),
+                lastSent: admin.firestore.Timestamp.now(),})
+            
+        })
+    });
+    await batch.commit();
+});
 
 // This map maps a question status to a tuple of
 // 1. The number of questions this counts as (0 if no show or retracted)
@@ -322,180 +337,184 @@ questionStatusNumbers.set("unresolved", [1, 0, 0]);
 questionStatusNumbers.set("no-show", [0, 0, 0]);
 
 exports.onQuestionUpdate = onDocumentUpdated('questions/{questionId}', async (event) => {
-        const change = event.data;
-        if (!change) {
-            console.error("No change detected in question update.");
-            return;
-        }
-        // retrieve old and new questions
-        const newQuestion: FireQuestion = change.after.data() as FireQuestion;
-        const prevQuestion: FireQuestion = change.before.data() as FireQuestion;
+    const change = event.data;
+    if (!change) {
+        // eslint-disable-next-line no-console
+        console.error("No change detected in question update.");
+        return;
+    }
+    // retrieve old and new questions
+    const newQuestion: FireQuestion = change.after.data() as FireQuestion;
+    const prevQuestion: FireQuestion = change.before.data() as FireQuestion;
 
-        // Derive session ID
-        const sessionId = newQuestion.sessionId;
+    // Derive session ID
+    const sessionId = newQuestion.sessionId;
 
-        // Derive changes in counts
-        const newStatus = newQuestion.status;
-        const prevStatus = prevQuestion.status;
-        const newNumbers = questionStatusNumbers.get(newStatus)!;
-        const prevNumbers = questionStatusNumbers.get(prevStatus)!;
+    // Derive changes in counts
+    const newStatus = newQuestion.status;
+    const prevStatus = prevQuestion.status;
+    const newNumbers = questionStatusNumbers.get(newStatus)!;
+    const prevNumbers = questionStatusNumbers.get(prevStatus)!;
 
-        // Grab number of changes
-        const numQuestionChange = newNumbers[0] - prevNumbers[0];
-        const numAssignedChange = newNumbers[1] - prevNumbers[1];
-        const numResolvedChange = newNumbers[2] - prevNumbers[2];
+    // Grab number of changes
+    const numQuestionChange = newNumbers[0] - prevNumbers[0];
+    const numAssignedChange = newNumbers[1] - prevNumbers[1];
+    const numResolvedChange = newNumbers[2] - prevNumbers[2];
 
-        let waitTimeChange = 0;
-        let resolveTimeChange = 0;
+    let waitTimeChange = 0;
+    let resolveTimeChange = 0;
 
-        // Derive timing changes (changes from assigned to unassigned)
-        if (numAssignedChange === 1 && newQuestion.timeAssigned !== undefined) {
-            // Add new time addressed
-            waitTimeChange = 
+    // Derive timing changes (changes from assigned to unassigned)
+    if (numAssignedChange === 1 && newQuestion.timeAssigned !== undefined) {
+        // Add new time addressed
+        waitTimeChange = 
             (newQuestion.timeAssigned.seconds - newQuestion.timeEntered.seconds) 
             / (newQuestion.position || 1);
-        }
-        else if (numAssignedChange === -1 && prevQuestion.timeAssigned !== undefined) {
-            // Subtract previous time addressed
-            waitTimeChange = 
+    }
+    else if (numAssignedChange === -1 && prevQuestion.timeAssigned !== undefined) {
+        // Subtract previous time addressed
+        waitTimeChange = 
             (prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds) 
             / (newQuestion.position || 1);
-        }
+    }
 
-        // Derive timing changes (changes from assigned to resolved)
-        if (numResolvedChange === 1 && newQuestion.timeAssigned !== undefined) {
-            resolveTimeChange = newQuestion.timeAddressed!.seconds - newQuestion.timeAssigned.seconds;
-        }
-        else if (numResolvedChange === -1
+    // Derive timing changes (changes from assigned to resolved)
+    if (numResolvedChange === 1 && newQuestion.timeAssigned !== undefined) {
+        resolveTimeChange = newQuestion.timeAddressed!.seconds - newQuestion.timeAssigned.seconds;
+    }
+    else if (numResolvedChange === -1
             && prevQuestion.timeAssigned !== undefined
             && prevQuestion.timeAddressed !== undefined
-        ) {
-            resolveTimeChange = prevQuestion.timeAssigned.seconds - prevQuestion.timeAddressed.seconds;
-        }
+    ) {
+        resolveTimeChange = prevQuestion.timeAssigned.seconds - prevQuestion.timeAddressed.seconds;
+    }
 
-        // Figure out who needs to be updated with a notification based on the changes
-        const asker: FireUser = (await db.doc(`users/${newQuestion.askerId}`).get()).data() as FireUser;
+    // Figure out who needs to be updated with a notification based on the changes
+    const asker: FireUser = (await db.doc(`users/${newQuestion.askerId}`).get()).data() as FireUser;
 
-        if (
-            prevQuestion.answererId !== newQuestion.answererId &&
+    const batch = db.batch();
+
+    if (
+        prevQuestion.answererId !== newQuestion.answererId &&
             newQuestion.answererId !== ''
-        ) {
-            db.doc(`notificationTrackers/${asker.email}`)
-                .update({
-                    notificationList: admin.firestore.FieldValue.arrayUnion({
+    ) {
+        db.doc(`notificationTrackers/${asker.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'TA Assigned',
+                    subtitle: 'TA Assigned',
+                    message: 'A TA has been assigned to your question',
+                    createdAt: admin.firestore.Timestamp.now()
+                })
+            }).catch(() => {
+                db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                    notificationList: [{
                         title: 'TA Assigned',
                         subtitle: 'TA Assigned',
                         message: 'A TA has been assigned to your question',
                         createdAt: admin.firestore.Timestamp.now()
-                    })
-                }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
-                        notificationList: [{
-                            title: 'TA Assigned',
-                            subtitle: 'TA Assigned',
-                            message: 'A TA has been assigned to your question',
-                            createdAt: admin.firestore.Timestamp.now()
-                        }],
-                        notifications: admin.firestore.Timestamp.now(),
-                        productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
+                    }],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),})
               
-                });
-        }
+            });
+    }
 
-        if (
-            prevQuestion.answererId !== newQuestion.answererId &&
+    if (
+        prevQuestion.answererId !== newQuestion.answererId &&
             newQuestion.answererId === ''
-        ) {
-            const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
-            db.doc(`notificationTrackers/${asker.email}`)
-                .update({
-                    notificationList: admin.firestore.FieldValue.arrayUnion({
+    ) {
+        const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
+        db.doc(`notificationTrackers/${asker.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'TA Unassigned',
+                    subtitle: 'TA Unassigned',
+                    message:
+                            `A TA has been unassigned from your question and you have \
+                  been readded to the top of the ${session.title} queue.`,
+                    createdAt: admin.firestore.Timestamp.now()
+                })
+            }).catch(() => {
+                db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                    notificationList: [{
                         title: 'TA Unassigned',
                         subtitle: 'TA Unassigned',
                         message:
                             `A TA has been unassigned from your question and you have \
                   been readded to the top of the ${session.title} queue.`,
                         createdAt: admin.firestore.Timestamp.now()
-                    })
-                }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
-                        notificationList: [{
-                            title: 'TA Unassigned',
-                            subtitle: 'TA Unassigned',
-                            message:
-                            `A TA has been unassigned from your question and you have \
-                  been readded to the top of the ${session.title} queue.`,
-                            createdAt: admin.firestore.Timestamp.now()
-                        }],
-                        notifications: admin.firestore.Timestamp.now(),
-                        productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
+                    }],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),})
               
-                });
-        }
-        else if (newQuestion.status === 'resolved') {
-            const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
-            db.doc(`notificationTrackers/${asker.email}`)
-                .update({
-                    notificationList: admin.firestore.FieldValue.arrayUnion({
-                        title: 'Question resolved',
-                        subtitle: 'Question marked as resolved',
-                        message:
+            });
+    }
+    else if (newQuestion.status === 'resolved') {
+        const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
+        db.doc(`notificationTrackers/${asker.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'Question resolved',
+                    subtitle: 'Question marked as resolved',
+                    message:
                             `A TA has marked your question as resolved and you \
                             have been removed from the ${session.title} queue`,
-                        createdAt: admin.firestore.Timestamp.now()
-                    })
-                }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
-                        notificationList: [{
-                            title: 'Question marked no-show',
-                            subtitle: 'Question marked as no-show',
-                            message:
-                            `A TA has marked your question as no-show and you \
-                            have been removed from the ${session.title} queue`,
-                            createdAt: admin.firestore.Timestamp.now()
-                        }],
-                        notifications: admin.firestore.Timestamp.now(),
-                        productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
-            
-                });
-        } else if (newQuestion.status === "no-show") {
-            const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
-            db.doc(`notificationTrackers/${asker.email}`)
-                .update({
-                    notificationList: admin.firestore.FieldValue.arrayUnion({
+                    createdAt: admin.firestore.Timestamp.now()
+                })
+            }).catch(() => {
+                db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                    notificationList: [{
                         title: 'Question marked no-show',
                         subtitle: 'Question marked as no-show',
                         message:
                             `A TA has marked your question as no-show and you \
                             have been removed from the ${session.title} queue`,
                         createdAt: admin.firestore.Timestamp.now()
-                    })
-                }).catch(() => {
-                    db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
-                        notificationList: [{
-                            title: 'Question marked no-show',
-                            subtitle: 'Question marked as no-show',
-                            message:
+                    }],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),})
+            
+            });
+    } else if (newQuestion.status === "no-show") {
+        const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
+        db.doc(`notificationTrackers/${asker.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: 'Question marked no-show',
+                    subtitle: 'Question marked as no-show',
+                    message:
                             `A TA has marked your question as no-show and you \
                             have been removed from the ${session.title} queue`,
-                            createdAt: admin.firestore.Timestamp.now()
-                        }],
-                        notifications: admin.firestore.Timestamp.now(),
-                        productUpdates: admin.firestore.Timestamp.now(),
-                        lastSent: admin.firestore.Timestamp.now(),})
+                    createdAt: admin.firestore.Timestamp.now()
+                })
+            }).catch(() => {
+                db.doc(`notificationTrackers/${asker.email}`).create({id: asker.email,
+                    notificationList: [{
+                        title: 'Question marked no-show',
+                        subtitle: 'Question marked as no-show',
+                        message:
+                            `A TA has marked your question as no-show and you \
+                            have been removed from the ${session.title} queue`,
+                        createdAt: admin.firestore.Timestamp.now()
+                    }],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),})
             
-                });
-        }
-
-        // Update relevant statistics in database
-        return db.doc(`sessions/${sessionId}`).update({
-            totalQuestions: admin.firestore.FieldValue.increment(numQuestionChange),
-            assignedQuestions: admin.firestore.FieldValue.increment(numAssignedChange),
-            resolvedQuestions: admin.firestore.FieldValue.increment(numResolvedChange),
-            totalWaitTime: admin.firestore.FieldValue.increment(waitTimeChange),
-            totalResolveTime: admin.firestore.FieldValue.increment(resolveTimeChange),
-        });
-    });
+            });
+    }
+    // Update relevant statistics in database
+    const sessionRef = db.collection('sessions').doc(sessionId);
+    batch.update(sessionRef, {
+        totalQuestions: admin.firestore.FieldValue.increment(numQuestionChange),
+        assignedQuestions: admin.firestore.FieldValue.increment(numAssignedChange),
+        resolvedQuestions: admin.firestore.FieldValue.increment(numResolvedChange),
+        totalWaitTime: admin.firestore.FieldValue.increment(waitTimeChange),
+        totalResolveTime: admin.firestore.FieldValue.increment(resolveTimeChange),
+    })
+    await batch.commit();
+});
