@@ -65,7 +65,10 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     const [tags, setTags] = useState<FireTag[]>([]);
     // For hybrid sessions to keep track if student is in virtual location
     const [isVirtual, setIsVirtual] = useState<boolean>(false);
-    // const [error, setError] = useState<boolean>(false);
+    const [missingPrimaryTags, setMissingPrimaryTags] = useState<boolean>(false);
+    const [missingSecondaryTags, setMissingSecondaryTags] = useState<boolean>(false);
+    const [missingLocation, setMissingLocation] = useState<boolean>(false);
+    const [missingQuestion, setMissingQuestion] = useState<boolean>(false);
 
     const primaryTags = tags.filter((tag) => tag.level === 1);
     const secondaryTags = tags.filter((tag) => tag.level === 2);
@@ -95,6 +98,11 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     };
 
     const handlePrimarySelected = (tag: FireTag | undefined): void => {
+        if (tag) {
+            setMissingPrimaryTags(false);
+        } else {
+            setMissingPrimaryTags(true); 
+        }
         if (selectedPrimary) {
             setLocation("");
             setQuestion("");
@@ -118,6 +126,11 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     };
 
     const handleSecondarySelected = (tag: FireTag): void => {
+        if (tag) {
+            setMissingSecondaryTags(false); 
+        } else {
+            setMissingSecondaryTags(true); 
+        }
         if (selectedSecondary) {
             setLocation("");
             setQuestion("");
@@ -144,6 +157,10 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     const handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
         let newStage: number;
+
+        const isLocationEmpty = target.value.length === 0;
+        setMissingLocation(isLocationEmpty);
+
         if (target.value.length > 0) {
             if (question.length > 0) {
                 newStage = QUESTION_INPUTTED;
@@ -165,6 +182,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
     const handleUpdateQuestion = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
+        const isQuestionEmpty = target.value.length === 0;
+        setMissingQuestion(isQuestionEmpty);
         setQuestion(target.value.length <= course.charLimit ? target.value : question);
         setStage(target.value.length > 0 ? QUESTION_INPUTTED : LOCATION_INPUTTED);
     };
@@ -183,6 +202,43 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
         setRedirect(allowRedirect);
     };
+
+    const handleClick = () : void => {
+        // eslint-disable-next-line no-console
+        console.log("Button Clicked");
+
+        const primaryTagsMissing = !selectedPrimary;
+        const secondaryTagsMissing = !selectedSecondary;
+        const locationMissing = !location;
+        const questionMissing = !question;
+
+        setMissingPrimaryTags(primaryTagsMissing);
+        setMissingSecondaryTags(secondaryTagsMissing);
+        setMissingLocation(locationMissing);
+        setMissingQuestion(questionMissing);
+
+        if (primaryTagsMissing || secondaryTagsMissing || locationMissing || questionMissing) {
+            // eslint-disable-next-line no-console
+            console.log("Fields missing, showing error state");
+            return;
+        }
+    
+        // eslint-disable-next-line no-console
+        console.log("All fields filled, submitting...");
+        handleJoinClick(); 
+    };
+
+    useEffect(() => {
+        // eslint-disable-next-line no-console
+        console.log({
+            missingPrimaryTags,
+            missingSecondaryTags,
+            missingLocation,
+            missingQuestion,
+        });
+    }, [missingPrimaryTags, missingSecondaryTags, missingLocation, missingQuestion]);
+    
+
 
     const handleJoinClick = (): void => {
         if (
@@ -241,7 +297,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                     <div className="disclaimerContainer">
                                         <p className="text"><Asterisk />Required</p>
                                     </div>
-                                    <div className="tagsMiniContainer">
+                                    <div className={`tagsMiniContainer ${missingPrimaryTags ? "error " : ""}`}>
                                         <p className="header">Select a Category<Asterisk /></p>
                                         <div className="category">
                                             {tags
@@ -266,7 +322,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         {secondaryTags.length !== 0 && (
                             <>
                                 <hr />
-                                <div className={"tagsMiniContainer secondaryTags " + !!selectedPrimary}>
+                                <div className={`tagsMiniContainer ${missingSecondaryTags ? "error " : ""}`+ !!selectedPrimary}>
                                     <p className="header">Select a Tag<Asterisk /></p>
                                     {selectedPrimary ? (
                                         tags
@@ -294,7 +350,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         {"building" in session && (
                             <>
                                 {" "}
-                                <div className="tagsMiniContainer">
+                                <div className={`tagsMiniContainer ${missingLocation  ? "error" : ""}`}>
                                     {
                                         <p className="header">
                                             {session.modality === "hybrid" ? "Location or Zoom Link" : "Location"}{" "}
@@ -346,7 +402,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                 </div>
                             </>
                         )}
-                        <div className="tagsMiniContainer">
+                        <div className={`tagsMiniContainer ${missingQuestion ? "error" : ""}`}>
                             <p className="header">{"Question "} <Asterisk /></p>
                             {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||
@@ -378,13 +434,13 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             <img alt="" src={addFiles}/>
                         </div>
                         <div className="addButtonWrapper">
-                            {stage > LOCATION_INPUTTED || primaryTags.length === 0 || secondaryTags.length === 0 ? (
-                                <p className="AddButton active" onClick={() => handleJoinClick()}>
-                                    Add My Question
-                                </p>
-                            ) : (
-                                <p className="AddButton"> Add My Question </p>
-                            )}
+                            <p
+                                className={`AddButton ${stage > LOCATION_INPUTTED || primaryTags.length === 0 || secondaryTags.length === 0 ? "active" : ""}`}
+                                onClick={handleClick}
+                            >
+                                Add My Question
+                            </p>
+                            
                         </div>
                     </div>
                 </div>

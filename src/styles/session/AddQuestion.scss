@@ -29,7 +29,6 @@
       margin: 0;
       padding: 0;
       width: 100%;
-      
     }
 
     .queueHeader {
@@ -112,15 +111,15 @@
           text-align: left;
           margin-bottom:0.5em;
         }
+        .error{
+          background-color: rgba(246, 125, 125, 0.15);
+        }
+
         .required{
           color: #F67D7D;
           font-size: 14px;
           font-weight: 500;
           line-height: 16.41px;
-        }
-
-        .shaded{
-          background-color: rgba(246, 125, 125, 0.15);
         }
 
         .category{
@@ -203,6 +202,9 @@
         .TextInput.question {
             width: 100%;
         }
+      }
+      .tagsMiniContainer.error {
+        background-color: rgba(246, 125, 125, 0.15);
       }
     }
 
