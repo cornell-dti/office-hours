@@ -30,10 +30,14 @@ _Screenshots showing major parts of app_
 ### 2024-25
 * **Vannessa Wong** - Product Manager
 * **Nidhi Soma** - Technical Product Manager
+* **Maddie Hsia** - Product Marketing Manager
+* **Nadia Choophungart** - Associate Product Manager
 * **Eric Weng** - Software Developer
 * **Annie Chen** - Software Developer
 * **Layla Liu** - Software Developer
+* **Nikhill Andrew** - Software Developer
 * **Renee Du** - Designer
+
 
 
 ### 2023-24
