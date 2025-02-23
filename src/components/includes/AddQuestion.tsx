@@ -214,6 +214,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         }
     };
 
+    const Asterisk = () => <span className="required"> * </span>;
+
     if (redirect) {
         return (
             <Redirect
@@ -240,10 +242,10 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             <>
                                 <div className="topRow">
                                     <div className="disclaimerContainer">
-                                        <p className="text"><span className="required"> * </span>Required</p>
+                                        <p className="text"><Asterisk />Required</p>
                                     </div>
                                     <div className="tagsMiniContainer">
-                                        <p className="header">Select a Category<span className="required"> * </span></p>
+                                        <p className="header">Select a Category<Asterisk /></p>
                                         <div className="category">
                                             {tags
                                                 .filter((tag) => tag.active && tag.level === 1)
@@ -268,7 +270,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             <>
                                 <hr />
                                 <div className={"tagsMiniContainer secondaryTags " + !!selectedPrimary}>
-                                    <p className="header">Select a Tag<span className="required"> * </span></p>
+                                    <p className="header">Select a Tag<Asterisk /></p>
                                     {selectedPrimary ? (
                                         tags
                                             .filter((tag) => tag.active && tag.level === 2)
@@ -348,7 +350,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             </>
                         )}
                         <div className="tagsMiniContainer">
-                            <p className="header">{"Question "} <span className="required"> * </span></p>
+                            <p className="header">{"Question "} <Asterisk /></p>
                             {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||
                             secondaryTags.length === 0 ||
@@ -375,7 +377,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         </div>
                         <hr />
                         <div className="tagsMiniContainer">
-                            <p className="header">Your Files<span className="required"> * </span></p>
+                            <p className="header">Your Files</p>
                             <img alt="" src={addFiles}/>
                         </div>
                         <div className="addButtonWrapper">
