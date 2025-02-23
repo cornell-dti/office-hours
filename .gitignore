@@ -48,3 +48,6 @@ yarn-error.log*
 
 .idea
 .DS_Store
+
+# ignore virtual environment
+venv/
