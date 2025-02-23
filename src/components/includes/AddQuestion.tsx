@@ -322,7 +322,10 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         {secondaryTags.length !== 0 && (
                             <>
                                 <hr />
-                                <div className={`tagsMiniContainer ${missingSecondaryTags ? "error " : ""}`+ !!selectedPrimary}>
+                                <div className={`tagsMiniContainer 
+                                    ${missingSecondaryTags ? "error " : ""}`+ !!selectedPrimary
+                                }
+                                >
                                     <p className="header">Select a Tag<Asterisk /></p>
                                     {selectedPrimary ? (
                                         tags
@@ -435,7 +438,9 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         </div>
                         <div className="addButtonWrapper">
                             <p
-                                className={`AddButton ${stage > LOCATION_INPUTTED || primaryTags.length === 0 || secondaryTags.length === 0 ? "active" : ""}`}
+                                className={`AddButton ${stage > LOCATION_INPUTTED 
+                                    || primaryTags.length === 0 
+                                    || secondaryTags.length === 0 ? "active" : ""}`}
                                 onClick={handleClick}
                             >
                                 Add My Question
