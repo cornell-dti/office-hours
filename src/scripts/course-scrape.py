@@ -41,6 +41,8 @@ blacklist = [
    'CS 3152',
    'INFO 4400',
    'INFO 4390'
+   'INFO 4152',
+   'CS 4152'
 ]
 
 def getCourseStatus(course, professors):
@@ -112,7 +114,7 @@ def getProfessorInfo(instructors):
 
 # Some courses are not relevant 
 # We will filter out these courses if they contain these words
-irrelevant_courses = ["Independent", "Research", "Project", "Projects", "Academic Support", "Sem", "Seminar", "Supplement", "Honors"]
+irrelevant_courses = ["Independent", "Research", "Project", "Projects", "Academic Support", "Sem", "Seminar", "Supplement", "Honors", "Thesis"]
 
 classes = []
 for c in classesJSON:

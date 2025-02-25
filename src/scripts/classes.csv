@@ -103,6 +103,7 @@ INFO 3200,Claire Wardle,cw736@cornell.edu,-1
 INFO 3950,Paul Ginsparg,phg5@cornell.edu,-1
 INFO 4100,Rene Kizilcec,rfk65@cornell.edu,-1
 INFO 4120,Cheng Zhang,cz448@cornell.edu,-1
+INFO 4152,Walker White,wmw2@cornell.edu,-1
 INFO 4220,Cristobal Cheyre Forestier,cac555@cornell.edu,-1
 INFO 4250,Daniel Susser,ds2423@cornell.edu,-1
 INFO 4260,Steven Jackson,sjj54@cornell.edu,-1
@@ -160,7 +161,6 @@ PHYS 4410,Anders Ryd,ar322@cornell.edu,-1
 PHYS 4443,Katja Nowack,kcn34@cornell.edu,-1
 PHYS 4444,Yuval Grossman,yg73@cornell.edu,-1
 PHYS 4488,James Sethna,jps6@cornell.edu,-1
-PHYS 4499,Tomas Arias,taa2@cornell.edu,-1
 PHYS 4688,Georg Hoffstaetter de Torquat,gh77@cornell.edu,-1
 STSCI 2150,Melissa Smith,ms429@cornell.edu,-1
 STSCI 3740,Yang Ning,yn265@cornell.edu,-1
@@ -168,20 +168,19 @@ STSCI 4520,David Kent,dk657@cornell.edu,-1
 STSCI 4550,Younghoon Kim,yk748@cornell.edu,-1
 "PHYS 2217, AEP 2170",Abigail Crites,atc72@cornell.edu,-1
 "AEP 3630, PHYS 3360",Earl Kirkland,ejk14@cornell.edu,-1
-"AEP 4450, ECE 4380",Francesco Monticone,fm428@cornell.edu,-1
+"ECE 4380, AEP 4450",Francesco Monticone,fm428@cornell.edu,-1
 "AEP 4840, ECE 4840",David Hammer,dah5@cornell.edu,-1
-"STSCI 3200, BTRY 3020, STSCI 2100",Jeremy Entner,jfe35@cornell.edu,-1
-"BTRY 3080, STSCI 3080",Florentina Bunea,fb238@cornell.edu,-1
+"BTRY 3020, STSCI 2100, STSCI 3200",Jeremy Entner,jfe35@cornell.edu,-1
+"STSCI 3080, BTRY 3080",Florentina Bunea,fb238@cornell.edu,-1
 "STSCI 4090, BTRY 4090, MATH 4720",Marten Wegkamp,mhw73@cornell.edu,-1
-"BTRY 4100, STSCI 4100",Dana Yang,xy374@cornell.edu,-1
+"STSCI 4100, BTRY 4100",Dana Yang,xy374@cornell.edu,-1
 "CHEM 1570, CHEM 3570",Cynthia Kinsland,clk10@cornell.edu,-1
-"CS 4152, INFO 4152",Walker White,wmw2@cornell.edu,-1
-"MATH 4260, CS 4220",Anil Damle,asd239@cornell.edu,-1
+"CS 4220, MATH 4260",Anil Damle,asd239@cornell.edu,-1
 "CS 4754, INFO 4410",Malte Jung,mfj28@cornell.edu,-1
-"ECE 4180, CS 4758",Anastasia Bizyaeva,asb379@cornell.edu,-1
+"CS 4758, ECE 4180",Anastasia Bizyaeva,asb379@cornell.edu,-1
 "CS 4852, ECON 3825",Cristobal Cheyre Forestier,cac555@cornell.edu,-1
 "ECON 3280, ECON 4280",Milena Djourelova,mnd43@cornell.edu,-1
-"INFO 4340, INFO 2310",Kyle Harms,kjh235@cornell.edu,-1
+"INFO 2310, INFO 4340",Kyle Harms,kjh235@cornell.edu,-1
 "INFO 3312, INFO 2951",Benjamin Soltoff,bcs88@cornell.edu,-1
 "MATH 4030, MATH 3040",Anil Nerode,an17@cornell.edu,-1
 "STSCI 3510, ORIE 3510",Jim Dai,jd694@cornell.edu,-1
