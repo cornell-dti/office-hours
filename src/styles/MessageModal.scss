@@ -106,7 +106,6 @@
       font-weight: 300;
       font-size: 18px;
       padding-top: 15px;
-      line-height: 0px;
     }
 
   }
@@ -213,7 +212,6 @@
 
   .CalendarExportModalVisible {
     width: 80%;
-    animation: 10s ease-in both modalFadeIn;
 
     .ExportText {
       font-size: 15px;
@@ -226,6 +224,10 @@
 
     .CalendarItem {
       width: 35%;
+    }
+
+    .content {
+      font-size:14px;
     }
   }
 }

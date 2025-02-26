@@ -405,6 +405,7 @@ const Wrapped= (props: Props): JSX.Element => {
     const StudentsHelpedBanner = () => (
         <div> 
             <Asterik/>
+            {/* fix month to be ta month not student month */}
             YOU HAD THE MOST VISITS IN {month} <Asterik/>
             YOU HAD THE MOST VISITS IN {month} <Asterik/>
         </div>
@@ -421,8 +422,12 @@ const Wrapped= (props: Props): JSX.Element => {
     const S = [S0, S1, S2, S3, S4, S5, S6, S7, S8, S9];
     const N = [N0, N1, N2, N3, N4, N5, N6, N7, N8, N9];
 
-    const NumberPeople = () => {
-        const digits = wrappedData.totalMinutes.toString().split('');
+    type NumberPplProps = {
+        num: number;
+    }
+
+    const NumberPeople = ({num} : NumberPplProps) => {
+        const digits = num.toString().split('');
         const length = digits.length;
         const getSvgImage = (index :number, digit: number) => {
             switch (length) {
@@ -501,13 +506,12 @@ const Wrapped= (props: Props): JSX.Element => {
     const Visits = () => (
         <div>
             <div className="visit">
-                
                 <div style={{ display: "flex", justifyContent: "flex-end", fontWeight: "bold" }}>
                     <div className="visit top-text">
                         YOU WORKED SO HARD THIS YEAR!
                     </div>
                     <div className="visit mid-text">
-                        <Typography variant="h3"> 
+                        <Typography variant="h3" style={{ fontWeight: 700 }}>
                             WITH...
                         </Typography>
                     </div>
@@ -535,7 +539,7 @@ const Wrapped= (props: Props): JSX.Element => {
                 </div>
             </div>
         </div>
-    )
+    );
 
     const TimeSpent = () => (
         <>
@@ -543,7 +547,7 @@ const Wrapped= (props: Props): JSX.Element => {
                 SPENDING A TOTAL OF...
             </div>
             <div>
-                <NumberPeople/>
+                <NumberPeople num={wrappedData.totalMinutes}/>
             </div>
             <div className="timeSpent minutes-text"> 
                 MINUTES
@@ -674,7 +678,7 @@ const Wrapped= (props: Props): JSX.Element => {
                 YOU MADE LIFE EASIER FOR...
             </div>
             <div>
-                <NumberPeople/>
+                <NumberPeople num={wrappedData.numStudentsHelped}/>
             </div>
             <div className="taStudentsHelped students">
                 STUDENTS
