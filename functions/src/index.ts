@@ -1,16 +1,19 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { Twilio } from 'twilio';
-import { onDocumentCreated, onDocumentUpdated } from 'firebase-functions/firestore';
+
+import {onDocumentCreated, onDocumentUpdated,} from "firebase-functions/firestore";
+import { doc, collection, writeBatch, WriteBatch } from 'firebase/firestore';
+import { firestore } from '../../src/firebase'
 // UPDATE INDEX.TS FIREBASE FUNCTIONS
-// import { doc, collection, writeBatch, WriteBatch } from 'firebase/firestore';
-// import { firestore } from '../firebase';
+
+
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
 admin.initializeApp();
 
-const db = admin.firestore();
+const db = firestore;
 
 // Twilio Setup
 const accountSid = functions.config().twilio.accountsid;
@@ -52,7 +55,7 @@ exports.onUserCreate = onDocumentCreated('users/{userId}',async (context) => {
     const userId = context.params.userId;
 
     // get the user doc
-    const userRef = db.collection('users').doc(userId);
+    const userRef = doc(db, 'users', userId);
     const userDoc = await userRef.get();
     const user = userDoc.data() as FireUser;
 

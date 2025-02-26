@@ -17,5 +17,8 @@
     "src",
     "../src/components/types/fireData.d.ts",
     "../src/components/types/requestData.d.ts"
-  ]
+  ],
+  "paths": {
+    "firebase-functions/*": ["node_modules/firebase-functions/lib/*"]
+  }
 }
