@@ -16070,12 +16070,10 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
-rxfire@^3.9.4:
-  version "3.13.5"
-  resolved "https://registry.yarnpkg.com/rxfire/-/rxfire-3.13.5.tgz#465a88561b1c139a383216efc2e156f85143fa19"
-  integrity sha512-NyGc9syGjx5W0I5L6c4YioXbjrJTXMSo74RWTiozunOAo04sD+LM/+vQ7HWk+XUZISC/Nk8s/NKo6+mkT0ov6w==
-  dependencies:
-    tslib "^1.11.1"
+rxfire@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/rxfire/-/rxfire-6.1.0.tgz#a697ea57a7ee3b0cb069f95168b08adac4fb8c36"
+  integrity sha512-NezdjeY32VZcCuGO0bbb8H8seBsJSCaWdUwGsHNzUcAOHR0VGpzgPtzjuuLXr8R/iemkqSzbx/ioS7VwV43ynA==
 
 rxjs@^6.5.3, rxjs@^6.6.0:
   version "6.6.7"
@@ -16088,6 +16086,13 @@ rxjs@^7.5.5:
   version "7.8.1"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.1.tgz#6f6f3d99ea8044291efd92e7c7fcf562c4057543"
   integrity sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==
+  dependencies:
+    tslib "^2.1.0"
+
+rxjs@^7.8.2:
+  version "7.8.2"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.2.tgz#955bc473ed8af11a002a2be52071bf475638607b"
+  integrity sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==
   dependencies:
     tslib "^2.1.0"
 
@@ -17608,7 +17613,7 @@ tsconfig-paths@^3.11.0, tsconfig-paths@^3.5.0:
     minimist "^1.2.0"
     strip-bom "^3.0.0"
 
-tslib@^1.11.1, tslib@^1.8.1, tslib@^1.9.0:
+tslib@^1.8.1, tslib@^1.9.0:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==

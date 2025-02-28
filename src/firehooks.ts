@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 
-import { collectionData, docData } from 'rxfire/firestore';
+import { docData } from 'rxfire/firestore';
 import { switchMap } from 'rxjs/operators';
 import { Observable, of, combineLatest, EMPTY } from 'rxjs';
 import moment from 'moment';
 import { collection, doc, query, where, orderBy, documentId, Query } from 'firebase/firestore';
-import { firestore, loggedIn$ } from './firebase';
+import { firestore, loggedIn$, collectionData } from './firebase';
 import {
     SingletonObservable,
     createUseSingletonObservableHook,
