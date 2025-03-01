@@ -132,12 +132,12 @@ export const useCoursesBetweenDates = (
             const questionsRef = collection(firestore, 'questions');
             
             // Fetch all questions for given sessions
-            const questions$ = sessions$.pipe(
+            const questions$: Observable<FireQuestion[][]> = sessions$.pipe(
                 switchMap(s => {
                     return s.length > 0 ?
                         combineLatest(...s.map(session => {
                             const questionsQuery = query(questionsRef, where('sessionId', '==', session.sessionId));
-                            return collectionData(questionsQuery, 'questionId');
+                            return collectionData(questionsQuery, 'questionId') as Observable<FireQuestion[]>;
                         }
                         )) : EMPTY;}
                 )
