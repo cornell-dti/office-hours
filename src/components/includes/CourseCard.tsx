@@ -79,7 +79,7 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
                 ) : (
                     <Grid container item className="courseColor" xs={6} />
                 )}
-                {roleString === "" && !inactive ? (
+                {roleString === "" && !inactive && (
                     <div>
                         {editable ? (
                             <Grid container item xs={6} justify-self="end">
@@ -95,8 +95,6 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
                             <Grid container item xs={6} justify-self="end" />
                         )}
                     </div>
-                ) : (
-                    <></>
                 )}
             </Grid>
             <div className="courseText">
