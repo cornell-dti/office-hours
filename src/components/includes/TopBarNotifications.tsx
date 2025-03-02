@@ -35,6 +35,20 @@ const TopBarNotifications = (
         notifications === undefined || notifications.length === 0 ||
         notificationTracker.notifications.toDate() >= notifications[0].createdAt.toDate());
 
+    useEffect(() => {
+        // eslint-disable-next-line no-console
+        console.log("component remounted, initial hasViewed " + hasViewed);
+    });
+
+    useEffect(() => {
+        if (notificationTracker && notifications && notifications.length > 0) {
+            const newHasViewed = notificationTracker.notifications.toDate() >= notifications[0].createdAt.toDate();
+            if (newHasViewed !== hasViewed) {
+                toggleHasViewed(newHasViewed);
+            }       
+        }
+    }, [hasViewed, notificationTracker, notifications]);
+
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     /**
@@ -42,7 +56,11 @@ const TopBarNotifications = (
      * notifications have been viewed and updates the firebase 
      */
     const updateTrackable = () => {
+        // eslint-disable-next-line no-console
+        console.log("trackable called");
         viewedTrackable(user, notificationTracker, true)
+        // eslint-disable-next-line no-console
+        console.log("updated firebase");
     }
 
     useEffect(() => {
@@ -57,9 +75,11 @@ const TopBarNotifications = (
         if(notificationTracker !== undefined && !hasViewed && dropped) {
             periodicClearNotifications(user, notificationTracker);
         }
-        toggleHasViewed(notificationTracker === undefined || 
-        notifications === undefined || notifications.length === 0 ||
-        notificationTracker.notifications.toDate() >= notifications[0].createdAt.toDate())
+        // toggleHasViewed(notificationTracker === undefined || 
+        // notifications === undefined || notifications.length === 0 ||
+        // notificationTracker.notifications.toDate() >= notifications[0].createdAt.toDate())
+        // eslint-disable-next-line no-console
+        console.log("useEffect for clearnotifs called");
     }, [notificationTracker, notifications, user, dropped, hasViewed])
 
     const getColor = (currNotif: SessionNotification) => {
@@ -73,13 +93,23 @@ const TopBarNotifications = (
     }
 
     const onClickOff = (e: MouseEvent) => {
+        // eslint-disable-next-line no-console
+        console.log("clicked off");
         if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
             toggleDropped(false);
             if(dropped) {
                 updateTrackable();
+                // toggleHasViewed(true);
+                // eslint-disable-next-line no-console
+                console.log("called updateTrackable");
             }
         }
     }
+
+    useEffect(() => {
+        // eslint-disable-next-line no-console
+        console.log("hasViewed: " + hasViewed);
+    }, [hasViewed]);
 
     useEffect(() => {
         document.addEventListener('mousedown', onClickOff);
@@ -107,13 +137,14 @@ const TopBarNotifications = (
 
     return (
         <div ref={dropdownRef}>
-            <div className="notifications__top" onClick={() => iconClicked()}>
+            <div className="notifications__top" onMouseDown={(e) => e.stopPropagation()} onClick={() => iconClicked()}>
                 <img
                     className="notifications__icon"
                     src={countdownZero && hasWrapped ? ribbonNotif : notification}
                     alt="Notification icon"
                 />
-                {!hasViewed && <img className="notifications__indicator" src={notif} alt="Notification indicator" />}
+                {!hasViewed && 
+                <img className="notifications__indicator" src={notif} alt="Notification indicator" />}
             </div>
             <div
                 className={`notifications__dropdown notifications__${dropped ? "visible" : "hidden"}`}
