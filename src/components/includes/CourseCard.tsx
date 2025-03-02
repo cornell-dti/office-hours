@@ -39,17 +39,17 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
 
     let roleString = "";
     let roleColor = "";
-    let selectedBackgroundColor = "#F5F5F5";
-    let selectedBorderColor = "#D8D8D8";
+    let selectedBackgroundColor = "var(selected-background-color)";
+    let selectedBorderColor = "var(selected-border-color)";
     if (role === "ta") {
         roleString = "TA";
-        roleColor = "#BF7913";
+        roleColor = "#var(role-color-ta)";
     } else if (role === "professor") {
         roleString = "PROF";
-        roleColor = "green"; // a purple thats closer to our brand colors- #726CFF
+        roleColor = "#var(role-color-professor)";
     } else {
-        selectedBackgroundColor = "rgba(214, 234, 254, 0.4)";
-        selectedBorderColor = "#77BBFA";
+        selectedBackgroundColor = "selectedBackgroundColor-role-student";
+        selectedBorderColor = "selectedBorderColor-role-student";
     }
 
     return (

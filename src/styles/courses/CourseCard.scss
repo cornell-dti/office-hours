@@ -12,6 +12,14 @@
     border: 2px solid #D8D8D8;
     overflow-wrap: anywhere;
 
+    selectedBackgroundColor: "#F5F5F5"; 
+    selectedBorderColor: "#D8D8D8"; 
+    role-color-ta:"#BF7913";
+    role-color-professor: "green"; // a purple thats closer to our brand colors- #726CFF
+    selectedBackgroundColor-role-student: "rgba(214, 234, 254, 0.4)"; 
+    selectedBorderColor-role-student: "#77BBFA";
+
+
     &.selected {
         background-color: rgba(214, 234, 254, 0.4);
         border: 2px solid #77BBFA;
