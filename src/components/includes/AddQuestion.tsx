@@ -308,8 +308,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         {primaryTags.length !== 0 && (
                             <>
                                 <div className={`topRow ${missingPrimaryTags ? "error" : ""}`}>
-                                    <div className="disclaimerContainer">
-                                        <p className="disclaimerContainer text"><Asterisk />Required</p>
+                                    <div className="disclaimerContainer text">
+                                        <p> <Asterisk /> Required</p>
                                     </div>
                                     <div className="tagsMiniContainer">
                                         <p className="header">Select a Category<Asterisk /></p>
