@@ -126,34 +126,30 @@ const SessionView = ({
      * both modified and resolved, indicating that the TA has answered a question. !isTa and
      * !isProf ensures that this useEffect only runs for students.
      */
-    // useEffect(() => {
-    //     let unsubscribe: () => void;
-        
-    //     if (!isTa && !isProf) {
-    //         const userRef = doc(firestore, "users", user.userId);
-    //         unsubscribe = onSnapshot(userRef, (snapshot) => {
-    //             const userData = snapshot.data() as FireUser;
-    //             const recentlyResolvedQuestion = userData.recentlyResolvedQuestion;
-    //             if (!recentlyResolvedQuestion) {
-    //                 return;
-    //             }
-    //             if (recentlyResolvedQuestion.questionId) {
-    //                 removeQuestionDisplayFeedback(recentlyResolvedQuestion.questionId);
-    //                 // Deletes the recentlyResolvedQuestion field from the user document
-    //                 updateDoc(userRef, { 
-    //                     recentlyResolvedQuestion: deleteField()
-    //                 });
-    //             }
-    //         });
-    //     }
+    // TODO (richardgu): use a Firebase Cloud Function for a server-side trigger in the future
+    useEffect(() => {
+        let unsubscribe: () => void;
 
-    //     return () => {
-    //         if (unsubscribe) {
-    //             unsubscribe();
-    //         }
-    //     };
-    // // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, []);
+        if (!isTa && !isProf) {
+            const sessionRef = firestore.collection("sessions").doc(session.sessionId);
+
+            unsubscribe = sessionRef.onSnapshot((snapshot) => {
+                const sessionData = snapshot.data() as FireSession;
+                const resolvedQuestions = sessionData.recentlyResolvedQuestions;
+                resolvedQuestions?.forEach((resolvedQuestion: FireQuestion) => {
+                        removeQuestionDisplayFeedback(resolvedQuestion.questionId);
+                }
+                );
+            });
+        }
+
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const dismissUndo = () => {
         if (timeoutId) {

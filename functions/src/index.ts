@@ -494,33 +494,31 @@ exports.onQuestionUpdate = functions.firestore
         });
     });
 
-// exports.onQuestionStatusUpdate = functions.firestore
-//     .document("questions/{questionId}")
-//     .onUpdate(async (change, context) => {
-//         const newQuestion = change.after.data();
-//         const prevQuestion = change.before.data();
-//         const questionId = context.params.questionId;
+exports.onQuestionStatusUpdate = functions.firestore
+    .document('questions/{questionId}')
+    .onUpdate(async (change) => {
+        // retrieve original and updated question
+        const newQuestion: FireQuestion = change.after.data() as FireQuestion;
+        const prevQuestion: FireQuestion = change.before.data() as FireQuestion;
 
-//         if (prevQuestion.status !== "resolved" && newQuestion.status === "resolved") {
-//             const userId = newQuestion.askerId;
+        // Derive session ID
+        const sessionId = newQuestion.sessionId;
 
-//             // Retrieve the session document reference 
-//             const userDoc = db.doc(`users/${userId}`);
+        // Derive statuses
+        const newStatus = newQuestion.status;
+        const prevStatus = prevQuestion.status;
 
-//             // Update the resolvedQuestionsArray field in the user document if it exists
-//             return userDoc.update(
-//                 {
-//                     // Keeps track of the most recent question that was resolved
-//                     // Object with questionId and askerId fields
-//                     // questionId: the id of the question that was resolved
-//                     // askerId: the id of the user who asked the question
-//                     recentlyResolvedQuestion: {
-//                         questionId,
-//                         askerId: userId,
-//                     }
-//                 });
-//         }
-//         // If the question is not resolved yet, then we do nothing
-//         return null;
-//     });
+        // Only proceed when newQuestion status is resolved
+        if (prevStatus !== "resolved" && newStatus == "resolved") {
+            const sessionRef = db.collection("sessions").doc(sessionId);
+            const questionId = newQuestion.questionId;
+
+            await sessionRef.update({
+                recentlyResolvedQuestions: admin.firestore.FieldValue.arrayUnion({
+                    questionId: questionId,
+                    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                }),
+            });
+        }
+    })
     
