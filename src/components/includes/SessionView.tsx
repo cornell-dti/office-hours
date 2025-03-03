@@ -137,7 +137,7 @@ const SessionView = ({
                 const sessionData = snapshot.data() as FireSession;
                 const resolvedQuestions = sessionData.recentlyResolvedQuestions;
                 resolvedQuestions?.forEach((resolvedQuestion: FireQuestion) => {
-                        removeQuestionDisplayFeedback(resolvedQuestion.questionId);
+                    removeQuestionDisplayFeedback(resolvedQuestion.questionId);
                 }
                 );
             });
