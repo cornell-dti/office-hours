@@ -40,6 +40,7 @@ const LoginView: React.FC = () => {
                 prompt: 'select_account'
             });
         }
+        
         authProvider.addScope('email');
         authProvider.addScope('profile');
 
