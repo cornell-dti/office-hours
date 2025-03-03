@@ -511,7 +511,7 @@ exports.onQuestionStatusUpdate = functions.firestore
 
             await sessionRef.update({
                 recentlyResolvedQuestions: admin.firestore.FieldValue.arrayUnion({
-                    questionId: questionId,
+                    questionId,
                     timestamp: admin.firestore.FieldValue.serverTimestamp(),
                 }),
             });
