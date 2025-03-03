@@ -123,6 +123,8 @@ const SessionView = ({
      */
     // TODO (richardgu): use a Firebase Cloud Function for a server-side trigger in the future
     useEffect(() => {
+        // eslint-disable-next-line no-console
+        console.log("useEffect triggered for Firebase listener");
         let unsubscribe: () => void;
 
         if (!isTa && !isProf) {
@@ -132,9 +134,11 @@ const SessionView = ({
                 snapshot.docChanges().forEach((change) => {
                     const questionData = change.doc.data();
                     const questionId = change.doc.id;
-
+                    // eslint-disable-next-line no-console
+                    console.log(`Change detected on question ${questionId}:`, change.type, questionData.status);
                     if (change.type === "modified" && questionData.status === "resolved") {
                         // eslint-disable-next-line no-console
+                        console.log("removeQuestionDisplayFeedback called");
                         removeQuestionDisplayFeedback(questionId);
                     }
                 });
@@ -143,6 +147,8 @@ const SessionView = ({
 
         return () => {
             if (unsubscribe) {
+                // eslint-disable-next-line no-console
+                console.log("unsubscribing from firestore listener");
                 unsubscribe();
             }
         };

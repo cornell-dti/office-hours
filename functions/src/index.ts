@@ -23,8 +23,12 @@ async function sendSMS (user: FireUser, message: string) {
         return;
     }
     const userPhone = user.phoneNumber;
+    // eslint-disable-next-line no-console
+    functions.logger.log("User phone number: " + userPhone);
     if (userPhone === "Dummy number" || userPhone === undefined)
         return;
+    // eslint-disable-next-line no-console
+    functions.logger.log('Attempting to send SMS via Twilio...');
     try {
         await client.messages
             .create({
@@ -32,9 +36,13 @@ async function sendSMS (user: FireUser, message: string) {
                 to: userPhone,
                 body: `[QueueMeIn] ${message}`.replace(/\s+/g, " "),
             }).then(msg => {
+                // eslint-disable-next-line no-console
+                functions.logger.log('SMS sent successfully:', msg);
                 functions.logger.log(msg);
             });
     } catch (error) {
+        // eslint-disable-next-line no-console
+        functions.logger.log('Error sending SMS:', error);
         functions.logger.log(error);
     }
 }
@@ -185,6 +193,8 @@ exports.onCommentCreate = functions.firestore
 exports.onSessionUpdate = functions.firestore
     .document('sessions/{sessionId}')
     .onUpdate(async (change) => {
+        // eslint-disable-next-line no-console
+        functions.logger.log("onSessionUpdate fired");
         // retrieve session id and ordered queue of active questions
         const afterSessionId = change.after.id;
         const afterQuestions = (await db.collection('questions')
@@ -236,6 +246,8 @@ exports.onSessionUpdate = functions.firestore
 exports.onQuestionCreate = functions.firestore
     .document('questions/{questionId}')
     .onCreate(async (snap) => {
+        // eslint-disable-next-line no-console
+        functions.logger.log("onQuestionCreate fired");
         // Get data object and obtain session/course
         const data = snap.data();
         const sessionId = data.sessionId;
@@ -268,6 +280,8 @@ exports.onQuestionCreate = functions.firestore
                     lastSent: admin.firestore.Timestamp.now(),})
               
             })
+            // eslint-disable-next-line no-console
+            functions.logger.log("ta new question added notifications fired");
         });
 
         // Add new question notification for all Professors
@@ -293,6 +307,8 @@ exports.onQuestionCreate = functions.firestore
                     lastSent: admin.firestore.Timestamp.now(),})
             
             })
+            // eslint-disable-next-line no-console
+            functions.logger.log("prof new question added notif sent")
         });
         return db.doc(`sessions/${sessionId}`).update({
             totalQuestions: increment,
@@ -313,6 +329,8 @@ questionStatusNumbers.set("no-show", [0, 0, 0]);
 exports.onQuestionUpdate = functions.firestore
     .document('questions/{questionId}')
     .onUpdate(async (change) => {
+        // eslint-disable-next-line no-console
+        functions.logger.log("onQuestionUpdate fired");
         // retrieve old and new questions
         const newQuestion: FireQuestion = change.after.data() as FireQuestion;
         const prevQuestion: FireQuestion = change.before.data() as FireQuestion;
@@ -387,6 +405,8 @@ exports.onQuestionUpdate = functions.firestore
                         lastSent: admin.firestore.Timestamp.now(),})
               
                 });
+            // eslint-disable-next-line no-console
+            functions.logger.log("ta assignment notification added");
         }
 
         if (
@@ -419,6 +439,8 @@ exports.onQuestionUpdate = functions.firestore
                         lastSent: admin.firestore.Timestamp.now(),})
               
                 });
+            // eslint-disable-next-line no-console
+            functions.logger.log("ta unassigned notification added");
         }
         else if (newQuestion.status === 'resolved') {
             const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
@@ -447,6 +469,8 @@ exports.onQuestionUpdate = functions.firestore
                         lastSent: admin.firestore.Timestamp.now(),})
             
                 });
+            // eslint-disable-next-line no-console
+            functions.logger.log("ta resolved/noshow notification added");
         } else if (newQuestion.status === "no-show") {
             const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
             db.doc(`notificationTrackers/${asker.email}`)
@@ -474,6 +498,8 @@ exports.onQuestionUpdate = functions.firestore
                         lastSent: admin.firestore.Timestamp.now(),})
             
                 });
+            // eslint-disable-next-line no-console
+            functions.logger.log("student resolved/noshow notification added");
         }
 
         // Update relevant statistics in database
