@@ -79,6 +79,9 @@
         width: 100%;
         padding-top: 14px;
         padding-bottom: 14px;
+        &.error{
+          background-color: rgba(246, 125, 125, 0.15);
+        }
       }
 
       .disclaimerContainer{
@@ -92,7 +95,7 @@
         line-height: 11.56px;
         letter-spacing: 0%;
         text-align: right;
-        .text{
+        &.text{
           color: #F67D7D;
         }
       }
@@ -112,15 +115,8 @@
           text-align: left;
           margin-bottom:0.5em;
         }
-        .error{
+        &.error{
           background-color: rgba(246, 125, 125, 0.15);
-        }
-
-        .required{
-          color: #F67D7D;
-          font-size: 14px;
-          font-weight: 500;
-          line-height: 16.41px;
         }
 
         .category{
@@ -204,9 +200,12 @@
             width: 100%;
         }
       }
-      .tagsMiniContainer.error {
-        background-color: rgba(246, 125, 125, 0.15);
-      }
+    }
+    .required{
+      color: #F67D7D;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 16.41px;
     }
 
     .locationInput {
