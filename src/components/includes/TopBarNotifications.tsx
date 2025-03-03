@@ -92,6 +92,15 @@ const TopBarNotifications = (
         return "#ffffff"
     }
 
+    /**
+     * This function handles the mouse click event when the user clicks out of the
+     * notifications dropdown element. 
+     * 
+     * This function checks if the click occurred outside of the dropdown element
+     * and if so, closes the dropdown and calls updateTrackable if the dropdown was open.
+     * 
+     * @param e The MouseEvent that is triggered by the click action.
+     */
     const onClickOff = (e: MouseEvent) => {
         // eslint-disable-next-line no-console
         console.log("clicked off");
