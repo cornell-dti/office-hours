@@ -126,18 +126,15 @@ const SessionView = ({
         let unsubscribe: () => void;
 
         if (!isTa && !isProf) {
-            const questionsRef = firestore.collection("questions").where("sessionId", "==", session.sessionId);
+            const sessionRef = firestore.collection("sessions").doc(session.sessionId);
 
-            unsubscribe = questionsRef.onSnapshot((snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    const questionData = change.doc.data();
-                    const questionId = change.doc.id;
-
-                    if (change.type === "modified" && questionData.status === "resolved") {
-                        // eslint-disable-next-line no-console
-                        removeQuestionDisplayFeedback(questionId);
-                    }
-                });
+            unsubscribe = sessionRef.onSnapshot((snapshot) => {
+                const sessionData = snapshot.data() as FireSession;
+                const resolvedQuestions = sessionData.recentlyResolvedQuestions;
+                resolvedQuestions?.forEach((resolvedQuestion: FireQuestion) => {
+                        removeQuestionDisplayFeedback(resolvedQuestion.questionId);
+                }
+                );
             });
         }
 
