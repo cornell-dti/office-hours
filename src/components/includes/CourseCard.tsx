@@ -39,7 +39,7 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
 
     let roleString = "";
     let roleColor = "";
-    let selectedBackgroundColor = "var(selected-background-color)";
+    let selectedBackgroundColor = "var(selected-background-color)"; // variables can be changed based on different roles
     let selectedBorderColor = "var(selected-border-color)";
     if (role === "ta") {
         roleString = "TA";
@@ -79,7 +79,7 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
                 ) : (
                     <Grid container item className="courseColor" xs={6} />
                 )}
-                {roleString === "" && !inactive && (
+                {roleString === "" && !inactive && ( // use && instead of empty components <><>, same behavior 
                     <div>
                         {editable ? (
                             <Grid container item xs={6} justify-self="end">

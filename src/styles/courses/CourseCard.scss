@@ -12,12 +12,13 @@
     border: 2px solid #D8D8D8;
     overflow-wrap: anywhere;
 
-    selectedBackgroundColor: "#F5F5F5"; 
-    selectedBorderColor: "#D8D8D8"; 
-    role-color-ta:"#BF7913";
+    
+    selectedBackgroundColor: "#F5F5F5";  // the default background color
+    selectedBorderColor: "#D8D8D8";  // the default border color
+    role-color-ta:"#BF7913"; // the color for "TA" 
     role-color-professor: "green"; // a purple thats closer to our brand colors- #726CFF
-    selectedBackgroundColor-role-student: "rgba(214, 234, 254, 0.4)"; 
-    selectedBorderColor-role-student: "#77BBFA";
+    selectedBackgroundColor-role-student: "rgba(214, 234, 254, 0.4)"; //  "Student" role background color
+    selectedBorderColor-role-student: "#77BBFA"; //  "Student" role border color 
 
 
     &.selected {
@@ -25,6 +26,9 @@
         border: 2px solid #77BBFA;
     }
 
+    /* 
+    Apply hover styles only to course cards that are both active and editable. Consistency in hover effects for former classes
+    */
     &.active.editable:hover {
         cursor: pointer;
         box-shadow: 5px 10px 20px rgb(219, 219, 219);
