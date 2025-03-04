@@ -43,6 +43,7 @@ $open: #ffdba6;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 10px;
+
         .icon {
             cursor: pointer;
         }
@@ -77,12 +78,8 @@ $open: #ffdba6;
     background-color: white;
     position: relative;
 
-    > * {
+    >* {
         margin: 0px 10px;
-    }
-
-    .Bookmark {
-        right: 35px;
     }
 
     .TimeInfo {
@@ -93,6 +90,27 @@ $open: #ffdba6;
 
     .Wrapper {
         display: flex;
+        justify-content: space-between;
+    }
+
+    .cal-btn {
+        width: 79.52px;
+        height: 21.26px;
+        border-radius: 2.56px;
+        padding: 7.26px;
+        padding-top: 3.63px;
+        padding-bottom: 3.63px;
+        gap: 8.53px;
+        text-decoration: none;
+        //margin-left: 140px;
+        cursor: pointer;
+        font-family: Roboto, sans-serif;
+        font-weight: 300;
+        font-size: 11.94px;
+        background: #5599DB;
+        background-image: linear-gradient(45deg, #668ae9, #6db9ea);
+        color: white;
+        border: none;
     }
 
     .Type {
@@ -111,21 +129,22 @@ $open: #ffdba6;
     }
 
     .Indicator {
-        margin: 9px 0 0 8px;
+        margin-top: 6px;
 
         .Circle {
-            border: solid 1.5px white;
+            border: solid 0.5px white;
             border-radius: 14px;
-            height: 14px;
-            width: 14px;
+            height: 8.719px;
+            width: 8.719px;
+            background-color: #F67D7D;
         }
 
-        &.Ongoing > * {
+        &.Ongoing>* {
             background-color: $live;
             box-shadow: 0 1px 4px 1px $live;
         }
 
-        &.Open > * {
+        &.Open>* {
             background-color: $open;
             box-shadow: 0 1px 4px 1px $open;
         }
@@ -133,9 +152,11 @@ $open: #ffdba6;
         &.Past,
         &.Upcoming {
             .Circle {
-                background-color: $interior-color;
-                border-color: $border-color;
-                box-shadow: none;
+                // background-color: $interior-color;
+                // border-color: $border-color;
+                // box-shadow: none;
+                background-color: #F67D7D;
+                border-color: #F67D7D
             }
         }
     }
@@ -145,19 +166,18 @@ $open: #ffdba6;
         border-radius: 5px;
         padding-bottom: 15px;
         text-align: left;
+        margin-right: 0px;
 
         .Location {
             color: $text-grey;
             font-size: 14px;
             font-weight: 500;
-        }
-
-        .CalendarExportIcon {
-            margin-left: 7px;
+            width: 160px;
         }
 
         .Tas {
             color: #207981;
+            width: 160px;
         }
 
         .Queue {
@@ -167,6 +187,7 @@ $open: #ffdba6;
                     color: #FF5A60;
                 }
             }
+
             .Finished {
                 .FinishedNum {
                     color: #14A856;
@@ -182,8 +203,9 @@ $open: #ffdba6;
     .OpenButton {
         color: $text-grey;
         font-size: 30px;
-        margin-top: 15px;
+        margin-top: 35px;
         padding-bottom: 10px;
         padding-right: 10px;
+        margin-left: 0px;
     }
 }
