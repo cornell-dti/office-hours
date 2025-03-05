@@ -16,8 +16,8 @@
     bottom: 30px;
     padding-top: 32px;
     padding-bottom: 4px;
-    padding-right: 32px;
-    padding-left: 32px;
+    // padding-right: 32px;
+    // padding-left: 32px;
     margin-bottom: 40px;
     
 
@@ -80,13 +80,13 @@
         padding-top: 14px;
         padding-bottom: 14px;
         &.error{
-          background-color: rgba(246, 125, 125, 0.15);
+          animation: errorFadeIn 0.5s forwards;
         }
       }
 
       .disclaimerContainer{
         position: absolute;
-        right: 0; 
+        right: 32px; 
         top: 24px; 
         width: 100%;
         font-family: Roboto;
@@ -101,7 +101,7 @@
       }
 
       .tagsMiniContainer {
-        padding: 10px 32px;
+        padding: 10px 64px;
         clear: both;
         width: 100%;
         display:inline-block;
@@ -115,7 +115,7 @@
           margin-bottom:0.5em;
         }
         &.error{
-          background-color: rgba(246, 125, 125, 0.15);
+          animation: errorFadeIn 0.5s forwards;
         }
 
         .category{
@@ -264,4 +264,11 @@
   .placeHolder {
     display: inline;
   }
+}
+
+@keyframes errorFadeIn {
+  0%{
+    background-color: rgba(246, 125, 125, 0);  }
+  100%{
+    background-color: rgba(246, 125, 125, 0.15);  }
 }
