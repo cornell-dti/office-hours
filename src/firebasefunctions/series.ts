@@ -13,7 +13,8 @@ export const createSeries = async (
     const courseDoc = await getDoc(doc(firestore, 'courses', sessionSeries.courseId));
     const courseData = courseDoc.data() as FireCourse;
 
-    const sessionSeriesId = doc(firestore, 'sessions').id;
+    const sessionSeriesId = doc(collection(firestore, 'sessions')).id;
+    //doc(firestore, 'sessions').id;
 
     const startTime = moment(sessionSeries.startTime.toDate()).tz("America/New_York");
     const endTime = moment(sessionSeries.endTime.toDate()).tz("America/New_York");
@@ -67,7 +68,7 @@ export const createSeries = async (
                 isPaused: false,
             };
 
-            batch.set(doc(collection(db, 'sessions')), derivedSession);
+            batch.set(doc(db, 'sessions', sessionSeriesId), derivedSession);
         } else if (sessionSeries.modality === "review") {
             const derivedSession: Omit<FireReviewSession, 'sessionId'> = {
                 modality: sessionSeries.modality,
@@ -85,8 +86,9 @@ export const createSeries = async (
                 link: sessionSeries.link,
                 isPaused: false,
             };
-
-            batch.set(doc(collection(db, 'sessions')), derivedSession);
+            // Generate a new unique ID for each session
+            const sessionId = doc(collection(firestore, 'sessions')).id;
+            batch.set(doc(db, 'sessions', sessionId), derivedSession);
         } else {
             let hybridProperty = {}
 
@@ -114,8 +116,9 @@ export const createSeries = async (
                 totalResolveTime: 0,
                 isPaused: false,
             };
-
-            batch.set(doc(collection(db, 'sessions')), derivedSession);
+            // Generate a new unique ID for each session
+            const sessionId = doc(collection(firestore, 'sessions')).id;
+            batch.set(doc(db, 'sessions', sessionId), derivedSession);
         }
     })
     await batch.commit();
@@ -180,7 +183,6 @@ export const updateSeries = async (
             };
             const sessionDoc = doc(db, 'sessions', sessionId); 
             batch.set(sessionDoc, newSession);
-            // batch.set(db.collection('sessions').doc(sessionId), newSession);
         } else if (sessionSeries.modality === "review") {
             const newSession: Omit<FireReviewSession, 'sessionId'> = {
                 sessionSeriesId,
