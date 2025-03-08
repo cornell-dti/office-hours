@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router";
 import { Checkbox } from "semantic-ui-react";
 import moment from "moment";
-import { collection, query, where} from 'firebase/firestore';
+import { collection, CollectionReference, query, where} from 'firebase/firestore';
 import { collectionData, firestore, auth } from "../../firebase";
 import SelectedTags from "./SelectedTags";
 import SessionAlertModal from "./SessionAlertModal";
@@ -61,7 +61,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         window.addEventListener("resize", updateWindowDimensions);
 
         const tags$ = collectionData<FireTag>(
-            query(collection(firestore, 'tags'), where('courseId', '==', 'course.courseId')), "tagId"
+            query(collection(firestore, 'tags') as CollectionReference<FireTag>, 
+                where('courseId', '==', course.courseId)),{idField: "tagId"}
         );
 
         const subscription = tags$.subscribe((newTags) => setTags(newTags));

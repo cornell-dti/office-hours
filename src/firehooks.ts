@@ -19,11 +19,14 @@ export const useDoc = <T>(collectionDoc: string, id: string | undefined, idField
     useEffect(
         () => {
             if (id) {
-                const primaryTag$: Observable<T> = docData(doc(firestore, collectionDoc, id), {idField: idFieldArg}) as Observable<T>;
+                const primaryTag$: Observable<T> = 
+                docData(doc(firestore, collectionDoc, id), {idField: idFieldArg}) as Observable<T>;
                 const subscription = primaryTag$.subscribe((d:T) => {
                     if (d === undefined) {
+                        // eslint-disable-next-line no-console
                         console.warn(`Firestore document ${collectionDoc}/${id} is undefined.`);
                     } else if (typeof d !== "object") {
+                        // eslint-disable-next-line no-console
                         console.error(`Unexpected Firestore data type:`, d);
                     }
                     setDocument(d);
@@ -242,7 +245,8 @@ const useParameterizedAskerQuestions = createUseParamaterizedSingletonObservable
     const [sessionId, askerId] = parameter.split('/');
 
     const askerQuery = getAskerQuestionsQuery(sessionId, askerId);
-    return new SingletonObservable([], collectionData<FireQuestion>(askerQuery as Query<FireQuestion, DocumentData>, {idField: 'questionId'}));
+    return new SingletonObservable([], 
+        collectionData<FireQuestion>(askerQuery as Query<FireQuestion, DocumentData>, {idField: 'questionId'}));
 });
 export const useAskerQuestions = (sessionId: string, askerId: string): null | FireQuestion[] => {
     return useParameterizedAskerQuestions(`${sessionId}/${askerId}`);
@@ -285,7 +289,8 @@ const courseUserQuery = (courseId: string) => (
 export const useCourseUsers = createUseParamaterizedSingletonObservableHook(courseId =>
     new SingletonObservable(
         [],
-        courseId === '' ? of([]) : collectionData(courseUserQuery(courseId), {idField:'userId'}) as Observable<FireUser[]>
+        courseId === '' ? of([]) : collectionData(courseUserQuery(courseId), 
+            {idField:'userId'}) as Observable<FireUser[]>
     )
 );
 type FireUserMap = { readonly [userId: string]: FireUser };
@@ -388,9 +393,10 @@ export const useSessionProfile: (
 
 const allBlogPostsObservable: Observable<readonly BlogPost[]> = loggedIn$.pipe(
     switchMap(() =>
-        collectionData(query(collection(firestore,'blogPosts'),orderBy("timeEntered", "desc")), {idField: 'postId'}).pipe(
-            map((docs:DocumentData[]) => docs as BlogPost[])
-        ))
+        collectionData(query(collection(firestore,'blogPosts'),orderBy("timeEntered", "desc")), {idField: 'postId'})
+            .pipe(
+                map((docs:DocumentData[]) => docs as BlogPost[])
+            ))
 );
 
 const allBlogPostsSingletonObservable = new SingletonObservable([], allBlogPostsObservable);

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Icon, DropdownItemProps } from 'semantic-ui-react';
 import { of, combineLatest, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, map } from 'rxjs/operators';
 import { docData } from 'rxfire/firestore';
 
-import { doc } from 'firebase/firestore';
+import { doc, DocumentReference } from 'firebase/firestore';
 import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
 import ProfessorDelete from '../includes/ProfessorDelete';
@@ -45,9 +45,14 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
             const courseStaffIds$: Observable<string[]> = of(course ? [...course.professors, ...course.tas] : []);
 
             const users$ = courseStaffIds$.pipe<FireUser[]>(switchMap(courseStaffIds =>
-                combineLatest(...courseStaffIds.map(courseStaffId =>
-                    docData<FireUser>(doc(firestore, 'users',courseStaffId), 'userId')
-                ))
+                courseStaffIds.length === 0 ?
+                    of([])
+                    : combineLatest(...courseStaffIds.map(courseStaffId =>
+                        docData<FireUser>(doc(firestore, 'users',courseStaffId) as DocumentReference<FireUser>,
+                            { idField: 'userId' })
+                    )).pipe(
+                        map(users=>users.filter((user): user is FireUser => user !== undefined))
+                    )
             ));
 
             const subscription = users$.subscribe(u => setStaff(u));
