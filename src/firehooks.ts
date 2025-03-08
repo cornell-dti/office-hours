@@ -191,15 +191,16 @@ export const useBatchQuery = <T, P = string>(
 ): T[] => useBatchQueryWithLoading(queryParameter, getQuery, idField) || [];
 
 const myUserObservable = loggedIn$.pipe(
-    switchMap(u =>
+    switchMap(u => u && u.uid ?
         docData(doc(firestore, 'users', u.uid), {idField: 'userId'}) as Observable<FireUser>
+        : EMPTY
     )
 );
 export const myUserSingletonObservable = new SingletonObservable(undefined, myUserObservable);
 export const useMyUser: () => FireUser | undefined = createUseSingletonObservableHook(myUserSingletonObservable);
 
 const needsPromotionObservable = loggedIn$.pipe(
-    switchMap(u => u.email ? 
+    switchMap(u => u && u.email ? 
         docData(doc(firestore, 'pendingUsers', u.email)) as Observable<FirePendingUser> : EMPTY
     )
 )
@@ -221,7 +222,7 @@ export const usePendingUsers = (courseId: string): readonly FirePendingUser[] =>
 }
 
 const isAdminObservable = loggedIn$.pipe(
-    switchMap(u => u.email?
+    switchMap(u => u && u.email?
         docData(doc(firestore, 'admins', u.email)) as Observable<unknown>: EMPTY
     )
 )
