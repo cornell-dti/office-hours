@@ -495,30 +495,29 @@ exports.onQuestionUpdate = functions.firestore
     });
 
 exports.onQuestionStatusUpdate = functions.firestore
-    .document('questions/{questionId}')
-    .onUpdate(async (change) => {
-        // retrieve original and updated question
-        const newQuestion: FireQuestion = change.after.data() as FireQuestion;
-        const prevQuestion: FireQuestion = change.before.data() as FireQuestion;
+    .document("questions/{questionId}")
+    .onUpdate(async (change, context) => {
+        const questionData = change.after.data();
+        const previousData = change.before.data();
 
-        // Derive session ID
-        const sessionId = newQuestion.sessionId;
+        if (questionData.status === "resolved" && previousData.status !== "resolved") {
+            const questionId = context.params.questionId;
+            const sessionId = questionData.sessionId;
 
-        // Derive statuses
-        const newStatus = newQuestion.status;
-        const prevStatus = prevQuestion.status;
+            // Obtain a document reference
+            const sessionDoc = db.doc(`sessions/${sessionId}`);
 
-        // Only proceed when newQuestion status is resolved
-        if (prevStatus !== "resolved" && newStatus == "resolved") {
-            const sessionRef = db.collection("sessions").doc(sessionId);
-            const questionId = newQuestion.questionId;
+            // Enter new data into the document
+            await sessionDoc.set(
+                {
+                    resolvedQuestionsArray: admin.firestore.FieldValue.arrayUnion(questionId),
+                },
+                { merge: true }
+            );
 
-            await sessionRef.update({
-                recentlyResolvedQuestions: admin.firestore.FieldValue.arrayUnion({
-                    questionId,
-                    timestamp: admin.firestore.FieldValue.serverTimestamp(),
-                }),
-            });
+            return null;
         }
-    })
+
+        return null;
+    });
     

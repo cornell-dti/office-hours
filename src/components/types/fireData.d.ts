@@ -28,7 +28,7 @@ interface FireBaseSession {
     totalResolveTime: number;
     taAnnouncements?: TaAnnouncement[];
     isPaused?: boolean;
-    recentlyResolvedQuestions?: []
+    resolvedQuestionsArray?: []
 }
 
 interface FireSessionLocation {

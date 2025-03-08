@@ -131,15 +131,16 @@ const SessionView = ({
         let unsubscribe: () => void;
 
         if (!isTa && !isProf) {
+            console.log("Hi", session.sessionId);
             const sessionRef = firestore.collection("sessions").doc(session.sessionId);
-
+            
             unsubscribe = sessionRef.onSnapshot((snapshot) => {
                 const sessionData = snapshot.data() as FireSession;
-                const resolvedQuestions = sessionData.recentlyResolvedQuestions;
-                resolvedQuestions?.forEach((resolvedQuestion: FireQuestion) => {
-                    removeQuestionDisplayFeedback(resolvedQuestion.questionId);
-                }
-                );
+                const resolvedQuestionsArray = sessionData.resolvedQuestionsArray;
+                console.log(resolvedQuestionsArray);
+                resolvedQuestionsArray?.forEach((questionId: string) => {
+                    removeQuestionDisplayFeedback(questionId);
+                });
             });
         }
 
