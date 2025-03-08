@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { Twilio } from 'twilio';
+import { MailtrapClient } from 'mailtrap';
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
@@ -8,17 +9,17 @@ admin.initializeApp();
 
 const db = admin.firestore();
 
-// Twilio Setup
-const accountSid = functions.config().twilio.accountsid;
-const authToken = functions.config().twilio.twilio_auth_token;
-const twilioNumber = functions.config().twilio.twilionumber;
-
-const client = new Twilio(accountSid, authToken);
-
 /**
- * Function that handles data and sends a text message to a requested phone number
- */
+* Function that handles data and sends a text message to a requested phone number
+*/
 async function sendSMS (user: FireUser, message: string) {
+    // Twilio Setup
+    const accountSid = process.env.ACCOUNTSID as string;
+    const authToken = process.env.TWILIO_AUTH_TOKEN as string;
+    const twilioNumber = process.env.TWILIO_NUMBER;
+
+    const client = new Twilio(accountSid, authToken);
+
     if(process.env.DATABASE === "staging") {
         return;
     }
@@ -40,10 +41,10 @@ async function sendSMS (user: FireUser, message: string) {
 }
 
 /** Adds new roles to a user without them being in QMI's system
- * Not inclusive: Still need to consider users that are
- * already in the system. (THIS CASE IS HANDLED BY NOT INCLDUING THEM IN THE
- * pendingUsers COLLECTION IN THE FIRST PLACE)
- */
+* Not inclusive: Still need to consider users that are
+* already in the system. (THIS CASE IS HANDLED BY NOT INCLDUING THEM IN THE
+* pendingUsers COLLECTION IN THE FIRST PLACE)
+*/
 exports.onUserCreate = functions.firestore
     .document('users/{userId}')
     .onCreate(async (snap, context) => {
@@ -140,7 +141,7 @@ exports.onCommentCreate = functions.firestore
                         title: 'Student comment',
                         subtitle: "New student comment",
                         message: `${asker.firstName} commented \
-                        on your assigned question`.trim(),
+                       on your assigned question`.trim(),
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
@@ -149,13 +150,13 @@ exports.onCommentCreate = functions.firestore
                             title: 'Student comment',
                             subtitle: "New student comment",
                             message: `${asker.firstName} commented \
-                        on your assigned question`.trim(),
+                       on your assigned question`.trim(),
                             createdAt: admin.firestore.Timestamp.now()
                         }],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
                         lastSent: admin.firestore.Timestamp.now(),})
-                    
+                  
                 });
         } else {
             db.doc(`notificationTrackers/${asker.email}`)
@@ -177,7 +178,7 @@ exports.onCommentCreate = functions.firestore
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
                         lastSent: admin.firestore.Timestamp.now(),})
-                    
+                  
                 });
         }
     })
@@ -201,15 +202,15 @@ exports.onSessionUpdate = functions.firestore
             const asker: FireUser = (await db.doc(`users/${topQuestion.askerId}`)
                 .get()).data() as FireUser;
             sendSMS(asker, `Your question has reached the top of the \
-                ${sessionName} queue. A TA will likely help you shortly.`);
+               ${sessionName} queue. A TA will likely help you shortly.`);
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({
                     notificationList: admin.firestore.FieldValue.arrayUnion({
                         title: 'Your Question is Up!',
                         subtitle: `Your question has reached the top of the \
-                     ${sessionName} queue.`,
+                    ${sessionName} queue.`,
                         message: `Your question has reached the top of the \
-                    ${sessionName} queue. A TA will likely help you shortly.`,
+                   ${sessionName} queue. A TA will likely help you shortly.`,
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
@@ -217,15 +218,15 @@ exports.onSessionUpdate = functions.firestore
                         notificationList: [{
                             title: 'Your Question is Up!',
                             subtitle: `Your question has reached the top of the \
-                     ${sessionName} queue.`,
+                    ${sessionName} queue.`,
                             message: `Your question has reached the top of the \
-                    ${sessionName} queue. A TA will likely help you shortly.`,
+                   ${sessionName} queue. A TA will likely help you shortly.`,
                             createdAt: admin.firestore.Timestamp.now()
                         }],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
                         lastSent: admin.firestore.Timestamp.now(),})
-          
+        
                 });
             db.doc(`questions/${afterQuestions[0].id}`).update({
                 wasNotified: true
@@ -266,7 +267,7 @@ exports.onQuestionCreate = functions.firestore
                     notifications: admin.firestore.Timestamp.now(),
                     productUpdates: admin.firestore.Timestamp.now(),
                     lastSent: admin.firestore.Timestamp.now(),})
-              
+            
             })
         });
 
@@ -291,7 +292,7 @@ exports.onQuestionCreate = functions.firestore
                     notifications: admin.firestore.Timestamp.now(),
                     productUpdates: admin.firestore.Timestamp.now(),
                     lastSent: admin.firestore.Timestamp.now(),})
-            
+          
             })
         });
         return db.doc(`sessions/${sessionId}`).update({
@@ -337,15 +338,15 @@ exports.onQuestionUpdate = functions.firestore
         // Derive timing changes (changes from assigned to unassigned)
         if (numAssignedChange === 1 && newQuestion.timeAssigned !== undefined) {
             // Add new time addressed
-            waitTimeChange = 
-            (newQuestion.timeAssigned.seconds - newQuestion.timeEntered.seconds) 
-            / (newQuestion.position || 1);
+            waitTimeChange =
+           (newQuestion.timeAssigned.seconds - newQuestion.timeEntered.seconds)
+           / (newQuestion.position || 1);
         }
         else if (numAssignedChange === -1 && prevQuestion.timeAssigned !== undefined) {
             // Subtract previous time addressed
-            waitTimeChange = 
-            (prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds) 
-            / (newQuestion.position || 1);
+            waitTimeChange =
+           (prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds)
+           / (newQuestion.position || 1);
         }
 
         // Derive timing changes (changes from assigned to resolved)
@@ -353,8 +354,8 @@ exports.onQuestionUpdate = functions.firestore
             resolveTimeChange = newQuestion.timeAddressed!.seconds - newQuestion.timeAssigned.seconds;
         }
         else if (numResolvedChange === -1
-            && prevQuestion.timeAssigned !== undefined
-            && prevQuestion.timeAddressed !== undefined
+           && prevQuestion.timeAssigned !== undefined
+           && prevQuestion.timeAddressed !== undefined
         ) {
             resolveTimeChange = prevQuestion.timeAssigned.seconds - prevQuestion.timeAddressed.seconds;
         }
@@ -364,7 +365,7 @@ exports.onQuestionUpdate = functions.firestore
 
         if (
             prevQuestion.answererId !== newQuestion.answererId &&
-            newQuestion.answererId !== ''
+           newQuestion.answererId !== ''
         ) {
             db.doc(`notificationTrackers/${asker.email}`)
                 .update({
@@ -385,13 +386,13 @@ exports.onQuestionUpdate = functions.firestore
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
                         lastSent: admin.firestore.Timestamp.now(),})
-              
+            
                 });
         }
 
         if (
             prevQuestion.answererId !== newQuestion.answererId &&
-            newQuestion.answererId === ''
+           newQuestion.answererId === ''
         ) {
             const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
             db.doc(`notificationTrackers/${asker.email}`)
@@ -400,8 +401,8 @@ exports.onQuestionUpdate = functions.firestore
                         title: 'TA Unassigned',
                         subtitle: 'TA Unassigned',
                         message:
-                            `A TA has been unassigned from your question and you have \
-                  been readded to the top of the ${session.title} queue.`,
+                           `A TA has been unassigned from your question and you have \
+                 been readded to the top of the ${session.title} queue.`,
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
@@ -410,14 +411,14 @@ exports.onQuestionUpdate = functions.firestore
                             title: 'TA Unassigned',
                             subtitle: 'TA Unassigned',
                             message:
-                            `A TA has been unassigned from your question and you have \
-                  been readded to the top of the ${session.title} queue.`,
+                           `A TA has been unassigned from your question and you have \
+                 been readded to the top of the ${session.title} queue.`,
                             createdAt: admin.firestore.Timestamp.now()
                         }],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
                         lastSent: admin.firestore.Timestamp.now(),})
-              
+            
                 });
         }
         else if (newQuestion.status === 'resolved') {
@@ -428,8 +429,8 @@ exports.onQuestionUpdate = functions.firestore
                         title: 'Question resolved',
                         subtitle: 'Question marked as resolved',
                         message:
-                            `A TA has marked your question as resolved and you \
-                            have been removed from the ${session.title} queue`,
+                           `A TA has marked your question as resolved and you \
+                           have been removed from the ${session.title} queue`,
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
@@ -438,14 +439,14 @@ exports.onQuestionUpdate = functions.firestore
                             title: 'Question marked no-show',
                             subtitle: 'Question marked as no-show',
                             message:
-                            `A TA has marked your question as no-show and you \
-                            have been removed from the ${session.title} queue`,
+                           `A TA has marked your question as no-show and you \
+                           have been removed from the ${session.title} queue`,
                             createdAt: admin.firestore.Timestamp.now()
                         }],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
                         lastSent: admin.firestore.Timestamp.now(),})
-            
+          
                 });
         } else if (newQuestion.status === "no-show") {
             const session: FireSession = (await db.doc(`sessions/${sessionId}`).get()).data() as FireSession;
@@ -455,8 +456,8 @@ exports.onQuestionUpdate = functions.firestore
                         title: 'Question marked no-show',
                         subtitle: 'Question marked as no-show',
                         message:
-                            `A TA has marked your question as no-show and you \
-                            have been removed from the ${session.title} queue`,
+                           `A TA has marked your question as no-show and you \
+                           have been removed from the ${session.title} queue`,
                         createdAt: admin.firestore.Timestamp.now()
                     })
                 }).catch(() => {
@@ -465,14 +466,14 @@ exports.onQuestionUpdate = functions.firestore
                             title: 'Question marked no-show',
                             subtitle: 'Question marked as no-show',
                             message:
-                            `A TA has marked your question as no-show and you \
-                            have been removed from the ${session.title} queue`,
+                           `A TA has marked your question as no-show and you \
+                           have been removed from the ${session.title} queue`,
                             createdAt: admin.firestore.Timestamp.now()
                         }],
                         notifications: admin.firestore.Timestamp.now(),
                         productUpdates: admin.firestore.Timestamp.now(),
                         lastSent: admin.firestore.Timestamp.now(),})
-            
+          
                 });
         }
 
@@ -484,4 +485,30 @@ exports.onQuestionUpdate = functions.firestore
             totalWaitTime: admin.firestore.FieldValue.increment(waitTimeChange),
             totalResolveTime: admin.firestore.FieldValue.increment(resolveTimeChange),
         });
+    });
+
+exports.onPendingUserCreate = functions.firestore
+    .document('pendingUsers/{userEmail}')
+    .onCreate(async (snap, context) => {
+        const userEmail = context.params.userEmail
+        const mailtrapClient = new MailtrapClient({ token: process.env.MAILTRAP_TOKEN as string });
+        const sender = {
+            email: "mailtrap@queueme.in",
+            name: "QueueMeIn Team"
+        }
+        const recipient = [{
+            email: userEmail
+        }]
+
+        try {
+            await mailtrapClient.send({
+                from: sender,
+                to: recipient,
+                subject: "You've been invited to QueueMeIn!",
+                text: "You've been invited to QueueMeIn! Click here to sign up: https://queueme.in",
+                category: "QMI Invite – Test",
+            });
+        } catch (error) {
+            // console.log("error sending mail: ", error)
+        }
     });

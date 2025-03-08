@@ -101,6 +101,7 @@ const importProfessorsOrTAs = async (
 
         });
 
+        // missingSet at this point contains the emails of all users who were not found in the database
         // add missing user to pendingUsers collection
         missingSet.forEach(email => {
             const pendingUsersRef = db.collection('pendingUsers').doc(email);
