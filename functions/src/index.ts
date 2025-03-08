@@ -497,27 +497,40 @@ exports.onQuestionUpdate = functions.firestore
 exports.onQuestionStatusUpdate = functions.firestore
     .document("questions/{questionId}")
     .onUpdate(async (change, context) => {
-        const questionData = change.after.data();
-        const previousData = change.before.data();
+        const newQuestion = change.after.data();
+        const prevQuestion = change.before.data();
+        const questionId = context.params.questionId;
 
-        if (questionData.status === "resolved" && previousData.status !== "resolved") {
-            const questionId = context.params.questionId;
-            const sessionId = questionData.sessionId;
+        if (prevQuestion.status !== "resolved" && newQuestion.status === "resolved") {
+            const sessionId = newQuestion.sessionId;
 
-            // Obtain a document reference
+            // Retrieve the session document reference 
             const sessionDoc = db.doc(`sessions/${sessionId}`);
 
-            // Enter new data into the document
-            await sessionDoc.set(
+            // Update the resolvedQuestionsArray field in the session document if it exists
+            return sessionDoc.update(
                 {
-                    resolvedQuestionsArray: admin.firestore.FieldValue.arrayUnion(questionId),
+                    resolvedQuestionsArray: admin.firestore.FieldValue.arrayUnion({
+                        questionId,
+                        resolvedAt: admin.firestore.Timestamp.now(),
+                    })
                 },
-                { merge: true }
-            );
-
-            return null;
+            ).catch(() => {
+                // If the resolvedQuestionsArray field does not exist, create it
+                return sessionDoc.set(
+                    {
+                        resolvedQuestionsArray: [
+                            {
+                                questionId,
+                                resolvedAt: admin.firestore.Timestamp.now(),
+                            },
+                        ],
+                    },
+                    { merge: true }
+                );
+            })
         }
-
+        // If the question is not resolved yet, then we do nothing
         return null;
     });
     

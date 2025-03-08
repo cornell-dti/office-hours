@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Icon } from "semantic-ui-react";
 
 import { connect } from "react-redux";
@@ -53,6 +53,11 @@ type AbsentState = {
     dismissedAbsent: boolean;
     lastAskedQuestion: FireQuestion | null;
 };
+
+type ResolvedItem = {
+    questionId: string;
+    resolvedAt: Date;
+}
 
 const SessionView = ({
     course,
@@ -119,6 +124,8 @@ const SessionView = ({
         // setPrevQuestSet(new Set(questions.map(q => q.questionId)));
     }, [questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
 
+    const processedQuestionIds = useRef(new Set());
+
     /** This useEffect dictates when the TA feedback popup is displayed by monitoring the
      * state of the current question. Firebase's [onSnapshot] method is used to monitor any
      * changes to the questions collection, and [docChanges] filters this down to the document
@@ -136,10 +143,16 @@ const SessionView = ({
             
             unsubscribe = sessionRef.onSnapshot((snapshot) => {
                 const sessionData = snapshot.data() as FireSession;
-                const resolvedQuestionsArray = sessionData.resolvedQuestionsArray;
-                console.log(resolvedQuestionsArray);
-                resolvedQuestionsArray?.forEach((questionId: string) => {
-                    removeQuestionDisplayFeedback(questionId);
+                const resolvedQuestionsArray = sessionData.resolvedQuestionsArray || [];
+                console.log("Received resolvedQuestionsArray update:", resolvedQuestionsArray);
+                resolvedQuestionsArray.forEach((question: ResolvedItem) => {
+                    if (question.questionId && !processedQuestionIds.current.has(question.questionId)) {
+                        console.log("Processed set before:", processedQuestionIds);
+                        console.log("Processing question:", question.questionId);
+                        removeQuestionDisplayFeedback(question.questionId);
+                        processedQuestionIds.current.add(question.questionId);
+                        console.log("Processed set:", processedQuestionIds);
+                    }
                 });
             });
         }
