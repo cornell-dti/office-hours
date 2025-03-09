@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Icon } from "semantic-ui-react";
 
 import { connect } from "react-redux";
@@ -14,6 +14,7 @@ import {
     useAskerQuestions,
 } from "../../firehooks";
 import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
+import { updateSession } from "../../firebasefunctions/session"
 import { filterUnresolvedQuestions } from "../../utilities/questions";
 
 
@@ -53,11 +54,6 @@ type AbsentState = {
     dismissedAbsent: boolean;
     lastAskedQuestion: FireQuestion | null;
 };
-
-type ResolvedItem = {
-    questionId: string;
-    resolvedAt: Date;
-}
 
 const SessionView = ({
     course,
@@ -124,8 +120,6 @@ const SessionView = ({
         // setPrevQuestSet(new Set(questions.map(q => q.questionId)));
     }, [questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
 
-    const processedQuestionIds = useRef(new Set());
-
     /** This useEffect dictates when the TA feedback popup is displayed by monitoring the
      * state of the current question. Firebase's [onSnapshot] method is used to monitor any
      * changes to the questions collection, and [docChanges] filters this down to the document
@@ -140,21 +134,33 @@ const SessionView = ({
         if (!isTa && !isProf) {
             console.log("Hi", session.sessionId);
             const sessionRef = firestore.collection("sessions").doc(session.sessionId);
-            
+            const processedIds = new Set<string>()
             unsubscribe = sessionRef.onSnapshot((snapshot) => {
+                console.log("onSnapshot called");
                 const sessionData = snapshot.data() as FireSession;
-                const resolvedQuestionsArray = sessionData.resolvedQuestionsArray || [];
-                console.log("Received resolvedQuestionsArray update:", resolvedQuestionsArray);
-                resolvedQuestionsArray.forEach((question: ResolvedItem) => {
-                    if (question.questionId && !processedQuestionIds.current.has(question.questionId)) {
-                        console.log("Processed set before:", processedQuestionIds);
-                        console.log("Processing question:", question.questionId);
+                const resolvedQuestionsArray = sessionData.resolvedQuestionsArray;
+               if (!resolvedQuestionsArray) {
+                   return;
+               }
+                    resolvedQuestionsArray.forEach((question: ResolvedItem) => {
+                        console.log("questionid: ", question.questionId);
+                        processedIds.add(question.questionId);
                         removeQuestionDisplayFeedback(question.questionId);
-                        processedQuestionIds.current.add(question.questionId);
-                        console.log("Processed set:", processedQuestionIds);
-                    }
-                });
-            });
+                    })
+                console.log("processedIds: ", processedIds);
+                      const updatedArray = resolvedQuestionsArray?.filter(
+                          (question: ResolvedItem) => !processedIds.has(question.questionId)
+                      );
+                console.log("updatedArray: ", updatedArray);
+                if (updatedArray) {
+                    const newSession: Omit<FireSession, "sessionId"> =
+                        {
+                            ...sessionData,
+                            resolvedQuestionsArray: updatedArray,
+                    };
+                    updateSession(sessionData, newSession);
+                }
+                })
         }
 
         return () => {
