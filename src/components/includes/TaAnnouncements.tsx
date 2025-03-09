@@ -19,7 +19,7 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
     const [showAnnouncements, setShowAnnouncements] = useState(false);
     const [showNewAnnouncement, setShowNewAnnouncement] = useState(false);
     const [announcementContent, setAnnouncementContent] = useState("");
-    const [taAnnouncements, setTaAnnouncements] = useState(session.taAnnouncemements);
+    const [taAnnouncements, setTaAnnouncements] = useState(session.taAnnouncements);
 
     const clickCircleIcon = () => {
         setShowBody(true);
@@ -65,14 +65,14 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
     };
 
     useEffect(() => {
-        setTaAnnouncements(session.taAnnouncemements);
+        setTaAnnouncements(session.taAnnouncements);
     }, [session]);
 
     return (
         <div className="AnnouncementContainer">
             <div className="AnnouncementTop">
                 <div className="AnnouncementTitle">
-                    TA announcements ({taAnnouncements == null ? 0 : taAnnouncements.length})
+                    TA announcements ({!taAnnouncements ? 0 : taAnnouncements.length})
                 </div>
                 <div className="AnnouncementIcons">
                     {!showProfessorStudentView &&
@@ -86,7 +86,7 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
                 <div className="AnnouncementBottom">
                     {showAnnouncements && (
                         <div>
-                            {(taAnnouncements == null || taAnnouncements?.length === 0) && (
+                            {(!taAnnouncements|| taAnnouncements?.length === 0) && (
                                 <span className="NoAnnouncement">No announcements yet.</span>
                             )}
                             {taAnnouncements && (
@@ -118,7 +118,9 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
                                                 {a.announcement}
                                                 {a.ta.userId === user.userId && (
                                                     <span
-                                                        onClick={() => deleteAnnouncement(a.announcement, a.uploadTime)}
+                                                        onClick={() => {
+                                                            deleteAnnouncement(a.announcement, a.uploadTime)
+                                                        }}
                                                     >
                                                         DELETE
                                                     </span>
