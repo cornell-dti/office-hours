@@ -3,9 +3,6 @@ import moment from 'moment-timezone';
 import { firestore } from '../firebase';
 import { getDateRange, syncTimes } from '../utilities/date';
 
-
-
-
 export const createSeries = async (
     db: Firestore,
     sessionSeries: FireSessionSeriesDefinition
@@ -14,7 +11,6 @@ export const createSeries = async (
     const courseData = courseDoc.data() as FireCourse;
 
     const sessionSeriesId = doc(collection(firestore, 'sessions')).id;
-    //doc(firestore, 'sessions').id;
 
     const startTime = moment(sessionSeries.startTime.toDate()).tz("America/New_York");
     const endTime = moment(sessionSeries.endTime.toDate()).tz("America/New_York");
@@ -68,7 +64,9 @@ export const createSeries = async (
                 isPaused: false,
             };
 
-            batch.set(doc(db, 'sessions', sessionSeriesId), derivedSession);
+            // Generate a new unique ID for each session
+            const sessionId = doc(collection(firestore, 'sessions')).id;
+            batch.set(doc(db, 'sessions', sessionId), derivedSession);
         } else if (sessionSeries.modality === "review") {
             const derivedSession: Omit<FireReviewSession, 'sessionId'> = {
                 modality: sessionSeries.modality,
