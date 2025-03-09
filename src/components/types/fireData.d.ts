@@ -12,6 +12,12 @@ interface TaAnnouncement {
     uploadTime: FireTimestamp;
 }
 
+interface ResolvedItem {
+    questionId: string;
+    sessionId: string;
+    resolveAt: admin.firestore.Timestamp;
+}
+
 interface FireBaseSession {
     modality: FireSessionModality;
     courseId: string;
@@ -28,8 +34,7 @@ interface FireBaseSession {
     totalResolveTime: number;
     taAnnouncemements?: TaAnnouncement[];
     isPaused?: boolean;
-    resolvedQuestionsArray?: []
-    lastResolvedQuestion?: string;
+    resolvedQuestionsArray?: ResolvedItem[];
 }
 
 interface FireSessionLocation {
