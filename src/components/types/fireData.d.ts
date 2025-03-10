@@ -15,6 +15,7 @@ interface TaAnnouncement {
 interface ResolvedItem {
     questionId: string;
     sessionId: string;
+    askerId: string;
     resolveAt: admin.firestore.Timestamp;
 }
 

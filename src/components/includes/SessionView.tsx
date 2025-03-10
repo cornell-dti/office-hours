@@ -140,7 +140,9 @@ const SessionView = ({
                     resolvedQuestionsArray.forEach((question: ResolvedItem) => {
                         console.log("questionid: ", question.questionId);
                         processedIds.add(question.questionId);
-                        removeQuestionDisplayFeedback(question.questionId);
+                        if (user.userId === question.askerId) {
+                            removeQuestionDisplayFeedback(question.questionId);
+                        }
                     })
                 console.log("processedIds: ", processedIds);
                       const updatedArray = resolvedQuestionsArray?.filter(
