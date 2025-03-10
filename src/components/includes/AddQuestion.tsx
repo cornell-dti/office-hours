@@ -9,7 +9,7 @@ import SelectedTags from "./SelectedTags";
 import SessionAlertModal from "./SessionAlertModal";
 
 import { addQuestion } from "../../firebasefunctions/sessionQuestion";
-import addFiles from "../../media/AddFilesButton.svg";
+// import addFiles from "../../media/AddFilesButton.svg";
 
 const compatFirestore = firebase.firestore();
 
@@ -451,11 +451,11 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                     />
                                 )}
                         </div>
-                        <hr />
+                        {/* <hr />
                         <div className="tagsMiniContainer">
                             <p className="header">Your Files</p>
                             <img alt="" src={addFiles}/>
-                        </div>
+                        </div> */}
                         <div className="addButtonWrapper">
                             <p
                                 className={`AddButton ${stage > LOCATION_INPUTTED 
