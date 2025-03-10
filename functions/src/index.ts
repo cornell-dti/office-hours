@@ -513,6 +513,7 @@ exports.onQuestionStatusUpdate = functions.firestore
                     resolvedQuestionsArray: admin.firestore.FieldValue.arrayUnion({
                         questionId,
                         sessionId,
+                        askerId: newQuestion.askerId,
                         resolvedAt: admin.firestore.Timestamp.now(),
                     })
                 },
@@ -524,6 +525,7 @@ exports.onQuestionStatusUpdate = functions.firestore
                             {
                                 questionId,
                                 sessionId,
+                                askerId: newQuestion.askerId,
                                 resolvedAt: admin.firestore.Timestamp.now(),
                             },
                         ],
