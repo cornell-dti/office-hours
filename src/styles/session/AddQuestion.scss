@@ -82,6 +82,9 @@
         &.error{
           animation: errorFadeIn 0.5s forwards;
         }
+        &.clearError{
+          animation: errorFadeOut 0.5s forwards;
+        }
       }
 
       .disclaimerContainer{
@@ -116,6 +119,9 @@
         }
         &.error{
           animation: errorFadeIn 0.5s forwards;
+        }
+        &.clearError{
+          animation: errorFadeOut 1s forwards;
         }
 
         .category{
@@ -231,6 +237,7 @@
       padding-bottom: 20px;
       border-bottom-right-radius: 8px;
       border-bottom-left-radius: 8px;
+      padding-top: 40px;
       display: flex;
       justify-content: center;
       
@@ -271,4 +278,11 @@
     background-color: rgba(246, 125, 125, 0);  }
   100%{
     background-color: rgba(246, 125, 125, 0.15);  }
+}
+
+@keyframes errorFadeOut {
+  0%{
+    background-color: rgba(246, 125, 125, 0.15);  }
+  100%{
+    background-color: rgba(246, 125, 125, 0);  }
 }

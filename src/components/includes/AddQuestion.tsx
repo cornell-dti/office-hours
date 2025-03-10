@@ -70,6 +70,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     const [missingLocation, setMissingLocation] = useState<boolean>(false);
     const [missingQuestion, setMissingQuestion] = useState<boolean>(false);
     const [attemptedSubmit, setAttemptedSubmit] = useState<boolean>(false);
+    const [initial, setInitial] = useState<boolean>(true);
 
     const primaryTags = tags.filter((tag) => tag.level === 1);
     const secondaryTags = tags.filter((tag) => tag.level === 2);
@@ -209,6 +210,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         console.log("Button Clicked");
 
         setAttemptedSubmit(true);
+        setInitial(false);
 
         const primaryTagsMissing = !selectedPrimary;
         const secondaryTagsMissing = !selectedSecondary;
@@ -304,7 +306,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                     <div className="tagsContainer">
                         {primaryTags.length !== 0 && (
                             <>
-                                <div className={`topRow ${missingPrimaryTags ? "error" : ""}`}>
+                                <div className={`topRow ${missingPrimaryTags ? "error" : initial ? "" : "clearError"}`}>
                                     <div className="disclaimerContainer text">
                                         <p> <Asterisk /> Required</p>
                                     </div>
@@ -334,7 +336,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             <>
                                 <hr />
                                 <div className={`tagsMiniContainer 
-                                    ${missingSecondaryTags ? "error " : ""}`+ !!selectedPrimary
+                                    ${missingSecondaryTags ? "error " : initial ? " " : "clearError "}`
+                                    + !!selectedPrimary
                                 }
                                 >
                                     <p className="header">Select a Tag<Asterisk /></p>
@@ -364,7 +367,9 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         {"building" in session && (
                             <>
                                 {" "}
-                                <div className={`tagsMiniContainer ${missingLocation  ? "error" : ""}`}>
+                                <div className={`tagsMiniContainer ${missingLocation  ? "error" : 
+                                    initial ? "" : "clearError"}`}
+                                >
                                     {
                                         <p className="header">
                                             {session.modality === "hybrid" ? "Location or Zoom Link" : "Location"}{" "}
@@ -417,7 +422,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             </>
                         )}
                         <hr/>
-                        <div className={`tagsMiniContainer ${missingQuestion ? "error" : ""}`}>
+                        <div className={`tagsMiniContainer ${missingQuestion ? "error" : initial ? "" : "clearError"}`}>
                             <p className="header">{"Question "} <Asterisk /></p>
                             {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||
