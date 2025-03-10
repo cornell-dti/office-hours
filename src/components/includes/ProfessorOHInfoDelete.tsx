@@ -62,7 +62,8 @@ const ProfessorOHInfoDelete = ({ course, session, toggleDelete, toggleEdit }: Pr
                     </div>
                 </div>
                 <div>
-                    {/* The disabled part forces a user trying to delete single OH to use delete button instead of checkbox for repeat deletes. */}
+                    {/* The disabled part forces a user trying to delete a single OH to 
+                    use delete button instead of checkbox for repeat deletes. */}
                     <Checkbox
                         label="Delete all office hours in this series"
                         disabled={session.sessionSeriesId === null || session.sessionSeriesId === undefined}
