@@ -8,7 +8,7 @@ import SessionAlertModal from "./SessionAlertModal";
 
 import { collectionData, firestore, auth } from "../../firebase";
 import { addQuestion } from "../../firebasefunctions/sessionQuestion";
-import addFiles from "../../media/AddFilesButton.svg";
+// import addFiles from "../../media/AddFilesButton.svg";
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
@@ -448,11 +448,11 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                     />
                                 )}
                         </div>
-                        <hr />
+                        {/* <hr />
                         <div className="tagsMiniContainer">
                             <p className="header">Your Files</p>
                             <img alt="" src={addFiles}/>
-                        </div>
+                        </div> */}
                         <div className="addButtonWrapper">
                             <p
                                 className={`AddButton ${stage > LOCATION_INPUTTED 
