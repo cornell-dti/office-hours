@@ -50,11 +50,6 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
             className={`CourseCard ${selected && editable ? "selected" : ""} ${inactive ? "inactive" : "active"} 
             ${role === "ta" || role === "professor" ? "ineditable" : "editable"}`}
             onClick={selectCourse}
-            style={
-                selected && editable
-                    ? { backgroundColor: "var(--selected-background-color)", borderColor: "var(--selected-border-color)" }
-                    : {}
-            }
         >
             <Grid container direction="row" justifyContent="space-between" style={{ height: "58px" }}>
                 {roleString ? (
@@ -62,8 +57,10 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
                         <span
                             className="courseRole"
                             style={{
-                                border: `2px solid ${role === "ta" ? "var(--role-color-ta)" : role === "professor" ? "var(--role-color-professor)" : "transparent"}`,
-                                color: role === "ta" ? "var(--role-color-ta)" : role === "professor" ? "var(--role-color-professor)" : "inherit",
+                                border: `2px solid ${role === "ta" ? "var(--role-color-ta)" : 
+                                    role === "professor" ? "var(--role-color-professor)" : "transparent"}`,
+                                color: role === "ta" ? "var(--role-color-ta)" : 
+                                role === "professor" ? "var(--role-color-professor)" : "inherit",
                             }}
                         >
                             {role === "ta" ? "TA" : role === "professor" ? "PROF" : ""}
