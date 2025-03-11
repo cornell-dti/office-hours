@@ -13,12 +13,12 @@
     overflow-wrap: anywhere;
 
     
-    selectedBackgroundColor: "#F5F5F5";  // the default background color
-    selectedBorderColor: "#D8D8D8";  // the default border color
-    role-color-ta:"#BF7913"; // the color for "TA" 
-    role-color-professor: "green"; // a purple thats closer to our brand colors- #726CFF
-    selectedBackgroundColor-role-student: "rgba(214, 234, 254, 0.4)"; //  "Student" role background color
-    selectedBorderColor-role-student: "#77BBFA"; //  "Student" role border color 
+    --selectedBackgroundColor: #F5F5F5;  // the default background color
+    --selectedBorderColor: #D8D8D8;  // the default border color
+    --role-color-ta: #BF7913; // the color for "TA" 
+    --role-color-professor: green; // a purple thats closer to our brand colors- #726CFF
+    --selectedBackgroundColor-role-student: rgba(214, 234, 254, 0.4); //  "Student" role background color
+    --selectedBorderColor-role-student: #77BBFA; //  "Student" role border color 
 
 
     &.selected {
@@ -68,8 +68,8 @@
             border-radius: 100px;
 
             //check coursecard for hex color of prof
-            border: 2px solid #BF7913;
-            color: #BF7913;
+            // border: 2px solid #BF7913;
+            // color: #BF7913;
             font-size: 15px;
             position: absolute;
         }

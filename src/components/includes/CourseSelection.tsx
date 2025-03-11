@@ -38,7 +38,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
         setCurrentlyEnrolledCourseIds(new Set(user.courses));
     }, [user.courses]);
 
-    const filterOnActiveAndRole = () => {
+    const filterOnActiveAndRole = React.useCallback(() => {
         return allCourses
             .filter((course) => course.semester === CURRENT_SEMESTER)
             .sort((a, b) => {
@@ -46,7 +46,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                 const isUserTAorProfB = b.tas?.includes(user.userId) || b.professors?.includes(user.userId) ? 1 : 0;
                 return isUserTAorProfB - isUserTAorProfA; // Sort in descending order (1's before 0's)
             });
-    };
+    }, [allCourses, user.userId]);
 
     useEffect(() => {
         setCurrentCourses(filterOnActiveAndRole);
@@ -56,7 +56,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                 return course.semester !== CURRENT_SEMESTER;
             }),
         );
-    }, [allCourses]);
+    }, [filterOnActiveAndRole, allCourses]);
 
     const [currentlyEnrolledCourseIds, setCurrentlyEnrolledCourseIds] = useState(new Set<string>());
 
@@ -83,7 +83,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                 ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] !== undefined,
             ),
         );
-    }, [user, filteredCourses, currentlyEnrolledCourseIds]);
+    }, [user, filteredCourses, currentlyEnrolledCourseIds, currentCourses]);
 
     const [selectedCourseIds, setSelectedCourseIds] = useState<string[]>([]);
 

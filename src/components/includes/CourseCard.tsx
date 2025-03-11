@@ -38,28 +38,21 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
     };
 
     let roleString = "";
-    let roleColor = "";
-    let selectedBackgroundColor = "var(selected-background-color)"; // variables can be changed based on different roles
-    let selectedBorderColor = "var(selected-border-color)";
+
     if (role === "ta") {
         roleString = "TA";
-        roleColor = "#var(role-color-ta)";
     } else if (role === "professor") {
         roleString = "PROF";
-        roleColor = "#var(role-color-professor)";
-    } else {
-        selectedBackgroundColor = "selectedBackgroundColor-role-student";
-        selectedBorderColor = "selectedBorderColor-role-student";
     }
 
     return (
         <div
             className={`CourseCard ${selected && editable ? "selected" : ""} ${inactive ? "inactive" : "active"} 
-            ${roleString === "" ? "editable" : "ineditable"}`}
+            ${role === "ta" || role === "professor" ? "ineditable" : "editable"}`}
             onClick={selectCourse}
             style={
                 selected && editable
-                    ? { backgroundColor: selectedBackgroundColor, borderColor: selectedBorderColor }
+                    ? { backgroundColor: "var(--selected-background-color)", borderColor: "var(--selected-border-color)" }
                     : {}
             }
         >
@@ -69,11 +62,11 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
                         <span
                             className="courseRole"
                             style={{
-                                border: "2px solid " + roleColor,
-                                color: roleColor,
+                                border: `2px solid ${role === "ta" ? "var(--role-color-ta)" : role === "professor" ? "var(--role-color-professor)" : "transparent"}`,
+                                color: role === "ta" ? "var(--role-color-ta)" : role === "professor" ? "var(--role-color-professor)" : "inherit",
                             }}
                         >
-                            {roleString}
+                            {role === "ta" ? "TA" : role === "professor" ? "PROF" : ""}
                         </span>{" "}
                     </Grid>
                 ) : (
