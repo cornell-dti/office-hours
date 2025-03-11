@@ -60,7 +60,7 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
                                 border: `2px solid ${role === "ta" ? "var(--role-color-ta)" : 
                                     role === "professor" ? "var(--role-color-professor)" : "transparent"}`,
                                 color: role === "ta" ? "var(--role-color-ta)" : 
-                                role === "professor" ? "var(--role-color-professor)" : "inherit",
+                                    role === "professor" ? "var(--role-color-professor)" : "inherit",
                             }}
                         >
                             {role === "ta" ? "TA" : role === "professor" ? "PROF" : ""}
