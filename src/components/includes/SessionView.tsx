@@ -13,6 +13,7 @@ import {
     useAskerQuestions,
 } from "../../firehooks";
 import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
+import { updateSession } from "../../firebasefunctions/session"
 import { filterUnresolvedQuestions } from "../../utilities/questions";
 
 import { firestore } from "../../firebase";
@@ -126,19 +127,37 @@ const SessionView = ({
         let unsubscribe: () => void;
 
         if (!isTa && !isProf) {
-            const questionsRef = firestore.collection("questions").where("sessionId", "==", session.sessionId);
-
-            unsubscribe = questionsRef.onSnapshot((snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    const questionData = change.doc.data();
-                    const questionId = change.doc.id;
-
-                    if (change.type === "modified" && questionData.status === "resolved") {
-                        // eslint-disable-next-line no-console
-                        removeQuestionDisplayFeedback(questionId);
-                    }
-                });
-            });
+            console.log("Hi", session.sessionId);
+            const sessionRef = firestore.collection("sessions").doc(session.sessionId);
+            const processedIds = new Set<string>()
+            unsubscribe = sessionRef.onSnapshot((snapshot) => {
+                console.log("onSnapshot called");
+                const sessionData = snapshot.data() as FireSession;
+                const resolvedQuestionsArray = sessionData.resolvedQuestionsArray;
+               if (!resolvedQuestionsArray) {
+                   return;
+               }
+                    resolvedQuestionsArray.forEach((question: ResolvedItem) => {
+                        console.log("questionid: ", question.questionId);
+                        processedIds.add(question.questionId);
+                        if (user.userId === question.askerId) {
+                            removeQuestionDisplayFeedback(question.questionId);
+                        }
+                    })
+                console.log("processedIds: ", processedIds);
+                      const updatedArray = resolvedQuestionsArray?.filter(
+                          (question: ResolvedItem) => !processedIds.has(question.questionId)
+                      );
+                console.log("updatedArray: ", updatedArray);
+                if (updatedArray) {
+                    const newSession: Omit<FireSession, "sessionId"> =
+                        {
+                            ...sessionData,
+                            resolvedQuestionsArray: updatedArray,
+                    };
+                    updateSession(sessionData, newSession);
+                }
+                })
         }
 
         return () => {
