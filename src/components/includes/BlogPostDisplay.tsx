@@ -1,7 +1,7 @@
 import React from 'react';
-import {Grid} from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 
-import {useAllBlogPosts} from '../../firehooks';
+import { useAllBlogPosts } from '../../firehooks';
 import BlogPostInternal from './BlogPostInternal';
 
 
