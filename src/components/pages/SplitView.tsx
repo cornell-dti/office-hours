@@ -157,9 +157,17 @@ const SplitView = ({
 
     // used to display feedback to user once question is removed
     const removeQuestionDisplayFeedback = (questionId: string | undefined) => {
+        // eslint-disable-next-line no-console
+        console.log("removeQuestionDisplayFeedback fired");
         setRemoveQuestionId(questionId);
+        // eslint-disable-next-line no-console
+        console.log("removeQuestionId finished");
         setDisplayFeedbackPrompt(true);
+        // eslint-disable-next-line no-console
+        console.log("displayFeedbackPrompt finished");
         setRemovedQuestionId(questionId);
+        // eslint-disable-next-line no-console
+        console.log("removeQuestionId finished");
     };
 
     useEffect(() => {
