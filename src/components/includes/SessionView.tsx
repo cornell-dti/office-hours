@@ -130,18 +130,21 @@ const SessionView = ({
     useEffect(() => {
         let unsubscribe: () => void;
         
-         if (!isTa && !isProf) {
-             const userRef = firestore.collection("users").doc(user.userId);
-             unsubscribe = userRef.onSnapshot((snapshot) => {
-                 console.log("onSnapshot called");
-                 const userData = snapshot.data() as FireUser;
-                 if (userData.recentlyResolvedQuestion?.questionId) {
-                     removeQuestionDisplayFeedback(userData.recentlyResolvedQuestion.questionId);
-                     // Deletes the recentlyResolvedQuestion field from the user document
-                     userRef.update({ recentlyResolvedQuestion: firebase.firestore.FieldValue.delete() });
-                 }
-             });
-         }
+        if (!isTa && !isProf) {
+            const userRef = firestore.collection("users").doc(user.userId);
+            unsubscribe = userRef.onSnapshot((snapshot) => {
+                const userData = snapshot.data() as FireUser;
+                const recentlyResolvedQuestion = userData.recentlyResolvedQuestion;
+                if (!recentlyResolvedQuestion) {
+                    return;
+                }
+                if (recentlyResolvedQuestion.questionId) {
+                    removeQuestionDisplayFeedback(recentlyResolvedQuestion.questionId);
+                    // Deletes the recentlyResolvedQuestion field from the user document
+                    userRef.update({ recentlyResolvedQuestion: firebase.firestore.FieldValue.delete() });
+                }
+            });
+        }
 
         return () => {
             if (unsubscribe) {
