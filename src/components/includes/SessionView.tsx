@@ -124,7 +124,6 @@ const SessionView = ({
      * both modified and resolved, indicating that the TA has answered a question. !isTa and
      * !isProf ensures that this useEffect only runs for students.
      */
-    // TODO (richardgu): use a Firebase Cloud Function for a server-side trigger in the future
     useEffect(() => {
         let unsubscribe: () => void;
         
