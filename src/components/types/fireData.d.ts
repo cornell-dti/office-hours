@@ -12,13 +12,6 @@ interface TaAnnouncement {
     uploadTime: FireTimestamp;
 }
 
-interface ResolvedItem {
-    questionId: string;
-    sessionId: string;
-    askerId: string;
-    resolveAt: admin.firestore.Timestamp;
-}
-
 interface FireBaseSession {
     modality: FireSessionModality;
     courseId: string;
@@ -35,7 +28,6 @@ interface FireBaseSession {
     totalResolveTime: number;
     taAnnouncemements?: TaAnnouncement[];
     isPaused?: boolean;
-    resolvedQuestionsArray?: ResolvedItem[];
 }
 
 interface FireSessionLocation {
@@ -155,6 +147,12 @@ interface FireCourse {
 type PrivilegedFireCourseRole = "professor" | "ta";
 type FireCourseRole = "professor" | "ta" | "student";
 
+interface ResolvedItem {
+    questionId: string;
+    askerId: string;
+    resolvedAt: FireTimestamp;
+}
+
 /**
  * Invariant for fire user and course enrollment:
  *
@@ -178,6 +176,7 @@ interface FireUser {
     textNotifsEnabled?: boolean;
     textPrompted?: boolean;
     wrapped?: boolean;
+    recentlyResolvedQuestion?: ResolvedItem;
 }
 
 interface FirePendingUser {

@@ -498,37 +498,26 @@ exports.onQuestionStatusUpdate = functions.firestore
         const questionId = context.params.questionId;
 
         if (prevQuestion.status !== "resolved" && newQuestion.status === "resolved") {
-            const sessionId = newQuestion.sessionId;
+            const userId = newQuestion.askerId;
 
             // Retrieve the session document reference 
-            const sessionDoc = db.doc(`sessions/${sessionId}`);
+            const userDoc = db.doc(`users/${userId}`);
 
             // Update the resolvedQuestionsArray field in the session document if it exists
-            return sessionDoc.update(
+            return userDoc.update(
                 {
-                    resolvedQuestionsArray: admin.firestore.FieldValue.arrayUnion({
+                    // An array that keeps track of questions that were just resolved by a course staff
+                    // Each question would be removed from the array once its feedback modal has been processed
+                    // Consists of objects with questionId, askerId, and resolvedAt fields
+                    // questionId: the id of the question that was resolved
+                    // askerId: the id of the user who asked the question
+                    // resolvedAt: the time the question was resolved
+                    recentlyResolvedQuestion: {
                         questionId,
-                        sessionId,
-                        askerId: newQuestion.askerId,
+                        askerId: userId,
                         resolvedAt: admin.firestore.Timestamp.now(),
-                    })
-                },
-            ).catch(() => {
-                // If the resolvedQuestionsArray field does not exist, create it
-                return sessionDoc.set(
-                    {
-                        resolvedQuestionsArray: [
-                            {
-                                questionId,
-                                sessionId,
-                                askerId: newQuestion.askerId,
-                                resolvedAt: admin.firestore.Timestamp.now(),
-                            },
-                        ],
-                    },
-                    { merge: true }
-                );
-            })
+                    }
+                });
         }
         // If the question is not resolved yet, then we do nothing
         return null;
