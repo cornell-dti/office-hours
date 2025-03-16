@@ -14,7 +14,6 @@ import {
     useAskerQuestions,
 } from "../../firehooks";
 import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
-import { updateSession } from "../../firebasefunctions/session"
 import { filterUnresolvedQuestions } from "../../utilities/questions";
 
 
@@ -130,40 +129,19 @@ const SessionView = ({
     // TODO (richardgu): use a Firebase Cloud Function for a server-side trigger in the future
     useEffect(() => {
         let unsubscribe: () => void;
-
-        if (!isTa && !isProf) {
-            console.log("Hi", session.sessionId);
-            const sessionRef = firestore.collection("sessions").doc(session.sessionId);
-            const processedIds = new Set<string>()
-            unsubscribe = sessionRef.onSnapshot((snapshot) => {
-                console.log("onSnapshot called");
-                const sessionData = snapshot.data() as FireSession;
-                const resolvedQuestionsArray = sessionData.resolvedQuestionsArray;
-               if (!resolvedQuestionsArray) {
-                   return;
-               }
-                    resolvedQuestionsArray.forEach((question: ResolvedItem) => {
-                        console.log("questionid: ", question.questionId);
-                        processedIds.add(question.questionId);
-                        if (user.userId === question.askerId) {
-                            removeQuestionDisplayFeedback(question.questionId);
-                        }
-                    })
-                console.log("processedIds: ", processedIds);
-                      const updatedArray = resolvedQuestionsArray?.filter(
-                          (question: ResolvedItem) => !processedIds.has(question.questionId)
-                      );
-                console.log("updatedArray: ", updatedArray);
-                if (updatedArray) {
-                    const newSession: Omit<FireSession, "sessionId"> =
-                        {
-                            ...sessionData,
-                            resolvedQuestionsArray: updatedArray,
-                    };
-                    updateSession(sessionData, newSession);
-                }
-                })
-        }
+        
+         if (!isTa && !isProf) {
+             const userRef = firestore.collection("users").doc(user.userId);
+             unsubscribe = userRef.onSnapshot((snapshot) => {
+                 console.log("onSnapshot called");
+                 const userData = snapshot.data() as FireUser;
+                 if (userData.recentlyResolvedQuestion?.questionId) {
+                     removeQuestionDisplayFeedback(userData.recentlyResolvedQuestion.questionId);
+                     // Deletes the recentlyResolvedQuestion field from the user document
+                     userRef.update({ recentlyResolvedQuestion: firebase.firestore.FieldValue.delete() });
+                 }
+             });
+         }
 
         return () => {
             if (unsubscribe) {
