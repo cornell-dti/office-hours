@@ -506,9 +506,8 @@ exports.onQuestionStatusUpdate = functions.firestore
             // Update the resolvedQuestionsArray field in the session document if it exists
             return userDoc.update(
                 {
-                    // An array that keeps track of questions that were just resolved by a course staff
-                    // Each question would be removed from the array once its feedback modal has been processed
-                    // Consists of objects with questionId, askerId, and resolvedAt fields
+                    // Keeps track of the most recent question that was resolved
+                    // Object with questionId, askerId, and resolvedAt fields
                     // questionId: the id of the question that was resolved
                     // askerId: the id of the user who asked the question
                     // resolvedAt: the time the question was resolved
