@@ -153,7 +153,8 @@ exports.onCommentCreate = onDocumentCreated(`questions/{questionId}/comments/{co
                     message: `${asker.firstName} commented \
                         on your assigned question`.trim(),
                     createdAt: Timestamp.now()
-                })
+                }),
+                lastSent: Timestamp.now()
             }).catch(() => {
             setDoc(userDocRef, {
                 id: answerer.email,
@@ -180,19 +181,22 @@ exports.onCommentCreate = onDocumentCreated(`questions/{questionId}/comments/{co
                     message: `A TA commented on your question`.trim(),
                     createdAt: Timestamp.now()
                 })
-            }).catch(() => {
-            setDoc(userDocRef, {id: asker.email,
-                notificationList: [{
-                    title: 'TA comment',
-                    subtitle: 'New TA comment',
-                    message: `A TA commented on your question`.trim(),
-                    createdAt: Timestamp.now()
-                }],
-                notifications: Timestamp.now(),
-                productUpdates: Timestamp.now(),
-                lastSent: Timestamp.now(),})
-                
-        });
+            }).then(() => {
+            updateDoc(userDocRef, { lastSent: Timestamp.now() });
+        })
+            .catch(() => {
+                setDoc(userDocRef, {id: asker.email,
+                    notificationList: [{
+                        title: 'TA comment',
+                        subtitle: 'New TA comment',
+                        message: `A TA commented on your question`.trim(),
+                        createdAt: Timestamp.now()
+                    }],
+                    notifications: Timestamp.now(),
+                    productUpdates: Timestamp.now(),
+                    lastSent: Timestamp.now(),})
+                    
+            });
     }
 })
 
@@ -231,7 +235,8 @@ exports.onSessionUpdate = onDocumentUpdated('sessions/{sessionId}', async (event
                 message: `Your question has reached the top of the \
                 ${sessionName} queue. A TA will likely help you shortly.`,
                 createdAt: Timestamp.now()
-            })
+            }),
+            lastSent: Timestamp.now()
         }).catch(() => {
             const userDocRef = doc(db, "notificationTrackers", asker.email);
             setDoc(userDocRef, {id: asker.email,
@@ -291,7 +296,8 @@ onDocumentCreated('questions/{questionId}', async (event) => {
                 subtitle: `A new question has been added to the ${session.title} queue`,
                 message: `A new question has been added to the ${session.title} queue`,
                 createdAt: Timestamp.now()
-            })
+            }),
+            lastSent: Timestamp.now()
         }).catch(() => {
             const userDocRef = doc(db, "notificationTrackers", user.email);
             setDoc(userDocRef, {id: user.email,
@@ -317,7 +323,8 @@ onDocumentCreated('questions/{questionId}', async (event) => {
                 subtitle: `A new question has been added to the ${session.title} queue`,
                 message: `A new question has been added to the ${session.title} queue`,
                 createdAt: Timestamp.now()
-            })
+            }),
+            lastSent: Timestamp.now()
         }).catch(() => {
             const userDocRef = doc(db, "notificationTrackers", user.email);
             setDoc(userDocRef, {id: user.email,
@@ -418,7 +425,8 @@ exports.onQuestionUpdate = onDocumentUpdated('questions/{questionId}', async (ev
                 subtitle: 'TA Assigned',
                 message: 'A TA has been assigned to your question',
                 createdAt: Timestamp.now()
-            })
+            }),
+            lastSent: Timestamp.now()
         }).catch(() => {
             const userDocRef = doc(db, "notificationTrackers", asker.email);
             setDoc(userDocRef, {id: asker.email,
@@ -447,7 +455,8 @@ exports.onQuestionUpdate = onDocumentUpdated('questions/{questionId}', async (ev
                         `A TA has been unassigned from your question and you have \
                 been readded to the top of the ${session.title} queue.`,
                 createdAt: Timestamp.now()
-            })
+            }),
+            lastSent: Timestamp.now()
         }).catch(() => {
             const userDocRef = doc(db, "notificationTrackers", asker.email);
             setDoc(userDocRef, {id: asker.email,
@@ -475,7 +484,8 @@ exports.onQuestionUpdate = onDocumentUpdated('questions/{questionId}', async (ev
                         `A TA has marked your question as resolved and you \
                         have been removed from the ${session.title} queue`,
                 createdAt: Timestamp.now()
-            })
+            }),
+            lastSent: Timestamp.now()
         }).catch(() => {
             const userDocRef = doc(db, "notificationTrackers", asker.email);
             setDoc(userDocRef, {id: asker.email,
@@ -502,7 +512,8 @@ exports.onQuestionUpdate = onDocumentUpdated('questions/{questionId}', async (ev
                         `A TA has marked your question as no-show and you \
                         have been removed from the ${session.title} queue`,
                 createdAt: Timestamp.now()
-            })
+            }),
+            lastSent: Timestamp.now()
         }).catch(() => {
             const userDocRef = doc(db, "notificationTrackers", asker.email);
             setDoc(userDocRef, {id: asker.email,

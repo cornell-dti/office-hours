@@ -161,7 +161,7 @@ const SplitView = ({
         setDisplayFeedbackPrompt(true);
         setRemovedQuestionId(questionId);
     };
-
+    
     useEffect(() => {
         // Add a banner prompting the user to enable browser notifications
         if ("Notification" in window && Notification.permission === "default") {
@@ -174,6 +174,7 @@ const SplitView = ({
         try {
             // Request permission to send desktop notifications
             if (Notification.permission === "default") {
+                console.log("Requesting notification permission...");
                 Notification.requestPermission();
             }
         } catch (error) {
