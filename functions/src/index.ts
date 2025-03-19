@@ -415,11 +415,10 @@ exports.onQuestionUpdate = onDocumentUpdated('questions/{questionId}', async (ev
 
     const batch = writeBatch(db);
 
-    if (
-        prevQuestion.answererId !== newQuestion.answererId &&
+    if (prevQuestion.answererId !== newQuestion.answererId &&
             newQuestion.answererId !== ''
     ) {
-        updateDoc(doc(db, 'notificationTrackers', asker.email), {
+        updateDoc(doc(db, "notificationTrackers", asker.email), {
             notificationList: arrayUnion({
                 title: 'TA Assigned',
                 subtitle: 'TA Assigned',
@@ -542,3 +541,40 @@ exports.onQuestionUpdate = onDocumentUpdated('questions/{questionId}', async (ev
     })
     await batch.commit();
 });
+
+exports.onQuestionStatusUpdate = onDocumentUpdated("questions/{questionId}", 
+    async (context) => {
+        const change = context.data;
+        if (!change) {
+            // eslint-disable-next-line no-console
+            console.error("No change detected in question update.");
+            return;
+        }
+        const newQuestion = change.after.data();
+        const prevQuestion = change.before.data();
+        const questionId = context.params.questionId;
+
+        if (prevQuestion.status !== "resolved" && newQuestion.status === "resolved") {
+            const userId = newQuestion.askerId;
+
+            // Retrieve the session document reference 
+            const userDoc = doc(db, "users", userId);
+
+            // Update the resolvedQuestionsArray field in the session document if it exists
+            await updateDoc(userDoc,
+                {
+                    // Keeps track of the most recent question that was resolved
+                    // Object with questionId, askerId, and resolvedAt fields
+                    // questionId: the id of the question that was resolved
+                    // askerId: the id of the user who asked the question
+                    // resolvedAt: the time the question was resolved
+                    recentlyResolvedQuestion: {
+                        questionId,
+                        askerId: userId,
+                        resolvedAt: admin.firestore.Timestamp.now(),
+                    }
+                });
+        }
+        // If the question is not resolved yet, then we do nothing
+    });
+    

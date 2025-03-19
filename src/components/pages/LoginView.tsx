@@ -37,8 +37,12 @@ const LoginView: React.FC = () => {
             authProvider.setCustomParameters({
                 hd: 'cornell.edu',
             });
+        } else if (process.env.NODE_ENV !== 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
+            authProvider.setCustomParameters({
+                prompt: 'select_account'
+            });
         }
-    
+        
         authProvider.addScope('email');
         authProvider.addScope('profile');
     
