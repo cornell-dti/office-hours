@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
-import firebase from 'firebase/app';
-
+import { doc, setDoc, Timestamp} from 'firebase/firestore';
 import { firestore } from '../../firebase';
 import { CURRENT_SEMESTER, START_DATE, END_DATE } from '../../constants';
 
@@ -41,12 +40,12 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
             term,
             queueOpenInterval: 30,
             charLimit: 140,
-            startDate: firebase.firestore.Timestamp.fromDate(startDate),
-            endDate: firebase.firestore.Timestamp.fromDate(endDate),
+            startDate:Timestamp.fromDate(startDate),
+            endDate: Timestamp.fromDate(endDate),
             professors: [],
             tas: []
         };
-        firestore.collection('courses').doc(courseId).set(course).then(onSubmit);
+        setDoc(doc(firestore, 'courses', courseId), course).then(onSubmit);
     };
 
     return (

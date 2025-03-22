@@ -34,7 +34,7 @@ functions/lib
 *.log
 
 # all folders and files beginning with a period
-
+.yarn
 
 ## Exceptions
 !.github/

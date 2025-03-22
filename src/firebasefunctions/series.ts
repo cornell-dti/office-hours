@@ -1,18 +1,16 @@
-import firebase from 'firebase/app';
+import { doc, getDoc, collection, query, where, Timestamp, Firestore, writeBatch, getDocs} from 'firebase/firestore';
 import moment from 'moment-timezone';
+import { firestore } from '../firebase';
 import { getDateRange, syncTimes } from '../utilities/date';
 
-
-const firestore = firebase.firestore;
-
 export const createSeries = async (
-    db: firebase.firestore.Firestore,
+    db: Firestore,
     sessionSeries: FireSessionSeriesDefinition
 ): Promise<void> => {
-    const courseDoc = await db.collection('courses').doc(sessionSeries.courseId).get();
+    const courseDoc = await getDoc(doc(firestore, 'courses', sessionSeries.courseId));
     const courseData = courseDoc.data() as FireCourse;
 
-    const sessionSeriesId = db.collection('sessions').doc().id;
+    const sessionSeriesId = doc(collection(firestore, 'sessions')).id;
 
     const startTime = moment(sessionSeries.startTime.toDate()).tz("America/New_York");
     const endTime = moment(sessionSeries.endTime.toDate()).tz("America/New_York");
@@ -25,7 +23,7 @@ export const createSeries = async (
 
     const now = moment();
 
-    const batch = db.batch();
+    const batch = writeBatch(db);
 
     datesToAdd.forEach((sessionStart) => {
         // Do not add sessions before today or course start
@@ -53,8 +51,8 @@ export const createSeries = async (
                 modality: sessionSeries.modality,
                 sessionSeriesId,
                 courseId: sessionSeries.courseId,
-                endTime: firestore.Timestamp.fromDate(sessionEnd.toDate()),
-                startTime: firestore.Timestamp.fromDate(sessionStart.toDate()),
+                endTime: Timestamp.fromDate(sessionEnd.toDate()),
+                startTime: Timestamp.fromDate(sessionStart.toDate()),
                 tas: sessionSeries.tas,
                 title: sessionSeries.title,
                 totalQuestions: 0,
@@ -66,14 +64,16 @@ export const createSeries = async (
                 isPaused: false,
             };
 
-            batch.set(db.collection('sessions').doc(), derivedSession);
+            // Generate a new unique ID for each session
+            const sessionId = doc(collection(firestore, 'sessions')).id;
+            batch.set(doc(db, 'sessions', sessionId), derivedSession);
         } else if (sessionSeries.modality === "review") {
             const derivedSession: Omit<FireReviewSession, 'sessionId'> = {
                 modality: sessionSeries.modality,
                 sessionSeriesId,
                 courseId: sessionSeries.courseId,
-                endTime: firestore.Timestamp.fromDate(sessionEnd.toDate()),
-                startTime: firestore.Timestamp.fromDate(sessionStart.toDate()),
+                endTime: Timestamp.fromDate(sessionEnd.toDate()),
+                startTime: Timestamp.fromDate(sessionStart.toDate()),
                 tas: sessionSeries.tas,
                 title: sessionSeries.title,
                 totalQuestions: 0,
@@ -84,8 +84,9 @@ export const createSeries = async (
                 link: sessionSeries.link,
                 isPaused: false,
             };
-
-            batch.set(db.collection('sessions').doc(), derivedSession);
+            // Generate a new unique ID for each session
+            const sessionId = doc(collection(firestore, 'sessions')).id;
+            batch.set(doc(db, 'sessions', sessionId), derivedSession);
         } else {
             let hybridProperty = {}
 
@@ -95,16 +96,15 @@ export const createSeries = async (
                 }
             }
 
-
             const derivedSession: Omit<FireInPersonSession | FireHybridSession, 'sessionId'> = {
                 ...hybridProperty,
                 sessionSeriesId,
                 modality: sessionSeries.modality,
                 building: sessionSeries.building,
                 courseId: sessionSeries.courseId,
-                endTime: firestore.Timestamp.fromDate(sessionEnd.toDate()),
+                endTime: Timestamp.fromDate(sessionEnd.toDate()),
                 room: sessionSeries.room,
-                startTime: firestore.Timestamp.fromDate(sessionStart.toDate()),
+                startTime: Timestamp.fromDate(sessionStart.toDate()),
                 tas: sessionSeries.tas,
                 title: sessionSeries.title,
                 totalQuestions: 0,
@@ -114,26 +114,24 @@ export const createSeries = async (
                 totalResolveTime: 0,
                 isPaused: false,
             };
-
-            batch.set(db.collection('sessions').doc(), derivedSession);
+            // Generate a new unique ID for each session
+            const sessionId = doc(collection(firestore, 'sessions')).id;
+            batch.set(doc(db, 'sessions', sessionId), derivedSession);
         }
     })
     await batch.commit();
 };
 
 export const updateSeries = async (
-    db: firebase.firestore.Firestore,
+    db: Firestore,
     sessionSeriesId: string,
     sessionSeries: FireSessionSeriesDefinition
 ): Promise<void> => {
     const adjustedStartTime = moment(sessionSeries.startTime.toDate()).tz("America/New_York");
     const adjustedEndTime = moment(sessionSeries.endTime.toDate()).tz("America/New_York");
-
-    const querySnapshot = await db
-        .collection('sessions')
-        .where('sessionSeriesId', '==', sessionSeriesId)
-        .get();
-    const batch = db.batch();
+    const sessionRef = collection(db, 'sessions');
+    const querySnapshot = await getDocs(query(sessionRef, where('sessionSeriesId', '==', sessionSeriesId)));
+    const batch = writeBatch(db);
     querySnapshot.forEach((sessionDocument) => {
         const sessionId = sessionDocument.id;
         const oldSession = sessionDocument.data() as Omit<FireSession, 'sessionId'>;
@@ -147,10 +145,10 @@ export const updateSeries = async (
         const newEndTime = moment(oldSession.endTime.toDate()).tz("America/New_York");
         syncTimes(newEndTime, adjustedEndTime);
 
-        const startTime = firestore.Timestamp.fromDate(
+        const startTime = Timestamp.fromDate(
             newStartTime.toDate()
         );
-        const endTime = firestore.Timestamp.fromDate(
+        const endTime = Timestamp.fromDate(
             newEndTime.toDate()
         );
 
@@ -181,7 +179,8 @@ export const updateSeries = async (
                 TALink: sessionSeries.TALink,
                 isPaused: false,
             };
-            batch.set(db.collection('sessions').doc(sessionId), newSession);
+            const sessionDoc = doc(db, 'sessions', sessionId); 
+            batch.set(sessionDoc, newSession);
         } else if (sessionSeries.modality === "review") {
             const newSession: Omit<FireReviewSession, 'sessionId'> = {
                 sessionSeriesId,
@@ -199,7 +198,8 @@ export const updateSeries = async (
                 link: sessionSeries.link,
                 isPaused: false,
             };
-            batch.set(db.collection('sessions').doc(sessionId), newSession);
+            const sessionDoc = doc(db, 'sessions', sessionId); 
+            batch.set(sessionDoc, newSession);
         } else {
 
             let hybridProperty = {}
@@ -228,18 +228,20 @@ export const updateSeries = async (
                 totalResolveTime: 0,
                 isPaused: false,
             };
-            batch.set(db.collection('sessions').doc(sessionId), newSession);
+            const sessionDoc = doc(db, 'sessions', sessionId); 
+            batch.set(sessionDoc, newSession);
         }
 
     });
     await batch.commit();
 };
 
-export const deleteSeries = async (db: firebase.firestore.Firestore, sessionSeriesId: string): Promise<void> => {
-    const querySnapshot = await db.collection('sessions').where('sessionSeriesId', '==', sessionSeriesId).get();
-    const batch = db.batch();
+export const deleteSeries = async (db: Firestore, sessionSeriesId: string): Promise<void> => {
+    const sessionRef = collection(db, 'sessions');
+    const querySnapshot = await getDocs(query(sessionRef, where('sessionSeriesId', '==', sessionSeriesId)));
+    const batch = writeBatch(db);
     querySnapshot.docs.forEach((document) =>
-        batch.delete(db.collection('sessions').doc(document.id))
+        batch.delete(doc(db, 'sessions', document.id))
     );
     await batch.commit();
 };

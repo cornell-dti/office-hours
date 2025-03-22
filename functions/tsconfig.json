@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "moduleResolution": "node",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "outDir": "lib",
@@ -16,5 +17,5 @@
     "src",
     "../src/components/types/fireData.d.ts",
     "../src/components/types/requestData.d.ts"
-  ]
+  ],
 }

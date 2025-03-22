@@ -10,6 +10,7 @@ import { CURRENT_SEMESTER } from '../../constants';
 import { updateCourses } from '../../firebasefunctions/courses';
 import { RootState } from '../../redux/store';
 import Wrapped from './Wrapped';
+import { Loader } from "semantic-ui-react";
 
 type Props = {
     readonly user: FireUser;
@@ -26,7 +27,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     // Normal editing mode (isNormalEditingMode=true) has all the controls.
     // On the contrary, onboarding (isNormalEditingMode=false) has only enroll button.
-    const [isNormalEditingMode, setEditingMode] = useState<boolean>(user.courses.length > 0);
+    const [isNormalEditingMode, setEditingMode] = useState<boolean>(user && user.courses.length > 0);
 
     const [currentCourses, setCurrentCourses] = useState<FireCourse[]>([]);
     const [formerCourses, setFormerCourses] = useState<FireCourse[]>([]);
@@ -34,19 +35,19 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     // current searched courses
     const [filteredCourses] = useState<FireCourse[]>(currentCourses);
-    useEffect(() => {
-        setCurrentlyEnrolledCourseIds(new Set(user.courses));
-    }, [user.courses]);
+        useEffect(() => {
+            setCurrentlyEnrolledCourseIds(new Set(user?.courses));
+        }, [user?.courses]);
 
     const filterOnActiveAndRole = React.useCallback(() => {
         return allCourses
             .filter((course) => course.semester === CURRENT_SEMESTER)
             .sort((a, b) => {
-                const isUserTAorProfA = a.tas?.includes(user.userId) || a.professors?.includes(user.userId) ? 1 : 0;
-                const isUserTAorProfB = b.tas?.includes(user.userId) || b.professors?.includes(user.userId) ? 1 : 0;
+                const isUserTAorProfA = a.tas?.includes(user?.userId) || a.professors?.includes(user?.userId) ? 1 : 0;
+                const isUserTAorProfB = b.tas?.includes(user?.userId) || b.professors?.includes(user?.userId) ? 1 : 0;
                 return isUserTAorProfB - isUserTAorProfA; // Sort in descending order (1's before 0's)
             });
-    }, [allCourses, user.userId]);
+    }, [allCourses, user?.userId]);
 
     useEffect(() => {
         setCurrentCourses(filterOnActiveAndRole);
@@ -61,11 +62,11 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     const [currentlyEnrolledCourseIds, setCurrentlyEnrolledCourseIds] = useState(new Set<string>());
 
     useEffect(() => {
-        setCurrentlyEnrolledCourseIds(new Set(user.courses));
-    }, [user.courses]);
+        setCurrentlyEnrolledCourseIds(new Set(user?.courses));
+    }, [user?.courses]);
 
     const preSelectedCourses: FireCourse[] =
-        user.courses.length > 0 ? currentCourses.filter((course) => user.roles[course.courseId] !== undefined) : [];
+        user?.courses.length > 0 ? currentCourses.filter((course) => user.roles[course.courseId] !== undefined) : [];
 
     const [selectedCourses, setSelectedCourses] = useState<FireCourse[]>(preSelectedCourses);
 
@@ -75,12 +76,12 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     useEffect(() => {
         setSelectedCourses(
             currentCourses.filter(
-                ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] === undefined,
+                ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user && user.roles[courseId] === undefined,
             ),
         );
         setUnchangableCourses(
             currentCourses.filter(
-                ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user.roles[courseId] !== undefined,
+                ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user && user.roles[courseId] !== undefined,
             ),
         );
     }, [user, filteredCourses, currentlyEnrolledCourseIds, currentCourses]);
@@ -99,11 +100,11 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
             // Otherwise, it means that the course has already been enrolled. We just keep it.
         } else {
             // The course is not selected.
-            if (!currentlyEnrolledCourseIds.has(courseId) || user.roles[courseId] !== undefined) {
+            if (!currentlyEnrolledCourseIds.has(courseId) || user?.roles[courseId] !== undefined) {
                 // Either
                 // - Previously not enrolled, still not enrolled.
                 // - Is a professor or a TA of the class. Cannot change by themselves.
-                if (user.roles[courseId] === "professor" || user.roles[courseId] === "ta") {
+                if (user?.roles[courseId] === "professor" || user?.roles[courseId] === "ta") {
                     numCoursesWithRoles += 1;
                 }
                 // We Do nothing.
@@ -130,6 +131,11 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     useEffect(() => {
         setSelectedCourseIds(selectedCourses.map((course) => course.courseId));
     }, [selectedCourses]);
+
+    // extra check if user is logged out
+    if (!user) {
+        return <Loader active={true} content={"Loading"} />;
+    }
 
     const onSelectCourse = (course: FireCourse, addCourse: boolean) => {
         setSelectedCourses((previousSelectedCourses) =>
@@ -257,7 +263,8 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                                     isEdit,
                                             )
                                             .map((course) => {
-                                                const role = currentlyEnrolledCourseIds.has(course.courseId)
+                                                const role = currentlyEnrolledCourseIds.has(course.courseId) 
+                                                && user
                                                     ? user.roles[course.courseId] || "student"
                                                     : undefined;
                                                 const selected =
@@ -322,6 +329,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                                                 )
                                                 .map((course, index) => {
                                                     const role = currentlyEnrolledCourseIds.has(course.courseId)
+                                                    && user
                                                         ? user.roles[course.courseId] || "student"
                                                         : undefined;
                                                     return (

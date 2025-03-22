@@ -47,8 +47,14 @@ const TopBar = (props: Props) => {
     const notificationTracker = useNotificationTracker(email);
     const countdownZero = props.countdownZero;
     const setDisplayWrapped = props.setDisplayWrapped;
+    console.log('hi');
+    console.log(user);
+    useEffect(() => {
+        console.log("useEffect triggered, user:", user);
+    }, [user]);
 
     useEffect(() => {
+        console.log('hey?');
         if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
             for (let i = 0; i < notificationTracker.notificationList.length; i++) {
                 const notif = notificationTracker.notificationList[i];
@@ -59,13 +65,27 @@ const TopBar = (props: Props) => {
                     notificationTracker.lastSent === undefined ||
                     notif.createdAt.toDate().getTime() > notificationTracker?.lastSent.toDate().getTime() + 2000
                 ) {
-                    updateLastSent(user, notificationTracker);
-                    addNotification({
-                        title: notif.title,
-                        subtitle: notif.subtitle,
-                        message: notif.message,
-                        native: true,
-                    });
+                    //console.log(":(");
+                    //console.log(notificationTracker.notificationList.length);
+                    //updateLastSent(user, notificationTracker);
+                    console.log('bruh');
+                    // Only show native notification if permission is granted
+                    if (Notification.permission === "granted") {
+                        console.log('bruh2');
+                        addNotification({
+                            title: notif.title,
+                            subtitle: notif.subtitle,
+                            message: notif.message,
+                            native: true,
+                        });
+                    }
+
+                    // addNotification({
+                    //     title: notif.title,
+                    //     subtitle: notif.subtitle,
+                    //     message: notif.message,
+                    //     native: true,
+                    // });
                     // hacky fix for duplicate notifs--server update to lastSent doesn't occur quickly enough
                     setTimeout(() => {}, 100);
                 } else {
@@ -73,7 +93,9 @@ const TopBar = (props: Props) => {
                 }
             }
         }
-    }, [notificationTracker, user]);
+    }, 
+    // eslint-disable-next-line
+    [ user]);
 
     const handleClick = (e: globalThis.MouseEvent) => {
         if (ref.current && !ref.current.contains(e.target as Node)) {
