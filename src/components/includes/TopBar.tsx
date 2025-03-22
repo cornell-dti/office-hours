@@ -47,9 +47,14 @@ const TopBar = (props: Props) => {
     const notificationTracker = useNotificationTracker(email);
     const countdownZero = props.countdownZero;
     const setDisplayWrapped = props.setDisplayWrapped;
-
-    const listlen = notificationTracker?.notificationList
+    console.log('hi');
+    console.log(user);
     useEffect(() => {
+        console.log("useEffect triggered, user:", user);
+    }, [user]);
+
+    useEffect(() => {
+        console.log('hey?');
         if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
             for (let i = 0; i < notificationTracker.notificationList.length; i++) {
                 const notif = notificationTracker.notificationList[i];

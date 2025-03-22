@@ -214,7 +214,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
         const primaryTagsMissing = !selectedPrimary;
         const secondaryTagsMissing = !selectedSecondary;
-        const locationMissing = !location;
+        const locationMissing = session.modality === "virtual" ? false : !location;
         const questionMissing = !question;
 
         setMissingPrimaryTags(primaryTagsMissing);
