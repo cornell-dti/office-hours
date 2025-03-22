@@ -180,10 +180,9 @@ exports.onCommentCreate = onDocumentCreated(`questions/{questionId}/comments/{co
                     subtitle: 'New TA comment',
                     message: `A TA commented on your question`.trim(),
                     createdAt: Timestamp.now()
-                })
-            }).then(() => {
-            updateDoc(userDocRef, { lastSent: Timestamp.now() });
-        })
+                }),
+                lastSent: Timestamp.now()
+            })
             .catch(() => {
                 setDoc(userDocRef, {id: asker.email,
                     notificationList: [{
@@ -221,6 +220,7 @@ exports.onSessionUpdate = onDocumentUpdated('sessions/{sessionId}', async (event
     const sessionName: string | undefined= (change.after.data() as FireSession).title
 
     const topQuestion: FireQuestion = (afterQuestions[0].data() as FireQuestion);
+    
 
     // if the top active question was not notified, notify them
     if (!topQuestion.wasNotified) {
@@ -248,9 +248,10 @@ exports.onSessionUpdate = onDocumentUpdated('sessions/{sessionId}', async (event
                 ${sessionName} queue. A TA will likely help you shortly.`,
                     createdAt: Timestamp.now()
                 }],
+                lastSent: Timestamp.now(),
                 notifications: Timestamp.now(),
                 productUpdates: Timestamp.now(),
-                lastSent: Timestamp.now(),})
+            })
         
         });
         updateDoc(doc(db, 'questions', afterQuestions[0].id), {
