@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 
 import { connect } from 'react-redux';
-import { Icon } from 'semantic-ui-react'
+import { Icon, Loader } from 'semantic-ui-react'
 import TopBar from './TopBar';
 import CourseCard from './CourseCard';
 import { CURRENT_SEMESTER } from '../../constants';
 import { updateCourses } from '../../firebasefunctions/courses';
 import { RootState } from '../../redux/store';
 import Wrapped from './Wrapped';
-import { Loader } from "semantic-ui-react";
+
 
 type Props = {
     readonly user: FireUser;
@@ -35,9 +35,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     // current searched courses
     const [filteredCourses] = useState<FireCourse[]>(currentCourses);
-        useEffect(() => {
-            setCurrentlyEnrolledCourseIds(new Set(user?.courses));
-        }, [user?.courses]);
+    useEffect(() => {
+        setCurrentlyEnrolledCourseIds(new Set(user?.courses));
+    }, [user?.courses]);
 
     const filterOnActiveAndRole = React.useCallback(() => {
         return allCourses
@@ -76,12 +76,14 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     useEffect(() => {
         setSelectedCourses(
             currentCourses.filter(
-                ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user && user.roles[courseId] === undefined,
+                ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) &&
+                 user && user.roles[courseId] === undefined,
             ),
         );
         setUnchangableCourses(
             currentCourses.filter(
-                ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && user && user.roles[courseId] !== undefined,
+                ({ courseId }) => currentlyEnrolledCourseIds.has(courseId) && 
+                user && user.roles[courseId] !== undefined,
             ),
         );
     }, [user, filteredCourses, currentlyEnrolledCourseIds, currentCourses]);

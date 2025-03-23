@@ -174,7 +174,6 @@ const SplitView = ({
         try {
             // Request permission to send desktop notifications
             if (Notification.permission === "default") {
-                console.log("Requesting notification permission...");
                 Notification.requestPermission();
             }
         } catch (error) {

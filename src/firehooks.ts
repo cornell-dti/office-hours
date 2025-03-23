@@ -417,7 +417,8 @@ export const useParameterizedComments: (questionId: string) => readonly FireComm
 export const useProductUpdate = (): BlogPost | undefined => useAllBlogPosts()[0]
 
 export const useNotificationTracker =
-    (trackerId: string | undefined): NotificationTracker | undefined => useDoc<NotificationTracker>('notificationTrackers', trackerId, 'trackerId');
+    (trackerId: string | undefined): NotificationTracker | undefined => 
+        useDoc<NotificationTracker>('notificationTrackers', trackerId, 'trackerId');
 
 
 export const useNotifications =

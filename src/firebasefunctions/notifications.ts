@@ -177,29 +177,9 @@ export const updateLastSent =
             if (email !== null) {
                 const trackerRef = doc(firestore, 'notificationTrackers', email);
                 const trackerSnap = await getDoc(trackerRef);
-                // console.log('ayo2');
-                // console.log(trackerSnap);
-                // console.log(trackerSnap?.exists);
-                // console.log(notificationTracker);
                 if( trackerSnap.exists() && notificationTracker !== undefined ){
-                    console.log('ayo');
-                    const prevTracker = trackerSnap.data() as NotificationTracker;
-                    const prevNotificationCount = prevTracker.notificationList?.length || 0;
-                    const newNotificationCount = notificationTracker.notificationList?.length || 0;
-                    console.log('counts');
-                    console.log(prevNotificationCount);
-                    console.log(newNotificationCount);
-                    
-                    if (newNotificationCount !== prevNotificationCount ) {
-                        console.log("New notification detected. Updating lastSent...");
-                        await updateDoc(trackerRef, { lastSent: Timestamp.now() });
-                    } else {
-                        console.log("No new notifications - skipping update.");
-                    }
-
-                    //await updateDoc(trackerRef, updatedTracker);
+                    await updateDoc(trackerRef, updatedTracker);
                 } else {
-                    console.log("new");
                     updatedTracker.id = email;
                     updatedTracker.notificationList = [];
                     updatedTracker.notifications = Timestamp.now();

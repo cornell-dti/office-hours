@@ -5,13 +5,13 @@ import { useHistory } from "react-router";
 import { connect } from "react-redux";
 import addNotification from "react-push-notification";
 import { Icon } from "semantic-ui-react";
+import { doc, updateDoc, Timestamp} from 'firebase/firestore';
 import { logOut } from "../../firebasefunctions/user";
 import Logo from "../../media/QLogo2.svg";
 import CalendarHeader from "./CalendarHeader";
 import ProfessorStudentToggle from "./ProfessorStudentToggle";
 import TopBarNotifications from "./TopBarNotifications";
 import { useNotificationTracker } from "../../firehooks";
-import { doc, updateDoc, Timestamp} from 'firebase/firestore';
 import { RootState } from "../../redux/store";
 import { firestore } from "../../firebase";
 import Snackbar from "./Snackbar";
@@ -52,13 +52,16 @@ const TopBar = (props: Props) => {
     const updateLastSent = useCallback(() => {
         if (!notificationTracker?.id || !notificationTracker.notificationList || !user?.email) return;
         const now =  Timestamp.now();
-        if (notificationTracker.lastSent && now.toDate().getTime() - notificationTracker.lastSent.toDate().getTime() < 5000) {
+        if (notificationTracker.lastSent && now.toDate().getTime() - 
+        notificationTracker.lastSent.toDate().getTime() < 5000) {
             // Skipping update, lastSesnt was updated recently
             return;
         }
         updateDoc(doc(firestore, "notificationTrackers", user.email), {
             lastSent: now
-        }).catch(error => console.error("Error updating lastSent:", error));
+        }).catch(error => {
+            // eslint-disable-next-line no-console
+            console.error("Error updating lastSent:", error)});
     }, [ notificationTracker?.notificationList]); 
 
     useEffect(() => {
@@ -72,7 +75,7 @@ const TopBar = (props: Props) => {
                     notificationTracker.lastSent === undefined ||
                     notif.createdAt.toDate().getTime() > notificationTracker?.lastSent.toDate().getTime() + 2000
                 ) {
-                   updateLastSent();
+                    updateLastSent();
                     // Only show native notification if permission is granted
                     if (Notification.permission === "granted") {
                         addNotification({
