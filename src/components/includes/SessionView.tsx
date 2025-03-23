@@ -15,7 +15,6 @@ import {
 } from "../../firehooks";
 import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
 import { filterUnresolvedQuestions } from "../../utilities/questions";
-import { getNumberOfStudentsPerTA } from "../../firebasefunctions/session";
 import { firestore } from "../../firebase";
 
 import { RootState } from "../../redux/store";
@@ -131,7 +130,6 @@ const SessionView = ({
             unsubscribe = userRef.onSnapshot((snapshot) => {
                 const userData = snapshot.data() as FireUser;
                 const recentlyResolvedQuestion = userData.recentlyResolvedQuestion;
-                console.log("recentlyResolvedQuestion: ", recentlyResolvedQuestion)
                 if (!recentlyResolvedQuestion) {
                     return;
                 }
