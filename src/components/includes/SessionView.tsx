@@ -133,7 +133,6 @@ const SessionView = ({
             unsubscribe = userRef.onSnapshot((snapshot) => {
                 const userData = snapshot.data() as FireUser;
                 const recentlyResolvedQuestion = userData.recentlyResolvedQuestion;
-                console.log("recentlyResolvedQuestion: ", recentlyResolvedQuestion)
                 if (!recentlyResolvedQuestion) {
                     return;
                 }

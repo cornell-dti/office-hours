@@ -99,14 +99,16 @@ export const getNumberOfStudentsPerTA = async (
     }
     // Get the session ID
     const sessionId = session.sessionId;
-    // Get the reference to the question collection but only containing questions from this specific session and are assigned to a TA
+    // Get the reference to the question collection but only containing questions 
+    // from this specific session and are assigned to a TA
     const questionsRef = firestore
         .collection("questions")
         .where("sessionId", "==", sessionId)
         .where("status", "==", "assigned");
     
     // Create a set to store unique students (same student may ask multiple questions)
-    // We are using number of UNIQUE students as metric rather than just the total number of questions without accounting for their askers
+    // We are using number of UNIQUE students as metric rather than just the total number of 
+    // questions without accounting for their askers
     const uniqueStudents = new Set<string>();
 
     const snapshot = await questionsRef.get();
