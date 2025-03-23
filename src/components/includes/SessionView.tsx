@@ -15,7 +15,7 @@ import {
 } from "../../firehooks";
 import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
 import { filterUnresolvedQuestions } from "../../utilities/questions";
-
+import { getNumberOfStudentsPerTA } from "../../firebasefunctions/session";
 
 import { RootState } from "../../redux/store";
 import Banner from "./Banner";
@@ -128,12 +128,14 @@ const SessionView = ({
      */
     useEffect(() => {
         let unsubscribe: () => void;
-        
+        console.log("User Id: ", user.userId)
         if (!isTa && !isProf) {
+            console.log("ran admin check")
             const userRef = firestore.collection("users").doc(user.userId);
             unsubscribe = userRef.onSnapshot((snapshot) => {
                 const userData = snapshot.data() as FireUser;
                 const recentlyResolvedQuestion = userData.recentlyResolvedQuestion;
+                console.log("recentlyResolvedQuestion: ", recentlyResolvedQuestion)
                 if (!recentlyResolvedQuestion) {
                     return;
                 }
@@ -141,6 +143,7 @@ const SessionView = ({
                     removeQuestionDisplayFeedback(recentlyResolvedQuestion.questionId);
                     // Deletes the recentlyResolvedQuestion field from the user document
                     userRef.update({ recentlyResolvedQuestion: firebase.firestore.FieldValue.delete() });
+                    console.log("ran updates")
                 }
             });
         }
@@ -152,6 +155,26 @@ const SessionView = ({
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    /** This useEffect fetches the number of students per TA in the session. It uses the
+     * [getNumberOfStudentsPerTA] function from the firebasefunctions/session.ts file to
+     * calculate the ratio of students per TA. This ratio will be used for the TA block
+     * component. The useEffect is triggered when the session changes. The [fetchNUmberOfStudentsPerTA]
+     * function is an async function that awaits the result of the [getNumberOfStudentsPerTA] function.
+     */
+    useEffect(() => { 
+        const fetchNumberOfStudentsPerTA = async () => {
+            try {
+                const numberOfStudentsPerTa = await getNumberOfStudentsPerTA(session);
+                console.log("Number of Students Per TA:", numberOfStudentsPerTa);
+            } catch (error) {
+                console.error("Error fetching number of students per TA:", error);
+            }
+        };
+        if (session) {
+            fetchNumberOfStudentsPerTA();
+        }
+     }, [session]);
 
     const dismissUndo = () => {
         if (timeoutId) {
