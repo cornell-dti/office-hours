@@ -117,8 +117,5 @@ export const getNumberOfStudentsPerTA = async (
             uniqueStudents.add(data.askerId);
         }
     });
-
-    console.log("Number of TAs: ", numberOfTAs)
-    console.log("Number of Unique Students: ", uniqueStudents.size)
     return uniqueStudents.size / numberOfTAs;
 }   
