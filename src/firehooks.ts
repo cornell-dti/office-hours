@@ -22,9 +22,9 @@ export const useDoc = <T>(collectionDoc: string, id: string | undefined, idField
                 const primaryTag$: Observable<T> = 
                 docData(doc(firestore, collectionDoc, id), {idField: idFieldArg}) as Observable<T>;
                 const subscription = primaryTag$.subscribe((d:T) => {
-                    if (d === undefined) {
+                    if (!d) {
                         // eslint-disable-next-line no-console
-                        console.warn(`Firestore document ${collectionDoc}/${id} is undefined.`);
+                        console.warn(`Firestore document ${collectionDoc}/${id} is undefined or null.`);
                     } else if (typeof d !== "object") {
                         // eslint-disable-next-line no-console
                         console.error(`Unexpected Firestore data type:`, d);
@@ -417,8 +417,8 @@ export const useParameterizedComments: (questionId: string) => readonly FireComm
 export const useProductUpdate = (): BlogPost | undefined => useAllBlogPosts()[0]
 
 export const useNotificationTracker =
-    (trackerId: string | undefined): NotificationTracker | undefined =>
-        useDoc<NotificationTracker>('notificationTrackers', trackerId, 'trackerId')
+    (trackerId: string | undefined): NotificationTracker | undefined => useDoc<NotificationTracker>('notificationTrackers', trackerId, 'trackerId');
+
 
 export const useNotifications =
     (trackerId: string | undefined): SessionNotification[] | undefined =>

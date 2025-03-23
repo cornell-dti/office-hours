@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback} from "react";
 
 import { useHistory } from "react-router";
 
@@ -11,8 +11,9 @@ import CalendarHeader from "./CalendarHeader";
 import ProfessorStudentToggle from "./ProfessorStudentToggle";
 import TopBarNotifications from "./TopBarNotifications";
 import { useNotificationTracker } from "../../firehooks";
+import { doc, updateDoc, Timestamp} from 'firebase/firestore';
 import { RootState } from "../../redux/store";
-import { updateLastSent } from "../../firebasefunctions/notifications";
+import { firestore } from "../../firebase";
 import Snackbar from "./Snackbar";
 import TextNotificationModal from "./TextNotificationModal";
 
@@ -47,14 +48,20 @@ const TopBar = (props: Props) => {
     const notificationTracker = useNotificationTracker(email);
     const countdownZero = props.countdownZero;
     const setDisplayWrapped = props.setDisplayWrapped;
-    console.log('hi');
-    console.log(user);
-    useEffect(() => {
-        console.log("useEffect triggered, user:", user);
-    }, [user]);
+
+    const updateLastSent = useCallback(() => {
+        if (!notificationTracker?.id || !notificationTracker.notificationList || !user?.email) return;
+        const now =  Timestamp.now();
+        if (notificationTracker.lastSent && now.toDate().getTime() - notificationTracker.lastSent.toDate().getTime() < 5000) {
+            // Skipping update, lastSesnt was updated recently
+            return;
+        }
+        updateDoc(doc(firestore, "notificationTrackers", user.email), {
+            lastSent: now
+        }).catch(error => console.error("Error updating lastSent:", error));
+    }, [ notificationTracker?.notificationList]); 
 
     useEffect(() => {
-        console.log('hey?');
         if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
             for (let i = 0; i < notificationTracker.notificationList.length; i++) {
                 const notif = notificationTracker.notificationList[i];
@@ -65,13 +72,9 @@ const TopBar = (props: Props) => {
                     notificationTracker.lastSent === undefined ||
                     notif.createdAt.toDate().getTime() > notificationTracker?.lastSent.toDate().getTime() + 2000
                 ) {
-                    //console.log(":(");
-                    //console.log(notificationTracker.notificationList.length);
-                    //updateLastSent(user, notificationTracker);
-                    console.log('bruh');
+                   updateLastSent();
                     // Only show native notification if permission is granted
                     if (Notification.permission === "granted") {
-                        console.log('bruh2');
                         addNotification({
                             title: notif.title,
                             subtitle: notif.subtitle,
@@ -95,7 +98,7 @@ const TopBar = (props: Props) => {
         }
     }, 
     // eslint-disable-next-line
-    [ user]);
+    [ notificationTracker?.notificationList ]);
 
     const handleClick = (e: globalThis.MouseEvent) => {
         if (ref.current && !ref.current.contains(e.target as Node)) {
