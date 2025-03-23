@@ -15,6 +15,7 @@ import { RootState } from "../../redux/store";
 import { updateLastSent } from "../../firebasefunctions/notifications";
 import Snackbar from "./Snackbar";
 import TextNotificationModal from "./TextNotificationModal";
+import TAStudentToggle from "./TAStudentToggle";
 
 type Props = {
     courseId: string;
@@ -106,6 +107,9 @@ const TopBar = (props: Props) => {
                         />
                         {props.role === "professor" && (
                             <ProfessorStudentToggle courseId={props.courseId} context={props.context} />
+                        )}
+                        {props.role === "ta" && (
+                            <TAStudentToggle courseId={props.courseId} context={props.context} />
                         )}
                     </div>
                     <div className="rightContentWrapper">
