@@ -1,10 +1,8 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import { ReactComponent as ViewIcon } from "../../media/ViewIcon.svg";
 import { ReactComponent as Clipboard } from "../../media/clipboard.svg";
 // import { ReactComponent as LineGraph } from "../../media/linegraph.svg";
-import ExportCSVModal from "./ExportCSV";
 
 type Props = {
     courseId: number | string;
@@ -12,10 +10,22 @@ type Props = {
     selected: "prep" | "analytics" | "student" ;
 };
 
+/**
+ * TASidebar Component - Displays a component on the left side of the screen
+ * to allow TAs to navigate between pages: 
+ * - Preparation: with Student Query Trends & Resources 
+ * - Analytics: with Metrics & Student Reviews
+ * - Student View: what the students can see
+ * 
+ * @component
+ * @param Props - Contains: 
+ * - `courseId`: the id for the course the TA is enrolled in ex. CS 3110
+ * - `code`: the course code ex. 3110
+ * - `selected`: which page the TA has currently selected
+ * @returns 
+ */
 const TASidebar = ({ courseId, code, selected }: Props) => {
     const css = (condition: boolean) => (condition ? "selected" : "");
-
-    const [showModal, setShowModal] = useState(false);
 
     return (
         <>
@@ -52,7 +62,6 @@ const TASidebar = ({ courseId, code, selected }: Props) => {
                     </div>
                 </div>
             </div>
-            <ExportCSVModal setShowModal={setShowModal} showModal={showModal} courseId={"" + courseId} />
         </>
     );
 };
