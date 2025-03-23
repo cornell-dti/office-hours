@@ -510,11 +510,9 @@ exports.onQuestionStatusUpdate = functions.firestore
                     // Object with questionId, askerId, and resolvedAt fields
                     // questionId: the id of the question that was resolved
                     // askerId: the id of the user who asked the question
-                    // resolvedAt: the time the question was resolved
                     recentlyResolvedQuestion: {
                         questionId,
                         askerId: userId,
-                        resolvedAt: admin.firestore.Timestamp.now(),
                     }
                 });
         }
