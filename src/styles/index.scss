@@ -75,6 +75,10 @@ $mobile-breakpoint: 920px;
 @import "./professor/ProfessorRoles";
 @import "./professor/ExportCSVModal";
 
+//TA
+@import "./ta/TASidebar.scss";
+@import "./ta/TAView.scss";
+
 // Admin
 @import "./AdminView";
 
