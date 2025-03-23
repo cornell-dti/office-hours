@@ -139,9 +139,10 @@
         .UnselectedProfessorViewDashboard,
         .UnselectedProfessorViewQueue {
             height: 100%;
+            width: 112px;
             border: 2px solid #d2d2d2;
             box-sizing: border-box;
-            padding: 4px 10px;
+            padding: 4px 11px 4px 10px;
             a {
                 color: #909090;
             }
@@ -158,6 +159,8 @@
         .SelectedProfessorViewQueue,
         .SelectedProfessorViewDashboard {
             height: 100%;
+            width: 113px;
+            color: #2478CA;
             padding: 4px 10px;
             background: #e1f0fe;
             border: 2px solid #3594f1;
@@ -292,9 +295,10 @@
         .UnselectedTAViewDashboard,
         .UnselectedTAViewQueue {
             height: 100%;
+            width: 112px;
             border: 2px solid #d2d2d2;
             box-sizing: border-box;
-            padding: 4px 10px;
+            padding: 4px 11px 4px 10px;
             a {
                 color: #909090;
             }
@@ -311,6 +315,8 @@
         .SelectedTAViewQueue,
         .SelectedTAViewDashboard {
             height: 100%;
+            width: 113px;
+            color: #2478CA;
             padding: 4px 10px;
             background: #e1f0fe;
             border: 2px solid #3594f1;
