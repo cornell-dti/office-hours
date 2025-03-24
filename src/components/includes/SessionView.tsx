@@ -15,7 +15,6 @@ import {
 } from "../../firehooks";
 import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
 import { filterUnresolvedQuestions } from "../../utilities/questions";
-
 import { firestore } from "../../firebase";
 
 import { RootState } from "../../redux/store";
@@ -126,7 +125,6 @@ const SessionView = ({
      */
     useEffect(() => {
         let unsubscribe: () => void;
-        
         if (!isTa && !isProf) {
             const userRef = firestore.collection("users").doc(user.userId);
             unsubscribe = userRef.onSnapshot((snapshot) => {
@@ -150,6 +148,26 @@ const SessionView = ({
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    /** This useEffect fetches the number of students per TA in the session. It uses the
+     * [getNumberOfStudentsPerTA] function from the firebasefunctions/session.ts file to
+     * calculate the ratio of students per TA. This ratio will be used for the TA block
+     * component eventually. The useEffect is triggered when the session changes. The [fetchNUmberOfStudentsPerTA]
+     * function is an async function that awaits the result of the [getNumberOfStudentsPerTA] function.
+     */
+    // useEffect(() => { 
+    //     const fetchNumberOfStudentsPerTA = async () => {
+    //         try {
+    //             const numberOfStudentsPerTa = await getNumberOfStudentsPerTA(session);
+    //             console.log("Number of Students Per TA:", numberOfStudentsPerTa);
+    //         } catch (error) {
+    //             console.error("Error fetching number of students per TA:", error);
+    //         }
+    //     };
+    //     if (session) {
+    //         fetchNumberOfStudentsPerTA();
+    //     }
+    //  }, [session]);
 
     const dismissUndo = () => {
         if (timeoutId) {
