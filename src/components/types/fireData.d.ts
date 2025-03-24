@@ -150,7 +150,6 @@ type FireCourseRole = "professor" | "ta" | "student";
 interface ResolvedItem {
     questionId: string;
     askerId: string;
-    resolvedAt: FireTimestamp;
 }
 
 /**
