@@ -8,9 +8,12 @@ import AdminCourseCard from '../includes/AdminCourseCard';
 import AdminCourseCreator from '../includes/AdminCourseCreator';
 import { useAllCourses, useIsAdmin } from '../../firehooks';
 import { CURRENT_SEMESTER, ALL_SEMESTERS } from '../../constants';
+import  AnalyticsView from './AnalyticsView';
+import { Icon } from 'semantic-ui-react'
 
 
 const AdminView = () => {
+    const [collapsed, setCollapsed] = useState(true);
     const history = useHistory();
     const courses = useAllCourses();
     const isAdmin = useIsAdmin();
@@ -38,6 +41,23 @@ const AdminView = () => {
                 // This field is only necessary for professors, but we are always student/TA here.
                 courseId="DUMMY_COURSE_ID"
             />
+            <h2><br />Queue Me In Product Analytics</h2>     
+                    {collapsed ? (
+                        <Icon
+                        name='chevron down'
+                        onClick={() => { setCollapsed(false)}}
+                                    />
+                    ) : (
+                        <div>
+                        <Icon
+                            name='chevron up'
+                            onClick={() => setCollapsed(true)}
+                        />
+                        <AnalyticsView/>
+                        </div>
+                    )}
+
+
             <h2>Courses</h2>
             <FormControl sx={{ m: 1, minWidth: "8%", backgroundColor: "#FFFFFF" }}>
                 <InputLabel id="course-select-label">Semester</InputLabel>

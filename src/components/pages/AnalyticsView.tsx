@@ -2,7 +2,6 @@ import React, { useEffect } from 'react'
 import { useHistory } from 'react-router'
 import { Table } from 'semantic-ui-react';
 
-import TopBar from '../includes/TopBar';
 
 import { useIsAdmin, useAllCourses, useAllQuestions, useAllUsers, useAllSessions } from '../../firehooks';
 
@@ -69,12 +68,7 @@ const AnalyticsView = () => {
     }
     return (
         <>
-            <TopBar
-                role="professor"
-                context="professor"
-                courseId="DUMMY_COURSE_ID"
-            />
-            <h1><br />Queue Me In Product Analytics</h1>
+
             <div
                 style={{
                     display: 'flex',
