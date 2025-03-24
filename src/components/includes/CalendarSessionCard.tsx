@@ -78,7 +78,7 @@ const CalendarSessionCard = (props: {
                             ' Type'
                         }
                     >
-                        {session.modality !== 'review' ? 'OH' : 'Discussion'}
+                        {session.modality !== 'review' ? 'OH' : 'DIS'}
                     </div>
                 </div>
             </div>
