@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import firebase from "firebase/app";
+import {Timestamp} from 'firebase/firestore';
 import plusCircle from "../../media/plus-circle.svg";
 import chevronUp from "../../media/chevron-up.svg";
 import chevronDown from "../../media/chevron-down.svg";
-import announcement from "../../media/announcement.svg";
+import announcementImg from "../../media/announcement.svg";
 import { addTaAnnouncement, deleteTaAnnouncement } from "../../firebasefunctions/session";
 import { RootState } from "../../redux/store";
 
@@ -19,7 +19,7 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
     const [showAnnouncements, setShowAnnouncements] = useState(false);
     const [showNewAnnouncement, setShowNewAnnouncement] = useState(false);
     const [announcementContent, setAnnouncementContent] = useState("");
-    const [taAnnouncements, setTaAnnouncements] = useState(session.taAnnouncemements);
+    const [taAnnouncements, setTaAnnouncements] = useState(session.taAnnouncements);
 
     const clickCircleIcon = () => {
         setShowBody(true);
@@ -58,21 +58,21 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
 
     const getTimeDifference = (announcement: TaAnnouncement) => {
         const announcementTime = announcement.uploadTime.toDate().getTime();
-        const currentTime = firebase.firestore.Timestamp.now().toDate().getTime();
+        const currentTime = Timestamp.now().toDate().getTime();
         const difference = currentTime - announcementTime;
         const minutes = Math.round(difference / 60000);
         return [Math.floor(minutes / 60), minutes % 60];
     };
 
     useEffect(() => {
-        setTaAnnouncements(session.taAnnouncemements);
+        setTaAnnouncements(session.taAnnouncements);
     }, [session]);
 
     return (
         <div className="AnnouncementContainer">
             <div className="AnnouncementTop">
                 <div className="AnnouncementTitle">
-                    TA announcements ({taAnnouncements == null ? 0 : taAnnouncements.length})
+                    TA announcements ({!taAnnouncements ? 0 : taAnnouncements.length})
                 </div>
                 <div className="AnnouncementIcons">
                     {!showProfessorStudentView &&
@@ -86,7 +86,7 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
                 <div className="AnnouncementBottom">
                     {showAnnouncements && (
                         <div>
-                            {(taAnnouncements == null || taAnnouncements?.length === 0) && (
+                            {(!taAnnouncements|| taAnnouncements?.length === 0) && (
                                 <span className="NoAnnouncement">No announcements yet.</span>
                             )}
                             {taAnnouncements && (
@@ -97,7 +97,7 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
                                                 <div>
                                                     <img
                                                         alt="Announcement Icon"
-                                                        src={announcement}
+                                                        src={announcementImg}
                                                         className="AnnouncementIcon"
                                                     />
                                                     <img
@@ -118,7 +118,9 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
                                                 {a.announcement}
                                                 {a.ta.userId === user.userId && (
                                                     <span
-                                                        onClick={() => deleteAnnouncement(a.announcement, a.uploadTime)}
+                                                        onClick={() => {
+                                                            deleteAnnouncement(a.announcement, a.uploadTime)
+                                                        }}
                                                     >
                                                         DELETE
                                                     </span>
@@ -134,7 +136,7 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
                     {showNewAnnouncement && (
                         <div className="NewAnnouncement">
                             <div className="NewAnnouncementTop">
-                                <img src={announcement} alt="Announcements" />
+                                <img src={announcementImg} alt="Announcements" />
                                 <div className="NewAnnouncementTaName">
                                     {`${user.firstName} ${user.lastName}`} (You)
                                 </div>

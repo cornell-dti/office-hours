@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 
-import firebase from 'firebase/app';
-import { collectionData, docData } from 'rxfire/firestore';
-import { switchMap } from 'rxjs/operators';
+import { docData } from 'rxfire/firestore';
+import { switchMap, map } from 'rxjs/operators';
 import { Observable, of, combineLatest, EMPTY } from 'rxjs';
 import moment from 'moment';
-import { firestore, loggedIn$ } from './firebase';
+import { collection, doc, query, where, orderBy, documentId, Query, DocumentData } from 'firebase/firestore';
+import { firestore, loggedIn$, collectionData } from './firebase';
 import {
     SingletonObservable,
     createUseSingletonObservableHook,
@@ -13,23 +13,33 @@ import {
 } from './utilities/singleton-observable-hook';
 
 
-export const useDoc = <T>(collection: string, id: string | undefined, idField: string) => {
-    const [doc, setDoc] = useState<T | undefined>();
+export const useDoc = <T>(collectionDoc: string, id: string | undefined, idFieldArg: string) => {
+    const [document, setDocument] = useState<T | undefined>();
 
     useEffect(
         () => {
             if (id) {
-                const primaryTag$: Observable<T> = docData(firestore.doc(collection + '/' + id), idField);
-                const subscription = primaryTag$.subscribe((d: T) => setDoc(d));
+                const primaryTag$: Observable<T> = 
+                docData(doc(firestore, collectionDoc, id), {idField: idFieldArg}) as Observable<T>;
+                const subscription = primaryTag$.subscribe((d:T) => {
+                    if (!d) {
+                        // eslint-disable-next-line no-console
+                        console.warn(`Firestore document ${collectionDoc}/${id} is undefined or null.`);
+                    } else if (typeof d !== "object") {
+                        // eslint-disable-next-line no-console
+                        console.error(`Unexpected Firestore data type:`, d);
+                    }
+                    setDocument(d);
+                });
                 return () => { subscription.unsubscribe(); };
             }
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             return () => { };
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [collection, id, idField, docData, firestore]
+        [collectionDoc, id, idFieldArg, docData, firestore]
     );
-    return doc;
+    return document;
 };
 
 /**
@@ -39,26 +49,33 @@ export const useDoc = <T>(collection: string, id: string | undefined, idField: s
  * the query, we re-render and re-fetch infinitely.
  */
 export const useQueryWithLoading = <T, P = string>(
-    queryParameter: P, getQuery: (parameter: P) => firebase.firestore.Query, idField: string
+    queryParameter: P, getQuery: (parameter: P) => Query, idFieldArg: string
 ): T[] | null => {
     const [result, setResult] = useState<T[] | null>(null);
 
     useEffect(
         () => {
-            const results$: Observable<T[]> = collectionData(getQuery(queryParameter), idField);
+            const results$:Observable<DocumentData> = collectionData(getQuery(queryParameter), {idField: idFieldArg});
 
             // updates results as they come in. Triggers re-renders.
-            const subscription = results$.subscribe(results => setResult(results));
+            const subscription = results$.subscribe(results => {
+                const mappedResults: T[] = results.map((result: DocumentData) => {
+                    // Safely map or cast DocumentData to T (e.g., FireTag or FireHybridSession)
+                    return result as T;
+                });
+                setResult(mappedResults);
+            });
+
             return () => { subscription.unsubscribe(); };
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [queryParameter, getQuery, idField, collectionData]
+        [queryParameter, getQuery, idFieldArg, collectionData]
     );
     return result;
 };
 
 export const useBatchQueryWithLoading = <T, P = string>(
-    queryParameter: P, getQueries: (parameter: P) => (firebase.firestore.Query)[], idField: string
+    queryParameter: P, getQueries: (parameter: P) => (Query)[], idFieldArg: string
 ): T[] | null => {
     const [result, setResult] = useState<T[] | null>(null);
 
@@ -67,11 +84,11 @@ export const useBatchQueryWithLoading = <T, P = string>(
             let partialResult: T[] = [];
 
             const effects = getQueries(queryParameter).map(getQuery => {
-                const results$: Observable<T[]> = collectionData(getQuery, idField);
+                const results$: Observable<DocumentData[]> = collectionData(getQuery, {idField: idFieldArg});
 
                 // updates results as they come in. Triggers re-renders.
                 const subscription = results$.subscribe(results => {
-                    partialResult = [...partialResult, ...results];
+                    partialResult = [...partialResult, ...results.map(result => result as T)];
                     setResult(partialResult);
                 })
                 return () => { subscription.unsubscribe(); };
@@ -84,7 +101,7 @@ export const useBatchQueryWithLoading = <T, P = string>(
 
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [queryParameter, getQueries, idField, collectionData]
+        [queryParameter, getQueries, idFieldArg, collectionData]
     );
     return result;
 };
@@ -98,12 +115,13 @@ export const useProfessorViewSessions = (
     useEffect(
         () => {
             const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
-            const results$: Observable<FireSession[]> = collectionData(
-                firestore
-                    .collection('sessions')
-                    .where('courseId', '==', courseId)
-                    .where('startTime', '>=', new Date(selectedWeekEpoch))
-                    .where('startTime', '<=', new Date(selectedWeekEpoch + 7 * ONE_DAY)), 'sessionId');
+            const sessionsRef = collection(firestore, 'sessions');
+            const sessionsQuery = query(sessionsRef, where('courseId', '==', courseId),
+                where('startTime', '>=', new Date(selectedWeekEpoch)),
+                where('startTime', '<=', new Date(selectedWeekEpoch + 7 * ONE_DAY)));
+            const results$: Observable<FireSession[]> = collectionData(sessionsQuery, {idField:'sessionId'}).pipe(
+                map((docs:DocumentData) => docs as FireSession[]) // Type assertion
+            );
 
             const subscription = results$.subscribe(results => setResult(results));
             return () => { subscription.unsubscribe(); };
@@ -123,28 +141,29 @@ export const useCoursesBetweenDates = (
 
     useEffect(
         () => {
-            const sessions$: Observable<FireSession[]> = collectionData(
-                firestore
-                    .collection('sessions')
-                    .where('startTime', '>=', startDate.toDate())
-                    .where('startTime', '<=', endDate.add(1, 'day').toDate())
-                    .where('courseId', '==', courseId),
-                'sessionId'
+            const sessionsRef = collection(firestore, 'sessions');
+            const sessionsQuery = query(sessionsRef, where('startTime', '>=', startDate.toDate()),
+                where('startTime', '<=', endDate.add(1, 'day').toDate()),where('courseId', '==', courseId));
+
+            const sessions$: Observable<FireSession[]> = collectionData(sessionsQuery,{idField: 'sessionId'}).pipe(
+                map((docs:DocumentData) => docs as FireSession[]) // Type assertion
             );
             const s1 = sessions$.subscribe(newSessions => setSessions(newSessions));
 
+            const questionsRef = collection(firestore, 'questions');
+            
             // Fetch all questions for given sessions
-            const questions$ = sessions$.pipe(
+            const questions$: Observable<FireQuestion[][]> = sessions$.pipe(
                 switchMap(s => {
                     return s.length > 0 ?
-                        combineLatest(...s.map(session =>
-                            collectionData(
-                                firestore.collection('questions').where('sessionId', '==', session.sessionId),
-                                'questionId'
-                            )
+                        combineLatest(...s.map(session => {
+                            const questionsQuery = query(questionsRef, where('sessionId', '==', session.sessionId));
+                            return collectionData(questionsQuery, {idField: 'questionId'}).pipe(
+                                map((docs: DocumentData[]) => docs.map(doc => doc as FireQuestion))
+                            );
+                        }
                         )) : EMPTY;
-                }
-                )
+                })
             );
 
             const s2 = questions$.subscribe((newQuestions: FireQuestion[][]) => setQuestions(newQuestions));
@@ -161,19 +180,20 @@ export const useCoursesBetweenDates = (
 
 export const useQuery = <T, P = string>(
     queryParameter: P,
-    getQuery: (parameter: P) => firebase.firestore.Query,
+    getQuery: (parameter: P) => Query,
     idField: string
 ): T[] => useQueryWithLoading(queryParameter, getQuery, idField) || [];
 
 export const useBatchQuery = <T, P = string>(
     queryParameter: P,
-    getQuery: (parameter: P) => firebase.firestore.Query[],
+    getQuery: (parameter: P) => Query[],
     idField: string
 ): T[] => useBatchQueryWithLoading(queryParameter, getQuery, idField) || [];
 
 const myUserObservable = loggedIn$.pipe(
-    switchMap(u =>
-        docData(firestore.doc('users/' + u.uid), 'userId') as Observable<FireUser>
+    switchMap(u => u && u.uid ?
+        docData(doc(firestore, 'users', u.uid), {idField: 'userId'}) as Observable<FireUser>
+        : EMPTY
     )
 );
 
@@ -181,7 +201,9 @@ export const myUserSingletonObservable = new SingletonObservable(undefined, myUs
 export const useMyUser: () => FireUser | undefined = createUseSingletonObservableHook(myUserSingletonObservable);
 
 const allUsersObservable: Observable<readonly FireUser[]> = loggedIn$.pipe(
-    switchMap(() => collectionData<FireUser>(firestore.collection('users')))
+    switchMap(() => collectionData(collection(firestore, 'users')).pipe(
+        map((docs: DocumentData[]) => docs as FireUser[])
+    ))
 );
 
 const allUsersSingletonObservable = new SingletonObservable([], allUsersObservable);
@@ -191,8 +213,8 @@ export const useAllUsers: () => readonly FireUser[] =
 
 
 const needsPromotionObservable = loggedIn$.pipe(
-    switchMap(u =>
-        docData(firestore.doc('pendingUsers/' + u.email)) as Observable<FirePendingUser>
+    switchMap(u => u && u.email ? 
+        docData(doc(firestore, 'pendingUsers', u.email)) as Observable<FirePendingUser> : EMPTY
     )
 )
 
@@ -202,8 +224,10 @@ export const usePendingUser: () => FirePendingUser | undefined =
     createUseSingletonObservableHook(needsPromotionSingletonObservable);
 
 
-const pendingUsersQuery = (courseId: string) =>
-    firestore.collection('pendingUsers').where(`roles.${courseId}`, 'in', ['professor', 'ta']);
+const pendingUsersQuery = (courseId: string) => {
+    const usersRef = collection(firestore, 'pendingUsers');
+    return query(usersRef, where(`roles.${courseId}`, 'in', ['professor', 'ta']));
+}
 
 export const usePendingUsers = (courseId: string): readonly FirePendingUser[] => {
     const pendingUsers = useQuery<FirePendingUser>(courseId, pendingUsersQuery, 'courseId');
@@ -211,8 +235,8 @@ export const usePendingUsers = (courseId: string): readonly FirePendingUser[] =>
 }
 
 const isAdminObservable = loggedIn$.pipe(
-    switchMap(u =>
-        docData(firestore.doc('admins/' + u.email)) as Observable<unknown>
+    switchMap(u => u && u.email?
+        docData(doc(firestore, 'admins', u.email)) as Observable<unknown>: EMPTY
     )
 )
 
@@ -222,19 +246,21 @@ export const useIsAdmin: () => unknown =
     createUseSingletonObservableHook(isAdminSingletonObservable);
 
 const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
-    switchMap(() => collectionData<FireCourse>(firestore.collection('courses'), 'courseId'))
+    switchMap(() => collectionData(collection(firestore,'courses') , {idField: 'courseId'}).pipe(
+        map((docs: DocumentData[]) => docs as FireCourse[])
+    ))
 );
 
 const getAskerQuestionsQuery = (sessionId: string, askerId: string) => {
-    return firestore.collection('questions')
-        .where('sessionId', '==', sessionId)
-        .where('askerId', '==', askerId);
+    const questionsRef = collection(firestore, 'questions');
+    return query(questionsRef, where('sessionId', '==', sessionId), where('askerId', '==', askerId));
 };
 const useParameterizedAskerQuestions = createUseParamaterizedSingletonObservableHook(parameter => {
     const [sessionId, askerId] = parameter.split('/');
 
-    const query = getAskerQuestionsQuery(sessionId, askerId);
-    return new SingletonObservable([], collectionData<FireQuestion>(query, 'questionId'));
+    const askerQuery = getAskerQuestionsQuery(sessionId, askerId);
+    return new SingletonObservable([], 
+        collectionData<FireQuestion>(askerQuery as Query<FireQuestion, DocumentData>, {idField: 'questionId'}));
 });
 export const useAskerQuestions = (sessionId: string, askerId: string): null | FireQuestion[] => {
     return useParameterizedAskerQuestions(`${sessionId}/${askerId}`);
@@ -255,7 +281,11 @@ export const useMyCourses = (): readonly FireCourse[] => {
     return allCourses.filter(({ courseId }) => currentlyEnrolledCourseIds.has(courseId));
 };
 
-const courseTagQuery = (courseId: string) => firestore.collection('tags').where('courseId', '==', courseId);
+const courseTagQuery = (courseId: string) => {
+    const tagRef = collection(firestore, 'tags');
+    return query(tagRef, where('courseId', '==', courseId));
+}
+
 export const useCourseTags = (courseId: string): { readonly [tagId: string]: FireTag } => {
     const tagsList = useQuery<FireTag>(courseId, courseTagQuery, 'tagId');
     const tags: { [tagId: string]: FireTag } = {};
@@ -268,12 +298,13 @@ export const useCourseTags = (courseId: string): { readonly [tagId: string]: Fir
 };
 
 const courseUserQuery = (courseId: string) => (
-    firestore.collection('users').where('courses', 'array-contains', courseId)
+    query(collection(firestore,'users'), where('courses', 'array-contains', courseId))
 );
 export const useCourseUsers = createUseParamaterizedSingletonObservableHook(courseId =>
     new SingletonObservable(
         [],
-        courseId === '' ? of([]) : collectionData<FireUser>(courseUserQuery(courseId), 'userId')
+        courseId === '' ? of([]) : collectionData(courseUserQuery(courseId), 
+            {idField:'userId'}) as Observable<FireUser[]>
     )
 );
 type FireUserMap = { readonly [userId: string]: FireUser };
@@ -293,11 +324,11 @@ const dummyProfessorOrTAList = ['DUMMY'];
 const courseProfessorOrTaBatchQuery = (professorsOrTas: readonly string[]) => {
     const blocks = blockArray(professorsOrTas.length === 0 ? dummyProfessorOrTAList : professorsOrTas, 10);
 
-    return blocks.map(block => firestore.collection('users').where(
-        firebase.firestore.FieldPath.documentId(),
+    return blocks.map(block => query(collection(firestore,'users'),where(
+        documentId(),
         'in',
         block
-    ));
+    )));
 };
 
 export const blockArray = <T>(arr: readonly T[], blockSize: number) => {
@@ -332,7 +363,9 @@ export const useCourseTAMap = (course: FireCourse): FireUserMap => useCourseCour
 const dummySession = { courseId: 'DUMMY', tas: [] };
 
 const allSessionsObservable: Observable<readonly FireSession[]> = loggedIn$.pipe(
-    switchMap(() => collectionData<FireSession>(firestore.collection('sessions')))
+    switchMap(() => collectionData(collection(firestore, 'sessions')).pipe(
+        map((docs: DocumentData[]) => docs as FireSession[])
+    ))
 );
 
 const allSessionsSingletonObservable = new SingletonObservable([], allSessionsObservable);
@@ -363,7 +396,10 @@ export const useSessionTANames = (
 );
 
 const allQuestionsObservable: Observable<readonly FireQuestion[]> = loggedIn$.pipe(
-    switchMap(() => collectionData<FireQuestion>(firestore.collection('questions')))
+    switchMap(() => collectionData(collection(firestore, 'questions')).pipe(
+        map((docs: DocumentData[]) => docs as FireQuestion[])
+    )
+    )
 );
 
 const allQuestionsSingletonObservable = new SingletonObservable([], allQuestionsObservable);
@@ -371,16 +407,19 @@ const allQuestionsSingletonObservable = new SingletonObservable([], allQuestions
 export const useAllQuestions: () => readonly FireQuestion[] =
     createUseSingletonObservableHook(allQuestionsSingletonObservable);
 
-const getSessionQuestionsQuery = (sessionId: string) => firestore.collection('questions')
-    .where('sessionId', '==', sessionId)
-    .orderBy('timeEntered', 'asc');
-const getSessionQuestionSlotsQuery = (sessionId: string) => firestore.collection('questionSlots')
-    .where('sessionId', '==', sessionId)
-    .orderBy('timeEntered', 'asc');
+const getSessionQuestionsQuery = (sessionId: string) => 
+    query(collection(firestore,'questions')
+        ,where('sessionId', '==', sessionId)
+        ,orderBy('timeEntered', 'asc'));
+const getSessionQuestionSlotsQuery = (sessionId: string) =>     
+    query(collection(firestore,'questionSlots')
+        ,where('sessionId', '==', sessionId)
+        ,orderBy('timeEntered', 'asc'));
+
 const useParameterizedSessionQuestions = createUseParamaterizedSingletonObservableHook(parameter => {
     const [sessionId, isTA] = parameter.split('/');
-    const query = isTA === 'true' ? getSessionQuestionsQuery(sessionId) : getSessionQuestionSlotsQuery(sessionId);
-    return new SingletonObservable([], collectionData<FireQuestion>(query, 'questionId'));
+    const q = isTA === 'true' ? getSessionQuestionsQuery(sessionId) : getSessionQuestionSlotsQuery(sessionId);
+    return new SingletonObservable([], collectionData(q, {idField: 'questionId'}) as Observable<FireQuestion[]>);
 });
 export const useSessionQuestions = (sessionId: string, isTA: boolean): FireQuestion[] =>
     useParameterizedSessionQuestions(`${sessionId}/${isTA}`);
@@ -393,7 +432,10 @@ export const useSessionProfile: (
 
 const allBlogPostsObservable: Observable<readonly BlogPost[]> = loggedIn$.pipe(
     switchMap(() =>
-        collectionData<BlogPost>(firestore.collection('blogPosts').orderBy("timeEntered", "desc"), 'postId'))
+        collectionData(query(collection(firestore,'blogPosts'),orderBy("timeEntered", "desc")), {idField: 'postId'})
+            .pipe(
+                map((docs:DocumentData[]) => docs as BlogPost[])
+            ))
 );
 
 const allBlogPostsSingletonObservable = new SingletonObservable([], allBlogPostsObservable);
@@ -403,16 +445,19 @@ export const useAllBlogPosts: () => readonly BlogPost[] =
 
 export const useParameterizedComments: (questionId: string) => readonly FireComment[] =
     createUseParamaterizedSingletonObservableHook(questionId => {
-        const query = firestore.doc(`questions/${questionId}`).collection('comments')
-        return new SingletonObservable([], collectionData<FireComment>(query, 'commentId'));
+        const commentsRef = collection(doc(firestore, 'questions', questionId), 'comments');
+        return new SingletonObservable([], collectionData(commentsRef, {idField: 'commentId'}).pipe(
+            map((docs: DocumentData[]) => docs as FireComment[])
+        ));
     });
 
 
 export const useProductUpdate = (): BlogPost | undefined => useAllBlogPosts()[0]
 
 export const useNotificationTracker =
-    (trackerId: string | undefined): NotificationTracker | undefined =>
-        useDoc<NotificationTracker>('notificationTrackers', trackerId, 'trackerId')
+    (trackerId: string | undefined): NotificationTracker | undefined => 
+        useDoc<NotificationTracker>('notificationTrackers', trackerId, 'trackerId');
+
 
 export const useNotifications =
     (trackerId: string | undefined): SessionNotification[] | undefined =>
@@ -433,10 +478,10 @@ export const useTag = (tagId: string | undefined) =>
 export const useUser = (userId: string | undefined) =>
     useDoc<FireUser>('users', userId, 'userId');
 
-export const getTagsQuery = (courseId: string) => firestore
-    .collection('tags')
-    .where('courseId', '==', courseId);
+export const getTagsQuery = (courseId: string) => query(
+    collection(firestore,'tags')
+    ,where('courseId', '==', courseId));
 
-export const getQuestionsQuery = (courseId: string) => firestore
-    .collection('questions')
-    .where('courseId', '==', courseId);
+export const getQuestionsQuery = (courseId: string) => query(
+    collection(firestore,'questions')
+    ,where('courseId', '==', courseId));
