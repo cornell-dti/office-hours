@@ -85,13 +85,6 @@ const TopBar = (props: Props) => {
                             native: true,
                         });
                     }
-
-                    // addNotification({
-                    //     title: notif.title,
-                    //     subtitle: notif.subtitle,
-                    //     message: notif.message,
-                    //     native: true,
-                    // });
                     // hacky fix for duplicate notifs--server update to lastSent doesn't occur quickly enough
                     setTimeout(() => {}, 100);
                 } else {
