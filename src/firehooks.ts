@@ -142,7 +142,8 @@ export const useCoursesBetweenDates = (
                                 firestore.collection('questions').where('sessionId', '==', session.sessionId),
                                 'questionId'
                             )
-                        )) : EMPTY;}
+                        )) : EMPTY;
+                }
                 )
             );
 
@@ -175,8 +176,19 @@ const myUserObservable = loggedIn$.pipe(
         docData(firestore.doc('users/' + u.uid), 'userId') as Observable<FireUser>
     )
 );
+
 export const myUserSingletonObservable = new SingletonObservable(undefined, myUserObservable);
 export const useMyUser: () => FireUser | undefined = createUseSingletonObservableHook(myUserSingletonObservable);
+
+const allUsersObservable: Observable<readonly FireUser[]> = loggedIn$.pipe(
+    switchMap(() => collectionData<FireUser>(firestore.collection('users')))
+);
+
+const allUsersSingletonObservable = new SingletonObservable([], allUsersObservable);
+
+export const useAllUsers: () => readonly FireUser[] =
+    createUseSingletonObservableHook(allUsersSingletonObservable);
+
 
 const needsPromotionObservable = loggedIn$.pipe(
     switchMap(u =>
@@ -190,7 +202,7 @@ export const usePendingUser: () => FirePendingUser | undefined =
     createUseSingletonObservableHook(needsPromotionSingletonObservable);
 
 
-const pendingUsersQuery = (courseId: string) => 
+const pendingUsersQuery = (courseId: string) =>
     firestore.collection('pendingUsers').where(`roles.${courseId}`, 'in', ['professor', 'ta']);
 
 export const usePendingUsers = (courseId: string): readonly FirePendingUser[] => {
@@ -318,6 +330,16 @@ export const useCourseTAMap = (course: FireCourse): FireUserMap => useCourseCour
 
 
 const dummySession = { courseId: 'DUMMY', tas: [] };
+
+const allSessionsObservable: Observable<readonly FireSession[]> = loggedIn$.pipe(
+    switchMap(() => collectionData<FireSession>(firestore.collection('sessions')))
+);
+
+const allSessionsSingletonObservable = new SingletonObservable([], allSessionsObservable);
+
+export const useAllSessions: () => readonly FireSession[] =
+    createUseSingletonObservableHook(allSessionsSingletonObservable);
+
 export const useSessionTAs = (
     course: FireCourse,
     session: Pick<FireSession, 'courseId' | 'tas'> = dummySession,
@@ -339,6 +361,15 @@ export const useSessionTANames = (
 ): readonly string[] => (
     useSessionTAs(course, session).map(courseUser => `${courseUser.firstName} ${courseUser.lastName}`)
 );
+
+const allQuestionsObservable: Observable<readonly FireQuestion[]> = loggedIn$.pipe(
+    switchMap(() => collectionData<FireQuestion>(firestore.collection('questions')))
+);
+
+const allQuestionsSingletonObservable = new SingletonObservable([], allQuestionsObservable);
+
+export const useAllQuestions: () => readonly FireQuestion[] =
+    createUseSingletonObservableHook(allQuestionsSingletonObservable);
 
 const getSessionQuestionsQuery = (sessionId: string) => firestore.collection('questions')
     .where('sessionId', '==', sessionId)
