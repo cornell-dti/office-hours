@@ -162,8 +162,8 @@ export const useCoursesBetweenDates = (
                                 map((docs: DocumentData[]) => docs.map(doc => doc as FireQuestion))
                             );
                         }
-                        )) : EMPTY;}
-                )
+                        )) : EMPTY;
+                })
             );
 
             const s2 = questions$.subscribe((newQuestions: FireQuestion[][]) => setQuestions(newQuestions));
@@ -196,8 +196,21 @@ const myUserObservable = loggedIn$.pipe(
         : EMPTY
     )
 );
+
 export const myUserSingletonObservable = new SingletonObservable(undefined, myUserObservable);
 export const useMyUser: () => FireUser | undefined = createUseSingletonObservableHook(myUserSingletonObservable);
+
+const allUsersObservable: Observable<readonly FireUser[]> = loggedIn$.pipe(
+    switchMap(() => collectionData(collection(firestore, 'users')).pipe(
+        map((docs: DocumentData[]) => docs as FireUser[])
+    ))
+);
+
+const allUsersSingletonObservable = new SingletonObservable([], allUsersObservable);
+
+export const useAllUsers: () => readonly FireUser[] =
+    createUseSingletonObservableHook(allUsersSingletonObservable);
+
 
 const needsPromotionObservable = loggedIn$.pipe(
     switchMap(u => u && u.email ? 
@@ -348,6 +361,18 @@ export const useCourseTAMap = (course: FireCourse): FireUserMap => useCourseCour
 
 
 const dummySession = { courseId: 'DUMMY', tas: [] };
+
+const allSessionsObservable: Observable<readonly FireSession[]> = loggedIn$.pipe(
+    switchMap(() => collectionData(collection(firestore, 'sessions')).pipe(
+        map((docs: DocumentData[]) => docs as FireSession[])
+    ))
+);
+
+const allSessionsSingletonObservable = new SingletonObservable([], allSessionsObservable);
+
+export const useAllSessions: () => readonly FireSession[] =
+    createUseSingletonObservableHook(allSessionsSingletonObservable);
+
 export const useSessionTAs = (
     course: FireCourse,
     session: Pick<FireSession, 'courseId' | 'tas'> = dummySession,
@@ -370,6 +395,18 @@ export const useSessionTANames = (
     useSessionTAs(course, session).map(courseUser => `${courseUser.firstName} ${courseUser.lastName}`)
 );
 
+const allQuestionsObservable: Observable<readonly FireQuestion[]> = loggedIn$.pipe(
+    switchMap(() => collectionData(collection(firestore, 'questions')).pipe(
+        map((docs: DocumentData[]) => docs as FireQuestion[])
+    )
+    )
+);
+
+const allQuestionsSingletonObservable = new SingletonObservable([], allQuestionsObservable);
+
+export const useAllQuestions: () => readonly FireQuestion[] =
+    createUseSingletonObservableHook(allQuestionsSingletonObservable);
+
 const getSessionQuestionsQuery = (sessionId: string) => 
     query(collection(firestore,'questions')
         ,where('sessionId', '==', sessionId)
@@ -378,6 +415,7 @@ const getSessionQuestionSlotsQuery = (sessionId: string) =>
     query(collection(firestore,'questionSlots')
         ,where('sessionId', '==', sessionId)
         ,orderBy('timeEntered', 'asc'));
+
 const useParameterizedSessionQuestions = createUseParamaterizedSingletonObservableHook(parameter => {
     const [sessionId, isTA] = parameter.split('/');
     const q = isTA === 'true' ? getSessionQuestionsQuery(sessionId) : getSessionQuestionSlotsQuery(sessionId);

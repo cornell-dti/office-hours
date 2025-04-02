@@ -37,7 +37,10 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     const [filteredCourses] = useState<FireCourse[]>(currentCourses);
     useEffect(() => {
         setCurrentlyEnrolledCourseIds(new Set(user?.courses));
-    }, [user?.courses]);
+    }, 
+    // eslint-disable-next-line
+    [user?.courses]);
+    // need optional chaining in the dependency array because while logging out from the Course Selection page, user could be null.
 
     const filterOnActiveAndRole = React.useCallback(() => {
         return allCourses
@@ -47,7 +50,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                 const isUserTAorProfB = b.tas?.includes(user?.userId) || b.professors?.includes(user?.userId) ? 1 : 0;
                 return isUserTAorProfB - isUserTAorProfA; // Sort in descending order (1's before 0's)
             });
-    }, [allCourses, user?.userId]);
+    }, 
+    // eslint-disable-next-line
+    [allCourses, user?.userId]);
 
     useEffect(() => {
         setCurrentCourses(filterOnActiveAndRole);
@@ -63,7 +68,9 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
 
     useEffect(() => {
         setCurrentlyEnrolledCourseIds(new Set(user?.courses));
-    }, [user?.courses]);
+    }, 
+    // eslint-disable-next-line
+    [user?.courses]);
 
     const preSelectedCourses: FireCourse[] =
         user?.courses.length > 0 ? currentCourses.filter((course) => user.roles[course.courseId] !== undefined) : [];
