@@ -1,238 +1,70 @@
-Name, Email, Courses
-Victoria Baker,vb272@cornell.edu,INFO 4300
-Amin Benalla,mab579@cornell.edu,INFO 4300
-Cassandra Sziklai,cns58@cornell.edu,INFO 4300
-Jun Choi,hc867@cornell.edu,INFO 4300
-Jade Williams,jlw428@cornell.edu,AEM 2010
-Amirah Ricks,ar948@cornell.edu,INFO 4300
-Steven Rakhmanchik,sr935@cornell.edu,INFO 4300
-Nixon Zuniga,nrz4@cornell.edu,CS 1112
-Julia Zeng,jwz28@cornell.edu,INFO 4300
-Bella Falkenberg,alf253@cornell.edu,CS 2110
-Sophia Baik,ssb265@cornell.edu,CS 1112
-Leane Ying,ly374@cornell.edu,CS 1112
-Paige Yun,phy6@cornell.edu,CS 1112
-Matthew Chen,mlc338@cornell.edu,INFO 4300
-Daniel Parker,dbp62@cornell.edu,CS 1112
-Alex Ilacqua,ai259@cornell.edu,CS 2110
-Jake Ludgin,jml557@cornell.edu,CS 2110
-Sharafa Mohammed,sm2592@cornell.edu,CS 3410
-Fiifi Botchway,feb49@cornell.edu,CS 1110
-Kayla Ng,kln47@cornell.edu,CS 3410
-Logan Kraver,ltk32@cornell.edu,CS 3780
-Amelia Garcia,agg76@cornell.edu,CS 1110
-Asen Ou,ako28@cornell.edu,CS 3410
-Luciano Bogomolni,lab383@cornell.edu,CS 3410
-Maximilian Dittgen,myd4@cornell.edu,INFO 4300
-Gregory Marzano,gam268@cornell.edu,CS 1112
-Laura Ren,lr545@cornell.edu,CS 1112
-Aaryaa Chiney,aac239@cornell.edu,CS 1112
-Angela Xiao,ax38@cornell.edu,INFO 4300
-Jason Mun,jjm493@cornell.edu,INFO 4300
-Christopher Brown,cpb95@cornell.edu,CS 1112
-Amy Wu,aw628@cornell.edu,INFO 4300
-Alina Yuan,ay332@cornell.edu,INFO 4300
-Kevin Gao,kg382@cornell.edu,INFO 4300
-Selena Zheng,sz389@cornell.edu,CS 2110
-Michael Wu,mw885@cornell.edu,INFO 4300
-Peter Bidoshi,pjb294@cornell.edu,INFO 4300
-Dennis Chen,dc777@cornell.edu,CS 1112
-Bellerina Hu,bh552@cornell.edu,CS 2110
-Aaron Baruch,amb565@cornell.edu,CS 2110
-Daniel Botros,dab463@cornell.edu,INFO 4300
-Rani Datta,rd447@cornell.edu,INFO 4300
-Jack Kafif,jk2298@cornell.edu,INFO 4300
-Elnandia Jean-Noel,edj38@cornell.edu,INFO 4300
-Amy Sharin,ars369@cornell.edu,INFO 4300
-Jeff Hong,jmh533@cornell.edu,CS 1112
-Grace Wei,gtw25@cornell.edu,INFO 4300
-Melvin Van Cleave,mav85@cornell.edu,CS 3410
-Mark Rydberg,mdr243@cornell.edu,CS 2110
-Stuti Gupta,sg2265@cornell.edu,INFO 4300
-Adelynn Wu,hw769@cornell.edu,CS 2110
-Sarah Clarke,sec268@cornell.edu,CS 2110
-Joseph Ugarte,jeu9@cornell.edu,INFO 4300
-Owen Rector,ocr5@cornell.edu,CS 2110
-Elizabeth Paperno,eep66@cornell.edu,CS 2110
-Ben Bigdelle,brb227@cornell.edu,INFO 4300
-Ella Schneyer,ems474@cornell.edu,CS 2110
-Alan Han,ayh9@cornell.edu,CS 3410
-Lydia Shen,les296@cornell.edu,CS 2110
-Sabrina Ning,sn634@cornell.edu,CS 2110
-Emma Wang,eyw27@cornell.edu,CS 2110
-Katelyn Liu,kl877@cornell.edu,CS 2110
-Angelica Borowy,amb577@cornell.edu,CS 3410
-Michael Avellino,mca63@cornell.edu,CS 3410
-Charlie Wright,caw352@cornell.edu,CS 1110
-Rares-Stefan Bucsa,rb795@cornell.edu,CS 1110
-Cole Bowman,cb935@cornell.edu,CS 1110
-Tran Le,tnl22@cornell.edu,CS 1110
-Alexander Jankowich,aej56@cornell.edu,CS 1110
-Edward Lee,eal265@cornell.edu,CS 1110
-Alvaro Deras,ad2226@cornell.edu,CS 1110
-Nedim Abdelaziz,na377@cornell.edu,CS 3780
-Harsh Patel,hhp26@cornell.edu,CS 1110
-Yafet Negash,yjn2@cornell.edu,CS 1110
-Jacky Pan,rp556@cornell.edu,CS 1110
-Yunoo Kim,yk646@cornell.edu,CS 3410
-Ozan Ersoz,oe35@cornell.edu,CS 3410
-Leo Lu,ll865@cornell.edu,CS 3780
-Hrishabh Ayush,ha385@cornell.edu,CS 1110
-Nicole Fan,nzf2@cornell.edu,CS 1110
-Amber Min,acm328@cornell.edu,CS 1110
-Kelly Yue,ky387@cornell.edu,CS 3410
-Yizhen Wu,yw2343@cornell.edu,CS 3780
-John Palsberg,jlp377@cornell.edu,CS 3410
-Richie Sun,rs929@cornell.edu,CS 1110
-Maximilian Fanning,maf386@cornell.edu,CS 3410
-Bisola Okunola,tbo8@cornell.edu,CS 3410
-William Lin,wl497@cornell.edu,CS 1110
-Michael Micalizzi,mjm734@cornell.edu,CS 3410
-Jamayne Gyimah-Danquah,jg2444@cornell.edu,CS 1110
-Allie Lin,asl277@cornell.edu,CS 1110
-Ahan Mishra,abm247@cornell.edu,CS 3780
-Hedy Song,ys565@cornell.edu,CS 1110
-Will Li,zl844@cornell.edu,CS 1110
-Grace Wang,grw72@cornell.edu,CS 1110
-Tanya Paul,tp389@cornell.edu,CS 1110
-Tanisha Pallerla,trp59@cornell.edu,CS 1110
-Ena Jovanovic,ej239@cornell.edu,CS 1110
-Ethan Huang,ejh249@cornell.edu,CS 1110
-Sean Dempsey,skd82@cornell.edu,CS 1110
-Kat Volkova,ev258@cornell.edu,CS 1110
-Matteo Junqueira de Andrade,mj578@cornell.edu,CS 1110
-Rebecca Guan,rzg5@cornell.edu,CS 1110
-Maryam Albakry,ma878@cornell.edu,CS 1110
-Eirdeena Zakirah Mohd Nor Al-Azzad,nbm52@cornell.edu,CS 1110
-Meg Isohata,msi32@cornell.edu,CS 1110
-Elli Belyarchik,emb427@cornell.edu,CS 1110
-Alex Noviello,abn52@cornell.edu,CS 3780
-Tianyi Zhang,tz234@cornell.edu,CS 1110
-Peter Zheng,pcz3@cornell.edu,CS 3780
-Leon Jiao,lsj47@cornell.edu,CS 3780
-Sahil Hosalli,sh2276@cornell.edu,CS 3780
-Tyler Wu,tzw3@cornell.edu,CS 3780
-Omar Ahmed,owa2@cornell.edu,CS 1110
-Eric Zhou,ez255@cornell.edu,CS 3780
-Ambrose Blay,ab2838@cornell.edu,CS 1110
-Omar Abuhammoud,oa85@cornell.edu,CS 3410
-Savitta Sivapalan,ss2849@cornell.edu,CS 3410
-Analeah Real,ar979@cornell.edu,CS 3410
-Nathan Chu,nwc35@cornell.edu,CS 3410
-Ilma Ljubovic,il278@cornell.edu,CS 1110
-Mihili Herath,mnh49@cornell.edu,CS 1110
-Irena Chen,izc2@cornell.edu,CS 2110
-Elizabeth Chen,eyc54@cornell.edu,CS 2110
-Caitlyn Cahill,crc258@cornell.edu,CS 3410
-Mukund Gaur,mg2476@cornell.edu,CS 2110
-Aarav Manjunath,asm374@cornell.edu,CS 2110
-Santiago Blaumann,sb2239@cornell.edu,CS 3410
-Kevin Cui,kc734@cornell.edu,CS 3410
-Jiahan Xie,jx353@cornell.edu,CS 3410
-Edward Duan,ewd24@cornell.edu,CS 3410
-Jacob Berko,jmb787@cornell.edu,CS 3410
-Noah Plant,nep38@cornell.edu,CS 3410
-Serena Duncan,smd334@cornell.edu,CS 3410
-Reese Thompson,rqt3@cornell.edu,CS 3410
-Arnab Ghosh,ag2583@cornell.edu,CS 2110
-Melissa Reifman,mbr87@cornell.edu,CS 3410
-Anirudh Tenneti,at863@cornell.edu,CS 2110
-Rowan Hennessy,rah379@cornell.edu,INFO 4300
-William Bradley,wjb247@cornell.edu,CS 3410
-Jiye Baek,jb2438@cornell.edu,INFO 4300
-Peter Engel,pde23@cornell.edu,CS 3410
-Cougar Hashikura,ch999@cornell.edu,CS 2110
-Helen Lei,hl883@cornell.edu,INFO 4300
-Nikhil Chinchalkar,nsc49@cornell.edu,CS 2110
-Dan Wei Zuo,dz267@cornell.edu,INFO 4300
-Lucas McKamey,lrm236@cornell.edu,INFO 4300
-Bingsong Li,bl484@cornell.edu,INFO 4300
-Ryan Fu,rhf84@cornell.edu,CS 2110
-Tejesh Dandu,td439@cornell.edu,CS 2110
-Aditya Bakshi,ab2429@cornell.edu,CS 2110
-Carissa Zheng,caz39@cornell.edu,CS 3410
-Ilya Strugatskiy,is368@cornell.edu,CS 3410
-Salman Abid,ma2422@cornell.edu,CS 3410
-Derek Liu,dtl54@cornell.edu,INFO 4300
-Andy Li,sl2535@cornell.edu,CS 3410
-Ryan Mistretta,rhm255@cornell.edu,CS 3410
-Jason Jang,jsj84@cornell.edu,CS 2110
-David Suh,dss349@cornell.edu,CS 3410
-Timmy Li,tl674@cornell.edu,CS 3410
-Alex Koiv,ak953@cornell.edu,CS 3410
-Shefali Awasthi,sa867@cornell.edu,INFO 4300
-Brendan Royals,bhr53@cornell.edu,INFO 4300
-Dani Ramos Ojeda,dr497@cornell.edu,INFO 4300
-Serena Yang,syy5@cornell.edu,INFO 4300
-Justin Chan,jgc244@cornell.edu,AEM 2830
-Daniel Wang,zw669@cornell.edu,CS 3780
-Marilyn Ung,mu86@cornell.edu,AEM 2840/5840
-Hoi Ki Wong,jw797@cornell.edu,AEM 2830
-Kevin Chen,kc846@cornell.edu,CS 3780
-David Wang,jw2442@cornell.edu,CS 3780
-Eugene Choi,ec727@cornell.edu,CS 3780
-Prakriti Tandon,pt293@cornell.edu,CS 3780
-Tyler Petrillo,tpp35@cornell.edu,CS 3780
-Srivatsa Kundurthy,srk247@cornell.edu,CS 3780
-Alexander He,adh236@cornell.edu,CS 3780
-QMI TestAccount,queuemeinuser1@gmail.com,TEST0000
-Inle Bush,imb33@cornell.edu,CS 3780
-Sam Fulmer,shf59@cornell.edu,AEM 2840/5840
-Eshaan Sharma,es887@cornell.edu,CS 3780
-Krishna Palempalli,kp386@cornell.edu,CS 3780
-Asif Rashid,ar2534@cornell.edu,AEM 2840/5840
-Boaz Ng,bn229@cornell.edu,CS 3780
-Miriam Alex,mta64@cornell.edu,CS 3780
-Lakshmi Meghana Kesanapalli,lk496@cornell.edu,CS 3780
-Gloria Geng,gcg46@cornell.edu,CS 3780
-Shriya Sudhakar,ss3576@cornell.edu,CS 3780
-Claas Beger,cbb89@cornell.edu,CS 3780
-Eric Qiu,sq225@cornell.edu,CS 3780
-Ethan Lin,eyl45@cornell.edu,CS 3780
-Alex Huang,yh753@cornell.edu,CS 3780
-Logan Day,lcd44@cornell.edu,AEM 2010
-Andrew Kang,ayk36@cornell.edu,CS 3780
-Xenex Joshi,xj233@cornell.edu,CS 3780
-Frank Dai,sd924@cornell.edu,CS 3780
-Tanish Tyagi,tt556@cornell.edu,CS 3780
-Yuchen Yang,yy956@cornell.edu,CS 3780
-Jane Lackley,jel337@cornell.edu,CS 3780
-Benson Zhang,bjz22@cornell.edu,CS 3780
-Brian Sanchez,bas358@cornell.edu,CS 1110
-Marc Davila,md934@cornell.edu,CS 1110
-Rayhan Khanna,rk696@cornell.edu,CS 3780
-Jerry Ji,rj378@cornell.edu,CS 3780
-Alex Kozik,ajk333@cornell.edu,CS 3780
-Andrew Hua,ah833@cornell.edu,CS 1110
-Judy Zhu,yz2429@cornell.edu,CS 3780
-Talia Rubeo,tor5@cornell.edu,CS 1110
-Brianna Liu,bl583@cornell.edu,CS 1110
-Griffin Carter,gfc46@cornell.edu,CS 1110
-Elizabeth Woo,erw96@cornell.edu,CS 1110
-Zoe Ng,zn48@cornell.edu,CS 1110
-Chesney Melissinos,cm994@cornell.edu,CS 1110
-Minhaj Fahad,msf257@cornell.edu,CS 1110
-Solomon Lee,ssl242@cornell.edu,CS 3780
-Courtney Brecher,cpb93@cornell.edu,CS 1110
-Will del Sobral,wpd26@cornell.edu,CS 1110
-Alan Munschy,apm238@cornell.edu,CS 1110
-Ashrith Pagedemarry,ap828@cornell.edu,CS 3780
-Alex Wang,ayw29@cornell.edu,CS 3780
-Ryan Guan,gg428@cornell.edu,CS 1110
-Taylor Wang,tw492@cornell.edu,CS 3780
-Steven Yu,ssy38@cornell.edu,CS 3780
-Lulu Wang,lw765@cornell.edu,CS 1110
-Vivian Zhou,vz48@cornell.edu,CS 3410
-Srija Ghosh,sg2293@cornell.edu,CS 3410
-Jeffrey Xiang,jjx5@cornell.edu,CS 3780
-Matthew Burgos,mb2557@cornell.edu,CS 1110
-Iram Liu,il233@cornell.edu,CS 3780
-Nick Brenner,nlb74@cornell.edu,CS 3780
-Anna Nelson,an525@cornell.edu,CS 1110
-Sahib Manjal,ssm237@cornell.edu,CS 3780
-Ramisha Hossain,rsh256@cornell.edu,CS 3780
-Justin Xiang,jx372@cornell.edu,CS 3780
-Ethan Hersch,esh87@cornell.edu,CS 3780
-Alice Lu,axl3@cornell.edu,CS 2110
-Rushil Choudhary,rc652@cornell.edu,CS 3780
-Advika Prasad,ap2373@cornell.edu,AEM 2010
+Layla Liu,xl989@cornell.edu,1234
+Annie Chen,anc76@cornell.edu,1234
+Eric Weng,ericweng0831@gmail.com,ERIC-TEST
+Lily Pham,lnp35@cornell.edu,1234
+Eric Weng,eweng0831@gmail.com,ERIC-TEST
+Annie Chen,anc76@cornell.edu,4820
+Layla Liu,layla.xin.liu@gmail.com,Test 2 sp25
+Nidhi Soma,ns848@cornell.edu,4820
+QMI TestAccount,queuemeinuser1@gmail.com,4820
+Layla Liu,xl989@cornell.edu,1280
+Layla Liu,xl989@cornell.edu,1234
+Layla Liu,layla.xin.liu@gmail.com,Test 2 sp25
+Annie Chen,anc76@cornell.edu,4820
+Nidhi Soma,ns848@cornell.edu,4820
+Eric Weng,ericweng0831@gmail.com,ERIC-TEST
+Lily Pham,lnp35@cornell.edu,1234
+Layla Liu,xl989@cornell.edu,1280
+Eric Weng,eweng0831@gmail.com,ERIC-TEST
+Annie Chen,anc76@cornell.edu,1234
+QMI TestAccount,queuemeinuser1@gmail.com,4820
+Layla Liu,layla.xin.liu@gmail.com,Test 2 sp25
+Layla Liu,xl989@cornell.edu,1234
+Eric Weng,ericweng0831@gmail.com,ERIC-TEST
+Lily Pham,lnp35@cornell.edu,1234
+Layla Liu,xl989@cornell.edu,1280
+Annie Chen,anc76@cornell.edu,1234
+Eric Weng,eweng0831@gmail.com,ERIC-TEST
+Annie Chen,anc76@cornell.edu,4820
+Nidhi Soma,ns848@cornell.edu,4820
+QMI TestAccount,queuemeinuser1@gmail.com,4820
+Eric Weng,ericweng0831@gmail.com,ERIC-TEST
+Lily Pham,lnp35@cornell.edu,1234
+Layla Liu,xl989@cornell.edu,1234
+Eric Weng,eweng0831@gmail.com,ERIC-TEST
+Nidhi Soma,ns848@cornell.edu,4820
+Annie Chen,anc76@cornell.edu,4820
+Layla Liu,layla.xin.liu@gmail.com,Test 2 sp25
+Annie Chen,anc76@cornell.edu,1234
+QMI TestAccount,queuemeinuser1@gmail.com,4820
+Layla Liu,xl989@cornell.edu,1280
+Layla Liu,xl989@cornell.edu,1234
+Layla Liu,layla.xin.liu@gmail.com,Test 2 sp25
+QMI TestAccount,queuemeinuser1@gmail.com,4820
+Nidhi Soma,ns848@cornell.edu,4820
+Annie Chen,anc76@cornell.edu,4820
+Layla Liu,xl989@cornell.edu,1280
+Lily Pham,lnp35@cornell.edu,1234
+Eric Weng,ericweng0831@gmail.com,ERIC-TEST
+Eric Weng,eweng0831@gmail.com,ERIC-TEST
+Annie Chen,anc76@cornell.edu,1234
+Layla Liu,xl989@cornell.edu,1234
+Layla Liu,xl989@cornell.edu,1280
+Eric Weng,ericweng0831@gmail.com,ERIC-TEST
+QMI TestAccount,queuemeinuser1@gmail.com,4820
+Lily Pham,lnp35@cornell.edu,1234
+Annie Chen,anc76@cornell.edu,1234
+Eric Weng,eweng0831@gmail.com,ERIC-TEST
+Annie Chen,anc76@cornell.edu,4820
+Nidhi Soma,ns848@cornell.edu,4820
+Layla Liu,layla.xin.liu@gmail.com,Test 2 sp25
+Layla Liu,xl989@cornell.edu,1234
+Annie Chen,anc76@cornell.edu,1234
+Lily Pham,lnp35@cornell.edu,1234
+Eric Weng,ericweng0831@gmail.com,ERIC-TEST
+Eric Weng,eweng0831@gmail.com,ERIC-TEST
+Layla Liu,xl989@cornell.edu,1280
+Layla Liu,layla.xin.liu@gmail.com,Test 2 sp25
+Annie Chen,anc76@cornell.edu,4820
+Nidhi Soma,ns848@cornell.edu,4820
+QMI TestAccount,queuemeinuser1@gmail.com,4820

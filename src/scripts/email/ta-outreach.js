@@ -38,29 +38,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var firebase_admin_1 = require("firebase-admin");
 var fs_1 = require("fs");
-var constants_1 = require("../constants");
+var constants_1 = require("../../constants");
+var resend_1 = require("resend");
+require("dotenv/config");
 firebase_admin_1["default"].initializeApp({
     credential: firebase_admin_1["default"].credential.applicationDefault(),
-    databaseURL: 'https://queue-me-in-prod.firebaseio.com'
+    databaseURL: 'https://qmi-test.firebaseio.com'
     //'https://qmi-test.firebaseio.com'
     // 'https://queue-me-in-prod.firebaseio.com'
 });
 // eslint-disable-next-line no-console
 console.log('Firebase admin initialized!');
+var resend = new resend_1.Resend(process.env.REACT_APP_RESEND_API_KEY);
 // eslint-disable-next-line no-console
-console.log('fs initialized');
+console.log('Resend initialized!');
+if (process.argv.length !== 3) {
+    throw new Error("Usage: node <script path> <index number> . Use 0 if running script for first time");
+}
+var indexStopped = process.argv[2];
 // Initialize Firestore
 var db = firebase_admin_1["default"].firestore();
 // Firestore Timestamps for the query range. Will have to change to represent semester dates
 var startDate = firebase_admin_1["default"].firestore.Timestamp.fromDate(new Date(constants_1.START_DATE));
 var endDate = firebase_admin_1["default"].firestore.Timestamp.fromDate(new Date(constants_1.END_DATE));
-fs_1.writeFileSync("./src/scripts/tas.csv", "Name, Email, Courses\n", {
+fs_1.writeFileSync("./src/scripts/email/tas.csv", "Name, Email, Courses\n", {
     flag: "w"
 });
+var taEmails = [];
+var taNames = [];
+var taClasses = [];
 var getTAs = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var coursesRef, usersRef, coursesSnapshot, _loop_1, _i, _a, doc;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
+    var coursesRef, usersRef, coursesSnapshot, _i, _a, doc, courseCode, taList, _b, taList_1, taId, rowData, taDoc;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
             case 0:
                 coursesRef = db.collection('courses');
                 usersRef = db.collection('users');
@@ -69,39 +79,51 @@ var getTAs = function () { return __awaiter(void 0, void 0, void 0, function () 
                         .where('endDate', '<=', endDate)
                         .get()];
             case 1:
-                coursesSnapshot = _b.sent();
-                _loop_1 = function (doc) {
-                    var courses = doc.data();
-                    courses.tas.forEach(function (taId) { return __awaiter(void 0, void 0, void 0, function () {
-                        var rowData, taDoc;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    rowData = "";
-                                    return [4 /*yield*/, usersRef.doc(taId).get()];
-                                case 1:
-                                    taDoc = (_a.sent()).data();
-                                    if (taDoc) {
-                                        // eslint-disable-next-line no-console
-                                        //console.log(taDoc.roles); 
-                                        /*Assuming you can't be a TA for two classes in the same semester,
-                                        so there should be no repeats.*/
-                                        rowData += taDoc.firstName + " " + taDoc.lastName + ",";
-                                        rowData += taDoc.email + "," + courses.code + "\n";
-                                        fs_1.writeFileSync("./src/scripts/tas.csv", rowData, {
-                                            flag: "a"
-                                        });
-                                    }
-                                    return [2 /*return*/];
-                            }
-                        });
-                    }); });
-                };
-                for (_i = 0, _a = coursesSnapshot.docs; _i < _a.length; _i++) {
-                    doc = _a[_i];
-                    _loop_1(doc);
+                coursesSnapshot = _c.sent();
+                _i = 0, _a = coursesSnapshot.docs;
+                _c.label = 2;
+            case 2:
+                if (!(_i < _a.length)) return [3 /*break*/, 8];
+                doc = _a[_i];
+                courseCode = doc.get('code');
+                taList = doc.get('tas');
+                _b = 0, taList_1 = taList;
+                _c.label = 3;
+            case 3:
+                if (!(_b < taList_1.length)) return [3 /*break*/, 6];
+                taId = taList_1[_b];
+                rowData = "";
+                return [4 /*yield*/, usersRef.doc(taId).get()];
+            case 4:
+                taDoc = (_c.sent()).data();
+                if (taDoc) {
+                    // eslint-disable-next-line no-console
+                    //console.log(taDoc.roles); 
+                    /*Assuming you can't be a TA for two classes in the same semester,
+                    so there should be no repeats.*/
+                    rowData += taDoc.firstName + " " + taDoc.lastName + ",";
+                    rowData += taDoc.email + "," + courseCode + "\n";
+                    taEmails.push(taDoc.email);
+                    taClasses.push(courseCode);
+                    taNames.push(taDoc.firstName + " " + taDoc.lastName);
+                    console.log('**');
+                    console.log(taEmails);
+                    fs_1.writeFileSync("./src/scripts/tas.csv", rowData, {
+                        flag: "a"
+                    });
                 }
-                return [2 /*return*/];
+                _c.label = 5;
+            case 5:
+                _b++;
+                return [3 /*break*/, 3];
+            case 6:
+                console.log('here2');
+                console.log(taEmails);
+                _c.label = 7;
+            case 7:
+                _i++;
+                return [3 /*break*/, 2];
+            case 8: return [2 /*return*/];
         }
     });
 }); };
@@ -114,13 +136,17 @@ var getTAs = function () { return __awaiter(void 0, void 0, void 0, function () 
                 return [4 /*yield*/, getTAs()];
             case 1:
                 _a.sent();
+                console.log('-----------');
+                console.log(taEmails);
+                console.log(taClasses);
+                console.log(taNames);
                 // eslint-disable-next-line no-console
-                console.log("Processing complete.");
+                console.log("Processing complete. Sending emails..");
                 return [3 /*break*/, 3];
             case 2:
                 error_1 = _a.sent();
                 // eslint-disable-next-line no-console
-                console.error("Failed to get TA emails:", error_1);
+                console.error("Failed to process:", error_1);
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
