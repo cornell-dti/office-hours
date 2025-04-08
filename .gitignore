@@ -15,6 +15,10 @@ node_modules
 # testing
 /coverage
 
+# test firebase service accounts
+qmi-prod-cypress.json
+qmi-test-cypress.json
+
 # production
 build
 src/styles/index.min.css
