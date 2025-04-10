@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router";
 import { Checkbox } from "semantic-ui-react";
 import moment from "moment";
-
+import { collection, CollectionReference, query, where} from 'firebase/firestore';
+import { collectionData, firestore, auth } from "../../firebase";
 import SelectedTags from "./SelectedTags";
 import SessionAlertModal from "./SessionAlertModal";
 
-import { collectionData, firestore, auth } from "../../firebase";
 import { addQuestion } from "../../firebasefunctions/sessionQuestion";
 // import addFiles from "../../media/AddFilesButton.svg";
 
@@ -84,8 +84,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         window.addEventListener("resize", updateWindowDimensions);
 
         const tags$ = collectionData<FireTag>(
-            firestore.collection("tags").where("courseId", "==", course.courseId),
-            "tagId"
+            query(collection(firestore, 'tags') as CollectionReference<FireTag>, 
+                where('courseId', '==', course.courseId)),{idField: "tagId"}
         );
 
         const subscription = tags$.subscribe((newTags) => setTags(newTags));
@@ -214,7 +214,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
         const primaryTagsMissing = !selectedPrimary;
         const secondaryTagsMissing = !selectedSecondary;
-        const locationMissing = !location;
+        const locationMissing = session.modality === "virtual" ? false : !location;
         const questionMissing = !question;
 
         setMissingPrimaryTags(primaryTagsMissing);

@@ -22,6 +22,10 @@
       img {
         cursor: pointer;
       }
+      :hover {
+        opacity:0.8;
+        transition: 0.3s;
+      }
 
       img+img {
         margin-left: 16px;
@@ -81,6 +85,10 @@
         span {
           color: #888888;
           cursor: pointer;
+        }
+        :hover {
+          color: black;
+          transition: 0.3s;
         }
       }
 
