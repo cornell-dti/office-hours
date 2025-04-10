@@ -8,9 +8,7 @@
 // });
 
 
-describe('Login Tests', () => {
-  it('logs into the website', (done) => {
-    
+before('Login to website', (done) => {  
     // TEMPORARY workaround for login error
     cy.on('uncaught:exception', (err, runnable) => {
       expect(err.message).to.include('Missing or insufficient permissions')
@@ -31,5 +29,12 @@ describe('Login Tests', () => {
     cy.wait(5000);
     // cy.get('[data-testid="cypress-test"]').should("exist")
     // .should('have.text', 'Office Hours Simplified')
+})
+
+describe('Landing Page Tests', () => {
+  it('logs into the website', (done) => {
+
+    cy.get('[data-testid="splitview-landingtext"]').should("exist")
+    .should('have.text', 'Please select an office hour from the calendar.')
   })
 })
