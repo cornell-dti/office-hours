@@ -40,7 +40,8 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     }, 
     // eslint-disable-next-line
     [user?.courses]);
-    // need optional chaining in the dependency array because while logging out from the Course Selection page, user could be null.
+    // need optional chaining in the dependency array because while logging 
+    // out from the Course Selection page, user could be null.
 
     const filterOnActiveAndRole = React.useCallback(() => {
         return allCourses
