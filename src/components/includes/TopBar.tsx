@@ -62,7 +62,10 @@ const TopBar = (props: Props) => {
         }).catch(error => {
             // eslint-disable-next-line no-console
             console.error("Error updating lastSent:", error)});
-    }, [ notificationTracker && notificationTracker.notificationList]); 
+    }, [
+        notificationTracker, 
+        user,
+    ]);
 
     useEffect(() => {
         if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
