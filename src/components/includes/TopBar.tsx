@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback} from "react";
 
 import { useHistory } from "react-router";
 
 import { connect } from "react-redux";
 import addNotification from "react-push-notification";
 import { Icon } from "semantic-ui-react";
+import { doc, updateDoc, Timestamp} from 'firebase/firestore';
 import { logOut } from "../../firebasefunctions/user";
 import Logo from "../../media/QLogo2.svg";
 import CalendarHeader from "./CalendarHeader";
@@ -12,7 +13,7 @@ import ProfessorStudentToggle from "./ProfessorStudentToggle";
 import TopBarNotifications from "./TopBarNotifications";
 import { useNotificationTracker } from "../../firehooks";
 import { RootState } from "../../redux/store";
-import { updateLastSent } from "../../firebasefunctions/notifications";
+import { firestore } from "../../firebase";
 import Snackbar from "./Snackbar";
 import TextNotificationModal from "./TextNotificationModal";
 import TAStudentToggle from "./TAStudentToggle";
@@ -49,6 +50,24 @@ const TopBar = (props: Props) => {
     const countdownZero = props.countdownZero;
     const setDisplayWrapped = props.setDisplayWrapped;
 
+    const updateLastSent = useCallback(() => {
+        if (!notificationTracker?.id || !notificationTracker.notificationList || !user?.email) return;
+        const now =  Timestamp.now();
+        if (notificationTracker.lastSent && now.toDate().getTime() - 
+        notificationTracker.lastSent.toDate().getTime() < 5000) {
+            // Skipping update, lastSesnt was updated recently
+            return;
+        }
+        updateDoc(doc(firestore, "notificationTrackers", user.email), {
+            lastSent: now
+        }).catch(error => {
+            // eslint-disable-next-line no-console
+            console.error("Error updating lastSent:", error)});
+    }, [
+        notificationTracker, 
+        user,
+    ]);
+
     useEffect(() => {
         if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
             for (let i = 0; i < notificationTracker.notificationList.length; i++) {
@@ -60,13 +79,16 @@ const TopBar = (props: Props) => {
                     notificationTracker.lastSent === undefined ||
                     notif.createdAt.toDate().getTime() > notificationTracker?.lastSent.toDate().getTime() + 2000
                 ) {
-                    updateLastSent(user, notificationTracker);
-                    addNotification({
-                        title: notif.title,
-                        subtitle: notif.subtitle,
-                        message: notif.message,
-                        native: true,
-                    });
+                    updateLastSent();
+                    // Only show native notification if permission is granted
+                    if (Notification.permission === "granted") {
+                        addNotification({
+                            title: notif.title,
+                            subtitle: notif.subtitle,
+                            message: notif.message,
+                            native: true,
+                        });
+                    }
                     // hacky fix for duplicate notifs--server update to lastSent doesn't occur quickly enough
                     setTimeout(() => {}, 100);
                 } else {
@@ -74,7 +96,9 @@ const TopBar = (props: Props) => {
                 }
             }
         }
-    }, [notificationTracker, user]);
+    }, 
+    // eslint-disable-next-line
+    [ notificationTracker?.notificationList ]);
 
     const handleClick = (e: globalThis.MouseEvent) => {
         if (ref.current && !ref.current.contains(e.target as Node)) {
