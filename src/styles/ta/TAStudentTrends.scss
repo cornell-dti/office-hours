@@ -1,0 +1,113 @@
+.trends-container {
+    width: 1180px;
+    height: 610px;
+    background-color: #FFF;
+    border-radius: 12px;
+
+    .ui.selection.dropdown {
+        width: 112px;
+        height: 33px;
+        background-color: #E4EFFF;
+        border-radius: 4px;
+        color: rgba(0, 0, 0, 0.87);
+        padding: 10px;
+    }
+
+    .ui.selection.dropdown > .dropdown.icon {
+        padding: 10px;
+    }
+
+    .ui.dropdown > .text {
+        color: #121212;
+        font-family: Roboto;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 7.5px;
+        letter-spacing: -0.24px;
+    }
+}
+
+.trends-header {
+    text-align: left;
+    font-family: Roboto;
+    font-size: 28px;
+    font-weight: 500;
+    font-style: normal;
+    padding-left: 31px;
+    padding-top: 36px;
+    padding-bottom: 30px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.time-task-dropdown-container {
+    padding-left: 31px;
+    display: flex;
+    justify-content: space-between;
+    width: 262px;
+}
+
+.filter-dropdown-container {
+    width: 193px;
+    padding-right: 33px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dropdowns-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.sort-text-container {
+    display: flex;
+    width: 40px;
+    height: 11px;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.sort-text {
+    color: #121212;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 7.5px; /* 62.5% */
+    letter-spacing: -0.24px;
+}
+
+.table-header-container {
+    width: 1180px;
+    height: 11px;
+    display: inline-flex;
+    align-items: center;
+    gap: 653px;
+    padding-top: 36px;
+    padding-left: 31px;
+    color: #8D8E8E;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 7.5px; /* 62.5% */
+    letter-spacing: -0.24px;
+}
+
+.table-header-sub {
+    display: flex;
+    width: 333px;
+    align-items: center;
+    gap: 123px;
+}
+
+hr {
+    width: 1121px;
+    height: 1px;
+    margin-left: 31px;
+    margin-top: 11px;
+    margin-right: 28px;
+    background: #ECECEC;
+}
