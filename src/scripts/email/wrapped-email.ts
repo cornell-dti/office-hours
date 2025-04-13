@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import admin from "firebase-admin";
+import * as admin from "firebase-admin"
 import 'dotenv/config'
 import { HTML } from "./wrapped-html";
 import { MAX_BATCH_LIMIT, MAX_EMAIL_LIMIT } from "../../constants";
@@ -82,7 +82,7 @@ Continue from this user the next day by typing "node ${process.argv[1]} ${i}"`)
 
     try {
         const data = await resend.batch.send(
-            createBatches(userEmails, 49, 'Check Out Your QMI Wrapped!', HTML, indexStopped)
+            createBatches(['ns848@cornell.edu'], 49, 'Email Sent in Error', `Hello, <br> Please ignore the previous emai, this was sent accidentally during testing. Apologies for any confusion! <br><br> Thank you,<br> QMI Team `, indexStopped)
         );
     
 

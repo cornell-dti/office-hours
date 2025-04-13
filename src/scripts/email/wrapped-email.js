@@ -14,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -38,12 +38,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.createBatches = void 0;
 var resend_1 = require("resend");
-var firebase_admin_1 = require("firebase-admin");
+var admin = require("firebase-admin");
 require("dotenv/config");
-var wrapped_html_1 = require("./wrapped-html");
 var constants_1 = require("../../constants");
-firebase_admin_1["default"].initializeApp({
-    credential: firebase_admin_1["default"].credential.applicationDefault(),
+admin.initializeApp({
+    credential: admin.credential.applicationDefault(),
     databaseURL: 'https://queue-me-in-prod.firebaseio.com'
 });
 var resend = new resend_1.Resend(process.env.REACT_APP_RESEND_API_KEY);
@@ -58,7 +57,7 @@ var indexStopped = process.argv[2];
 var createBatches = function (totalEmails, batchSize, subj, content, startInd) {
     var i = parseInt(startInd, 10);
     // eslint-disable-next-line no-console
-    console.log("starting from user " + i + ": " + totalEmails[i]);
+    console.log("starting from user ".concat(i, ": ").concat(totalEmails[i]));
     var emailObjs = [];
     if (batchSize > constants_1.MAX_BATCH_LIMIT) {
         throw new Error("Batch size is too large. Must be no more than 49");
@@ -67,7 +66,7 @@ var createBatches = function (totalEmails, batchSize, subj, content, startInd) {
         // eslint-disable-next-line no-console
         console.log(
         // eslint-disable-next-line max-len
-        "Total email length > " + constants_1.MAX_BATCH_LIMIT * constants_1.MAX_EMAIL_LIMIT + ". Up to " + batchSize * constants_1.MAX_EMAIL_LIMIT + " emails will be sent, but you must run this script again the next day.");
+        "Total email length > ".concat(constants_1.MAX_BATCH_LIMIT * constants_1.MAX_EMAIL_LIMIT, ". Up to ").concat(batchSize * constants_1.MAX_EMAIL_LIMIT, " emails will be sent, but you must run this script again the next day."));
     }
     while (i < totalEmails.length && emailObjs.length < constants_1.MAX_EMAIL_LIMIT) {
         emailObjs.push({
@@ -84,7 +83,7 @@ var createBatches = function (totalEmails, batchSize, subj, content, startInd) {
     }
     if (emailObjs.length === constants_1.MAX_EMAIL_LIMIT) {
         // eslint-disable-next-line no-console
-        console.log("Reached email limit of " + constants_1.MAX_EMAIL_LIMIT + " emails per day, stopped at:\n             i=" + i + ",  user " + totalEmails[i] + "\nContinue from this user the next day by typing \"node " + process.argv[1] + " " + i + "\"");
+        console.log("Reached email limit of ".concat(constants_1.MAX_EMAIL_LIMIT, " emails per day, stopped at:\n             i=").concat(i, ",  user ").concat(totalEmails[i], "\nContinue from this user the next day by typing \"node ").concat(process.argv[1], " ").concat(i, "\""));
     }
     return emailObjs;
 };
@@ -94,7 +93,7 @@ exports.createBatches = createBatches;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                usersRef = firebase_admin_1["default"].firestore().collection('users');
+                usersRef = admin.firestore().collection('users');
                 // eslint-disable-next-line no-console
                 console.log('firebase worked');
                 return [4 /*yield*/, usersRef
@@ -116,7 +115,7 @@ exports.createBatches = createBatches;
                 _a.label = 3;
             case 3:
                 _a.trys.push([3, 5, , 6]);
-                return [4 /*yield*/, resend.batch.send(exports.createBatches(userEmails, 49, 'Check Out Your QMI Wrapped!', wrapped_html_1.HTML, indexStopped))];
+                return [4 /*yield*/, resend.batch.send((0, exports.createBatches)(['ns848@cornell.edu'], 1, 'Email Sent in Error', "Hello, <br> Please ignore the previous emai, this was sent accidentally during testing. Apologies for any confusion! <br><br> Thank you,<br> QMI Team ", indexStopped))];
             case 4:
                 data = _a.sent();
                 // eslint-disable-next-line no-console
