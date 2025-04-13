@@ -1,48 +1,49 @@
-import firebase from 'firebase/app';
+import { doc, collection, deleteDoc, updateDoc, writeBatch, Timestamp} from 'firebase/firestore';
+import { User } from 'firebase/auth';
 import { firestore } from '../firebase';
 
 export const addBlogPost = (
-    user: firebase.User | null, 
+    user: User | null, 
     title: string, description: string, 
     listItems: string[]
 ): boolean => {
     if (user != null) {
-        const postId = firestore.collection('blogPosts').doc().id;
+        const postRef = doc(collection(firestore, "blogPosts"));
         const blogPost: Omit<BlogPost, 'postId'> = {
             title,
             description,
             listItems,
-            timeEntered: firebase.firestore.Timestamp.now()
+            timeEntered: Timestamp.now()
         }
 
-        const batch = firestore.batch();
-        batch.set(firestore.collection('blogPosts').doc(postId), blogPost);
+        const batch = writeBatch(firestore);
+        batch.set(postRef, blogPost);
         batch.commit();
 
         return true;
     } return false;
 }
 
-export const editBlogPost = (user: firebase.User | null, blogPost: BlogPost) => {
+export const editBlogPost = (user: User | null, blogPost: BlogPost) => {
     if (user != null) {
         const {title, description, listItems, postId} = blogPost;
         const updatedBlogPost: Partial<BlogPost> = {
             title,
             description,
             listItems: [...listItems],
-            edited: firebase.firestore.Timestamp.now(),
+            edited: Timestamp.now(),
         }
-        const postRef = firestore.collection('blogPosts').doc(postId);
-        postRef.update(updatedBlogPost);
+        const postRef = doc(firestore, 'blogPosts', postId);
+        updateDoc(postRef, updatedBlogPost);
     }
 }
 
 export const deleteBlogPost = (
-    user: firebase.User | null, 
+    user: User | null, 
     postId: BlogPost['postId']
 ) => {
     if (user != null) {
-        const postRef = firestore.collection('blogPosts').doc(postId);
-        postRef.delete();
+        const postRef = doc(firestore, 'blogPosts', postId);
+        deleteDoc(postRef);
     }
 }

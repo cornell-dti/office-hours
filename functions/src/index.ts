@@ -1,4 +1,5 @@
-import * as functions from 'firebase-functions';
+// eslint-disable-next-line import/no-unresolved
+import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 import { Twilio } from 'twilio';
 
@@ -503,18 +504,16 @@ exports.onQuestionStatusUpdate = functions.firestore
             // Retrieve the session document reference 
             const userDoc = db.doc(`users/${userId}`);
 
-            // Update the resolvedQuestionsArray field in the session document if it exists
+            // Update the resolvedQuestionsArray field in the user document if it exists
             return userDoc.update(
                 {
                     // Keeps track of the most recent question that was resolved
-                    // Object with questionId, askerId, and resolvedAt fields
+                    // Object with questionId and askerId fields
                     // questionId: the id of the question that was resolved
                     // askerId: the id of the user who asked the question
-                    // resolvedAt: the time the question was resolved
                     recentlyResolvedQuestion: {
                         questionId,
                         askerId: userId,
-                        resolvedAt: admin.firestore.Timestamp.now(),
                     }
                 });
         }
