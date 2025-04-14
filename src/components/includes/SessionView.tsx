@@ -67,6 +67,7 @@ const SessionView = ({
     sessionBanners,
     showProfessorStudentView,
 }: Props) => {
+    console.log(session.sessionId)
     // make user appear as not a ta/prof if showProfessorStudentView is true
     const isTa = showProfessorStudentView ? false : user.roles[course.courseId] !== undefined;
     const isProf = showProfessorStudentView ? false : user.roles[course.courseId] === "professor";
