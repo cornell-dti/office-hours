@@ -1,20 +1,19 @@
 import * as admin from "firebase-admin"
 import { writeFileSync } from "fs";
-import { START_DATE, END_DATE, MAX_BATCH_LIMIT, MAX_EMAIL_LIMIT } from "../../constants";
 import { Resend } from 'resend';
-import { createBatches } from "./wrapped-email"
+import { START_DATE, END_DATE, MAX_BATCH_LIMIT, MAX_EMAIL_LIMIT } from "../../constants";
 import 'dotenv/config'
 
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
     databaseURL: 'https://queue-me-in-prod.firebaseio.com'
-    //'https://qmi-test.firebaseio.com'
+    // 'https://qmi-test.firebaseio.com'
     // 'https://queue-me-in-prod.firebaseio.com'
 
 });
 
 // eslint-disable-next-line no-console
-console.log('Firebase admin initialized from wrapped-email!');
+console.log('Firebase admin initialized!');
 
 const resend = new Resend(process.env.REACT_APP_RESEND_API_KEY);
 // eslint-disable-next-line no-console
@@ -34,6 +33,51 @@ writeFileSync("./src/scripts/email/tas.csv", "Name, Email, Courses\n", {
     flag: "w"
 })
 
+/** Returns an array of email objects to send - should be at most 100 per day. 
+- totalEmails is a list of all the user emails to send to. 
+- batchSize should be 49 or less to maintain free emailing.
+- Throws an error if this pre-condition is violated. */
+/* Have to redefine this function from wrapped-email because using the exported version 
+runs the other script and sends the other emails too. */
+const createBatches =  (totalEmails: string[], batchSize: number, subj: string, content: string, startInd: string) => {
+    let i = parseInt(startInd, 10);
+    // eslint-disable-next-line no-console
+    console.log(`starting from user ${i}: ${totalEmails[i]}`);
+    const emailObjs = [];
+    if (batchSize > MAX_BATCH_LIMIT) {
+        throw new Error("Batch size is too large. Must be no more than 49");
+    }
+    if (totalEmails.length > MAX_BATCH_LIMIT * MAX_EMAIL_LIMIT) {
+        // eslint-disable-next-line no-console
+        console.log(
+            // eslint-disable-next-line max-len
+            `Total email length > ${MAX_BATCH_LIMIT * MAX_EMAIL_LIMIT}. Up to ${batchSize * MAX_EMAIL_LIMIT} emails will be sent, but you must run this script again the next day.`)
+    }
+    while (i < totalEmails.length && emailObjs.length < MAX_EMAIL_LIMIT) {
+
+        emailObjs.push(
+            {
+                from: 'queuemein@cornelldti.org',
+                // This is the dti address because recievers can see, but dti will not see recievers.
+                to: ['hello@cornelldti.org'],
+                bcc: totalEmails.slice(i, Math.min(i+batchSize, totalEmails.length)),
+                subject: subj,
+                html: content
+            }
+        )
+        
+        i+= batchSize;
+    }
+    if (emailObjs.length === MAX_EMAIL_LIMIT) {
+        // eslint-disable-next-line no-console
+        console.log(`Reached email limit of ${MAX_EMAIL_LIMIT} emails per day, stopped at:
+             i=${i},  user ${totalEmails[i]}
+Continue from this user the next day by typing "node ${process.argv[1]} ${i}"`)
+    }
+    return emailObjs;
+
+}
+
 const taEmails:string[] = []
 const taNames:string[] = []
 const taClasses:string[] = []
@@ -49,11 +93,13 @@ const getTAs = async () => {
         .where('endDate', '<=', endDate)
         .get();
 
+    const allTaDataPromises = [];
+
     for (const doc of coursesSnapshot.docs) {
         const courseCode = doc.get('code');
         const taList:readonly string[] = doc.get('tas');
-        
-        for (const taId of taList) {
+
+        const taDataPromises = taList.map(async (taId) => {
             let rowData = "";
             const taDoc = (await usersRef.doc(taId).get()).data() as {
                 firstName: string;
@@ -70,8 +116,8 @@ const getTAs = async () => {
                 recentlyResolvedQuestion?: admin.firestore.FieldValue;
             };
             if (taDoc){      
-                /*Assuming you can't be a TA for two classes in the same semester, 
-                so there should be no repeats.*/       
+                /* Assuming you can't be a TA for two classes in the same semester, 
+                so there should be no repeats. */       
                 rowData += taDoc.firstName + " " + taDoc.lastName + ",";
                 rowData += taDoc.email + "," + courseCode + "\n";
                 taEmails.push(taDoc.email);
@@ -81,16 +127,22 @@ const getTAs = async () => {
                     flag: "a"
                 })
             }
-        }
+        });
+        
+        allTaDataPromises.push(...taDataPromises);
     }
+
+    await Promise.all(allTaDataPromises);
 }
 
 (async () => {
     try {
         await getTAs();
+        // eslint-disable-next-line no-console
         console.log('Writing info to CSV...');
         // eslint-disable-next-line no-console
         console.log("Processing complete. Sending emails..");
+        /* eslint-disable max-len */
         const content = `
 Hi there,
 <br><br>
@@ -107,7 +159,7 @@ Best,
 Maddie Hsia
         `
         const data = await resend.batch.send(
-            createBatches(['ns848@cornell.edu', 'nidhisoma@gmail.com'], 1, "[Queue Me In] Provide Your TA Feedback", content, indexStopped)
+            createBatches(taEmails, 49, "[Queue Me In] Provide Your TA Feedback", content, indexStopped)
         );
 
         // eslint-disable-next-line no-console

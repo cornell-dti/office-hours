@@ -38,18 +38,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var admin = require("firebase-admin");
 var fs_1 = require("fs");
-var constants_1 = require("../../constants");
 var resend_1 = require("resend");
-var wrapped_email_1 = require("./wrapped-email");
+var constants_1 = require("../../constants");
 require("dotenv/config");
-// admin.initializeApp({
-//     credential: admin.credential.applicationDefault(),
-//     databaseURL: 'https://queue-me-in-prod.firebaseio.com'
-//     //'https://qmi-test.firebaseio.com'
-//     // 'https://queue-me-in-prod.firebaseio.com'
-// });
+admin.initializeApp({
+    credential: admin.credential.applicationDefault(),
+    databaseURL: 'https://queue-me-in-prod.firebaseio.com'
+    // 'https://qmi-test.firebaseio.com'
+    // 'https://queue-me-in-prod.firebaseio.com'
+});
 // eslint-disable-next-line no-console
-console.log('Firebase admin initialized from wrapped-email!');
+console.log('Firebase admin initialized!');
 var resend = new resend_1.Resend(process.env.REACT_APP_RESEND_API_KEY);
 // eslint-disable-next-line no-console
 console.log('Resend initialized!');
@@ -65,13 +64,50 @@ var endDate = admin.firestore.Timestamp.fromDate(new Date(constants_1.END_DATE))
 (0, fs_1.writeFileSync)("./src/scripts/email/tas.csv", "Name, Email, Courses\n", {
     flag: "w"
 });
+/** Returns an array of email objects to send - should be at most 100 per day.
+- totalEmails is a list of all the user emails to send to.
+- batchSize should be 49 or less to maintain free emailing.
+- Throws an error if this pre-condition is violated. */
+/* Have to redefine this function from wrapped-email because using the exported version
+runs the other script and sends the other emails too. */
+var createBatches = function (totalEmails, batchSize, subj, content, startInd) {
+    var i = parseInt(startInd, 10);
+    // eslint-disable-next-line no-console
+    console.log("starting from user ".concat(i, ": ").concat(totalEmails[i]));
+    var emailObjs = [];
+    if (batchSize > constants_1.MAX_BATCH_LIMIT) {
+        throw new Error("Batch size is too large. Must be no more than 49");
+    }
+    if (totalEmails.length > constants_1.MAX_BATCH_LIMIT * constants_1.MAX_EMAIL_LIMIT) {
+        // eslint-disable-next-line no-console
+        console.log(
+        // eslint-disable-next-line max-len
+        "Total email length > ".concat(constants_1.MAX_BATCH_LIMIT * constants_1.MAX_EMAIL_LIMIT, ". Up to ").concat(batchSize * constants_1.MAX_EMAIL_LIMIT, " emails will be sent, but you must run this script again the next day."));
+    }
+    while (i < totalEmails.length && emailObjs.length < constants_1.MAX_EMAIL_LIMIT) {
+        emailObjs.push({
+            from: 'queuemein@cornelldti.org',
+            // This is the dti address because recievers can see, but dti will not see recievers.
+            to: ['hello@cornelldti.org'],
+            bcc: totalEmails.slice(i, Math.min(i + batchSize, totalEmails.length)),
+            subject: subj,
+            html: content
+        });
+        i += batchSize;
+    }
+    if (emailObjs.length === constants_1.MAX_EMAIL_LIMIT) {
+        // eslint-disable-next-line no-console
+        console.log("Reached email limit of ".concat(constants_1.MAX_EMAIL_LIMIT, " emails per day, stopped at:\n             i=").concat(i, ",  user ").concat(totalEmails[i], "\nContinue from this user the next day by typing \"node ").concat(process.argv[1], " ").concat(i, "\""));
+    }
+    return emailObjs;
+};
 var taEmails = [];
 var taNames = [];
 var taClasses = [];
 var getTAs = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var coursesRef, usersRef, coursesSnapshot, _i, _a, doc, courseCode, taList, _b, taList_1, taId, rowData, taDoc;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var coursesRef, usersRef, coursesSnapshot, allTaDataPromises, _loop_1, _i, _a, doc;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
                 coursesRef = db.collection('courses');
                 usersRef = db.collection('users');
@@ -80,43 +116,46 @@ var getTAs = function () { return __awaiter(void 0, void 0, void 0, function () 
                         .where('endDate', '<=', endDate)
                         .get()];
             case 1:
-                coursesSnapshot = _c.sent();
-                _i = 0, _a = coursesSnapshot.docs;
-                _c.label = 2;
-            case 2:
-                if (!(_i < _a.length)) return [3 /*break*/, 7];
-                doc = _a[_i];
-                courseCode = doc.get('code');
-                taList = doc.get('tas');
-                _b = 0, taList_1 = taList;
-                _c.label = 3;
-            case 3:
-                if (!(_b < taList_1.length)) return [3 /*break*/, 6];
-                taId = taList_1[_b];
-                rowData = "";
-                return [4 /*yield*/, usersRef.doc(taId).get()];
-            case 4:
-                taDoc = (_c.sent()).data();
-                if (taDoc) {
-                    /*Assuming you can't be a TA for two classes in the same semester,
-                    so there should be no repeats.*/
-                    rowData += taDoc.firstName + " " + taDoc.lastName + ",";
-                    rowData += taDoc.email + "," + courseCode + "\n";
-                    taEmails.push(taDoc.email);
-                    taClasses.push(courseCode);
-                    taNames.push(taDoc.firstName + " " + taDoc.lastName);
-                    (0, fs_1.writeFileSync)("./src/scripts/email/tas.csv", rowData, {
-                        flag: "a"
-                    });
+                coursesSnapshot = _b.sent();
+                allTaDataPromises = [];
+                _loop_1 = function (doc) {
+                    var courseCode = doc.get('code');
+                    var taList = doc.get('tas');
+                    var taDataPromises = taList.map(function (taId) { return __awaiter(void 0, void 0, void 0, function () {
+                        var rowData, taDoc;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    rowData = "";
+                                    return [4 /*yield*/, usersRef.doc(taId).get()];
+                                case 1:
+                                    taDoc = (_a.sent()).data();
+                                    if (taDoc) {
+                                        /* Assuming you can't be a TA for two classes in the same semester,
+                                        so there should be no repeats. */
+                                        rowData += taDoc.firstName + " " + taDoc.lastName + ",";
+                                        rowData += taDoc.email + "," + courseCode + "\n";
+                                        taEmails.push(taDoc.email);
+                                        taClasses.push(courseCode);
+                                        taNames.push(taDoc.firstName + " " + taDoc.lastName);
+                                        (0, fs_1.writeFileSync)("./src/scripts/email/tas.csv", rowData, {
+                                            flag: "a"
+                                        });
+                                    }
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); });
+                    allTaDataPromises.push.apply(allTaDataPromises, taDataPromises);
+                };
+                for (_i = 0, _a = coursesSnapshot.docs; _i < _a.length; _i++) {
+                    doc = _a[_i];
+                    _loop_1(doc);
                 }
-                _c.label = 5;
-            case 5:
-                _b++;
-                return [3 /*break*/, 3];
-            case 6:
-                _i++;
-                return [3 /*break*/, 2];
-            case 7: return [2 /*return*/];
+                return [4 /*yield*/, Promise.all(allTaDataPromises)];
+            case 2:
+                _b.sent();
+                return [2 /*return*/];
         }
     });
 }); };
@@ -129,11 +168,12 @@ var getTAs = function () { return __awaiter(void 0, void 0, void 0, function () 
                 return [4 /*yield*/, getTAs()];
             case 1:
                 _a.sent();
+                // eslint-disable-next-line no-console
                 console.log('Writing info to CSV...');
                 // eslint-disable-next-line no-console
                 console.log("Processing complete. Sending emails..");
                 content = "\nHi there,\n<br><br>\nI hope this email finds you well! My name is Maddie and I am Queue Me In\u2019s Product Marketing Manager. I am reaching out to ask if you could provide feedback on your experience using Queue Me In as a TA. Please share with us your thoughts using <a href=\"https://docs.google.com/forms/d/e/1FAIpQLSdDv1hHnVefUVZXqKobxMZZa1JrobwTY6oIMhcszxE3OYVBdg/viewform\">this Google Form</a>. Your feedback is extremely valuable as we will use it to create and optimize features that help streamline your user experience. The form itself isn\u2019t very long and should take approximately 10 minutes to complete.\n<br><br>\n<strong>Filling out this form will enter you in a raffle to win one of 2 $20 Amazon e-gift cards!</strong> To enter, please be sure to submit before April 21st at 11:59PM EST.\n<br><br>\nThank you in advance for your feedback. We really appreciate your time!\n<br><br>\nIf you have any questions, comments, or concerns, please reach out to me at mh2535@cornell.edu.\n<br><br>\nBest,\n<br><br>\nMaddie Hsia\n        ";
-                return [4 /*yield*/, resend.batch.send((0, wrapped_email_1.createBatches)(['ns848@cornell.edu', 'nidhisoma@gmail.com'], 1, "[Queue Me In] Provide Your TA Feedback", content, indexStopped))];
+                return [4 /*yield*/, resend.batch.send(createBatches(taEmails, 49, "[Queue Me In] Provide Your TA Feedback", content, indexStopped))];
             case 2:
                 data = _a.sent();
                 // eslint-disable-next-line no-console
