@@ -541,12 +541,14 @@ exports.onStudentJoinSession = functions.firestore.document("sessions/{sessionId
         const beforeStudents = beforeData.assignedQuestions - beforeData.resolvedQuestions;
         const afterStudents = afterData.assignedQuestions - afterData.resolvedQuestions;
 
-        // Checks if the number of students have changed (either more assigned questions or a question is removed by the student)
+        // Checks if the number of students have changed (either more assigned questions or a question 
+        // is removed by the student)
         if (beforeStudents < afterStudents || beforeStudents > afterStudents) {
             // Retrieve the session document reference
             const sessionDoc = db.doc(`sessions/${sessionId}`);
-            // Update the session document with the serverTimestamp for synchronized clock (instead of using client timestamp)
-            // This is important because we want to make sure that the server time is used for all calculations
+            // Update the session document with the serverTimestamp for synchronized clock (instead of using 
+            // client timestamp). This is important because we want to make sure that the server time is used 
+            // for all calculations
             sessionDoc.update({
                 serverTimeStamp: admin.firestore.FieldValue.serverTimestamp(),
             });
