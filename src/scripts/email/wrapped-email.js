@@ -36,10 +36,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.createBatches = void 0;
 var resend_1 = require("resend");
 var admin = require("firebase-admin");
 require("dotenv/config");
+var wrapped_html_1 = require("./wrapped-html");
 var constants_1 = require("../../constants");
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
@@ -51,9 +51,9 @@ if (process.argv.length !== 3) {
 }
 var indexStopped = process.argv[2];
 /** Returns an array of email objects to send - should be at most 100 per day.
-- totalEmails is a list of all the user emails to send to.
-- batchSize should be 49 or less to maintain free emailing.
-- Throws an error if this pre-condition is violated. */
+ * totalEmails is a list of all the user emails to send to.
+ * batchSize should be 49 or less to maintain free emailing.
+ * Throws an error if this pre-condition is violated. */
 var createBatches = function (totalEmails, batchSize, subj, content, startInd) {
     var i = parseInt(startInd, 10);
     // eslint-disable-next-line no-console
@@ -87,7 +87,6 @@ var createBatches = function (totalEmails, batchSize, subj, content, startInd) {
     }
     return emailObjs;
 };
-exports.createBatches = createBatches;
 (function () { return __awaiter(void 0, void 0, void 0, function () {
     var usersRef, usersSnapshot, userEmails, data, error_1;
     return __generator(this, function (_a) {
@@ -115,7 +114,7 @@ exports.createBatches = createBatches;
                 _a.label = 3;
             case 3:
                 _a.trys.push([3, 5, , 6]);
-                return [4 /*yield*/, resend.batch.send((0, exports.createBatches)(['ns848@cornell.edu'], 1, 'Email Sent in Error', "Hello, <br> Please ignore the previous emai, this was sent accidentally during testing. Apologies for any confusion! <br><br> Thank you,<br> QMI Team ", indexStopped))];
+                return [4 /*yield*/, resend.batch.send(createBatches(userEmails, 49, 'Check Out Your QMI Wrapped!', wrapped_html_1.HTML, indexStopped))];
             case 4:
                 data = _a.sent();
                 // eslint-disable-next-line no-console

@@ -18,10 +18,10 @@ if (process.argv.length !== 3) {
 const indexStopped = process.argv[2];
 
 /** Returns an array of email objects to send - should be at most 100 per day. 
-- totalEmails is a list of all the user emails to send to. 
-- batchSize should be 49 or less to maintain free emailing.
-- Throws an error if this pre-condition is violated. */
-export const createBatches =  (totalEmails: string[], batchSize: number, subj: string, content: string, startInd: string) => {
+ * totalEmails is a list of all the user emails to send to. 
+ * batchSize should be 49 or less to maintain free emailing.
+ * Throws an error if this pre-condition is violated. */
+const createBatches =  (totalEmails: string[], batchSize: number, subj: string, content: string, startInd: string) => {
     let i = parseInt(startInd, 10);
     // eslint-disable-next-line no-console
     console.log(`starting from user ${i}: ${totalEmails[i]}`);
@@ -82,7 +82,7 @@ Continue from this user the next day by typing "node ${process.argv[1]} ${i}"`)
 
     try {
         const data = await resend.batch.send(
-            createBatches(['ns848@cornell.edu'], 49, 'Email Sent in Error', `Hello, <br> Please ignore the previous emai, this was sent accidentally during testing. Apologies for any confusion! <br><br> Thank you,<br> QMI Team `, indexStopped)
+            createBatches(userEmails, 49, 'Check Out Your QMI Wrapped!', HTML, indexStopped)
         );
     
 
