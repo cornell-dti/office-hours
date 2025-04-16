@@ -555,8 +555,6 @@ exports.onStudentJoinSession = functions.firestore
 
         // Get the session reference
         const sessionRef = db.doc(`sessions/${sessionId}`);
-
-        // Read the updated session to get the server timestamp (now) and session start time
         const sessionData = await sessionRef.get();
         const session = sessionData.data();
 
@@ -567,17 +565,16 @@ exports.onStudentJoinSession = functions.firestore
         let ratio = numberOfTAs;
 
         if (!session?.studentPerTaRatio) {
+            // If no TAs, set ratio to -1 to indicate that there are no TAs
+            if (numberOfTAs === 0) {
+                return db.doc(`sessions/${sessionId}`).update({
+                    studentPerTaRatio: -1,
+                });
+            }
             // Update the studentPerTaRatio field in the session document
             return sessionRef.update({
                 studentPerTaRatio: ratio,
                 officeHourStarted: false,
-            });
-        }
-
-        // If no TAs, set ratio to -1 to indicate that there are no TAs
-        if (numberOfTAs === 0) {
-            return db.doc(`sessions/${sessionId}`).update({
-                studentPerTaRatio: -1,
             });
         }
         if (beforeStudents < afterStudents || beforeStudents > afterStudents) {
