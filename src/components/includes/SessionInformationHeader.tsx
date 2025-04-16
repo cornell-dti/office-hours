@@ -8,15 +8,21 @@ import { pauseSession } from '../../firebasefunctions/session';
 import users from '../../media/users.svg'
 import chalkboard from '../../media/chalkboard-teacher.svg'
 import hourglass from '../../media/hourglass-half.svg'
-
+import calendarIcon from '../../media/Calendar_icon.svg';
+import clockIcon from '../../media/clock-regular_1.svg';
+import rightArrowIcon from '../../media/rightArrowIcon.svg';
 import zoom from '../../media/zoom.svg';
 import closeZoom from '../../media/closeZoom.svg';
+import leftArrowIcon from '../../media/leftArrowIcon.svg';
+import timelinePlaceholder from '../../media/timeline_placeholder-graph.png';
 
 import editZoomLink from '../../media/editZoomLink.svg';
 import { useSessionQuestions, useSessionTAs } from '../../firehooks';
 import { computeNumberAhead } from '../../utilities/questions';
 import JoinErrorMessage from './JoinErrorMessage';
 import { RootState } from '../../redux/store';
+import {useState} from 'react';
+
 
 type Props = {
     session: FireSession;
@@ -178,19 +184,25 @@ const SessionInformationHeader = ({
         setShowErrorMessage(message);
     }
 
+    const [startIndex, setStartIndex] = useState(0);
+    const visibleCount = 4;
+
+    const visibleTAs = tas.slice(startIndex, startIndex + visibleCount);
+    const hasNext = startIndex + visibleCount < tas.length;
+
     return isDesktop ? (
         <header className="DesktopSessionInformationHeader">
     <Grid container spacing={2} style={{ alignItems: 'stretch' }}>
             {/* Left Column (Boxes 1 & 2) */}
-      <Grid item xs={12} md={4}>
+      <Grid item xs={12} md={5}>
         <Grid container direction="column">
             <Grid item style={{ 
                 flex: 2 ,
                 alignItems: 'flex-start', // Align children to the top (left if textAlign is set)
-                justifyContent: 'flex-start' // Align items to the left horizontally
+                // justifyContent: 'flex-start' // Align items to the left horizontally
          
             }}>
-                    <div className="LeftInformationHeader" style = {{ textAlign: 'left', width: '100%'}}>                     
+                    <div className="LeftInformationHeader" style = {{ width: '100%'}}>                     
                                 {'building' in session ? (
                                     <p className="Location">
                                         {[session.building, session.room].map(s => s || '').join(' ')}
@@ -216,14 +228,23 @@ const SessionInformationHeader = ({
                                     <br />
                                 </p> 
                                
-                                <p className="Date">
-                                    <Icon name="calendar alternate outline" />
+                                <div className="Date">
+                                <img
+                                    src={calendarIcon}
+                                    alt="Calendar Icon for Office Hour Date"
+                                    className="calendarIcon"
+                                />
                                     <Moment
                                         date={session.startTime.seconds * 1000}
                                         interval={0}
                                         format={'dddd, MMM D'}
                                     />
                                     <br />
+                                <img
+                                    src={clockIcon}
+                                    alt="Clock Icon for Office Hour Date"
+                                    className="clockIcon"
+                                />
                                     <Moment
                                     date={session.startTime.seconds * 1000}
                                     interval={0}
@@ -234,84 +255,85 @@ const SessionInformationHeader = ({
                                         interval={0}
                                         format={' - h:mm A'}
                                     />
-                                </p>
+                                    
+                                </div>
                          </div>
             </Grid>
             <Grid item style={{ display: 'flex', flex: 1 }}>
-                        <div className="QueueInfo">
-                        <p>
-                        <span className="blue">{tas.length + ' TAs '}</span>
-                                assigned to this office hour
-                         </p>
-                         </div>
+            <div className="TAsHeader">
+            <Grid container alignItems="center" justifyContent="space-between">
+                {/* Text on the left */}
+                <Grid item xs={12} sm={4}>
+                    <div className="TAHeaderText">
+                    <p style={{ fontWeight: 'bold', fontSize: '20px', margin: 0 }}>
+                        TA's ({tas.length})
+                    </p>
+                    <p style={{ fontSize: '14px', color: '#4d4d4d', margin: 0 }}>
+                        2.5 students/TA
+                    </p>
+                    </div>
+                </Grid>
 
+                {/* TA profile images on the right */}
+                <Grid item xs={12} sm={8}>
+                <div className="TAImagesWrapper">
+                    {startIndex > 0 && (
+                        <div className="ScrollArrow" onClick={() => setStartIndex(prev => prev - 1)}>
+                        <img src={leftArrowIcon} alt="scroll left" className="arrowIcon" />
+                        </div>
+                    )}
+
+                    <div className="TAImagesScrollWrapper">
+                        <div className="TAImagesScroll">
+                        {visibleTAs.map((ta, index) => (
+                            <div key={index} className="TACircleContainer">
+                            <img
+                                src={ta.photoUrl || '/placeholder.png'}
+                                alt={`${ta.firstName} ${ta.lastName}'s Photo`}
+                                className="TACircle"
+                            />
+                            </div>
+                        ))}
+                        </div>
+                    </div>
+
+                    {hasNext && (
+                        <div className="ScrollArrow" onClick={() => setStartIndex(prev => prev + 1)}>
+                        <img src={rightArrowIcon} alt="scroll right" className="arrowIcon" />
+                        </div>
+                    )}
+                    </div>
+
+                </Grid>
+                </Grid>
+                </div>
             </Grid>
         </Grid>
        </Grid>                                    
-      <Grid item xs={12} md={8} spacing={2} style = {{display: 'flex', flex: 3}}>
+      <Grid item xs={12} md={7} style = {{display: 'flex', flex: 3}}>
 
                             <div className="QueueInfo">
-                                    <Grid container direction="row" justifyContent="center" alignItems={'center'}>
-                                        <Grid item xs={2}>
-                                            <img src={users} alt="number of people" />
-                                        </Grid>
-                                        <Grid item xs={10}>
-                                            <p>
-                                                <span className="red">{numAhead + ' students '}</span> ahead
-                                            </p>
-                                        </Grid>
-                                    </Grid>
-                                {tas.length > 0 &&
-                                    <div className="OneQueueInfo">
-                                        <Grid container direction="row" justifyContent="center" alignItems={'center'}>
-                                            <Grid item xs={2}>
-                                                <img src={chalkboard} alt="number of people" />
-                                            </Grid>
-                                            <Grid item xs={10}>
-                                                <p>
-                                                    <span className="blue">{tas.length + ' TAs '}</span>
-                                                    assigned to this office hour
-                                                </p>
-                                            </Grid>
-                                        </Grid>
-                                    </div>
-                                }
-                                <div className="OneQueueInfo">
-                                    <Grid container direction="row" justifyContent="center" alignItems={'center'}>
-                                        <Grid item xs={2}>
-                                            <img src={hourglass} alt="time" />
-                                        </Grid>
-                                        <Grid item xs={10}>
-                                            {avgWaitTime !== 'No information available' ? (
-                                                <p>
-                                                    <span className="blue">{avgWaitTime + ' ' + esimatedTime}</span>
-
-                                                    estimated wait time
-                                                </p>
-                                            ) : (
-                                                <p className="blue">{avgWaitTime}</p>
-                                            )}
-                                        </Grid>
-                                    </Grid>
-                                </div>
-                                <div className="OneQueueInfo">
-                                    {isTa && isOpen &&
-                                        (<Grid container direction="row" justifyContent="center" alignItems={'center'}>
-                                            <Grid item xs={2}>
-                                                <Switch 
-                                                    className="closeQueueSwitch" 
-                                                    checked={!isPaused} 
-                                                    onChange={handlePause} 
-                                                    color="primary" 
-                                                />
-                                            </Grid>
-                                            <Grid item xs={10}>
-                                                <p>{`Queue is ${isPaused ? "closed" : "open"}`} </p>
-                                            </Grid>
-                                        </Grid>)}
-                                </div>
-                                </div>
-
+                            <p className="WaitTitle">
+                                Wait Time
+                            </p>
+                            {avgWaitTime !== 'No information available' ? (
+                            <p className="WaitSummary">
+                                <span className="red">{numAhead} students</span> ahead | 
+                                <span className="blue"> {avgWaitTime}</span>
+                                <span className="gray"> {esimatedTime}</span> estimated wait time
+                            </p>
+                            ) : (
+                            <p className="WaitSummary">
+                                <span className="red">{numAhead} students</span> ahead | 
+                                <span className="blue"> No information available</span>
+                            </p>
+                            )}
+                            <img
+                                src={timelinePlaceholder} // update with actual path to your placeholder
+                                alt="Placeholder wait time graph"
+                                className="GraphPlaceholder"
+                            />
+                        </div>
       </Grid>
     </Grid>
        </header>
