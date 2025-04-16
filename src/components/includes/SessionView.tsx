@@ -202,7 +202,6 @@ const SessionView = ({
     }
 
     // First check that the session is not ended yet.
-    console.log (session);
     const haveAnotherQuestion =
         new Date(session.endTime.toDate()) >= new Date() &&
         questions.some(({ askerId, status }) => askerId === user.userId && status === "unresolved");

@@ -29,7 +29,7 @@ interface FireBaseSession {
     taAnnouncements?: TaAnnouncement[];
     isPaused?: boolean;
     studentPerTaRatio?: number;
-    hasUnresolvedQuestion?: boolean;
+    officeHourStarted?: boolean;
 }
 
 interface FireSessionLocation {
