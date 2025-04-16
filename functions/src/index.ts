@@ -545,64 +545,72 @@ exports.onQuestionStatusUpdate = functions.firestore
 exports.onStudentJoinSession = functions.firestore
     .document("sessions/{sessionId}")
     .onUpdate(async (change, context) => {
-        // Log when the function is triggered
-        functions.logger.info("Function triggered", {
-            sessionId: change.after.id,
-        });
-        // Retrieve the original session data and the updated session data
-        const beforeData = change.before.data() as FireSession;
-        const afterData = change.after.data() as FireSession;
+        const beforeData = change.before.data();
+        const afterData = change.after.data();
         const sessionId = context.params.sessionId;
 
-        // Variable used to store the ratio of students per TA
-        let ratio = -1;
+        // Only proceed if the number of active students (questions are unresolved yet) has changed
+        const beforeStudents = beforeData.totalQuestions - beforeData.resolvedQuestions;
+        const afterStudents = afterData.totalQuestions - afterData.resolvedQuestions;
 
-        // Retrieve the session document reference
+        // Get the session reference
         const sessionRef = db.doc(`sessions/${sessionId}`);
-        const sessionDoc = await sessionRef.get();
-        const session = sessionDoc.data() as FireSession;
+
+        // Read the updated session to get the server timestamp (now) and session start time
+        const sessionData = await sessionRef.get();
+        const session = sessionData.data();
 
         // Get the number of TAs in the session
-        const numberOfTAs = afterData?.tas.length;
+        const numberOfTAs = afterData.tas.length;
 
-        // We only calculate the student per TA ratio for assigned questions where a question is
-        // being handled by a particular TA. Note [assignedQuestions - resolvedQuestions] is the number of students
-        // that are currently being handled by TAs. This is because the resolved questions are no longer being handled.
-        const beforeStudents = beforeData.assignedQuestions - beforeData.resolvedQuestions;
-        const afterStudents = afterData.assignedQuestions - afterData.resolvedQuestions;
+        // Default value for studentPerTaRatio to indicate that no information is available
+        let ratio = numberOfTAs;
 
-        // Checks if the number of students have changed (either more assigned questions or a question
-        // is removed by the student)
+        if (!session?.studentPerTaRatio) {
+            // Update the studentPerTaRatio field in the session document
+            return sessionRef.update({
+                studentPerTaRatio: ratio,
+                officeHourStarted: false,
+            });
+        }
+
+        // If no TAs, set ratio to -1 to indicate that there are no TAs
+        if (numberOfTAs === 0) {
+            return db.doc(`sessions/${sessionId}`).update({
+                studentPerTaRatio: -1,
+            });
+        }
         if (beforeStudents < afterStudents || beforeStudents > afterStudents) {
-            // Get the reference to the question collection but only containing questions
-            // from this specific session and are assigned to a TA
-            const questionsRef = db
+            // Query only the necessary fields to reduce data transfer
+            const questionsSnapshot = await db
                 .collection("questions")
                 .where("sessionId", "==", sessionId)
-                .where("status", "==", "assigned");
+                .where("status", "in", ["assigned", "unresolved"]);
 
             // Create a set to store unique students (same student may ask multiple questions)
             // We are using number of UNIQUE students as metric rather than just the total number of
             // questions without accounting for their askers
             const uniqueStudents = new Set<string>();
 
-            const snapshot = await questionsRef.get();
+            const snapshot = await questionsSnapshot.get();
             if (snapshot.empty) {
-                ratio = 0;
+                return sessionRef.update({
+                    studentPerTaRatio: 0,
+                });
             } else {
                 // Iterate through the question documents and add the UNIQUE student ID to the set
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     uniqueStudents.add(data.askerId);
                 });
-                ratio = uniqueStudents.size / numberOfTAs;
             }
-        }
-        
-        if (session.studentPerTaRatio !== ratio) {
-            // Update the session document with the new student per TA ratio
-            sessionRef.update({
+
+            ratio = uniqueStudents.size / numberOfTAs;
+
+            // Only update if the ratio has changed
+            return sessionRef.update({
                 studentPerTaRatio: ratio,
+                officeHourStarted: true,
             });
         }
 
