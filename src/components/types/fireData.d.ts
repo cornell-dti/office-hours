@@ -12,12 +12,6 @@ interface TaAnnouncement {
     uploadTime: FireTimestamp;
 }
 
-interface timeOffset {
-    value: number;
-    serverTimestamp: Timestamp;
-    calculatedOffset: boolean;
-}
-
 interface FireBaseSession {
     modality: FireSessionModality;
     courseId: string;
@@ -34,8 +28,9 @@ interface FireBaseSession {
     totalResolveTime: number;
     taAnnouncemements?: TaAnnouncement[];
     isPaused?: boolean;
-    offset?: timeOffset;
+    serverTimestamp?: Timestamp;
     studentPerTaRatio?: number;
+    officeHourStarted?: boolean;
 }
 
 interface FireSessionLocation {
