@@ -551,35 +551,16 @@ exports.onStudentJoinSession = functions.firestore
         const sessionId = context.params.sessionId;
 
         // Variable used to store the ratio of students per TA
-        let ratio = 0;
+        let ratio = -1;
 
         // Retrieve the session document reference
         const sessionRef = db.doc(`sessions/${sessionId}`);
-        const sessionData = await sessionRef.get();
-        const session = sessionData.data();``
-
-        // Update the session document with the serverTimestamp for synchronized clock (instead of using
-        // client timestamp). This is important because we want to make sure that the server time is used
-        // for all calculations
-        sessionRef.update({
-            serverTimeStamp: admin.firestore.FieldValue.serverTimestamp(),
-        });
-
-        const startTime = session?.startTime;
-        const now = session?.serverTimeStamp;
+        const sessionDoc = await sessionRef.get();
+        const session = sessionDoc.data() as FireSession;
 
         // Get the number of TAs in the session
-        const numberOfTAs = session?.tas.length;
+        const numberOfTAs = afterData?.tas.length;
 
-        // If there are no TAs return -1 (indicate on frontend that no TAs are available)
-        if (numberOfTAs === 0) {
-            ratio = -1;
-        }
-        // If the session has not started return default value which is number of TAs
-        // This indicates that we will only start tracking number of students per TA once the session has started
-        if (now < startTime) {
-            ratio = numberOfTAs;
-        }
         // We only calculate the student per TA ratio for assigned questions where a question is
         // being handled by a particular TA. Note [assignedQuestions - resolvedQuestions] is the number of students
         // that are currently being handled by TAs. This is because the resolved questions are no longer being handled.
@@ -613,10 +594,13 @@ exports.onStudentJoinSession = functions.firestore
                 ratio = uniqueStudents.size / numberOfTAs;
             }
         }
-        // Update the session document with the new student per TA ratio
-        sessionRef.update({
-            studentPerTaRatio: ratio,
-        });
+        
+        if (session.studentPerTaRatio !== ratio) {
+            // Update the session document with the new student per TA ratio
+            sessionRef.update({
+                studentPerTaRatio: ratio,
+            });
+        }
 
         return null;
     });
