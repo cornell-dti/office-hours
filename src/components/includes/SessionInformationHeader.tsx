@@ -8,15 +8,21 @@ import { pauseSession } from '../../firebasefunctions/session';
 import users from '../../media/users.svg'
 import chalkboard from '../../media/chalkboard-teacher.svg'
 import hourglass from '../../media/hourglass-half.svg'
-
+import calendarIcon from '../../media/Calendar_icon.svg';
+import clockIcon from '../../media/clock-regular_1.svg';
+import rightArrowIcon from '../../media/rightArrowIcon.svg';
 import zoom from '../../media/zoom.svg';
 import closeZoom from '../../media/closeZoom.svg';
+import leftArrowIcon from '../../media/leftArrowIcon.svg';
+import timelinePlaceholder from '../../media/timeline_placeholder-graph.png';
 
 import editZoomLink from '../../media/editZoomLink.svg';
 import { useSessionQuestions, useSessionTAs } from '../../firehooks';
 import { computeNumberAhead } from '../../utilities/questions';
 import JoinErrorMessage from './JoinErrorMessage';
 import { RootState } from '../../redux/store';
+import {useState} from 'react';
+
 
 type Props = {
     session: FireSession;
@@ -179,23 +185,25 @@ const SessionInformationHeader = ({
         setShowErrorMessage(message);
     }
 
+    const [startIndex, setStartIndex] = useState(0);
+    const visibleCount = 4;
+
+    const visibleTAs = tas.slice(startIndex, startIndex + visibleCount);
+    const hasNext = startIndex + visibleCount < tas.length;
+
     return isDesktop ? (
         <header className="DesktopSessionInformationHeader">
-            <Grid container direction="row" justifyContent="center" alignItems={'stretch'} spacing={3}>
-                <Grid container item lg={7} md={7} xs={12} justifyContent="center">
-                    <div className="LeftInformationHeader">
-                        <Grid container direction="row">
-                            <Grid container item lg={4} md={5} xs={4} className="Picture">
-                                <img
-                                    src={tas[0] ? tas[0].photoUrl : '/placeholder.png'}
-                                    alt={
-                                        tas[0]
-                                            ? `${tas[0].firstName} ${tas[0].lastName}'s Photo URL`
-                                            : 'Placeholder photo url'
-                                    }
-                                />
-                            </Grid>
-                            <Grid container item lg={8} md={7} xs={8} className="Details">
+    <Grid container spacing={2} style={{ alignItems: 'stretch' }}>
+            {/* Left Column (Boxes 1 & 2) */}
+      <Grid item xs={12} md={5}>
+        <Grid container direction="column">
+            <Grid item style={{ 
+                flex: 2 ,
+                alignItems: 'flex-start', // Align children to the top (left if textAlign is set)
+                // justifyContent: 'flex-start' // Align items to the left horizontally
+         
+            }}>
+                    <div className="LeftInformationHeader" style = {{ width: '100%'}}>                     
                                 {'building' in session ? (
                                     <p className="Location">
                                         {[session.building, session.room].map(s => s || '').join(' ')}
@@ -237,344 +245,117 @@ const SessionInformationHeader = ({
                                         </>
                                     )}
                                     <br />
-                                </p>
-                            </Grid>
-                        </Grid>
+                                </p> 
+                               
+                                <div className="Date">
+                                <img
+                                    src={calendarIcon}
+                                    alt="Calendar Icon for Office Hour Date"
+                                    className="calendarIcon"
+                                />
+                                    <Moment
+                                        date={session.startTime.seconds * 1000}
+                                        interval={0}
+                                        format={'dddd, MMM D'}
+                                    />
+                                    <br />
+                                <img
+                                    src={clockIcon}
+                                    alt="Clock Icon for Office Hour Date"
+                                    className="clockIcon"
+                                />
+                                    <Moment
+                                    date={session.startTime.seconds * 1000}
+                                    interval={0}
+                                    format={'h:mm A'}
+                                    />
+                                    <Moment
+                                        date={session.endTime.seconds * 1000}
+                                        interval={0}
+                                        format={' - h:mm A'}
+                                    />
+                                    
+                                </div>
+                         </div>
+            </Grid>
+            <Grid item style={{ display: 'flex', flex: 1 }}>
+            <div className="TAsHeader">
+            <Grid container alignItems="center" justifyContent="space-between">
+                {/* Text on the left */}
+                <Grid item xs={12} sm={4}>
+                    <div className="TAHeaderText">
+                    <p style={{ fontWeight: 'bold', fontSize: '20px', margin: 0 }}>
+                        TA's ({tas.length})
+                    </p>
+                    <p style={{ fontSize: '14px', color: '#4d4d4d', margin: 0 }}>
+                        2.5 students/TA
+                    </p>
                     </div>
                 </Grid>
 
-                <Grid container item lg={5} md={5} xs={12} justifyContent="center">
-                    <Grid
-                        container
-                        direction="column"
-                        justifyContent="space-evenly"
-                        alignItems={'stretch'}
-                        spacing={2}
-                    >
-                        <Grid container item>
-                            <div className="QueueInfo">
-                                <div className="OneQueueInfo">
-                                    <Grid container direction="row" justifyContent="center" alignItems={'center'}>
-                                        <Grid item xs={2}>
-                                            <img src={users} alt="number of people" />
-                                        </Grid>
-                                        <Grid item xs={10}>
-                                            <p>
-                                                <span className="red">{numAhead + ' students '}</span> ahead
-                                            </p>
-                                        </Grid>
-                                    </Grid>
-                                </div>
-                                {tas.length > 0 &&
-                                    <div className="OneQueueInfo">
-                                        <Grid container direction="row" justifyContent="center" alignItems={'center'}>
-                                            <Grid item xs={2}>
-                                                <img src={chalkboard} alt="number of people" />
-                                            </Grid>
-                                            <Grid item xs={10}>
-                                                <p>
-                                                    <span className="blue">{tas.length + ' TAs '}</span>
-                                                    assigned to this office hour
-                                                </p>
-                                            </Grid>
-                                        </Grid>
-                                    </div>
-                                }
-                                <div className="OneQueueInfo">
-                                    <Grid container direction="row" justifyContent="center" alignItems={'center'}>
-                                        <Grid item xs={2}>
-                                            <img src={hourglass} alt="time" />
-                                        </Grid>
-                                        <Grid item xs={10}>
-                                            {avgWaitTime !== 'No information available' ? (
-                                                <p>
-                                                    <span className="blue">{avgWaitTime + ' ' + esimatedTime}</span>
+                {/* TA profile images on the right */}
+                <Grid item xs={12} sm={8}>
+                <div className="TAImagesWrapper">
+                    {startIndex > 0 && (
+                        <div className="ScrollArrow" onClick={() => setStartIndex(prev => prev - 1)}>
+                        <img src={leftArrowIcon} alt="scroll left" className="arrowIcon" />
+                        </div>
+                    )}
 
-                                                    estimated wait time
-                                                </p>
-                                            ) : (
-                                                <p className="blue">{avgWaitTime}</p>
-                                            )}
-                                        </Grid>
-                                    </Grid>
-                                </div>
-                                <div className="OneQueueInfo">
-                                    {isTa && isOpen &&
-                                        (<Grid container direction="row" justifyContent="center" alignItems={'center'}>
-                                            <Grid item xs={2}>
-                                                <Switch 
-                                                    className="closeQueueSwitch" 
-                                                    checked={!isPaused} 
-                                                    onChange={handlePause} 
-                                                    color="primary" 
-                                                />
-                                            </Grid>
-                                            <Grid item xs={10}>
-                                                <p>{`Queue is ${isPaused ? "closed" : "open"}`} </p>
-                                            </Grid>
-                                        </Grid>)}
-                                </div>
+                    <div className="TAImagesScrollWrapper">
+                        <div className="TAImagesScroll">
+                        {visibleTAs.map((ta, index) => (
+                            <div key={index} className="TACircleContainer">
+                            <img
+                                src={ta.photoUrl || '/placeholder.png'}
+                                alt={`${ta.firstName} ${ta.lastName}'s Photo`}
+                                className="TACircle"
+                            />
                             </div>
-                        </Grid>
+                        ))}
+                        </div>
+                    </div>
 
-                        <Grid container item alignItems={'center'} justifyContent="center">
-                            <div className="ZoomLink">
-                                {session.modality === 'virtual' && isTa && (
-                                    <div className={(typeof session.useTALink === 'undefined'
-                                        || session.useTALink === false) ? "TaZoom" : "StudentZoom"}
-                                    >
-                                        {(typeof session.useTALink === 'undefined' || session.useTALink === false) ?
-                                            <Grid container direction="row" justifyContent="center" spacing={1}>
-                                                <Grid container justifyContent="center" item xs={2}>
-                                                    <img src={zoom} alt="zoom" />
-                                                </Grid>
+                    {hasNext && (
+                        <div className="ScrollArrow" onClick={() => setStartIndex(prev => prev + 1)}>
+                        <img src={rightArrowIcon} alt="scroll right" className="arrowIcon" />
+                        </div>
+                    )}
+                    </div>
 
-                                                {zoomLinkDisplay === 'show' && (
-                                                    <>
-                                                        <Grid container item lg={7} md={10} xs={7}>
-                                                            <input
-                                                                type="text"
-                                                                id="zoomLinkInput"
-                                                                name="zoomLinkInput"
-                                                                autoComplete="off"
-                                                                value={zoomLink}
-                                                                onChange={e => setZoomLink(e.target.value)}
-                                                            />
-                                                            <div className="CloseZoom">
-                                                                <img
-                                                                    onClick={closeZoomLink}
-                                                                    src={closeZoom}
-                                                                    alt="close zoom"
-                                                                />
-                                                            </div>
-                                                        </Grid>
-                                                        <Grid
-                                                            container
-                                                            justifyContent="center"
-                                                            alignItems={'center'}
-                                                            item
-                                                            lg={3}
-                                                            md={12}
-                                                            xs={3}
-                                                        >
-                                                            <button
-                                                                type="button"
-                                                                className="SaveZoomLink"
-                                                                onClick={saveZoomLink}
-                                                            >
-                                                                Save
-                                                            </button>
-                                                        </Grid>
-                                                    </>
-                                                )}
-
-                                                {zoomLinkDisplay === 'hide' && (
-                                                    <Grid container item xs={10}>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                setZoomLinkDisplay('show');
-                                                            }}
-                                                        >
-                                                            update your virtual location
-                                                        </button>
-                                                    </Grid>
-                                                )}
-
-                                                {zoomLinkDisplay === 'saved' && (
-                                                    <>
-                                                        <Grid container justifyContent="center" item xs={8}>
-                                                            <p>{zoomLink}</p>
-                                                        </Grid>
-                                                        <Grid container item justifyContent="center" xs={2}>
-                                                            <img
-                                                                id="EditZoom"
-                                                                onClick={() => setZoomLinkDisplay('show')}
-                                                                src={editZoomLink}
-                                                                alt="edit zoom link"
-                                                            />
-                                                        </Grid>
-                                                    </>
-                                                )}
-                                            </Grid>
-                                            :
-                                            <div className="StudentZoom">
-                                                <Grid
-                                                    container
-                                                    direction="row"
-                                                    justifyContent="center"
-                                                    alignItems={'center'}
-                                                >
-                                                    <Grid container justifyContent="center" item lg={2} md={2} xs={2}>
-                                                        <img src={zoom} alt="zoom" />
-                                                    </Grid>
-                                                    <Grid item lg={6} md={10} xs={6}>
-                                                        <p>Zoom Link</p>
-                                                    </Grid>
-                                                    <a
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        href={session.TALink}
-                                                    >
-                                                        <button type="button" className="JoinButton">
-                                                                Join
-                                                        </button>
-                                                    </a>
-                                                </Grid>
-                                            </div>
-                                        }
-                                    </div>
-                                )}
-
-                                {session.modality === 'virtual' && !isTa && (
-                                    <div className="StudentZoom">
-                                        <Grid
-                                            container
-                                            direction="row"
-                                            justifyContent="center"
-                                            alignItems={'center'}
-                                        >
-                                            <Grid container justifyContent="center" item lg={2} md={2} xs={2}>
-                                                <img src={zoom} alt="zoom" />
-                                            </Grid>
-                                            <Grid item lg={6} md={10} xs={6}>
-                                                <p>Zoom link</p>
-                                            </Grid>
-                                            <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
-                                                {(!(typeof session.useTALink === 'undefined' || 
-                                                                session.useTALink === false) && session.TALink) || 
-                                                                assignedQuestion?.answererLocation ? (
-                                                        <a
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            href={(typeof session.useTALink === 'undefined' || 
-                                                                session.useTALink === false) ? 
-                                                                assignedQuestion?.answererLocation : 
-                                                                session.TALink}
-                                                        >
-                                                            <button type="button" className="JoinButton">
-                                                                Join
-                                                            </button>
-                                                        </a>
-                                                    ) : (
-                                                        <button
-                                                            type="button"
-                                                            className="JoinButton"
-                                                            onClick={() => activateError()}
-                                                        >
-                                                            Join
-                                                        </button>
-                                                    )}
-                                            </Grid>
-                                        </Grid>
-                                    </div>
-                                )}
-
-                                {session.modality === 'review' && (
-                                    <div className="StudentZoom">
-                                        <Grid
-                                            container
-                                            direction="row"
-                                            justifyContent="center"
-                                            alignItems={'center'}
-                                        >
-                                            <Grid container justifyContent="center" item lg={2} md={2}>
-                                                <img src={zoom} alt="zoom" />
-                                            </Grid>
-                                            <Grid item lg={6} md={10}>
-                                                <p>Zoom Link</p>
-                                            </Grid>
-
-                                            <Grid
-                                                container
-                                                justifyContent="center"
-                                                item
-                                                lg={4}
-                                                md={12}
-                                                alignItems={'center'}
-                                            >
-                                                <a
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    href={session.link}
-                                                >
-                                                    <button type="button" className="JoinButton">
-                                                        Join
-                                                    </button>
-                                                </a>
-                                            </Grid>
-                                        </Grid>
-                                    </div>
-                                )}
-
-                                {session.modality === 'hybrid' && (
-                                    <div className="StudentZoom">
-                                        <Grid
-                                            container
-                                            direction="row"
-                                            justifyContent="center"
-                                            alignItems={'center'}
-                                        >
-                                            <Grid container justifyContent="center" item xs={2}>
-                                                <img src={zoom} alt="zoom" />
-                                            </Grid>
-                                            {(typeof session.useTALink === 'undefined' ||
-                                                    session.useTALink === false) ? (<Grid container item xs={10}>
-                                                    <p>Use student provided Zoom link</p>
-                                                </Grid>): (<>
-                                                    <Grid item lg={6} md={10} xs={6}>
-                                                        <p>Zoom Link</p>
-                                                    </Grid>
-                                                    <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
-                                                        <a
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            href={
-                                                                session.TALink}
-                                                        >
-                                                            <button type="button" className="JoinButton">
-                                                                            Join
-                                                            </button>
-                                                        </a>
-                                                    </Grid>
-                                                </>)}
-                                        </Grid>
-                                    </div>
-                                )}
-
-                                {session.modality === 'in-person' && (
-                                    <div className="StudentZoom">
-                                        <Grid
-                                            container
-                                            direction="row"
-                                            justifyContent="center"
-                                            alignItems={'center'}
-                                        >
-                                            <Grid container justifyContent="center" item xs={2}>
-                                                <img src={zoom} alt="zoom" />
-                                            </Grid>
-                                            <Grid container item xs={10}>
-                                                <p>No Zoom link available</p>
-                                            </Grid>
-                                        </Grid>
-                                    </div>
-                                )}
-
-                                {showError && (
-                                    <JoinErrorMessage
-                                        message={showErrorMessage}
-                                        show={true}
-                                        closeModal={() => {
-                                            setShowError(false);
-                                        }}
-                                    />
-                                )}
-                            </div>
-                        </Grid>
-                    </Grid>
                 </Grid>
+                </Grid>
+                </div>
             </Grid>
-        </header>
+        </Grid>
+       </Grid>                                    
+      <Grid item xs={12} md={7} style = {{display: 'flex', flex: 3}}>
+
+                            <div className="QueueInfo">
+                            <p className="WaitTitle">
+                                Wait Time
+                            </p>
+                            {avgWaitTime !== 'No information available' ? (
+                            <p className="WaitSummary">
+                                <span className="red">{numAhead} students</span> ahead | 
+                                <span className="blue"> {avgWaitTime}</span>
+                                <span className="gray"> {esimatedTime}</span> estimated wait time
+                            </p>
+                            ) : (
+                            <p className="WaitSummary">
+                                <span className="red">{numAhead} students</span> ahead | 
+                                <span className="blue"> No information available</span>
+                            </p>
+                            )}
+                            <img
+                                src={timelinePlaceholder} // update with actual path to your placeholder
+                                alt="Placeholder wait time graph"
+                                className="GraphPlaceholder"
+                            />
+                        </div>
+      </Grid>
+    </Grid>
+       </header>
     ) : (
         <header className="SessionInformationHeader">
             <div className="header">

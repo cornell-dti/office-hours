@@ -36,65 +36,105 @@
     padding: 6% 10%;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: start;
 
-    .Picture {
-      height: 100%;
-      width: 100%;
-      padding-bottom: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      img {
-        max-width: 60%;
-        height: 60%;
-        max-height: 72px;
-        max-width: 72px;
-        border-radius: 50%;
-      }
+    .Location {
+      font-size: 24px;
+      font-family: Roboto;
+      font-weight: 500;
+      margin-bottom: 5px;
+      overflow: hidden;
+      // white-space: nowrap;
+      text-overflow: ellipsis;
     }
-
-    .Details {
-      display: inline-block;
-
-      .Location {
-        font-size: 20px;
-        font-weight: 500;
-        margin-bottom: 5px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-
-      p time {
-        margin-bottom: 8px;
-      }
-
-      .Date {
-        margin-bottom: 20px;
-      }
-
-      a {
-        color: white;
-        text-decoration: underline;
-      }
+    .Date {
+      margin-top: 10px;
+      color: #484848;
+      font-family: Roboto;
+      font-size: 14.4px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      line-height: 1.6; 
     }
-
     .Title {
       margin-bottom: 5px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+      margin-bottom: 5px;
+      color: #484848;
+      font-family: Roboto;
+      font-size: 14.4px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
     }
-  }
+    .clockIcon {
+      vertical-align: middle;
+      margin-right: 6px; /* optional spacing between icon and text */
+      height: 16px;       /* adjust as needed */
+      }
+      .calendarIcon{
+      vertical-align: middle;
+      margin-right: 6px; /* optional spacing between icon and text */
+      height: 16px;  
+      }
+}
+.TAsHeader {
+  border-radius: 8px;
+  box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+  padding: 16px 24px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-  .ImgWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+.TAHeaderText {
+  text-align: left;
+}
 
+.TAImagesWrapper {
+  display: flex;
+  gap: 16px;
+}
+
+
+.TAImagesScroll {
+  display: flex;
+  gap: 16px;
+  overflow: hidden;
+  flex: 1;
+}
+
+.TAImagesScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.TACircleContainer {
+  flex: 0 0 auto;
+}
+
+.TACircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.arrowIcon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.ScrollArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
   .QueueInfo {
     border-radius: 8px;
     box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
@@ -112,6 +152,33 @@
       padding-left: 10px;
     }
 
+    .WaitTitle{
+      color: #484848;
+      font-family: Roboto, sans-serif;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+      margin: 0 0 8px 0; // Add spacing below
+    }
+    .WaitSummary {
+      color: #484848;
+      font-family: Roboto, sans-serif;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      margin: 0;
+    }
+    .GraphPlaceholder {
+      width: 100%;
+      max-width: 100%; /* Don't overflow parent container */
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-top: 25px;
+      display: block;
+    }
     .red {
       color: #f46565;
     }
@@ -120,6 +187,9 @@
       color: #5599db;
     }
   }
+
+
+
 
   @media only screen and (max-width: 1300px) {
     .closeQueueSwitch {
@@ -303,9 +373,7 @@
     }
   }
 
-  .Title {
-    margin-bottom: 5px;
-  }
+
 
   .MoreInformation {
     display: inline-block;
