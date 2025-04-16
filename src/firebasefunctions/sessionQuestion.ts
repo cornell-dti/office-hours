@@ -240,27 +240,37 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
     return unsubscribe;
 }
 
-export const submitFeedback = (removedQuestionId: string | undefined, relevantCourse: FireCourse, session: string) => 
-    (rating?: number, feedback?: string) => {
+export const submitFeedback = (removedQuestionId: string | undefined,) => 
+    (rating1?: number, rating2?: number, rating3?: number, feedback?: string) => {
         
-        const feedbackRecord = {
-            session,
-            questionId: removedQuestionId,
-            rating,
-            writtenFeedback: feedback,
-        };
-        const courseRef = firestore.collection("courses").doc(relevantCourse.courseId);
-        courseRef.get().then((doc) => {
+    
+        const questionRef = firestore.collection("questions").doc(removedQuestionId)
+        questionRef.get().then((doc) => {
             if (doc.exists) {
-                const existingFeedbackList = doc.data()?.feedbackList || [];
-            
-                existingFeedbackList.push(feedbackRecord);
-
-                return courseRef.update({
-                    feedbackList: existingFeedbackList
+                const taID = doc.data()?.answererId || undefined;
+                const timeStamp = doc.data()?.timeAddressed || undefined;
+                const feedbackRecord = {
+                    organization: rating1, 
+                    efficiency: rating2,
+                    overallExperience: rating3,
+                    timeStamp,
+                    writtenFeedback: feedback,
+                };
+                const usersRef = firestore.collection("users").doc(taID);
+                usersRef.get().then((doc) => {
+                    if (doc.exists) {
+                        const existingFeedbackList = doc.data()?.feedbackList || [];
+                    
+                        existingFeedbackList.push(feedbackRecord);
+        
+                        return usersRef.update({
+                            feedbackList: existingFeedbackList
+                        })
+                    } 
                 })
-            } 
+            }
             return Promise.resolve();
-        })
+        }
+    )
     
     };

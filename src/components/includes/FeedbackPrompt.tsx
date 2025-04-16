@@ -10,12 +10,14 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
 type Props = {
-    onClose: (rating?: number, feedback?: string) => void;
+    onClose: (rating1?: number, rating2?: number, rating3?: number, feedback?: string) => void;
     closeFeedbackPrompt: () => void;
 };
 
 const FeedbackPrompt = (props: Props) => {
-    const [rating, setRating] = useState<number | null>(0);
+    const [rating1, setRating1] = useState<number | null>(0);
+    const [rating2, setRating2] = useState<number | null>(0);
+    const [rating3, setRating3] = useState<number | null>(0);
     const [feedback, setFeedback] = useState<string>("");
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -58,10 +60,34 @@ const FeedbackPrompt = (props: Props) => {
                 </Typography>
                 <Box component="fieldset" mb={3} borderColor="transparent">
                     <Rating
-                        name="simple-controlled"
-                        value={rating}
+                        name="simple-controlled1"
+                        value={rating1}
                         onChange={(event: any, newValue: React.SetStateAction<number | null>) => {
-                            setRating(newValue); }
+                            setRating1(newValue); }
+                        }
+                        size="large"
+                        emptyIcon={<StarBorderIcon fontSize="inherit" />}
+                    />
+                    <br />
+                </Box>
+                <Box component="fieldset" mb={3} borderColor="transparent">
+                    <Rating
+                        name="simple-controlled2"
+                        value={rating2}
+                        onChange={(event: any, newValue: React.SetStateAction<number | null>) => {
+                            setRating2(newValue); }
+                        }
+                        size="large"
+                        emptyIcon={<StarBorderIcon fontSize="inherit" />}
+                    />
+                    <br />
+                </Box>
+                <Box component="fieldset" mb={3} borderColor="transparent">
+                    <Rating
+                        name="simple-controlled3"
+                        value={rating3}
+                        onChange={(event: any, newValue: React.SetStateAction<number | null>) => {
+                            setRating3(newValue); }
                         }
                         size="large"
                         emptyIcon={<StarBorderIcon fontSize="inherit" />}
@@ -86,14 +112,14 @@ const FeedbackPrompt = (props: Props) => {
                 <Button
                     variant="contained"
                     onClick={() => {
-                        if (rating) {
-                            props.onClose(rating, feedback); 
+                        if (rating1 && rating2 && rating3) {
+                            props.onClose(rating1, rating2, rating3, feedback); 
                         }
                         props.closeFeedbackPrompt();
                     }}
                     style={{position: "absolute", bottom: "2rem", right: "1.8rem"}}
-                    color={(rating) ? "primary" : "default"}
-                    disabled={!rating}
+                    color={(rating1 && rating2 && rating3) ? "primary" : "default"}
+                    disabled={!rating1 || !rating2 || !rating3}
           
                 >
                     Submit Rating
