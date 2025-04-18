@@ -328,8 +328,8 @@ exports.onQuestionUpdate = functions.firestore
         // Derive changes in counts
         const newStatus = newQuestion.status;
         const prevStatus = prevQuestion.status;
-        const newNumbers = questionStatusNumbers.get(newStatus)!;
-        const prevNumbers = questionStatusNumbers.get(prevStatus)!;
+        const newNumbers = questionStatusNumbers.get(newStatus) ?? [0, 0, 0];
+        const prevNumbers = questionStatusNumbers.get(prevStatus) ?? [0, 0, 0];
 
         // Grab number of changes
         const numQuestionChange = newNumbers[0] - prevNumbers[0];
@@ -351,8 +351,8 @@ exports.onQuestionUpdate = functions.firestore
         }
 
         // Derive timing changes (changes from assigned to resolved)
-        if (numResolvedChange === 1 && newQuestion.timeAssigned !== undefined) {
-            resolveTimeChange = newQuestion.timeAddressed!.seconds - newQuestion.timeAssigned.seconds;
+        if (numResolvedChange === 1 && newQuestion.timeAssigned !== undefined && newQuestion.timeAddressed !== undefined) {
+            resolveTimeChange = newQuestion.timeAddressed.seconds - newQuestion.timeAssigned.seconds;
         } else if (
             numResolvedChange === -1 &&
             prevQuestion.timeAssigned !== undefined &&
