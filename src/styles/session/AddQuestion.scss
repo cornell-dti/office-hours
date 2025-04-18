@@ -28,6 +28,7 @@
       margin: 0;
       padding: 0;
       width: 100%;
+      
     }
 
     .queueHeader {
@@ -110,6 +111,20 @@
           text-align: left;
           margin-bottom:0.5em;
         }
+        .required{
+          color: #F67D7D;
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 16.41px;
+        }
+
+        .shaded{
+          background-color: rgba(246, 125, 125, 0.15);
+        }
+
+        .category{
+          padding-top: 12px;
+        }
 
         .header {
           height: 17px;
@@ -188,12 +203,6 @@
             width: 100%;
         }
       }
-    }
-    .required{
-      color: #F67D7D;
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 16.41px;
     }
 
     .locationInput {
