@@ -81,7 +81,7 @@
         padding-top: 14px;
         padding-bottom: 14px;
         &.error{
-          background-color: rgba(246, 125, 125, 0.15);
+          animation: errorFadeIn 0.5s forwards;
         }
       }
 
@@ -116,7 +116,7 @@
           margin-bottom:0.5em;
         }
         &.error{
-          background-color: rgba(246, 125, 125, 0.15);
+          animation: errorFadeIn 0.5s forwards;
         }
 
         .category{
@@ -229,7 +229,6 @@
       padding-bottom: 20px;
       border-bottom-right-radius: 8px;
       border-bottom-left-radius: 8px;
-      padding-top: 40px;
       display: flex;
       justify-content: center;
       
@@ -263,4 +262,11 @@
   .placeHolder {
     display: inline;
   }
+}
+
+@keyframes errorFadeIn {
+  0%{
+    background-color: rgba(246, 125, 125, 0);  }
+  100%{
+    background-color: rgba(246, 125, 125, 0.15);  }
 }
