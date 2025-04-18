@@ -161,7 +161,7 @@ const SplitView = ({
         setDisplayFeedbackPrompt(true);
         setRemovedQuestionId(questionId);
     };
-
+    
     useEffect(() => {
         // Add a banner prompting the user to enable browser notifications
         if ("Notification" in window && Notification.permission === "default") {
@@ -194,7 +194,6 @@ const SplitView = ({
 
     return (
         <>
-            
             <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
             <TopBar
                 role={(user && course && user.roles[course.courseId]) || "student"}

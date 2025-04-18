@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import { useHistory } from 'react-router-dom';
 
-import firebase, { app, firestore } from '../../firebase';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth, firestore } from '../../firebase';
 import { userUpload } from '../../firebasefunctions/user';
 
 import QMILogo2020 from '../../media/QMILogo2020.svg';
@@ -30,25 +31,34 @@ const LoginView: React.FC = () => {
     const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
 
     const googleAuth = () => {
-        const authProvider = new firebase.auth.GoogleAuthProvider();
+        const authProvider = new GoogleAuthProvider();
+        
         if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
             authProvider.setCustomParameters({
                 hd: 'cornell.edu',
             });
+        } else if (process.env.NODE_ENV !== 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
+            authProvider.setCustomParameters({
+                prompt: 'select_account'
+            });
         }
+        
         authProvider.addScope('email');
         authProvider.addScope('profile');
-
-        return app
-            .auth()
-            .signInWithPopup(authProvider)
+    
+        signInWithPopup(auth, authProvider)
             .then((response) => {
                 const user = response.user;
                 clearNotifications(user);
                 userUpload(user, firestore);
                 history.push('/');
+            })
+            .catch((error) => {
+                // eslint-disable-next-line no-console
+                console.error('Google Sign-In Error:', error);
             });
     };
+    
 
     return (
         <div className="loginView">

@@ -3,6 +3,7 @@ import { Icon, Button } from "semantic-ui-react";
 import Moment from "react-moment";
 import Linkify from "react-linkify";
 import { connect } from "react-redux";
+import { doc, updateDoc} from 'firebase/firestore';
 import notif from "../../media/notif.svg";
 import SelectedTags from "./SelectedTags";
 import GreenCheck from "../../media/greenCheck.svg";
@@ -105,8 +106,8 @@ class SessionQuestion extends React.Component<Props, State> {
                 location: target.value,
             });
 
-            const question = firestore.collection("questions").doc(this.props.question.questionId);
-            question.update({
+            const question = doc(firestore, 'questions', this.props.question.questionId);
+            updateDoc(question, {
                 location: target.value,
             });
 

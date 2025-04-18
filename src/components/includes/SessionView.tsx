@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
 import { Icon } from "semantic-ui-react";
 
 import { connect } from "react-redux";
+import { onSnapshot, doc, updateDoc, deleteField} from 'firebase/firestore';
 import SessionInformationHeader from "./SessionInformationHeader";
 import SessionQuestionsContainer from "./SessionQuestionsContainer";
 
@@ -21,6 +21,8 @@ import { firestore } from "../../firebase";
 import { RootState } from "../../redux/store";
 import Banner from "./Banner";
 import TaAnnouncements from "./TaAnnouncements";
+
+import "firebase/auth";
 
 type Props = {
     course: FireCourse;
@@ -61,7 +63,6 @@ const SessionView = ({
     user,
     setShowModal,
     setRemoveQuestionId,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     removeQuestionDisplayFeedback,
     timeWarning,
     sessionBanners,
@@ -115,6 +116,42 @@ const SessionView = ({
         });
         // setPrevQuestSet(new Set(questions.map(q => q.questionId)));
     }, [questions, user.userId, course.courseId, user.roles, user, session.sessionId]);
+
+    /** This useEffect dictates when the TA feedback popup is displayed by monitoring the
+     * state of the current question. Firebase's [onSnapshot] method is used to monitor any
+     * changes to the questions collection, and [docChanges] filters this down to the document
+     * changes since the last snapshot. Then, we call [removeQuestionDisplayFeedback] iff a question was
+     * both modified and resolved, indicating that the TA has answered a question. !isTa and
+     * !isProf ensures that this useEffect only runs for students.
+     */
+    useEffect(() => {
+        let unsubscribe: () => void;
+        
+        if (!isTa && !isProf) {
+            const userRef = doc(firestore, "users", user.userId);
+            unsubscribe = onSnapshot(userRef, (snapshot) => {
+                const userData = snapshot.data() as FireUser;
+                const recentlyResolvedQuestion = userData.recentlyResolvedQuestion;
+                if (!recentlyResolvedQuestion) {
+                    return;
+                }
+                if (recentlyResolvedQuestion.questionId) {
+                    removeQuestionDisplayFeedback(recentlyResolvedQuestion.questionId);
+                    // Deletes the recentlyResolvedQuestion field from the user document
+                    updateDoc(userRef, { 
+                        recentlyResolvedQuestion: deleteField()
+                    });
+                }
+            });
+        }
+
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const dismissUndo = () => {
         if (timeoutId) {

@@ -54,8 +54,18 @@ const TopBarNotifications = (
     }, [user]);
 
     useEffect(() => {
-        if(notificationTracker !== undefined && !hasViewed && dropped) {
-            periodicClearNotifications(user, notificationTracker);
+        if (user && user.wrapped) {
+            setHasWrapped(true);
+        } else {
+            setHasWrapped(false);
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if(notificationTracker && !hasViewed && dropped) {
+            (async () => {
+                await periodicClearNotifications(user, notificationTracker);
+            })();
         }
         toggleHasViewed(notificationTracker === undefined || 
         notifications === undefined || notifications.length === 0 ||
@@ -107,7 +117,7 @@ const TopBarNotifications = (
 
     return (
         <div ref={dropdownRef}>
-            <div className="notifications__top" style={{ cursor: "grab" }} onClick={() => iconClicked()}>
+            <div className="notifications__top" onClick={() => iconClicked()}>
                 <img
                     className="notifications__icon"
                     src={countdownZero && hasWrapped ? ribbonNotif : notification}
@@ -124,7 +134,7 @@ const TopBarNotifications = (
                     <div
                         onClick={() => handleNotifClick()}
                         className="notifications__notification"
-                        style={{ backgroundColor: "#DBE8FD", borderRadius: "8px", cursor: "grab" }}
+                        style={{ backgroundColor: "#DBE8FD", borderRadius: "8px" }}
                     >
                         <div className="notification__header">
                             <div className="notification__title">Queue Me In Wrapped</div>
