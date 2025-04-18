@@ -170,8 +170,6 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         // eslint-disable-next-line no-console
         console.log("Button Clicked");
 
-        setAttemptedSubmit(true);
-
         const primaryTagsMissing = !selectedPrimary;
         const secondaryTagsMissing = !selectedSecondary;
         const locationMissing = !location;
