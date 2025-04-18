@@ -328,8 +328,10 @@ exports.onQuestionUpdate = functions.firestore
         // Derive changes in counts
         const newStatus = newQuestion.status;
         const prevStatus = prevQuestion.status;
-        const newNumbers = questionStatusNumbers.get(newStatus) ?? [0, 0, 0];
-        const prevNumbers = questionStatusNumbers.get(prevStatus) ?? [0, 0, 0];
+        const newNumbers = questionStatusNumbers.get(newStatus) ?? 
+            [0, 0, 0];
+        const prevNumbers = questionStatusNumbers.get(prevStatus) ?? 
+            [0, 0, 0];
 
         // Grab number of changes
         const numQuestionChange = newNumbers[0] - prevNumbers[0];
