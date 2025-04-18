@@ -8,7 +8,6 @@ import SelectedTags from "./SelectedTags";
 import SessionAlertModal from "./SessionAlertModal";
 
 import { addQuestion } from "../../firebasefunctions/sessionQuestion";
-// import addFiles from "../../media/AddFilesButton.svg";
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
@@ -65,12 +64,6 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     const [tags, setTags] = useState<FireTag[]>([]);
     // For hybrid sessions to keep track if student is in virtual location
     const [isVirtual, setIsVirtual] = useState<boolean>(false);
-    const [missingPrimaryTags, setMissingPrimaryTags] = useState<boolean>(false);
-    const [missingSecondaryTags, setMissingSecondaryTags] = useState<boolean>(false);
-    const [missingLocation, setMissingLocation] = useState<boolean>(false);
-    const [missingQuestion, setMissingQuestion] = useState<boolean>(false);
-    const [attemptedSubmit, setAttemptedSubmit] = useState<boolean>(false);
-    const [initial, setInitial] = useState<boolean>(true);
 
     const primaryTags = tags.filter((tag) => tag.level === 1);
     const secondaryTags = tags.filter((tag) => tag.level === 2);
@@ -306,41 +299,32 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                     <div className="tagsContainer">
                         {primaryTags.length !== 0 && (
                             <>
-                                <div className={`topRow ${missingPrimaryTags ? "error" : initial ? "" : "clearError"}`}>
-                                    <div className="disclaimerContainer text">
-                                        <p> <Asterisk /> Required</p>
-                                    </div>
-                                    <div className="tagsMiniContainer">
-                                        <p className="header">Select a Category<Asterisk /></p>
-                                        <div className="category">
-                                            {tags
-                                                .filter((tag) => tag.active && tag.level === 1)
-                                                .map((tag) => (
-                                                    <SelectedTags
-                                                        key={tag.tagId}
-                                                        tag={tag}
-                                                        isSelected={stage > INITIAL_STATE}
-                                                        onClick={() => handlePrimarySelected(tag)}
-                                                        check={tag.name === selectedPrimary?.name}
-                                                        isPrimary={true}
-                                                        select={true}
-                                                    />
-                                                ))}
-                                        </div>
+                                <hr />
+                                <div className="tagsMiniContainer">
+                                    <p className="header">Select a Category</p>
+                                    <div className="QuestionTags">
+                                        {tags
+                                            .filter((tag) => tag.active && tag.level === 1)
+                                            .map((tag) => (
+                                                <SelectedTags
+                                                    key={tag.tagId}
+                                                    tag={tag}
+                                                    isSelected={stage > INITIAL_STATE}
+                                                    onClick={() => handlePrimarySelected(tag)}
+                                                    check={tag.name === selectedPrimary?.name}
+                                                    isPrimary={true}
+                                                    select={true}
+                                                />
+                                            ))}
                                     </div>
                                 </div>
-                                
                             </>
                         )}
                         {secondaryTags.length !== 0 && (
                             <>
                                 <hr />
-                                <div className={`tagsMiniContainer 
-                                    ${missingSecondaryTags ? "error " : initial ? " " : "clearError "}`
-                                    + !!selectedPrimary
-                                }
-                                >
-                                    <p className="header">Select a Tag<Asterisk /></p>
+                                <div className={"tagsMiniContainer secondaryTags " + !!selectedPrimary}>
+                                    <p className="header">Select a Tag</p>
                                     {selectedPrimary ? (
                                         tags
                                             .filter((tag) => tag.active && tag.level === 2)
@@ -385,7 +369,6 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                                     {LOCATION_CHAR_LIMIT - location.length !== 1 && "s"} left)
                                                 </span>
                                             )}
-                                            <Asterisk/>
                                         </p>
                                     }
                                     {stage >= SECONDARY_SELECTED || activeTags.length === 0 ? (
@@ -409,7 +392,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                                     onChange={handleUpdateLocation}
                                                     placeholder={
                                                         session.modality === "in-person" || !isVirtual
-                                                            ? "Enter where you are (room & location in room)"
+                                                            ? "What is your location?"
                                                             : "What is your zoom link?"
                                                     }
                                                 />
@@ -419,11 +402,11 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                         <p className="placeHolder text">Finish selecting tags...</p>
                                     )}
                                 </div>
+                                <hr />
                             </>
                         )}
-                        <hr/>
-                        <div className={`tagsMiniContainer ${missingQuestion ? "error" : initial ? "" : "clearError"}`}>
-                            <p className="header">{"Question "} <Asterisk /></p>
+                        <div className="tagsMiniContainer">
+                            <p className="header">{"Question "}</p>
                             {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||
                             secondaryTags.length === 0 ||
@@ -432,7 +415,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                         className="TextInput question"
                                         value={question}
                                         onChange={handleUpdateQuestion}
-                                        placeholder="What would you like help or feedback on?"
+                                        placeholder="What's your question about?"
                                     />
                                 ) : (
                                     <textarea
@@ -448,11 +431,6 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                     />
                                 )}
                         </div>
-                        {/* <hr />
-                        <div className="tagsMiniContainer">
-                            <p className="header">Your Files</p>
-                            <img alt="" src={addFiles}/>
-                        </div> */}
                         <div className="addButtonWrapper">
                             <p
                                 className={`AddButton ${stage > LOCATION_INPUTTED 
