@@ -26,7 +26,7 @@ interface FireBaseSession {
     resolvedQuestions: number;
     totalWaitTime: number;
     totalResolveTime: number;
-    taAnnouncemements?: TaAnnouncement[];
+    taAnnouncements?: TaAnnouncement[];
     isPaused?: boolean;
 }
 

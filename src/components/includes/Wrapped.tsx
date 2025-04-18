@@ -8,7 +8,8 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import "../../styles/Wrapped.scss";
 import "../../styles/WrappedAnimation.scss";
 import React, { useEffect, useState } from "react";
-import firebase from '../../firebase';
+import {  doc, getDoc } from 'firebase/firestore';
+import { firestore } from '../../firebase';
 import Couple from "../../media/wrapped/couple.svg"
 import Girl from "../../media/wrapped/girl.svg"
 import Bus from "../../media/wrapped/bus.svg"
@@ -200,99 +201,87 @@ const Wrapped= (props: Props): JSX.Element => {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (!props.user?.userId) {
-                console.error("User ID is not available.");
-                return;
-            }
-    
             setLoading(true);
-    
             try {
-                const wrappedRef = firebase.firestore().collection("wrapped");
-                const doc = await wrappedRef.doc(props.user.userId).get();
+                const docRef = doc(firestore, 'wrapped', props.user?.userId || '');
+                const docSnap = await getDoc(docRef);
     
-                if (!doc.exists) {
-                    console.log("No document found for the user in 'wrapped' collection.");
-                    return;
-                }
+                const userDocRef = doc(firestore, 'users', wrappedData.favTaId || '');
+                const userDocSnap = await getDoc(userDocRef);
     
-                const studentData = doc.data() as {
-                    numVisits: number;
-                    personalityType: string;
-                    timeHelpingStudents: number;
-                    totalMinutes: number;
-                    favTaId: string;
-                    favClass: string;
-                    favDay: number;
-                    favMonth: number;
-                    numStudentsHelped: number;
-                };
+                if (docSnap.exists()) {
+                    const studentData = docSnap.data() as { 
+                        numVisits: number;
+                        personalityType: string; 
+                        timeHelpingStudents: number; 
+                        totalMinutes: number; 
+                        favTaId: string;
+                        favClass: string;
+                        favDay: number;
+                        favMonth: number;
+                        numStudentsHelped: number;
+                    };
     
-                // Set initial wrapped data
-                setWrappedData(studentData);
+                    setWrappedData(studentData);
     
-                let numStages = 0;
+                    let numStages = 0;
+                    if (studentData.timeHelpingStudents === undefined || studentData.timeHelpingStudents === 0) {
+                        numStages = 6;
+                        setRole(0);
+                    } else if (studentData.favTaId === "" || studentData.favTaId === undefined) {
+                        numStages = 4;
+                        setRole(2);
+                    } else {
+                        numStages = 7;
+                        setRole(1);
+                    }
     
-                // Determine the user's role and adjust stages accordingly
-                if ((!studentData.timeHelpingStudents || studentData.timeHelpingStudents === 0) 
-                    && studentData.favTaId) {
-                    numStages = 6;
-                    setRole(0);
-                } else if (!studentData.favTaId) {
-                    numStages = 4;
-                    setRole(2);
-                } else {
-                    numStages = 7;
-                    setRole(1);
-                }
-    
-                // Favorites slide
-                if (studentData.favTaId && studentData.favClass) {
-                    const usersRef = firebase.firestore().collection("users");
-                    const userDoc = await usersRef.doc(studentData.favTaId).get();
-
                     let taNameExists = false;
-                    
-                    if (userDoc.exists) {
-                        const taData = userDoc.data() as { firstName: string; lastName: string };
-                        setTaName(taData);
+                    if (userDocSnap.exists()) {
+                        setTaName(userDocSnap.data() as { 
+                            firstName: string;
+                            lastName: string;
+                        });  
                         taNameExists = true;
                     } else {
-                        console.log("No such TA document found.");
+                        console.log('No such TA document!');
                     }
-
-                    // Check if favorite fields are valid
-                    const validFavs = studentData.favClass !== "" && studentData.favDay !== -1 && taNameExists;
-
-                    setDisplayFavs(validFavs);
     
-                    if (!validFavs) {
-                        numStages--; // Adjust total stages if favorites can't be displayed
-                    }
-
-                    // Fetch favorite class details
-                    const coursesRef = firebase.firestore().collection("courses");
-                    const coursesDoc = await coursesRef.doc(studentData.favClass).get();
+                    if (
+                        studentData.favClass === "" || 
+                        studentData.favDay === -1 || 
+                        studentData.favTaId === "" || 
+                        !taNameExists
+                    ) {
+                        setDisplayFavs(false);
+                        numStages--;
+                    } 
     
-                    if (coursesDoc.exists) {
-                        const courseData = coursesDoc.data() as { code: string };
-                        setFavClass(courseData);
+                    setTotalStages(numStages);
+    
+                    const courseDocRef = doc(firestore, "courses", studentData.favClass);
+                    const coursesDocSnap = await getDoc(courseDocRef);
+    
+                    if (coursesDocSnap.exists()) {
+                        setFavClass(coursesDocSnap.data() as {
+                            code: string;
+                        });
                     } else {
-                        console.log("No such course document found.");
+                        console.log('No such course document!');
                     }
-            
+                } else {
+                    console.log('No such wrapped document!');
                 }
-    
-                // Update total stages
-                setTotalStages(numStages);
             } catch (error) {
-                console.error("Error fetching data:", error);
-            } 
+                console.error("Error fetching data: ", error);
+            } finally {
+                setLoading(false);
+            }
         };
     
         fetchData();
-    }, [props.user]);
-        
+    }, [props.user, wrappedData.favClass, wrappedData.favTaId]);
+    
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -328,64 +317,66 @@ const Wrapped= (props: Props): JSX.Element => {
         return () => {clearTimeout(timer)};
     }
 
-    const WrappedAnimationModal = () => (                 
-        <div className='qmi-container'>
+    const WrappedAnimationModal = () =>
+        (                 
+            <div className='qmi-container'>
                                 
-            {/* creates first red svg circle. need linear gradient tags here 
+                {/* creates first red svg circle. need linear gradient tags here 
               since didn't import this svg.
               make note that width and height are basically the box containing the circle,
               so they need to be double the radius
               */}
-            <svg className="red-circle" width="300" height="300">
-                {/* this creates the color gradients on the qmi logo */}
-                <defs>
-                    <linearGradient 
-                        id="red-gradient" 
-                        x1="24.4251" 
-                        y1="-52.6352" 
-                        x2="112.279" 
-                        y2="143.659" 
-                        gradientUnits="userSpaceOnUse"
-                    >
-                        <stop stopColor="#FF9399" />
-                        <stop offset="1" stopColor="#FF5A60" />
-                    </linearGradient>
-                </defs>
+                <svg className="red-circle" width="300" height="300">
+                    {/* this creates the color gradients on the qmi logo */}
+                    <defs>
+                        <linearGradient 
+                            id="red-gradient" 
+                            x1="24.4251" 
+                            y1="-52.6352" 
+                            x2="112.279" 
+                            y2="143.659" 
+                            gradientUnits="userSpaceOnUse"
+                        >
+                            <stop stopColor="#FF9399" />
+                            <stop offset="1" stopColor="#FF5A60" />
+                        </linearGradient>
+                    </defs>
                                     
-                {/* this is the actual circle part. 
+                    {/* this is the actual circle part. 
                                     cx and cy are centers so shld be half of height/width. r is radius */}
-                <circle cx='150' cy='150' r='115'> </circle>
-            </svg>
-            <svg className="blue-circle" width="400" height="400">
-                <defs>
-                    <linearGradient 
-                        id="blue-gradient" 
-                        x1="36.7649" 
-                        y1="66.8832" 
-                        x2="134.326" 
-                        y2="192.278" 
-                        gradientUnits="userSpaceOnUse"
-                    >
-                        <stop stopColor="#B2D9FF" />
-                        <stop offset="1" stopColor="#78B6F4" />
-                    </linearGradient>
-                </defs>
-                <circle cx='200' cy='200' r='180'> </circle>
-            </svg>
-            {/* imported way of using svgs, so cant adjust stroke colors */}
-            <img src={arrow} className="arrow-circle" alt="dti arrow" />
-            {/* made two pluses since color gradient changes and second one needs
+                    <circle cx='150' cy='150' r='115'> </circle>
+                </svg>
+                <svg className="blue-circle" width="400" height="400">
+                    <defs>
+                        <linearGradient 
+                            id="blue-gradient" 
+                            x1="36.7649" 
+                            y1="66.8832" 
+                            x2="134.326" 
+                            y2="192.278" 
+                            gradientUnits="userSpaceOnUse"
+                        >
+                            <stop stopColor="#B2D9FF" />
+                            <stop offset="1" stopColor="#78B6F4" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx='200' cy='200' r='180'> </circle>
+                </svg>
+                {/* imported way of using svgs, so cant adjust stroke colors */}
+                <img src={arrow} className="arrow-circle" alt="dti arrow" />
+                {/* made two pluses since color gradient changes and second one needs
                to expand outside of the container. */}
-            <img src={smallPlus} className="first-plus" alt="first plus" />
-            <img
-                src={bigPlus}
-                className="sec-plus"
-                alt="second plus"
-                onAnimationEnd={handleAnimationEnd}
-            />
+                <img src={smallPlus} className="first-plus" alt="first plus" />
+                <img
+                    src={bigPlus}
+                    className="sec-plus"
+                    alt="second plus"
+                    onAnimationEnd={handleAnimationEnd}
+                />
                 
-        </div>
-    )
+            </div>
+        )
+      
 
     const WelcomeBanner = () => (
         <div>
@@ -518,7 +509,7 @@ const Wrapped= (props: Props): JSX.Element => {
                         YOU WORKED SO HARD THIS YEAR!
                     </div>
                     <div className="visit mid-text">
-                        <Typography variant="h3" style={{ fontSize: "27px" }} > 
+                        <Typography variant="h3" style={{ fontWeight: 700 }}>
                             WITH...
                         </Typography>
                     </div>
@@ -538,7 +529,7 @@ const Wrapped= (props: Props): JSX.Element => {
                     <div 
                         className="visit bottom-text"
                     >
-                        <Typography variant="h3" style={{ fontSize: "27px" , width: "189px" }}> 
+                        <Typography variant="h3"> 
                             {wrappedData.numVisits === 1 ? "VISIT " : "VISITS " }
                             TO OFFICE HOURS
                         </Typography>
@@ -784,7 +775,7 @@ const Wrapped= (props: Props): JSX.Element => {
                     style={{ position: "absolute", top: "0.2rem", right: "0.2rem", color: "#FFFFFF" }}
                     onClick={props.onClose}
                 >
-                    <CloseIcon style={{ fontSize: "larger" }} />
+                    <CloseIcon />
                 </IconButton>
             </div>
         </div>

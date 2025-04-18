@@ -7,7 +7,6 @@ import {
     filterAndpartitionQuestions,
     computeNumberAheadFromFilterAndpartitionQuestions,
 } from '../../utilities/questions';
-import CalendarExport from '../../media/calendar_export.svg';
 import { RootState } from '../../redux/store';
 
 const CalendarSessionCard = (props: {
@@ -16,6 +15,7 @@ const CalendarSessionCard = (props: {
     session: FireSession;
     callback: (sessionId: string) => void;
     active: boolean;
+    // eslint-disable-next-line react/no-unused-prop-types
     status: string;
     setIsDayExport: React.Dispatch<React.SetStateAction<boolean>>;
     setShowCalendarModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -41,8 +41,6 @@ const CalendarSessionCard = (props: {
         userQuestions
     );
 
-    const includeBookmark = userQuestions.length > 0;
-
     const tas = useSessionTANames(props.course, session);
 
     const timeDesc = '';
@@ -58,7 +56,6 @@ const CalendarSessionCard = (props: {
             className={(props.active && 'active') + ' CalendarSessionCard'}
             onClick={handleOnClick}
         >
-            {includeBookmark && <div className='Bookmark' />}
             <div className='TimeInfo'>
                 <div className='StartTime'>
                     <Moment
@@ -81,31 +78,31 @@ const CalendarSessionCard = (props: {
                             ' Type'
                         }
                     >
-                        {session.modality !== 'review' ? 'OH' : 'Discussion'}
-                    </div>
-                    <div className={'Indicator ' + props.status}>
-                        <div className='Circle' />
+                        {session.modality !== 'review' ? 'OH' : 'DIS'}
                     </div>
                 </div>
             </div>
 
             <div className='CalendarCard'>
                 <div className='Wrapper'>
-                    {'building' in session ? (
-                        <div className='Location'>
-                            {session.building + ' ' + session.room}
-                        </div>
-                    ) : session.modality === 'review' ? (
-                        <div className='Location'> Zoom Discussion </div>
-                    ) : (
-                        <div className='Location'>Online</div>
-                    )}
-                    <img
-                        src={CalendarExport}
-                        alt='Export to calendar'
-                        className='CalendarExportIcon'
+                    <div className='Location'>
+                        {'building' in session ? (
+                            session.building + ' ' + session.room
+                        ) : session.modality === 'review' ? (
+                            'Zoom Discussion'
+                        ) : (
+                            'Online'
+                        )}
+                        {numAhead > 0 && (<div className={'Indicator'}>
+                            <div className='Circle' />
+                        </div>)}
+                    </div>
+
+                    <button
+                        type="button"
+                        className="cal-btn"
                         onClick={showCalendarExportModal}
-                    />
+                    >+ Add to Cal</button>
                 </div>
                 <div className='Tas'>
                     {session.title ||
@@ -142,7 +139,7 @@ const CalendarSessionCard = (props: {
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user : state.auth.user
+    user: state.auth.user
 })
 
 

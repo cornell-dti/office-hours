@@ -88,15 +88,15 @@ const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, 
                         <>
                             <div>
                                 <div className="countdownContainer_boxes">{prependZero(timeRemaining.days)}</div>
-                                <p className="counter_sub">{timeRemaining.days === 1 ? "DAY" : "DAYS"}</p>
+                                <p className="counter_sub">{timeRemaining.days <= 1 ? "DAY" : "DAYS"}</p>
                             </div>
                             <div>
                                 <div className="countdownContainer_boxes">{prependZero(timeRemaining.hours)}</div>
-                                <p className="counter_sub">{timeRemaining.hours === 1 ? "HOUR" : "HOURS"}</p>
+                                <p className="counter_sub">{timeRemaining.hours <= 1 ? "HOUR" : "HOURS"}</p>
                             </div>
                             <div>
                                 <div className="countdownContainer_boxes">{prependZero(timeRemaining.minutes)}</div>
-                                <p className="counter_sub">{timeRemaining.minutes === 1 ? "MINUTE" : "MINUTES"}</p>
+                                <p className="counter_sub">{timeRemaining.minutes <= 1 ? "MINUTE" : "MINUTES"}</p>
                             </div>
                             <div className="textContainer">
                                 <p className="top">Queue Me In</p>
