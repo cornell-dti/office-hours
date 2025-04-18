@@ -353,7 +353,8 @@ exports.onQuestionUpdate = functions.firestore
         }
 
         // Derive timing changes (changes from assigned to resolved)
-        if (numResolvedChange === 1 && newQuestion.timeAssigned !== undefined && newQuestion.timeAddressed !== undefined) {
+        if (numResolvedChange === 1 && newQuestion.timeAssigned !== 
+            undefined && newQuestion.timeAddressed !== undefined) {
             resolveTimeChange = newQuestion.timeAddressed.seconds - newQuestion.timeAssigned.seconds;
         } else if (
             numResolvedChange === -1 &&
