@@ -175,11 +175,6 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         const locationMissing = !location;
         const questionMissing = !question;
 
-        setMissingPrimaryTags(primaryTagsMissing);
-        setMissingSecondaryTags(secondaryTagsMissing);
-        setMissingLocation(locationMissing);
-        setMissingQuestion(questionMissing);
-
         if (primaryTagsMissing || secondaryTagsMissing || locationMissing || questionMissing) {
             // eslint-disable-next-line no-console
             console.log("Fields missing, showing error state");
@@ -189,18 +184,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         // eslint-disable-next-line no-console
         console.log("All fields filled, submitting...");
         handleJoinClick(); 
-    };
-
-    useEffect(() => {
-        // eslint-disable-next-line no-console
-        console.log({
-            missingPrimaryTags,
-            missingSecondaryTags,
-            missingLocation,
-            missingQuestion,
-        });
-    }, [missingPrimaryTags, missingSecondaryTags, missingLocation, missingQuestion]);
-    
+    };  
 
 
     const handleJoinClick = (): void => {
