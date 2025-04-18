@@ -308,7 +308,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         {"building" in session && (
                             <>
                                 {" "}
-                                <div className={`tagsMiniContainer ${missingLocation  ? "error" : ""}`}>
+                                <div className="tagsMiniContainer">
                                     {
                                         <p className="header">
                                             {session.modality === "hybrid" ? "Location or Zoom Link" : "Location"}{" "}
@@ -387,13 +387,13 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                 )}
                         </div>
                         <div className="addButtonWrapper">
-                            <p
-                                className={`AddButton ${stage > LOCATION_INPUTTED || primaryTags.length === 0 || secondaryTags.length === 0 ? "active" : ""}`}
-                                onClick={handleClick}
-                            >
-                                Add My Question
-                            </p>
-                            
+                            {stage > LOCATION_INPUTTED || primaryTags.length === 0 || secondaryTags.length === 0 ? (
+                                <p className="AddButton active" onClick={() => handleJoinClick()}>
+                                    Add My Question
+                                </p>
+                            ) : (
+                                <p className="AddButton"> Add My Question </p>
+                            )}
                         </div>
                     </div>
                 </div>
