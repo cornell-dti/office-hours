@@ -569,6 +569,7 @@ exports.onStudentJoinSession = functions.firestore
             if (numberOfTAs === 0) {
                 return db.doc(`sessions/${sessionId}`).update({
                     studentPerTaRatio: -1,
+                    officeHourStarted: false,
                 });
             }
             // Update the studentPerTaRatio field in the session document
