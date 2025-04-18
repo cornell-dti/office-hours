@@ -29,7 +29,8 @@
       "yarn --cwd \"$RESOURCE_DIR\" lint",
       "yarn --cwd \"$RESOURCE_DIR\" build"
     ],
-    "source": "functions"
+    "source": "functions",
+    "runtime": "nodejs16"
   },
   "emulators": {
     "functions": {
