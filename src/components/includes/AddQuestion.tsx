@@ -257,8 +257,6 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         }
     };
 
-    const Asterisk = () => <span className="required"> * </span>;
-
     if (redirect) {
         return (
             <Redirect
@@ -283,32 +281,37 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                     <div className="tagsContainer">
                         {primaryTags.length !== 0 && (
                             <>
-                                <hr />
-                                <div className="tagsMiniContainer">
-                                    <p className="header">Select a Category</p>
-                                    <div className="QuestionTags">
-                                        {tags
-                                            .filter((tag) => tag.active && tag.level === 1)
-                                            .map((tag) => (
-                                                <SelectedTags
-                                                    key={tag.tagId}
-                                                    tag={tag}
-                                                    isSelected={stage > INITIAL_STATE}
-                                                    onClick={() => handlePrimarySelected(tag)}
-                                                    check={tag.name === selectedPrimary?.name}
-                                                    isPrimary={true}
-                                                    select={true}
-                                                />
-                                            ))}
+                                <div className="topRow">
+                                    <div className="disclaimerContainer">
+                                        <p className="text"><span className="required"> * </span>Required</p>
+                                    </div>
+                                    <div className="tagsMiniContainer">
+                                        <p className="header">Select a Category<span className="required"> * </span></p>
+                                        <div className="category">
+                                            {tags
+                                                .filter((tag) => tag.active && tag.level === 1)
+                                                .map((tag) => (
+                                                    <SelectedTags
+                                                        key={tag.tagId}
+                                                        tag={tag}
+                                                        isSelected={stage > INITIAL_STATE}
+                                                        onClick={() => handlePrimarySelected(tag)}
+                                                        check={tag.name === selectedPrimary?.name}
+                                                        isPrimary={true}
+                                                        select={true}
+                                                    />
+                                                ))}
+                                        </div>
                                     </div>
                                 </div>
+                                
                             </>
                         )}
                         {secondaryTags.length !== 0 && (
                             <>
                                 <hr />
                                 <div className={"tagsMiniContainer secondaryTags " + !!selectedPrimary}>
-                                    <p className="header">Select a Tag</p>
+                                    <p className="header">Select a Tag<span className="required"> * </span></p>
                                     {selectedPrimary ? (
                                         tags
                                             .filter((tag) => tag.active && tag.level === 2)
@@ -390,7 +393,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             </>
                         )}
                         <div className="tagsMiniContainer">
-                            <p className="header">{"Question "}</p>
+                            <p className="header">{"Question "} <span className="required"> * </span></p>
                             {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||
                             secondaryTags.length === 0 ||
