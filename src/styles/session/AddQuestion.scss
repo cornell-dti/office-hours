@@ -77,6 +77,7 @@
 
       .tagsMiniContainer {
         padding: 10px 32px;
+        padding: 10px 32px;
         clear: both;
         width: 100%;
         display:inline-block;
@@ -226,11 +227,4 @@
   .placeHolder {
     display: inline;
   }
-}
-
-@keyframes errorFadeIn {
-  0%{
-    background-color: rgba(246, 125, 125, 0);  }
-  100%{
-    background-color: rgba(246, 125, 125, 0.15);  }
 }
