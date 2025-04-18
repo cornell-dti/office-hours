@@ -14,9 +14,10 @@
     width: 100%;
     top: 30px;
     bottom: 30px;
-    padding-bottom: 5px;
-    padding-right: 15px;
-    padding-left: 15px;
+    padding-top: 32px;
+    padding-bottom: 4px;
+    padding-right: 32px;
+    padding-left: 32px;
     margin-bottom: 40px;
     
 
@@ -79,6 +80,9 @@
         width: 100%;
         padding-top: 14px;
         padding-bottom: 14px;
+        &.error{
+          background-color: rgba(246, 125, 125, 0.15);
+        }
       }
 
       .disclaimerContainer{
@@ -98,7 +102,7 @@
       }
 
       .tagsMiniContainer {
-        padding: 10px 64px;
+        padding: 10px 32px;
         clear: both;
         width: 100%;
         display:inline-block;
@@ -111,15 +115,8 @@
           text-align: left;
           margin-bottom:0.5em;
         }
-        .error{
+        &.error{
           background-color: rgba(246, 125, 125, 0.15);
-        }
-
-        .required{
-          color: #F67D7D;
-          font-size: 14px;
-          font-weight: 500;
-          line-height: 16.41px;
         }
 
         .category{
@@ -266,18 +263,4 @@
   .placeHolder {
     display: inline;
   }
-}
-
-@keyframes errorFadeIn {
-  0%{
-    background-color: rgba(246, 125, 125, 0);  }
-  100%{
-    background-color: rgba(246, 125, 125, 0.15);  }
-}
-
-@keyframes errorFadeOut {
-  0%{
-    background-color: rgba(246, 125, 125, 0.15);  }
-  100%{
-    background-color: rgba(246, 125, 125, 0);  }
 }
