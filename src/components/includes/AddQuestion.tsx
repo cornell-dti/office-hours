@@ -48,7 +48,10 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     const [tags, setTags] = useState<FireTag[]>([]);
     // For hybrid sessions to keep track if student is in virtual location
     const [isVirtual, setIsVirtual] = useState<boolean>(false);
-    // const [error, setError] = useState<boolean>(false);
+    const [missingPrimaryTags, setMissingPrimaryTags] = useState<boolean>(false);
+    const [missingSecondaryTags, setMissingSecondaryTags] = useState<boolean>(false);
+    const [missingLocation, setMissingLocation] = useState<boolean>(false);
+    const [missingQuestion, setMissingQuestion] = useState<boolean>(false);
 
     const primaryTags = tags.filter((tag) => tag.level === 1);
     const secondaryTags = tags.filter((tag) => tag.level === 2);
@@ -167,6 +170,43 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         setRedirect(allowRedirect);
     };
 
+    const handleClick = () : void => {
+        // eslint-disable-next-line no-console
+        console.log("Button Clicked");
+
+        const primaryTagsMissing = !selectedPrimary;
+        const secondaryTagsMissing = !selectedSecondary;
+        const locationMissing = !location;
+        const questionMissing = !question;
+
+        setMissingPrimaryTags(primaryTagsMissing);
+        setMissingSecondaryTags(secondaryTagsMissing);
+        setMissingLocation(locationMissing);
+        setMissingQuestion(questionMissing);
+
+        if (primaryTagsMissing || secondaryTagsMissing || locationMissing || questionMissing) {
+            // eslint-disable-next-line no-console
+            console.log("Fields missing, showing error state");
+            return;
+        }
+    
+        // eslint-disable-next-line no-console
+        console.log("All fields filled, submitting...");
+        handleJoinClick(); 
+    };
+
+    useEffect(() => {
+        // eslint-disable-next-line no-console
+        console.log({
+            missingPrimaryTags,
+            missingSecondaryTags,
+            missingLocation,
+            missingQuestion,
+        });
+    }, [missingPrimaryTags, missingSecondaryTags, missingLocation, missingQuestion]);
+    
+
+
     const handleJoinClick = (): void => {
         if (
             stage !== CLOSE_TO_END_OF_OH &&
@@ -220,9 +260,9 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             <>
                                 <div className="topRow">
                                     <div className="disclaimerContainer">
-                                        <p className="text"><span className="required"> * </span>Required</p>
+                                        <p className="text"><Asterisk />Required</p>
                                     </div>
-                                    <div className="tagsMiniContainer">
+                                    <div className={`tagsMiniContainer ${missingPrimaryTags ? "error " : ""}`}>
                                         <p className="header">Select a Category<Asterisk /></p>
                                         <div className="category">
                                             {tags
@@ -291,6 +331,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                                     {LOCATION_CHAR_LIMIT - location.length !== 1 && "s"} left)
                                                 </span>
                                             )}
+                                            <span className="required"> * </span>
                                         </p>
                                     }
                                     {stage >= SECONDARY_SELECTED || activeTags.length === 0 ? (
@@ -327,7 +368,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                 <hr />
                             </>
                         )}
-                        <div className="tagsMiniContainer">
+                        <div className={`tagsMiniContainer ${missingQuestion ? "error" : ""}`}>
                             <p className="header">{"Question "} <Asterisk /></p>
                             {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||
