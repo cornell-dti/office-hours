@@ -2,24 +2,17 @@ import * as React from "react";
 import Moment from "react-moment";
 import { Icon } from "semantic-ui-react";
 
-import { Grid, Switch } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { connect } from "react-redux";
 import { pauseSession } from "../../firebasefunctions/session";
 import users from "../../media/users.svg";
-import chalkboard from "../../media/chalkboard-teacher.svg";
-import hourglass from "../../media/hourglass-half.svg";
 import calendarIcon from "../../media/Calendar_icon.svg";
 import clockIcon from "../../media/clock-regular_1.svg";
 import rightArrowIcon from "../../media/rightArrowIcon.svg";
-import zoom from "../../media/zoom.svg";
-import closeZoom from "../../media/closeZoom.svg";
 import leftArrowIcon from "../../media/leftArrowIcon.svg";
 import timelinePlaceholder from "../../media/timeline_placeholder-graph.png";
-
-import editZoomLink from "../../media/editZoomLink.svg";
 import { useSessionQuestions, useSessionTAs } from "../../firehooks";
 import { computeNumberAhead } from "../../utilities/questions";
-import JoinErrorMessage from "./JoinErrorMessage";
 import { RootState } from "../../redux/store";
 import { useState } from "react";
 
@@ -106,15 +99,15 @@ const SessionInformationHeader = ({
     React.useEffect(() => {
         const ratio = session.studentPerTaRatio;
         if (session.tas.length === 0) {
-            setRatioText("No TAs assigned to this OH");
+            setRatioText("No TAs available");
         } else {
-            if (!session.officeHourStarted || ratio === 0) {
-                setRatioText(`${ratio} TAs assigned to this OH`);
-            } else {
+            if (session.officeHourStarted) {
                 setRatioText(`${ratio} students/TA`);
-            }
+            } else {
+                setRatioText(`${ratio} TAs available`);
+            } 
         }
-    }, [session.studentPerTaRatio]);
+    }, [session.studentPerTaRatio, session.officeHourStarted]);
 
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
@@ -201,23 +194,29 @@ const SessionInformationHeader = ({
     const [startIndex, setStartIndex] = useState(0);
     const visibleCount = 4;
 
-    const visibleTAs = tas.slice(startIndex, startIndex + visibleCount);
+
+    const visibleTAs =
+        React.useMemo(() => {
+             return tas.slice(startIndex, startIndex + visibleCount);
+        },[tas, startIndex, visibleCount]);
     const hasNext = startIndex + visibleCount < tas.length;
 
     return isDesktop ? (
-        <header className="DesktopSessionInformationHeader">
-            <Grid container spacing={2} style={{ alignItems: "stretch" }}>
+        <header
+            className="DesktopSessionInformationHeader"
+            style={{
+                height: "350px", // Fixed overall height for the entire component
+            }}
+        >
+            <Grid container style={{ alignItems: "stretch", height: "100%" }}>
                 {/* Left Column (Boxes 1 & 2) */}
-                <Grid item xs={12} md={5} style={{ display: "flex" }}>
-                    <Grid container direction="column" style={{ height: "100%", width: "100%" }}>
+                <Grid item style={{ display: "flex", width: "40%" }}>
+                    <Grid container direction="column" spacing={2} style={{ width: "100%" }}>
                         <Grid
                             item
                             style={{
-                                marginBottom: "16px",
-                                minHeight: "130px",
-                                // flex: 2,
-                                // alignItems: "flex-start", // Align children to the top (left if textAlign is set)
-                                // justifyContent: 'flex-start' // Align items to the left horizontally
+                                display: "flex",
+                                height: "65%",
                             }}
                         >
                             <div className="LeftInformationHeader" style={{ width: "100%" }}>
@@ -279,12 +278,17 @@ const SessionInformationHeader = ({
                                 </div>
                             </div>
                         </Grid>
-                        <Grid item style={{ display: "flex", flex: 1 }}>
+                        <Grid item style={{ width: "100%", display: "flex", height: "35%" }}>
                             <div className="TAsHeader">
-                                <Grid container alignItems="center" justifyContent="space-between">
+                                <Grid
+                                    container
+                                    alignItems="center"
+                                    justifyContent="space-between"
+                                    style={{ height: "100%", width: "100%" }}
+                                >
                                     {/* Text on the left */}
                                     <Grid item xs={12} sm={4}>
-                                        <div className="TAHeaderText">
+                                        <div className="TAHeaderText" >
                                             <p style={{ fontWeight: "bold", fontSize: "20px", margin: 0 }}>
                                                 TA's ({tas.length})
                                             </p>
@@ -313,8 +317,8 @@ const SessionInformationHeader = ({
                                                                 alt={`${ta.firstName} ${ta.lastName}'s Photo`}
                                                                 className="TACircle"
                                                                 style={{
-                                                                    width: "55px",
-                                                                    height: "55px",
+                                                                    width: "60px",
+                                                                    height: "60px",
                                                                     border: "2px solid #f2f2f2",
                                                                 }}
                                                             />
@@ -342,7 +346,7 @@ const SessionInformationHeader = ({
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item xs={12} md={7} style={{ display: "flex", flex: 3 }}>
+                <Grid item style={{ display: "flex", width: "60%" }}>
                     <div className="QueueInfo">
                         <p className="WaitTitle">Wait Time</p>
                         {avgWaitTime !== "No information available" ? (
