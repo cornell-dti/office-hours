@@ -14,10 +14,9 @@
     width: 100%;
     top: 30px;
     bottom: 30px;
-    padding-top: 32px;
-    padding-bottom: 4px;
-    padding-right: 32px;
-    padding-left: 32px;
+    padding-bottom: 5px;
+    padding-right: 15px;
+    padding-left: 15px;
     margin-bottom: 40px;
     
 
@@ -75,32 +74,6 @@
         clear:both;
       }
 
-      .topRow{
-        position: relative;
-        width: 100%;
-        padding-top: 14px;
-        padding-bottom: 14px;
-        &.error{
-          animation: errorFadeIn 0.5s forwards;
-        }
-      }
-
-      .disclaimerContainer{
-        position: absolute;
-        right: 0; 
-        top: 24px; 
-        width: 100%;
-        font-family: Roboto;
-        font-weight: 500;
-        font-size: 9.87px;
-        line-height: 11.56px;
-        letter-spacing: 0%;
-        text-align: right;
-        .text{
-          color: #F67D7D;
-        }
-      }
-
       .tagsMiniContainer {
         padding: 10px 32px;
         clear: both;
@@ -114,13 +87,6 @@
         p {
           text-align: left;
           margin-bottom:0.5em;
-        }
-        &.error{
-          animation: errorFadeIn 0.5s forwards;
-        }
-
-        .category{
-          padding-top: 12px;
         }
 
         .header {
