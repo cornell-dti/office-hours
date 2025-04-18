@@ -247,7 +247,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         {secondaryTags.length !== 0 && (
                             <>
                                 <hr />
-                                <div className={"tagsMiniContainer secondaryTags " + !!selectedPrimary}>
+                                <div className={`tagsMiniContainer ${missingSecondaryTags ? "error " : ""}`+ !!selectedPrimary}>
                                     <p className="header">Select a Tag<Asterisk /></p>
                                     {selectedPrimary ? (
                                         tags
@@ -358,13 +358,13 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             <img alt="" src={addFiles}/>
                         </div>
                         <div className="addButtonWrapper">
-                            {stage > LOCATION_INPUTTED || primaryTags.length === 0 || secondaryTags.length === 0 ? (
-                                <p className="AddButton active" onClick={() => handleJoinClick()}>
-                                    Add My Question
-                                </p>
-                            ) : (
-                                <p className="AddButton"> Add My Question </p>
-                            )}
+                            <p
+                                className={`AddButton ${stage > LOCATION_INPUTTED || primaryTags.length === 0 || secondaryTags.length === 0 ? "active" : ""}`}
+                                onClick={handleClick}
+                            >
+                                Add My Question
+                            </p>
+                            
                         </div>
                     </div>
                 </div>
