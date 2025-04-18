@@ -131,17 +131,17 @@ const SessionView = ({
             const userRef = doc(firestore, "users", user.userId);
             unsubscribe = onSnapshot(userRef, (snapshot) => {
                 const userData = snapshot.data() as FireUser;
-                const recentlyResolvedQuestion = userData.recentlyResolvedQuestion;
-                if (!recentlyResolvedQuestion) {
-                    return;
-                }
-                if (recentlyResolvedQuestion.questionId) {
-                    removeQuestionDisplayFeedback(recentlyResolvedQuestion.questionId);
-                    // Deletes the recentlyResolvedQuestion field from the user document
-                    updateDoc(userRef, { 
-                        recentlyResolvedQuestion: deleteField()
-                    });
-                }
+                // const recentlyResolvedQuestion = userData.recentlyResolvedQuestion;
+                // if (!recentlyResolvedQuestion) {
+                //     return;
+                // }
+                // if (recentlyResolvedQuestion.questionId) {
+                //     removeQuestionDisplayFeedback(recentlyResolvedQuestion.questionId);
+                //     // Deletes the recentlyResolvedQuestion field from the user document
+                //     updateDoc(userRef, { 
+                //         recentlyResolvedQuestion: deleteField()
+                //     });
+                // }
             });
         }
 

@@ -8,7 +8,7 @@ import SelectedTags from "./SelectedTags";
 import SessionAlertModal from "./SessionAlertModal";
 
 import { addQuestion } from "../../firebasefunctions/sessionQuestion";
-import addFiles from "../../media/AddFilesButton.svg";
+// import addFiles from "../../media/AddFilesButton.svg";
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
@@ -264,10 +264,10 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             <>
                                 <div className={`topRow ${missingPrimaryTags ? "error" : ""}`}>
                                     <div className="disclaimerContainer text">
-                                        <p> <Asterisk /> Required</p>
+                                        <p> Required</p>
                                     </div>
                                     <div className={`tagsMiniContainer ${missingPrimaryTags ? "error " : ""}`}>
-                                        <p className="header">Select a Category<Asterisk /></p>
+                                        <p className="header">Select a Category</p>
                                         <div className="category">
                                             {tags
                                                 .filter((tag) => tag.active && tag.level === 1)
@@ -295,7 +295,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                     ${missingSecondaryTags ? "error " : ""}`+ !!selectedPrimary
                                 }
                                 >
-                                    <p className="header">Select a Tag<Asterisk /></p>
+                                    <p className="header">Select a Tag</p>
                                     {selectedPrimary ? (
                                         tags
                                             .filter((tag) => tag.active && tag.level === 2)
@@ -377,7 +377,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         )}
                         <hr/>
                         <div className={`tagsMiniContainer ${missingQuestion ? "error" : ""}`}>
-                            <p className="header">{"Question "} <Asterisk /></p>
+                            <p className="header">{"Question "}</p>
                             {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||
                             secondaryTags.length === 0 ||
@@ -405,7 +405,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         <hr />
                         <div className="tagsMiniContainer">
                             <p className="header">Your Files<span className="required"> * </span></p>
-                            <img alt="" src={addFiles}/>
+                            {/* <img alt="" src={addFiles}/> */}
                         </div>
                         <div className="addButtonWrapper">
                             <p
