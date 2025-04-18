@@ -37,7 +37,7 @@ const LoginView: React.FC = () => {
             authProvider.setCustomParameters({
                 hd: 'cornell.edu',
             });
-        }
+        } 
         
         authProvider.addScope('email');
         authProvider.addScope('profile');
