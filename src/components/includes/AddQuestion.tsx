@@ -27,22 +27,6 @@ type Props = {
     showProfessorStudentView: boolean;
 };
 
-/**
- * `AddQuestion` Component - Displays a component that allows users ask a question
- *  to join the queue.
- * 
- * @remarks
- * This component is used within a course session to enable students to submit 
- * questions to join the queue. The user submits information about location as well
- * as the specific assignment. It adapts its layout based on screen size and provides different 
- * views depending on the user's role (professor's student view or student view).
- * 
- * @param props - Contains:
- *   - `course`: The course associated with the session.
- *   - `session`: The current session where the question will be added.
- *   - `mobileBreakpoint`: The screen width threshold for mobile layout.
- *   - `showProfessorStudentView`: boolean to toggle ProfessorStudentView.
- */
 const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentView }: Props) => {
     /*
      * State machine states
@@ -430,6 +414,10 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                         }
                                     />
                                 )}
+                        </div>
+                        <div className="tagsMiniContainer">
+                            <p className="header">Your Files<span className="required"> * </span></p>
+                            <img alt="" src={addFiles}/>
                         </div>
                         <div className="addButtonWrapper">
                             <p

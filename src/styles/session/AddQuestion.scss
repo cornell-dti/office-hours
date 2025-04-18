@@ -73,6 +73,29 @@
         clear:both;
       }
 
+      .topRow{
+        position: relative;
+        width: 100%;
+        padding-top: 24px;
+        padding-bottom: 24px;
+      }
+
+      .disclaimerContainer{
+        position: absolute;
+        right: 0; 
+        top: 24px; 
+        width: 100%;
+        font-family: Roboto;
+        font-weight: 500;
+        font-size: 9.87px;
+        line-height: 11.56px;
+        letter-spacing: 0%;
+        text-align: right;
+        .text{
+          color: #F67D7D;
+        }
+      }
+
       .tagsMiniContainer {
         padding: 10px 64px;
         clear: both;
