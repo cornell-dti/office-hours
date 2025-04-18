@@ -166,27 +166,6 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         setRedirect(allowRedirect);
     };
 
-    const handleClick = () : void => {
-        // eslint-disable-next-line no-console
-        console.log("Button Clicked");
-
-        const primaryTagsMissing = !selectedPrimary;
-        const secondaryTagsMissing = !selectedSecondary;
-        const locationMissing = !location;
-        const questionMissing = !question;
-
-        if (primaryTagsMissing || secondaryTagsMissing || locationMissing || questionMissing) {
-            // eslint-disable-next-line no-console
-            console.log("Fields missing, showing error state");
-            return;
-        }
-    
-        // eslint-disable-next-line no-console
-        console.log("All fields filled, submitting...");
-        handleJoinClick(); 
-    };  
-
-
     const handleJoinClick = (): void => {
         if (
             stage !== CLOSE_TO_END_OF_OH &&
