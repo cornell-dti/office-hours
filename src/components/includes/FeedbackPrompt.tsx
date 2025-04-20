@@ -9,6 +9,9 @@ import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
+const FEEDBACK_CHAR_LIMIT = 1000;
+const Asterisk = () => <span className="required"> * </span>;
+
 type Props = {
     onClose: (rating1?: number, rating2?: number, rating3?: number, feedback?: string) => void;
     closeFeedbackPrompt: () => void;
@@ -95,7 +98,7 @@ const FeedbackPrompt = (props: Props) => {
                     <br />
                 </Box>
             
-                    
+    
                 <TextField
                     id="outlined-multiline-static"
                     variant="outlined"
@@ -104,9 +107,28 @@ const FeedbackPrompt = (props: Props) => {
                     fullWidth
                     style={{ marginBottom: "4rem" }}
                     placeholder="Please describe your experience..."
-                    onChange={(event) => setFeedback(event.target.value)}
+                    /* Adds a character limit to the feedback response*/
+                    onChange={(event) => {
+                        const input = event.target.value;
+                        if (input.length <= FEEDBACK_CHAR_LIMIT) {
+                            setFeedback(input);
+                        }
+                    }}
                 />
+                <Typography
+                variant="caption"
+                color={feedback.length >= FEEDBACK_CHAR_LIMIT ? "error" : "textSecondary"}
+                style={{ marginBottom: "2rem", textAlign: "right" }}
+            >
+                ({FEEDBACK_CHAR_LIMIT - feedback.length} character
+                {FEEDBACK_CHAR_LIMIT - feedback.length !== 1 ? "s" : ""} left)
+                <Asterisk/>
+                </Typography>
+
+            
+                
                
+
                 {/* Currently enable submission of blank feedback in order to not 
                 block user flow */}
                 <Button
