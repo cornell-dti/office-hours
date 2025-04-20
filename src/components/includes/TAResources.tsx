@@ -21,6 +21,7 @@ const dummyFiles = [
 ];
 /* adjust for filetypes other than img? */
 
+/* container for all of the files */
 const TAResources = () => {
 
     return (

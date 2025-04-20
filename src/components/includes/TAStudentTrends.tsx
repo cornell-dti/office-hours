@@ -15,8 +15,10 @@ const TAStudentTrends = () => {
     const filter = ["First Mentioned", "Query Volume"];
     const filtersArray = filter.map((label: string) => ({key: label, text: label, value: label}));
 
+    // useStates to track filter selection
     const [timeFilter, setTimeFilter] = useState("This week");
     const [taskFilter, setTaskFilter] = useState(tasks[tasks.length - 2]);
+    // set tasks default to most recent assignment
     const [sortFilter, setSortFilter] = useState("Query Volume");
     const [filteredData, setFilteredData] = useState(dummyData);
 
@@ -24,6 +26,7 @@ const TAStudentTrends = () => {
         /* TODO: adjust filters after backend implementation to fully match figma. */
         let result = [...dummyData];
 
+        // logic for the time dropdown filter
         result = result.filter(item => {
             const mention = item.mention.toLowerCase();
             const num = parseInt(mention, 10) || 0;
@@ -41,10 +44,13 @@ const TAStudentTrends = () => {
         });
     
 
+        // logic for the task dropdown filter 
         if (taskFilter !== "All Tasks") {
             result = result.filter(item => item.assignment === taskFilter);
         }
+
         /* TODO: only show query vol amt within a time period */
+        // logic for the sort by filter
         result.sort((a, b) => {
             if (sortFilter === "Query Volume") {
                 if (b.volume !== a.volume) return b.volume - a.volume;
@@ -64,6 +70,7 @@ const TAStudentTrends = () => {
         setFilteredData(result);
     }, [timeFilter, taskFilter, sortFilter]);
 
+    // function to compare two mentions to sort in ascending order
     const compareMentionTimes = (a: string, b: string) => {
         const getDayValue = (m: string) => {
             m = m.toLowerCase();
