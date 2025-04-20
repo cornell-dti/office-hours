@@ -1,8 +1,9 @@
 .trends-container {
     width: 1180px;
-    height: 610px;
+    // height: 610px; //might need to remove
     background-color: #FFF;
     border-radius: 12px;
+    margin-bottom: 46px;
 
     .ui.selection.dropdown {
         width: 112px;
@@ -13,8 +14,34 @@
         padding: 10px;
     }
 
+    .ui.selection.dropdown .menu > .item{
+        border-top: none;
+    }
+
+    .ui.dropdown .menu > .selected.item{
+        font-weight: 500;
+    }
+
     .ui.selection.dropdown > .dropdown.icon {
-        padding: 10px;
+        // padding: 10px;
+        font-family: inherit !important;
+        font-size: 0 !important;
+        
+        /* Custom icon container */
+        width: 8px !important;
+        height: 5px !important;
+        right: 4px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+
+        background-image: url("../../media/chevron_down.svg");
+
+        &::before{
+            display: none !important;
+        }
     }
 
     .ui.dropdown > .text {
@@ -26,7 +53,24 @@
         line-height: 7.5px;
         letter-spacing: -0.24px;
     }
+
+    .ui.dropdown .menu {
+        background-color: #EAEAEA;
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    .ui.dropdown .menu > .item:hover{
+        background-color: #D8D8D8;
+        color: #121212;
+    }
+    
+    .ui.dropdown .menu > .item{
+        color: #121212;
+        font-size: 12px;
+    }
 }
+
 
 .trends-header {
     text-align: left;
@@ -87,6 +131,7 @@
     gap: 653px;
     padding-top: 36px;
     padding-left: 31px;
+    margin-bottom: 11px;
     color: #8D8E8E;
     font-family: Roboto;
     font-size: 12px;
@@ -102,12 +147,7 @@
     align-items: center;
     gap: 123px;
 }
-
-hr {
-    width: 1121px;
-    height: 1px;
-    margin-left: 31px;
-    margin-top: 11px;
-    margin-right: 28px;
-    background: #ECECEC;
+.table-contents-container{
+    padding-bottom: 16px;
 }
+
