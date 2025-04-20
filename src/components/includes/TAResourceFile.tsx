@@ -9,6 +9,7 @@ type Props = {
     filetype: string;
 }
 
+/* each individual file button */
 const TAResourcesFile = (props: Props) => {
     const [fileIcon, setFileIcon] = useState(defaultFileIcon);
 

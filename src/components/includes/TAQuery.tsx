@@ -11,15 +11,25 @@ type Props = {
 };
 
 type Question = {
-    text: string;
-    frequency: number;
+    text: string; // the question itself
+    frequency: number; // how often the question was asked
 };
 
 type QuestionTopic = {
-    topic: string;
-    questions: Question[];
+    topic: string; // the category ex. recursion
+    questions: Question[]; // the list of questions in the category
 };
 
+/**
+ * `TAQuery` Component - Displays an expandable component that contains information on 
+ * question trends, frequency/volume, and first mentions.
+ * 
+ * @param props - Contains:
+ *   - `title`: The main topic/query trend.
+ *   - `volume`: The number of queries recorded for the topic.
+ *   - `mention`: The relative time when the topic was first mentioned.
+ *   - `questions`: The array of questions related to this topic and their frequencies.
+ */
 const TAQuery = ({
     title,
     volume,
