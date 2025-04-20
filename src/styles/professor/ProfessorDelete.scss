@@ -1,5 +1,11 @@
 .ProfessorDelete.true {
     display: block;
+    button {
+        font-family:"Lato";
+    }
+    button:hover {
+        color: black;
+    }
 }
 
 .ProfessorDelete {

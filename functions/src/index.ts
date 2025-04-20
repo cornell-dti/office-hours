@@ -1,4 +1,5 @@
-import * as functions from 'firebase-functions';
+// eslint-disable-next-line import/no-unresolved
+import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 import { Twilio } from 'twilio';
 
