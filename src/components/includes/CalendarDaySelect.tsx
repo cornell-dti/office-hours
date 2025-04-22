@@ -58,7 +58,7 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
 
     return (
         <div className="CalendarDaySelect">
-            <p className="month">{monthNames[now.getMonth()]}</p>
+            <p className="month" data-cy="calDaySelect-month">{monthNames[now.getMonth()]}</p>
             <div className="selector">
                 <button 
                     type="button"

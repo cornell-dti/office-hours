@@ -2,7 +2,7 @@
     "include": ["./**/*.ts", "../cypress.d.ts"],
     "compilerOptions": {
     "target": "es5",
-    "types": ["cypress"],
+    "types": ["cypress", "node"],
     "lib": [
       "dom",
       "dom.iterable",

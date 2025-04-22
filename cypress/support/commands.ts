@@ -36,16 +36,16 @@
 //   }
 // }
 
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 // Cypress as of now doesn't support the new modular Admin SDK so use firebase/compat/auth to get old versions
 
-import 'firebase/auth';
-import 'firebase/firestore';
-import 'firebase/database';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
+import 'firebase/compat/database';
 import { attachCustomCommands } from 'cypress-firebase';
 
 let firebaseConfig: Record<string, unknown>;
-if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
+if (process.env.NODE_ENV === 'production' && process.env.                   REACT_APP_IS_STAGING !== 'true') {
     firebaseConfig = {
         apiKey: Cypress.env("REACT_APP_API_KEY"),
         authDomain: "queue-me-in-prod.firebaseapp.com",

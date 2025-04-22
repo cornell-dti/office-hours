@@ -17,7 +17,9 @@ class CalendarDateItem extends React.PureComponent<Props> {
 
     render() {
         return (
-            <button type="button" className={'menuDate' + (this.props.active ? ' active' : '')} onClick={this._onClick}>
+            <button type="button" className={'menuDate' + (this.props.active ? ' active' : '')}
+            data-cy={this.props.active ? "calDateItem-active": ""}
+            onClick={this._onClick}>
                 <div className="day">{this.props.day}</div>
                 <div className="date">{this.props.date}</div>
                 <div className="indicator">

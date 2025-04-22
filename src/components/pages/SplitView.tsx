@@ -249,7 +249,7 @@ const SplitView = ({
                                 Welcome{user && ", "}
                                 <span className="welcomeName">{user && user.firstName}</span>
                             </p>
-                            <div data-testid="splitview-landingtext" className="noSessionSelected">
+                            <div data-cy="splitView-landingText" className="noSessionSelected">
                                 Please select an office hour from the calendar.
                                 <span>{"\n"}</span>
                                 {"Notification" in window &&
