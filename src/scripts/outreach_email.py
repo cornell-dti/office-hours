@@ -74,8 +74,9 @@ def main():
                 course_final = "/".join(course_final)
             
             # used value of 0 means only the course has used QMI. value of 1 means the professor has used QMI. value of 2 means both the professor and course used QMI.
+            courseUsed = '0'
             if used[0] != '-':
-                content = f"Dear Professor {final},\nHello! My name is {name}, and I am the technical product manager of Queue Me In for this upcoming semester. In the past {course_final + ' has' if used.startswith('0') else 'you have'} been a frequent user of Queue Me In during previous semesters, and we're reaching out to see if you would like us to set up {course_final} on Queue Me In again this semester to manage and streamline office hours. If you have any questions about Queue Me In, we're happy to provide more information as well!\nLinked below is a pitch of QMI for more details about the product if you need it!\n\nThank you, and I look forward to hearing from you soon!\n\n{link}\n\nSincerely,\n\n{name}"
+                content = f"Dear Professor {final},\nHello! My name is {name}, and I am the technical product manager of Queue Me In for this upcoming semester. In the past {course_final + ' has' if used.startswith(courseUsed) else 'you have'} been a frequent user of Queue Me In during previous semesters, and we're reaching out to see if you would like us to set up {course_final} on Queue Me In again this semester to manage and streamline office hours. If you have any questions about Queue Me In, we're happy to provide more information as well!\nLinked below is a pitch of QMI for more details about the product if you need it!\n\nThank you, and I look forward to hearing from you soon!\n\n{link}\n\nSincerely,\n\n{name}"
                 subject = 'Will you be using Queue Me In again this semester?'
             # a value of -1 means neither the course or professor has used QMI before
             elif used.startswith('-1'):
