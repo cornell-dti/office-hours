@@ -26,7 +26,7 @@ interface FireBaseSession {
     resolvedQuestions: number;
     totalWaitTime: number;
     totalResolveTime: number;
-    taAnnouncemements?: TaAnnouncement[];
+    taAnnouncements?: TaAnnouncement[];
     isPaused?: boolean;
 }
 
@@ -147,6 +147,11 @@ interface FireCourse {
 type PrivilegedFireCourseRole = "professor" | "ta";
 type FireCourseRole = "professor" | "ta" | "student";
 
+interface ResolvedItem {
+    questionId: string;
+    askerId: string;
+}
+
 /**
  * Invariant for fire user and course enrollment:
  *
@@ -170,6 +175,7 @@ interface FireUser {
     textNotifsEnabled?: boolean;
     textPrompted?: boolean;
     wrapped?: boolean;
+    recentlyResolvedQuestion?: ResolvedItem;
 }
 
 interface FirePendingUser {
