@@ -8,10 +8,12 @@ import { MAX_BATCH_LIMIT, MAX_EMAIL_LIMIT } from "../../constants";
 
 Credit to CoursePlan's email system for instructions to set this up.
 
-This script uses the Resend API to send automated emails to users that can see Wrapped. At most, it can send 100 emails each as a batch with 49 recipients in a day.
+This script uses the Resend API to send automated emails to users that can see Wrapped. 
+At most, it can send 100 emails each as a batch with 49 recipients in a day.
 
 If it's the first time running the script, you should run: node <script path> 0
-This will start the script from the first email (0th index). If the 100 email limit has been hit, there will be a console statement that tells you the next input number to run the next day.
+This will start the script from the first email (0th index). 
+If the 100 email limit has been hit, there will be a console statement that tells you the next input number to run the next day.
 
 */
 
