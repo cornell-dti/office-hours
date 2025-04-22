@@ -4,6 +4,11 @@ import { Resend } from 'resend';
 import { START_DATE, END_DATE, MAX_BATCH_LIMIT, MAX_EMAIL_LIMIT } from "../../constants";
 import 'dotenv/config'
 
+/*
+If it's the first time running the script, you should run: node <script path> 0
+This will start the script from the first email (0th index). If the 100 email limit has been hit, there will be a console statement that tells you the next input number to run the next day.
+*/
+
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
     databaseURL: 'https://queue-me-in-prod.firebaseio.com'
