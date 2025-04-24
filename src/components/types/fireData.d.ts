@@ -28,6 +28,7 @@ interface FireBaseSession {
     totalResolveTime: number;
     taAnnouncemements?: TaAnnouncement[];
     isPaused?: boolean;
+    serverTimestamp?: Timestamp;
     studentPerTaRatio?: number;
     hasUnresolvedQuestion?: boolean;
 }
