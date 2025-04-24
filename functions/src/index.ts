@@ -561,30 +561,45 @@ exports.onStudentJoinSession = functions.firestore
         let ratio = numberOfTAs;
 
         if (!session?.studentPerTaRatio) {
+            // If no TAs, set ratio to -1 to indicate that there are no TAs
+            if (numberOfTAs === 0) {
+                return db.doc(`sessions/${sessionId}`).update({
+                    studentPerTaRatio: -1,
+                    officeHourStarted: false,
+                });
+            }
             // Update the studentPerTaRatio field in the session document
-            sessionRef.update({
+            return sessionRef.update({
                 studentPerTaRatio: ratio,
                 officeHourStarted: false,
             });
         }
-        // If no TAs, set ratio to -1 to indicate that there are no TAs
-        if (numberOfTAs === 0) {
-            return db.doc(`sessions/${sessionId}`).update({
-                studentPerTaRatio: -1,
-                officeHourStarted: false,
-            });
-        }
         if (beforeStudents < afterStudents || beforeStudents > afterStudents) {
+            // Query only the necessary fields to reduce data transfer
+            const questionsSnapshot = await db
+                .collection("questions")
+                .where("sessionId", "==", sessionId)
+                .where("status", "in", ["assigned", "unresolved"]);
 
-            ratio = afterStudents / numberOfTAs;
-            
-            if (ratio === 0) {
-                if (numberOfTAs == 0) {
-                    ratio = -1;
-                } else {
-                    ratio = numberOfTAs;
-                }
+            // Create a set to store unique students (same student may ask multiple questions)
+            // We are using number of UNIQUE students as metric rather than just the total number of
+            // questions without accounting for their askers
+            const uniqueStudents = new Set<string>();
+
+            const snapshot = await questionsSnapshot.get();
+            if (snapshot.empty) {
+                return sessionRef.update({
+                    studentPerTaRatio: 0,
+                });
+            } else {
+                // Iterate through the question documents and add the UNIQUE student ID to the set
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    uniqueStudents.add(data.askerId);
+                });
             }
+
+            ratio = uniqueStudents.size / numberOfTAs;
 
             // Only update if the ratio has changed
             return sessionRef.update({
