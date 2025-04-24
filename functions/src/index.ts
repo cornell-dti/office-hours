@@ -526,11 +526,9 @@ exports.onQuestionStatusUpdate = functions.firestore
                 // Object with questionId, askerId, and resolvedAt fields
                 // questionId: the id of the question that was resolved
                 // askerId: the id of the user who asked the question
-                // resolvedAt: the time the question was resolved
                 recentlyResolvedQuestion: {
                     questionId,
                     askerId: userId,
-                    resolvedAt: admin.firestore.Timestamp.now(),
                 },
             });
         }
@@ -551,69 +549,35 @@ exports.onStudentJoinSession = functions.firestore
         const beforeTAs = beforeData.tas.length;
         const afterTAs = afterData.tas.length;
 
+        // If number of students in queue and number of TAs in session have not changed, do nothing
+        // Exit early
+        if (beforeStudents === afterStudents && beforeTAs === afterTAs) {
+            return null;
+        }
+
         // Get the session reference
         const sessionRef = db.doc(`sessions/${sessionId}`);
-        const sessionData = await sessionRef.get();
-        const session = sessionData.data();
 
         // Get the number of TAs in the session
         const numberOfTAs = afterData.tas.length;
 
-        // If session doesn't have a studentPerTaRatio field, set it to the number of TAs
-        // This typically happens when the session is first created
-        // Using this as a starting point for when session has not yet started (no questions yet)
-        // Since there are no ongoing questions, we set hasUnresolvedQuestion to false
-        if (!session?.studentPerTaRatio) {
-            // Update the studentPerTaRatio field in the session document
-            sessionRef.update({
-                studentPerTaRatio: numberOfTAs,
-                hasUnresolvedQuestion: false,
-            });
-        }
         // If no TAs, set ratio to -1 to indicate that there are no TAs
         // Since there are no TAs, we don't have enough information to determine the ratio
-        // Thus, set hasUnresolvedQuestion to false
+        // If there are still unresolved questions, set hasUnresolvedQuestion to true
+        // Otherwise, set it to false
         if (numberOfTAs === 0) {
             return db.doc(`sessions/${sessionId}`).update({
                 studentPerTaRatio: -1,
-                hasUnresolvedQuestion: false,
+                hasUnresolvedQuestion: afterStudents > 0,
             });
         }
+        const ratio = afterStudents / numberOfTAs;
 
-        const updateRatioWithTA = () => {
-            if (numberOfTAs === 0) {
-                db.doc(`sessions/${sessionId}`).update({
-                    studentPerTaRatio: -1,
-                    hasUnresolvedQuestion: false,
-                });
-            } else {
-                db.doc(`sessions/${sessionId}`).update({
-                    studentPerTaRatio: numberOfTAs,
-                    hasUnresolvedQuestion: false,
-                });
-            }
-        }
-
-        // If number of TAs has changed, update the studentPerTaRatio
-        if (beforeTAs < afterTAs || beforeTAs > afterTAs) {
-            updateRatioWithTA();
-        }
-
-        // If number of students has changed, update the studentPerTaRatio
-        if (beforeStudents < afterStudents || beforeStudents > afterStudents) {
-            const ratio = afterStudents / numberOfTAs;
-            if (ratio === 0 || ratio === undefined) {
-                updateRatioWithTA();
-                return null;
-            }
-
-            // Update if the ratio has changed
-            // Since there are active students, we set hasUnresolvedQuestion to true
-            return sessionRef.update({
-                studentPerTaRatio: ratio,
-                hasUnresolvedQuestion: true,
-            });
-        }
-
-        return null;
+        // Update when the ratio has changed
+        // If there are still unresolved questions, set hasUnresolvedQuestion to true
+        // Otherwise, set it to false
+        return sessionRef.update({
+            studentPerTaRatio: ratio,
+            hasUnresolvedQuestion: afterStudents > 0,
+        });
     });
