@@ -30,7 +30,7 @@ interface FireBaseSession {
     isPaused?: boolean;
     serverTimestamp?: Timestamp;
     studentPerTaRatio?: number;
-    hasUnresolvedQuestion?: boolean;
+    officeHourStarted?: boolean;
 }
 
 interface FireSessionLocation {
