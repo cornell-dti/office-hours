@@ -614,3 +614,49 @@ exports.onStudentJoinSession = functions.firestore
 
         return null;
     });
+
+exports.onStudentJoinSession = functions.firestore
+    .document("sessions/{sessionId}")
+    .onUpdate(async (change, context) => {
+        const beforeData = change.before.data();
+        const afterData = change.after.data();
+        const sessionId = context.params.sessionId;
+
+        const beforeStudents = beforeData.totalQuestions - beforeData.resolvedQuestions;
+        const afterStudents = afterData.totalQuestions - afterData.resolvedQuestions;
+
+        const beforeTAs = beforeData.tas.length;
+        const afterTAs = afterData.tas.length;
+
+        // If number of students in queue and number of TAs in session have not changed, do nothing
+        // Exit early
+        if (beforeStudents === afterStudents && beforeTAs === afterTAs) {
+            return null;
+        }
+
+        // Get the session reference
+        const sessionRef = db.doc(`sessions/${sessionId}`);
+
+        // Get the number of TAs in the session
+        const numberOfTAs = afterData.tas.length;
+
+        // If no TAs, set ratio to -1 to indicate that there are no TAs
+        // Since there are no TAs, we don't have enough information to determine the ratio
+        // If there are still unresolved questions, set hasUnresolvedQuestion to true
+        // Otherwise, set it to false
+        if (numberOfTAs === 0) {
+            return db.doc(`sessions/${sessionId}`).update({
+                studentPerTaRatio: -1,
+                hasUnresolvedQuestion: afterStudents > 0,
+            });
+        }
+        const ratio = afterStudents / numberOfTAs;
+
+        // Update when the ratio has changed
+        // If there are still unresolved questions, set hasUnresolvedQuestion to true
+        // Otherwise, set it to false
+        return sessionRef.update({
+            studentPerTaRatio: ratio,
+            hasUnresolvedQuestion: afterStudents > 0,
+        });
+    });
