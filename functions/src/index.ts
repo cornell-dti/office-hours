@@ -526,88 +526,13 @@ exports.onQuestionStatusUpdate = functions.firestore
                 // Object with questionId, askerId, and resolvedAt fields
                 // questionId: the id of the question that was resolved
                 // askerId: the id of the user who asked the question
-                // resolvedAt: the time the question was resolved
                 recentlyResolvedQuestion: {
                     questionId,
                     askerId: userId,
-                    resolvedAt: admin.firestore.Timestamp.now(),
                 },
             });
         }
         // If the question is not resolved yet, then we do nothing
-        return null;
-    });
-
-exports.onStudentJoinSession = functions.firestore
-    .document("sessions/{sessionId}")
-    .onUpdate(async (change, context) => {
-        const beforeData = change.before.data();
-        const afterData = change.after.data();
-        const sessionId = context.params.sessionId;
-
-        // Only proceed if the number of active students (questions are unresolved yet) has changed
-        const beforeStudents = beforeData.totalQuestions - beforeData.resolvedQuestions;
-        const afterStudents = afterData.totalQuestions - afterData.resolvedQuestions;
-
-        // Get the session reference
-        const sessionRef = db.doc(`sessions/${sessionId}`);
-        const sessionData = await sessionRef.get();
-        const session = sessionData.data();
-
-        // Get the number of TAs in the session
-        const numberOfTAs = afterData.tas.length;
-
-        // Default value for studentPerTaRatio to indicate that no information is available
-        let ratio = numberOfTAs;
-
-        if (!session?.studentPerTaRatio) {
-            // If no TAs, set ratio to -1 to indicate that there are no TAs
-            if (numberOfTAs === 0) {
-                return db.doc(`sessions/${sessionId}`).update({
-                    studentPerTaRatio: -1,
-                    officeHourStarted: false,
-                });
-            }
-            // Update the studentPerTaRatio field in the session document
-            return sessionRef.update({
-                studentPerTaRatio: ratio,
-                officeHourStarted: false,
-            });
-        }
-        if (beforeStudents < afterStudents || beforeStudents > afterStudents) {
-            // Query only the necessary fields to reduce data transfer
-            const questionsSnapshot = await db
-                .collection("questions")
-                .where("sessionId", "==", sessionId)
-                .where("status", "in", ["assigned", "unresolved"]);
-
-            // Create a set to store unique students (same student may ask multiple questions)
-            // We are using number of UNIQUE students as metric rather than just the total number of
-            // questions without accounting for their askers
-            const uniqueStudents = new Set<string>();
-
-            const snapshot = await questionsSnapshot.get();
-            if (snapshot.empty) {
-                return sessionRef.update({
-                    studentPerTaRatio: 0,
-                });
-            } else {
-                // Iterate through the question documents and add the UNIQUE student ID to the set
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    uniqueStudents.add(data.askerId);
-                });
-            }
-
-            ratio = uniqueStudents.size / numberOfTAs;
-
-            // Only update if the ratio has changed
-            return sessionRef.update({
-                studentPerTaRatio: ratio,
-                officeHourStarted: true,
-            });
-        }
-
         return null;
     });
 
