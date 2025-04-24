@@ -42,7 +42,8 @@ const AdminView = () => {
                 courseId="DUMMY_COURSE_ID"
             />
 
-            <h2><br />Queue Me In Product Analytics</h2>   
+            {/* Temporarily commenting out Analytics due to memory issues. */}
+            {/* <h2><br />Queue Me In Product Analytics</h2>   
                   
             {collapsed ? (
                 <Icon
@@ -59,7 +60,7 @@ const AdminView = () => {
                     />
                     <AnalyticsView/>
                 </div>
-            )}
+            )} */}
 
 
             <h2>Courses</h2>
