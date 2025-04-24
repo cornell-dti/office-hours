@@ -548,6 +548,9 @@ exports.onStudentJoinSession = functions.firestore
         const beforeStudents = beforeData.totalQuestions - beforeData.resolvedQuestions;
         const afterStudents = afterData.totalQuestions - afterData.resolvedQuestions;
 
+        const beforeTAs = beforeData.tas.length;
+        const afterTAs = afterData.tas.length;
+
         // Get the session reference
         const sessionRef = db.doc(`sessions/${sessionId}`);
         const sessionData = await sessionRef.get();
@@ -576,21 +579,32 @@ exports.onStudentJoinSession = functions.firestore
                 hasUnresolvedQuestion: false,
             });
         }
-        // Only proceed if the number of active students (questions are unresolved yet) has changed
+
+        const updateRatioWithTA = () => {
+            if (numberOfTAs === 0) {
+                db.doc(`sessions/${sessionId}`).update({
+                    studentPerTaRatio: -1,
+                    hasUnresolvedQuestion: false,
+                });
+            } else {
+                db.doc(`sessions/${sessionId}`).update({
+                    studentPerTaRatio: numberOfTAs,
+                    hasUnresolvedQuestion: false,
+                });
+            }
+        }
+
+        // If number of TAs has changed, update the studentPerTaRatio
+        if (beforeTAs < afterTAs || beforeTAs > afterTAs) {
+            updateRatioWithTA();
+        }
+
+        // If number of students has changed, update the studentPerTaRatio
         if (beforeStudents < afterStudents || beforeStudents > afterStudents) {
             const ratio = afterStudents / numberOfTAs;
-            if (ratio === 0) {
-                if (numberOfTAs == 0) {
-                    return db.doc(`sessions/${sessionId}`).update({
-                        studentPerTaRatio: -1,
-                        hasUnresolvedQuestion: false,
-                    });
-                } else {
-                    return db.doc(`sessions/${sessionId}`).update({
-                        studentPerTaRatio: numberOfTAs,
-                        hasUnresolvedQuestion: false,
-                    });
-                }
+            if (ratio === 0 || ratio === undefined) {
+                updateRatioWithTA();
+                return null;
             }
 
             // Update if the ratio has changed
