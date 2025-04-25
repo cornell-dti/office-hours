@@ -15,6 +15,8 @@ import { useSessionQuestions, useSessionTAs } from "../../firehooks";
 import { computeNumberAhead } from "../../utilities/questions";
 import { RootState } from "../../redux/store";
 import { useState } from "react";
+import WaitTimeGraph from "./WaitTimeGraph";
+import sampleData from "../../dummy_data.json";
 
 type Props = {
     session: FireSession;
@@ -205,7 +207,7 @@ const SessionInformationHeader = ({
         <header
             className="DesktopSessionInformationHeader"
             style={{
-                height: "350px", // Fixed overall height for the entire component
+                height: "450px", // Fixed overall height for the entire component
             }}
         >
             <Grid container style={{ alignItems: "stretch", height: "100%" }}>
@@ -270,7 +272,7 @@ const SessionInformationHeader = ({
                                 >
                                     {/* Text on the left */}
                                     <Grid item xs={12} sm={4}>
-                                        <div className="TAHeaderText" >
+                                        <div className="TAHeaderText">
                                             <p style={{ fontWeight: "bold", fontSize: "20px", margin: 0 }}>
                                                 TA's ({tas.length})
                                             </p>
@@ -343,10 +345,12 @@ const SessionInformationHeader = ({
                                 <span className="blue"> No information available</span>
                             </p>
                         )}
-                        <img
-                            src={timelinePlaceholder} // update with actual path to your placeholder
-                            alt="Placeholder wait time graph"
-                            className="GraphPlaceholder"
+                        <WaitTimeGraph
+                            barData={sampleData.barData}
+                            yMax={sampleData.yMax}
+                            timeKeys={sampleData.timeKeys}
+                            legend={sampleData.legend}
+                            OHDetails={sampleData.OHDetails}
                         />
                     </div>
                 </Grid>

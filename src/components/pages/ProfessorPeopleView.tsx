@@ -13,6 +13,7 @@ import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
 import { useCourse, useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
 import TopBar from "../includes/TopBar";
+import StudentReviewPanel from "../includes/StudentReviewPanel";
 
 const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) => {
     const courseId = props.match.params.courseId;
@@ -46,10 +47,10 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
     const busiestSessionInfo = busiestSession && {
         ...("building" in busiestSession
             ? {
-                building: busiestSession.building,
-                room: busiestSession.room,
-                online: false as const,
-            }
+                  building: busiestSession.building,
+                  room: busiestSession.room,
+                  online: false as const,
+              }
             : { online: true as const }),
         ohDate: moment(busiestSession.startTime.seconds * 1000).format("MMMM Do"),
         startHour: moment(busiestSession.startTime.seconds * 1000).format("h:mm a"),
@@ -209,6 +210,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             <TopBar courseId={courseId} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 <div className="main">
+                    <StudentReviewPanel />
                     <div className="Date-picker-container">
                         <DateRangePicker
                             isOutsideRange={() => false}
