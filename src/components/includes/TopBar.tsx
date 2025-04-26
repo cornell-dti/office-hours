@@ -116,7 +116,8 @@ const TopBar = (props: Props) => {
         <div className="MenuBox" onBlur={() => setShowMenu(false)} ref={ref}>
             <header className="topBar">
                 <div className="triggerArea">
-                    <div className="logo" onClick={() => history.push("/home")}>
+                    <div className="logo" onClick={() => history.push("/home")} 
+                        data-cy="topBar-homeButton">
                         <img src={Logo} className="QMILogoImage" alt="Queue Me In Logo" />
                     </div>
                     <div className="viewToggles">

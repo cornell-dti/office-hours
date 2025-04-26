@@ -44,6 +44,22 @@ import 'firebase/compat/firestore';
 import 'firebase/compat/database';
 import { attachCustomCommands } from 'cypress-firebase';
 
+Cypress.Commands.add('visitIfNotAlready', (path: string) => {
+    cy.location('pathname').then((currentPath) => {
+      if (currentPath !== path) {
+        cy.visit(`http://localhost:3000${path}`);
+      }
+    });
+  });
+
+  declare global {
+    namespace Cypress {
+      interface Chainable {
+        visitIfNotAlready(path: string): Chainable<void>;
+      }
+    }
+  }
+
 let firebaseConfig: Record<string, unknown>;
 if (process.env.NODE_ENV === 'production' && process.env.                   REACT_APP_IS_STAGING !== 'true') {
     firebaseConfig = {

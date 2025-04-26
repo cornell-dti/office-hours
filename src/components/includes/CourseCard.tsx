@@ -50,6 +50,7 @@ const CourseCard = ({ course, role, onSelectCourse, editable, selected, inactive
             className={`CourseCard ${selected && editable ? "selected" : ""} ${inactive ? "inactive" : "active"} 
             ${role === "ta" || role === "professor" ? "ineditable" : "editable"}`}
             onClick={selectCourse}
+            data-cy={`courseSelection-${course.name}`}
         >
             <Grid container direction="row" justifyContent="space-between" style={{ height: "58px" }}>
                 {roleString ? (
