@@ -61,6 +61,9 @@ const FeedbackPrompt = (props: Props) => {
                 <Typography variant="body2" style={{fontStyle: "roboto", fontSize: "14px"}}> 
                     Your response will remain anonymous. 
                 </Typography>
+                <Typography variant="body2" style={{fontStyle: "roboto", fontSize: "14px"}}> 
+                    Organization 
+                </Typography>
                 <Box component="fieldset" mb={3} borderColor="transparent">
                     <Rating
                         name="simple-controlled1"
@@ -73,6 +76,9 @@ const FeedbackPrompt = (props: Props) => {
                     />
                     <br />
                 </Box>
+                <Typography variant="body2" style={{fontStyle: "roboto", fontSize: "14px"}}> 
+                    Efficiency 
+                </Typography>
                 <Box component="fieldset" mb={3} borderColor="transparent">
                     <Rating
                         name="simple-controlled2"
@@ -85,6 +91,9 @@ const FeedbackPrompt = (props: Props) => {
                     />
                     <br />
                 </Box>
+                <Typography variant="body2" style={{fontStyle: "roboto", fontSize: "14px"}}> 
+                    Overall Experience 
+                </Typography>
                 <Box component="fieldset" mb={3} borderColor="transparent">
                     <Rating
                         name="simple-controlled3"
@@ -107,7 +116,7 @@ const FeedbackPrompt = (props: Props) => {
                     fullWidth
                     style={{ marginBottom: "4rem" }}
                     placeholder="Please describe your experience..."
-                    /* Adds a character limit to the feedback response*/
+                    /* Adds a character limit to the feedback response */
                     onChange={(event) => {
                         const input = event.target.value;
                         if (input.length <= FEEDBACK_CHAR_LIMIT) {
@@ -116,13 +125,13 @@ const FeedbackPrompt = (props: Props) => {
                     }}
                 />
                 <Typography
-                variant="caption"
-                color={feedback.length >= FEEDBACK_CHAR_LIMIT ? "error" : "textSecondary"}
-                style={{ marginBottom: "2rem", textAlign: "right" }}
-            >
+                    variant="caption"
+                    color={feedback.length >= FEEDBACK_CHAR_LIMIT ? "error" : "textSecondary"}
+                    style={{ marginBottom: "2rem", textAlign: "right" }}
+                >
                 ({FEEDBACK_CHAR_LIMIT - feedback.length} character
-                {FEEDBACK_CHAR_LIMIT - feedback.length !== 1 ? "s" : ""} left)
-                <Asterisk/>
+                    {FEEDBACK_CHAR_LIMIT - feedback.length !== 1 ? "s" : ""} left)
+                    <Asterisk/>
                 </Typography>
 
             

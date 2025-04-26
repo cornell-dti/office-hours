@@ -240,6 +240,8 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
     return unsubscribe;
 }
 
+/* Adds three new ratings (organization, efficiency, overallExperience) 
+to the firebase under the users tab for each question asked. */
 export const submitFeedback = (removedQuestionId: string | undefined,) => 
     (rating1?: number, rating2?: number, rating3?: number, feedback?: string) => {
         
