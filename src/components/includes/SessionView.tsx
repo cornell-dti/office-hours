@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Icon } from "semantic-ui-react";
 
 import { connect } from "react-redux";
-import firebase from "firebase/app";
+import { onSnapshot, doc, updateDoc, deleteField} from 'firebase/firestore';
 import SessionInformationHeader from "./SessionInformationHeader";
 import SessionQuestionsContainer from "./SessionQuestionsContainer";
 
@@ -126,8 +126,8 @@ const SessionView = ({
     useEffect(() => {
         let unsubscribe: () => void;
         if (!isTa && !isProf) {
-            const userRef = firestore.collection("users").doc(user.userId);
-            unsubscribe = userRef.onSnapshot((snapshot) => {
+            const userRef = doc(firestore, "users", user.userId);
+            unsubscribe = onSnapshot(userRef, (snapshot) => {
                 const userData = snapshot.data() as FireUser;
                 const recentlyResolvedQuestion = userData.recentlyResolvedQuestion;
                 if (!recentlyResolvedQuestion) {
@@ -136,7 +136,9 @@ const SessionView = ({
                 if (recentlyResolvedQuestion.questionId) {
                     removeQuestionDisplayFeedback(recentlyResolvedQuestion.questionId);
                     // Deletes the recentlyResolvedQuestion field from the user document
-                    userRef.update({ recentlyResolvedQuestion: firebase.firestore.FieldValue.delete() });
+                    updateDoc(userRef, { 
+                        recentlyResolvedQuestion: deleteField()
+                    });
                 }
             });
         }

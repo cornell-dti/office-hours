@@ -26,7 +26,7 @@ interface FireBaseSession {
     resolvedQuestions: number;
     totalWaitTime: number;
     totalResolveTime: number;
-    taAnnouncemements?: TaAnnouncement[];
+    taAnnouncements?: TaAnnouncement[];
     isPaused?: boolean;
     studentPerTaRatio?: number;
     hasUnresolvedQuestion?: boolean;
@@ -152,7 +152,6 @@ type FireCourseRole = "professor" | "ta" | "student";
 interface ResolvedItem {
     questionId: string;
     askerId: string;
-    resolvedAt: FireTimestamp;
 }
 
 /**
