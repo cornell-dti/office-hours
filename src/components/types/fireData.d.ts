@@ -140,8 +140,7 @@ interface FireCourse {
     year: string;
     timeLimit?: number;
     timeWarning?: number;
-    isTimeLimit?: boolean;
-    feedbackList?: FeedbackRecord[]; // TODO: possibly change to non-null
+    isTimeLimit?: boolean; // TODO: possibly change to non-null
 }
 
 type PrivilegedFireCourseRole = "professor" | "ta";
@@ -176,6 +175,7 @@ interface FireUser {
     textPrompted?: boolean;
     wrapped?: boolean;
     recentlyResolvedQuestion?: ResolvedItem;
+    feedbackList?: FeedbackRecord[];
 }
 
 interface FirePendingUser {
