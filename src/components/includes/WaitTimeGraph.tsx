@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+/* eslint-disable react/require-default-props */
 import * as React from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
 import rightArrowIcon from "../../media/Right Arrow.svg";
