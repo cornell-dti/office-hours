@@ -141,6 +141,7 @@ interface FireCourse {
     timeLimit?: number;
     timeWarning?: number;
     isTimeLimit?: boolean; // TODO: possibly change to non-null
+    feedbackList?: FeedbackRecord[];
 }
 
 type PrivilegedFireCourseRole = "professor" | "ta";
