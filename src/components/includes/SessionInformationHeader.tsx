@@ -98,20 +98,32 @@ const SessionInformationHeader = ({
 }: Props) => {
     const [ratioText, setRatioText] = React.useState("");
 
+    const tas = useSessionTAs(course, session);
+    const pluralize = (count: number, singular: string, plural: string) => {
+        return count <= 1 ? singular : plural;
+    };
+
     React.useEffect(() => {
         const ratio = session.studentPerTaRatio;
-        if (session.tas.length === 0) {
-            setRatioText("No TAs available");
-        } else {
-            if (session.officeHourStarted) {
-                setRatioText(`${ratio} students/TA`);
+        const numberOfTAs = session.tas.length;
+        if (ratio === undefined) {
+            if (numberOfTAs === 0) {
+                setRatioText("No TAs available");
             } else {
-                setRatioText(`${ratio} TAs available`);
-            } 
+                setRatioText(`${numberOfTAs} ${pluralize(numberOfTAs, "TA", "TAs")} available`);
+            }
+            return;
+        } else if (ratio === -1) {
+            setRatioText("No TAs available");
+            return;
+        } else {
+            if (session.hasUnresolvedQuestion) {
+                setRatioText(`${ratio} ${pluralize(ratio, "student", "students")}/TA`);
+            } else {
+                setRatioText(`${numberOfTAs} ${pluralize(numberOfTAs, "TA", "TAs")} available`);
+            }
         }
-    }, [session.studentPerTaRatio, session.officeHourStarted]);
-
-    const tas = useSessionTAs(course, session);
+    }, [session.studentPerTaRatio, session.hasUnresolvedQuestion, tas, questions]);
     const numAhead = computeNumberAhead(
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined),
         user.userId
@@ -196,11 +208,9 @@ const SessionInformationHeader = ({
     const [startIndex, setStartIndex] = useState(0);
     const visibleCount = 4;
 
-
-    const visibleTAs =
-        React.useMemo(() => {
-             return tas.slice(startIndex, startIndex + visibleCount);
-        },[tas, startIndex, visibleCount]);
+    const visibleTAs = React.useMemo(() => {
+        return tas.slice(startIndex, startIndex + visibleCount);
+    }, [tas, startIndex, visibleCount]);
     const hasNext = startIndex + visibleCount < tas.length;
 
     return isDesktop ? (
@@ -318,6 +328,7 @@ const SessionInformationHeader = ({
                                                                 src={ta.photoUrl || "/placeholder.png"}
                                                                 alt={`${ta.firstName} ${ta.lastName}'s Photo`}
                                                                 className="TACircle"
+                                                                referrerPolicy="no-referrer"
                                                                 style={{
                                                                     width: "60px",
                                                                     height: "60px",
