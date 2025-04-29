@@ -4,7 +4,7 @@ import { docData } from 'rxfire/firestore';
 import { switchMap, map } from 'rxjs/operators';
 import { Observable, of, combineLatest, EMPTY } from 'rxjs';
 import moment from 'moment';
-import { collection, doc, query, where, orderBy, documentId, Query, DocumentData } from 'firebase/firestore';
+import { collection, doc, query, where, orderBy, limit, documentId, Query, DocumentData } from 'firebase/firestore';
 import { firestore, loggedIn$, collectionData } from './firebase';
 import {
     SingletonObservable,
@@ -222,9 +222,18 @@ export const myUserSingletonObservable = new SingletonObservable(undefined, myUs
 export const useMyUser: () => FireUser | undefined = createUseSingletonObservableHook(myUserSingletonObservable);
 
 const allUsersObservable: Observable<readonly FireUser[]> = loggedIn$.pipe(
-    switchMap(() => collectionData(collection(firestore, 'users')).pipe(
-        map((docs: DocumentData[]) => docs as FireUser[])
-    ))
+    switchMap(() => {
+        const usersRef = collection(firestore, 'users');
+        const usersQuery = query(
+            usersRef,
+            orderBy('lastName', 'asc'),
+            orderBy('firstName', 'asc'),
+            limit(100) 
+        );
+        return collectionData(usersQuery, {idField: 'userId'}).pipe(
+            map((docs: DocumentData[]) => docs as FireUser[])
+        );
+    })
 );
 
 const allUsersSingletonObservable = new SingletonObservable([], allUsersObservable);
@@ -417,10 +426,18 @@ export const useSessionTANames = (
 );
 
 const allQuestionsObservable: Observable<readonly FireQuestion[]> = loggedIn$.pipe(
-    switchMap(() => collectionData(collection(firestore, 'questions')).pipe(
-        map((docs: DocumentData[]) => docs as FireQuestion[])
-    )
-    )
+    switchMap(() => {
+        const questionsRef = collection(firestore, 'questions');
+        const questionsQuery = query(
+            questionsRef,
+            orderBy('timeEntered', 'desc'), // most recent first
+            where('timeEntered', '>=', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)), // only 30 days
+            limit(100)
+        );
+        return collectionData(questionsQuery, {idField: 'questionId'}).pipe(
+            map((docs: DocumentData[]) => docs as FireQuestion[])
+        );
+    })
 );
 
 const allQuestionsSingletonObservable = new SingletonObservable([], allQuestionsObservable);
