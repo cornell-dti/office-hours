@@ -1,10 +1,11 @@
-import React from 'react';
-import StudentReviewCard from "./StudentReviewCard";
-import reviewData from "../../review_dummy.json";
+import React , { useState, useEffect } from 'react';
 import { Dropdown } from "semantic-ui-react";
+import StudentReviewCard from "./StudentReviewCard";
+import {reviewData} from "../../review_dummy";
 
 const StudentReviewPanel = () => {
-    const [filter, setFilter] = React.useState<string>("Most recent");
+    const [filter, setFilter] = useState<string>("Most recent");
+    const [sortedReviews, setSortedReviews] = useState(reviewData);
 
     // Filter dropdown options
     const filterOptions = [
@@ -15,12 +16,9 @@ const StudentReviewPanel = () => {
     ];
 
     const FilterDropdown = () => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-            <label style={{ fontSize: "16px", marginRight: "8px" }}>
-                Sort by
-            </label>
+        <div className="filter-dropdown">
+            <p className="filter-text">Sort by</p>
             <Dropdown
-                style={{ width: "150px" }}
                 placeholder={filter}
                 fluid
                 selection
@@ -30,63 +28,58 @@ const StudentReviewPanel = () => {
         </div>
     );
     
-    switch (filter) {
-        case ("Most recent"):
-            reviewData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-            break;
-        case ("Least recent"):
-            reviewData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-            break;
-        case ("Highest rating"):
-            reviewData.sort((a, b) => {
-                const aRating = (a.overall + a.efficiency + a.organization);
-                const bRating = (b.overall + b.efficiency + b.organization);
-                return bRating - aRating;
-            });
-            break;
-        case ("Lowest rating"):
-            reviewData.sort((a, b) => {
-                const aRating = (a.overall + a.efficiency + a.organization);
-                const bRating = (b.overall + b.efficiency + b.organization);
-                return aRating - bRating;
-            });
-            break;
-        default:
-    }
+    useEffect(() => {
+        const sortedData = [...reviewData];
+
+        switch (filter) {
+            case ("Most recent"):
+                sortedData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                break;
+            case ("Least recent"):
+                sortedData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                break;
+            case ("Highest rating"):
+                sortedData.sort((a, b) => {
+                    const aRating = ((a.overall ?? 0) + (a.efficiency ?? 0) + (a.organization ?? 0));
+                    const bRating = ((b.overall ?? 0) + (b.efficiency ?? 0) + (b.organization ?? 0));
+                    return bRating - aRating;
+                });
+                break;
+            case ("Lowest rating"):
+                sortedData.sort((a, b) => {
+                    const aRating = ((a.overall ?? 0) + (a.efficiency ?? 0) + (a.organization ?? 0));
+                    const bRating = ((b.overall ?? 0) + (b.efficiency ?? 0) + (b.organization ?? 0));
+                    return aRating - bRating;
+                });
+                break;
+            default:
+                break;
+        }
+        setSortedReviews(sortedData);
+    }, [filter])
     
     return (
-        <div>
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "24px",
-                }}
-            >
-                <h2
-                    style={{
-                        fontSize: "24px",
-                        fontWeight: "bold",
-                        margin: 0,
-                    }}
-                >
-                    Student Reviews ({reviewData.length})
-                </h2>
+        <div className="student-review-container">
+            <div className="student-review-header">
+                <div className="header-text-container">
+                    <p className="header-text">Student Reviews </p>
+                    <p className="review-count">{`(${sortedReviews.length})`}</p>
+                </div>    
                 <FilterDropdown />
             </div>
-            {reviewData.map((review, index) => {
-                return (
-                    <StudentReviewCard
-                        key={index}
-                        overall={review.overall}
-                        efficiency={review.efficiency}
-                        organization={review.organization}
-                        feedback={review.feedback}
-                        date={review.date}
-                    />
-                );
-            })}
+            <div className="reviews">
+                {sortedReviews.map((review) => {
+                    return (
+                        <StudentReviewCard
+                            overall={review.overall}
+                            efficiency={review.efficiency}
+                            organization={review.organization}
+                            feedback={review.feedback}
+                            date={review.date}
+                        />
+                    );
+                })}
+            </div>
         </div>
     );
 };

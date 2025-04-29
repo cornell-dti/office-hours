@@ -39,7 +39,7 @@ import { CURRENT_SEMESTER } from "../constants";
 import ProfessorStudentView from "./pages/ProfessorStudentView";
 import TAView from "./pages/TAView";
 import TAStudentView from "./pages/TAStudentView";
-// import TAAnalyticsView from "./pages/TAAnalyticsView";
+import TAAnalyticsView from "./pages/TAAnalyticsView";
 
 ReactGA.initialize("UA-123790900-1");
 
@@ -291,13 +291,13 @@ export default connect(null, { updateUser, updateAuthStatus })(({ updateUser, up
                             requireProfessor
                             requireTA={false}
                         />
-                        {/* <PrivateRoute 
+                        <PrivateRoute 
                             path="/ta-analytics/course/:courseId"
                             component={TAAnalyticsView}
                             exact={true}
                             requireProfessor={false}
                             requireTA={true}
-                        /> */}
+                        />
                         <PrivateRoute
                             path="/ta/course/:courseId"
                             component={TAView}

@@ -15,16 +15,19 @@ type PercentageBarProps = {
 
 const PercentageBar = ({ label, score }: PercentageBarProps) => {
     // Calculate width based on score out of 5
-    const percentage = score ? (score / 5) * 100 + "%" : "0%";
+    const percentage = score !== undefined ? (score / 5) * 100 + "%" : "0%";
+    const barClass = score !== undefined ? "percentage-bar" : "percentage-bar-undefined";
 
     return (
-        <div style={{ display: "flex", alignItems: "center", margin: "16px"}}>
-            <div style={{ width: "128px", textAlign: "left" }}> {label} </div>
-            <div style={{ flexGrow: 1, backgroundColor: "#e5e7eb", height: "8px", borderRadius: "5px" }}>
-                <div style={{ backgroundColor: "#2563eb", height: "8px", borderRadius: "5px", width: percentage}} />
+        <div className="percentage-bar-container">
+            <div className="percentage-label"> 
+                {label} 
             </div>
-            <div style={{ width: "32px", color: "#1f2937", textAlign: "left", marginLeft: "20px" }}>
-                {score}
+            <div className={barClass}>
+                <div className="percentage-bar-fill" style={{ width: percentage}} />
+            </div>
+            <div className="score-text">
+                {score !== undefined ? score.toFixed(1) : "N/A"}            
             </div>
         </div>
     );
@@ -32,34 +35,23 @@ const PercentageBar = ({ label, score }: PercentageBarProps) => {
 
 // Single review card component
 const StudentReviewCard = ({ feedback, overall, efficiency, organization, date}: StudentReviewCardProps) => {
+    const isFeedbackEmpty = feedback.trim() === "";
     return (
-        <div
-            style={{
-                backgroundColor: "white",
-                borderRadius: "12px",
-                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                border: "1px solid #e5e7eb",
-                padding: "32px",
-                marginBottom: "24px",
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: "48px",
-            }}
-        >
-            <div style={{ width: "40%" }}>
+        <div className="review-container">
+            <div className="metrics-container">
                 <PercentageBar label="Overall" score={overall} />
                 <PercentageBar label="Efficiency" score={efficiency} />
                 <PercentageBar label="Organization" score={organization} />
             </div>
-            <div style={{ width: "60%" }}>
-                <p style={{ textAlign: "left" }}>{feedback}</p>
-            </div>
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "100px" }}>
-                <p style={{ textAlign: "right", fontSize: "12px", color: "#6b7280" }}>
-                    {date}
-                </p>
+            <div className="review-text-container">
+                <div className="feedback-container">
+                    <p className={`feedback-text ${isFeedbackEmpty ? "empty" : ""}`}>
+                        {isFeedbackEmpty ? "No additional comments." : feedback}
+                    </p>
+                </div>
+                <div className="date-container">
+                    <p className="date-text">{date}</p>
+                </div>
             </div>
         </div>
     );

@@ -1,0 +1,96 @@
+.percentage-bar-container{
+    display: flex;
+    align-items: center;
+    margin: 16px;
+    .percentage-label{
+        width: 128px;
+        text-align: left;
+        color: #1E1E1E;
+        font-family: Roboto;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px; /* 150% */
+    }
+    .percentage-bar{
+        flex-grow: 1;
+        background-color: #E4EFFF;
+        height: 8px;
+        border-radius: 5px;
+        .percentage-bar-fill{
+            background-color: #5599DB;
+            height: 8px;
+            border-radius: 5px;
+        }
+    }
+    .percentage-bar-undefined{
+        flex-grow: 1;
+        background-color: #D3D2D2;
+        height: 8px;
+        border-radius: 5px;
+    }
+    .score-text{
+        width: 32px;
+        text-align: left;
+        margin-left: 20px;
+        color: #1E1E1E;
+        font-family: Roboto;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px; /* 150% */
+    }
+}
+
+.review-container{
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+    padding: 40px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    .metrics-container{
+        width: 362px;
+    }
+    .review-text-container{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-end;
+        height: 120px;
+        .feedback-container{
+            width: 630px;
+            .feedback-text{
+                text-align: left;
+                color: #1E1E1E;
+                font-family: Roboto;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: normal;
+                &.empty{
+                    color: #484848;
+                }
+            }
+        }
+        .date-container{
+            display: flex;
+            justify-content: flex-end;
+            // margin-top: 100px;
+            width: 630px;
+            .date-text{
+                color: #484848;
+                text-align: right;
+                font-family: Roboto;
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: 16px; /* 133.333% */
+            }
+        }
+    }
+}
