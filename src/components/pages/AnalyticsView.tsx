@@ -66,6 +66,7 @@ const AnalyticsView = () => {
         startMonth = 0; // January
         endMonth = 6;  // July
     }
+    
     // Fall is Aug 01-Dec 31, Spring is Jan 01-July 31
     const startDate = new Date(currDate.getFullYear(), startMonth, 1);
     const endDate = new Date(currDate.getFullYear(), endMonth, 31);
