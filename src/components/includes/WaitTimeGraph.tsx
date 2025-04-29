@@ -24,6 +24,10 @@ const WaitTimeGraph = (props: Props) => {
     const dayOfWeek = dayNames[day];
     const [selectedDay, setSelectedDay] = React.useState<string>(dayOfWeek);
 
+    const currentHour = today.getHours();
+
+    console.log("Current hour:", currentHour);
+
     // Transform data to have hours on x-axis and one series for selected day
     const transformData = () => {
         const hours = props.timeKeys;
@@ -33,7 +37,7 @@ const WaitTimeGraph = (props: Props) => {
 
         return hours.map((hour) => ({
             hour,
-            waitTime: dayData[hour]
+            waitTime: dayData[hour],
         }));
     };
 
@@ -71,8 +75,8 @@ const WaitTimeGraph = (props: Props) => {
                 data={transformData()}
                 keys={["waitTime"]}
                 indexBy="hour"
-                colors={"#3773C2"}
                 borderWidth={1}
+                colors={(bar) => (bar.indexValue === today ? "#4285F4" : "#D2E3FC")}
                 margin={{
                     top: 20,
                     right: 20,
