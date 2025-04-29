@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react'
 import { useHistory } from 'react-router'
 import { Table } from 'semantic-ui-react';
-
-
 import { useIsAdmin, useAllCourses, useAllQuestions, useAllUsers, useAllSessions } from '../../firehooks';
+import { useQuery } from '../../firehooks';
+import { collection, query, where, orderBy } from 'firebase/firestore';
+import { firestore } from '../../firebase';
 
 const AnalyticsView = () => {
     const history = useHistory();
     const isAdmin = useIsAdmin();
+    
     useEffect(() => {
         if (isAdmin === undefined) {
             history.push('/')
@@ -15,13 +17,44 @@ const AnalyticsView = () => {
     }, [isAdmin, history]);
 
     // queries for all semesters
-    const courses = useAllCourses();
-    const questions = useAllQuestions();
-    const users = useAllUsers();
-    const sessions = useAllSessions();
+    const courses = useQuery<FireCourse>(
+        'all',
+        () => query(
+            collection(firestore, 'courses'),
+            orderBy('semester', 'desc')
+        ),
+        'courseId'
+    );
+
+    const questions = useQuery<FireQuestion>(
+        'all',
+        () => query(
+            collection(firestore, 'questions'),
+            orderBy('timeEntered', 'desc')
+        ),
+        'questionId'
+    );
+
+    const users = useQuery<FireUser>(
+        'all',
+        () => query(
+            collection(firestore, 'users'),
+            orderBy('lastActive', 'desc')
+        ),
+        'userId'
+    );
+
+    const sessions = useQuery<FireSession>(
+        'all',
+        () => query(
+            collection(firestore, 'sessions'),
+            orderBy('startTime', 'desc')
+        ),
+        'sessionId'
+    );
 
     // use time to filter for current semester
-    const currDate: Date = new Date();
+    const currDate = new Date();
     const currSem = currDate.getMonth() >= 8 && currDate.getMonth() < 13 ? 'FA' : 'SP';
     const currYearTwo = currDate.getFullYear() % 100;
 
