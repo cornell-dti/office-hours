@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react'
 import { useHistory } from 'react-router'
 import { Table } from 'semantic-ui-react';
-import { useIsAdmin, useAllCourses, useAllQuestions, useAllUsers, useAllSessions } from '../../firehooks';
-import { useQuery } from '../../firehooks';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy } from 'firebase/firestore';
+import { useIsAdmin, useQuery} from '../../firehooks';
 import { firestore } from '../../firebase';
 
 const AnalyticsView = () => {

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import { docData } from 'rxfire/firestore';
 import { switchMap, map } from 'rxjs/operators';
-import { Observable, of, combineLatest, EMPTY } from 'rxjs';
+import { Observable, of, EMPTY } from 'rxjs';
 import moment from 'moment';
 import { collection, doc, query, where, orderBy, limit, documentId, Query, DocumentData } from 'firebase/firestore';
 import { firestore, loggedIn$, collectionData } from './firebase';
