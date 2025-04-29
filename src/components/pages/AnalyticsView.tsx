@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react'
 import { useHistory } from 'react-router'
 import { Table } from 'semantic-ui-react';
-
-
-import { useIsAdmin, useAllCourses, useAllQuestions, useAllUsers, useAllSessions } from '../../firehooks';
+import { collection, query, orderBy } from 'firebase/firestore';
+import { useIsAdmin, useQuery} from '../../firehooks';
+import { firestore } from '../../firebase';
 
 const AnalyticsView = () => {
     const history = useHistory();
     const isAdmin = useIsAdmin();
+    
     useEffect(() => {
         if (isAdmin === undefined) {
             history.push('/')
@@ -15,13 +16,44 @@ const AnalyticsView = () => {
     }, [isAdmin, history]);
 
     // queries for all semesters
-    const courses = useAllCourses();
-    const questions = useAllQuestions();
-    const users = useAllUsers();
-    const sessions = useAllSessions();
+    const courses = useQuery<FireCourse>(
+        'all',
+        () => query(
+            collection(firestore, 'courses'),
+            orderBy('semester', 'desc')
+        ),
+        'courseId'
+    );
+
+    const questions = useQuery<FireQuestion>(
+        'all',
+        () => query(
+            collection(firestore, 'questions'),
+            orderBy('timeEntered', 'desc')
+        ),
+        'questionId'
+    );
+
+    const users = useQuery<FireUser>(
+        'all',
+        () => query(
+            collection(firestore, 'users'),
+            orderBy('lastActive', 'desc')
+        ),
+        'userId'
+    );
+
+    const sessions = useQuery<FireSession>(
+        'all',
+        () => query(
+            collection(firestore, 'sessions'),
+            orderBy('startTime', 'desc')
+        ),
+        'sessionId'
+    );
 
     // use time to filter for current semester
-    const currDate: Date = new Date();
+    const currDate = new Date();
     const currSem = currDate.getMonth() >= 8 && currDate.getMonth() < 13 ? 'FA' : 'SP';
     const currYearTwo = currDate.getFullYear() % 100;
 
@@ -34,6 +66,7 @@ const AnalyticsView = () => {
         startMonth = 0; // January
         endMonth = 6;  // July
     }
+    
     // Fall is Aug 01-Dec 31, Spring is Jan 01-July 31
     const startDate = new Date(currDate.getFullYear(), startMonth, 1);
     const endDate = new Date(currDate.getFullYear(), endMonth, 31);

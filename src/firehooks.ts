@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 
 import { docData } from 'rxfire/firestore';
 import { switchMap, map } from 'rxjs/operators';
-import { Observable, of, combineLatest, EMPTY } from 'rxjs';
+import { Observable, of, EMPTY } from 'rxjs';
 import moment from 'moment';
-import { collection, doc, query, where, orderBy, documentId, Query, DocumentData } from 'firebase/firestore';
+import { collection, doc, query, where, orderBy, limit, documentId, Query, DocumentData } from 'firebase/firestore';
 import { firestore, loggedIn$, collectionData } from './firebase';
 import {
     SingletonObservable,
@@ -142,27 +142,48 @@ export const useCoursesBetweenDates = (
     useEffect(
         () => {
             const sessionsRef = collection(firestore, 'sessions');
-            const sessionsQuery = query(sessionsRef, where('startTime', '>=', startDate.toDate()),
-                where('startTime', '<=', endDate.add(1, 'day').toDate()),where('courseId', '==', courseId));
+            const sessionsQuery = query(sessionsRef, 
+                where('startTime', '>=', startDate.toDate()),
+                where('startTime', '<=', endDate.add(1, 'day').toDate()),
+                where('courseId', '==', courseId)
+            );
 
-            const sessions$: Observable<FireSession[]> = collectionData(sessionsQuery,{idField: 'sessionId'}).pipe(
-                map((docs:DocumentData) => docs as FireSession[]) // Type assertion
+            const sessions$: Observable<FireSession[]> = collectionData(sessionsQuery, {idField: 'sessionId'}).pipe(
+                map((docs: DocumentData) => docs as FireSession[])
             );
             const s1 = sessions$.subscribe(newSessions => setSessions(newSessions));
 
             const questionsRef = collection(firestore, 'questions');
             
-            // Fetch all questions for given sessions
             const questions$: Observable<FireQuestion[][]> = sessions$.pipe(
-                switchMap(s => {
-                    return s.length > 0 ?
-                        combineLatest(...s.map(session => {
-                            const questionsQuery = query(questionsRef, where('sessionId', '==', session.sessionId));
-                            return collectionData(questionsQuery, {idField: 'questionId'}).pipe(
-                                map((docs: DocumentData[]) => docs.map(doc => doc as FireQuestion))
+                switchMap(sessions => {
+                    if (sessions.length === 0) return EMPTY;
+                    
+                    const sessionIds = sessions.map(s => s.sessionId);
+                    
+                    const questionsQuery = query(
+                        questionsRef,
+                        where('sessionId', 'in', sessionIds),
+                        orderBy('sessionId'),
+                        orderBy('timeEntered', 'asc')
+                    );
+
+                    return collectionData(questionsQuery, {idField: 'questionId'}).pipe(
+                        map((docs: DocumentData[]) => {
+                            // Group questions by sessionId
+                            const questionsBySession = new Map<string, FireQuestion[]>();
+                            docs.forEach(doc => {
+                                const question = doc as FireQuestion;
+                                const sessionQuestions = questionsBySession.get(question.sessionId) || [];
+                                sessionQuestions.push(question);
+                                questionsBySession.set(question.sessionId, sessionQuestions);
+                            });
+
+                            return sessions.map(session => 
+                                questionsBySession.get(session.sessionId) || []
                             );
-                        }
-                        )) : EMPTY;
+                        })
+                    );
                 })
             );
 
@@ -201,9 +222,18 @@ export const myUserSingletonObservable = new SingletonObservable(undefined, myUs
 export const useMyUser: () => FireUser | undefined = createUseSingletonObservableHook(myUserSingletonObservable);
 
 const allUsersObservable: Observable<readonly FireUser[]> = loggedIn$.pipe(
-    switchMap(() => collectionData(collection(firestore, 'users')).pipe(
-        map((docs: DocumentData[]) => docs as FireUser[])
-    ))
+    switchMap(() => {
+        const usersRef = collection(firestore, 'users');
+        const usersQuery = query(
+            usersRef,
+            orderBy('lastName', 'asc'),
+            orderBy('firstName', 'asc'),
+            limit(100) 
+        );
+        return collectionData(usersQuery, {idField: 'userId'}).pipe(
+            map((docs: DocumentData[]) => docs as FireUser[])
+        );
+    })
 );
 
 const allUsersSingletonObservable = new SingletonObservable([], allUsersObservable);
@@ -396,10 +426,18 @@ export const useSessionTANames = (
 );
 
 const allQuestionsObservable: Observable<readonly FireQuestion[]> = loggedIn$.pipe(
-    switchMap(() => collectionData(collection(firestore, 'questions')).pipe(
-        map((docs: DocumentData[]) => docs as FireQuestion[])
-    )
-    )
+    switchMap(() => {
+        const questionsRef = collection(firestore, 'questions');
+        const questionsQuery = query(
+            questionsRef,
+            orderBy('timeEntered', 'desc'), // most recent first
+            where('timeEntered', '>=', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)), // only 30 days
+            limit(100)
+        );
+        return collectionData(questionsQuery, {idField: 'questionId'}).pipe(
+            map((docs: DocumentData[]) => docs as FireQuestion[])
+        );
+    })
 );
 
 const allQuestionsSingletonObservable = new SingletonObservable([], allQuestionsObservable);
