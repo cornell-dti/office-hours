@@ -249,7 +249,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                             <ReusableBarGraph
                                 barData={timeSpentData.barData}
                                 dayKeys={timeSpentData.dayKeys}
-                                title="Time Spent Per Student"
+                                title="Wait Time Per Student"
                                 subtitle={`Students waited for about ${avgTime(waitTimeData)} minutes this week`}
                             />
                         </Grid>

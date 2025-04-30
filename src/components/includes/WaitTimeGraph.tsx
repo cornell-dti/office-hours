@@ -76,7 +76,7 @@ const WaitTimeGraph = (props: Props) => {
                 keys={["waitTime"]}
                 indexBy="hour"
                 borderWidth={1}
-                colors={(bar) => (bar.indexValue === today ? "#4285F4" : "#D2E3FC")}
+                colors={(bar) => "#4285F4"}
                 margin={{
                     top: 20,
                     right: 20,
