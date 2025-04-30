@@ -14,7 +14,6 @@ import "react-dates/lib/css/_datepicker.css";
 import { useCourse, useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
 import TopBar from "../includes/TopBar";
 
-
 const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) => {
     const courseId = props.match.params.courseId;
 
@@ -204,14 +203,12 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         }
     }
 
-
     return (
         <div className="ProfessorView">
             <ProfessorSidebar courseId={courseId} code={(course && course.code) || "Loading"} selected={"people"} />
             <TopBar courseId={courseId} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 <div className="main">
-                    
                     <div className="Date-picker-container">
                         <DateRangePicker
                             isOutsideRange={() => false}
