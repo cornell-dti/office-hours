@@ -141,6 +141,7 @@ export const viewedTrackable =
     async (user: FireUser | undefined,
         notificationTracker: NotificationTracker | undefined,
         viewedNotifs: boolean) => {
+        console.log('calling notif');
         if (user !== undefined) {
             const email = user.email;
             const updatedTracker: Partial<NotificationTracker> = {
