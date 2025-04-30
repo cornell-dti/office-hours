@@ -5,7 +5,6 @@ import { Icon } from "semantic-ui-react";
 type Props = {
     barData: BarDatum[];
     timeKeys: string[];
-    yMax: number;
     legend: string;
     OHDetails: {
         [id: string]: {
@@ -51,6 +50,7 @@ const WaitTimeGraph = (props: Props) => {
             >
                 {dayNames.map((dayName) => (
                     <button
+                        type="button"
                         key={dayName}
                         onClick={() => setSelectedDay(dayName)}
                         style={{
