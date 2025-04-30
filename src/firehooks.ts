@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import { docData } from 'rxfire/firestore';
 import { switchMap, map } from 'rxjs/operators';
@@ -15,7 +15,7 @@ import {
 
 export const useDoc = <T>(collectionDoc: string, id: string | undefined, idFieldArg: string) => {
     const [document, setDocument] = useState<T | undefined>();
-
+    console.log('useDoc called');
     useEffect(
         () => {
             if (id) {
@@ -31,9 +31,11 @@ export const useDoc = <T>(collectionDoc: string, id: string | undefined, idField
                     }
                     setDocument(d);
                 });
+                console.log(subscription);
                 return () => { subscription.unsubscribe(); };
             }
             // eslint-disable-next-line @typescript-eslint/no-empty-function
+            console.log('useDoc-----------------------------')
             return () => { };
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,10 +54,13 @@ export const useQueryWithLoading = <T, P = string>(
     queryParameter: P, getQuery: (parameter: P) => Query, idFieldArg: string
 ): T[] | null => {
     const [result, setResult] = useState<T[] | null>(null);
-
+    const memoizedQuery = useMemo(() => getQuery(queryParameter), [queryParameter, getQuery]);
+    console.log('useQueryWithLoading called');
     useEffect(
         () => {
-            const results$:Observable<DocumentData> = collectionData(getQuery(queryParameter), {idField: idFieldArg});
+            console.log('useQueryWithLoading useEffect called');
+            
+            const results$:Observable<DocumentData> = collectionData(memoizedQuery, {idField: idFieldArg});
 
             // updates results as they come in. Triggers re-renders.
             const subscription = results$.subscribe(results => {
@@ -71,6 +76,8 @@ export const useQueryWithLoading = <T, P = string>(
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [queryParameter, getQuery, idFieldArg, collectionData]
     );
+    console.log(result);
+    console.log('useQueryWithLoading result ----------------------')
     return result;
 };
 
@@ -78,12 +85,13 @@ export const useBatchQueryWithLoading = <T, P = string>(
     queryParameter: P, getQueries: (parameter: P) => (Query)[], idFieldArg: string
 ): T[] | null => {
     const [result, setResult] = useState<T[] | null>(null);
-
+    const memoizedQueries = useMemo(() => getQueries(queryParameter), [queryParameter, getQueries]);
+    console.log('useBatchQueryWithLoading called');
     useEffect(
         () => {
             let partialResult: T[] = [];
-
-            const effects = getQueries(queryParameter).map(getQuery => {
+            console.log('useBatchQueryWithLoading useEffect')
+            const effects = memoizedQueries.map(getQuery => {
                 const results$: Observable<DocumentData[]> = collectionData(getQuery, {idField: idFieldArg});
 
                 // updates results as they come in. Triggers re-renders.
@@ -91,11 +99,13 @@ export const useBatchQueryWithLoading = <T, P = string>(
                     partialResult = [...partialResult, ...results.map(result => result as T)];
                     setResult(partialResult);
                 })
+                console.log('useBatchQueryWithLoading subscribe');
                 return () => { subscription.unsubscribe(); };
             });
 
 
             return () => {
+                console.log('useBatchQueryWithLoading unscubstricpe');
                 effects.forEach(unsubscription => unsubscription());
             }
 
@@ -111,9 +121,10 @@ export const useProfessorViewSessions = (
     selectedWeekEpoch: number
 ) => {
     const [result, setResult] = useState<FireSession[]>([]);
-
+    console.log('useProfessorViewSessions called');
     useEffect(
         () => {
+            console.log('useProfessorViewSessions useEffecgt called');
             const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
             const sessionsRef = collection(firestore, 'sessions');
             const sessionsQuery = query(sessionsRef, where('courseId', '==', courseId),
@@ -124,7 +135,10 @@ export const useProfessorViewSessions = (
             );
 
             const subscription = results$.subscribe(results => setResult(results));
-            return () => { subscription.unsubscribe(); };
+            console.log('useProfessorViewSessions sub');
+            return () => { subscription.unsubscribe();
+                console.log('useProfessorViewSessions unsub');
+             };
         },
         [courseId, selectedWeekEpoch]
     );
@@ -138,9 +152,10 @@ export const useCoursesBetweenDates = (
 ) => {
     const [sessions, setSessions] = useState<FireSession[]>([]);
     const [questions, setQuestions] = useState<FireQuestion[][]>([]);
-
+    console.log('useCoursesBetweenDates called');
     useEffect(
         () => {
+            console.log('useCoursesBetweenDates useEffect called');
             const sessionsRef = collection(firestore, 'sessions');
             const sessionsQuery = query(sessionsRef, 
                 where('startTime', '>=', startDate.toDate()),
@@ -287,7 +302,7 @@ const getAskerQuestionsQuery = (sessionId: string, askerId: string) => {
 };
 const useParameterizedAskerQuestions = createUseParamaterizedSingletonObservableHook(parameter => {
     const [sessionId, askerId] = parameter.split('/');
-
+    console.log('useParameterizedAskerQuestions called')
     const askerQuery = getAskerQuestionsQuery(sessionId, askerId);
     return new SingletonObservable([], 
         collectionData<FireQuestion>(askerQuery as Query<FireQuestion, DocumentData>, {idField: 'questionId'}));
@@ -302,6 +317,7 @@ export const useAllCourses: () => readonly FireCourse[] =
     createUseSingletonObservableHook(allCoursesSingletonObservable);
 
 export const useMyCourses = (): readonly FireCourse[] => {
+    console.log('useMyCourses called');
     const allCourses = useAllCourses();
     const user = useMyUser();
     if (user === undefined) {
@@ -317,6 +333,7 @@ const courseTagQuery = (courseId: string) => {
 }
 
 export const useCourseTags = (courseId: string): { readonly [tagId: string]: FireTag } => {
+    console.log('useCourseTags called')
     const tagsList = useQuery<FireTag>(courseId, courseTagQuery, 'tagId');
     const tags: { [tagId: string]: FireTag } = {};
 
@@ -339,6 +356,7 @@ export const useCourseUsers = createUseParamaterizedSingletonObservableHook(cour
 );
 type FireUserMap = { readonly [userId: string]: FireUser };
 export const useCourseUsersMap = (courseId: string, canReadUsers: boolean): FireUserMap => {
+    console.log('useCourseUsersMap called');
     const courseUsers = useCourseUsers(canReadUsers ? courseId : '');
     const map: { [userId: string]: FireUser } = {};
 
