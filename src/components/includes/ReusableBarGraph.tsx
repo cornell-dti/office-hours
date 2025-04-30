@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ResponsiveBar } from "@nivo/bar";
+import { useMemo } from "react";
 
 type Props = {
     barData: {
@@ -7,13 +8,12 @@ type Props = {
         value: string;
         detail: string;
     }[];
-    dayKeys: string[];
     title?: string;
-    subtitle?: string;
+    subtitle?: string | React.ReactNode;
 };
 
 const ReusableBarGraph = (props: Props) => {
-    const today = React.useMemo(() => {
+    const today = useMemo(() => {
         const date = new Date();
         const dayOfWeek = date.getDay();
         const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -32,44 +32,19 @@ const ReusableBarGraph = (props: Props) => {
     const maxValue = Math.max(...formattedData.map((data) => Number(data.value))) * 1.2; // Add 20% headroom
 
     return (
-        <div
-            style={{
-                height: "auto",
-                width: "100%",
-                padding: "20px 20px 15px 20px",
-                fontFamily: "sans-serif",
-                display: "flex",
-                flexDirection: "column",
-                backgroundColor: "white",
-                borderRadius: "8px",
-            }}
-        >
+        <div className="bar-graph-container">
             {props.title && (
-                <h2
-                    style={{
-                        margin: "0 0 5px 0",
-                        fontSize: "22px",
-                        fontWeight: "bold",
-                        color: "#333",
-                        textAlign: "left",
-                    }}
-                >
+                <h2>
                     {props.title}
                 </h2>
             )}
 
             {props.subtitle && (
-                <div
-                    style={{
-                        fontSize: "14px",
-                        color: "#333",
-                        textAlign: "left",
-                    }}
-                >
+                <div className="subtitle">
                     {props.subtitle}
                 </div>
             )}
-            <div style={{ height: 160, flexGrow: 1 }}>
+            <div className="graph">
                 <ResponsiveBar
                     data={formattedData}
                     keys={["value"]}
@@ -77,7 +52,7 @@ const ReusableBarGraph = (props: Props) => {
                     margin={{ top: 20, right: 15, bottom: 30, left: 15 }}
                     padding={0.05}
                     maxValue={maxValue}
-                    colors={(bar) => (bar.indexValue === today ? "#4285F4" : "#D2E3FC")}
+                    colors={(bar) => (bar.indexValue === today ? "#5599DB" : "#DAE9FC")}
                     axisBottom={{
                         tickSize: 0,
                         tickPadding: 5,
@@ -86,26 +61,40 @@ const ReusableBarGraph = (props: Props) => {
                     axisLeft={null}
                     enableGridY={false}
                     enableLabel={false}
-                    tooltip={({ data }) => (
-                        <div
-                            style={{
-                                background: "white",
-                                padding: "8px 12px",
-                                borderRadius: "8px",
-                                fontSize: "13px",
-                                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                            }}
-                        >
-                            <strong>{data.detail}</strong>
-                        </div>
-                    )}
+                    tooltip={({ data }) => {
+                        const [boldPart, ...rest] = (typeof data.detail === "string" ? data.detail : "").split(" ");
+
+                        return (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "flex-start",
+                                    background: "white",
+                                    padding: "8px",
+                                    width: "85px",
+                                    borderRadius: "4px",
+                                    fontSize: "12px",
+                                    boxShadow: "0 4px 8px 0 rgba(0,0,0,0.1)",
+                                    position: "absolute",
+                                }}
+                            >
+                                <span>
+                                    <strong>{boldPart} {rest[0]}</strong> {rest.slice(1).join(" ")}
+                                </span>
+                            </div>
+                        );
+                    }}
                     theme={{
                         axis: {
                             ticks: {
                                 text: {
-                                    fontSize: 11,
-                                    fill: "#333",
-                                    fontWeight: "normal",
+                                    fill: "#000",
+                                    fontFamily: "Roboto",
+                                    fontSize: 12,
+                                    fontStyle: "normal",
+                                    fontWeight: 400,
+                                    lineHeight: "normal",
+                                    paddingTop: "8px",
                                 },
                             },
                         },

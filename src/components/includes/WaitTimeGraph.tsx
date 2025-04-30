@@ -26,6 +26,7 @@ const WaitTimeGraph = (props: Props) => {
 
     const currentHour = today.getHours();
 
+    // eslint-disable-next-line no-console
     console.log("Current hour:", currentHour);
 
     // Transform data to have hours on x-axis and one series for selected day

@@ -13,12 +13,6 @@ import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
 import { useCourse, useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
 import TopBar from "../includes/TopBar";
-import StudentReviewPanel from "../includes/StudentReviewPanel";
-import ReusableBarGraph from "../includes/ReusableBarGraph";
-import studentHelpedData from "../../studentHelped.json";
-import timeSpentData from "../../timeSpent.json";
-import waitTimeData from "../../waitTime.json";
-import { Grid } from "@material-ui/core";
 
 const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) => {
     const courseId = props.match.params.courseId;
@@ -209,52 +203,12 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         }
     }
 
-    const studentHelpedTotal = studentHelpedData.barData.reduce((acc, curr) => acc + Number(curr.value), 0);
-
-    const avgTime = ({ barData }: { barData: { dayOfWeek: string; value: string }[] }) => {
-        const total = barData.reduce((acc, curr) => acc + Number(curr.value), 0);
-        return Math.round(total / timeSpentData.barData.length);
-    };
-
     return (
         <div className="ProfessorView">
             <ProfessorSidebar courseId={courseId} code={(course && course.code) || "Loading"} selected={"people"} />
             <TopBar courseId={courseId} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 <div className="main">
-                    <Grid
-                        container
-                        alignItems="center"
-                        justifyContent="center"
-                        spacing={2}
-                        style={{ marginBottom: "20px" }}
-                    >
-                        <Grid item xs={12} sm={6} md={4}>
-                            <ReusableBarGraph
-                                barData={studentHelpedData.barData}
-                                dayKeys={studentHelpedData.dayKeys}
-                                title="Students Helped"
-                                subtitle={`You helped a total of ${studentHelpedTotal} students`}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <ReusableBarGraph
-                                barData={timeSpentData.barData}
-                                dayKeys={timeSpentData.dayKeys}
-                                title="Time Spent Per Student"
-                                subtitle={`You spent about ${avgTime(timeSpentData)} minutes per student`}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <ReusableBarGraph
-                                barData={timeSpentData.barData}
-                                dayKeys={timeSpentData.dayKeys}
-                                title="Time Spent Per Student"
-                                subtitle={`Students waited for about ${avgTime(waitTimeData)} minutes this week`}
-                            />
-                        </Grid>
-                    </Grid>
-                    <StudentReviewPanel />
                     <div className="Date-picker-container">
                         <DateRangePicker
                             isOutsideRange={() => false}

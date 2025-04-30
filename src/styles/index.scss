@@ -80,6 +80,8 @@ $mobile-breakpoint: 920px;
 @import "./ta/TAAnalyticsView.scss";
 @import "./ta/StudentReviewCard.scss";
 @import "./ta/StudentReviewPanel.scss";
+@import "./ta/ReusableBarGraph.scss";
+@import "./ta/TAMetrics.scss";
 
 // Admin
 @import "./AdminView";

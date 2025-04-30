@@ -35,6 +35,5 @@
             "value": "3",
             "detail": "3 students"
         }
-    ],
-    "dayKeys": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    ]
 }

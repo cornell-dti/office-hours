@@ -4,6 +4,7 @@ import { useCourse } from '../../firehooks';
 import TopBar from '../includes/TopBar';
 import TASidebar from '../includes/TASidebar';
 import StudentReviewPanel from "../includes/StudentReviewPanel";
+import TAMetrics from "../includes/TAMetrics";
 
 const TAAnalyticsView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
     const course = useCourse(courseId);
@@ -23,6 +24,7 @@ const TAAnalyticsView = ({ match: { params: { courseId } } }: RouteComponentProp
             <section className="rightOfSidebar">
                 <div className="main">
                     {/* TODO */}
+                    <TAMetrics />
                     <StudentReviewPanel />
                 </div>
             </section>

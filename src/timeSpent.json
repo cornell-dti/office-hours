@@ -35,6 +35,5 @@
             "value": "6",
             "detail": "6 minutes per student"
         }
-    ],
-    "dayKeys": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    ]
 }
