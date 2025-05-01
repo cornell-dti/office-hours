@@ -57,14 +57,19 @@ const AdminView = () => {
                         name='chevron up'
                         onClick={() => setCollapsed(true)}
                     />
-                    <AnalyticsView/>
+                    
                 </div>
             )}
+            {/* Separate style logic so component is technically "rendered" only once when the admin page loads, not each time the arrow is clicked. This reduces repeated Firebase reads. */}
+            <div style={collapsed ? {"display":"None"}: {}}>
+            <AnalyticsView/>
+            </div>
+            
 
 
             <h2>Courses</h2>
             <FormControl sx={{ m: 1, minWidth: "8%", backgroundColor: "#FFFFFF" }}>
-                <InputLabel id="course-select-label">Semester</InputLabel>
+                <InputLabel id="course-select-input">Semester</InputLabel>
                 <Select
                     labelId="course-select-label"
                     id="course-select"
