@@ -63,10 +63,10 @@ const ProfessorOHInfo = (props: {
                 session.modality === "virtual"
                     ? Modality.VIRTUAL
                     : session.modality === "review"
-                    ? Modality.REVIEW
-                    : session.modality === "hybrid"
-                    ? Modality.HYBRID
-                    : Modality.INPERSON
+                        ? Modality.REVIEW
+                        : session.modality === "hybrid"
+                            ? Modality.HYBRID
+                            : Modality.INPERSON
             );
 
             // Update TALink and useTALink states based on session data
@@ -247,15 +247,15 @@ const ProfessorOHInfo = (props: {
         const sessionLocation =
             modality === Modality.HYBRID || modality === Modality.INPERSON
                 ? {
-                      building: locationBuildingSelected || "",
-                      room: locationRoomNumSelected || "",
-                  }
+                    building: locationBuildingSelected || "",
+                    room: locationRoomNumSelected || "",
+                }
                 : {};
         const sessionLink =
             modality === Modality.REVIEW
                 ? {
-                      link: zoomLink || "",
-                  }
+                    link: zoomLink || "",
+                }
                 : {};
         const sessionWithoutSessionSeriesId = {
             ...hybridOrVirtProperties,
@@ -279,20 +279,20 @@ const ProfessorOHInfo = (props: {
             sessionSeriesId === undefined
                 ? sessionWithoutSessionSeriesId
                 : {
-                      ...sessionWithoutSessionSeriesId,
-                      ...sessionLocation,
-                      ...sessionLink,
-                      sessionSeriesId,
-                  };
+                    ...sessionWithoutSessionSeriesId,
+                    ...sessionLocation,
+                    ...sessionLink,
+                    sessionSeriesId,
+                };
         const updatedSession: Omit<FireSession, "sessionId"> =
             sessionSeriesId === undefined
                 ? sessionWithoutSessionSeriesId
                 : {
-                      ...sessionWithoutSessionSeriesId,
-                      ...sessionLocation,
-                      ...sessionLink,
-                      sessionSeriesId,
-                  };
+                    ...sessionWithoutSessionSeriesId,
+                    ...sessionLocation,
+                    ...sessionLink,
+                    sessionSeriesId,
+                };
         if (propsSession) {
             return updateSession(propsSession, updatedSession);
         }
@@ -413,13 +413,13 @@ const ProfessorOHInfo = (props: {
                               "(e.g. Zoom Link, Google Meet Link)" +
                               " which is provided to the student when the TA is assigned to them."
                             : modality === Modality.HYBRID
-                            ? "In a hybrid session the student can either provide a Zoom link" +
+                                ? "In a hybrid session the student can either provide a Zoom link" +
                               " or a physical location. Or, if you check the course zoom link checkbox" +
                               " the student is referred to the course website for the zoom link."
-                            : modality === Modality.REVIEW
-                            ? "In a review session a Zoom link for the review is posted " +
+                                : modality === Modality.REVIEW
+                                    ? "In a review session a Zoom link for the review is posted " +
                               " and students can ask questions to be answered during the session."
-                            : "In an in-person session the student can provide their physical" +
+                                    : "In an in-person session the student can provide their physical" +
                               " location (e.g. by the whiteboard)."}
                     </p>
                 </div>
