@@ -26,7 +26,7 @@ export const createSeries = async (
     
     const ratio = sessionSeries.studentPerTaRatio;
 
-    const hasUnresolvedQuestion = sessionSeries.hasUnresolvedQuestion;
+    const unresolved = sessionSeries.hasUnresolvedQuestion;
 
     const batch = db.batch();
 
@@ -66,7 +66,7 @@ export const createSeries = async (
                 totalWaitTime: 0,
                 totalResolveTime: 0,
                 studentPerTaRatio: ratio,
-                hasUnresolvedQuestion: hasUnresolvedQuestion,
+                hasUnresolvedQuestion: unresolved,
                 TALink: sessionSeries.TALink,
                 isPaused: false,
             };
@@ -90,7 +90,7 @@ export const createSeries = async (
                 totalWaitTime: 0,
                 totalResolveTime: 0,
                 studentPerTaRatio: ratio,
-                hasUnresolvedQuestion: hasUnresolvedQuestion,
+                hasUnresolvedQuestion: unresolved,
                 link: sessionSeries.link,
                 isPaused: false,
             };
@@ -124,7 +124,7 @@ export const createSeries = async (
                 totalWaitTime: 0,
                 totalResolveTime: 0,
                 studentPerTaRatio: ratio,
-                hasUnresolvedQuestion: hasUnresolvedQuestion,
+                hasUnresolvedQuestion: unresolved,
                 isPaused: false,
             };
             // Generate a new unique ID for each session
