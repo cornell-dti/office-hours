@@ -160,6 +160,7 @@ const ProfessorOHInfo = (props: {
                 taDocuments.push(ta.id);
             }
         });
+
         if (isSeriesMutation) {
             let series: FireSessionSeriesDefinition;
             if (modality === Modality.VIRTUAL) {
@@ -230,7 +231,15 @@ const ProfessorOHInfo = (props: {
                 }
                 return updateSeries(firestore, seriesId, series);
             }
-            return createSeries(firestore, series);
+
+            const seriesWithRatio = {
+                ...series,
+                // When the session is created and no TAs are assigned, initialize the ratio to -1
+                // When the session is created with TAs, initialize the ratio to 0 since no students in queue yet
+                studentPerTaRatio: taDocuments.length > 0 ? 0 : -1,
+                hasUnresolvedQuestion: false,
+            }
+            return createSeries(firestore, seriesWithRatio);
         }
 
         const sessionSeriesId = propsSession && propsSession.sessionSeriesId;

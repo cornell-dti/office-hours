@@ -80,6 +80,8 @@ interface FireBaseSessionSeries {
     startTime: FireTimestamp;
     tas: string[];
     title?: string;
+    studentPerTaRatio?: number;
+    hasUnresolvedQuestion?: boolean;
     sessionSeriesId: string;
 }
 
