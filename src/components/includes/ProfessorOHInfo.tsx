@@ -309,8 +309,8 @@ const ProfessorOHInfo = (props: {
         const newSessionWithRatio = {
             ...newSession,
             // When the session is created and no TAs are assigned, initialize the ratio to -1
-            // When the session is created with TAs, initialize the ratio to number of TAs
-            studentPerTaRatio: taDocuments.length > 0 ? taDocuments.length : -1,
+            // When the session is created with TAs, initialize the ratio to 0 since no students in queue yet
+            studentPerTaRatio: taDocuments.length > 0 ? 0 : -1,
             hasUnresolvedQuestion: false,
         };
         return addSession(newSessionWithRatio);
