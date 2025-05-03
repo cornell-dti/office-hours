@@ -342,13 +342,13 @@ exports.onQuestionUpdate = functions.firestore.document("questions/{questionId}"
     // Derive session ID
     const sessionId = newQuestion.sessionId;
 
-        // Derive changes in counts
-        const newStatus = newQuestion.status;
-        const prevStatus = prevQuestion.status;
-        const newNumbers = questionStatusNumbers.get(newStatus) ?? 
-            [0, 0, 0];
-        const prevNumbers = questionStatusNumbers.get(prevStatus) ?? 
-            [0, 0, 0];
+    // Derive changes in counts
+    const newStatus = newQuestion.status;
+    const prevStatus = prevQuestion.status;
+    const newNumbers = questionStatusNumbers.get(newStatus) ?? 
+        [0, 0, 0];
+    const prevNumbers = questionStatusNumbers.get(prevStatus) ?? 
+        [0, 0, 0];
 
     // Grab number of changes
     const numQuestionChange = newNumbers[0] - prevNumbers[0];
@@ -369,17 +369,17 @@ exports.onQuestionUpdate = functions.firestore.document("questions/{questionId}"
             (prevQuestion.timeEntered.seconds - prevQuestion.timeAssigned.seconds) / (newQuestion.position || 1);
     }
 
-        // Derive timing changes (changes from assigned to resolved)
-        if (numResolvedChange === 1 && newQuestion.timeAssigned !== 
-            undefined && newQuestion.timeAddressed !== undefined) {
-            resolveTimeChange = newQuestion.timeAddressed.seconds - newQuestion.timeAssigned.seconds;
-        } else if (
-            numResolvedChange === -1 &&
-            prevQuestion.timeAssigned !== undefined &&
-            prevQuestion.timeAddressed !== undefined
-        ) {
-            resolveTimeChange = prevQuestion.timeAssigned.seconds - prevQuestion.timeAddressed.seconds;
-        }
+    // Derive timing changes (changes from assigned to resolved)
+    if (numResolvedChange === 1 && newQuestion.timeAssigned !== 
+        undefined && newQuestion.timeAddressed !== undefined) {
+        resolveTimeChange = newQuestion.timeAddressed.seconds - newQuestion.timeAssigned.seconds;
+    } else if (
+        numResolvedChange === -1 &&
+        prevQuestion.timeAssigned !== undefined &&
+        prevQuestion.timeAddressed !== undefined
+    ) {
+        resolveTimeChange = prevQuestion.timeAssigned.seconds - prevQuestion.timeAddressed.seconds;
+    }
 
     // Figure out who needs to be updated with a notification based on the changes
     const asker: FireUser = (await db.doc(`users/${newQuestion.askerId}`).get()).data() as FireUser;
