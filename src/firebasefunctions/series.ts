@@ -23,6 +23,10 @@ export const createSeries = async (
     const datesToAdd = getDateRange(startTime, courseEndTime);
 
     const now = moment();
+    
+    const ratio = sessionSeries.studentPerTaRatio;
+
+    const hasUnresolvedQuestion = sessionSeries.hasUnresolvedQuestion;
 
     const batch = db.batch();
 
@@ -61,6 +65,8 @@ export const createSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
+                studentPerTaRatio: ratio,
+                hasUnresolvedQuestion: hasUnresolvedQuestion,
                 TALink: sessionSeries.TALink,
                 isPaused: false,
             };
@@ -83,6 +89,8 @@ export const createSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
+                studentPerTaRatio: ratio,
+                hasUnresolvedQuestion: hasUnresolvedQuestion,
                 link: sessionSeries.link,
                 isPaused: false,
             };
@@ -115,6 +123,8 @@ export const createSeries = async (
                 resolvedQuestions: 0,
                 totalWaitTime: 0,
                 totalResolveTime: 0,
+                studentPerTaRatio: ratio,
+                hasUnresolvedQuestion: hasUnresolvedQuestion,
                 isPaused: false,
             };
             // Generate a new unique ID for each session
@@ -175,11 +185,13 @@ export const updateSeries = async (
                 startTime,
                 tas: sessionSeries.tas,
                 title: sessionSeries.title,
-                totalQuestions: 0,
-                assignedQuestions: 0,
-                resolvedQuestions: 0,
-                totalWaitTime: 0,
-                totalResolveTime: 0,
+                totalQuestions: oldSession ? oldSession.totalQuestions : 0,
+                assignedQuestions: oldSession ? oldSession.assignedQuestions : 0,
+                resolvedQuestions: oldSession ? oldSession.resolvedQuestions : 0,
+                totalWaitTime: oldSession ? oldSession.totalWaitTime : 0,
+                totalResolveTime: oldSession ? oldSession.totalResolveTime : 0,
+                studentPerTaRatio: oldSession.studentPerTaRatio,
+                hasUnresolvedQuestion: oldSession.hasUnresolvedQuestion,
                 TALink: sessionSeries.TALink,
                 isPaused: false,
             };
@@ -193,11 +205,13 @@ export const updateSeries = async (
                 startTime,
                 tas: sessionSeries.tas,
                 title: sessionSeries.title,
-                totalQuestions: 0,
-                assignedQuestions: 0,
-                resolvedQuestions: 0,
-                totalWaitTime: 0,
-                totalResolveTime: 0,
+                totalQuestions: oldSession ? oldSession.totalQuestions : 0,
+                assignedQuestions: oldSession ? oldSession.assignedQuestions : 0,
+                resolvedQuestions: oldSession ? oldSession.resolvedQuestions : 0,
+                totalWaitTime: oldSession ? oldSession.totalWaitTime : 0,
+                totalResolveTime: oldSession ? oldSession.totalResolveTime : 0,
+                studentPerTaRatio: oldSession.studentPerTaRatio,
+                hasUnresolvedQuestion: oldSession.hasUnresolvedQuestion,
                 link: sessionSeries.link,
                 isPaused: false,
             };
@@ -223,11 +237,13 @@ export const updateSeries = async (
                 startTime,
                 tas: sessionSeries.tas,
                 title: sessionSeries.title,
-                totalQuestions: 0,
-                assignedQuestions: 0,
-                resolvedQuestions: 0,
-                totalWaitTime: 0,
-                totalResolveTime: 0,
+                totalQuestions: oldSession ? oldSession.totalQuestions : 0,
+                assignedQuestions: oldSession ? oldSession.assignedQuestions : 0,
+                resolvedQuestions: oldSession ? oldSession.resolvedQuestions : 0,
+                totalWaitTime: oldSession ? oldSession.totalWaitTime : 0,
+                totalResolveTime: oldSession ? oldSession.totalResolveTime : 0,
+                studentPerTaRatio: oldSession.studentPerTaRatio,
+                hasUnresolvedQuestion: oldSession.hasUnresolvedQuestion,
                 isPaused: false,
             };
             batch.set(db.collection('sessions').doc(sessionId), newSession);
