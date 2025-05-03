@@ -43,6 +43,7 @@ export const userUpload = async (user: { uid: string; email: string | null;
                             photoUrl,
                         };
                         transaction.update(userDocumentReference, partialUserDocument);
+                        console.log('runTransaction update in userUpload in user.ts');
                     } else {
                         const fullUserDocument: Omit<FireUser, 'userId'> = {
                             email,
@@ -55,6 +56,7 @@ export const userUpload = async (user: { uid: string; email: string | null;
                             textNotifsEnabled: false,
                         };
                         transaction.set(userDocumentReference, fullUserDocument);
+                        console.log('runTransaction set in userUpload in user.ts');
                     }
                 });
             } catch (error) {
