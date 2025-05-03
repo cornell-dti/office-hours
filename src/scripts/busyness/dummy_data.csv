@@ -1,0 +1,51 @@
+questionId,content,hasPrimaryTag,hasSecondaryTag,wasNotified,waitTimeBeforeAssignment,responseTimeAfterAssignment,totalDuration
+SZFjlyOOGqgKPOrhICjP,"How do I implement a FIFO queue in OCaml?",0,0,1,00:26:01,00:00:04,00:26:06
+SZFjlyOOGqgKPOrhICjP2,"Can someone explain what a functor is in OCaml and how to use it?",1,1,1,00:12:30,00:05:19,00:17:49
+SZFjlyOOGqgKPOrhICjP3,"What's the difference between inheritance and composition in OOP?",0,1,0,00:03:15,00:08:30,00:11:45
+SZFjlyOOGqgKPOrhICjP4,"How does the cache hierarchy work in modern CPUs?",1,0,1,00:01:45,00:10:12,00:11:57
+SZFjlyOOGqgKPOrhICjP5,"I'm confused about pattern matching in OCaml, can someone help?",0,0,0,00:45:18,00:02:30,00:47:48
+SZFjlyOOGqgKPOrhICjP6,"What are the advantages of gradient boosting over random forests?",1,0,1,00:05:09,00:03:25,00:08:34
+SZFjlyOOGqgKPOrhICjP7,"How do I implement polymorphism in Java? I'm struggling with the concept.",1,1,1,00:02:19,00:04:40,00:07:00
+SZFjlyOOGqgKPOrhICjP8,"Can someone explain branch prediction in pipelined processors?",0,1,0,00:18:25,00:06:10,00:24:36
+SZFjlyOOGqgKPOrhICjP9,"What's the best way to handle recursive data structures in OCaml?",1,0,1,00:08:45,00:02:04,00:10:49
+SZFjlyOOGqgKPOrhICjP10,"How does backpropagation work in neural networks? I'm lost.",0,0,1,00:32:27,00:05:13,00:37:40
+SZFjlyOOGqgKPOrhICjP11,"Explain the SOLID principles in object-oriented design, please.",1,1,0,00:15:37,00:08:46,00:24:24
+SZFjlyOOGqgKPOrhICjP12,"What's the difference between RISC and CISC architectures?",0,1,1,00:07:55,00:01:19,00:09:15
+SZFjlyOOGqgKPOrhICjP13,"How do I implement higher-order functions in OCaml?",1,0,1,00:22:10,00:04:30,00:26:40
+SZFjlyOOGqgKPOrhICjP14,"Can someone explain overfitting and how to prevent it?",0,0,0,00:10:49,00:07:15,00:18:04
+SZFjlyOOGqgKPOrhICjP15,"What are abstract classes and when should I use them?",1,1,1,00:03:34,00:02:45,00:06:19
+SZFjlyOOGqgKPOrhICjP16,"How does virtual memory work and what is paging?",0,1,0,00:28:55,00:09:19,00:38:15
+SZFjlyOOGqgKPOrhICjP17,"I'm having trouble with recursion in OCaml, can someone help?",1,0,1,00:06:15,00:03:04,00:09:19
+SZFjlyOOGqgKPOrhICjP18,"What's the difference between supervised and unsupervised learning?",0,0,0,00:16:45,00:05:55,00:22:40
+SZFjlyOOGqgKPOrhICjP19,"How do interfaces work in Java and why are they useful?",1,1,1,00:04:04,00:02:10,00:06:15
+SZFjlyOOGqgKPOrhICjP20,"Can someone explain how instruction pipelining works?",0,1,1,00:35:40,00:07:34,00:43:15
+SZFjlyOOGqgKPOrhICjP21,"What are algebraic data types in OCaml and how do I use them?",1,0,1,00:09:25,00:04:49,00:14:15
+SZFjlyOOGqgKPOrhICjP22,"How do feature extraction techniques work in machine learning?",1,1,0,00:05:40,00:03:19,00:09:00
+SZFjlyOOGqgKPOrhICjP23,"What is encapsulation and why is it important in OOP?",0,1,1,00:12:45,00:05:04,00:17:49
+SZFjlyOOGqgKPOrhICjP24,"How does a CPU execute instructions at the hardware level?",1,0,0,00:20:19,00:02:55,00:23:15
+SZFjlyOOGqgKPOrhICjP25,"How do modules work in OCaml and how are they different from classes?",0,0,1,00:28:30,00:06:45,00:35:15
+SZFjlyOOGqgKPOrhICjP26,"What are decision trees and how do they work in classification problems?",1,1,0,00:15:10,00:04:15,00:19:25
+SZFjlyOOGqgKPOrhICjP27,"Can someone explain method overloading vs method overriding?",0,1,1,00:07:04,00:01:40,00:08:45
+SZFjlyOOGqgKPOrhICjP28,"What is cache coherence and why is it important in multicore systems?",1,0,0,00:11:49,00:03:30,00:15:19
+SZFjlyOOGqgKPOrhICjP29,"How do I work with Option types in OCaml?",0,0,1,00:06:34,00:02:04,00:08:39
+SZFjlyOOGqgKPOrhICjP30,"What is regularization and why is it used in machine learning models?",1,1,0,00:18:15,00:07:25,00:25:40
+SZFjlyOOGqgKPOrhICjP31,"What are design patterns and why are they useful in OOP?",0,1,1,00:13:30,00:05:45,00:19:15
+SZFjlyOOGqgKPOrhICjP32,"How does address translation work in virtual memory systems?",1,0,0,00:24:40,00:09:04,00:33:45
+SZFjlyOOGqgKPOrhICjP33,"What are monads in OCaml and when would I use them?",0,0,1,00:30:19,00:03:55,00:34:15
+SZFjlyOOGqgKPOrhICjP34,"How do convolutional neural networks work for image processing?",1,1,0,00:04:55,00:02:34,00:07:30
+SZFjlyOOGqgKPOrhICjP35,"What is the difference between abstract classes and interfaces?",0,1,1,00:08:10,00:01:49,00:10:00
+SZFjlyOOGqgKPOrhICjP36,"Can someone explain how floating-point arithmetic works at the hardware level?",1,0,0,00:14:34,00:04:19,00:18:54
+SZFjlyOOGqgKPOrhICjP37,"How do I use the List module effectively in OCaml?",0,0,1,00:22:04,00:08:10,00:30:15
+SZFjlyOOGqgKPOrhICjP38,"What is cross-validation and why is it important in machine learning?",1,1,0,00:03:49,00:02:19,00:06:09
+SZFjlyOOGqgKPOrhICjP39,"Can someone explain dependency injection in object-oriented programming?",0,1,1,00:32:45,00:05:34,00:38:19
+SZFjlyOOGqgKPOrhICjP40,"How do interrupt handlers work in operating systems?",1,0,0,00:26:25,00:07:49,00:34:15
+SZFjlyOOGqgKPOrhICjP41,"What's the difference between mutable and immutable data structures in OCaml?",0,0,1,00:10:10,00:03:15,00:13:25
+SZFjlyOOGqgKPOrhICjP42,"How do I implement and train a simple recurrent neural network?",1,1,0,00:05:19,00:01:55,00:07:15
+SZFjlyOOGqgKPOrhICjP43,"What are the pros and cons of multiple inheritance?",0,1,1,00:17:30,00:04:04,00:21:34
+SZFjlyOOGqgKPOrhICjP44,"How does memory-mapped I/O work in computer architecture?",1,0,0,00:09:15,00:02:45,00:12:00
+SZFjlyOOGqgKPOrhICjP45,"How do I implement polymorphic variants in OCaml?",0,0,1,00:27:49,00:06:25,00:34:15
+SZFjlyOOGqgKPOrhICjP46,"What is the difference between precision and recall in machine learning?",1,1,0,00:19:45,00:05:10,00:24:55
+SZFjlyOOGqgKPOrhICjP47,"Can you explain the concept of virtual functions in C++?",0,1,1,00:13:04,00:03:49,00:16:54
+SZFjlyOOGqgKPOrhICjP48,"What is pipelining in CPU design and how does it improve performance?",1,0,0,00:06:55,00:02:15,00:09:10
+SZFjlyOOGqgKPOrhICjP49,"How do I use functors to create generic data structures in OCaml?",0,0,1,00:25:10,00:08:55,00:34:05
+SZFjlyOOGqgKPOrhICjP50,"What are support vector machines and how do they work?",1,1,0,00:07:45,00:03:34,00:11:19
