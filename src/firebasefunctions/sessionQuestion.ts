@@ -236,8 +236,8 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
 
 /* Adds three new ratings (organization, efficiency, overallExperience) 
 to the firebase under the users tab for each question asked. */
-export const submitFeedback = (removedQuestionId: string | undefined,) => 
-    (rating1?: number, rating2?: number, rating3?: number, feedback?: string) => {
+export const submitFeedback = (removedQuestionId: string | undefined) => 
+    (rating1?: number, rating2?: number, rating3?: number, feedback?: string, verified?: boolean | undefined) => {
         
     
         const questionRef = firestore.collection("questions").doc(removedQuestionId)
@@ -251,6 +251,7 @@ export const submitFeedback = (removedQuestionId: string | undefined,) =>
                     overallExperience: rating3,
                     timeStamp,
                     writtenFeedback: feedback,
+                    verification: verified,
                 };
                 const usersRef = firestore.collection("users").doc(taID);
                 usersRef.get().then((doc) => {
@@ -258,10 +259,17 @@ export const submitFeedback = (removedQuestionId: string | undefined,) =>
                         const existingFeedbackList = doc.data()?.feedbackList || [];
                     
                         existingFeedbackList.push(feedbackRecord);
+
+                        const updateData: any = {
+                            feedbackList:
+                            existingFeedbackList,
+                        };
+
+                        if (doc.data()?.verified === undefined && verified !== undefined) {
+                            updateData.verified = verified;
+                        }
         
-                        return usersRef.update({
-                            feedbackList: existingFeedbackList
-                        })
+                        return usersRef.update(updateData);
                     }
                     return null; 
                 })
