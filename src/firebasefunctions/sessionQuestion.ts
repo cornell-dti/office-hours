@@ -230,7 +230,7 @@ export const getComments = (questionId: string, setComments: (comments: FireComm
 to the firebase under the users tab for each question asked. */
 export const submitFeedback =
     (removedQuestionId: string | undefined) =>
-        (rating1?: number, rating2?: number, rating3?: number, feedback?: string) => {
+        (rating1?: number, rating2?: number, rating3?: number, feedback?: string, verified?: boolean | undefined) => {
             const questionRef = doc(firestore, `questions/${removedQuestionId}`);
             getDoc(questionRef).then((questionDoc) => {
                 if (questionDoc.exists()) {
@@ -242,6 +242,7 @@ export const submitFeedback =
                         overallExperience: rating3,
                         timeStamp,
                         writtenFeedback: feedback,
+                        verification: verified,
                     };
                     const usersRef = doc(firestore, `users/${taID}`);
                     getDoc(usersRef).then((doc) => {
@@ -250,9 +251,15 @@ export const submitFeedback =
 
                             existingFeedbackList.push(feedbackRecord);
 
-                            return updateDoc(usersRef, {
+                            const updateData: any = {
                                 feedbackList: existingFeedbackList,
-                            });
+                            };
+
+                            if (doc.data().verified === undefined && verified !== undefined) {
+                                updateData.verified = verified;
+                            }
+
+                            return updateDoc(usersRef, updateData);
                         }
                         return null;
                     });

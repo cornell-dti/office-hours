@@ -110,13 +110,15 @@ const FeedbackPrompt = (props: Props) => {
                     variant="outlined"
                     multiline
                     minRows={4}
+                    maxRows = {5}
                     fullWidth
                     style={{ marginBottom: "4rem" }}
                     placeholder="Please describe your experience..."
                     /* Adds a character limit to the feedback response */
                     onChange={(event) => {
                         const input = event.target.value;
-                        if (input.length <= FEEDBACK_CHAR_LIMIT) {
+                        const length = input.length;
+                        if (length <= FEEDBACK_CHAR_LIMIT) {
                             setFeedback(input);
                         }
                     }}
