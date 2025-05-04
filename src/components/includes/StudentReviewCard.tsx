@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 // add eric changes for percentage bar animation from his branch later
 
 type StudentReviewCardProps = {
@@ -16,25 +16,50 @@ type PercentageBarProps = {
 
 const PercentageBar = ({ label, score }: PercentageBarProps) => {
     // Calculate width based on score out of 5
+    const [width, setWidth] = useState("0%");
     const percentage = score !== undefined ? (score / 5) * 100 + "%" : "0%";
     const barClass = score !== undefined ? "percentage-bar" : "percentage-bar-undefined";
 
+
+    useEffect(() => {
+        setWidth("0%");
+        const timer = setTimeout(() => {
+            setWidth(percentage);
+        }, 50);
+        return () => clearTimeout(timer);
+    }, [score, percentage]);
+
     return (
         <div className="percentage-bar-container">
-            <div className="percentage-label"> 
-                {label} 
+            <div className="percentage-label">
+                {label}
             </div>
             <div className={barClass}>
-                <div className="percentage-bar-fill" style={{ width: percentage}} />
+                <div
+                    className="percentage-bar-fill"
+                    style={{
+                        width,
+                        transition: `width ${800}ms ease-out`,
+                    }}
+                />
             </div>
             <div className="score-text">
-                {score !== undefined ? score.toFixed(1) : "N/A"}            
+                {score !== undefined ? score.toFixed(1) : "N/A"}
             </div>
-        </div>
+        </div>      
     );
 };
 
-// Single review card component
+/**
+ * `StudentReviewCard` Component - Displays a single review card with student's feedback 
+ * as well as ratings on the TA's organization, efficiency, and overall performance.
+ * 
+ * @param feedback - The feedback text provided by the student.
+ * @param overall - The overall performance rating of the TA as a `PercentageBar` out of 5.
+ * @param efficiency - The efficiency rating of the TA as a `PercentageBar` out of 5.
+ * @param organization - The organization rating of the TA as a `PercentageBar` out of 5.
+ * @param date - The date when the feedback was provided.  
+ */
 const StudentReviewCard = ({ feedback, overall, efficiency, organization, date}: StudentReviewCardProps) => {
     const isFeedbackEmpty = feedback.trim() === "";
     return (

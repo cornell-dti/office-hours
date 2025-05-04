@@ -23,7 +23,6 @@ const TAAnalyticsView = ({ match: { params: { courseId } } }: RouteComponentProp
             />    
             <section className="rightOfSidebar">
                 <div className="main">
-                    {/* TODO */}
                     <TAMetrics />
                     <StudentReviewPanel />
                 </div>
