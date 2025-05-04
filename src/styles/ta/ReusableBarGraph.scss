@@ -1,0 +1,35 @@
+.bar-graph-container{
+    height: auto;
+    width: 364px;
+    padding: 28px 26px 20px 31px;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 12px;
+    
+    h2{
+        margin: 0 0 10px 0;
+        text-align: left;
+        color: #484848;
+        font-family: Roboto;
+        font-size: 28px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+    }
+
+    .subtitle{
+        text-align: left;
+        color: #474747;
+        font-family: Roboto;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+    }
+
+    .graph{
+        height: 160px;
+        flex-grow: 1;
+    }
+}
