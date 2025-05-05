@@ -10,11 +10,12 @@ import calendarIcon from "../../media/Calendar_icon.svg";
 import clockIcon from "../../media/clock-regular_1.svg";
 import rightArrowIcon from "../../media/rightArrowIcon.svg";
 import leftArrowIcon from "../../media/leftArrowIcon.svg";
-import timelinePlaceholder from "../../media/timeline_placeholder-graph.png";
 import { useSessionQuestions, useSessionTAs } from "../../firehooks";
 import { computeNumberAhead } from "../../utilities/questions";
 import { RootState } from "../../redux/store";
 import { useState } from "react";
+import WaitTimeGraph from "./WaitTimeGraph";
+import sampleData from "../../dummy_data.json";
 
 type Props = {
     session: FireSession;
@@ -343,10 +344,12 @@ const SessionInformationHeader = ({
                                 <span className="blue"> No information available</span>
                             </p>
                         )}
-                        <img
-                            src={timelinePlaceholder} // update with actual path to your placeholder
-                            alt="Placeholder wait time graph"
-                            className="GraphPlaceholder"
+                         <WaitTimeGraph
+                            barData={sampleData.barData}
+                            yMax={sampleData.yMax}
+                            timeKeys={sampleData.timeKeys}
+                            legend={sampleData.legend}
+                            OHDetails={sampleData.OHDetails}
                         />
                     </div>
                 </Grid>
