@@ -296,14 +296,11 @@ const SessionInformationHeader = ({
                                                     {visibleTAs.map((ta, index) => (
                                                         <div key={index} className="TACircleContainer">
                                                             <img
-                                                                src={ta.photoUrl || "/placeholder.png"}
+                                                            src={ta.photoUrl || "/placeholder.png"}
                                                                 alt={`${ta.firstName} ${ta.lastName}'s Photo`}
                                                                 className="TACircle"
-                                                                style={{
-                                                                    width: "60px",
-                                                                    height: "60px",
-                                                                    border: "2px solid #f2f2f2",
-                                                                }}
+                                                                referrerPolicy="no-referrer"
+                                                                
                                                             />
                                                         </div>
                                                     ))}
