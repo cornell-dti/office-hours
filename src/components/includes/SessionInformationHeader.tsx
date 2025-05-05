@@ -10,7 +10,6 @@ import calendarIcon from "../../media/Calendar_icon.svg";
 import clockIcon from "../../media/clock-regular_1.svg";
 import rightArrowIcon from "../../media/rightArrowIcon.svg";
 import leftArrowIcon from "../../media/leftArrowIcon.svg";
-import timelinePlaceholder from "../../media/timeline_placeholder-graph.png";
 import { useSessionQuestions, useSessionTAs } from "../../firehooks";
 import { computeNumberAhead } from "../../utilities/questions";
 import { RootState } from "../../redux/store";
@@ -374,7 +373,7 @@ const SessionInformationHeader = ({
                                 <span className="blue"> No information available</span>
                             </p>
                         )}
-                        <WaitTimeGraph
+                         <WaitTimeGraph
                             barData={sampleData.barData}
                             yMax={sampleData.yMax}
                             timeKeys={sampleData.timeKeys}
