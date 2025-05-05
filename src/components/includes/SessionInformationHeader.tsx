@@ -98,6 +98,7 @@ const SessionInformationHeader = ({
     const [ratioText, setRatioText] = React.useState("");
 
     const tas = useSessionTAs(course, session);
+    
     const pluralize = (count: number, singular: string, plural: string) => {
         return count <= 1 ? singular : plural;
     };
@@ -123,9 +124,10 @@ const SessionInformationHeader = ({
             }
         }
     }, [session.studentPerTaRatio, session.hasUnresolvedQuestion, tas, questions]);
+
     const numAhead = computeNumberAhead(
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined),
-        user.userId
+        user.userId,
     );
 
     let dynamicPosition = questions.findIndex((question) => question.askerId === myQuestion?.askerId) + 1;
@@ -135,13 +137,13 @@ const SessionInformationHeader = ({
     }
 
     const avgWaitTime = formatAvgTime(
-        (session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition)
+        (session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition),
     );
 
     const today = new Date();
     const esimatedTime = formatEstimatedTime(
         (session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition),
-        today
+        today,
     );
 
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState("hide");
@@ -324,11 +326,10 @@ const SessionInformationHeader = ({
                                                     {visibleTAs.map((ta, index) => (
                                                         <div key={index} className="TACircleContainer">
                                                             <img
-                                                            src={ta.photoUrl || "/placeholder.png"}
+                                                                src={ta.photoUrl || "/placeholder.png"}
                                                                 alt={`${ta.firstName} ${ta.lastName}'s Photo`}
                                                                 className="TACircle"
                                                                 referrerPolicy="no-referrer"
-                                                                
                                                             />
                                                         </div>
                                                     ))}
@@ -369,7 +370,7 @@ const SessionInformationHeader = ({
                                 <span className="blue"> No information available</span>
                             </p>
                         )}
-                         <WaitTimeGraph
+                        <WaitTimeGraph
                             barData={sampleData.barData}
                             yMax={sampleData.yMax}
                             timeKeys={sampleData.timeKeys}
