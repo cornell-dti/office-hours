@@ -97,23 +97,37 @@ const SessionInformationHeader = ({
 }: Props) => {
     const [ratioText, setRatioText] = React.useState("");
 
+    const tas = useSessionTAs(course, session);
+    
+    const pluralize = (count: number, singular: string, plural: string) => {
+        return count <= 1 ? singular : plural;
+    };
+
     React.useEffect(() => {
         const ratio = session.studentPerTaRatio;
-        if (session.tas.length === 0) {
-            setRatioText("No TAs available");
-        } else {
-            if (session.officeHourStarted) {
-                setRatioText(`${ratio} students/TA`);
+        const numberOfTAs = session.tas.length;
+        if (ratio === undefined) {
+            if (numberOfTAs === 0) {
+                setRatioText("No TAs available");
             } else {
-                setRatioText(`${ratio} TAs available`);
-            } 
+                setRatioText(`${numberOfTAs} ${pluralize(numberOfTAs, "TA", "TAs")} available`);
+            }
+            return;
+        } else if (ratio === -1) {
+            setRatioText("No TAs available");
+            return;
+        } else {
+            if (session.hasUnresolvedQuestion) {
+                setRatioText(`${ratio} ${pluralize(ratio, "student", "students")}/TA`);
+            } else {
+                setRatioText(`${numberOfTAs} ${pluralize(numberOfTAs, "TA", "TAs")} available`);
+            }
         }
-    }, [session.studentPerTaRatio, session.officeHourStarted]);
+    }, [session.studentPerTaRatio, session.hasUnresolvedQuestion, tas, questions]);
 
-    const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined),
-        user.userId
+        user.userId,
     );
 
     let dynamicPosition = questions.findIndex((question) => question.askerId === myQuestion?.askerId) + 1;
@@ -123,13 +137,13 @@ const SessionInformationHeader = ({
     }
 
     const avgWaitTime = formatAvgTime(
-        (session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition)
+        (session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition),
     );
 
     const today = new Date();
     const esimatedTime = formatEstimatedTime(
         (session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition),
-        today
+        today,
     );
 
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState("hide");
@@ -195,18 +209,16 @@ const SessionInformationHeader = ({
     const [startIndex, setStartIndex] = useState(0);
     const visibleCount = 4;
 
-
-    const visibleTAs =
-        React.useMemo(() => {
-             return tas.slice(startIndex, startIndex + visibleCount);
-        },[tas, startIndex, visibleCount]);
+    const visibleTAs = React.useMemo(() => {
+        return tas.slice(startIndex, startIndex + visibleCount);
+    }, [tas, startIndex, visibleCount]);
     const hasNext = startIndex + visibleCount < tas.length;
 
     return isDesktop ? (
         <header
             className="DesktopSessionInformationHeader"
             style={{
-                height: "350px", // Fixed overall height for the entire component
+                height: "450px", // Fixed overall height for the entire component
             }}
         >
             <Grid container style={{ alignItems: "stretch", height: "100%" }}>
@@ -271,7 +283,7 @@ const SessionInformationHeader = ({
                                 >
                                     {/* Text on the left */}
                                     <Grid item xs={12} sm={4}>
-                                        <div className="TAHeaderText" >
+                                        <div className="TAHeaderText">
                                             <p style={{ fontWeight: "bold", fontSize: "20px", margin: 0 }}>
                                                 TA's ({tas.length})
                                             </p>
@@ -296,11 +308,10 @@ const SessionInformationHeader = ({
                                                     {visibleTAs.map((ta, index) => (
                                                         <div key={index} className="TACircleContainer">
                                                             <img
-                                                            src={ta.photoUrl || "/placeholder.png"}
+                                                                src={ta.photoUrl || "/placeholder.png"}
                                                                 alt={`${ta.firstName} ${ta.lastName}'s Photo`}
                                                                 className="TACircle"
                                                                 referrerPolicy="no-referrer"
-                                                                
                                                             />
                                                         </div>
                                                     ))}
@@ -341,7 +352,7 @@ const SessionInformationHeader = ({
                                 <span className="blue"> No information available</span>
                             </p>
                         )}
-                         <WaitTimeGraph
+                        <WaitTimeGraph
                             barData={sampleData.barData}
                             yMax={sampleData.yMax}
                             timeKeys={sampleData.timeKeys}
