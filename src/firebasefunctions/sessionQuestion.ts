@@ -227,7 +227,8 @@ export const getComments = (questionId: string, setComments: (comments: FireComm
 };
 
 /* Adds three new ratings (organization, efficiency, overallExperience) 
-to the firebase under the users tab for each question asked. */
+to the firebase under the users tab for each question asked. Also adds a verification field
+to determine whether or not a review was checked. */
 export const submitFeedback =
     (removedQuestionId: string | undefined) =>
         (rating1?: number, rating2?: number, rating3?: number, feedback?: string, verified?: boolean | undefined) => {
