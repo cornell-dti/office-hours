@@ -236,26 +236,6 @@ const myUserObservable = loggedIn$.pipe(
 export const myUserSingletonObservable = new SingletonObservable(undefined, myUserObservable);
 export const useMyUser: () => FireUser | undefined = createUseSingletonObservableHook(myUserSingletonObservable);
 
-const allUsersObservable: Observable<readonly FireUser[]> = loggedIn$.pipe(
-    switchMap(() => {
-        const usersRef = collection(firestore, 'users');
-        const usersQuery = query(
-            usersRef,
-            orderBy('lastName', 'asc'),
-            orderBy('firstName', 'asc'),
-            limit(100) 
-        );
-        return collectionData(usersQuery, {idField: 'userId'}).pipe(
-            map((docs: DocumentData[]) => docs as FireUser[])
-        );
-    })
-);
-
-const allUsersSingletonObservable = new SingletonObservable([], allUsersObservable);
-
-export const useAllUsers: () => readonly FireUser[] =
-    createUseSingletonObservableHook(allUsersSingletonObservable);
-
 
 const needsPromotionObservable = loggedIn$.pipe(
     switchMap(u => u && u.email ? 
