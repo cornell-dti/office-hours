@@ -67,7 +67,7 @@ const AnalyticsView = () => {
             const currSessionsQuery = query(sessionsRef, where('startTime', '>=', startDate));
             const currQuestionsQuery = query(questionsRef, where('timeEntered', '>=',  startDate));
             const userSet = new Set();
-            // his might cause a lot of reads but how to optimize?
+    
             (await getDocs(currQuestionsQuery)).docs.map((docu) => {
                 if (docu.exists()){
                     userSet.add(docu.get('askerId'));
@@ -86,6 +86,7 @@ const AnalyticsView = () => {
             setCurrUsersCount(userSet.size);
             setCurrSessionsCount(currSessionsSnapshot.data().count);
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.error('Error fetching counts:', error);
         }
     };
@@ -93,12 +94,12 @@ const AnalyticsView = () => {
     useEffect(() => {
         fetchAllCounts();
         fetchCounts();  
-        // Fetch counts when the component mounts. Not a realtime listener to avoid 
-        // constant reads of large collections
+        // Fetch counts when the component mounts. 
+        // Not a realtime listener to avoid constant reads of large collections
     }, []);
 
     // map storing the stats for ALL semesters
-    const historical: { [key: string]: any } = {
+    const historical: { [key: string]: number } = {
         "Courses": coursesCount,
         "Questions": questionsCount,
         "Users": usersCount,
@@ -106,7 +107,7 @@ const AnalyticsView = () => {
     };
 
     // map storing the stats for CURRENT semester
-    const current: { [key: string]: any } = {
+    const current: { [key: string]: number } = {
         "Courses": currCoursesCount,
         "Questions": currQuestionsCount,
         "Users": currUsersCount,
