@@ -118,11 +118,12 @@ export const useProfessorViewSessions = (
             const sessionsQuery = query(sessionsRef, where('courseId', '==', courseId),
                 where('startTime', '>=', new Date(selectedWeekEpoch)),
                 where('startTime', '<=', new Date(selectedWeekEpoch + 7 * ONE_DAY)));
-            const results$: Observable<FireSession[]> = collectionData(sessionsQuery, {idField:'sessionId'}) as Observable<FireSession[]>;
+            const results$: Observable<FireSession[]> = collectionData(sessionsQuery,
+                {idField:'sessionId'}) as Observable<FireSession[]>;
 
             const subscription = results$.subscribe(results => setResult(results));
             return () => { subscription.unsubscribe();
-             };
+            };
         },
         [courseId, selectedWeekEpoch]
     );
@@ -145,7 +146,8 @@ export const useCoursesBetweenDates = (
                 where('courseId', '==', courseId)
             );
 
-            const sessions$: Observable<FireSession[]> = collectionData(sessionsQuery, {idField: 'sessionId'}) as Observable<FireSession[]>;
+            const sessions$: Observable<FireSession[]> = collectionData(sessionsQuery, 
+                {idField: 'sessionId'}) as Observable<FireSession[]>;
             const s1 = sessions$.subscribe(newSessions => setSessions(newSessions));
 
             const questionsRef = collection(firestore, 'questions');
@@ -153,14 +155,14 @@ export const useCoursesBetweenDates = (
             const questions$ = sessions$.pipe(
                 switchMap(s => {
                     return s.length > 0 ?
-                    combineLatest(...s.map(session => {
-                        const questionsQuery = query(
-                        questionsRef,
-                        where('sessionId', '==', session.sessionId)
-                    );
-                    return collectionData(questionsQuery, {idField: 'questionId'})
-                    }
-                    )) : EMPTY;}
+                        combineLatest(...s.map(session => {
+                            const questionsQuery = query(
+                                questionsRef,
+                                where('sessionId', '==', session.sessionId)
+                            );
+                            return collectionData(questionsQuery, {idField: 'questionId'})
+                        }
+                        )) : EMPTY;}
                 )
             ) as Observable<FireQuestion[][]>;
             
@@ -333,13 +335,13 @@ const useCourseCourseProfessorOrTaMap = (course: FireCourse, type: 'professor' |
         courseProfessorOrTaBatchQuery,
         'userId'
     );
-    const map: { [userId: string]: FireUser } = {};
+    const mapping: { [userId: string]: FireUser } = {};
 
     courseUsers.forEach(user => {
-        map[user.userId] = user;
+        mapping[user.userId] = user;
     });
 
-    return map;
+    return mapping;
 };
 export const useCourseProfessorMap = (course: FireCourse): FireUserMap => (
     useCourseCourseProfessorOrTaMap(course, 'professor')
@@ -396,8 +398,9 @@ export const useSessionProfile: (
 
 const allBlogPostsObservable: Observable<readonly BlogPost[]> = loggedIn$.pipe(
     switchMap(() =>
-        collectionData(query(collection(firestore,'blogPosts'),orderBy("timeEntered", "desc")), {idField: 'postId'}) as Observable<BlogPost[]>
-));
+        collectionData(query(collection(firestore,'blogPosts'),orderBy("timeEntered", "desc")), 
+    {idField: 'postId'}) as Observable<BlogPost[]>
+    ));
 
 const allBlogPostsSingletonObservable = new SingletonObservable([], allBlogPostsObservable);
 
@@ -407,7 +410,8 @@ export const useAllBlogPosts: () => readonly BlogPost[] =
 export const useParameterizedComments: (questionId: string) => readonly FireComment[] =
     createUseParamaterizedSingletonObservableHook(questionId => {
         const commentsRef = collection(doc(firestore, 'questions', questionId), 'comments');
-        return new SingletonObservable([], collectionData(commentsRef, {idField: 'commentId'}) as Observable<FireComment[]>);
+        return new SingletonObservable([], 
+            collectionData(commentsRef, {idField: 'commentId'}) as Observable<FireComment[]>);
     });
 
 

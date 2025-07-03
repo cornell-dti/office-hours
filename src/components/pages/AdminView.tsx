@@ -60,9 +60,10 @@ const AdminView = () => {
                     
                 </div>
             )}
-            {/* Separate style logic so component is technically "rendered" only once when the admin page loads, not each time the arrow is clicked. This reduces repeated Firebase reads. */}
+            {/* Separate style logic so component is technically "rendered" only once when the admin page loads,
+             not each time the arrow is clicked. This reduces repeated Firebase reads. */}
             <div style={collapsed ? {"display":"None"}: {}}>
-            <AnalyticsView/>
+                <AnalyticsView/>
             </div>
             
 

@@ -88,7 +88,6 @@ const useLoginStatus = () => {
 const useLoadedData = () => {
     const courses = useAllCourses();
     const user = useMyUser();
-    console.log('useLoadedData in App.tsx called');
 
     if (!user || !user.roles || !user.courses || courses.length === 0) {
         // User and courses might load after loging status load.
