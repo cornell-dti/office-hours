@@ -2,9 +2,9 @@ import { useState, useEffect, useMemo } from 'react';
 
 import { docData } from 'rxfire/firestore';
 import { switchMap, map } from 'rxjs/operators';
-import { Observable, of, EMPTY } from 'rxjs';
+import { Observable, of, EMPTY, combineLatest } from 'rxjs';
 import moment from 'moment';
-import { collection, doc, query, where, orderBy, limit, documentId, Query, DocumentData } from 'firebase/firestore';
+import { collection, doc, query, where, orderBy, documentId, Query, DocumentData } from 'firebase/firestore';
 import { firestore, loggedIn$, collectionData } from './firebase';
 import {
     SingletonObservable,
@@ -15,7 +15,6 @@ import {
 
 export const useDoc = <T>(collectionDoc: string, id: string | undefined, idFieldArg: string) => {
     const [document, setDocument] = useState<T | undefined>();
-    console.log('useDoc called');
     useEffect(
         () => {
             if (id) {
@@ -31,11 +30,9 @@ export const useDoc = <T>(collectionDoc: string, id: string | undefined, idField
                     }
                     setDocument(d);
                 });
-                console.log(subscription);
                 return () => { subscription.unsubscribe(); };
             }
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            console.log('useDoc-----------------------------')
             return () => { };
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -55,29 +52,26 @@ export const useQueryWithLoading = <T, P = string>(
 ): T[] | null => {
     const [result, setResult] = useState<T[] | null>(null);
     const memoizedQuery = useMemo(() => getQuery(queryParameter), [queryParameter, getQuery]);
-    console.log('useQueryWithLoading called');
     useEffect(
         () => {
-            console.log('useQueryWithLoading useEffect called');
             
-            const results$:Observable<DocumentData> = collectionData(memoizedQuery, {idField: idFieldArg});
+            const results$:Observable<T[]> = collectionData(memoizedQuery, {idField: idFieldArg}) as Observable<T[]>;
 
             // updates results as they come in. Triggers re-renders.
-            const subscription = results$.subscribe(results => {
-                const mappedResults: T[] = results.map((result: DocumentData) => {
-                    // Safely map or cast DocumentData to T (e.g., FireTag or FireHybridSession)
-                    return result as T;
-                });
-                setResult(mappedResults);
-            });
+            const subscription = results$.subscribe(results => setResult(results));
+            //     {
+            //     const mappedResults: T[] = results.map((result: DocumentData) => {
+            //         // Safely map or cast DocumentData to T (e.g., FireTag or FireHybridSession)
+            //         return result as T;
+            //     });
+            //     setResult(mappedResults);
+            // });
 
             return () => { subscription.unsubscribe(); };
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [queryParameter, getQuery, idFieldArg, collectionData]
     );
-    console.log(result);
-    console.log('useQueryWithLoading result ----------------------')
     return result;
 };
 
@@ -86,26 +80,22 @@ export const useBatchQueryWithLoading = <T, P = string>(
 ): T[] | null => {
     const [result, setResult] = useState<T[] | null>(null);
     const memoizedQueries = useMemo(() => getQueries(queryParameter), [queryParameter, getQueries]);
-    console.log('useBatchQueryWithLoading called');
     useEffect(
         () => {
             let partialResult: T[] = [];
-            console.log('useBatchQueryWithLoading useEffect')
             const effects = memoizedQueries.map(getQuery => {
-                const results$: Observable<DocumentData[]> = collectionData(getQuery, {idField: idFieldArg});
+                const results$: Observable<T[]> = collectionData(getQuery, {idField: idFieldArg}) as Observable<T[]>;
 
                 // updates results as they come in. Triggers re-renders.
                 const subscription = results$.subscribe(results => {
-                    partialResult = [...partialResult, ...results.map(result => result as T)];
+                    partialResult = [...partialResult, ...results];
                     setResult(partialResult);
                 })
-                console.log('useBatchQueryWithLoading subscribe');
                 return () => { subscription.unsubscribe(); };
             });
 
 
             return () => {
-                console.log('useBatchQueryWithLoading unscubstricpe');
                 effects.forEach(unsubscription => unsubscription());
             }
 
@@ -121,23 +111,17 @@ export const useProfessorViewSessions = (
     selectedWeekEpoch: number
 ) => {
     const [result, setResult] = useState<FireSession[]>([]);
-    console.log('useProfessorViewSessions called');
     useEffect(
         () => {
-            console.log('useProfessorViewSessions useEffecgt called');
             const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
             const sessionsRef = collection(firestore, 'sessions');
             const sessionsQuery = query(sessionsRef, where('courseId', '==', courseId),
                 where('startTime', '>=', new Date(selectedWeekEpoch)),
                 where('startTime', '<=', new Date(selectedWeekEpoch + 7 * ONE_DAY)));
-            const results$: Observable<FireSession[]> = collectionData(sessionsQuery, {idField:'sessionId'}).pipe(
-                map((docs:DocumentData) => docs as FireSession[]) // Type assertion
-            );
+            const results$: Observable<FireSession[]> = collectionData(sessionsQuery, {idField:'sessionId'}) as Observable<FireSession[]>;
 
             const subscription = results$.subscribe(results => setResult(results));
-            console.log('useProfessorViewSessions sub');
             return () => { subscription.unsubscribe();
-                console.log('useProfessorViewSessions unsub');
              };
         },
         [courseId, selectedWeekEpoch]
@@ -152,10 +136,8 @@ export const useCoursesBetweenDates = (
 ) => {
     const [sessions, setSessions] = useState<FireSession[]>([]);
     const [questions, setQuestions] = useState<FireQuestion[][]>([]);
-    console.log('useCoursesBetweenDates called');
     useEffect(
         () => {
-            console.log('useCoursesBetweenDates useEffect called');
             const sessionsRef = collection(firestore, 'sessions');
             const sessionsQuery = query(sessionsRef, 
                 where('startTime', '>=', startDate.toDate()),
@@ -163,45 +145,25 @@ export const useCoursesBetweenDates = (
                 where('courseId', '==', courseId)
             );
 
-            const sessions$: Observable<FireSession[]> = collectionData(sessionsQuery, {idField: 'sessionId'}).pipe(
-                map((docs: DocumentData) => docs as FireSession[])
-            );
+            const sessions$: Observable<FireSession[]> = collectionData(sessionsQuery, {idField: 'sessionId'}) as Observable<FireSession[]>;
             const s1 = sessions$.subscribe(newSessions => setSessions(newSessions));
 
             const questionsRef = collection(firestore, 'questions');
-            
-            const questions$: Observable<FireQuestion[][]> = sessions$.pipe(
-                switchMap(sessions => {
-                    if (sessions.length === 0) return EMPTY;
-                    
-                    const sessionIds = sessions.map(s => s.sessionId);
-                    
-                    const questionsQuery = query(
+            // Fetch all questions for given sessions
+            const questions$ = sessions$.pipe(
+                switchMap(s => {
+                    return s.length > 0 ?
+                    combineLatest(...s.map(session => {
+                        const questionsQuery = query(
                         questionsRef,
-                        where('sessionId', 'in', sessionIds),
-                        orderBy('sessionId'),
-                        orderBy('timeEntered', 'asc')
+                        where('sessionId', '==', session.sessionId)
                     );
-
-                    return collectionData(questionsQuery, {idField: 'questionId'}).pipe(
-                        map((docs: DocumentData[]) => {
-                            // Group questions by sessionId
-                            const questionsBySession = new Map<string, FireQuestion[]>();
-                            docs.forEach(doc => {
-                                const question = doc as FireQuestion;
-                                const sessionQuestions = questionsBySession.get(question.sessionId) || [];
-                                sessionQuestions.push(question);
-                                questionsBySession.set(question.sessionId, sessionQuestions);
-                            });
-
-                            return sessions.map(session => 
-                                questionsBySession.get(session.sessionId) || []
-                            );
-                        })
-                    );
-                })
-            );
-
+                    return collectionData(questionsQuery, {idField: 'questionId'})
+                    }
+                    )) : EMPTY;}
+                )
+            ) as Observable<FireQuestion[][]>;
+            
             const s2 = questions$.subscribe((newQuestions: FireQuestion[][]) => setQuestions(newQuestions));
             return () => {
                 s1.unsubscribe();
@@ -282,7 +244,6 @@ const getAskerQuestionsQuery = (sessionId: string, askerId: string) => {
 };
 const useParameterizedAskerQuestions = createUseParamaterizedSingletonObservableHook(parameter => {
     const [sessionId, askerId] = parameter.split('/');
-    console.log('useParameterizedAskerQuestions called')
     const askerQuery = getAskerQuestionsQuery(sessionId, askerId);
     return new SingletonObservable([], 
         collectionData<FireQuestion>(askerQuery as Query<FireQuestion, DocumentData>, {idField: 'questionId'}));
@@ -297,7 +258,6 @@ export const useAllCourses: () => readonly FireCourse[] =
     createUseSingletonObservableHook(allCoursesSingletonObservable);
 
 export const useMyCourses = (): readonly FireCourse[] => {
-    console.log('useMyCourses called');
     const allCourses = useAllCourses();
     const user = useMyUser();
     if (user === undefined) {
@@ -313,7 +273,6 @@ const courseTagQuery = (courseId: string) => {
 }
 
 export const useCourseTags = (courseId: string): { readonly [tagId: string]: FireTag } => {
-    console.log('useCourseTags called')
     const tagsList = useQuery<FireTag>(courseId, courseTagQuery, 'tagId');
     const tags: { [tagId: string]: FireTag } = {};
 
@@ -323,6 +282,7 @@ export const useCourseTags = (courseId: string): { readonly [tagId: string]: Fir
 
     return tags;
 };
+
 
 const courseUserQuery = (courseId: string) => (
     query(collection(firestore,'users'), where('courses', 'array-contains', courseId))
@@ -336,7 +296,6 @@ export const useCourseUsers = createUseParamaterizedSingletonObservableHook(cour
 );
 type FireUserMap = { readonly [userId: string]: FireUser };
 export const useCourseUsersMap = (courseId: string, canReadUsers: boolean): FireUserMap => {
-    console.log('useCourseUsersMap called');
     const courseUsers = useCourseUsers(canReadUsers ? courseId : '');
     const map: { [userId: string]: FireUser } = {};
 
@@ -390,17 +349,6 @@ export const useCourseTAMap = (course: FireCourse): FireUserMap => useCourseCour
 
 const dummySession = { courseId: 'DUMMY', tas: [] };
 
-const allSessionsObservable: Observable<readonly FireSession[]> = loggedIn$.pipe(
-    switchMap(() => collectionData(collection(firestore, 'sessions')).pipe(
-        map((docs: DocumentData[]) => docs as FireSession[])
-    ))
-);
-
-const allSessionsSingletonObservable = new SingletonObservable([], allSessionsObservable);
-
-export const useAllSessions: () => readonly FireSession[] =
-    createUseSingletonObservableHook(allSessionsSingletonObservable);
-
 export const useSessionTAs = (
     course: FireCourse,
     session: Pick<FireSession, 'courseId' | 'tas'> = dummySession,
@@ -422,26 +370,6 @@ export const useSessionTANames = (
 ): readonly string[] => (
     useSessionTAs(course, session).map(courseUser => `${courseUser.firstName} ${courseUser.lastName}`)
 );
-
-const allQuestionsObservable: Observable<readonly FireQuestion[]> = loggedIn$.pipe(
-    switchMap(() => {
-        const questionsRef = collection(firestore, 'questions');
-        const questionsQuery = query(
-            questionsRef,
-            orderBy('timeEntered', 'desc'), // most recent first
-            where('timeEntered', '>=', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)), // only 30 days
-            limit(100)
-        );
-        return collectionData(questionsQuery, {idField: 'questionId'}).pipe(
-            map((docs: DocumentData[]) => docs as FireQuestion[])
-        );
-    })
-);
-
-const allQuestionsSingletonObservable = new SingletonObservable([], allQuestionsObservable);
-
-export const useAllQuestions: () => readonly FireQuestion[] =
-    createUseSingletonObservableHook(allQuestionsSingletonObservable);
 
 const getSessionQuestionsQuery = (sessionId: string) => 
     query(collection(firestore,'questions')
@@ -468,11 +396,8 @@ export const useSessionProfile: (
 
 const allBlogPostsObservable: Observable<readonly BlogPost[]> = loggedIn$.pipe(
     switchMap(() =>
-        collectionData(query(collection(firestore,'blogPosts'),orderBy("timeEntered", "desc")), {idField: 'postId'})
-            .pipe(
-                map((docs:DocumentData[]) => docs as BlogPost[])
-            ))
-);
+        collectionData(query(collection(firestore,'blogPosts'),orderBy("timeEntered", "desc")), {idField: 'postId'}) as Observable<BlogPost[]>
+));
 
 const allBlogPostsSingletonObservable = new SingletonObservable([], allBlogPostsObservable);
 
@@ -482,9 +407,7 @@ export const useAllBlogPosts: () => readonly BlogPost[] =
 export const useParameterizedComments: (questionId: string) => readonly FireComment[] =
     createUseParamaterizedSingletonObservableHook(questionId => {
         const commentsRef = collection(doc(firestore, 'questions', questionId), 'comments');
-        return new SingletonObservable([], collectionData(commentsRef, {idField: 'commentId'}).pipe(
-            map((docs: DocumentData[]) => docs as FireComment[])
-        ));
+        return new SingletonObservable([], collectionData(commentsRef, {idField: 'commentId'}) as Observable<FireComment[]>);
     });
 
 
