@@ -399,7 +399,7 @@ export const useSessionProfile: (
 const allBlogPostsObservable: Observable<readonly BlogPost[]> = loggedIn$.pipe(
     switchMap(() =>
         collectionData(query(collection(firestore,'blogPosts'),orderBy("timeEntered", "desc")), 
-    {idField: 'postId'}) as Observable<BlogPost[]>
+            {idField: 'postId'}) as Observable<BlogPost[]>
     ));
 
 const allBlogPostsSingletonObservable = new SingletonObservable([], allBlogPostsObservable);
