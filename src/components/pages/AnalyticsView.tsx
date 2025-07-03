@@ -57,6 +57,7 @@ const AnalyticsView = () => {
             setSessionsCount(sessionsSnapshot.data().count);
 
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.error('error fetching all counts: ' + error);
         }
     }
