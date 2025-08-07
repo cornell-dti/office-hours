@@ -69,7 +69,7 @@ const AnalyticsView = () => {
             const currQuestionsQuery = query(questionsRef, where('timeEntered', '>=',  startDate));
             const userSet = new Set();
     
-            (await getDocs(currQuestionsQuery)).docs.map((docu) => {
+            (await getDocs(currQuestionsQuery)).docs.forEach((docu) => {
                 if (docu.exists()){
                     userSet.add(docu.get('askerId'));
                     userSet.add(docu.get('answererId'));
@@ -97,7 +97,9 @@ const AnalyticsView = () => {
         fetchCounts();  
         // Fetch counts when the component mounts. 
         // Not a realtime listener to avoid constant reads of large collections
-    }, []);
+    }, 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []);
 
     // map storing the stats for ALL semesters
     const historical: { [key: string]: number } = {
