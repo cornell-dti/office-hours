@@ -1,0 +1,40 @@
+{
+    "barData": [
+        {
+            "dayOfWeek": "Monday",
+            "value": "1",
+            "detail": "1 student"
+        },
+        {
+            "dayOfWeek": "Tuesday",
+            "value": "5",
+            "detail": "5 students"
+        },
+        {
+            "dayOfWeek": "Wednesday",
+            "value": "0",
+            "detail": "0 students"
+        },
+        {
+            "dayOfWeek": "Thursday",
+            "value": "7",
+            "detail": "7 students"
+        },
+        {
+            "dayOfWeek": "Friday",
+            "value": "9",
+            "detail": "9 students"
+        },
+        {
+            "dayOfWeek": "Saturday",
+            "value": "2",
+            "detail": "2 students"
+        },
+        {
+            "dayOfWeek": "Sunday",
+            "value": "3",
+            "detail": "3 students"
+        }
+    ],
+    "dayKeys": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+}
