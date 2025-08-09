@@ -3,17 +3,17 @@ import { useHistory } from 'react-router'
 import { Grid } from '@material-ui/core'
 import { FormControl, Select, SelectChangeEvent, MenuItem, InputLabel } from '@mui/material';
 
-//import { Icon } from 'semantic-ui-react'
+import { Icon } from 'semantic-ui-react'
 import TopBar from '../includes/TopBar';
 import AdminCourseCard from '../includes/AdminCourseCard';
 import AdminCourseCreator from '../includes/AdminCourseCreator';
 import { useAllCourses, useIsAdmin } from '../../firehooks';
 import { CURRENT_SEMESTER, ALL_SEMESTERS } from '../../constants';
-//import  AnalyticsView from './AnalyticsView';
+import  AnalyticsView from './AnalyticsView';
 
 
 const AdminView = () => {
-    //const [collapsed, setCollapsed] = useState(true);
+    const [collapsed, setCollapsed] = useState(true);
     const history = useHistory();
     const courses = useAllCourses();
     const isAdmin = useIsAdmin();
@@ -42,8 +42,7 @@ const AdminView = () => {
                 courseId="DUMMY_COURSE_ID"
             />
 
-            {/* Temporarily commenting out Analytics due to memory issues. */}
-            {/* <h2><br />Queue Me In Product Analytics</h2>   
+            <h2><br />Queue Me In Product Analytics</h2>   
                   
             {collapsed ? (
                 <Icon
@@ -58,14 +57,20 @@ const AdminView = () => {
                         name='chevron up'
                         onClick={() => setCollapsed(true)}
                     />
-                    <AnalyticsView/>
+                    
                 </div>
-            )} */}
+            )}
+            {/* Separate style logic so component is technically "rendered" only once when the admin page loads,
+             not each time the arrow is clicked. This reduces repeated Firebase reads. */}
+            <div style={collapsed ? {"display":"None"}: {}}>
+                <AnalyticsView/>
+            </div>
+            
 
 
             <h2>Courses</h2>
             <FormControl sx={{ m: 1, minWidth: "8%", backgroundColor: "#FFFFFF" }}>
-                <InputLabel id="course-select-label">Semester</InputLabel>
+                <InputLabel id="course-select-input">Semester</InputLabel>
                 <Select
                     labelId="course-select-label"
                     id="course-select"
