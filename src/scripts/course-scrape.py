@@ -73,7 +73,7 @@ def getCourseStatus(course, professors):
                 # Checks if at least one professor in the current semester is in the past professors
                 if any(p in past_professors for p in current_professors) or professors in past_professors:
                     # If the course previously decided to use QMI and the professor is in the past professors, return 2 (both course/prof used QMI)
-                    if row[4] == "yes":
+                    if row[4].lower() == "yes":
                         return 2
 
                     # If the course previously decided not to use QMI and the professor is in the past professors, return the status from the past semester
@@ -82,10 +82,10 @@ def getCourseStatus(course, professors):
                 # If the professor is not in the past professors
                 else:
                     # If the course previously decided to use QMI, return 0 (course used QMI)
-                    if row[4] == "yes":
+                    if row[4].lower() == "yes":
                         return 0
                     # If the course previously decided not to use QMI, but the course and professor has used QMI before, return 0 (course used QMI)
-                    elif row[4] == "no" and row[3] in ["2", "0"]:
+                    elif row[4].lower() == "no" and row[3] in ["2", "0"]:
                         return 0
                     return -1
             # Professor of current course was found in different old course that did use QMI
@@ -118,7 +118,7 @@ def getProfessorInfo(instructors):
 
 # Some courses are not relevant 
 # We will filter out these courses if they contain these words
-irrelevant_courses = ["Independent", "Research", "Project", "Projects", "Academic Support", "Sem", "Seminar", "Supplement", "Honors", "Thesis"]
+irrelevant_courses = ["Independent", "Research", "Project", "Projects", "Academic Support", "Sem", "Seminar", "Supplement", "Honors", "Thesis", "Laboratory"]
 
 classes = []
 for c in classesJSON:
@@ -186,7 +186,7 @@ if professors_with_multiple_courses:
 else:
     print("No professors teach multiple courses.")
 
-with open('../scripts/classes.csv', 'w', newline='') as file:
+with open('../scripts/classes_real.csv', 'w', newline='') as file:
     field = ["Course", "Professor", "Emails", 'Has course/professor use QMI before']
     writer = csv.DictWriter(file, fieldnames=field)
 
