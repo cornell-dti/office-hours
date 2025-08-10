@@ -40,6 +40,7 @@ blacklist = [
    'INFO 3152',
    'CS 3152',
    'INFO 4400',
+   'INFO 3450',
    'INFO 4390'
    'INFO 4152',
    'CS 4152'
@@ -57,18 +58,18 @@ def getCourseStatus(course, professors):
     :param course: The course subject and its code (e.g CS 1110)
     :param professors: The string that consist of all the professors teaching the course this sem (e.g "Michael Clarkson, Lillian Lee" )
     """
+
+    
     with open('../scripts/trackers/past_semester.csv', 'r') as file:
         csvreader = csv.reader(file)
         header = next(csvreader)
         
         for row in csvreader:
+            # List of professors in the past semester
+            past_professors = row[1].split(", ")
+            # List of professors in the current semester
+            current_professors = professors.split(", ")
             if row[0] == course:
-                # List of professors in the current semester
-                current_professors = professors.split(", ")
-
-                # List of professors in the past semester
-                past_professors = row[1].split(", ")
-
                 # Checks if at least one professor in the current semester is in the past professors
                 if any(p in past_professors for p in current_professors) or professors in past_professors:
                     # If the course previously decided to use QMI and the professor is in the past professors, return 2 (both course/prof used QMI)
@@ -87,6 +88,9 @@ def getCourseStatus(course, professors):
                     elif row[4] == "no" and row[3] in ["2", "0"]:
                         return 0
                     return -1
+            # Professor of current course was found in different old course that did use QMI
+            elif int(row[3]) >=1 and (any(p in past_professors for p in current_professors) or professors in past_professors):
+               return 1
     # If no match is found, return -1 after checking all rows
     return -1
 
@@ -182,7 +186,7 @@ if professors_with_multiple_courses:
 else:
     print("No professors teach multiple courses.")
 
-with open('../scripts/classes.csv', 'w') as file:
+with open('../scripts/classes.csv', 'w', newline='') as file:
     field = ["Course", "Professor", "Emails", 'Has course/professor use QMI before']
     writer = csv.DictWriter(file, fieldnames=field)
 
