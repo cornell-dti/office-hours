@@ -1,187 +1,177 @@
 Course,Professor,Emails,Has course/professor use QMI before
-AEP 1100,Chris Xu,cx10@cornell.edu,-1
-AEP 2550,Or Katz,ok86@cornell.edu,-1
-AEP 3100,Peter McMahon,plm99@cornell.edu,-1
-AEP 3200,Ankit Disa,asd47@cornell.edu,-1
-AEP 3550,Valla Fatemi,vf82@cornell.edu,-1
-AEP 3620,Kenji Yasuda,ky443@cornell.edu,-1
-AEP 4340,Lisa Wickham,lw45@cornell.edu,-1
-AEP 4400,Jeffrey Moses,jam262@cornell.edu,-1
-BIOMG 1290,Charles Aquadro,cfa1@cornell.edu,-1
-BIOMG 1350,"Chris Fromme, Kelly Liu","jcf14@cornell.edu, jl53@cornell.edu",-1
-BIOMG 2800,"Kristina Blake-Hodek, Maria Serrano","kab69@cornell.edu, mvs44@cornell.edu",-1
+AEP 1100,Jeffrey Moses,jam262@cornell.edu,-1
+AEP 1200,Valla Fatemi,vf82@cornell.edu,-1
+AEP 3330,Lisa Wickham,lw45@cornell.edu,-1
+AEP 3560,Gennady Shvets,gs656@cornell.edu,-1
+AEP 3610,Or Katz,ok86@cornell.edu,-1
+AEP 4200,Ankit Disa,asd47@cornell.edu,-1
+AEP 4380,Earl Kirkland,ejk14@cornell.edu,-1
+BIOMG 1350,"Martin Graef, Cora Whitmore","mg2255@cornell.edu, cmd352@cornell.edu",-1
+BIOMG 2800,"Kristina Blake-Hodek, Siu Lee","kab69@cornell.edu, ssl29@cornell.edu",-1
 BIOMG 3300,Kevin Siegenthaler,kds89@cornell.edu,-1
-BIOMG 3350,"Stephen Jesch, Frank Pugh","saj23@cornell.edu, fp265@cornell.edu",-1
-BIOMG 4320,Chun Han,ch599@cornell.edu,-1
+BIOMG 3310,Linda Nicholson,lkn2@cornell.edu,-1
+BIOMG 3850,Eirene Markenscoff-Papadimitriou,ecm253@cornell.edu,-1
+BIOMG 4000,Ayshwarya Subramanian,as3894@cornell.edu,-1
+BIOMG 4311,John Crickard,jbc287@cornell.edu,-1
+BIOMG 4380,Jeffrey Pleiss,jap332@cornell.edu,-1
 BIOMG 4400,Stephen Jesch,saj23@cornell.edu,-1
-BIOMG 4610,Mariana Wolfner,mfw5@cornell.edu,-1
-BIOMG 4880,Zeribe Nwosu,zcn3@cornell.edu,-1
-CHEM 2070,Julie Laudenschlager,jel363@cornell.edu,-1
-CHEM 2080,Robert DiStasio,rad332@cornell.edu,-1
-CHEM 2090,Youn Jue Bae,yb293@cornell.edu,-1
-CHEM 3580,"Geoffrey Coates, Brett Fors","gc39@cornell.edu, bpf46@cornell.edu",-1
-CHEM 3880,Barbara Baird,bab13@cornell.edu,-1
-CHEM 4100,Peter Wolczanski,ptw2@cornell.edu,-1
-CHEM 4810,Fernando Escobedo,fe13@cornell.edu,-1
-CHEME 2200,T. Michael Duncan,tmd10@cornell.edu,-1
-CHEME 3230,Sarah Hormozi,sh2365@cornell.edu,-1
-CHEME 3320,Shuwen Yue,sy593@cornell.edu,-1
-CHEME 3900,Sijin Li,sl3276@cornell.edu,-1
-CHEME 4020,Ilana Brito,ilb8@cornell.edu,-1
-CHEME 4620,"Brian Bauer, William Cleary, Marsha Kowal, Jeffrey Varner, Alex Woltornist","btb42@cornell.edu, wjc42@cornell.edu, mcl238@cornell.edu, jdv27@cornell.edu, aw499@cornell.edu",-1
-CS 1110,"Michael Clarkson, Lillian Lee","mrc26@cornell.edu, ljl2@cornell.edu",0
+BIOMG 4810,Philipp Messer,pm544@cornell.edu,-1
+BIOMG 4870,Andrew Clark,ac347@cornell.edu,-1
+CHEM 1560,Dan Lorey,dl24@cornell.edu,-1
+CHEM 1729,Stephen Lee,sl137@cornell.edu,-1
+CHEM 2070,"H. Davis, Melissa Hines","hfd1@cornell.edu, mah11@cornell.edu",-1
+CHEM 2080,Michael Patterson,mgp74@cornell.edu,-1
+CHEM 2090,Peter Wolczanski,ptw2@cornell.edu,-1
+CHEM 3570,Bruce Ganem,bg18@cornell.edu,-1
+CHEM 3580,Cynthia Kinsland,clk10@cornell.edu,-1
+CHEM 3870,Erik Thiede,eht45@cornell.edu,-1
+CHEM 4500,Jeremy Baskin,jmb772@cornell.edu,-1
+CHEME 2880,Eda Celik Akdur,ec525@cornell.edu,-1
+CHEME 3130,Tobias Hanrath,th358@cornell.edu,-1
+CHEME 3240,Jillian Goldfarb,jlg459@cornell.edu,-1
+CHEME 4320,Sijin Li,sl3276@cornell.edu,-1
+CHEME 4800,Jeffrey Varner,jdv27@cornell.edu,-1
+CHEME 4840,James Engstrom,jre7@cornell.edu,-1
+CHEME 4880,"Xingen Lei, Tong Li, Dennis Miller, Prabhu Pingali, Jefferson Tester, K. Max Zhang","xl20@cornell.edu, tl24@cornell.edu, ddm2@cornell.edu, plp39@cornell.edu, jwt54@cornell.edu, kz33@cornell.edu",-1
+CS 1110,Walker White,wmw2@cornell.edu,-1
 CS 1112,Daisy Fan,kdf4@cornell.edu,2
-CS 1340,"Jon Kleinberg, Karen Levy","jmk6@cornell.edu, kl838@cornell.edu",-1
-CS 1700,Haym Hirsh,hbh46@cornell.edu,-1
-CS 2110,"Matthew Eichhorn, Curran Muhlberger","mae226@cornell.edu, cdm89@cornell.edu",2
-CS 2800,"Joe Halpern, Eva Tardos","jyh13@cornell.edu, et28@cornell.edu",0
-CS 3110,Anshuman Mohan,am3327@cornell.edu,0
-CS 3410,"Zachary Susag, Hakim Weatherspoon","zjs32@cornell.edu, hw228@cornell.edu",2
-CS 3420,Nils Napp,nen38@cornell.edu,-1
-CS 3700,Kevin Ellis,kme72@cornell.edu,-1
-CS 3780,"Tushaar Gangavarapu, Karthik Sridharan","tg352@cornell.edu, ks999@cornell.edu",-1
-CS 4300,Cristian Danescu-Niculescu-Mizil,cd326@cornell.edu,2
-CS 4410,Robbert VanRenesse,rv22@cornell.edu,0
-CS 4450,Rachit Agarwal,ra625@cornell.edu,-1
-CS 4670,"Bharath Hariharan, Wei-Chiu Ma","bh497@cornell.edu, wm347@cornell.edu",2
-CS 4740,"Claire Cardie, Tanya Goyal","ctc9@cornell.edu, tg436@cornell.edu",-1
-CS 4744,Mats Rooth,mr249@cornell.edu,-1
-CS 4756,Kuan Fang,kf382@cornell.edu,-1
-CS 4782,"Jennifer Sun, Kilian Weinberger","jjs533@cornell.edu, kqw4@cornell.edu",-1
-CS 4789,Wen Sun,ws455@cornell.edu,0
-CS 4810,Dexter Kozen,dck10@cornell.edu,-1
-CS 4813,Nicholas Spooner,nps52@cornell.edu,-1
-CS 4820,Michael Kim,mpk76@cornell.edu,2
-CS 4850,Robert Kleinberg,rdk2@cornell.edu,-1
+CS 1710,Laura Casasanto,lsc96@cornell.edu,-1
+CS 2110,Matthew Eichhorn,mae226@cornell.edu,-1
+CS 2800,"Mark Moeller, Anke van Zuylen","mdm367@cornell.edu, avz2@cornell.edu",-1
+CS 3110,Michael Clarkson,mrc26@cornell.edu,1
+CS 3410,"Giulia Guidi, Kevin Laeufer","gg434@cornell.edu, kml348@cornell.edu",-1
+CS 3700,Bart Selman,bs54@cornell.edu,-1
+CS 3780,"Sanjiban Choudhury, John Thickstun","sc2582@cornell.edu, jt947@cornell.edu",-1
+CS 4110,Nate Foster,jnf27@cornell.edu,-1
+CS 4320,Sainyam Galhotra,sg2385@cornell.edu,-1
+CS 4414,Ken Birman,kpb3@cornell.edu,-1
+CS 4620,Abe Davis,mad324@cornell.edu,-1
+CS 4745,Marten van Schijndel,mv443@cornell.edu,-1
+CS 4775,Jaehee Kim,jk2287@cornell.edu,-1
+CS 4787,Christopher De Sa,cmd353@cornell.edu,-1
+CS 4820,Eshan Chattopadhyay,ec583@cornell.edu,-1
+CS 4830,Noah Stephens-Davidowitz,nhs59@cornell.edu,-1
 ECE 2100,Carl Bernard,cbp8@cornell.edu,-1
-ECE 2300,Zhiru Zhang,zz284@cornell.edu,2
-ECE 2400,Anne Bracy,awb93@cornell.edu,-1
-ECE 2720,Vikram Krishnamurthy,vk342@cornell.edu,-1
-ECE 3100,Qing Zhao,qz16@cornell.edu,-1
-ECE 3140,Nils Napp,nen38@cornell.edu,2
-ECE 3150,Amit Lal,al274@cornell.edu,-1
-ECE 3200,Ziv Goldfeld,zg265@cornell.edu,-1
-ECE 4150,David Hysell,dlh37@cornell.edu,-1
-ECE 4160,Elizabeth Helbling,efh45@cornell.edu,-1
-ECE 4210,Francesca Parise,fp264@cornell.edu,-1
-ECE 4271,David Delchamps,dfd1@cornell.edu,-1
-ECE 4370,Karan Mehta,kkm65@cornell.edu,-1
-ECE 4520,Lang Tong,lt35@cornell.edu,-1
-ECE 4590,R. van Dover,rbv2@cornell.edu,-1
-ECE 4670,Aaron Wagner,abw35@cornell.edu,-1
-ECE 4740,Alyosha Molnar,am699@cornell.edu,-1
+ECE 2300,Christopher Batten,cb535@cornell.edu,-1
+ECE 2720,Jayadev Acharya,ja679@cornell.edu,-1
+ECE 3030,Karan Mehta,kkm65@cornell.edu,-1
+ECE 3250,David Delchamps,dfd1@cornell.edu,-1
+ECE 4060,Farhan Rana,fr37@cornell.edu,-1
+ECE 4110,Aaron Wagner,abw35@cornell.edu,-1
+ECE 4330,Mohamed Ibrahim,mii8@cornell.edu,-1
+ECE 4360,Judy Cha,jc476@cornell.edu,-1
+ECE 4450,A. Kevin Tang,at422@cornell.edu,-1
+ECE 4510,Hsiao-Dong Chiang,hc63@cornell.edu,-1
+ECE 4530,Alyosha Molnar,am699@cornell.edu,-1
+ECE 4560,Khurram Afridi,kka34@cornell.edu,-1
 ECE 4760,Van Adams,vha3@cornell.edu,-1
-ECE 4910,Bruce Johnson,brj1@cornell.edu,-1
-ECON 1110,George Orlov,go84@cornell.edu,-1
-ECON 1120,Fikri Pitsuwan,fp67@cornell.edu,-1
-ECON 2300,Arnab Basu,ab362@cornell.edu,-1
-ECON 3030,Philipp Kircher,pk532@cornell.edu,-1
-ECON 3040,Mathieu Taschereau-Dumouchel,mt763@cornell.edu,-1
-ECON 3110,Kevin Packard,kcp48@cornell.edu,-1
-ECON 3120,Douglas McKee,dmm399@cornell.edu,-1
-ECON 3140,Joerg Stoye,js2434@cornell.edu,-1
-ECON 3430,Stephanie Thomas,srt82@cornell.edu,-1
-ECON 3475,Michele Belot,mb2693@cornell.edu,-1
-ECON 3550,Elizabeth Tennant,ejt58@cornell.edu,-1
-ECON 3670,Brandon Tripp,bkt24@cornell.edu,-1
-ECON 3711,John Cawley,jhc38@cornell.edu,-1
-ECON 3770,Evan Riehl,er488@cornell.edu,-1
-ECON 3860,C.-Y. Cynthia Lin Lawell,cl2447@cornell.edu,-1
-ECON 3865,Shanjun Li,sl2448@cornell.edu,-1
-ECON 4020,Lawrence Blume,lb19@cornell.edu,-1
-ECON 4210,Kristoffer Nimark,pkn8@cornell.edu,-1
-ECON 4270,Stephen Coate,sc163@cornell.edu,-1
-ECON 4600,Levon Barseghyan,lb247@cornell.edu,-1
-ECON 4620,Adam Harris,ash295@cornell.edu,-1
+ECE 4800,Eilyan Bitar,eyb5@cornell.edu,-1
+ECON 1120,George Orlov,go84@cornell.edu,-1
+ECON 2475,Michele Belot,mb2693@cornell.edu,-1
+ECON 2801,Kaushik Basu,kb40@cornell.edu,-1
+ECON 3030,Jacob Dorn,jd2378@cornell.edu,-1
+ECON 3040,Julieta Caunedo,jdc364@cornell.edu,-1
+ECON 3120,George Jakubson,gj10@cornell.edu,-1
+ECON 3130,Douglas McKee,dmm399@cornell.edu,-1
+ECON 3250,Pauline Leung,pl532@cornell.edu,-1
+ECON 3300,George Boyer,grb3@cornell.edu,-1
+ECON 3545,Eswar Prasad,esp54@cornell.edu,-1
+ECON 3610,Sharon Tennyson,st96@cornell.edu,-1
+ECON 3720,Michael Richards,mrr243@cornell.edu,-1
+ECON 3805,George Hay,gah7@cornell.edu,-1
+ECON 3855,Nancy Brooks,nb275@cornell.edu,-1
+ECON 3910,David Sahn,des16@cornell.edu,-1
+ECON 4140,Chen Qiu,cq62@cornell.edu,-1
+ECON 4290,Stephen Coate,sc163@cornell.edu,-1
+ECON 4410,Jeremy Lise,jl4459@cornell.edu,-1
 ECON 4660,Ted O'Donoghue,edo1@cornell.edu,-1
-ECON 4903,Eleonora Patacchini,ep454@cornell.edu,-1
-INFO 1260,"Jon Kleinberg, Karen Levy","jmk6@cornell.edu, kl838@cornell.edu",-1
-INFO 1300,Royal Westwater,rw547@cornell.edu,-1
-INFO 3130,Moon Duchin,md68@cornell.edu,-1
-INFO 3140,Shimon Edelman,se37@cornell.edu,-1
-INFO 3200,Claire Wardle,cw736@cornell.edu,-1
+INFO 1200,"Daniel Susser, Gili Vidan","ds2423@cornell.edu, gv232@cornell.edu",-1
+INFO 2300,Kyle Harms,kjh235@cornell.edu,-1
+INFO 2450,J. Matias,jnm222@cornell.edu,-1
+INFO 2950,Matthew Wilkens,mw966@cornell.edu,-1
+INFO 3350,Jacob Matthews,jam963@cornell.edu,-1
 INFO 3950,Paul Ginsparg,phg5@cornell.edu,-1
-INFO 4100,Rene Kizilcec,rfk65@cornell.edu,-1
-INFO 4120,Cheng Zhang,cz448@cornell.edu,-1
-INFO 4152,Walker White,wmw2@cornell.edu,-1
-INFO 4220,Cristobal Cheyre Forestier,cac555@cornell.edu,-1
-INFO 4250,Daniel Susser,ds2423@cornell.edu,-1
-INFO 4260,Steven Jackson,sjj54@cornell.edu,-1
-INFO 4300,Cristian Danescu-Niculescu-Mizil,cd326@cornell.edu,-1
-INFO 4310,Jeff Rzeszotarski,jmr395@cornell.edu,-1
-INFO 4320,Francois Guimbretiere,fvg3@cornell.edu,-1
-INFO 4360,Drew Margolin,dm658@cornell.edu,-1
-INFO 4450,Susan Fussell,srf72@cornell.edu,-1
-INFO 4940,Sharlane Cleare,ssc294@cornell.edu,-1
-MATH 1106,Marie MacDonald,mb2636@cornell.edu,-1
-MATH 1110,Hosea Wondo,hdw24@cornell.edu,-1
-MATH 1120,Luke Serafin,lss255@cornell.edu,-1
-MATH 1340,Matthew Haulmark,mrh286@cornell.edu,-1
-MATH 1910,Timothy Healey,tjh10@cornell.edu,-1
-MATH 1920,Sergio Chaves,slc339@cornell.edu,-1
-MATH 2210,Benjamin Dozier,bed47@cornell.edu,-1
-MATH 2220,Justin Moore,jtm237@cornell.edu,-1
-MATH 2240,Jason Manning,jm882@cornell.edu,-1
-MATH 2310,Alex Townsend,ajt253@cornell.edu,-1
-MATH 2930,David Freund,drf88@cornell.edu,-1
-MATH 2940,Frans Schalekamp,fms9@cornell.edu,-1
+INFO 4140,Tracy Mitrano,tbm3@cornell.edu,-1
+INFO 4240,Christopher Csikszentmihalyi,cpc83@cornell.edu,-1
+INFO 4301,Megan Sawey,mes476@cornell.edu,-1
+INFO 4320,Cheng Zhang,cz448@cornell.edu,-1
+INFO 4420,Francois Guimbretiere,fvg3@cornell.edu,-1
+INFO 4505,Aditya Vashistha,av567@cornell.edu,-1
+INFO 4555,Jeff Christen,jrc42@cornell.edu,-1
+INFO 4561,Malte Ziewitz,mcz35@cornell.edu,-1
+INFO 4940,Mike Priehs,mep324@cornell.edu,-1
+MATH 1106,Michael Stillman,mes15@cornell.edu,-1
+MATH 1110,Zachary Couvillion,zjc28@cornell.edu,-1
+MATH 1120,Kimball Strong,ks2424@cornell.edu,-1
+MATH 1300,Mary Ann Huntley,mh688@cornell.edu,-1
+MATH 1710,Michael Nussbaum,mn66@cornell.edu,-1
+MATH 1890,Rachel Webb,rmw263@cornell.edu,-1
+MATH 1910,Peter Doerschuk,pd83@cornell.edu,-1
+MATH 1920,Martin Kassabov,mdk35@cornell.edu,-1
+MATH 2210,Anubhav Nanavaty,an667@cornell.edu,-1
+MATH 2220,James West,jew13@cornell.edu,-1
+MATH 2230,Reyer Sjamaar,rs73@cornell.edu,-1
+MATH 2930,Samuel Otto,seo34@cornell.edu,-1
+MATH 2940,Anton Mosunov,am3435@cornell.edu,-1
+MATH 3040,Anil Nerode,an17@cornell.edu,-1
 MATH 3110,Timothy Riley,trr22@cornell.edu,-1
-MATH 3320,Dan Barbasch,dmb14@cornell.edu,-1
-MATH 3340,Rachel Webb,rmw263@cornell.edu,-1
-MATH 3360,Karola Meszaros,km626@cornell.edu,-1
-MATH 4180,Chun Pong Chu,cc2938@cornell.edu,-1
-MATH 4200,John Hubbard,jhh8@cornell.edu,-1
-MATH 4280,Alexander Vladimirsky,abv8@cornell.edu,-1
+MATH 3270,Timothy Healey,tjh10@cornell.edu,-1
+MATH 3320,Nicolas Templier,npt27@cornell.edu,-1
+MATH 4040,Inna Zakharevich,iiz5@cornell.edu,-1
+MATH 4220,Chun Pong Chu,cc2938@cornell.edu,-1
 MATH 4310,Andreea Iorga,ai324@cornell.edu,-1
-MATH 4500,James West,jew13@cornell.edu,-1
-MATH 4540,Xiaodong Cao,xc46@cornell.edu,-1
-MATH 4710,Laurent Saloff-Coste,lps2@cornell.edu,-1
-MATH 4740,Sungwoo Jeong,sj822@cornell.edu,-1
-ORIE 3120,Peter Frazier,pf98@cornell.edu,-1
-ORIE 3310,David Shmoys,dbs10@cornell.edu,-1
-ORIE 3741,Soroosh Shafiee,ss3789@cornell.edu,-1
-ORIE 4126,Eric Gentsch,elg46@cornell.edu,-1
-ORIE 4130,Shane Henderson,sgh9@cornell.edu,-1
-ORIE 4152,Negin Majedi,fm457@cornell.edu,-1
-ORIE 4160,Paul Golz,plg67@cornell.edu,-1
-ORIE 4600,John Richard Callister,jc62@cornell.edu,-1
-ORIE 4742,Sid Banerjee,sb2373@cornell.edu,-1
-PHYS 1102,Nam Jung Kim,nk652@cornell.edu,-1
+MATH 4410,Karola Meszaros,km626@cornell.edu,-1
+MATH 4520,Yusheng Luo,yl3769@cornell.edu,-1
+MATH 4530,Benjamin Dozier,bed47@cornell.edu,-1
+MATH 4710,Lionel Levine,ll432@cornell.edu,-1
+ORIE 3150,John Richard Callister,jc62@cornell.edu,-1
+ORIE 3300,Shoham Sabach,sms742@cornell.edu,-1
+ORIE 3500,Pierre Patie,pp396@cornell.edu,-1
+ORIE 4100,Eric Gentsch,elg46@cornell.edu,-1
+ORIE 4130,Mark Lewis,mel47@cornell.edu,-1
+ORIE 4160,David Goldberg,dag369@cornell.edu,-1
+ORIE 4340,Brenda Dietrich,bld34@cornell.edu,-1
+ORIE 4570,Jim Dai,jd694@cornell.edu,-1
+ORIE 4580,Sid Banerjee,sb2373@cornell.edu,-1
+ORIE 4820,Jessica Leeker,jrl399@cornell.edu,-1
+PHYS 1101,Robert Fulbright,rmf14@cornell.edu,-1
 PHYS 1112,Philip Krasicky,pdk4@cornell.edu,-1
-PHYS 1116,Csaba Csaki,cc338@cornell.edu,-1
-PHYS 1203,Nils Deppe,nd357@cornell.edu,-1
-PHYS 2208,Matthias Liepe,mul2@cornell.edu,-1
+PHYS 1116,Maxim Perelstein,mp325@cornell.edu,-1
+PHYS 1201,Itai Cohen,ic64@cornell.edu,-1
+PHYS 1205,Georg Hoffstaetter de Torquat,gh77@cornell.edu,-1
+PHYS 2207,Glenn Case,gsc11@cornell.edu,-1
 PHYS 2213,Ryan Tapping,rct76@cornell.edu,-1
-PHYS 2214,Itai Cohen,ic64@cornell.edu,-1
-PHYS 2218,Liam McAllister,lm432@cornell.edu,-1
-PHYS 3310,"Jim Alexander, Kyle Shen","jpa6@cornell.edu, kms272@cornell.edu",-1
-PHYS 3316,Xiaomeng Liu,xl956@cornell.edu,-1
-PHYS 3318,Ivan Bazarov,ib38@cornell.edu,-1
-PHYS 4410,Anders Ryd,ar322@cornell.edu,-1
-PHYS 4443,Katja Nowack,kcn34@cornell.edu,-1
-PHYS 4444,Yuval Grossman,yg73@cornell.edu,-1
-PHYS 4488,James Sethna,jps6@cornell.edu,-1
-PHYS 4688,Georg Hoffstaetter de Torquat,gh77@cornell.edu,-1
-STSCI 2150,Melissa Smith,ms429@cornell.edu,-1
-STSCI 3740,Yang Ning,yn265@cornell.edu,-1
-STSCI 4520,David Kent,dk657@cornell.edu,-1
-STSCI 4550,Younghoon Kim,yk748@cornell.edu,-1
-"PHYS 2217, AEP 2170",Abigail Crites,atc72@cornell.edu,-1
-"AEP 3630, PHYS 3360",Earl Kirkland,ejk14@cornell.edu,-1
-"ECE 4380, AEP 4450",Francesco Monticone,fm428@cornell.edu,-1
-"AEP 4840, ECE 4840",David Hammer,dah5@cornell.edu,-1
-"BTRY 3020, STSCI 2100, STSCI 3200",Jeremy Entner,jfe35@cornell.edu,-1
+PHYS 2214,Dan Ralph,dcr14@cornell.edu,-1
+PHYS 2218,Tomas Arias,taa2@cornell.edu,-1
+PHYS 3310,Ivan Bazarov,ib38@cornell.edu,-1
+PHYS 3316,Brad Ramshaw,bjr228@cornell.edu,-1
+PHYS 3317,Yuval Grossman,yg73@cornell.edu,-1
+PHYS 3327,Lawrence Gibbons,lkg5@cornell.edu,-1
+PHYS 4410,Ritchie Patterson,jrp3@cornell.edu,-1
+PHYS 4445,Liam McAllister,lm432@cornell.edu,-1
+PHYS 4480,Erich Mueller,em256@cornell.edu,-1
+STSCI 2110,Kevin Packard,kcp48@cornell.edu,-1
+STSCI 4050,James Booth,jb383@cornell.edu,-1
+STSCI 4060,Xiaolong Yang,xy44@cornell.edu,-1
+"AEP 2170, PHYS 2217",Lois Pollack,lp26@cornell.edu,-1
+"PHYS 4230, AEP 4230",Nicholas Rivera,nr462@cornell.edu,-1
+"AEP 4500, PHYS 4454",David Muller,dm24@cornell.edu,-1
+"STSCI 2200, BTRY 3010",Jeremy Entner,jfe35@cornell.edu,-1
 "STSCI 3080, BTRY 3080",Florentina Bunea,fb238@cornell.edu,-1
-"STSCI 4090, BTRY 4090, MATH 4720",Marten Wegkamp,mhw73@cornell.edu,-1
-"STSCI 4100, BTRY 4100",Dana Yang,xy374@cornell.edu,-1
-"CHEM 1570, CHEM 3570",Cynthia Kinsland,clk10@cornell.edu,-1
-"CS 4220, MATH 4260",Anil Damle,asd239@cornell.edu,-1
-"CS 4754, INFO 4410",Malte Jung,mfj28@cornell.edu,-1
-"CS 4758, ECE 4180",Anastasia Bizyaeva,asb379@cornell.edu,-1
-"CS 4852, ECON 3825",Cristobal Cheyre Forestier,cac555@cornell.edu,-1
-"ECON 3280, ECON 4280",Milena Djourelova,mnd43@cornell.edu,-1
-"INFO 2310, INFO 4340",Kyle Harms,kjh235@cornell.edu,-1
-"INFO 3312, INFO 2951",Benjamin Soltoff,bcs88@cornell.edu,-1
-"MATH 4030, MATH 3040",Anil Nerode,an17@cornell.edu,-1
-"STSCI 3510, ORIE 3510",Jim Dai,jd694@cornell.edu,-1
-"STSCI 3110, STSCI 2110",Kevin Packard,kcp48@cornell.edu,-1
+"STSCI 3090, BTRY 3090",Sreyoshi Das,sd878@cornell.edu,-1
+"BTRY 4030, STSCI 4030",Dan Kowal,drk92@cornell.edu,-1
+"STSCI 4090, ECON 3110, STSCI 3110, BTRY 4090",Thomas Diciccio,tjd9@cornell.edu,-1
+"BTRY 4110, STSCI 4110, STSCI 2150",Melissa Smith,ms429@cornell.edu,-1
+"CHEM 1560, CHEM 1150",Dan Lorey,dl24@cornell.edu,-1
+"ECON 2040, INFO 2040, CS 2850","Rohit Lamba, Yian Yin","rl932@cornell.edu, yy994@cornell.edu",-1
+"MATH 4250, CS 4210, MATH 2310",Alex Townsend,ajt253@cornell.edu,-1
+"CS 4420, ECE 4750",Anne Bracy,awb93@cornell.edu,-1
+"ECE 4770, CS 4750","Tapomayukh Bhattacharjee, Preston Culbertson","tb557@cornell.edu, pdc79@cornell.edu",-1
+"INFO 4430, INFO 4410, CS 4754",Malte Jung,mfj28@cornell.edu,-1
+"ECON 3850, ECON 1110",Nicholas Sanders,njs224@cornell.edu,-1
+"ECON 4903, ECON 3440",Eleonora Patacchini,ep454@cornell.edu,-1
+"INFO 2300, INFO 1300",Kyle Harms,kjh235@cornell.edu,-1
+"INFO 3900, STSCI 3900","Y. Samuel Wang, Christina Yu","ysw7@cornell.edu, cel85@cornell.edu",-1
+"MATH 4370, MATH 3210",Dan Barbasch,dmb14@cornell.edu,-1
+"ORIE 4630, STSCI 4630",David Ruppert,dr24@cornell.edu,-1
+"STSCI 2110, STSCI 2100",Kevin Packard,kcp48@cornell.edu,-1
