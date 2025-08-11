@@ -102,6 +102,19 @@
   }
   }
 }
+
+.Resolved-vs-Unresolved-Box {
+  margin-top: 15px;
+  background-color: white;
+  border-radius: 6px;
+  padding: 20px;
+  font-size: 20px;
+  .questions-line-container{
+    width: 100%;
+  }
+}
+
+
 .bar-tooltip{
   color: white;
   font-size: 12px;
