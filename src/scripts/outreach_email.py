@@ -7,7 +7,7 @@ import time
 from dotenv import load_dotenv
 
 
-MAX_EMAIL_LIMIT = 99
+MAX_EMAIL_LIMIT = 64
 
 
 path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env')
@@ -109,7 +109,7 @@ def main():
                 print('-'*50)         
                 time.sleep(3)   
             else: 
-                print(f'Resend free email limit of 100 reached, run again in 24 hours. Edit csv file to start from {numSent+2}.\nNext email is to {profemails} for {course_final}.')
+                print(f'Resend free email limit of {MAX_EMAIL_LIMIT} reached, run again in 24 hours. Edit csv file to start from {numSent+2}.\nNext email is to {profemails} for {course_final}.')
                 break
     
     with open('./emails.csv', mode='a') as file:

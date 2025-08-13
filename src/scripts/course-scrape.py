@@ -43,7 +43,8 @@ blacklist = [
    'INFO 3450',
    'INFO 4390'
    'INFO 4152',
-   'CS 4152'
+   'CS 4152',
+   'ORIE 3150' # anything with Prof. Callister
 ]
 
 def getCourseStatus(course, professors):
