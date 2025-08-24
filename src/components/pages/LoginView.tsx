@@ -32,7 +32,7 @@ const LoginView: React.FC = () => {
 
     const googleAuth = () => {
         const authProvider = new GoogleAuthProvider();
-        
+       
         if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
             authProvider.setCustomParameters({
                 hd: 'cornell.edu',

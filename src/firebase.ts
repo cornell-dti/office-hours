@@ -8,24 +8,25 @@ import { filter } from 'rxjs/operators';
 let firebaseConfig: Record<string, unknown>;
 if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
     firebaseConfig = {
-        apiKey: process.env.REACT_APP_API_KEY,
-        authDomain: "queue-me-in-prod.firebaseapp.com",
-        databaseURL: "https://queue-me-in-prod.firebaseio.com",
-        projectId: "queue-me-in-prod",
-        storageBucket: "queue-me-in-prod.appspot.com",
-        messagingSenderId: "283964683310",
-        appId: "1:283964683310:web:98ef1bd535c6315749dbbf",
-        measurementId: "G-GHJ0TML275"
+    apiKey: process.env.REACT_APP_API_KEY,
+    authDomain: "queue-me-in-oberlin.firebaseapp.com",
+    projectId: "queue-me-in-oberlin",
+    storageBucket: "queue-me-in-oberlin.firebasestorage.app",
+    messagingSenderId: "1041093971965",
+    appId: "1:1041093971965:web:1d59d7aedf97c17cb8d394",
+    measurementId: "G-JJ6KRB9D3E"
     };
 } else {
     firebaseConfig = {
-        apiKey: process.env.REACT_APP_TEST_KEY ? process.env.REACT_APP_TEST_KEY : process.env.REACT_APP_API_KEY,
-        authDomain: 'qmi-test.firebaseapp.com',
-        databaseURL: 'https://qmi-test.firebaseio.com',
-        projectId: 'qmi-test',
-        storageBucket: 'qmi-test.appspot.com',
-        messagingSenderId: '349252319671',
+    apiKey: process.env.REACT_APP_API_KEY,
+    authDomain: "queue-me-in-oberlin.firebaseapp.com",
+    projectId: "queue-me-in-oberlin",
+    storageBucket: "queue-me-in-oberlin.firebasestorage.app",
+    messagingSenderId: "1041093971965",
+    appId: "1:1041093971965:web:1d59d7aedf97c17cb8d394",
+    measurementId: "G-JJ6KRB9D3E"
     };
+
 }
 
 const app = initializeApp(firebaseConfig);
