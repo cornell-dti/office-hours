@@ -36,7 +36,7 @@ const AdminView = () => {
     const handleExpand = () => {
         setCollapsed(false);
         if (!analyticsLoaded) {
-        setAnalyticsLoaded(true); // ensures <AnalyticsView/> mounts when user clicks on icon
+            setAnalyticsLoaded(true); // ensures <AnalyticsView/> mounts when user clicks on icon
         }
     };
 
@@ -70,9 +70,9 @@ const AdminView = () => {
             )}
             {/* Separate style logic so component is technically "rendered" only once when the admin page loads,
              not each time the arrow is clicked. This reduces repeated Firebase reads. */}
-             {analyticsLoaded && (
+            {analyticsLoaded && (
                 <div style={collapsed ? { display: "none" } : {}}>
-                <AnalyticsView />
+                    <AnalyticsView />
                 </div>
             )}
             
