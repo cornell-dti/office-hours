@@ -213,6 +213,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     //  so that when you cannot unenroll from a course, it says No Classes Chosen instead of an empty box
     const selectedCoursesString = selectedCourses.length === 0 ? "" : selectedCourses.map((c) => c.code).join(", ");
 
+    /* eslint-disable max-len*/
     return (
         <div>
             <div className="CourseSelection">
@@ -227,72 +228,72 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
                     <div className="WhiteBackground">
                         <div className="selectionContent">
                             <div className="description">
-                                        <div className="sideblock">
-                                            <div className="title">
-                                                {isEdit ? <div> Edit Your Classes </div> : "My Classes"}
-                                            </div>
-                                            <div className="subtitle">
-                                                {isEdit
-                                                    ? "Add or remove classes of your selection."
-                                                    : (currentCourses.length > 0 ? "Select the office hours you want to view.": "You are not enrolled in any courses. Click 'Edit' to enroll in courses.")}
-                                                <div className="EnrolledCourses mobile">{selectedCoursesString}</div>
-                                            </div>
-                                        </div>
-                                        <div className="sideblock searchbar">
-                                            <input
-                                                type="text"
-                                                placeholder="Search for class name or number..."
-                                                onChange={searchInput}
-                                                size={2}
-                                            />
-                                            <div className="searchIcon">
-                                                <Icon className="icon" color="grey" name="search" />
-                                            </div>
-                                        </div>
+                                <div className="sideblock">
+                                    <div className="title">
+                                        {isEdit ? <div> Edit Your Classes </div> : "My Classes"}
                                     </div>
-                                    <hr className="sectionDivide" />
-                                    {isEdit && (selectedCoursesString.length > 0 || unchangeableCourses.length > 0) ? (
-                                        <div className="EnrolledClasses">
-                                            {unchangeableCourses.map((course) => course.code).join(", ")}
-                                            {selectedCoursesString.length > 0 && unchangeableCourses.length > 0
-                                                ? ", "
-                                                : ""}
-                                            {selectedCoursesString}
-                                        </div>
-                                    ) : (
-                                        <div />
-                                    )}
-                                    <div className="CourseCards">
-                                        {currentCourses
-                                            .filter(
-                                                (course) =>
-                                                    selectedCourseIds.includes(course.courseId) ||
+                                    <div className="subtitle">
+                                        {isEdit
+                                            ? "Add or remove classes of your selection."
+                                            : (currentCourses.length > 0 ? "Select the office hours you want to view.": "You are not enrolled in any courses. Click 'Edit' to enroll in courses.")}
+                                        <div className="EnrolledCourses mobile">{selectedCoursesString}</div>
+                                    </div>
+                                </div>
+                                <div className="sideblock searchbar">
+                                    <input
+                                        type="text"
+                                        placeholder="Search for class name or number..."
+                                        onChange={searchInput}
+                                        size={2}
+                                    />
+                                    <div className="searchIcon">
+                                        <Icon className="icon" color="grey" name="search" />
+                                    </div>
+                                </div>
+                            </div>
+                            <hr className="sectionDivide" />
+                            {isEdit && (selectedCoursesString.length > 0 || unchangeableCourses.length > 0) ? (
+                                <div className="EnrolledClasses">
+                                    {unchangeableCourses.map((course) => course.code).join(", ")}
+                                    {selectedCoursesString.length > 0 && unchangeableCourses.length > 0
+                                        ? ", "
+                                        : ""}
+                                    {selectedCoursesString}
+                                </div>
+                            ) : (
+                                <div />
+                            )}
+                            <div className="CourseCards">
+                                {currentCourses
+                                    .filter(
+                                        (course) =>
+                                            selectedCourseIds.includes(course.courseId) ||
                                                     currentlyEnrolledCourseIds.has(course.courseId) ||
                                                     isEdit,
-                                            )
-                                            .map((course) => {
-                                                const role = currentlyEnrolledCourseIds.has(course.courseId) 
+                                    )
+                                    .map((course) => {
+                                        const role = currentlyEnrolledCourseIds.has(course.courseId) 
                                                 && user
-                                                    ? user.roles[course.courseId] || "student"
-                                                    : undefined;
-                                                const selected =
+                                            ? user.roles[course.courseId] || "student"
+                                            : undefined;
+                                        const selected =
                                                     selectedCourseIds.includes(course.courseId) ||
                                                     (role !== undefined && role !== "student");
-                                                return (
-                                                    <div key={course.courseId}>
-                                                        <CourseCard
-                                                            course={course}
-                                                            role={role}
-                                                            onSelectCourse={(addCourse) =>
-                                                                onSelectCourse(course, addCourse)
-                                                            }
-                                                            editable={isEdit}
-                                                            selected={selected}
-                                                        />
-                                                    </div>
-                                                );
-                                            })}
-                                    </div>
+                                        return (
+                                            <div key={course.courseId}>
+                                                <CourseCard
+                                                    course={course}
+                                                    role={role}
+                                                    onSelectCourse={(addCourse) =>
+                                                        onSelectCourse(course, addCourse)
+                                                    }
+                                                    editable={isEdit}
+                                                    selected={selected}
+                                                />
+                                            </div>
+                                        );
+                                    })}
+                            </div>
                             
                             {!isEdit &&
                             formerCourses.filter(
