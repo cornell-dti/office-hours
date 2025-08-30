@@ -8,23 +8,21 @@ import { filter } from 'rxjs/operators';
 let firebaseConfig: Record<string, unknown>;
 if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
     firebaseConfig = {
-    apiKey: process.env.REACT_APP_API_KEY,
-    authDomain: "queue-me-in-oberlin.firebaseapp.com",
-    projectId: "queue-me-in-oberlin",
-    storageBucket: "queue-me-in-oberlin.firebasestorage.app",
-    messagingSenderId: "1041093971965",
-    appId: "1:1041093971965:web:1d59d7aedf97c17cb8d394",
-    measurementId: "G-JJ6KRB9D3E"
+        apiKey: process.env.REACT_APP_API_KEY,
+        authDomain: "queue-me-in-oberlin-470213.firebaseapp.com",
+        projectId: "queue-me-in-oberlin-470213",
+        storageBucket: "queue-me-in-oberlin-470213.firebasestorage.app",
+        messagingSenderId: "27148633978",
+        appId: "1:27148633978:web:9fa990309f7c47d61878c3"
     };
 } else {
     firebaseConfig = {
-    apiKey: process.env.REACT_APP_API_KEY,
-    authDomain: "queue-me-in-oberlin.firebaseapp.com",
-    projectId: "queue-me-in-oberlin",
-    storageBucket: "queue-me-in-oberlin.firebasestorage.app",
-    messagingSenderId: "1041093971965",
-    appId: "1:1041093971965:web:1d59d7aedf97c17cb8d394",
-    measurementId: "G-JJ6KRB9D3E"
+        apiKey: process.env.REACT_APP_API_KEY,
+        authDomain: "queue-me-in-oberlin-470213.firebaseapp.com",
+        projectId: "queue-me-in-oberlin-470213",
+        storageBucket: "queue-me-in-oberlin-470213.firebasestorage.app",
+        messagingSenderId: "27148633978",
+        appId: "1:27148633978:web:9fa990309f7c47d61878c3"
     };
 
 }

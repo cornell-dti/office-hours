@@ -4,7 +4,7 @@ import { docData } from 'rxfire/firestore';
 import { switchMap, map } from 'rxjs/operators';
 import { Observable, of, EMPTY, combineLatest } from 'rxjs';
 import moment from 'moment';
-import { collection, doc, query, where, orderBy, documentId, Query, DocumentData } from 'firebase/firestore';
+import { collection, doc, query, where, orderBy, documentId, Query, DocumentData, getDocs } from 'firebase/firestore';
 import { firestore, loggedIn$, collectionData } from './firebase';
 import {
     SingletonObservable,
@@ -395,6 +395,7 @@ const useParameterizedSessionQuestions = createUseParamaterizedSingletonObservab
 export const useSessionQuestions = (sessionId: string, isTA: boolean): FireQuestion[] =>
     useParameterizedSessionQuestions(`${sessionId}/${isTA}`);
 
+//TODO: we don't use profiles in sessions anymore?
 export const useSessionProfile: (
     userId: string | undefined,
     sessionId: string | undefined
@@ -450,6 +451,65 @@ export const getTagsQuery = (courseId: string) => query(
     collection(firestore,'tags')
     ,where('courseId', '==', courseId));
 
-export const getQuestionsQuery = (courseId: string) => query(
-    collection(firestore,'questions')
-    ,where('courseId', '==', courseId));
+// Replaces getQuestionsQuery since courseId does not exist in the questions collection. Returns questions from a given courseId within startDate to endDate.
+export const useQuestionsQueries = ( startDate: moment.Moment,
+    endDate: moment.Moment,
+    courseId: string) => {
+const [questions, setQuestions] = useState<FireQuestion[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchQuestions = async () => {
+      const sessionsRef = collection(firestore, 'sessions');
+      const sessionsQuery = query(
+        sessionsRef,
+        where('startTime', '>=', startDate.toDate()),
+        where('startTime', '<=', endDate.toDate()),
+        where('courseId', '==', courseId)
+      );
+
+      const snapshot = await getDocs(sessionsQuery);
+      const courseSessions = snapshot.docs.map((doc) => doc.id);
+
+      if (cancelled) return;
+
+      if (courseSessions.length === 0) {
+        setQuestions([]);
+        return;
+      }
+
+      // Split into chunks of <= 10 for Firestore "in"
+      const sessionIdBlocks = blockArray(courseSessions, 10);
+
+      let allQuestions: FireQuestion[] = [];
+      for (const block of sessionIdBlocks) {
+        const q = query(
+          collection(firestore, 'questions'),
+          where('sessionId', 'in', block)
+        );
+        const qsSnapshot = await getDocs(q);
+
+        for (const d of qsSnapshot.docs) {
+            const data = d.data() as Omit<FireQuestion, 'questionId'>;
+            allQuestions.push({ questionId: d.id, ...data });
+        }
+      }
+
+      if (!cancelled) {
+        setQuestions(allQuestions);
+      }
+    };
+
+    fetchQuestions();
+    return () => {
+      cancelled = true;
+    };
+  }, 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [startDate.valueOf(), endDate.valueOf(), courseId]);
+
+  return questions;
+}
+    
+    

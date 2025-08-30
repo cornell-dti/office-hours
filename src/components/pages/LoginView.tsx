@@ -35,7 +35,7 @@ const LoginView: React.FC = () => {
        
         if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
             authProvider.setCustomParameters({
-                hd: 'cornell.edu',
+                hd: 'oberlin.edu',
             });
         } 
         

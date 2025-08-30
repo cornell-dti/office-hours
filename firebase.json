@@ -30,7 +30,10 @@
       "yarn --cwd \"$RESOURCE_DIR\" build"
     ],
     "source": "functions",
-    "runtime": "nodejs16"
+    "runtime": "nodejs20"
+  },
+   "engines": {
+    "node": ">=18.0.0"
   },
   "emulators": {
     "functions": {
