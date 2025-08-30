@@ -304,13 +304,13 @@ export const useCourseUsers = createUseParamaterizedSingletonObservableHook(cour
 type FireUserMap = { readonly [userId: string]: FireUser };
 export const useCourseUsersMap = (courseId: string, canReadUsers: boolean): FireUserMap => {
     const courseUsers = useCourseUsers(canReadUsers ? courseId : '');
-    const map: { [userId: string]: FireUser } = {};
+    const mapping: { [userId: string]: FireUser } = {};
 
     courseUsers.forEach(user => {
-        map[user.userId] = user;
+        mapping[user.userId] = user;
     });
 
-    return map;
+    return mapping;
 };
 
 const dummyProfessorOrTAList = ['DUMMY'];
@@ -395,7 +395,7 @@ const useParameterizedSessionQuestions = createUseParamaterizedSingletonObservab
 export const useSessionQuestions = (sessionId: string, isTA: boolean): FireQuestion[] =>
     useParameterizedSessionQuestions(`${sessionId}/${isTA}`);
 
-//TODO: we don't use profiles in sessions anymore?
+// TODO: we don't use profiles in sessions anymore?
 export const useSessionProfile: (
     userId: string | undefined,
     sessionId: string | undefined
@@ -451,65 +451,62 @@ export const getTagsQuery = (courseId: string) => query(
     collection(firestore,'tags')
     ,where('courseId', '==', courseId));
 
-// Replaces getQuestionsQuery since courseId does not exist in the questions collection. Returns questions from a given courseId within startDate to endDate.
+// Replaces getQuestionsQuery since courseId does not exist in the questions collection. 
+// Returns questions from a given courseId within startDate to endDate.
 export const useQuestionsQueries = ( startDate: moment.Moment,
     endDate: moment.Moment,
     courseId: string) => {
-const [questions, setQuestions] = useState<FireQuestion[]>([]);
+    const [questions, setQuestions] = useState<FireQuestion[]>([]);
 
-  useEffect(() => {
-    let cancelled = false;
+    useEffect(() => {
+        let cancelled = false;
 
-    const fetchQuestions = async () => {
-      const sessionsRef = collection(firestore, 'sessions');
-      const sessionsQuery = query(
-        sessionsRef,
-        where('startTime', '>=', startDate.toDate()),
-        where('startTime', '<=', endDate.toDate()),
-        where('courseId', '==', courseId)
-      );
+        const fetchQuestions = async () => {
+            const sessionsRef = collection(firestore, 'sessions');
+            const sessionsQuery = query(
+                sessionsRef,
+                where('startTime', '>=', startDate.toDate()),
+                where('startTime', '<=', endDate.toDate()),
+                where('courseId', '==', courseId)
+            );
 
-      const snapshot = await getDocs(sessionsQuery);
-      const courseSessions = snapshot.docs.map((doc) => doc.id);
+            const snapshot = await getDocs(sessionsQuery);
+            const courseSessions = snapshot.docs.map((d) => d.id);
 
-      if (cancelled) return;
+            if (cancelled) return;
 
-      if (courseSessions.length === 0) {
-        setQuestions([]);
-        return;
-      }
+            if (courseSessions.length === 0) {
+                setQuestions([]);
+                return;
+            }
 
-      // Split into chunks of <= 10 for Firestore "in"
-      const sessionIdBlocks = blockArray(courseSessions, 10);
+            // Split into chunks of <= 10 for Firestore "in"
+            const sessionIdBlocks = blockArray(courseSessions, 10);
+            const queries = sessionIdBlocks.map((block) =>
+                query(collection(firestore, "questions"), where("sessionId", "in", block))
+            );
+            const qsSnapshots = await Promise.all(queries.map((q) => getDocs(q)));
 
-      let allQuestions: FireQuestion[] = [];
-      for (const block of sessionIdBlocks) {
-        const q = query(
-          collection(firestore, 'questions'),
-          where('sessionId', 'in', block)
-        );
-        const qsSnapshot = await getDocs(q);
+            const allQuestions: FireQuestion[] = qsSnapshots.flatMap((qsSnapshot) =>
+                qsSnapshot.docs.map((d) => {
+                    const data = d.data() as Omit<FireQuestion, "questionId">;
+                    return { questionId: d.id, ...data };
+                }));
 
-        for (const d of qsSnapshot.docs) {
-            const data = d.data() as Omit<FireQuestion, 'questionId'>;
-            allQuestions.push({ questionId: d.id, ...data });
-        }
-      }
+            if (!cancelled) {
+                setQuestions(allQuestions);
+            }
+        };
 
-      if (!cancelled) {
-        setQuestions(allQuestions);
-      }
-    };
+        fetchQuestions();
+        return () => {
+            cancelled = true;
+        };
+    }, 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [startDate.valueOf(), endDate.valueOf(), courseId]);
 
-    fetchQuestions();
-    return () => {
-      cancelled = true;
-    };
-  }, 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  [startDate.valueOf(), endDate.valueOf(), courseId]);
-
-  return questions;
+    return questions;
 }
     
     

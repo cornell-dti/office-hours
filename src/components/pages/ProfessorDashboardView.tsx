@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dropdown, DropdownProps } from 'semantic-ui-react';
+import moment from 'moment';
 import TopBar from '../includes/TopBar';
 import ProfessorSidebar from '../includes/ProfessorSidebar';
 import TagsBarChart from '../includes/TagsBarChart';
 
 import { useQuery, useCourse, getTagsQuery, useQuestionsQueries } from '../../firehooks';
 import { START_DATE, END_DATE } from '../../constants';
-import moment from 'moment';
 
 interface CategoryTag {
     category: string;
@@ -39,14 +39,13 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
     const endDate = moment(new Date(END_DATE));
 
     const questions = useQuestionsQueries(startDate, endDate, courseId);
-    console.log(questions);
 
     const course = useCourse(courseId);
 
     useEffect(() => {
         if (!tags || !questions) return;
 
-         const categories: CategoryTag[] = tags
+        const categories: CategoryTag[] = tags
             .filter((tag) => tag.level === 1)
             .map((tag) => {
                 const enrichedChildTags: (FireTag & { questionCount: number; resolvedQuestionCount: number })[] = tags
@@ -138,7 +137,9 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
                                     <p className="totalQuestions"> {currentCategory.totalQuestions} </p>
                                     <p className="totalQuestionsLabel"> questions total </p>
                                     <hr />
-                                    <p className="percentResolved"> {Number.isInteger(currentCategory.percentResolved) ? currentCategory.percentResolved: currentCategory.percentResolved.toFixed(2)}% </p>
+                                    <p className="percentResolved"> {Number.isInteger(currentCategory.percentResolved)? 
+                                        currentCategory.percentResolved: 
+                                        currentCategory.percentResolved.toFixed(2)}% </p>
                                     <p className="percentResolvedLabel"> answered </p>
                                 </div>
                                 <TagsBarChart

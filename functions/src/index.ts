@@ -193,12 +193,14 @@ exports.onSessionUpdate = functions.firestore
             .where('status', 'in', ['assigned', 'unresolved'])
             .orderBy('timeEntered', 'asc').get()).docs;
 
-        const sessionName: string | undefined= (change.after.data() as FireSession).title
-
+        const sessionName: string | undefined= (change.after.data() as FireSession).title;
+        if (afterQuestions.length === 0) {
+            return; // exit early, nothing to notify
+        }
         const topQuestion: FireQuestion = (afterQuestions[0].data() as FireQuestion);
 
         // if the top active question was not notified, notify them
-        if (!topQuestion.wasNotified) {
+        if (topQuestion && !topQuestion.wasNotified) {
             const asker: FireUser = (await db.doc(`users/${topQuestion.askerId}`)
                 .get()).data() as FireUser;
             sendSMS(asker, `Your question has reached the top of the \

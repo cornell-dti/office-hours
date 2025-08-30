@@ -2,7 +2,7 @@ name: Oberlin
 on:
   push:
     branches:
-      - oberlin
+      - oberlin-setup
 
 jobs:
   deploy:
