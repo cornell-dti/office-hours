@@ -74,7 +74,7 @@ export const editAssignment = (cond: boolean, tag: FireTag,
 
     deletedTags
         .forEach(firetag =>
-            batch.delete(doc(firestore,'tags', firetag.tagId)));
+            firetag.tagId && batch.delete(doc(firestore,'tags', firetag.tagId)));
 
     newTags.forEach(tagText => {
         const childTag = doc(collection(firestore, "tags"));
