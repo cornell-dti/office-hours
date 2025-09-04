@@ -48,11 +48,9 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
                 courseStaffIds.length === 0 ?
                     of([])
                     : combineLatest(...courseStaffIds.map(courseStaffId =>
-                        docData<FireUser>(doc(firestore, 'users',courseStaffId) as DocumentReference<FireUser>,
-                            { idField: 'userId' })
-                    )).pipe(
-                        map(users=>users.filter((user): user is FireUser => user !== undefined))
-                    )
+                        docData<FireUser>(doc(firestore, 'users',courseStaffId),
+                        'userId')
+                    ))
             ));
 
             const subscription = users$.subscribe(u => setStaff(u));

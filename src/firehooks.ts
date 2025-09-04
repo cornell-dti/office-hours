@@ -19,7 +19,7 @@ export const useDoc = <T>(collectionDoc: string, id: string | undefined, idField
         () => {
             if (id) {
                 const primaryTag$: Observable<T> = 
-                docData(doc(firestore, collectionDoc, id), {idField: idFieldArg}) as Observable<T>;
+                docData(doc(firestore, collectionDoc, id), idFieldArg);
                 const subscription = primaryTag$.subscribe((d:T) => {
                     if (!d) {
                         // eslint-disable-next-line no-console
@@ -51,22 +51,13 @@ export const useQueryWithLoading = <T, P = string>(
     queryParameter: P, getQuery: (parameter: P) => Query, idFieldArg: string
 ): T[] | null => {
     const [result, setResult] = useState<T[] | null>(null);
-    const memoizedQuery = useMemo(() => getQuery(queryParameter), [queryParameter, getQuery]);
     useEffect(
         () => {
             
-            const results$:Observable<T[]> = collectionData(memoizedQuery, {idField: idFieldArg}) as Observable<T[]>;
+            const results$:Observable<T[]> = collectionData(getQuery(queryParameter), idFieldArg);
 
             // updates results as they come in. Triggers re-renders.
             const subscription = results$.subscribe(results => setResult(results));
-            //     {
-            //     const mappedResults: T[] = results.map((result: DocumentData) => {
-            //         // Safely map or cast DocumentData to T (e.g., FireTag or FireHybridSession)
-            //         return result as T;
-            //     });
-            //     setResult(mappedResults);
-            // });
-
             return () => { subscription.unsubscribe(); };
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -79,12 +70,11 @@ export const useBatchQueryWithLoading = <T, P = string>(
     queryParameter: P, getQueries: (parameter: P) => (Query)[], idFieldArg: string
 ): T[] | null => {
     const [result, setResult] = useState<T[] | null>(null);
-    const memoizedQueries = useMemo(() => getQueries(queryParameter), [queryParameter, getQueries]);
     useEffect(
         () => {
             let partialResult: T[] = [];
-            const effects = memoizedQueries.map(getQuery => {
-                const results$: Observable<T[]> = collectionData(getQuery, {idField: idFieldArg}) as Observable<T[]>;
+            const effects = getQueries(queryParameter).map(getQuery => {
+                const results$: Observable<T[]> = collectionData(getQuery, idFieldArg);
 
                 // updates results as they come in. Triggers re-renders.
                 const subscription = results$.subscribe(results => {
@@ -119,7 +109,7 @@ export const useProfessorViewSessions = (
                 where('startTime', '>=', new Date(selectedWeekEpoch)),
                 where('startTime', '<=', new Date(selectedWeekEpoch + 7 * ONE_DAY)));
             const results$: Observable<FireSession[]> = collectionData(sessionsQuery,
-                {idField:'sessionId'}) as Observable<FireSession[]>;
+                'sessionId');
 
             const subscription = results$.subscribe(results => setResult(results));
             return () => { subscription.unsubscribe();
@@ -147,7 +137,7 @@ export const useCoursesBetweenDates = (
             );
 
             const sessions$: Observable<FireSession[]> = collectionData(sessionsQuery, 
-                {idField: 'sessionId'}) as Observable<FireSession[]>;
+                'sessionId');
             const s1 = sessions$.subscribe(newSessions => setSessions(newSessions));
 
             const questionsRef = collection(firestore, 'questions');
@@ -160,11 +150,11 @@ export const useCoursesBetweenDates = (
                                 questionsRef,
                                 where('sessionId', '==', session.sessionId)
                             );
-                            return collectionData(questionsQuery, {idField: 'questionId'})
+                            return collectionData(questionsQuery, 'questionId')
                         }
                         )) : EMPTY;}
                 )
-            ) as Observable<FireQuestion[][]>;
+            );
             
             const s2 = questions$.subscribe((newQuestions: FireQuestion[][]) => setQuestions(newQuestions));
             return () => {
@@ -192,7 +182,7 @@ export const useBatchQuery = <T, P = string>(
 
 const myUserObservable = loggedIn$.pipe(
     switchMap(u => u && u.uid ?
-        docData(doc(firestore, 'users', u.uid), {idField: 'userId'}) as Observable<FireUser>
+        docData(doc(firestore, 'users', u.uid), 'userId') as Observable<FireUser>
         : EMPTY
     )
 );
@@ -235,9 +225,7 @@ export const useIsAdmin: () => unknown =
     createUseSingletonObservableHook(isAdminSingletonObservable);
 
 const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
-    switchMap(() => collectionData(collection(firestore,'courses') , {idField: 'courseId'}).pipe(
-        map((docs: DocumentData[]) => docs as FireCourse[])
-    ))
+    switchMap(() => collectionData<FireCourse>(collection(firestore,'courses') , 'courseId'))
 );
 
 const getAskerQuestionsQuery = (sessionId: string, askerId: string) => {
@@ -248,7 +236,7 @@ const useParameterizedAskerQuestions = createUseParamaterizedSingletonObservable
     const [sessionId, askerId] = parameter.split('/');
     const askerQuery = getAskerQuestionsQuery(sessionId, askerId);
     return new SingletonObservable([], 
-        collectionData<FireQuestion>(askerQuery as Query<FireQuestion, DocumentData>, {idField: 'questionId'}));
+        collectionData<FireQuestion>(askerQuery,'questionId'));
 });
 export const useAskerQuestions = (sessionId: string, askerId: string): null | FireQuestion[] => {
     return useParameterizedAskerQuestions(`${sessionId}/${askerId}`);
@@ -292,9 +280,8 @@ const courseUserQuery = (courseId: string) => (
 export const useCourseUsers = createUseParamaterizedSingletonObservableHook(courseId =>
     new SingletonObservable(
         [],
-        courseId === '' ? of([]) : collectionData(courseUserQuery(courseId), 
-            {idField:'userId'}) as Observable<FireUser[]>
-    )
+        courseId === '' ? of([]) : collectionData<FireUser>(courseUserQuery(courseId), 
+            'userId'))
 );
 type FireUserMap = { readonly [userId: string]: FireUser };
 export const useCourseUsersMap = (courseId: string, canReadUsers: boolean): FireUserMap => {
@@ -385,7 +372,7 @@ const getSessionQuestionSlotsQuery = (sessionId: string) =>
 const useParameterizedSessionQuestions = createUseParamaterizedSingletonObservableHook(parameter => {
     const [sessionId, isTA] = parameter.split('/');
     const q = isTA === 'true' ? getSessionQuestionsQuery(sessionId) : getSessionQuestionSlotsQuery(sessionId);
-    return new SingletonObservable([], collectionData(q, {idField: 'questionId'}) as Observable<FireQuestion[]>);
+    return new SingletonObservable([], collectionData<FireQuestion>(q, 'questionId'));
 });
 export const useSessionQuestions = (sessionId: string, isTA: boolean): FireQuestion[] =>
     useParameterizedSessionQuestions(`${sessionId}/${isTA}`);
@@ -398,9 +385,9 @@ export const useSessionProfile: (
 
 const allBlogPostsObservable: Observable<readonly BlogPost[]> = loggedIn$.pipe(
     switchMap(() =>
-        collectionData(query(collection(firestore,'blogPosts'),orderBy("timeEntered", "desc")), 
-            {idField: 'postId'}) as Observable<BlogPost[]>
-    ));
+        collectionData<BlogPost>(query(collection(firestore,'blogPosts'),orderBy("timeEntered", "desc")), 
+             'postId'))
+    );
 
 const allBlogPostsSingletonObservable = new SingletonObservable([], allBlogPostsObservable);
 
@@ -411,7 +398,7 @@ export const useParameterizedComments: (questionId: string) => readonly FireComm
     createUseParamaterizedSingletonObservableHook(questionId => {
         const commentsRef = collection(doc(firestore, 'questions', questionId), 'comments');
         return new SingletonObservable([], 
-            collectionData(commentsRef, {idField: 'commentId'}) as Observable<FireComment[]>);
+            collectionData<FireComment>(commentsRef, 'commentId'));
     });
 
 
