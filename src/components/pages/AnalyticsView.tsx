@@ -1,8 +1,10 @@
+/* eslint-disable */
+
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Table } from 'semantic-ui-react';
 import { CURRENT_SEMESTER, START_DATE } from '../../constants';
-import { firestore, Timestamp } from '../../firebase';
+//import { firestore, Timestamp } from '../../firebase';
 import { useIsAdmin } from '../../firehooks';
 
 

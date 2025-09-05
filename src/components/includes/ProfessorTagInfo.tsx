@@ -130,7 +130,7 @@ class ProfessorTagInfo extends React.Component<PropTypes, State> {
     };
 
     handleEditAssignment = (): void => {
-         if (!this.props.tag) return;
+        if (!this.props.tag) return;
 
         const parentTagChanged = this.props.tag ?
             this.state.tag.name !== this.props.tag.name || this.state.tag.active !== this.props.tag.active

@@ -25,7 +25,7 @@ export const addQuestion = (
 ): boolean => {
     if (user != null) {
         const batch = db.batch();
-         const questionId = db.collection('questions').doc().id;
+        const questionId = db.collection('questions').doc().id;
         const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
             askerId: user.uid,
             sessionId: session.sessionId,
@@ -234,7 +234,7 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
     return unsubscribe;
 }
 
-    export const submitFeedback = (removedQuestionId: string | undefined, relevantCourse: FireCourse, session: string) => 
+export const submitFeedback = (removedQuestionId: string | undefined, relevantCourse: FireCourse, session: string) => 
     (rating?: number, feedback?: string) => {
         
         const feedbackRecord = {

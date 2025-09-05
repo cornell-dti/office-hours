@@ -83,7 +83,7 @@ export const logOut = () => {
     auth()
         .signOut()
         .then(() => {
-           // eslint-disable-next-line no-console
+            // eslint-disable-next-line no-console
             console.log("User signed out successfully.");
         })
         .catch((error) => {

@@ -59,7 +59,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
         window.addEventListener("resize", updateWindowDimensions);
 
-         const tags$ = collectionData<FireTag>(
+        const tags$ = collectionData<FireTag>(
             firestore.collection("tags").where("courseId", "==", course.courseId),
             "tagId"
         );

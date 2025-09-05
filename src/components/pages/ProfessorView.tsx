@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Icon, DropdownItemProps } from 'semantic-ui-react';
 import { of, combineLatest, Observable } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { docData } from 'rxfire/firestore';
 
 import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';

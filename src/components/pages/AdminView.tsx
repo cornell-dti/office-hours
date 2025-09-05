@@ -9,7 +9,6 @@ import AdminCourseCard from '../includes/AdminCourseCard';
 import AdminCourseCreator from '../includes/AdminCourseCreator';
 import { useAllCourses, useIsAdmin } from '../../firehooks';
 import { CURRENT_SEMESTER, ALL_SEMESTERS } from '../../constants';
-import  AnalyticsView from './AnalyticsView';
 
 
 const AdminView = () => {
