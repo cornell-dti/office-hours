@@ -5,7 +5,6 @@ import { useHistory } from "react-router";
 import { connect } from "react-redux";
 import addNotification from "react-push-notification";
 import { Icon } from "semantic-ui-react";
-import { doc, updateDoc, Timestamp} from 'firebase/firestore';
 import { logOut } from "../../firebasefunctions/user";
 import Logo from "../../media/QLogo2.svg";
 import CalendarHeader from "./CalendarHeader";
@@ -13,7 +12,7 @@ import ProfessorStudentToggle from "./ProfessorStudentToggle";
 import TopBarNotifications from "./TopBarNotifications";
 import { useNotificationTracker } from "../../firehooks";
 import { RootState } from "../../redux/store";
-import { firestore } from "../../firebase";
+import { firestore, Timestamp } from "../../firebase";
 import Snackbar from "./Snackbar";
 import TextNotificationModal from "./TextNotificationModal";
 
@@ -57,11 +56,10 @@ const TopBar = (props: Props) => {
             // Skipping update, lastSesnt was updated recently
             return;
         }
-        updateDoc(doc(firestore, "notificationTrackers", user.email), {
-            lastSent: now
-        }).catch(error => {
-            // eslint-disable-next-line no-console
-            console.error("Error updating lastSent:", error)});
+        const batch = firestore.batch();
+        batch.update(firestore.doc(`notificationTrackers/${user.email}`), {
+            lastSetn: now
+        });
     }, [
         notificationTracker, 
         user,

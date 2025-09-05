@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Icon } from "semantic-ui-react";
 
 import { connect } from "react-redux";
-// import { onSnapshot, doc, updateDoc, deleteField} from 'firebase/firestore';
 import SessionInformationHeader from "./SessionInformationHeader";
 import SessionQuestionsContainer from "./SessionQuestionsContainer";
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import {Timestamp} from 'firebase/firestore';
+import { Timestamp } from "../../firebase"
 import plusCircle from "../../media/plus-circle.svg";
 import chevronUp from "../../media/chevron-up.svg";
 import chevronDown from "../../media/chevron-down.svg";

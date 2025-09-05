@@ -1,5 +1,7 @@
-import { getAuth, signOut } from "firebase/auth";
-import { Firestore, runTransaction, doc } from "firebase/firestore";
+import firebase from 'firebase/app';
+
+
+const auth = firebase.auth;
 
 type FireUser = {
     userId: string;
@@ -12,8 +14,7 @@ type FireUser = {
     phoneNumber: string;
     textNotifsEnabled: boolean;
 };
-export const userUpload = async (user: { uid: string; email: string | null; 
-    displayName: string | null; photoURL: string | null }, db: Firestore) => {
+export const userUpload = async (user: firebase.User | null, db: firebase.firestore.Firestore) => {
     if (user != null) {
         const uid = user.uid;
         const email = user.email || undefined;
@@ -32,10 +33,10 @@ export const userUpload = async (user: { uid: string; email: string | null;
         if (uid && email && displayName && photoUrl && firstName && lastName) {
             const firstNameDefined = firstName || "";
             try {
-                await runTransaction(db, async (transaction) => {
-                    const userDocumentReference = doc(db, 'users', uid);
+                await db.runTransaction(async (transaction) => {
+                    const userDocumentReference = db.collection('users').doc(uid);
                     const userDocument = await transaction.get(userDocumentReference);
-                    if (userDocument.exists()) {
+                    if (userDocument.exists) {
                         const partialUserDocument: Partial<FireUser> = {
                             email,
                             firstName: firstNameDefined,
@@ -65,11 +66,24 @@ export const userUpload = async (user: { uid: string; email: string | null;
     }
 };
 
+// export const logOut = () => {
+//     const auth = getAuth();
+//     signOut(auth)
+//         .then(() => {
+//             // eslint-disable-next-line no-console
+//             console.log("User signed out successfully.");
+//         })
+//         .catch((error) => {
+//             // eslint-disable-next-line no-console
+//             console.error("Error signing out:", error);
+//         });
+// };
+
 export const logOut = () => {
-    const auth = getAuth();
-    signOut(auth)
+    auth()
+        .signOut()
         .then(() => {
-            // eslint-disable-next-line no-console
+           // eslint-disable-next-line no-console
             console.log("User signed out successfully.");
         })
         .catch((error) => {

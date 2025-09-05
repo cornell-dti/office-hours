@@ -5,7 +5,6 @@ import { Icon } from 'semantic-ui-react';
 // @ts-ignore (Linkify has no typescript)
 import Linkify from 'linkifyjs/react';
 import { connect } from 'react-redux';
-import { doc, updateDoc, writeBatch} from 'firebase/firestore';
 import { firestore } from '../../firebase';
 import SelectedTags from './SelectedTags';
 import Arrow from '../../media/arrow_discussion.svg';
@@ -36,11 +35,11 @@ const DiscussionQuestion = (props: Props) => {
     const [showDiscComment, setShowDiscComment] = useState(false);
 
     const retractQuestion = (): void => {
-        const batch = writeBatch(firestore);
+        const batch = firestore.batch();
         const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
         const questionUpdate: Partial<FireQuestion> = slotUpdate;
-        batch.update(doc(firestore, 'questionSlots', question.questionId), slotUpdate);
-        batch.update(doc(firestore, 'questions', question.questionId), questionUpdate);
+        batch.update(firestore.doc(`questionSlots/${question.questionId}`), slotUpdate);
+        batch.update(firestore.doc(`questions/${question.questionId}`), questionUpdate);
         batch.commit();
     };
 
@@ -48,7 +47,7 @@ const DiscussionQuestion = (props: Props) => {
         if (props.isPast) {
             return;
         }
-        const batch = writeBatch(firestore);
+        const batch = firestore.batch();
         const upvotedUsers = question.upvotedUsers;
         const userIndex = upvotedUsers ? upvotedUsers.findIndex(userId => userId === props.user.userId) : -1;
         if (userIndex !== -1) {
@@ -57,7 +56,7 @@ const DiscussionQuestion = (props: Props) => {
             upvotedUsers.push(props.user.userId);
         }
         const update = { upvotedUsers };
-        batch.update(doc(firestore, 'questions', question.questionId), update);
+        batch.update(firestore.doc(`questions/${question.questionId}`), update);
         batch.commit();
     };
 
@@ -68,7 +67,10 @@ const DiscussionQuestion = (props: Props) => {
         } else {
             update = { studentComment: newComment };
         }
-        updateDoc(doc(firestore, 'questions', question.questionId), update).catch(() => { });
+        firestore
+            .doc(`questions/${question.questionId}`)
+            .update(update)
+            .catch(() => { });
     };
 
     const resolveQuestion = () => {
