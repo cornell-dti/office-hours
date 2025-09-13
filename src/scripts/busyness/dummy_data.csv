@@ -1,0 +1,51 @@
+answererId,askerId,content,location,position,primaryTag,secondaryTag,sessionId,status,date,timeAssigned,timeEntered,wasNotified,startTime,endTime
+answerer_001,asker_008,Need help,Library,1,tagP_004,tagS_003,session_001,pending,9/8/2025,9:28:17 AM,9:24:45 AM,TRUE,9:00:00 AM,11:00:00 AM
+answerer_003,asker_009,Follow-up,Lab,2,tagP_004,tagS_003,session_001,answered,9/9/2025,9:35:31 AM,9:33:46 AM,FALSE,9:00:00 AM,11:00:00 AM
+answerer_006,asker_007,Clarification,Lab,3,tagP_002,tagS_002,session_005,pending,9/10/2025,6:55:34 PM,6:54:12 PM,FALSE,6:00:00 PM,7:00:00 PM
+answerer_002,asker_010,Example question,Test,4,tagP_004,tagS_005,session_004,answered,9/11/2025,11:52:56 AM,11:52:46 AM,FALSE,10:30:00 AM,12:00:00 PM
+answerer_004,asker_010,Example question,Library,5,tagP_003,tagS_001,session_002,answered,9/12/2025,1:18:41 PM,1:17:27 PM,TRUE,1:00:00 PM,1:30:00 PM
+answerer_010,asker_009,Example question,Library,6,tagP_001,tagS_005,session_001,pending,9/13/2025,9:40:36 AM,9:37:42 AM,FALSE,9:00:00 AM,11:00:00 AM
+answerer_006,asker_004,Clarification,Dorm,7,tagP_002,tagS_005,session_002,archived,9/14/2025,1:09:43 PM,1:04:47 PM,FALSE,1:00:00 PM,1:30:00 PM
+answerer_008,asker_009,Testing,Cafeteria,8,tagP_004,tagS_004,session_003,retracted,9/8/2025,3:48:15 PM,3:47:15 PM,FALSE,3:00:00 PM,4:15:00 PM
+answerer_004,asker_002,Testing,Lab,9,tagP_002,tagS_002,session_001,archived,9/9/2025,10:01:24 AM,9:56:47 AM,TRUE,9:00:00 AM,11:00:00 AM
+answerer_004,asker_007,Testing,Library,10,tagP_005,tagS_001,session_002,archived,9/10/2025,1:12:08 PM,1:08:28 PM,FALSE,1:00:00 PM,1:30:00 PM
+answerer_009,asker_006,Testing,Lab,11,tagP_004,tagS_001,session_003,archived,9/11/2025,4:11:34 PM,4:08:37 PM,TRUE,3:00:00 PM,4:15:00 PM
+answerer_002,asker_008,Need help,Lab,12,tagP_005,tagS_001,session_003,archived,9/12/2025,3:41:18 PM,3:36:28 PM,FALSE,3:00:00 PM,4:15:00 PM
+answerer_003,asker_008,Need help,Library,13,tagP_003,tagS_004,session_003,archived,9/13/2025,3:20:30 PM,3:19:00 PM,TRUE,3:00:00 PM,4:15:00 PM
+answerer_009,asker_003,Testing,Dorm,14,tagP_003,tagS_005,session_004,archived,9/14/2025,11:03:17 AM,11:02:37 AM,TRUE,10:30:00 AM,12:00:00 PM
+answerer_004,asker_008,Need help,Test,15,tagP_003,tagS_003,session_005,pending,9/8/2025,6:33:56 PM,6:32:01 PM,FALSE,6:00:00 PM,7:00:00 PM
+answerer_001,asker_009,Testing,Dorm,16,tagP_001,tagS_003,session_005,archived,9/9/2025,6:01:57 PM,6:00:09 PM,TRUE,6:00:00 PM,7:00:00 PM
+answerer_001,asker_008,Clarification,Dorm,17,tagP_001,tagS_003,session_001,answered,9/10/2025,10:50:20 AM,10:48:27 AM,TRUE,9:00:00 AM,11:00:00 AM
+answerer_001,asker_010,Clarification,Cafeteria,18,tagP_002,tagS_001,session_002,pending,9/11/2025,1:27:37 PM,1:26:31 PM,TRUE,1:00:00 PM,1:30:00 PM
+answerer_005,asker_005,Testing,Cafeteria,19,tagP_004,tagS_001,session_002,archived,9/12/2025,1:10:53 PM,1:07:57 PM,FALSE,1:00:00 PM,1:30:00 PM
+answerer_009,asker_005,Testing,Test,20,tagP_004,tagS_003,session_003,archived,9/13/2025,3:11:34 PM,3:09:00 PM,FALSE,3:00:00 PM,4:15:00 PM
+answerer_009,asker_006,Testing,Library,21,tagP_002,tagS_004,session_001,archived,9/14/2025,9:29:46 AM,9:26:34 AM,TRUE,9:00:00 AM,11:00:00 AM
+answerer_010,asker_004,Follow-up,Lab,22,tagP_004,tagS_003,session_004,archived,9/8/2025,11:15:16 AM,11:13:14 AM,TRUE,10:30:00 AM,12:00:00 PM
+answerer_006,asker_002,Need help,Library,23,tagP_002,tagS_003,session_001,pending,9/9/2025,10:26:08 AM,10:25:28 AM,FALSE,9:00:00 AM,11:00:00 AM
+answerer_010,asker_002,Example question,Test,24,tagP_002,tagS_002,session_004,retracted,9/10/2025,10:39:45 AM,10:35:41 AM,FALSE,10:30:00 AM,12:00:00 PM
+answerer_009,asker_006,Testing,Cafeteria,25,tagP_003,tagS_003,session_004,answered,9/11/2025,10:59:34 AM,10:55:59 AM,TRUE,10:30:00 AM,12:00:00 PM
+answerer_009,asker_005,Follow-up,Dorm,26,tagP_004,tagS_002,session_003,answered,9/12/2025,4:10:26 PM,4:08:29 PM,TRUE,3:00:00 PM,4:15:00 PM
+answerer_006,asker_009,Follow-up,Library,27,tagP_003,tagS_003,session_001,archived,9/13/2025,10:15:17 AM,10:14:14 AM,TRUE,9:00:00 AM,11:00:00 AM
+answerer_002,asker_008,Testing,Test,28,tagP_004,tagS_002,session_002,retracted,9/14/2025,1:09:39 PM,1:07:29 PM,TRUE,1:00:00 PM,1:30:00 PM
+answerer_005,asker_008,Testing,Dorm,29,tagP_004,tagS_005,session_002,retracted,9/8/2025,1:28:04 PM,1:26:44 PM,TRUE,1:00:00 PM,1:30:00 PM
+answerer_004,asker_004,Example question,Dorm,30,tagP_003,tagS_004,session_002,archived,9/9/2025,1:15:50 PM,1:11:10 PM,FALSE,1:00:00 PM,1:30:00 PM
+answerer_005,asker_002,Clarification,Dorm,31,tagP_001,tagS_003,session_002,retracted,9/10/2025,1:22:49 PM,1:19:48 PM,TRUE,1:00:00 PM,1:30:00 PM
+answerer_004,asker_006,Testing,Lab,32,tagP_004,tagS_003,session_004,pending,9/11/2025,11:57:18 AM,11:54:11 AM,TRUE,10:30:00 AM,12:00:00 PM
+answerer_003,asker_006,Testing,Cafeteria,33,tagP_002,tagS_002,session_005,retracted,9/12/2025,6:10:29 PM,6:06:11 PM,FALSE,6:00:00 PM,7:00:00 PM
+answerer_010,asker_001,Follow-up,Lab,34,tagP_005,tagS_001,session_002,archived,9/13/2025,1:28:33 PM,1:25:25 PM,TRUE,1:00:00 PM,1:30:00 PM
+answerer_005,asker_008,Testing,Library,35,tagP_005,tagS_002,session_005,pending,9/14/2025,6:35:23 PM,6:32:35 PM,FALSE,6:00:00 PM,7:00:00 PM
+answerer_002,asker_004,Clarification,Test,36,tagP_002,tagS_003,session_004,pending,9/8/2025,11:12:24 AM,11:08:56 AM,FALSE,10:30:00 AM,12:00:00 PM
+answerer_002,asker_006,Example question,Library,37,tagP_004,tagS_004,session_004,archived,9/9/2025,11:37:03 AM,11:32:40 AM,TRUE,10:30:00 AM,12:00:00 PM
+answerer_003,asker_008,Example question,Dorm,38,tagP_003,tagS_002,session_002,archived,9/10/2025,1:26:17 PM,1:25:36 PM,FALSE,1:00:00 PM,1:30:00 PM
+answerer_004,asker_002,Testing,Lab,39,tagP_003,tagS_002,session_004,archived,9/11/2025,11:21:06 AM,11:19:38 AM,TRUE,10:30:00 AM,12:00:00 PM
+answerer_007,asker_006,Need help,Test,40,tagP_002,tagS_002,session_002,archived,9/12/2025,1:23:59 PM,1:20:29 PM,TRUE,1:00:00 PM,1:30:00 PM
+answerer_008,asker_004,Clarification,Library,41,tagP_005,tagS_002,session_004,archived,9/13/2025,11:33:12 AM,11:29:42 AM,TRUE,10:30:00 AM,12:00:00 PM
+answerer_007,asker_002,Need help,Test,42,tagP_003,tagS_002,session_004,pending,9/14/2025,11:32:18 AM,11:28:17 AM,FALSE,10:30:00 AM,12:00:00 PM
+answerer_008,asker_007,Need help,Dorm,43,tagP_003,tagS_001,session_003,retracted,9/8/2025,3:16:38 PM,3:14:57 PM,TRUE,3:00:00 PM,4:15:00 PM
+answerer_003,asker_009,Clarification,Dorm,44,tagP_005,tagS_003,session_004,answered,9/9/2025,11:19:13 AM,11:15:02 AM,TRUE,10:30:00 AM,12:00:00 PM
+answerer_008,asker_003,Example question,Lab,45,tagP_004,tagS_002,session_005,answered,9/10/2025,6:50:54 PM,6:50:11 PM,TRUE,6:00:00 PM,7:00:00 PM
+answerer_008,asker_002,Testing,Test,46,tagP_001,tagS_001,session_001,retracted,9/11/2025,9:36:53 AM,9:36:15 AM,FALSE,9:00:00 AM,11:00:00 AM
+answerer_002,asker_006,Need help,Library,47,tagP_001,tagS_001,session_002,retracted,9/12/2025,1:28:34 PM,1:27:49 PM,FALSE,1:00:00 PM,1:30:00 PM
+answerer_002,asker_006,Follow-up,Dorm,48,tagP_004,tagS_004,session_003,answered,9/13/2025,3:48:44 PM,3:45:59 PM,TRUE,3:00:00 PM,4:15:00 PM
+answerer_001,asker_003,Testing,Test,49,tagP_005,tagS_002,session_002,retracted,9/14/2025,1:24:11 PM,1:22:42 PM,TRUE,1:00:00 PM,1:30:00 PM
+answerer_004,asker_005,Need help,Cafeteria,50,tagP_001,tagS_001,session_002,pending,9/8/2025,1:29:56 PM,1:25:06 PM,FALSE,1:00:00 PM,1:30:00 PM
