@@ -1,3 +1,5 @@
+/* eslint-disable react/button-has-type */
+/* eslint-disable react/no-unused-prop-types */
 import * as React from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
 import { Icon } from "semantic-ui-react";
@@ -27,6 +29,7 @@ const WaitTimeGraph = (props: Props) => {
 
     const currentHour = today.getHours();
 
+    // eslint-disable-next-line no-console
     console.log("Current hour:", currentHour);
 
     // Transform data to have hours on x-axis and one series for selected day
@@ -76,6 +79,7 @@ const WaitTimeGraph = (props: Props) => {
                 keys={["waitTime"]}
                 indexBy="hour"
                 borderWidth={1}
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 colors={(bar) => "#4285F4"}
                 margin={{
                     top: 20,

@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from "react";
 import Moment from "react-moment";
 import { Icon } from "semantic-ui-react";
 
 import { Grid } from "@material-ui/core";
 import { connect } from "react-redux";
+import { useState } from "react";
 import { pauseSession } from "../../firebasefunctions/session";
 import users from "../../media/users.svg";
 import calendarIcon from "../../media/Calendar_icon.svg";
@@ -13,7 +15,6 @@ import leftArrowIcon from "../../media/leftArrowIcon.svg";
 import { useSessionQuestions, useSessionTAs } from "../../firehooks";
 import { computeNumberAhead } from "../../utilities/questions";
 import { RootState } from "../../redux/store";
-import { useState } from "react";
 import WaitTimeGraph from "./WaitTimeGraph";
 import sampleData from "../../dummy_data.json";
 
@@ -112,16 +113,14 @@ const SessionInformationHeader = ({
             } else {
                 setRatioText(`${numberOfTAs} ${pluralize(numberOfTAs, "TA", "TAs")} available`);
             }
-            return;
+            
         } else if (ratio === -1) {
             setRatioText("No TAs available");
-            return;
+            
+        } else if (session.hasUnresolvedQuestion) {
+            setRatioText(`${ratio} ${pluralize(ratio, "student", "students")}/TA`);
         } else {
-            if (session.hasUnresolvedQuestion) {
-                setRatioText(`${ratio} ${pluralize(ratio, "student", "students")}/TA`);
-            } else {
-                setRatioText(`${numberOfTAs} ${pluralize(numberOfTAs, "TA", "TAs")} available`);
-            }
+            setRatioText(`${numberOfTAs} ${pluralize(numberOfTAs, "TA", "TAs")} available`);
         }
     }, [session.studentPerTaRatio, session.hasUnresolvedQuestion, tas, questions]);
 
