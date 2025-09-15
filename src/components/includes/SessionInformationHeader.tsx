@@ -97,12 +97,6 @@ const SessionInformationHeader = ({
 }: Props) => {
     const [ratioText, setRatioText] = React.useState("");
 
-    const tas = useSessionTAs(course, session);
-    
-    const pluralize = (count: number, singular: string, plural: string) => {
-        return count <= 1 ? singular : plural;
-    };
-
     React.useEffect(() => {
         const ratio = session.studentPerTaRatio;
         const numberOfTAs = session.tas.length;
@@ -123,8 +117,9 @@ const SessionInformationHeader = ({
                 setRatioText(`${numberOfTAs} ${pluralize(numberOfTAs, "TA", "TAs")} available`);
             }
         }
-    }, [session.studentPerTaRatio, session.hasUnresolvedQuestion, tas, questions]);
+    }, [session.studentPerTaRatio, session.officeHourStarted]);
 
+    const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined),
         user.userId,
@@ -311,7 +306,11 @@ const SessionInformationHeader = ({
                                                                 src={ta.photoUrl || "/placeholder.png"}
                                                                 alt={`${ta.firstName} ${ta.lastName}'s Photo`}
                                                                 className="TACircle"
-                                                                referrerPolicy="no-referrer"
+                                                                style={{
+                                                                    width: "60px",
+                                                                    height: "60px",
+                                                                    border: "2px solid #f2f2f2",
+                                                                }}
                                                             />
                                                         </div>
                                                     ))}
