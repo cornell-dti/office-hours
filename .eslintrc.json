@@ -46,6 +46,7 @@
         "react/no-unused-state": "warn",
         "react/prop-types": "off",
         "react/prefer-stateless-function": "warn",
+        "react/require-default-props": "off",
         "react/state-in-constructor": "off",
         "import/extensions": "off",
         "import/prefer-default-export": "off",

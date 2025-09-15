@@ -54,8 +54,10 @@ const TopBarNotifications = (
     }, [user]);
 
     useEffect(() => {
-        if(notificationTracker !== undefined && !hasViewed && dropped) {
-            periodicClearNotifications(user, notificationTracker);
+        if(notificationTracker && !hasViewed && dropped) {
+            (async () => {
+                await periodicClearNotifications(user, notificationTracker);
+            })();
         }
         toggleHasViewed(notificationTracker === undefined || 
         notifications === undefined || notifications.length === 0 ||

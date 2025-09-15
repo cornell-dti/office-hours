@@ -34,6 +34,16 @@
         box-shadow: 5px 10px 20px rgb(219, 219, 219);
     }
 
+    &.active.ineditable:hover {
+        cursor: pointer;
+        box-shadow: 5px 10px 20px rgb(219, 219, 219);
+    }
+
+    &.selected.active.ineditable:hover {
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
     .grid-container {
         height: 58px;
     }
