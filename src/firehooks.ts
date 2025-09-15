@@ -46,12 +46,11 @@ export const useQueryWithLoading = <T, P = string>(
     useEffect(
         () => {
             
-            const results$:Observable<T[]> = collectionData(getQuery(queryParameter), 
-                {idField: idFieldArg}) as Observable<T[]>;
+            const results$:Observable<T[]> = collectionData(getQuery(queryParameter), {idField: idFieldArg}) as Observable<T[]>;
 
             // updates results as they come in. Triggers re-renders.
             const subscription = results$.subscribe(results => setResult(results));
-            return () => { subscription.unsubscribe(); };
+             return () => { subscription.unsubscribe(); };
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [queryParameter, getQuery, idFieldArg, collectionData]
