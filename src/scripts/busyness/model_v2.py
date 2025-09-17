@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import firebase_admin
+from firebase_admin import firestore
+from google.cloud.firestore_v1.base_query import FieldFilter, Or, And
+import datetime
 
 #question might actually not matter at all. we need inputs that matter for the whole session, not an individual question
 #what the frontend will call: at [session start time to end time] on [day of week] for [course], what is the estimated wait time? 
@@ -11,6 +15,36 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 # x = [startHour, startMin, endHour, endMin, courseName, month, dayOfWeek]
 # y = [wait time] (this is a supervised learning problem. use the waitTimeBeforeAssignment col in the df )
 # maybe have a thing where if the prediction date is too far off we just do a uniform distribution cause what's the point in calling the model
+
+
+
+def get_real_data():
+    # only do this if the file doesn't alr exist
+    cred_obj = firebase_admin.credentials.ApplicationDefault()
+    default_app = firebase_admin.initialize_app(cred_obj, {
+        'databaseURL':'https://qmi-test.firebaseio.com'
+        })
+
+    db = firestore.client()
+
+    print("Firebase initalized :D")
+
+    start = datetime.datetime(2025, 8, 18)
+    end = datetime.datetime(2025, 12, 19)
+    questions = (
+        db.collection('questions')
+        .where(filter=FieldFilter("timeEntered", ">=", start))
+        .limit(5) # to be safe for now
+        .stream()
+    )
+
+    for doc in questions:
+        #here save into csv
+        print(f"{doc.id} => {doc.to_dict()}")
+
+
+
+
 
 def load_data(file_path):
     """Load and preprocess data from CSV file"""
@@ -46,33 +80,35 @@ def load_data(file_path):
 
 def main():
     """Run the vanilla LSTM pipeline"""
+    get_real_data()
+
     # Load data
-    df = load_data('dummy_data.csv')
+    # df = load_data('dummy_data.csv')
 
-    # Check if we have enough data
-    if len(df) < 10:
-        print("Not enough data to create sequences.")
-        return
-    #return a uniform prediction here
+    # # Check if we have enough data
+    # if len(df) < 10:
+    #     print("Not enough data to create sequences.")
+    #     return
+    # #return a uniform prediction here
 
 
-    #split train/test so past is always used to predict future. 
-    # test data needs to be unique?? bc what if i have same sessions but two different questions with different wait times - the "truth" would be the average right?
-    # or maybe it doesn't matter? whatever estimate minimizes the mean squared error <- going with this for now
+    # #split train/test so past is always used to predict future. 
+    # # test data needs to be unique?? bc what if i have same sessions but two different questions with different wait times - the "truth" would be the average right?
+    # # or maybe it doesn't matter? whatever estimate minimizes the mean squared error <- going with this for now
     
-    X = df[['month', 'day', 'startHour', 'startMin', 'endHour', 'endMin']]
-    y = df['timeWaiting']  
+    # X = df[['month', 'day', 'startHour', 'startMin', 'endHour', 'endMin']]
+    # y = df['timeWaiting']  
 
-    X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2, shuffle=False)
-    print(f"after split, X_train: {len(X_train)}, X_test: {len(X_test)}, y_train: {len(y_train)}, y_test:{len(y_test)}")
+    # X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2, shuffle=False)
+    # print(f"after split, X_train: {len(X_train)}, X_test: {len(X_test)}, y_train: {len(y_train)}, y_test:{len(y_test)}")
 
-    regr = MLPRegressor(random_state=1, max_iter=2000, tol=0.1)
-    regr.fit(X_train, y_train)
-    y_pred = regr.predict(X_test)
-    predictions = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
-    print(predictions)
-    score = regr.score(X_test, y_test)
-    print("R-squared Score:", score)
+    # regr = MLPRegressor(random_state=1, max_iter=2000, tol=0.1)
+    # regr.fit(X_train, y_train)
+    # y_pred = regr.predict(X_test)
+    # predictions = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+    # print(predictions)
+    # score = regr.score(X_test, y_test)
+    # print("R-squared Score:", score)
 
     """
     R-squared Score: -0.6991570375221456
