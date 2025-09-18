@@ -1,6 +1,7 @@
-import { doc, collection, deleteDoc, updateDoc, writeBatch, Timestamp} from 'firebase/firestore';
-import { User } from 'firebase/auth';
-import { firestore } from '../firebase';
+import firebase from 'firebase/compat/app';
+import {User} from "firebase/auth"
+
+const firestore = firebase.firestore();
 
 export const addBlogPost = (
     user: User | null, 
@@ -8,16 +9,16 @@ export const addBlogPost = (
     listItems: string[]
 ): boolean => {
     if (user != null) {
-        const postRef = doc(collection(firestore, "blogPosts"));
+        const postId = firestore.collection('blogPosts').doc().id;
         const blogPost: Omit<BlogPost, 'postId'> = {
             title,
             description,
             listItems,
-            timeEntered: Timestamp.now()
+            timeEntered: firebase.firestore.Timestamp.now()
         }
 
-        const batch = writeBatch(firestore);
-        batch.set(postRef, blogPost);
+        const batch = firestore.batch();
+        batch.set(firestore.collection('blogPosts').doc(postId), blogPost);
         batch.commit();
 
         return true;
@@ -31,10 +32,10 @@ export const editBlogPost = (user: User | null, blogPost: BlogPost) => {
             title,
             description,
             listItems: [...listItems],
-            edited: Timestamp.now(),
+            edited: firebase.firestore.Timestamp.now(),
         }
-        const postRef = doc(firestore, 'blogPosts', postId);
-        updateDoc(postRef, updatedBlogPost);
+        const postRef = firestore.collection('blogPosts').doc(postId);
+        postRef.update(updatedBlogPost);
     }
 }
 
@@ -43,7 +44,7 @@ export const deleteBlogPost = (
     postId: BlogPost['postId']
 ) => {
     if (user != null) {
-        const postRef = doc(firestore, 'blogPosts', postId);
-        deleteDoc(postRef);
+        const postRef = firestore.collection('blogPosts').doc(postId);
+        postRef.delete();
     }
 }

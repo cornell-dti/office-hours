@@ -1,16 +1,17 @@
-import { doc, getDoc, collection, query, where, Timestamp, Firestore, writeBatch, getDocs} from 'firebase/firestore';
 import moment from 'moment-timezone';
-import { firestore } from '../firebase';
+import firebase from 'firebase/compat/app';
 import { getDateRange, syncTimes } from '../utilities/date';
 
+const Timestamp = firebase.firestore.Timestamp;
+
 export const createSeries = async (
-    db: Firestore,
+    db: firebase.firestore.Firestore,
     sessionSeries: FireSessionSeriesDefinition
 ): Promise<void> => {
-    const courseDoc = await getDoc(doc(firestore, 'courses', sessionSeries.courseId));
+    const courseDoc = await db.collection('courses').doc(sessionSeries.courseId).get();
     const courseData = courseDoc.data() as FireCourse;
 
-    const sessionSeriesId = doc(collection(firestore, 'sessions')).id;
+    const sessionSeriesId = db.collection('sessions').doc().id;
 
     const startTime = moment(sessionSeries.startTime.toDate()).tz("America/New_York");
     const endTime = moment(sessionSeries.endTime.toDate()).tz("America/New_York");
@@ -23,7 +24,7 @@ export const createSeries = async (
 
     const now = moment();
 
-    const batch = writeBatch(db);
+    const batch = db.batch();
 
     datesToAdd.forEach((sessionStart) => {
         // Do not add sessions before today or course start
@@ -65,8 +66,9 @@ export const createSeries = async (
             };
 
             // Generate a new unique ID for each session
-            const sessionId = doc(collection(firestore, 'sessions')).id;
-            batch.set(doc(db, 'sessions', sessionId), derivedSession);
+            batch.set(db.collection('sessions').doc(), derivedSession);
+            // const sessionId = doc(collection(firestore, 'sessions')).id;
+            // batch.set(doc(db, 'sessions', sessionId), derivedSession);
         } else if (sessionSeries.modality === "review") {
             const derivedSession: Omit<FireReviewSession, 'sessionId'> = {
                 modality: sessionSeries.modality,
@@ -85,8 +87,9 @@ export const createSeries = async (
                 isPaused: false,
             };
             // Generate a new unique ID for each session
-            const sessionId = doc(collection(firestore, 'sessions')).id;
-            batch.set(doc(db, 'sessions', sessionId), derivedSession);
+            // const sessionId = doc(collection(firestore, 'sessions')).id;
+            // batch.set(doc(db, 'sessions', sessionId), derivedSession);
+            batch.set(db.collection('sessions').doc(), derivedSession);
         } else {
             let hybridProperty = {}
 
@@ -115,23 +118,24 @@ export const createSeries = async (
                 isPaused: false,
             };
             // Generate a new unique ID for each session
-            const sessionId = doc(collection(firestore, 'sessions')).id;
-            batch.set(doc(db, 'sessions', sessionId), derivedSession);
+            // const sessionId = doc(collection(firestore, 'sessions')).id;
+            // batch.set(doc(db, 'sessions', sessionId), derivedSession);
+            batch.set(db.collection('sessions').doc(), derivedSession);
         }
     })
     await batch.commit();
 };
 
 export const updateSeries = async (
-    db: Firestore,
+    db: firebase.firestore.Firestore,
     sessionSeriesId: string,
     sessionSeries: FireSessionSeriesDefinition
 ): Promise<void> => {
     const adjustedStartTime = moment(sessionSeries.startTime.toDate()).tz("America/New_York");
     const adjustedEndTime = moment(sessionSeries.endTime.toDate()).tz("America/New_York");
-    const sessionRef = collection(db, 'sessions');
-    const querySnapshot = await getDocs(query(sessionRef, where('sessionSeriesId', '==', sessionSeriesId)));
-    const batch = writeBatch(db);
+    const sessionRef = db.collection('sessions');
+    const querySnapshot = await sessionRef.where('sessionSeriesId', '==', sessionSeriesId).get();
+    const batch = db.batch();
     querySnapshot.forEach((sessionDocument) => {
         const sessionId = sessionDocument.id;
         const oldSession = sessionDocument.data() as Omit<FireSession, 'sessionId'>;
@@ -179,8 +183,7 @@ export const updateSeries = async (
                 TALink: sessionSeries.TALink,
                 isPaused: false,
             };
-            const sessionDoc = doc(db, 'sessions', sessionId); 
-            batch.set(sessionDoc, newSession);
+            batch.set(db.collection('sessions').doc(sessionId), newSession);
         } else if (sessionSeries.modality === "review") {
             const newSession: Omit<FireReviewSession, 'sessionId'> = {
                 sessionSeriesId,
@@ -198,8 +201,7 @@ export const updateSeries = async (
                 link: sessionSeries.link,
                 isPaused: false,
             };
-            const sessionDoc = doc(db, 'sessions', sessionId); 
-            batch.set(sessionDoc, newSession);
+            batch.set(db.collection('sessions').doc(sessionId), newSession);
         } else {
 
             let hybridProperty = {}
@@ -228,20 +230,18 @@ export const updateSeries = async (
                 totalResolveTime: 0,
                 isPaused: false,
             };
-            const sessionDoc = doc(db, 'sessions', sessionId); 
-            batch.set(sessionDoc, newSession);
+            batch.set(db.collection('sessions').doc(sessionId), newSession);
         }
 
     });
     await batch.commit();
 };
 
-export const deleteSeries = async (db: Firestore, sessionSeriesId: string): Promise<void> => {
-    const sessionRef = collection(db, 'sessions');
-    const querySnapshot = await getDocs(query(sessionRef, where('sessionSeriesId', '==', sessionSeriesId)));
-    const batch = writeBatch(db);
+export const deleteSeries = async (db: firebase.firestore.Firestore, sessionSeriesId: string): Promise<void> => {
+    const querySnapshot = await db.collection('sessions').where('sessionSeriesId', '==', sessionSeriesId).get();
+    const batch = db.batch();
     querySnapshot.docs.forEach((document) =>
-        batch.delete(doc(db, 'sessions', document.id))
+        batch.delete(db.collection('sessions').doc(document.id))
     );
     await batch.commit();
 };
