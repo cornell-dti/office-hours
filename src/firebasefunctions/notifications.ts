@@ -1,10 +1,7 @@
-import firebase from "firebase/compat/app";
-import {User} from "firebase/auth"
+import firebase from "firebase/app";
+import { firestore, Timestamp} from '../firebase';
 
-const firestore = firebase.firestore();
-const Timestamp = firebase.firestore.Timestamp;
-
-export const createNotificationTracker = async (user: User | null) => {
+export const createNotificationTracker = async (user: firebase.User | null) => {
     if (user !== null) {
         const email = user.email;
         if (email !== null) {
@@ -117,7 +114,7 @@ async (user: FireUser | undefined, notificationTracker: NotificationTracker | un
 }
 
 // Clears the entire set of notifications
-export const clearNotifications = async (user: User | null) => {
+export const clearNotifications = async (user: firebase.User | null) => {
     if (user !== null) {
         const email = user.email;
         if (email != null) {

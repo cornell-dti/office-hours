@@ -9,7 +9,6 @@ import AdminCourseCard from '../includes/AdminCourseCard';
 import AdminCourseCreator from '../includes/AdminCourseCreator';
 import { useAllCourses, useIsAdmin } from '../../firehooks';
 import { CURRENT_SEMESTER, ALL_SEMESTERS } from '../../constants';
-import  AnalyticsView from './AnalyticsView';
 
 
 const AdminView = () => {
@@ -70,11 +69,10 @@ const AdminView = () => {
             )}
             {/* Separate style logic so component is technically "rendered" only once when the admin page loads,
              not each time the arrow is clicked. This reduces repeated Firebase reads. */}
-            {analyticsLoaded && (
-                <div style={collapsed ? { display: "none" } : {}}>
-                    <AnalyticsView />
-                </div>
-            )}
+             {/* NOTE: This is just not feasible in Firebase v8 since there's no cheap way to get the counts of the entire collection. Use this component when Firebase v9+ works. */}
+            {/* <div style={collapsed ? {"display":"None"}: {}}>
+                <AnalyticsView/>
+            </div> */}
             
 
 

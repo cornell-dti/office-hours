@@ -17,11 +17,11 @@ import { Loader } from "semantic-ui-react";
 import { Notifications } from "react-push-notification";
 import { Provider, connect } from "react-redux";
 import { auth } from "../firebase";
-import firebase from "firebase/compat/app"
 
 import { updateAuthStatus, updateUser } from "../redux/actions/auth";
 import { store } from "../redux/store";
 
+import { firestore } from '../firebase';
 import AdminView from "./pages/AdminView";
 import BlogCMS from "./pages/BlogCMS";
 import LoginView from "./pages/LoginView";
@@ -76,7 +76,7 @@ const useLoginStatus = () => {
         auth.onAuthStateChanged((user) => {
             if (user) {
                 setIsLoggedIn(2);
-                userUpload(user, firebase.firestore());
+                userUpload(user, firestore);
             } else {
                 setIsLoggedIn(1);
             }

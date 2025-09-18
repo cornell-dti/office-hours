@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import notif from "../../media/notif.svg";
 import SelectedTags from "./SelectedTags";
 import GreenCheck from "../../media/greenCheck.svg";
-import firebase from "firebase/compat/app"
+import {firestore} from "../../firebase";
 import {
     markStudentNoShow,
     retractStudentQuestion,
@@ -23,8 +23,6 @@ import { RootState } from "../../redux/store";
 import CommentBubble from "../../media/chat_bubble.svg";
 import LatestCommentContainer from "./LatestCommentContainer";
 import SessionQuestionTime from "./SessionQuestionTime";
-
-const firestore = firebase.firestore();
 
 // TODO_ADD_SERVER_CHECK
 const LOCATION_CHAR_LIMIT = 40;

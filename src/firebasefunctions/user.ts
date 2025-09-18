@@ -1,5 +1,4 @@
-import firebase from 'firebase/compat/app';
-import {User} from 'firebase/auth'
+import firebase from 'firebase/app';
 
 
 const auth = firebase.auth;
@@ -15,7 +14,7 @@ type FireUser = {
     phoneNumber: string;
     textNotifsEnabled: boolean;
 };
-export const userUpload = async (user: User | null, db: firebase.firestore.Firestore) => {
+export const userUpload = async (user: firebase.User | null, db: firebase.firestore.Firestore) => {
     if (user != null) {
         const uid = user.uid;
         const email = user.email || undefined;
@@ -66,6 +65,19 @@ export const userUpload = async (user: User | null, db: firebase.firestore.Fires
         }
     }
 };
+
+// export const logOut = () => {
+//     const auth = getAuth();
+//     signOut(auth)
+//         .then(() => {
+//             // eslint-disable-next-line no-console
+//             console.log("User signed out successfully.");
+//         })
+//         .catch((error) => {
+//             // eslint-disable-next-line no-console
+//             console.error("Error signing out:", error);
+//         });
+// };
 
 export const logOut = () => {
     auth()

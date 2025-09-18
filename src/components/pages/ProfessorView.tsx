@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Icon, DropdownItemProps } from 'semantic-ui-react';
 import { of, combineLatest, Observable } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { docData } from 'rxfire/firestore';
 
-import { doc, DocumentReference } from 'firebase/firestore';
 import ProfessorCalendarTable from '../includes/ProfessorCalendarTable';
 import ProfessorAddNew from '../includes/ProfessorAddNew';
 import ProfessorDelete from '../includes/ProfessorDelete';
@@ -46,9 +45,8 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
 
             const users$ = courseStaffIds$.pipe<FireUser[]>(switchMap(courseStaffIds =>
                 combineLatest(...courseStaffIds.map(courseStaffId =>
-                        docData<FireUser>(doc(firestore, 'users',courseStaffId) as DocumentReference<FireUser>,
-                            { idField: 'userId' }) as Observable<FireUser>
-                    ))
+                    docData<FireUser>(firestore.doc(`users/${courseStaffId}`), 'userId')
+                ))
             ));
             
             const subscription = users$.subscribe(u => setStaff(u));

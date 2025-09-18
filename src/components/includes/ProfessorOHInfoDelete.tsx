@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import moment from 'moment';
 import { Checkbox } from 'semantic-ui-react';
-import firebase from "firebase/compat/app"
+import {firestore } from "../../firebase";
 import { deleteSeries } from '../../firebasefunctions/series';
 import { deleteSession } from '../../firebasefunctions/session';
 import { useSessionTANames } from '../../firehooks';
-
-const firestore = firebase.firestore()
 
 type Props = {
     readonly course: FireCourse;

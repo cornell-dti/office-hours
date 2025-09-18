@@ -1,9 +1,5 @@
-import firebase from 'firebase/compat/app';
-//import { firestore, Timestamp } from '../firebase';
-import { User } from 'firebase/auth';
-
-
-const firestore = firebase.firestore();
+import firebase from 'firebase/app';
+import { firestore, Timestamp } from '../firebase';
 
 export const updateVirtualLocation = (
     db: firebase.firestore.Firestore,
@@ -20,7 +16,7 @@ export const updateVirtualLocation = (
 
 //make this v9 to make AddQuestion.tsx work
 export const addQuestion = (
-    user: User | null,
+    user: firebase.User | null,
     session: FireSession,
     db: firebase.firestore.Firestore,
     location: string,
@@ -198,7 +194,7 @@ export const updateQuestion = (
 
 export const addComment = (content: string, commenterId: string, questionId: string, isTA: boolean,
     askerId: string, answererId: string) => {
-    const timePosted = firebase.firestore.Timestamp.now();
+    const timePosted = Timestamp.now();
     const commentId = firestore.doc(`questions/${questionId}`).collection('comments').doc().id;
     firestore.doc(`questions/${questionId}`).update(isTA ? { studentNew: true } : { taNew: true });
     const newComment: FireComment = {
