@@ -8,8 +8,7 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import "../../styles/Wrapped.scss";
 import "../../styles/WrappedAnimation.scss";
 import React, { useEffect, useState } from "react";
-import {  doc, getDoc } from 'firebase/firestore';
-import { firestore } from '../../firebase';
+import firebase from "firebase/compat/app"
 import Couple from "../../media/wrapped/couple.svg"
 import Girl from "../../media/wrapped/girl.svg"
 import Bus from "../../media/wrapped/bus.svg"
@@ -72,6 +71,9 @@ import fiveDigits from "../../media/wrapped/five_digits.svg";
 import arrow from '../../media/wrapped/arrow.svg';
 import smallPlus from '../../media/wrapped/plus.svg';
 import bigPlus from '../../media/wrapped/plus2.svg';
+
+
+const firestore = firebase.firestore();
 
 type Props = {
     user: FireUser | undefined;
@@ -200,17 +202,15 @@ const Wrapped= (props: Props): JSX.Element => {
     };
 
     useEffect(() => {
+        const wrappedRef = firestore.collection('wrapped');
         const fetchData = async () => {
             setLoading(true);
             try {
-                const docRef = doc(firestore, 'wrapped', props.user?.userId || '');
-                const docSnap = await getDoc(docRef);
+                const doc = await wrappedRef.doc(props.user?.userId || '').get();
+                const usersRef = firestore.collection('users');
     
-                const userDocRef = doc(firestore, 'users', wrappedData.favTaId || '');
-                const userDocSnap = await getDoc(userDocRef);
-    
-                if (docSnap.exists()) {
-                    const studentData = docSnap.data() as { 
+                if (doc.exists) {
+                    const studentData = doc.data() as { 
                         numVisits: number;
                         personalityType: string; 
                         timeHelpingStudents: number; 
@@ -235,10 +235,12 @@ const Wrapped= (props: Props): JSX.Element => {
                         numStages = 7;
                         setRole(1);
                     }
+
+                    const userDoc = await usersRef.doc(wrappedData.favTaId || '').get();
     
                     let taNameExists = false;
-                    if (userDocSnap.exists()) {
-                        setTaName(userDocSnap.data() as { 
+                    if (userDoc.exists) {
+                        setTaName(userDoc.data() as { 
                             firstName: string;
                             lastName: string;
                         });  
@@ -258,12 +260,13 @@ const Wrapped= (props: Props): JSX.Element => {
                     } 
     
                     setTotalStages(numStages);
+                    const coursesRef = firestore.collection("courses");
+
+                    const coursesDoc = await coursesRef.doc(studentData.favClass).get();
+                      
     
-                    const courseDocRef = doc(firestore, "courses", studentData.favClass);
-                    const coursesDocSnap = await getDoc(courseDocRef);
-    
-                    if (coursesDocSnap.exists()) {
-                        setFavClass(coursesDocSnap.data() as {
+                    if (coursesDoc.exists) {
+                        setFavClass(coursesDoc.data() as {
                             code: string;
                         });
                     } else {

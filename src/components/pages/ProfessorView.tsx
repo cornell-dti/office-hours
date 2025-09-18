@@ -47,16 +47,12 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
             const courseStaffIds$: Observable<string[]> = of(course ? [...course.professors, ...course.tas] : []);
 
             const users$ = courseStaffIds$.pipe<FireUser[]>(switchMap(courseStaffIds =>
-                courseStaffIds.length === 0 ?
-                    of([])
-                    : combineLatest(...courseStaffIds.map(courseStaffId =>
+                combineLatest(...courseStaffIds.map(courseStaffId =>
                         docData<FireUser>(doc(firestore, 'users',courseStaffId) as DocumentReference<FireUser>,
-                            { idField: 'userId' })
-                    )).pipe(
-                        map(users=>users.filter((user): user is FireUser => user !== undefined))
-                    )
+                            { idField: 'userId' }) as Observable<FireUser>
+                    ))
             ));
-
+            
             const subscription = users$.subscribe(u => setStaff(u));
             return () => subscription.unsubscribe();
         },

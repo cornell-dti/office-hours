@@ -1,4 +1,6 @@
 import { initializeApp } from 'firebase/app';
+import 'firebase/compat/firestore';
+import firebase from "firebase/compat/app";
 import { getAuth } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator, Timestamp } from 'firebase/firestore';
 import { authState } from 'rxfire/auth';
@@ -28,7 +30,8 @@ if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !=
     };
 }
 
-const app = initializeApp(firebaseConfig);
+const app = firebase.initializeApp(firebaseConfig);
+firebase.firestore(app); // Initialize firestore
 
 const firestore = getFirestore(app);
 

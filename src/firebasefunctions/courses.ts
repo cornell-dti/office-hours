@@ -1,10 +1,10 @@
-import { doc, updateDoc } from 'firebase/firestore';
-import { firestore } from '../firebase';
+import firebase from "firebase/compat/app"
+
+const firestore = firebase.firestore();
 
 export const updateCourses = (
     userId: string,
     userUpdate: Partial<FireUser>
 ): Promise<void> => {
-    const userRef = doc(firestore, 'users', userId);
-    return updateDoc(userRef, userUpdate);
+    return firestore.collection('users').doc(userId).update(userUpdate)
 };

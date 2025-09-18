@@ -8,6 +8,9 @@ import SelectedTags from "./SelectedTags";
 import SessionAlertModal from "./SessionAlertModal";
 
 import { addQuestion } from "../../firebasefunctions/sessionQuestion";
+import firebase from "firebase/compat/app";
+
+const compatFirestore = firebase.firestore();
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
@@ -155,7 +158,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         const allowRedirect = addQuestion(
             auth.currentUser,
             session,
-            firestore,
+            compatFirestore,
             location,
             selectedPrimary,
             selectedSecondary,

@@ -16,7 +16,8 @@ import { Loader } from "semantic-ui-react";
 
 import { Notifications } from "react-push-notification";
 import { Provider, connect } from "react-redux";
-import { auth, firestore } from "../firebase";
+import { auth } from "../firebase";
+import firebase from "firebase/compat/app"
 
 import { updateAuthStatus, updateUser } from "../redux/actions/auth";
 import { store } from "../redux/store";
@@ -75,7 +76,7 @@ const useLoginStatus = () => {
         auth.onAuthStateChanged((user) => {
             if (user) {
                 setIsLoggedIn(2);
-                userUpload(user, firestore);
+                userUpload(user, firebase.firestore());
             } else {
                 setIsLoggedIn(1);
             }

@@ -1,8 +1,9 @@
-import { doc, getDoc, getDocs, setDoc, updateDoc, query, where, collection, writeBatch } from 'firebase/firestore';
-import { firestore } from '../firebase';
+import firebase from "firebase/compat/app"
 import { blockArray } from '../firehooks';
 
-const db = firestore;
+
+
+const db = firebase.firestore();
 
 const getUserRoleUpdate = (
     user: FireUser,
@@ -58,30 +59,29 @@ const importProfessorsOrTAs = async (
 }> => {
     const missingSet = new Set<string>(emailListTotal);
     const demotedSet = new Set<string>();
-    const batch = writeBatch(db);
+    const batch = db.batch();
     const updatedUsers: FireUser[] = [];
     const courseChange: FireCourse = { ...course };
 
     const emailBlocks = blockArray(emailListTotal, 10);
 
-    return Promise.all(emailBlocks.map(async (emailList) => {
-        const usersRef = collection(db, 'users');
-        const userQuery = query(usersRef, where('email', 'in', emailList));
-        const taUserDocuments = await getDocs(userQuery); 
-        // const updatedUsersThisBlock: FireUser[] = [];
-        // const userUpdatesThisBlock: Partial<FireUser>[] = [];
-        const updatesThisBlock: { user: FireUser; roleUpdate: Partial<FireUser> }[] = [];
+    return Promise.all(emailBlocks.map(emailList => {
+        return db.collection('users').where('email', 'in', emailList).get().then(taUserDocuments => {
+            // const updatedUsersThisBlock: FireUser[] = [];
+            // const userUpdatesThisBlock: Partial<FireUser>[] = [];
+            const updatesThisBlock: { user: FireUser; roleUpdate: Partial<FireUser> }[] = [];
 
-        taUserDocuments.forEach((document) => {
-            const existingUser = { userId: document.id, ...document.data() } as FireUser;
-            const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, role);
-            updatesThisBlock.push({
-                user: existingUser,
-                roleUpdate
-            })
+            taUserDocuments.forEach((document) => {
+                const existingUser = { userId: document.id, ...document.data() } as FireUser;
+                const roleUpdate = getUserRoleUpdate(existingUser, course.courseId, role);
+                updatesThisBlock.push({
+                    user: existingUser,
+                    roleUpdate
+                })
+            });
+
+            return updatesThisBlock;
         });
-
-        return updatesThisBlock;
 
     })).then(updatedBlocks => {
         const allUpdates: { user: FireUser; roleUpdate: Partial<FireUser> }[] = [];
@@ -94,7 +94,7 @@ const importProfessorsOrTAs = async (
                     updatedUsers.push(user);
                     allUpdates.push({ user, roleUpdate });
                     // update user's roles table
-                    batch.update(doc(db, 'users', user.userId), roleUpdate);
+                    batch.update(db.collection('users').doc(user.userId), roleUpdate);
                 } else if (role !== 'professor') {
                     demotedSet.add(email);
                 }
@@ -105,13 +105,14 @@ const importProfessorsOrTAs = async (
 
         // add missing user to pendingUsers collection
         missingSet.forEach(email => {
-            const pendingUsersRef = doc(db, 'pendingUsers', email);
-            getDoc(pendingUsersRef)
+            const pendingUsersRef = db.collection('pendingUsers').doc(email);
+
+            pendingUsersRef.get()
                 .then((docSnapshot) => {
-                    if (docSnapshot.exists()) {
-                        updateDoc(pendingUsersRef, { [`roles.${course.courseId}`]: role });
+                    if (docSnapshot.exists) {
+                        pendingUsersRef.update({ [`roles.${course.courseId}`]: role });
                     } else {
-                        setDoc(pendingUsersRef, { email, roles: { [course.courseId]: role } } );
+                        pendingUsersRef.set({ email, roles: { [course.courseId]: role } });
                     }
                 });
         })
@@ -122,7 +123,8 @@ const importProfessorsOrTAs = async (
         );
         if (updates.professors) courseChange.professors = updates.professors;
         if (updates.tas) courseChange.tas = updates.tas;
-        batch.update(doc(db, 'courses', course.courseId),
+        batch.update(
+            db.collection('courses').doc(course.courseId),
             updates
         );
         batch.commit();
@@ -155,11 +157,13 @@ export const changeRole = (
     course: FireCourse,
     newRole: FireCourseRole
 ): void => {
-    const batch = writeBatch(db);
-    batch.update(doc(db, 'users', user.userId),
+    const batch = db.batch();
+    batch.update(
+        db.collection('users').doc(user.userId),
         getUserRoleUpdate(user, course.courseId, newRole)
     );
-    batch.update(doc(db, 'courses', course.courseId),
+    batch.update(
+        db.collection('courses').doc(course.courseId),
         getCourseRoleUpdate(course, user.userId, newRole)
     );
     batch.commit();
