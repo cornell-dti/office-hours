@@ -60,7 +60,7 @@ const WaitTimeGraph = (props: Props) => {
 	// Keep chart margin centralized so overlays align with the plot area
 	const chartMargin = React.useMemo(() => ({ top: 30, right: 12, bottom: 64, left: 12 }), []);
 	// Visual gap between the bars and the separator line
-	const baselineGapPx = -35;
+	const baselineGapPx = -30;
 
     // Build 6-slot data for the selected day and current 3-hour window
     const transformData = () => {
@@ -78,6 +78,24 @@ const WaitTimeGraph = (props: Props) => {
 
     return (
         <div style={{ height: 240, position: "relative" }}>
+            <style>
+                {`
+                    /* Target only the actual bar rectangles, not the container or other SVG elements */
+                    svg rect[fill="#D9D9D9"]:hover,
+                    svg rect[fill="#6399D6"]:hover,
+                    svg rect[fill="#DAE9FC"]:hover {
+                        fill: #6399D6 !important;
+                        opacity: 0.4 !important;
+                        transition: all 0.2s ease !important;
+                    }
+                    /* Ensure only bar rectangles have transition */
+                    svg rect[fill="#D9D9D9"],
+                    svg rect[fill="#6399D6"],
+                    svg rect[fill="#DAE9FC"] {
+                        transition: all 0.2s ease;
+                    }
+                `}
+            </style>
             <div
                 style={{
                     display: "flex",
@@ -92,14 +110,15 @@ const WaitTimeGraph = (props: Props) => {
                         key={dayName}
                         onClick={() => setSelectedDay(dayName)}
                         style={{
-                            backgroundColor: selectedDay === dayName ? "#e6e9ef" : "#f6f7fb",
-                            color: "#4d4d4d",
+                            backgroundColor: selectedDay === dayName ? "#e6e9ef" : "transparent",
+                            color: selectedDay === dayName ? "#4d4d4d" : "#6b7280",
                             border: "none",
-                            padding: "8px 14px",
-                            borderRadius: "8px",
+                            padding: "6px 12px",
+                            borderRadius: "6px",
                             cursor: "pointer",
-                            fontWeight: 500,
-                            fontSize: "14px",
+                            fontWeight: selectedDay === dayName ? 600 : 400,
+                            fontSize: "13px",
+                            transition: "all 0.2s ease",
                         }}
                     >
                         {dayName === dayOfWeek ? "TODAY" : dayName.slice(0, 3).toUpperCase()}
@@ -163,10 +182,30 @@ const WaitTimeGraph = (props: Props) => {
                 indexBy="slot"
 				margin={chartMargin}
                 padding={0.2}
-                colors={(bar) => (bar.data.hour === currentHourLabel ? "#4285F4" : "#D2E3FC")}
+                colors={(bar) => {
+                    const currentTime = new Date();
+                    const barTime = new Date();
+                    const [time, period] = bar.data.slot.split(' ');
+                    const [hour, minute] = time.split(':');
+                    
+                    // Set the bar time based on the slot
+                    barTime.setHours(period === 'PM' && hour !== '12' ? parseInt(hour) + 12 : 
+                                   period === 'AM' && hour === '12' ? 0 : parseInt(hour));
+                    barTime.setMinutes(parseInt(minute));
+                    
+                    // Compare with current time
+                    if (barTime < currentTime) {
+                        return "#D9D9D9"; // Past time
+                    } else if (bar.data.hour === currentHourLabel) {
+                        return "#6399D6"; // Current time
+                    } else {
+                        return "#DAE9FC"; // Future time
+                    }
+                }}
                 axisLeft={null}
                 enableGridY={false}
                 enableLabel={false}
+                isInteractive={true}
                 tooltip={({ data }) => (
                     <div
                         style={{
@@ -180,6 +219,14 @@ const WaitTimeGraph = (props: Props) => {
                         <strong>{props.OHDetails[data.hour].avgWaitTime || `${data.waitTime} minutes`}</strong>
                     </div>
                 )}
+                theme={{
+                    axis: {
+                        legend: { text: { fontSize: 16, outlineWidth: 0 } },
+                        ticks: { text: { fontSize: 14, fill: "#111827", fontWeight:  "normal" } },
+                        // Use default, subtle domain line to match analytics cards
+                    },
+                    tooltip: { container: { border: "none", padding: 0, boxShadow: "none", background: "transparent" } },
+                }}
 				axisBottom={{
 					legend: "",
 					tickSize: 0,
@@ -187,14 +234,6 @@ const WaitTimeGraph = (props: Props) => {
 					tickRotation: 0,
 					format: (tick) => (String(tick).includes(":00 ") ? String(tick) : ""),
 				}}
-                theme={{
-                    axis: {
-					legend: { text: { fontSize: 16, outlineWidth: 0 } },
-					ticks: { text: { fontSize: 14, fill: "#111827", fontWeight:  "normal" } },
-                        // Use default, subtle domain line to match analytics cards
-                    },
-                    tooltip: { container: { border: "none", padding: 0, boxShadow: "none", background: "transparent" } },
-                }}
             />
 
 			{/* Separator line and soft white fade just above the x-axis to create a hover effect */}

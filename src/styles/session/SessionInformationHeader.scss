@@ -209,6 +209,9 @@
     .WaitSummary span + span {
       margin-left: 8px;      // spread out adjacent pieces of text
     }
+    .WaitSummary strong {
+      font-weight: 500;      // lighter than default bold (700)
+    }
     .GraphPlaceholder {
       width: 100%;
       max-width: 100%; /* Don't overflow parent container */
