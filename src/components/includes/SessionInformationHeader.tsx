@@ -76,9 +76,9 @@ const formatEstimatedTime = (waitTimeSecs: number, currentTime: Date) => {
         totalHour = (totalHour + 1) % 12;
     }
     if (totalMins < 10) {
-        return " (" + totalHour + ":0" + totalMins + amPm + ") ";
+        return <> (<> <strong>{totalHour}:0{totalMins}{amPm}</strong> </>) </>;
     }
-    return " (" + totalHour + ":" + totalMins + amPm + ") ";
+    return <> (<> <strong>{totalHour}:{totalMins}{amPm}</strong> </>) </>;
 };
 const pluralize = (count: number, singular: string, plural: string) => {
         return count <= 1 ? singular : plural;
