@@ -79,6 +79,9 @@ const formatEstimatedTime = (waitTimeSecs: number, currentTime: Date) => {
     }
     return " (" + totalHour + ":" + totalMins + amPm + ") ";
 };
+const pluralize = (count: number, singular: string, plural: string) => {
+        return count <= 1 ? singular : plural;
+    };
 
 const SessionInformationHeader = ({
     session,
@@ -117,7 +120,7 @@ const SessionInformationHeader = ({
                 setRatioText(`${numberOfTAs} ${pluralize(numberOfTAs, "TA", "TAs")} available`);
             }
         }
-    }, [session.studentPerTaRatio, session.officeHourStarted]);
+    }, [session.studentPerTaRatio, session.hasUnresolvedQuestion, questions]);
 
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
