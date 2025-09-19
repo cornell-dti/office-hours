@@ -66,7 +66,7 @@ const WaitTimeGraph = (props: Props) => {
                             cursor: "pointer",
                         }}
                     >
-                        {dayName === dayOfWeek ? "Today" : dayName}
+                        {dayName === dayOfWeek ? "TODAY" : dayName.slice(0, 3).toUpperCase()}
                     </button>
                 ))}
             </div>
@@ -75,16 +75,16 @@ const WaitTimeGraph = (props: Props) => {
                 data={transformData()}
                 keys={["waitTime"]}
                 indexBy="hour"
-                borderWidth={1}
-                colors={(bar) => "#4285F4"}
+                borderWidth={0}
+                colors={(bar) => (bar.data.hour === currentHourLabel ? "#5B8DEF" : "#DCE7FF")}
                 margin={{
-                    top: 20,
+                    top: 10,
                     right: 20,
                     bottom: 60,
-                    left: 60,
+                    left: 55,
                 }}
-                borderRadius={4}
-                padding={0.05}
+                borderRadius={6}
+                padding={0.18}
                 enableLabel={false}
                 tooltip={({ value, data }) => (
                     <div
@@ -93,11 +93,12 @@ const WaitTimeGraph = (props: Props) => {
                             flexDirection: "column",
                             justifyContent: "center",
                             alignItems: "center",
-                            padding: "10px",
-                            paddingRight: "25px",
-                            border: "2px solid black",
-                            borderRadius: "4px",
+                            padding: "10px 16px",
+                            border: "1px solid #D0D7E2",
+                            borderRadius: "8px",
                             textAlign: "center",
+                            background: "#ffffff",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
                         }}
                     >
                         <strong style={{ color: "black", fontSize: "16px" }}>
@@ -120,20 +121,29 @@ const WaitTimeGraph = (props: Props) => {
                 )}
                 axisLeft={{
                     legendPosition: "middle",
-                    legendOffset: -50,
+                    legendOffset: -45,
                     legend: props.legend,
+                    tickSize: 0,
+                    tickPadding: 8,
                 }}
                 axisBottom={{
                     legendPosition: "middle",
                     legendOffset: 40,
                     legend: "Hours",
+                    tickPadding: 10,
                 }}
                 theme={{
                     axis: {
                         legend: {
                             text: {
                                 fontSize: 16,
-                                outlineWidth: 6,
+                                outlineWidth: 0,
+                            },
+                        },
+                        ticks: {
+                            text: {
+                                fontSize: 12,
+                                fill: "#6b7280",
                             },
                         },
                     },

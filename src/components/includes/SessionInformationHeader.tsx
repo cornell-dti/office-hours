@@ -299,17 +299,19 @@ const SessionInformationHeader = ({
                                     style={{ height: "100%", width: "100%" }}
                                 >
                                     {/* Text on the left */}
-                                    <Grid item xs={12} sm={4}>
+                                    <Grid item xs={12} sm={3}>
                                         <div className="TAHeaderText">
                                             <p style={{ fontWeight: "bold", fontSize: "20px", margin: 0 }}>
                                                 TA's ({tas.length})
                                             </p>
-                                            <p style={{ fontSize: "14px", color: "#4d4d4d", margin: 0 }}>{ratioText}</p>
+                                            <p style={{ fontSize: "14px", color: "#4d4d4d", margin: 0, whiteSpace: "nowrap" }}>
+                                                {ratioText}
+                                            </p>
                                         </div>
                                     </Grid>
 
                                     {/* TA profile images on the right */}
-                                    <Grid item xs={12} sm={8}>
+                                    <Grid item xs={12} sm={9}>
                                         <div className="TAImagesWrapper">
                                             {startIndex > 0 && (
                                                 <div
@@ -329,8 +331,8 @@ const SessionInformationHeader = ({
                                                                 alt={`${ta.firstName} ${ta.lastName}'s Photo`}
                                                                 className="TACircle"
                                                                 style={{
-                                                                    width: "60px",
-                                                                    height: "60px",
+                                                                    width: "48px",
+                                                                    height: "48px",
                                                                     border: "2px solid #f2f2f2",
                                                                 }}
                                                             />
