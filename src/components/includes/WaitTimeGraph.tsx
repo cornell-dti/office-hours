@@ -1,6 +1,8 @@
 import * as React from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
 import { Icon } from "semantic-ui-react";
+import rightArrowIcon from "../../media/rightArrowIcon.svg";
+import leftArrowIcon from "../../media/leftArrowIcon.svg";
 
 type Props = {
     barData: BarDatum[];
@@ -34,21 +36,48 @@ const WaitTimeGraph = (props: Props) => {
         .toLowerCase()
         .replace(" ", "");
 
-    // Transform data to have hours on x-axis and one series for selected day
+    // Windowed 3-hour view with 30-minute slots (6 columns)
+    const hours = props.timeKeys; // e.g. ["7pm", "8pm", ...]
+    const currentHourIndex = Math.max(0, hours.findIndex((h) => h === currentHourLabel));
+    const initialStart = Math.max(0, Math.min(currentHourIndex, hours.length - 3));
+    const [hourStart, setHourStart] = React.useState<number>(initialStart);
+    const hasPrevHours = hourStart > 0;
+    const hasNextHours = hourStart + 3 < hours.length;
+    const visibleHours = hours.slice(hourStart, hourStart + 3);
+
+    const parseHour = (h: string) => {
+        // "7pm" -> { hour: 7, ampm: "PM" }
+        const num = parseInt(h, 10);
+        const ampm = h.includes("pm") ? "PM" : "AM";
+        return { hour: num === 0 ? 12 : num, ampm };
+    };
+
+    const formatHalfLabel = (h: string, half: 0 | 30) => {
+        const { hour, ampm } = parseHour(h);
+        return `${hour}:${half.toString().padStart(2, "0")} ${ampm}`;
+    };
+
+	// Keep chart margin centralized so overlays align with the plot area
+	const chartMargin = React.useMemo(() => ({ top: 30, right: 12, bottom: 64, left: 12 }), []);
+	// Visual gap between the bars and the separator line
+	const baselineGapPx = -35;
+
+    // Build 6-slot data for the selected day and current 3-hour window
     const transformData = () => {
-        const hours = props.timeKeys;
         const dayData = props.barData.find((d) => d.dayOfWeek === selectedDay);
+        if (!dayData) return [] as { slot: string; waitTime: number; hour: string }[];
 
-        if (!dayData) return [];
-
-        return hours.map((hour) => ({
-            hour,
-            waitTime: dayData[hour],
-        }));
+        const slots: { slot: string; waitTime: number; hour: string }[] = [];
+        visibleHours.forEach((h) => {
+            // Split each hour into two half-hour slots. Use the hour's value for both (no finer granularity available).
+            slots.push({ slot: formatHalfLabel(h, 0), waitTime: Number(dayData[h] as unknown as number), hour: h });
+            slots.push({ slot: formatHalfLabel(h, 30), waitTime: Number(dayData[h] as unknown as number), hour: h });
+        });
+        return slots;
     };
 
     return (
-        <div style={{ height: 300 }}>
+        <div style={{ height: 240, position: "relative" }}>
             <div
                 style={{
                     display: "flex",
@@ -78,89 +107,121 @@ const WaitTimeGraph = (props: Props) => {
                 ))}
             </div>
 
-            <ResponsiveBar
+            {/* Side arrows, vertically centered beside the bars */}
+            <button
+                type="button"
+                onClick={() => setHourStart((s) => Math.max(0, s - 1))}
+                disabled={!hasPrevHours}
+                style={{
+                    position: "absolute",
+                    left: -6,
+                    top: "50%",
+                    transform: "translateY(-30%)",
+                    background: "#fff",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 9999,
+                    width: 28,
+                    height: 28,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    opacity: hasPrevHours ? 1 : 0.4,
+                    cursor: hasPrevHours ? "pointer" : "default",
+                    zIndex: 10,
+                }}
+            >
+                <img src={leftArrowIcon} alt="prev hours" style={{ width: 14, height: 14 }} />
+            </button>
+            <button
+                type="button"
+                onClick={() => setHourStart((s) => Math.min(hours.length - 3, s + 1))}
+                disabled={!hasNextHours}
+                style={{
+                    position: "absolute",
+                    right: -6,
+                    top: "50%",
+                    transform: "translateY(-30%)",
+                    background: "#fff",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 9999,
+                    width: 28,
+                    height: 28,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    opacity: hasNextHours ? 1 : 0.4,
+                    cursor: hasNextHours ? "pointer" : "default",
+                    zIndex: 10,
+                }}
+            >
+                <img src={rightArrowIcon} alt="next hours" style={{ width: 14, height: 14 }} />
+            </button>
+
+			<ResponsiveBar
                 data={transformData()}
                 keys={["waitTime"]}
-                indexBy="hour"
-                borderWidth={0}
-                colors={(bar) => (bar.data.hour === currentHourLabel ? "#5B8DEF" : "#DCE7FF")}
-                margin={{
-                    top: 10,
-                    right: 20,
-                    bottom: 60,
-                    left: 55,
-                }}
-                borderRadius={6}
-                padding={0.18}
+                indexBy="slot"
+				margin={chartMargin}
+                padding={0.2}
+                colors={(bar) => (bar.data.hour === currentHourLabel ? "#4285F4" : "#D2E3FC")}
+                axisLeft={null}
+                enableGridY={false}
                 enableLabel={false}
-                tooltip={({ value, data }) => (
+                tooltip={({ data }) => (
                     <div
                         style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            padding: "10px 16px",
-                            border: "1px solid #D0D7E2",
+                            background: "white",
+                            padding: "8px 12px",
                             borderRadius: "8px",
-                            textAlign: "center",
-                            background: "#ffffff",
-                            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                            fontSize: "13px",
+                            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                         }}
                     >
-                        <strong style={{ color: "black", fontSize: "16px" }}>
-                            {selectedDay}, {data.hour}
-                        </strong>
-                        <div style={{ marginTop: "8px" }}>
-                            <Icon />
-                            {props.OHDetails[data.hour].startHour} - {props.OHDetails[data.hour].endHour}
-                            <br />
-                            <Icon />
-                            {props.OHDetails[data.hour].location}
-                            <br />
-                            <Icon />
-                            TA(s): {props.OHDetails[data.hour].ta}
-                            <br />
-                            <Icon />
-                            <strong>{value} minutes</strong> average wait time
-                        </div>
+                        <strong>{props.OHDetails[data.hour].avgWaitTime || `${data.waitTime} minutes`}</strong>
                     </div>
                 )}
-                axisLeft={{
-                    legendPosition: "middle",
-                    legendOffset: -45,
-                    legend: props.legend,
-                    tickSize: 0,
-                    tickPadding: 8,
-                }}
-                axisBottom={{
-                    legendPosition: "middle",
-                    legendOffset: 40,
-                    legend: "Hours",
-                    tickPadding: 10,
-                }}
+				axisBottom={{
+					legend: "",
+					tickSize: 0,
+					tickPadding: 14,
+					tickRotation: 0,
+					format: (tick) => (String(tick).includes(":00 ") ? String(tick) : ""),
+				}}
                 theme={{
                     axis: {
-                        legend: {
-                            text: {
-                                fontSize: 16,
-                                outlineWidth: 0,
-                            },
-                        },
-                        ticks: {
-                            text: {
-                                fontSize: 12,
-                                fill: "#6b7280",
-                            },
-                        },
+					legend: { text: { fontSize: 16, outlineWidth: 0 } },
+					ticks: { text: { fontSize: 14, fill: "#111827", fontWeight:  "normal" } },
+                        // Use default, subtle domain line to match analytics cards
                     },
-                    grid: {
-                        line: {
-                            strokeWidth: 0,
-                        },
-                    },
+                    tooltip: { container: { border: "none", padding: 0, boxShadow: "none", background: "transparent" } },
                 }}
             />
+
+			{/* Separator line and soft white fade just above the x-axis to create a hover effect */}
+			<div
+				style={{
+					position: "absolute",
+					left: chartMargin.left,
+					right: chartMargin.right,
+					bottom: chartMargin.bottom + baselineGapPx,
+					height: 18,
+					pointerEvents: "none",
+					zIndex: 5,
+				}}
+			/>
+			<div
+				style={{
+					position: "absolute",
+					left: chartMargin.left,
+					right: chartMargin.right,
+					bottom: chartMargin.bottom + baselineGapPx,
+					height: 1.25,
+					background: "rgba(17, 24, 39, 0.85)",
+					borderRadius: 0.5,
+					pointerEvents: "none",
+					zIndex: 6,
+				}}
+			/>
         </div>
     );
 };
