@@ -168,6 +168,27 @@
       font-weight: 400;
       line-height: normal;
       margin: 0;
+      display: flex;          // align icon and text neatly on a row
+      align-items: center;
+    }
+    // Add a little space between stacked summary lines
+    .WaitSummary + .WaitSummary {
+      margin-top: 6px;
+    }
+    .waitIcon {
+      height: 20px;
+      width: 20px;
+      margin-right: 10px;
+      opacity: 0.85;
+      flex: 0 0 20px;        // reserve same width so text lines up
+    }
+    .waitIcon.hourglass {
+      height: 16px;          // slightly smaller hourglass
+      width: 16px;
+      flex-basis: 20px;      // keep left edge aligned with users icon
+    }
+    .WaitSummary span + span {
+      margin-left: 8px;      // spread out adjacent pieces of text
     }
     .GraphPlaceholder {
       width: 100%;

@@ -8,6 +8,7 @@ import { pauseSession } from "../../firebasefunctions/session";
 import users from "../../media/users.svg";
 import calendarIcon from "../../media/Calendar_icon.svg";
 import clockIcon from "../../media/clock-regular_1.svg";
+import hourglassIcon from "../../media/hourglass-half.svg";
 import rightArrowIcon from "../../media/rightArrowIcon.svg";
 import leftArrowIcon from "../../media/leftArrowIcon.svg";
 import { useSessionQuestions, useSessionTAs } from "../../firehooks";
@@ -361,16 +362,31 @@ const SessionInformationHeader = ({
                     <div className="QueueInfo">
                         <p className="WaitTitle">Wait Time</p>
                         {avgWaitTime !== "No information available" ? (
-                            <p className="WaitSummary">
-                                <span className="red">{numAhead} students</span> ahead |
-                                <span className="blue"> {avgWaitTime}</span>
-                                <span className="gray"> {esimatedTime}</span> estimated wait time
-                            </p>
+                            <>
+                                <p className="WaitSummary">
+                                    <img src={users} alt="users" className="waitIcon" />
+                                    <span className="red">{numAhead} students</span>
+                                    <span>ahead</span>
+                                </p>
+                                <p className="WaitSummary">
+                                    <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
+                                    <span className="blue"> {avgWaitTime}</span>
+                                    <span className="gray"> {esimatedTime}</span>
+                                    <span>estimated wait time</span>
+                                </p>
+                            </>
                         ) : (
-                            <p className="WaitSummary">
-                                <span className="red">{numAhead} students</span> ahead |
-                                <span className="blue"> No information available</span>
-                            </p>
+                            <>
+                                <p className="WaitSummary">
+                                    <img src={users} alt="users" className="waitIcon" />
+                                    <span className="red">{numAhead} students</span>
+                                    <span>ahead</span>
+                                </p>
+                                <p className="WaitSummary">
+                                    <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
+                                    <span className="blue"> No information available</span>
+                                </p>
+                            </>
                         )}
                         <WaitTimeGraph
                             barData={sampleData.barData}
