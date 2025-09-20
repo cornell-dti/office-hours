@@ -72,7 +72,6 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     const [missingLocation, setMissingLocation] = useState<boolean>(false);
     const [missingQuestion, setMissingQuestion] = useState<boolean>(false);
     const [attemptedSubmit, setAttemptedSubmit] = useState<boolean>(false);
-    const [initial, setInitial] = useState<boolean>(true);
 
     const primaryTags = tags.filter((tag) => tag.level === 1);
     const secondaryTags = tags.filter((tag) => tag.level === 2);
@@ -220,7 +219,6 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         console.log("Button Clicked");
 
         setAttemptedSubmit(true);
-        setInitial(false);
 
         setMissingPrimaryTags(!selectedPrimary);
         setMissingSecondaryTags(!selectedSecondary);
@@ -313,7 +311,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                     <div className="tagsContainer">
                         {primaryTags.length !== 0 && (
                             <>
-                                <div className={`topRow ${attemptedSubmit && missingPrimaryTags ? "error" : (initial ? "" : "clearError")}`}>
+                                <div className={`topRow ${missingPrimaryTags ? "error" : ""}`}>
                                     <div className="disclaimerContainer text">
                                         <p> <Asterisk /> Required</p>
                                     </div>
@@ -343,7 +341,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             <>
                                 <hr />
                                 <div className={`tagsMiniContainer 
-                                    ${attemptedSubmit && missingSecondaryTags ? "error " : initial ? " " : "clearError "}`
+                                    ${missingSecondaryTags ? "error " :  ""}`
                                     + !!selectedPrimary
                                 }
                                 >
@@ -374,8 +372,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         {"building" in session && (
                             <>
                                 {" "}
-                                <div className={`tagsMiniContainer ${attemptedSubmit && missingLocation  ? "error" : 
-                                    initial ? "" : "clearError"}`}
+                                <div className={`tagsMiniContainer ${missingLocation  ? "error" : ""}`}
                                 >
                                     {
                                         <p className="header">
@@ -433,7 +430,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             </>
                         )}
                         <hr/>
-                        <div className={`tagsMiniContainer ${attemptedSubmit && missingQuestion ? "error" : initial ? "" : "clearError"}`}>
+                        <div className={`tagsMiniContainer ${missingQuestion ? "error" : ""}`}>
                             <p className="header">{"Question "} <Asterisk /></p>
                             {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||

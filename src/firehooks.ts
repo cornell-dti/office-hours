@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 
 import { docData } from 'rxfire/firestore';
 import { switchMap} from 'rxjs/operators';
@@ -46,7 +46,8 @@ export const useQueryWithLoading = <T, P = string>(
     useEffect(
         () => {
             
-            const results$:Observable<T[]> = collectionData(getQuery(queryParameter), {idField: idFieldArg}) as Observable<T[]>;
+            const results$:Observable<T[]> = collectionData(getQuery(queryParameter), 
+            {idField: idFieldArg}) as Observable<T[]>;
 
             // updates results as they come in. Triggers re-renders.
             const subscription = results$.subscribe(results => setResult(results));
