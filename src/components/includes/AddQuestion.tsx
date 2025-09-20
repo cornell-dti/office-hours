@@ -362,8 +362,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         {"building" in session && (
                             <>
                                 {" "}
-                                <div className={`tagsMiniContainer ${missingLocation  ? "error" : ""}`}
-                                >
+                                <div className={`tagsMiniContainer ${missingLocation  ? "error" : ""}`}>
                                     {
                                         <p className="header">
                                             {session.modality === "hybrid" ? "Location or Zoom Link" : "Location"}{" "}
