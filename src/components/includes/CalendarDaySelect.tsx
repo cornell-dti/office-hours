@@ -22,8 +22,8 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
     const [selectedWeekEpoch, setSelectedWeekEpoch] = React.useState(() => {
         const week = new Date(); // now
         week.setHours(0, 0, 0, 0); // beginning of today (00:00:00.000)
-        const daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
-        week.setTime(week.getTime() - daysSinceMonday * ONE_DAY); // beginning of this week's Monday
+        const daysSinceMonday = ((week.getDay() - 1) + 7) % 7; // shift back to Monday of this week
+        week.setDate(week.getDate() - daysSinceMonday);
 
         // TODO(ewlsh) Check that using state setters within state initializers is allowed.
         setActive(daysSinceMonday);
@@ -32,11 +32,11 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
     });
 
     const incrementWeek = React.useCallback((forward: boolean) => {  
-        const newDate = selectedWeekEpoch + (forward ? ONE_WEEK : -ONE_WEEK);
-            
-        callback(newDate + active * ONE_DAY);
-            
-        setSelectedWeekEpoch(newDate);
+        const d = new Date(selectedWeekEpoch);
+        d.setDate(d.getDate() + (forward ? 7 : -7));
+
+        callback(new Date(d).getTime() + active * ONE_DAY);
+        setSelectedWeekEpoch(d.getTime());
  
     }, [callback, selectedWeekEpoch, active]);
 
@@ -56,6 +56,12 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
         hasSessionsDays[((d - 1) + 7) % 7] = true;
     }
 
+    const getDateAtOffset = (base: Date, offsetDays: number) => {
+        const d = new Date(base);
+        d.setDate(d.getDate() + offsetDays);
+        return d;
+    };
+
     return (
         <div className="CalendarDaySelect">
             <p className="month">{monthNames[now.getMonth()]}</p>
@@ -71,7 +77,7 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
                     key={day}
                     index={i}
                     day={day}
-                    date={new Date(now.getTime() + i * ONE_DAY).getDate()}
+                    date={getDateAtOffset(now, i).getDate()}
                     active={i === active}
                     handleClick={handleDateClick}
                     hasSession={hasSessionsDays[i]}
