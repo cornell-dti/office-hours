@@ -213,7 +213,7 @@ function CourseSelection({ user, isEdit, allCourses }: Props): React.ReactElemen
     //  so that when you cannot unenroll from a course, it says No Classes Chosen instead of an empty box
     const selectedCoursesString = selectedCourses.length === 0 ? "" : selectedCourses.map((c) => c.code).join(", ");
 
-    /* eslint-disable max-len*/
+    /* eslint-disable max-len */
     return (
         <div>
             <div className="CourseSelection">
