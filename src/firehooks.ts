@@ -47,7 +47,7 @@ export const useQueryWithLoading = <T, P = string>(
         () => {
             
             const results$:Observable<T[]> = collectionData(getQuery(queryParameter), 
-            {idField: idFieldArg}) as Observable<T[]>;
+                {idField: idFieldArg}) as Observable<T[]>;
 
             // updates results as they come in. Triggers re-renders.
             const subscription = results$.subscribe(results => setResult(results));
