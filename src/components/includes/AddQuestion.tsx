@@ -75,7 +75,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     const primaryTags = tags.filter((tag) => tag.level === 1);
     const secondaryTags = tags.filter((tag) => tag.level === 2);
     const activeTags = tags.filter((tag) => tag.active);
-
+    const locationMissing = session.modality === "virtual" || (session.modality === "hybrid" && isVirtual) ? false : !location;
+   
     useEffect(() => {
         const updateWindowDimensions = () => {
             setWidth(window.innerWidth);
@@ -212,17 +213,12 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         setAttemptedSubmit(true);
         setInitial(false);
 
-        const primaryTagsMissing = !selectedPrimary;
-        const secondaryTagsMissing = !selectedSecondary;
-        const locationMissing = session.modality === "virtual" ? false : !location;
-        const questionMissing = !question;
-
-        setMissingPrimaryTags(primaryTagsMissing);
-        setMissingSecondaryTags(secondaryTagsMissing);
+        setMissingPrimaryTags(!selectedPrimary);
+        setMissingSecondaryTags(!selectedSecondary);
         setMissingLocation(locationMissing);
-        setMissingQuestion(questionMissing);
+        setMissingQuestion(!question);
 
-        if (primaryTagsMissing || secondaryTagsMissing || locationMissing || questionMissing) {
+        if (!selectedPrimary || !selectedSecondary || locationMissing || !question) {
             // eslint-disable-next-line no-console
             console.log("Fields missing, showing error state");
             return;
@@ -247,7 +243,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         if (attemptedSubmit){
             setMissingPrimaryTags(!selectedPrimary);
             setMissingSecondaryTags(!selectedSecondary);
-            setMissingLocation(!location);
+            setMissingLocation(locationMissing);
             setMissingQuestion(!question);
         }
     }, [selectedPrimary, selectedSecondary, location, question, attemptedSubmit]);
@@ -297,6 +293,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     }
 
     return (
+        
         <div className="QuestionView" onKeyDown={(e) => handleKeyPressDown(e)}>
             {(stage < CLOSE_TO_END_OF_OH || width < mobileBreakpoint) && (
                 <div className="AddQuestion">
@@ -306,7 +303,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                     <div className="tagsContainer">
                         {primaryTags.length !== 0 && (
                             <>
-                                <div className={`topRow ${missingPrimaryTags ? "error" : initial ? "" : "clearError"}`}>
+                                <div className={`topRow ${attemptedSubmit && missingPrimaryTags ? "error" : (initial ? "" : "clearError")}`}>
                                     <div className="disclaimerContainer text">
                                         <p> <Asterisk /> Required</p>
                                     </div>
@@ -336,7 +333,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             <>
                                 <hr />
                                 <div className={`tagsMiniContainer 
-                                    ${missingSecondaryTags ? "error " : initial ? " " : "clearError "}`
+                                    ${attemptedSubmit && missingSecondaryTags ? "error " : initial ? " " : "clearError "}`
                                     + !!selectedPrimary
                                 }
                                 >
@@ -367,7 +364,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                         {"building" in session && (
                             <>
                                 {" "}
-                                <div className={`tagsMiniContainer ${missingLocation  ? "error" : 
+                                <div className={`tagsMiniContainer ${attemptedSubmit && missingLocation  ? "error" : 
                                     initial ? "" : "clearError"}`}
                                 >
                                     {
@@ -395,13 +392,17 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                                                     className="hybridCheckbox"
                                                     label="Are you virtual?"
                                                     checked={isVirtual}
-                                                    onClick={() => setIsVirtual(!isVirtual)}
+                                                    onClick={() => {
+                                                        setIsVirtual(!isVirtual);
+                                                        !isVirtual && setMissingLocation(false);
+                                                        !isVirtual && setStage(LOCATION_INPUTTED);
+                                                    }}
                                                 />
                                             )}
                                             {!(
                                                 session.modality === "hybrid" &&
                                                 typeof session.useTALink !== "undefined" &&
-                                                session.useTALink
+                                                session.useTALink && isVirtual
                                             ) && (
                                                 <textarea
                                                     className="TextInput location"
@@ -422,7 +423,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
                             </>
                         )}
                         <hr/>
-                        <div className={`tagsMiniContainer ${missingQuestion ? "error" : initial ? "" : "clearError"}`}>
+                        <div className={`tagsMiniContainer ${attemptedSubmit && missingQuestion ? "error" : initial ? "" : "clearError"}`}>
                             <p className="header">{"Question "} <Asterisk /></p>
                             {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||

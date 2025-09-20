@@ -50,7 +50,7 @@ export const useQueryWithLoading = <T, P = string>(
 
             // updates results as they come in. Triggers re-renders.
             const subscription = results$.subscribe(results => setResult(results));
-             return () => { subscription.unsubscribe(); };
+            return () => { subscription.unsubscribe(); };
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [queryParameter, getQuery, idFieldArg, collectionData]
