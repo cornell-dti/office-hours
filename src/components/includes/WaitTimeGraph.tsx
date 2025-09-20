@@ -86,13 +86,25 @@ const WaitTimeGraph = (props: Props) => {
                     svg rect[fill="#DAE9FC"]:hover {
                         fill: #6399D6 !important;
                         opacity: 0.4 !important;
-                        transition: all 0.2s ease !important;
+                        transition: fill 0.2s ease, opacity 0.2s ease !important;
                     }
-                    /* Ensure only bar rectangles have transition */
+                    /* Ensure only bar rectangles have transition for fill and opacity only */
                     svg rect[fill="#D9D9D9"],
                     svg rect[fill="#6399D6"],
                     svg rect[fill="#DAE9FC"] {
-                        transition: all 0.2s ease;
+                        transition: fill 0.2s ease, opacity 0.2s ease;
+                    }
+                    /* Prevent any transitions on the chart container that might affect positioning */
+                    .nivo-bar,
+                    .nivo-bar-rect,
+                    svg {
+                        transition: none !important;
+                    }
+                    /* Only allow transitions on the specific bar rectangles */
+                    svg rect[fill="#D9D9D9"],
+                    svg rect[fill="#6399D6"],
+                    svg rect[fill="#DAE9FC"] {
+                        transition: fill 0.2s ease, opacity 0.2s ease !important;
                     }
                 `}
             </style>
@@ -184,22 +196,40 @@ const WaitTimeGraph = (props: Props) => {
                 padding={0.2}
                 colors={(bar) => {
                     const currentTime = new Date();
-                    const barTime = new Date();
-                    const [time, period] = bar.data.slot.split(' ');
-                    const [hour, minute] = time.split(':');
+                    const today = new Date();
                     
-                    // Set the bar time based on the slot
-                    barTime.setHours(period === 'PM' && hour !== '12' ? parseInt(hour) + 12 : 
-                                   period === 'AM' && hour === '12' ? 0 : parseInt(hour));
-                    barTime.setMinutes(parseInt(minute));
+                    // Get the selected day index (0 = Sunday, 1 = Monday, etc.)
+                    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                    const selectedDayIndex = dayNames.indexOf(selectedDay);
+                    const todayIndex = today.getDay();
                     
-                    // Compare with current time
-                    if (barTime < currentTime) {
-                        return "#D9D9D9"; // Past time
-                    } else if (bar.data.hour === currentHourLabel) {
-                        return "#6399D6"; // Current time
-                    } else {
+                    // If selected day is today, use the original time-based logic
+                    if (selectedDayIndex === todayIndex) {
+                        const barTime = new Date();
+                        const [time, period] = bar.data.slot.split(' ');
+                        const [hour, minute] = time.split(':');
+                        
+                        // Set the bar time based on the slot
+                        barTime.setHours(period === 'PM' && hour !== '12' ? parseInt(hour) + 12 : 
+                                       period === 'AM' && hour === '12' ? 0 : parseInt(hour));
+                        barTime.setMinutes(parseInt(minute));
+                        
+                        // Compare with current time
+                        if (barTime < currentTime) {
+                            return "#D9D9D9"; // Past time
+                        } else if (bar.data.hour === currentHourLabel) {
+                            return "#6399D6"; // Current time
+                        } else {
+                            return "#DAE9FC"; // Future time
+                        }
+                    }
+                    // If selected day is in the future, all bars are future time
+                    else if (selectedDayIndex > todayIndex) {
                         return "#DAE9FC"; // Future time
+                    }
+                    // If selected day is in the past, all bars are past time
+                    else {
+                        return "#D9D9D9"; // Past time
                     }
                 }}
                 axisLeft={null}
@@ -214,9 +244,18 @@ const WaitTimeGraph = (props: Props) => {
                             borderRadius: "8px",
                             fontSize: "13px",
                             boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "2px",
+                            textAlign: "left",
                         }}
                     >
-                        <strong>{props.OHDetails[data.hour].avgWaitTime || `${data.waitTime} minutes`}</strong>
+                        <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
+                            At {data.slot}
+                        </div>
+                        <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
+                            <strong>Est Wait:</strong> {props.OHDetails[data.hour].avgWaitTime || `${data.waitTime} min`}
+                        </div>
                     </div>
                 )}
                 theme={{
