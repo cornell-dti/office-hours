@@ -115,12 +115,13 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     }, [error]);
 
     // analytics calculations
+    // Added courseTAs for the course which holds a map of userIDs of TAs
     const { sessions } = useCoursesBetweenDates(startDate, endDate, courseId);
     const course = useCourse(courseId);
     const courseUsers = useCourseUsersMap(courseId, true)
     const courseTAs = useCourseTAMap(course!)
 
-
+    // This component now iterates through user documents of TAs in a particular course and gets each of their feedback lists.
     const getFeedbackForSession = (sessionId: string) => {
         const feedback: FeedbackRecord[] = [];
 

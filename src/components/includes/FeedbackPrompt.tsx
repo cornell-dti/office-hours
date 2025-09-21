@@ -45,12 +45,10 @@ const FeedbackPrompt = (props: Props) => {
         };
     }, [containerRef, props]);
 
-    const handleUpdateQuestion = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    // Prevents responder from writing a review over 1000 charachters long. 
+    const handleUpdateFeedback = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
-        const isQuestionEmpty = target.value.length === 0;
-        setMissingQuestion(isQuestionEmpty);
         setFeedback(target.value.length <= FEEDBACK_CHAR_LIMIT ? target.value : feedback);
-        setStage(target.value.length > 0 ? QUESTION_INPUTTED : LOCATION_INPUTTED);
     };
 
     /* TODO (richardgu): handle rating/form verification so we only save valid feedback 
@@ -137,7 +135,8 @@ const FeedbackPrompt = (props: Props) => {
                         },
                         maxLength: FEEDBACK_CHAR_LIMIT, 
                     }}
-                    onChange={handleUpdateQuestion}
+                    //Uses handleUpdateFeedback to limit response
+                    onChange={handleUpdateFeedback}
                 />
                 <Typography
                     variant="caption"
