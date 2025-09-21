@@ -107,7 +107,7 @@
 .TAImagesScroll {
   display: flex;
   gap: 4px;
-  overflow: hidden;
+  overflow: visible;
   flex: 1;
 }
 
@@ -124,9 +124,54 @@
   flex: 0 0 auto;
 }
 
+.TATooltipWrapper {
+  position: relative;
+  display: inline-block;
+}
+
 .TACircle {
   width: 46px;
   height: 46px;
+  cursor: pointer;
+}
+
+.TATooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: normal;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  white-space: nowrap;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none;
+  border: 1px solid #e5e7eb;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: white;
+  }
+}
+
+.TATooltipWrapper:hover .TATooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.TACircle {
   border-radius: 50%;
   object-fit: cover;
 }
@@ -146,9 +191,9 @@
   transform: translateY(-50%);
   width: 28px;
   height: 28px;
-  border-radius: 9999px;
-  background: #ffffff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .TAImagesWrapper > .ScrollArrow:first-child { left: 4px; }
