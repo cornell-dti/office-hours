@@ -254,6 +254,9 @@ export const submitFeedback = (removedQuestionId: string | undefined) =>
                     writtenFeedback: feedback,
                     verification: verified,
                 };
+                if (taID == undefined) {
+                        throw new Error("taID is undefined")
+                }
                 const usersRef = firestore.collection("users").doc(taID);
                 usersRef.get().then((doc) => {
                     if (doc.exists) {
