@@ -11,17 +11,24 @@ import CloseIcon from "@material-ui/icons/Close";
 
 const FEEDBACK_CHAR_LIMIT = 1000;
 const Asterisk = () => <span className="required"> * </span>;
+const LOCATION_INPUTTED = 40;
+const QUESTION_INPUTTED = 50;
+const INITIAL_STATE = 10;
 
 type Props = {
     onClose: (rating1?: number, rating2?: number, rating3?: number, feedback?: string) => void;
     closeFeedbackPrompt: () => void;
 };
 
+
+
 const FeedbackPrompt = (props: Props) => {
     const [rating1, setRating1] = useState<number | null>(0);
     const [rating2, setRating2] = useState<number | null>(0);
     const [rating3, setRating3] = useState<number | null>(0);
     const [feedback, setFeedback] = useState<string>("");
+    const [stage, setStage] = useState<number>(INITIAL_STATE);
+    const [missingQuestion, setMissingQuestion] = useState<boolean>(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -37,6 +44,14 @@ const FeedbackPrompt = (props: Props) => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [containerRef, props]);
+
+    const handleUpdateQuestion = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+        const target = event.target as HTMLTextAreaElement;
+        const isQuestionEmpty = target.value.length === 0;
+        setMissingQuestion(isQuestionEmpty);
+        setFeedback(target.value.length <= FEEDBACK_CHAR_LIMIT ? target.value : feedback);
+        setStage(target.value.length > 0 ? QUESTION_INPUTTED : LOCATION_INPUTTED);
+    };
 
     /* TODO (richardgu): handle rating/form verification so we only save valid feedback 
     into Firestore, make things look nicer.
@@ -114,14 +129,15 @@ const FeedbackPrompt = (props: Props) => {
                     fullWidth
                     style={{ marginBottom: "4rem" }}
                     placeholder="Please describe your experience..."
+                    value={feedback}
                     /* Adds a character limit to the feedback response */
-                    onChange={(event) => {
-                        const input = event.target.value;
-                        const length = input.length;
-                        if (length <= FEEDBACK_CHAR_LIMIT) {
-                            setFeedback(input);
-                        }
+                    inputProps={{
+                        style: {
+                            overflow: 'auto',
+                        },
+                        maxLength: FEEDBACK_CHAR_LIMIT, 
                     }}
+                    onChange={handleUpdateQuestion}
                 />
                 <Typography
                     variant="caption"
