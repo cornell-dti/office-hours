@@ -58,7 +58,7 @@ const WaitTimeGraph = (props: Props) => {
     };
 
 	// Keep chart margin centralized so overlays align with the plot area
-	const chartMargin = React.useMemo(() => ({ top: 30, right: 12, bottom: 64, left: 12 }), []);
+	const chartMargin = React.useMemo(() => ({ top: 15, right: 12, bottom: 40, left: 12 }), []);
 	// Visual gap between the bars and the separator line
 	const baselineGapPx = -30;
 
@@ -77,7 +77,7 @@ const WaitTimeGraph = (props: Props) => {
     };
 
     return (
-        <div style={{ height: 240, position: "relative" }}>
+        <div style={{ height: 140, position: "relative" }}>
             <style>
                 {`
                     /* Target only the actual bar rectangles, not the container or other SVG elements */
@@ -259,7 +259,7 @@ const WaitTimeGraph = (props: Props) => {
                 theme={{
                     axis: {
                         legend: { text: { fontSize: 16, outlineWidth: 0 } },
-                        ticks: { text: { fontSize: 14, fill: "#111827", fontWeight:  "normal" } },
+                        ticks: { text: { fontSize: 13, fill: "#111827", fontWeight:  "300" } },
                         // Use default, subtle domain line to match analytics cards
                     },
                     tooltip: { container: { border: "none", padding: 0, boxShadow: "none", background: "transparent" } },
@@ -267,7 +267,7 @@ const WaitTimeGraph = (props: Props) => {
 				axisBottom={{
 					legend: "",
 					tickSize: 0,
-					tickPadding: 14,
+					tickPadding: 8,
 					tickRotation: 0,
 					format: (tick) => (String(tick).includes(":00 ") ? String(tick) : ""),
 				}}

@@ -218,7 +218,7 @@ const SessionInformationHeader = ({
         <header
             className="DesktopSessionInformationHeader"
             style={{
-                height: "450px", // Fixed overall height for the entire component
+                height: "280px", // More compact design
             }}
         >
             <Grid container style={{ alignItems: "stretch", height: "100%" }}>
@@ -229,7 +229,7 @@ const SessionInformationHeader = ({
                             item
                             style={{
                                 display: "flex",
-                                height: "65%",
+                                height: "60%",
                             }}
                         >
                             <div className="LeftInformationHeader" style={{ width: "100%" }}>
@@ -256,24 +256,27 @@ const SessionInformationHeader = ({
                                 </p>
 
                                 <div className="Date">
-                                    <img
-                                        src={calendarIcon}
-                                        alt="Calendar Icon for Office Hour Date"
-                                        className="calendarIcon"
-                                    />
-                                    <Moment
-                                        date={session.startTime.seconds * 1000}
-                                        interval={0}
-                                        format={"dddd, MMM D"}
-                                    />
-                                    <br />
-                                    <img src={clockIcon} alt="Clock Icon for Office Hour Date" className="clockIcon" />
-                                    <Moment date={session.startTime.seconds * 1000} interval={0} format={"h:mm A"} />
-                                    <Moment date={session.endTime.seconds * 1000} interval={0} format={" - h:mm A"} />
+                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                                        <img
+                                            src={calendarIcon}
+                                            alt="Calendar Icon for Office Hour Date"
+                                            className="calendarIcon"
+                                        />
+                                        <Moment
+                                            date={session.startTime.seconds * 1000}
+                                            interval={0}
+                                            format={"dddd, MMM D"}
+                                        />
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <img src={clockIcon} alt="Clock Icon for Office Hour Date" className="clockIcon" />
+                                        <Moment date={session.startTime.seconds * 1000} interval={0} format={"h:mm A"} />
+                                        <Moment date={session.endTime.seconds * 1000} interval={0} format={" - h:mm A"} />
+                                    </div>
                                 </div>
                             </div>
                         </Grid>
-                        <Grid item style={{ width: "100%", display: "flex", height: "35%" }}>
+                        <Grid item style={{ width: "100%", display: "flex", height: "40%" }}>
                             <div className="TAsHeader">
                                 <Grid
                                     container
