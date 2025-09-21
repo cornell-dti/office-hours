@@ -1,8 +1,8 @@
 import * as React from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
 import { Icon } from "semantic-ui-react";
-import rightArrowIcon from "../../media/rightArrowIcon.svg";
-import leftArrowIcon from "../../media/leftArrowIcon.svg";
+import rightArrowIcon from "../../media/Right Arrow.svg";
+import leftArrowIcon from "../../media/Left Arrow.svg";
 
 type Props = {
     barData: BarDatum[];
@@ -148,9 +148,8 @@ const WaitTimeGraph = (props: Props) => {
                     left: -6,
                     top: "50%",
                     transform: "translateY(-30%)",
-                    background: "#fff",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: 9999,
+                    background: "transparent",
+                    border: "none",
                     width: 28,
                     height: 28,
                     display: "flex",
@@ -172,9 +171,8 @@ const WaitTimeGraph = (props: Props) => {
                     right: -6,
                     top: "50%",
                     transform: "translateY(-30%)",
-                    background: "#fff",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: 9999,
+                    background: "transparent",
+                    border: "none",
                     width: 28,
                     height: 28,
                     display: "flex",

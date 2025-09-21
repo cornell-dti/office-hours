@@ -9,8 +9,8 @@ import users from "../../media/users.svg";
 import calendarIcon from "../../media/Calendar_icon.svg";
 import clockIcon from "../../media/clock-regular_1.svg";
 import hourglassIcon from "../../media/hourglass-half.svg";
-import rightArrowIcon from "../../media/rightArrowIcon.svg";
-import leftArrowIcon from "../../media/leftArrowIcon.svg";
+import rightArrowIcon from "../../media/Right Arrow.svg";
+import leftArrowIcon from "../../media/Left Arrow.svg";
 import { useSessionQuestions, useSessionTAs } from "../../firehooks";
 import { computeNumberAhead } from "../../utilities/questions";
 import { RootState } from "../../redux/store";
@@ -206,6 +206,7 @@ const SessionInformationHeader = ({
     };
 
     const [startIndex, setStartIndex] = useState(0);
+    const [hoveredTA, setHoveredTA] = useState<number | null>(null);
     const visibleCount = 4;
 
     const visibleTAs = React.useMemo(() => {
@@ -308,16 +309,57 @@ const SessionInformationHeader = ({
                                                 <div className="TAImagesScroll">
                                                     {visibleTAs.map((ta, index) => (
                                                         <div key={index} className="TACircleContainer">
-                                                            <img
-                                                                src={ta.photoUrl || "/placeholder.png"}
-                                                                alt={`${ta.firstName} ${ta.lastName}'s Photo`}
-                                                                className="TACircle"
+                                                            <div 
+                                                                className="TATooltipWrapper"
                                                                 style={{
-                                                                    width: "48px",
-                                                                    height: "48px",
-                                                                    border: "2px solid #f2f2f2",
+                                                                    position: "relative",
+                                                                    display: "inline-block"
                                                                 }}
-                                                            />
+                                                                onMouseEnter={() => {
+                                                                    console.log('Hovering TA:', ta.firstName, ta.lastName);
+                                                                    setHoveredTA(index);
+                                                                }}
+                                                                onMouseLeave={() => {
+                                                                    console.log('Leaving TA');
+                                                                    setHoveredTA(null);
+                                                                }}
+                                                            >
+                                                                <img
+                                                                    src={ta.photoUrl || "/placeholder.png"}
+                                                                    alt={`${ta.firstName} ${ta.lastName}'s Photo`}
+                                                                    className="TACircle"
+                                                                    style={{
+                                                                        width: "48px",
+                                                                        height: "48px",
+                                                                        border: "2px solid #f2f2f2",
+                                                                        borderRadius: "50%",
+                                                                        objectFit: "cover",
+                                                                        cursor: "pointer"
+                                                                    }}
+                                                                />
+                                                                {hoveredTA === index && (
+                                                                    <div 
+                                                                        className="TATooltip"
+                                                                        style={{
+                                                                            position: "absolute",
+                                                                            bottom: "calc(100% + 8px)",
+                                                                            left: "50%",
+                                                                            transform: "translateX(-50%)",
+                                                                            background: "white",
+                                                                            padding: "8px 12px",
+                                                                            borderRadius: "8px",
+                                                                            fontSize: "13px",
+                                                                            color: "#333",
+                                                                            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                                                            whiteSpace: "nowrap",
+                                                                            zIndex: 9999,
+                                                                            border: "1px solid #e5e7eb"
+                                                                        }}
+                                                                    >
+                                                                        {ta.firstName} {ta.lastName}
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     ))}
                                                 </div>
