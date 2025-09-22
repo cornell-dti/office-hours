@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, r2_score
 import tensorflow as tf
 import firebase_admin
 from firebase_admin import firestore
@@ -118,9 +118,17 @@ def create_dataset(dataset, look_back=1):
 	return np.array(dataX), np.array(dataY)
 
 
+def create_sliding_windows(X, y, lookback=5):
+    Xs, ys = [], []
+    for i in range(len(X) - lookback):
+        Xs.append(X[i:i+lookback])   # window of features
+        ys.append(y[i+lookback])     # predict the *next* target
+    return np.array(Xs), np.array(ys)
+
+
 def main():
     """Run the vanilla LSTM pipeline"""
-    get_real_data()
+    #get_real_data()
 
     # Load data
     df = load_data('oberlin_data.csv')
@@ -135,7 +143,6 @@ def main():
 
 
     #do LSTM stuff
-    dataset = df.to_numpy('float32')
     X = df[['month', 'day', 'startHour', 'startMin', 'endHour', 'endMin']].to_numpy(dtype=np.float32)
     y = df[['timeWaiting']].to_numpy(dtype=np.float32)
     scaler_X = MinMaxScaler()
@@ -145,45 +152,46 @@ def main():
     y_scaled = scaler_y.fit_transform(y)
     # split into train and test sets
 
-    X_train, X_test, y_train, y_test = train_test_split(
-    X_scaled, y_scaled, test_size=0.2, shuffle=False)
+
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_scaled, test_size=0.2, shuffle=False)
     print(f"after split, X_train: {len(X_train)}, X_test: {len(X_test)}, y_train: {len(y_train)}, y_test:{len(y_test)}")
     # Reshape X for LSTM: (samples, timesteps, features)
-    # if you treat each row as one timestep (no sequences yet), timesteps=1
-    X_train = np.reshape(X_train, (X_train.shape[0], 1, X_train.shape[1]))
-    X_test = np.reshape(X_test, (X_test.shape[0], 1, X_test.shape[1]))
+    lookback = 5  # number of timesteps to look back
+    X_train_seq, y_train_seq = create_sliding_windows(X_train, y_train, lookback)
+    X_test_seq, y_test_seq = create_sliding_windows(X_test, y_test, lookback)
 
     print("X_train:", X_train.shape)
     print("y_train:", y_train.shape)
     print("X_test:", X_test.shape)
     print("y_test:", y_test.shape)
 
+    n_features = X_train_seq.shape[2]
+
     model = Sequential([
-    LSTM(50, activation='relu', input_shape=(X_train.shape[1], X_train.shape[2])),
+    LSTM(50, activation='relu', input_shape=(lookback, n_features)),
     Dense(1)
     ])
 
     model.compile(optimizer='adam', loss='mse')
-    model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.2, verbose=0)
+    model.fit(X_train_seq, y_train_seq, epochs=100, batch_size=32, validation_split=0.2, verbose=0)
 
-    y_pred = model.predict(X_test)
+    y_pred = model.predict(X_test_seq)
     print(f"y_pred shape {y_pred.shape}")
 
     #invert the scale for interpretability
-    y_test = scaler_y.inverse_transform(y_test)
+    y_test = scaler_y.inverse_transform(y_test_seq)
     y_pred = scaler_y.inverse_transform(y_pred)
+
+    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+    r2 = r2_score(y_test, y_pred)
+
+    print(f"Test RMSE: {rmse:.2f}")
+    print(f"R^2: {r2:.3f}")
+
+    
 
     predictions = pd.DataFrame({'Actual': y_test.flatten(), 'Predicted': y_pred.flatten()})
     print(predictions)
-
-    loss = model.evaluate(X_test, y_test)
-    print(f'Test loss?? idk: {loss}')
-
-    loss = model.evaluate(y_pred, y_test)
-    print(f'real Test loss?? maybe: {loss}')
-
-    testScore = np.sqrt(mean_squared_error(y_test, y_pred))
-    print('Test RMSE: %.2f RMSE' % (testScore))
 
 
     #split train/test so past is always used to predict future. 
