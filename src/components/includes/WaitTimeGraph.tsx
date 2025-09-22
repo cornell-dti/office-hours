@@ -32,6 +32,9 @@ const WaitTimeGraph = (props: Props) => {
     // eslint-disable-next-line no-console
     console.log("Current hour:", currentHour);
 
+    const vw = typeof window !== "undefined" ? window.innerWidth : 1024;
+    const scale = Math.min(1, vw / 1024);
+
     // Transform data to have hours on x-axis and one series for selected day
     const transformData = () => {
         const hours = props.timeKeys;
@@ -46,14 +49,21 @@ const WaitTimeGraph = (props: Props) => {
     };
 
     return (
-        <div style={{ height: 300 }}>
+        <div 
+            style={{ 
+                width: "100%",
+                minWidth: 0,
+                height: `${300 * scale + 150}px`, 
+            }}
+        >
             <div
                 style={{
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    marginTop: "20px",
-                    gap: "10px",
+                    marginTop: `${20 * scale}px`,
+                    gap: `${10 * scale}px`,
+                    flexWrap: "wrap",
                 }}
             >
                 {dayNames.map((dayName) => (
@@ -64,8 +74,9 @@ const WaitTimeGraph = (props: Props) => {
                             backgroundColor: selectedDay === dayName ? "#4285f4" : "#f1f3f4",
                             color: selectedDay === dayName ? "white" : "black",
                             border: "none",
-                            padding: "8px 12px",
+                            padding: `${6 * scale}px ${10 * scale}px`,
                             borderRadius: "4px",
+                            fontSize: `${12 * scale + 2}px`,
                             cursor: "pointer",
                         }}
                     >
@@ -82,10 +93,10 @@ const WaitTimeGraph = (props: Props) => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 colors={(bar) => "#4285F4"}
                 margin={{
-                    top: 20,
-                    right: 20,
+                    top: 20 * scale,
+                    right: vw < 768 ? 10 : 20,
                     bottom: 60,
-                    left: 60,
+                    left: vw < 768 ? 10 : 20,
                 }}
                 borderRadius={4}
                 padding={0.05}
@@ -97,17 +108,18 @@ const WaitTimeGraph = (props: Props) => {
                             flexDirection: "column",
                             justifyContent: "center",
                             alignItems: "center",
-                            padding: "10px",
-                            paddingRight: "25px",
+                            padding: `${10 * scale}px`,
+                            paddingRight:  `${25 * scale}px`,
                             border: "2px solid black",
+                            fontSize: `${12 * scale + 4}px`,
                             borderRadius: "4px",
                             textAlign: "center",
                         }}
                     >
-                        <strong style={{ color: "black", fontSize: "16px" }}>
+                        <strong style={{ color: "black" }}>
                             {selectedDay}, {data.hour}
                         </strong>
-                        <div style={{ marginTop: "8px" }}>
+                        <div style={{ marginTop: `${8 * scale}px` }}>
                             <Icon />
                             {props.OHDetails[data.hour].startHour} - {props.OHDetails[data.hour].endHour}
                             <br />
@@ -136,7 +148,7 @@ const WaitTimeGraph = (props: Props) => {
                     axis: {
                         legend: {
                             text: {
-                                fontSize: 16,
+                                fontSize: 16 * scale,
                                 outlineWidth: 6,
                             },
                         },
