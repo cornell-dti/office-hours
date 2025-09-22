@@ -45,94 +45,82 @@
     box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
     height: 100%;
     width: 100%;
-    padding: 6% 10% 4% 6%;
+    padding:  6% 8%;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
+    align-items: start;
 
     .Location {
       font-size: 24px;
       font-family: Roboto;
-      font-weight: 600;
-      margin-bottom: 6px;
-      margin-top: 2px;
+      font-weight: 500;
+      margin-bottom: 5px;
       overflow: hidden;
       // white-space: nowrap;
       text-overflow: ellipsis;
     }
     .Date {
-      margin-top: 8px;
-      margin-left: 0;
-      color: #4d4d4d;
-      font-family: Roboto, sans-serif;
-      font-size: 14px;
+      margin-top: 10px;
+      color: #484848;
+      font-family: Roboto;
+      font-size: 14.4px;
       font-style: normal;
       font-weight: 400;
-      line-height: 1.4;
-      margin: 0;
+      line-height: normal;
+      line-height: 1.6; 
     }
     .Title {
-      margin-bottom: 6px;
-      margin-left: 0;
+      margin-bottom: 5px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      color: #4d4d4d;
-      font-family: Roboto, sans-serif;
-      font-size: 14px;
+      margin-bottom: 5px;
+      color: #484848;
+      font-family: Roboto;
+      font-size: 14.4px;
       font-style: normal;
       font-weight: 400;
-      line-height: 1.4;
+      line-height: normal;
     }
-     .clockIcon {
-       vertical-align: middle;
-       margin-right: 10px;
-       height: 16px;
-       width: 16px;
-       opacity: 0.85;
-       }
-       .calendarIcon{
-       vertical-align: middle;
-       margin-right: 10px;
-       height: 16px;
-       width: 16px;
-       opacity: 0.85;
-       }
+    .clockIcon {
+      vertical-align: middle;
+      margin-right: 6px; /* optional spacing between icon and text */
+      height: 16px;       /* adjust as needed */
+      }
+      .calendarIcon{
+      vertical-align: middle;
+      margin-right: 6px; /* optional spacing between icon and text */
+      height: 16px;  
+      }
 }
+
 .TAsHeader {
   border-radius: 8px;
   box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
   background-color: #ffffff;
-  padding: 12px 16px;
+  padding: 6% 8%;
   width: 100%;
   display: flex;
   flex-direction: column;
+    margin: 25px 48px;
+
 }
 
 .TAHeaderText {
   text-align: left;
-  p { white-space: nowrap; word-break: keep-all; }
 }
 
 .TAImagesWrapper {
   display: flex;
-  gap: 8px;
-  position: relative;
-  padding: 0 48px 0 28px; // slight reduction to reveal 4th avatar
+  gap: 16px;
 }
 
 
 .TAImagesScroll {
   display: flex;
-  gap: 4px;
-  overflow: visible;
+  gap: 16px;
+  overflow: hidden;
   flex: 1;
-}
-
-.TAImagesScrollWrapper {
-  flex: 1;
-  padding: 0 8px 0 10px; // keep a small buffer but allow 4th avatar to show
 }
 
 .TAImagesScroll::-webkit-scrollbar {
@@ -143,61 +131,16 @@
   flex: 0 0 auto;
 }
 
-.TATooltipWrapper {
-  position: relative;
-  display: inline-block;
-}
-
 .TACircle {
-  width: 46px;
-  height: 46px;
-  cursor: pointer;
-}
-
-.TATooltip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: normal;
-  color: #333;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  white-space: nowrap;
-  z-index: 9999;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-  pointer-events: none;
-  border: 1px solid #e5e7eb;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 5px solid transparent;
-    border-top-color: white;
-  }
-}
-
-.TATooltipWrapper:hover .TATooltip {
-  opacity: 1;
-  visibility: visible;
-}
-
-.TACircle {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
 }
 
 .arrowIcon {
-  width: 14px;
-  height: 14px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
 }
 
@@ -205,18 +148,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 28px;
-  height: 28px;
-  background: transparent;
-  border: none;
-  box-shadow: none;
 }
-
-.TAImagesWrapper > .ScrollArrow:first-child { left: 4px; }
-.TAImagesWrapper > .ScrollArrow:last-child { right: -12px; }
   .QueueInfo {
     border-radius: 8px;
     box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
@@ -224,8 +156,10 @@
     background-color: #ffffff;
     color: $text-grey;
     text-align: center;
-    padding: 3% 8%;
+    padding: 4%;
     width: 100%;
+    margin: 25px 48px;
+
 
     p {
       text-align: left;
@@ -243,15 +177,6 @@
       line-height: normal;
       margin: 0 0 8px 0; // Add spacing below
     }
-    .WaitSubtitle{
-      color: #666;
-      font-family: Roboto, sans-serif;
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-      margin: 0 0 15px 0; // Add spacing below
-    }
     .WaitSummary {
       color: #484848;
       font-family: Roboto, sans-serif;
@@ -260,30 +185,6 @@
       font-weight: 400;
       line-height: normal;
       margin: 0;
-      display: flex;          // align icon and text neatly on a row
-      align-items: center;
-    }
-    // Add a little space between stacked summary lines
-    .WaitSummary + .WaitSummary {
-      margin-top: 6px;
-    }
-    .waitIcon {
-      height: 20px;
-      width: 20px;
-      margin-right: 10px;
-      opacity: 0.85;
-      flex: 0 0 20px;        // reserve same width so text lines up
-    }
-    .waitIcon.hourglass {
-      height: 16px;          // slightly smaller hourglass
-      width: 16px;
-      flex-basis: 20px;      // keep left edge aligned with users icon
-    }
-    .WaitSummary span + span {
-      margin-left: 8px;      // spread out adjacent pieces of text
-    }
-    .WaitSummary strong {
-      font-weight: 500;      // lighter than default bold (700)
     }
     .GraphPlaceholder {
       width: 100%;
@@ -303,12 +204,292 @@
     }
   }
 
+  .ZoomLink {
+    background-color: white;
+    border-radius: 8px;
+    padding: 5% 10% 3% 0%;
+    width: 100%;
+    font-family: Roboto;
+
+    .StudentZoom,
+    .TaZoom {
+      text-align: left;
+      color: #4d4d4d;
+      font-size: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+
+      p {
+        padding-left: 10px;
+        max-width: fit-content;
+      }
+
+      button {
+        width: 84px;
+        height: 29px;
+        background: #ffffff;
+        border: 1px solid rgba(53, 148, 241, 0.5);
+        box-sizing: border-box;
+        border-radius: 5px;
+        color: rgba(53, 148, 241, 0.5);
+        font-size: 14px;
+        outline: none;
+      }
+
+      .JoinButton {
+        color: #3594f1;
+        border: 1px solid #3594f1;
+      }
+
+      .DisabledJoinButton {
+        pointer-events: none;
+        cursor: not-allowed;
+      }
+    }
+
+    .TaZoom {
+      button {
+        width: fit-content;
+        height: fit-content;
+        border: 1px solid #5599db;
+        color: #5599db;
+        padding: 4px 13px;
+      }
+
+      input {
+        background: #f3f5fc;
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+        outline: none;
+        border: none;
+        width: 75%;
+        height: 31px;
+        padding: 6px;
+        color: #474747;
+        font-size: 14px;
+      }
+
+      p {
+        width: 100%;
+        height: 31px;
+        background: #f3f5fc;
+        border-radius: 8px;
+        padding: 6px 8px;
+        font-size: 14px;
+        display: inline-block;
+        margin: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .CloseZoom {
+        width: 10px;
+        padding: 0 15px 0 10px;
+        height: 31px;
+        background: #f3f5fc;
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        button {
+          outline: none;
+          border: none;
+          background-color: transparent;
+        }
+      }
+
+      .SaveZoomLink {
+        width: fit-content;
+        height: fit-content;
+        font-size: 14px;
+        color: #3594f1;
+        border: 1px solid #3594f1;
+      }
+    }
+  }
+}
+
+.SessionInformationHeader {
+  background-color: #F5F5F5;
+  font-size: 15px;
+  width: 100%;
+  border-bottom: solid 1px #e3e3e3;
+
+    .LeftInformationHeader {
+    font-size: 13px;
+    background-color: white;
+    color: #484848;
+    text-align: left;
+    letter-spacing: 0.6px;
+    border-radius: 8px;
+    box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+    height: 100%;
+    width: 100%;
+    padding:  6% 8%;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+      margin: 25px 48px;
 
 
+    .Location {
+      font-size: 24px;
+      font-family: Roboto;
+      font-weight: 500;
+      margin-bottom: 5px;
+      overflow: hidden;
+      // white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .Date {
+      margin-top: 10px;
+      color: #484848;
+      font-family: Roboto;
+      font-size: 14.4px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      line-height: 1.6; 
+    }
+    .Title {
+      margin-bottom: 5px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin-bottom: 5px;
+      color: #484848;
+      font-family: Roboto;
+      font-size: 14.4px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+    .clockIcon {
+      vertical-align: middle;
+      margin-right: 6px; /* optional spacing between icon and text */
+      height: 16px;       /* adjust as needed */
+      }
+      .calendarIcon{
+      vertical-align: middle;
+      margin-right: 6px; /* optional spacing between icon and text */
+      height: 16px;  
+      }
+}
 
-  @media only screen and (max-width: 1300px) {
-    .closeQueueSwitch {
-      margin-left: -10px;
+.TAsHeader {
+  border-radius: 8px;
+  box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+  padding: 6% 8%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+    margin: 25px 48px;
+
+}
+
+.TAHeaderText {
+  text-align: left;
+}
+
+.TAImagesWrapper {
+  display: flex;
+  gap: 16px;
+}
+
+
+.TAImagesScroll {
+  display: flex;
+  gap: 16px;
+  overflow: hidden;
+  flex: 1;
+}
+
+.TAImagesScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.TACircleContainer {
+  flex: 0 0 auto;
+}
+
+.TACircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.arrowIcon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.ScrollArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+  .QueueInfo {
+    border-radius: 8px;
+    box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: $text-grey;
+    text-align: center;
+    padding: 4% 10%;
+    width: 100%;
+    margin: 25px 48px;
+
+
+    p {
+      text-align: left;
+      color: #4d4d4d;
+      font-size: 16px;
+      padding-left: 10px;
+    }
+
+    .WaitTitle{
+      color: #484848;
+      font-family: Roboto, sans-serif;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+      margin: 0 0 8px 0; // Add spacing below
+    }
+    .WaitSummary {
+      color: #484848;
+      font-family: Roboto, sans-serif;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      margin: 0;
+    }
+    .GraphPlaceholder {
+      width: 100%;
+      max-width: 100%; /* Don't overflow parent container */
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-top: 25px;
+      display: block;
+    }
+    .red {
+      color: #f46565;
+    }
+
+    .blue {
+      color: #5599db;
     }
   }
 
@@ -325,6 +506,8 @@
       color: #4d4d4d;
       font-size: 16px;
       display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
       align-items: center;
       justify-content: center;
       width: 100%;
@@ -419,17 +602,11 @@
       }
     }
   }
-}
-
-.SessionInformationHeader {
-  background-color: white;
-  font-size: 15px;
-  width: 100%;
-  border-bottom: solid 1px #e3e3e3;
 
   .header {
     padding: 10px 25px 10px 20px;
     text-align: left;
+    height: auto;
 
     .BackButton {
       font-size: 15px;
@@ -543,5 +720,66 @@
         padding-bottom: 5px;
       }
     }
+  }
+}
+
+@media (max-width: 1279px) {
+  .DesktopSessionInformationHeader .LeftInformationHeader {
+    min-height: 230px;
+    max-height: 265px;
+    padding: 23px 0 0 28px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 1279px){
+  .DesktopSessionInformationHeader .QueueInfo {
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: $mobile-breakpoint) {
+  .SessionInformationHeader .LeftInformationHeader {
+    min-height: 230px;
+    max-height: 265px;
+    padding: 20px 12px 12px 20px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: $mobile-breakpoint){
+  .SessionInformationHeader .QueueInfo {
+    // margin-top: 20px;
+    padding: 20px 12px 5% 20px;    
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+@media (max-width: $mobile-breakpoint){
+  .SessionInformationHeader .TAsHeader {
+    padding: 20px 12px 12px 20px;
+    min-height: 150px;
+    margin-top: 0px;
+  }
+}
+
+@media (max-width: 423px){
+  .SessionInformationHeader .JoinButton {
+    margin-top: 10px;
+  }
+}
+
+@media (min-width: 1280px) and (max-width: 1720px){
+  .DesktopSessionInformationHeader .QueueInfo {
+    padding: 20px 12px 13% 20px;    
+  }
+}
+
+@media (min-width: $mobile-breakpoint) and (max-width: 1279px){
+  .DesktopSessionInformationHeader .QueueInfo {
+    padding: 20px 12px 15% 20px;    
   }
 }

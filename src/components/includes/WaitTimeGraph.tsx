@@ -203,6 +203,9 @@ const WaitTimeGraph = (props: Props) => {
     // Visual gap between the bars and the separator line
     const baselineGapPx = -55;
 
+    const vw = typeof window !== "undefined" ? window.innerWidth : 1024;
+    const scale = Math.min(1, vw / 1024);
+
     // Build data for the selected day and current window of 30‑minute slots
     const transformData = () => {
         const dayData = props.barData.find((d) => d.dayOfWeek === selectedDay);
@@ -254,8 +257,9 @@ const WaitTimeGraph = (props: Props) => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    marginBottom: "20px",
-                    gap: "10px",
+                    marginTop: `${20 * scale}px`,
+                    gap: `${10 * scale}px`,
+                    flexWrap: "wrap",
                 }}
             >
                 {dayNames.map((dayName) => {
