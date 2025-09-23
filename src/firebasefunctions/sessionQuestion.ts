@@ -14,7 +14,6 @@ export const updateVirtualLocation = (
 };
 
 
-//make this v9 to make AddQuestion.tsx work
 export const addQuestion = (
     user: firebase.User | null,
     session: FireSession,

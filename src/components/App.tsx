@@ -16,12 +16,12 @@ import { Loader } from "semantic-ui-react";
 
 import { Notifications } from "react-push-notification";
 import { Provider, connect } from "react-redux";
-import { auth } from "../firebase";
+import { auth , firestore } from "../firebase";
 
 import { updateAuthStatus, updateUser } from "../redux/actions/auth";
 import { store } from "../redux/store";
 
-import { firestore } from '../firebase';
+
 import AdminView from "./pages/AdminView";
 import BlogCMS from "./pages/BlogCMS";
 import LoginView from "./pages/LoginView";

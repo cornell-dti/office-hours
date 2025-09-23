@@ -69,7 +69,8 @@ const AdminView = () => {
             )}
             {/* Separate style logic so component is technically "rendered" only once when the admin page loads,
              not each time the arrow is clicked. This reduces repeated Firebase reads. */}
-             {/* NOTE: This is just not feasible in Firebase v8 since there's no cheap way to get the counts of the entire collection. Use this component when Firebase v9+ works. */}
+            {/* NOTE: This isn't feasible in Firebase v8 since there's no cheap way to get counts of entire collection. 
+            Use this component when Firebase v9+ works. */}
             {/* <div style={collapsed ? {"display":"None"}: {}}>
                 <AnalyticsView/>
             </div> */}

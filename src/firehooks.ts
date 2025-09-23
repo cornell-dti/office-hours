@@ -420,9 +420,9 @@ export const useQuestionsQueries = ( startDate: moment.Moment,
 
         const fetchQuestions = async () => {
             const sessionsQuery = firestore.collection('sessions')
-            .where('startTime', '>=', startDate.toDate())
-            .where('startTime', '<=', endDate.toDate())
-            .where('courseId', '==', courseId);
+                .where('startTime', '>=', startDate.toDate())
+                .where('startTime', '<=', endDate.toDate())
+                .where('courseId', '==', courseId);
 
             const snapshot = await sessionsQuery.get();
             const courseSessions = snapshot.docs.map((d) => d.id);

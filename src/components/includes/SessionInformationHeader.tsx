@@ -96,7 +96,6 @@ const SessionInformationHeader = ({
     questions,
     isPaused,
 }: Props) => {
-    //HIIIII: uses batch query so could be causing reads
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined),
