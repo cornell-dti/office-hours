@@ -36,9 +36,8 @@ import { Analytics } from "./includes/Analytics";
 import { userUpload } from "../firebasefunctions/user";
 import { useMyUser, useAllCourses } from "../firehooks";
 import { CURRENT_SEMESTER } from "../constants";
-import ProfessorStudentView from "./pages/ProfessorStudentView";
+import AdminStudentView from "./pages/AdminStudentView";
 import TAView from "./pages/TAView";
-import TAStudentView from "./pages/TAStudentView";
 
 ReactGA.initialize("UA-123790900-1");
 
@@ -271,14 +270,14 @@ export default connect(null, { updateUser, updateAuthStatus })(({ updateUser, up
                         />
                         <PrivateRoute
                             path="/professor-student-view/course/:courseId/session/:sessionId/:page?"
-                            component={ProfessorStudentView}
+                            component={AdminStudentView}
                             exact={true}
                             requireProfessor
                             requireTA={true}
                         />
                         <PrivateRoute
                             path="/professor-student-view/course/:courseId"
-                            component={ProfessorStudentView}
+                            component={AdminStudentView}
                             exact={true}
                             requireProfessor
                             requireTA={true}
@@ -306,14 +305,14 @@ export default connect(null, { updateUser, updateAuthStatus })(({ updateUser, up
                         />
                         <PrivateRoute
                             path="/ta-student-view/course/:courseId"
-                            component={TAStudentView}
+                            component={AdminStudentView}
                             exact={true}
                             requireProfessor={false}
                             requireTA={true}
                         />
                         <PrivateRoute
                             path="/ta-student-view/course/:courseId/session/:sessionId/:page?"
-                            component={TAStudentView}
+                            component={AdminStudentView}
                             exact={true}
                             requireProfessor={false}
                             requireTA={true}
