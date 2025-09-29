@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import * as H from "history";
 import { connect } from "react-redux";
 import { Loader } from "semantic-ui-react";
+import firebase from "firebase/compat/app"
+import ProfessorSidebar from "../includes/ProfessorSidebar";
 import TASidebar from "../includes/TASidebar";
 import TopBar from "../includes/TopBar";
 import LeaveQueue from "../includes/LeaveQueue";
 
 import { useCourse, useSession } from "../../firehooks";
-import firebase from "firebase/compat/app";
-import { firestore } from "../../firebase";
 import { removeQuestionbyID, submitFeedback } from "../../firebasefunctions/sessionQuestion";
 import CalendarExportModal from "../includes/CalendarExportModal";
 import CalendarView from "../includes/CalendarView";
@@ -18,9 +18,8 @@ import ProductUpdates from "../includes/ProductUpdates";
 import SessionView from "../includes/SessionView";
 import { updateCourse, updateSession } from "../../redux/actions/course";
 
-const compatFirestore = firebase.firestore();
-
 const MOBILE_BREAKPOINT = 920;
+const firestore = firebase.firestore();
 
 const useWindowWidth = () => {
     const [width, setWidth] = useState(window.innerWidth);
@@ -40,12 +39,12 @@ const useWindowWidth = () => {
             window.removeEventListener("resize", handleResize);
             window.removeEventListener("beforeunload", handleCloseWindowAlert);
         };
-    });
+    }, []);
 
     return width;
 };
 
-type TAStudentViewProps = {
+type AdminStudentViewProps = {
     history: H.History;
     match: {
         params: {
@@ -55,25 +54,29 @@ type TAStudentViewProps = {
         };
     };
     user: FireUser | undefined;
+    role: FireCourseRole;
     course: FireCourse;
     session: FireSession;
     updateCourse: (user: FireCourse | undefined) => Promise<void>;
     updateSession: (user: FireSession | undefined) => Promise<void>;
 };
 
-const TAStudentView = ({
+const AdminStudentView = ({
     history,
     match,
     user,
+    role,
     course,
     session,
     updateCourse,
     updateSession,
-}: TAStudentViewProps) => {
+}: AdminStudentViewProps) => {
     const [activeView, setActiveView] = useState(
         match.params.page === "add" ? "addQuestion" : match.params.sessionId ? "session" : "calendar"
     );
     const [showModal, setShowModal] = useState(false);
+
+    const isProf = role === "professor";
 
     const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
@@ -97,6 +100,7 @@ const TAStudentView = ({
             isPaused: false,
         },
     ]);
+    const [selectedDateEpoch, setSelectedDateEpoch] = useState<number>(Date.now());
 
     const courseHook = useCourse(match.params.courseId);
     const sessionHook = useSession(match.params.sessionId);
@@ -118,26 +122,40 @@ const TAStudentView = ({
 
     // Keep track of active view for mobile
     const handleSessionClick = (newSessionId: string) => {
-        history.push("/ta-student-view/course/" + match.params.courseId + "/session/" + newSessionId);
+        if (isProf){
+            history.push("/professor-student-view/course/" + match.params.courseId + "/session/" + newSessionId);
+        } else {
+            history.push("/ta-student-view/course/" + match.params.courseId + "/session/" + newSessionId);
+        }
         setActiveView("session");
     };
 
     const handleJoinClick = () => {
         if (session) {
-            history.push(
-                "/ta-student-view/course/" + match.params.courseId + "/session/" + session.sessionId + "/add"
-            );
+            if (isProf){
+                history.push(
+                    "/professor-student-view/course/" + match.params.courseId + "/session/" + session.sessionId + "/add"
+                );
+            } else {
+                history.push(
+                    "/ta-student-view/course/" + match.params.courseId + "/session/" + session.sessionId + "/add"
+                );
+            }
             setActiveView("addQuestion");
         }
     };
 
     const handleBackClick = () => {
-        history.push("/ta-student-view/course/" + match.params.courseId);
+        if (isProf){
+            history.push("/professor-student-view/course/" + match.params.courseId);
+        } else {
+            history.push("/ta-student-view/course/" + match.params.courseId);
+        }
         setActiveView("calendar");
     };
 
     const removeQuestion = () => {
-        removeQuestionbyID(compatFirestore, removeQuestionId);
+        removeQuestionbyID(firestore, removeQuestionId);
     };
 
     // used to display feedback
@@ -146,17 +164,27 @@ const TAStudentView = ({
         setDisplayFeedbackPrompt(true);
         setRemovedQuestionId(questionId);
         // eslint-disable-next-line no-console
-        console.log("ta student view questionId: ", questionId);
+        console.log(`${isProf ? "professor" : "ta"} student view questionId: `, questionId);
     };
 
     return (
-        <div className="TAView">
-            <TASidebar
-                courseId={match.params.courseId}
-                code={(course && course.code) || "Loading"}
-                selected={"student"}
-            />
-            <TopBar courseId={match.params.courseId} context="ta" role="ta" />
+        <div className={`${isProf ? "Professor" : "TA"}View`}>
+            {
+                isProf ? (
+                    <ProfessorSidebar
+                        courseId={match.params.courseId}
+                        code={(course && course.code) || "Loading"}
+                        selected={"student"}
+                    />
+                ) : (
+                    <TASidebar
+                        courseId={match.params.courseId}
+                        code={(course && course.code) || "Loading"}
+                        selected={"student"}
+                    />
+                )
+            }
+            <TopBar courseId={match.params.courseId} context={role} role={role} />
             <section className="rightOfSidebar">
                 <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
                 {(width > MOBILE_BREAKPOINT || activeView === "calendar") && (
@@ -168,6 +196,8 @@ const TAStudentView = ({
                         setShowCalendarModal={setShowCalendarModal}
                         setIsDayExport={setIsDayExport}
                         setCurrentExportSessions={setCurrentExportSessions}
+                        selectedDateEpoch={selectedDateEpoch}
+                        setSelectedDateEpoch={setSelectedDateEpoch}
                     />
                 )}
                 <CalendarExportModal
@@ -189,6 +219,7 @@ const TAStudentView = ({
                                 removeQuestionDisplayFeedback={removeQuestionDisplayFeedback}
                                 timeWarning={course ? course.timeWarning : 1}
                                 showProfessorStudentView={true}
+                                selectedDateEpoch={selectedDateEpoch}
                             />
                         ) : (
                             <section className="StudentSessionView">
@@ -219,7 +250,7 @@ const TAStudentView = ({
                 <ProductUpdates />
                 {displayFeedbackPrompt ? (
                     <FeedbackPrompt
-                        onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
+                        onClose={submitFeedback(removedQuestionId, session.sessionId)}
                         closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                     />
                 ) : null}
@@ -234,4 +265,7 @@ const mapStateToProps = (state: RootState) => ({
     session: state.course.session,
 });
 
-export default connect(mapStateToProps, { updateCourse, updateSession })(TAStudentView);
+export default connect(
+    mapStateToProps, 
+    { updateCourse, updateSession })
+(AdminStudentView as React.ComponentType<Omit<AdminStudentViewProps, "role">>);
