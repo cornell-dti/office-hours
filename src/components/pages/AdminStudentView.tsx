@@ -3,6 +3,7 @@ import * as H from "history";
 import { connect } from "react-redux";
 import { Loader } from "semantic-ui-react";
 import ProfessorSidebar from "../includes/ProfessorSidebar";
+import TASidebar from "../includes/TASidebar";
 import TopBar from "../includes/TopBar";
 import LeaveQueue from "../includes/LeaveQueue";
 
@@ -42,7 +43,7 @@ const useWindowWidth = () => {
     return width;
 };
 
-type ProfessorStudentViewProps = {
+type AdminStudentViewProps = {
     history: H.History;
     match: {
         params: {
@@ -52,25 +53,29 @@ type ProfessorStudentViewProps = {
         };
     };
     user: FireUser | undefined;
+    role: FireCourseRole;
     course: FireCourse;
     session: FireSession;
     updateCourse: (user: FireCourse | undefined) => Promise<void>;
     updateSession: (user: FireSession | undefined) => Promise<void>;
 };
 
-const ProfessorStudentView = ({
+const AdminStudentView = ({
     history,
     match,
     user,
+    role,
     course,
     session,
     updateCourse,
     updateSession,
-}: ProfessorStudentViewProps) => {
+}: AdminStudentViewProps) => {
     const [activeView, setActiveView] = useState(
         match.params.page === "add" ? "addQuestion" : match.params.sessionId ? "session" : "calendar"
     );
     const [showModal, setShowModal] = useState(false);
+
+    const isProf = role === "professor";
 
     const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
@@ -115,21 +120,35 @@ const ProfessorStudentView = ({
 
     // Keep track of active view for mobile
     const handleSessionClick = (newSessionId: string) => {
-        history.push("/professor-student-view/course/" + match.params.courseId + "/session/" + newSessionId);
+        if (isProf){
+            history.push("/professor-student-view/course/" + match.params.courseId + "/session/" + newSessionId);
+        } else {
+            history.push("/ta-student-view/course/" + match.params.courseId + "/session/" + newSessionId);
+        }
         setActiveView("session");
     };
 
     const handleJoinClick = () => {
         if (session) {
-            history.push(
-                "/professor-student-view/course/" + match.params.courseId + "/session/" + session.sessionId + "/add"
-            );
+            if (isProf){
+                history.push(
+                    "/professor-student-view/course/" + match.params.courseId + "/session/" + session.sessionId + "/add"
+                );
+            } else {
+                history.push(
+                    "/ta-student-view/course/" + match.params.courseId + "/session/" + session.sessionId + "/add"
+                );
+            }
             setActiveView("addQuestion");
         }
     };
 
     const handleBackClick = () => {
-        history.push("/professor-student-view/course/" + match.params.courseId);
+        if (isProf){
+            history.push("/professor-student-view/course/" + match.params.courseId);
+        } else {
+            history.push("/ta-student-view/course/" + match.params.courseId);
+        }
         setActiveView("calendar");
     };
 
@@ -143,17 +162,27 @@ const ProfessorStudentView = ({
         setDisplayFeedbackPrompt(true);
         setRemovedQuestionId(questionId);
         // eslint-disable-next-line no-console
-        console.log("professor student view questionId: ", questionId);
+        console.log(`${isProf ? "professor" : "ta"} student view questionId: `, questionId);
     };
 
     return (
-        <div className="ProfessorView">
-            <ProfessorSidebar
-                courseId={match.params.courseId}
-                code={(course && course.code) || "Loading"}
-                selected={"student"}
-            />
-            <TopBar courseId={match.params.courseId} context="professor" role="professor" />
+        <div className={`${isProf ? "Professor" : "TA"}View`}>
+            {
+                isProf ? (
+                    <ProfessorSidebar
+                        courseId={match.params.courseId}
+                        code={(course && course.code) || "Loading"}
+                        selected={"student"}
+                    />
+                ) : (
+                    <TASidebar
+                        courseId={match.params.courseId}
+                        code={(course && course.code) || "Loading"}
+                        selected={"student"}
+                    />
+                )
+            }
+            <TopBar courseId={match.params.courseId} context={role} role={role} />
             <section className="rightOfSidebar">
                 <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
                 {(width > MOBILE_BREAKPOINT || activeView === "calendar") && (
@@ -231,4 +260,7 @@ const mapStateToProps = (state: RootState) => ({
     session: state.course.session,
 });
 
-export default connect(mapStateToProps, { updateCourse, updateSession })(ProfessorStudentView);
+export default connect(
+    mapStateToProps, 
+    { updateCourse, updateSession })
+(AdminStudentView as React.ComponentType<Omit<AdminStudentViewProps, "role">>);
