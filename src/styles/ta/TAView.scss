@@ -180,6 +180,10 @@
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
         user-select: none;
+        @media (max-width: $mobile-breakpoint){
+            width: -webkit-fill-available;
+            top: 105px;
+        }
     }
 
     section.StudentSessionView {
@@ -191,6 +195,11 @@
         overflow-y: scroll;
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
+        @media (max-width: $mobile-breakpoint){
+            left: 200px;
+            top: 105px;
+            width: -webkit-fill-available;
+        }
     }
 
     .leave-queue-background {
