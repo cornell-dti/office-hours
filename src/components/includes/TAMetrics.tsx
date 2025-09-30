@@ -34,7 +34,7 @@ const TAMetrics = () => {
                     title="Time Spent Per Student"
                     subtitle={
                         <>
-                            You spent about{" "}
+                            You spent an average of{" "}
                             <span className="emphasis">
                                 {avgTime(timeSpentData)} minutes
                             </span>{" "}
