@@ -15,7 +15,6 @@ import {
 } from "../../firehooks";
 import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
 import { filterUnresolvedQuestions } from "../../utilities/questions";
-
 import { firestore } from "../../firebase";
 
 import { RootState } from "../../redux/store";
@@ -126,7 +125,6 @@ const SessionView = ({
      */
     useEffect(() => {
         let unsubscribe: () => void;
-        
         if (!isTa && !isProf) {
             const userRef = doc(firestore, "users", user.userId);
             unsubscribe = onSnapshot(userRef, (snapshot) => {
