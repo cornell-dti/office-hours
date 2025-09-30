@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Dropdown } from 'semantic-ui-react';
 import TAQuery from "./TAQuery";
 import { dummyData } from "./dummyData";
@@ -22,7 +22,7 @@ const TAStudentTrends = () => {
     const [sortFilter, setSortFilter] = useState("Query Volume");
     const [filteredData, setFilteredData] = useState(dummyData);
 
-    useEffect(() => {
+    const getFilteredData = useCallback(() => {
         /* TODO: adjust filters after backend implementation to fully match figma. */
         let result = [...dummyData];
 
@@ -67,8 +67,12 @@ const TAStudentTrends = () => {
             
         });
 
-        setFilteredData(result);
-    }, [timeFilter, taskFilter, sortFilter]);
+        return result;
+    }, [timeFilter, taskFilter, sortFilter])
+
+    useEffect(() => {
+        setFilteredData(getFilteredData);
+    }, [getFilteredData]);
 
     // function to compare two mentions to sort in ascending order
     const compareMentionTimes = (a: string, b: string) => {
