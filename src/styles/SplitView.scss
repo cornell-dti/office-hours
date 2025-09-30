@@ -14,6 +14,7 @@ aside.CalendarView {
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     user-select: none;
+    background-color: #F5F5F5;
 }
 
 section.StudentSessionView {
@@ -25,6 +26,7 @@ section.StudentSessionView {
     overflow-y: scroll;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    background-color: #F5F5F5;
 }
 
 section.StudentSessionView::-webkit-scrollbar,
