@@ -123,6 +123,17 @@
                 display: inline;
                 cursor: pointer;
             }
+
+                        .courseMenu {
+                li {
+                    height: 65px;
+
+                    div {
+                        line-height: 45px;
+
+                    }
+                }
+            }
         }
     }
 

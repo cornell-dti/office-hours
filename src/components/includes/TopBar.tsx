@@ -16,6 +16,7 @@ import { RootState } from "../../redux/store";
 import { firestore } from "../../firebase";
 import Snackbar from "./Snackbar";
 import TextNotificationModal from "./TextNotificationModal";
+import { MOBILE_BREAKPOINT } from "../../constants";
 
 type Props = {
     courseId: string;
@@ -37,6 +38,7 @@ const TopBar = (props: Props) => {
     const [showMenu, setShowMenu] = useState(false);
     const [showTextModal, setShowTextModal] = useState<boolean>(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : "/placeholder.png");
+    const [width, setWidth] = useState<number>(window.innerWidth);
     const ref = React.useRef<HTMLDivElement>(null);
     const history = useHistory();
 
@@ -68,6 +70,12 @@ const TopBar = (props: Props) => {
     ]);
 
     useEffect(() => {
+        const updateWindowDimensions = () => {
+            setWidth(window.innerWidth);
+        };
+
+        window.addEventListener('resize', updateWindowDimensions);
+
         if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
             for (let i = 0; i < notificationTracker.notificationList.length; i++) {
                 const notif = notificationTracker.notificationList[i];
@@ -147,7 +155,7 @@ const TopBar = (props: Props) => {
                                 onError={() => setImage("/placeholder.png")}
                                 alt="User Profile"
                             />
-                            <span className="name">
+                            {width >= MOBILE_BREAKPOINT && (<span className="name">
                                 {props.user
                                     ? props.user.firstName +
                                       " " +
@@ -156,7 +164,7 @@ const TopBar = (props: Props) => {
                                       props.user.email.substring(0, props.user.email.indexOf("@")) +
                                       ")"
                                     : "Loading..."}
-                            </span>
+                            </span>)}
                         </div>
                     </div>
                 </div>
