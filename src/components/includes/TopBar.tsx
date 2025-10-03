@@ -122,7 +122,7 @@ const TopBar = (props: Props) => {
     }, []);
 
     return (
-        <div className="MenuBox" onBlur={() => setShowMenu(false)}>
+        <div className="MenuBox" onBlur={() => setShowMenu(false)} >
             <header className="topBar">
                 <div className="triggerArea">
                     <div className="logo" onClick={() => history.push("/home")}>
