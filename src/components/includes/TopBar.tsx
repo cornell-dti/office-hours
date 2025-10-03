@@ -121,7 +121,7 @@ const TopBar = (props: Props) => {
     });
 
     return (
-        <div className="MenuBox" onBlur={() => setShowMenu(false)} ref={ref}>
+        <div className="MenuBox" onBlur={() => setShowMenu(false)} >
             <header className="topBar">
                 <div className="triggerArea">
                     <div className="logo" onClick={() => history.push("/home")}>
@@ -148,7 +148,10 @@ const TopBar = (props: Props) => {
                             countdownZero={countdownZero}
                             setDisplayWrapped={setDisplayWrapped}
                         />
-                        <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
+                        <div 
+                            className={"userProfile " + (showMenu ? ' selected' : '')} 
+                            onClick={() => setShowMenu(!showMenu)}
+                        >
                             <img
                                 src={image}
                                 className="profilePic"
@@ -170,7 +173,7 @@ const TopBar = (props: Props) => {
                 </div>
             </header>
             {showMenu && (
-                <>
+                <div ref={ref}>
                     <ul className="desktop logoutMenu">
                         <li onMouseDown={() => logOut()}>
                             <span>
@@ -196,7 +199,7 @@ const TopBar = (props: Props) => {
                             SMS Settings
                         </li>
                     </ul>
-                </>
+                </div>
             )}
             <TextNotificationModal showTextModal={showTextModal} setShowTextModal={setShowTextModal} user={user} />
             {props.snackbars.map((snackbar) => (
