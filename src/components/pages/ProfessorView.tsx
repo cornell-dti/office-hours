@@ -22,8 +22,8 @@ const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* m
 const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
     const week = new Date();
     week.setHours(0, 0, 0, 0);
-    const daysSinceMonday = ((week.getDay() - 1) + 7) % 7;
-    week.setTime(week.getTime() - daysSinceMonday * ONE_DAY); // beginning of this week's Monday
+    const daysSinceMonday = ((week.getDay() - 1) + 7) % 7; // shift back to Monday of this week
+    week.setDate(week.getDate() - daysSinceMonday);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -32,7 +32,11 @@ const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<
 
     // Add or subtract one week from selectedWeekEpoch
     const handleWeekClick = (previousWeek: boolean) => {
-        setSelectedWeekEpoch(old => old + ((previousWeek ? -7 : 7) * ONE_DAY));
+        setSelectedWeekEpoch(old => {
+            const d = new Date(old);
+            d.setDate(d.getDate() + (previousWeek ? -7 : 7));
+            return d.getTime();
+        });
     };
 
     const course = useCourse(courseId);

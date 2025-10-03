@@ -34,13 +34,14 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
     const incrementWeek = React.useCallback((forward: boolean) => {  
         const d = new Date(selectedWeekEpoch);
         d.setDate(d.getDate() + (forward ? 7 : -7));
-
-        callback(new Date(d).getTime() + active * ONE_DAY);
+        callback(d.getTime() + active * ONE_DAY);
         setSelectedWeekEpoch(d.getTime());
  
     }, [callback, selectedWeekEpoch, active]);
 
     const  handleDateClick = React.useCallback((item: number) => {
+        const d = new Date(selectedWeekEpoch);
+        d.setDate(d.getDate() + item);
         callback(selectedWeekEpoch + item * ONE_DAY);
 
         setActive(item);
@@ -49,8 +50,12 @@ const CalendarDaySelect: React.FC<Props> = (props) => {
     const now = new Date(selectedWeekEpoch);
 
     const hasSessionsDays = new Array(7);
+    // compute start and end of the week using calendar arithmetic
+    const weekStart = new Date(selectedWeekEpoch);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 7); // exactly 7 local days later
     const sessionDays = props.sessionDates
-        .filter((d) => d.getTime() >= selectedWeekEpoch && d.getTime() <= selectedWeekEpoch + ONE_WEEK)
+        .filter((d) => d >= weekStart && d < weekEnd)
         .map((d) => d.getDay());
     for (const d of sessionDays) {
         hasSessionsDays[((d - 1) + 7) % 7] = true;
