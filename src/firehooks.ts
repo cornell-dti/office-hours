@@ -113,11 +113,16 @@ export const useProfessorViewSessions = (
     const [result, setResult] = useState<FireSession[]>([]);
     useEffect(
         () => {
-            const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
             const sessionsRef = collection(firestore, 'sessions');
+
+             // use date arithmetic instead of ms to avoid DST issues
+            const startDate = new Date(selectedWeekEpoch);
+            const endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + 7); 
+
             const sessionsQuery = query(sessionsRef, where('courseId', '==', courseId),
-                where('startTime', '>=', new Date(selectedWeekEpoch)),
-                where('startTime', '<=', new Date(selectedWeekEpoch + 7 * ONE_DAY)));
+                where('startTime', '>=',startDate),
+                where('startTime', '<', endDate));
             const results$: Observable<FireSession[]> = collectionData(sessionsQuery,
                 {idField:'sessionId'}) as Observable<FireSession[]>;
 
