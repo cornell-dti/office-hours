@@ -32,6 +32,7 @@ type Props = {
     isOpen: boolean;
     questions: readonly FireQuestion[];
     isPaused: boolean | undefined;
+    selectedDateEpoch: number;
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
@@ -98,6 +99,7 @@ const SessionInformationHeader = ({
     isOpen,
     questions,
     isPaused,
+    selectedDateEpoch,
 }: Props) => {
     const [ratioText, setRatioText] = React.useState("");
 
@@ -390,39 +392,85 @@ const SessionInformationHeader = ({
                 <Grid item style={{ display: "flex", width: "60%" }}>
                     <div className="QueueInfo">
                         <p className="WaitTitle">Wait Time</p>
-                        {avgWaitTime !== "No information available" ? (
-                            <>
-                                <p className="WaitSummary">
-                                    <img src={users} alt="users" className="waitIcon" />
-                                    <span className="red">{numAhead} students</span>
-                                    <span>ahead</span>
+                        {(() => {
+                            const selectedDate = new Date(selectedDateEpoch);
+                            const today = new Date();
+                            const isToday = selectedDate.toDateString() === today.toDateString();
+                            const isFutureDate = selectedDate > today;
+                            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                            const selectedDay = dayNames[selectedDate.getDay()];
+                            
+                            // Don't show subtitle for today
+                            if (isToday) {
+                                return null;
+                            }
+                            
+                            return (
+                                <p className="WaitSubtitle">
+                                    {isFutureDate ? (
+                                        <>This is an estimate of wait times on <strong>{selectedDay}</strong> for {course.code}.</>
+                                    ) : (
+                                        `Wait times for ${selectedDay}`
+                                    )}
                                 </p>
-                                <p className="WaitSummary">
-                                    <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
-                                    <span className="blue"> {avgWaitTime}</span>
-                                    <span className="gray"> {esimatedTime}</span>
-                                    <span>estimated wait time</span>
-                                </p>
-                            </>
-                        ) : (
-                            <>
-                                <p className="WaitSummary">
-                                    <img src={users} alt="users" className="waitIcon" />
-                                    <span className="red">{numAhead} students</span>
-                                    <span>ahead</span>
-                                </p>
-                                <p className="WaitSummary">
-                                    <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
-                                    <span className="blue"> No information available</span>
-                                </p>
-                            </>
-                        )}
+                            );
+                        })()}
+                        {(() => {
+                            const selectedDate = new Date(selectedDateEpoch);
+                            const today = new Date();
+                            const isToday = selectedDate.toDateString() === today.toDateString();
+                            
+                            // Only show queue info for today AND if today has office hours
+                            if (!isToday) return null;
+                            
+                            // Check if today has office hours based on actual data
+                            const todayDayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                            const todayDayName = todayDayNames[today.getDay()];
+                            const todayData = sampleData.barData.find(day => day.dayOfWeek === todayDayName);
+                            
+                            // Check if there's actual wait time data for today
+                            const hasOfficeHours = todayData && Object.keys(todayData).some(key => 
+                                key !== 'dayOfWeek' && Number((todayData as any)[key]) > 0
+                            );
+                            
+                            if (!hasOfficeHours) return null;
+                            
+                            return avgWaitTime !== "No information available" ? (
+                                <>
+                                    <p className="WaitSummary">
+                                        <img src={users} alt="users" className="waitIcon" />
+                                        <span className="red">{numAhead} students</span>
+                                        <span>ahead</span>
+                                    </p>
+                                    <p className="WaitSummary">
+                                        <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
+                                        <span className="blue"> {avgWaitTime}</span>
+                                        <span className="gray"> {esimatedTime}</span>
+                                        <span>estimated wait time</span>
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="WaitSummary">
+                                        <img src={users} alt="users" className="waitIcon" />
+                                        <span className="red">{numAhead} students</span>
+                                        <span>ahead</span>
+                                    </p>
+                                    <p className="WaitSummary">
+                                        <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
+                                        <span className="blue"> No information available</span>
+                                    </p>
+                                </>
+                            );
+                        })()}
                         <WaitTimeGraph
                             barData={sampleData.barData}
                             yMax={sampleData.yMax}
                             timeKeys={sampleData.timeKeys}
                             legend={sampleData.legend}
                             OHDetails={sampleData.OHDetails}
+                            selectedDateEpoch={selectedDateEpoch}
+                            course={course}
                         />
                     </div>
                 </Grid>

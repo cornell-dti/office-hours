@@ -18,14 +18,36 @@ type Props = {
             avgWaitTime: string;
         };
     };
+    selectedDateEpoch: number;
+    course?: FireCourse;
 };
 
 const WaitTimeGraph = (props: Props) => {
     const today = new Date();
-    const day = today.getDay();
-    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const dayOfWeek = dayNames[day];
-    const [selectedDay, setSelectedDay] = React.useState<string>(dayOfWeek);
+    const selectedDate = new Date(props.selectedDateEpoch);
+    const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const selectedDay = dayNames[(selectedDate.getDay() + 6) % 7]; // Adjust for Sunday=0
+    
+    // Check if the selected date is in the future
+    const isFutureDate = selectedDate > today;
+    
+    // Check if there are office hours for the selected day
+    const selectedDayData = props.barData.find(day => day.dayOfWeek === selectedDay);
+    
+    // Check if there are office hours for the selected day based on actual data
+    let hasOfficeHours = false;
+    
+    if (selectedDayData) {
+        // Check if any time slot has wait time > 0
+        const timeSlotKeys = Object.keys(selectedDayData).filter(key => key !== 'dayOfWeek');
+        
+        const hasWaitTimeData = timeSlotKeys.some(key => 
+            Number(selectedDayData[key]) > 0
+        );
+        
+        // Office hours exist if there's actual wait time data
+        hasOfficeHours = hasWaitTimeData;
+    }
 
     const currentHour = today.getHours();
     const currentHourLabel = new Intl.DateTimeFormat("en-US", {
@@ -58,9 +80,9 @@ const WaitTimeGraph = (props: Props) => {
     };
 
 	// Keep chart margin centralized so overlays align with the plot area
-	const chartMargin = React.useMemo(() => ({ top: 15, right: 12, bottom: 40, left: 12 }), []);
+	const chartMargin = React.useMemo(() => ({ top: 5, right: 12, bottom: 40, left: 12 }), []);
 	// Visual gap between the bars and the separator line
-	const baselineGapPx = -30;
+	const baselineGapPx = -55;
 
     // Build 6-slot data for the selected day and current 3-hour window
     const transformData = () => {
@@ -108,37 +130,61 @@ const WaitTimeGraph = (props: Props) => {
                     }
                 `}
             </style>
+            {/* Day selection buttons - now synchronized with calendar */}
             <div
                 style={{
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    marginTop: "20px",
+                    marginBottom: "20px",
                     gap: "10px",
                 }}
             >
-                {dayNames.map((dayName) => (
-                    <button
-                        key={dayName}
-                        onClick={() => setSelectedDay(dayName)}
-                        style={{
-                            backgroundColor: selectedDay === dayName ? "#e6e9ef" : "transparent",
-                            color: selectedDay === dayName ? "#4d4d4d" : "#6b7280",
-                            border: "none",
-                            padding: "6px 12px",
-                            borderRadius: "6px",
-                            cursor: "pointer",
-                            fontWeight: selectedDay === dayName ? 600 : 400,
-                            fontSize: "13px",
-                            transition: "all 0.2s ease",
-                        }}
-                    >
-                        {dayName === dayOfWeek ? "TODAY" : dayName.slice(0, 3).toUpperCase()}
-                    </button>
-                ))}
+                {dayNames.map((dayName) => {
+                    const isToday = dayName === dayNames[today.getDay()];
+                    const isSelected = dayName === selectedDay;
+                    
+                    return (
+                        <div
+                            key={dayName}
+                            style={{
+                                backgroundColor: isSelected ? "#e6e9ef" : "transparent",
+                                color: isSelected ? "#4d4d4d" : "#6b7280",
+                                border: "none",
+                                padding: "6px 12px",
+                                borderRadius: "6px",
+                                cursor: "default",
+                                fontWeight: isSelected ? 600 : 400,
+                                fontSize: "13px",
+                                transition: "all 0.2s ease",
+                            }}
+                        >
+                            {isToday ? "TODAY" : dayName.slice(0, 3).toUpperCase()}
+                        </div>
+                    );
+                })}
             </div>
 
-            {/* Side arrows, vertically centered beside the bars */}
+            {/* Show message if no office hours for this day */}
+            {!hasOfficeHours && (
+                <div
+                    style={{
+                        textAlign: "center",
+                        marginTop: "40px",
+                        marginBottom: "40px",
+                        fontSize: "14px",
+                        color: "#666",
+                        fontStyle: "italic",
+                    }}
+                >
+                    There are no normally scheduled office hour times for this day of the week.
+                </div>
+            )}
+
+            {/* Only show graph if there are office hours */}
+            {hasOfficeHours && (
+                <>
+                    {/* Side arrows, vertically centered beside the bars */}
             <button
                 type="button"
                 onClick={() => setHourStart((s) => Math.max(0, s - 1))}
@@ -196,10 +242,10 @@ const WaitTimeGraph = (props: Props) => {
                     const currentTime = new Date();
                     const today = new Date();
                     
-                    // Get the selected day index (0 = Sunday, 1 = Monday, etc.)
-                    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                    // Get the selected day index (0 = Monday, 1 = Tuesday, etc.)
+                    const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
                     const selectedDayIndex = dayNames.indexOf(selectedDay);
-                    const todayIndex = today.getDay();
+                    const todayIndex = (today.getDay() + 6) % 7; // Adjust for Monday-first order
                     
                     // If selected day is today, use the original time-based logic
                     if (selectedDayIndex === todayIndex) {
@@ -221,9 +267,9 @@ const WaitTimeGraph = (props: Props) => {
                             return "#DAE9FC"; // Future time
                         }
                     }
-                    // If selected day is in the future, all bars are future time
+                    // If selected day is in the future, use estimated styling
                     else if (selectedDayIndex > todayIndex) {
-                        return "#DAE9FC"; // Future time
+                        return "#E8F4FD"; // Lighter blue for estimates
                     }
                     // If selected day is in the past, all bars are past time
                     else {
@@ -249,11 +295,17 @@ const WaitTimeGraph = (props: Props) => {
                         }}
                     >
                         <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
-                            At {data.slot}
+                            On {selectedDay.slice(0, 3)} at {data.slot}
                         </div>
-                        <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
-                            <strong>Est Wait:</strong> {props.OHDetails[data.hour].avgWaitTime || `${data.waitTime} min`}
-                        </div>
+                        {isFutureDate ? (
+                            <div style={{ fontSize: "13px", fontWeight: "normal", color: "#666", fontStyle: "italic" }}>
+                                This is an estimate based on historical data
+                            </div>
+                        ) : (
+                            <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
+                                <strong>Est Wait:</strong> {props.OHDetails[data.hour].avgWaitTime || `${data.waitTime} min`}
+                            </div>
+                        )}
                     </div>
                 )}
                 theme={{
@@ -298,6 +350,8 @@ const WaitTimeGraph = (props: Props) => {
 					zIndex: 6,
 				}}
 			/>
+                </>
+            )}
         </div>
     );
 };

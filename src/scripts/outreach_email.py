@@ -7,6 +7,9 @@ import time
 from dotenv import load_dotenv
 
 
+MAX_EMAIL_LIMIT = 64
+
+
 path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env')
 load_dotenv(path)
 
@@ -18,7 +21,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", default="Nidhi Soma", type=str, help='Enter your name to be used in email. Format: "<First Last>"')    
     parser.add_argument("-e", "--email", default="queuemein@cornelldti.org", type=str, help='Enter your email address. Format: "<email>"')
-    parser.add_argument("-p", "--pm", default="vw77@cornell.edu", type=str, help='Enter the product manager email. Format: "<email>"')
+    parser.add_argument("-p", "--pm", default="pc745@cornell.edu", type=str, help='Enter the product manager email. Format: "<email>"')
     parser.add_argument("-t", "--tpm", default="ns848@cornell.edu", type=str, help='Enter the technical product manager email. Format: "<email>"')
     parser.add_argument("-f", "--filename", default="classes.csv", type=str, help='Enter the csv file name to be used. Format: "<filepath.csv>"')  
     
@@ -38,7 +41,7 @@ def main():
     with open(filename, mode='r') as file:
         csvFile = csv.reader(file)
         header = next(csvFile)
-        for lines in csvFile:
+        for numSent, lines in enumerate(csvFile):
             print(lines)
             course = lines[0]
             profnames = lines[1]
@@ -76,35 +79,40 @@ def main():
             # used value of 0 means only the course has used QMI. value of 1 means the professor has used QMI. value of 2 means both the professor and course used QMI.
             courseUsed = '0'
             if used[0] != '-':
-                content = f"Dear Professor {final},\nHello! My name is {name}, and I am the technical product manager of Queue Me In for this upcoming semester. In the past {course_final + ' has' if used.startswith(courseUsed) else 'you have'} been a frequent user of Queue Me In during previous semesters, and we're reaching out to see if you would like us to set up {course_final} on Queue Me In again this semester to manage and streamline office hours. If you have any questions about Queue Me In, we're happy to provide more information as well!\nLinked below is a pitch of QMI for more details about the product if you need it!\n\nThank you, and I look forward to hearing from you soon!\n\n{link}\n\nSincerely,\n\n{name}"
+                content = f"Dear Professor {final},\nHello! My name is {name}, and I am the technical product manager of Queue Me In for this upcoming semester. In the past {course_final + ' has' if used.startswith(courseUsed) else 'you have'} been a frequent user of Queue Me In, and we're reaching out to see if you would like us to set up {course_final} on Queue Me In again this semester to manage and streamline office hours. If you have any questions about Queue Me In, we're happy to provide more information as well!\nLinked below is a pitch of QMI for more details about the product if you need it.\n\nThank you, and I look forward to hearing from you soon!\n\n{link}\n\nSincerely,\n\n{name}"
                 subject = 'Will you be using Queue Me In again this semester?'
             # a value of -1 means neither the course or professor has used QMI before
             elif used.startswith('-1'):
-                content = f"Dear Professor {final},\nHello! My name is {name}, and I am the technical product manager of Queue Me In for this upcoming semester. Queue Me In is built by Cornell DTI and is used by several IS/CS classes here at Cornell, including CS 1110, CS 2110, CS 3110, and CS 3410, to name a few. We were wondering if you would like us to set up a Queue Me In office hours course for {course_final} this semester to help manage and streamline office hours. If you have any questions about Queue Me In, we're happy to provide more information as well!\nLinked below is a pitch of our work so that you can review if this is something you’d like to use this semester.\n\nThank you, and I look forward to hearing from you soon!\n\n{link}\n\nSincerely,\n\n{name}"
+                content = f"Dear Professor {final},\nHello! My name is {name}, and I am the technical product manager of Queue Me In for this upcoming semester. Queue Me In is built by Cornell DTI and is used by several IS/CS/ECE classes here at Cornell, including CS 1110, CS 2110, CS 3410, and INFO 4300 to name a few. We were wondering if you would like us to set up a Queue Me In office hours course for {course_final} this semester to help manage and streamline office hours. If you have any questions about Queue Me In, we're happy to provide more information as well!\nLinked below is a pitch of our work so that you can review if this is something you’d like to use this semester.\n\nThank you, and I look forward to hearing from you soon!\n\n{link}\n\nSincerely,\n\n{name}"
                 subject = 'Try using Cornell DTI’s Queue Me In to streamline office hours this semester!'
             else:
                 print('Invalid value for used')
                 sys.exit(1)
+
+            if numSent < MAX_EMAIL_LIMIT:
         
-            print(f"Sending email to {profemails} from {email}...")
-            print(f"Subject: {subject}")
-            print(f"Content: \n{content}")
+                print(f"Sending email to {profemails} from {email}...")
+                print(f"Subject: {subject}")
+                print(f"Content: \n{content}")
 
-            params: resend.Emails.SendParams = {
-                'from': email,
-                'to': profemails,
-                'subject': subject,
-                'text': content,
-                'cc': [pm, tpm]
-            }
+                params: resend.Emails.SendParams = {
+                    'from': email,
+                    'to': profemails,
+                    'subject': subject,
+                    'text': content,
+                    'cc': [pm, tpm]
+                }
 
-            email_id = resend.Emails.send(params)
-            print(f"Email ID: {email_id}")
-            emails.append((email_id, profemails))
-            print('-'*50)         
-            time.sleep(3)   
+                email_id = resend.Emails.send(params)
+                print(f"Email ID: {email_id}")
+                emails.append((email_id, profemails))
+                print('-'*50)         
+                time.sleep(3)   
+            else: 
+                print(f'Resend free email limit of {MAX_EMAIL_LIMIT} reached, run again in 24 hours. Edit csv file to start from {numSent+2}.\nNext email is to {profemails} for {course_final}.')
+                break
     
-    with open('./emails.csv', mode='w') as file:
+    with open('./emails.csv', mode='a') as file:
         writer = csv.writer(file)
         writer.writerow(['Email ID', 'Professor Emails'])
         for email in emails:
