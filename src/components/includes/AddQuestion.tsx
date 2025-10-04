@@ -74,7 +74,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     const primaryTags = tags.filter((tag) => tag.level === 1);
     const secondaryTags = tags.filter((tag) => tag.level === 2);
     const activeTags = tags.filter((tag) => tag.active);
-    const locationMissing = ((session.modality === "hybrid" && isVirtual) || session.modality === "virtual") ? false : !location;
+    const locationMissing = ((session.modality === "hybrid" && isVirtual) || session.modality === "virtual") 
+    ? false : !location;
    
     useEffect(() => {
         const updateWindowDimensions = () => {

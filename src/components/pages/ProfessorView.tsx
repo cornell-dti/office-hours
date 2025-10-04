@@ -17,8 +17,6 @@ import CalendarWeekSelect from '../includes/CalendarWeekSelect';
 import { useProfessorViewSessions, useCourse } from '../../firehooks';
 import { firestore } from '../../firebase';
 
-const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
-
 const ProfessorView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
     const week = new Date();
     week.setHours(0, 0, 0, 0);
