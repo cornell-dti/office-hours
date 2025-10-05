@@ -1,14 +1,14 @@
+/* eslint-disable react/prop-types */
 import * as React from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
-import { Icon } from "semantic-ui-react";
 import rightArrowIcon from "../../media/Right Arrow.svg";
 import leftArrowIcon from "../../media/Left Arrow.svg";
 
 type Props = {
     barData: BarDatum[];
     timeKeys: string[];
-    yMax: number;
-    legend: string;
+    yMax: number;// eslint-disable-line react/no-unused-prop-types
+    legend: string;// eslint-disable-line react/no-unused-prop-types
     OHDetails: {
         [id: string]: {
             ta: string;
@@ -19,7 +19,7 @@ type Props = {
         };
     };
     selectedDateEpoch: number;
-    course?: FireCourse;
+    course?: FireCourse;// eslint-disable-line react/no-unused-prop-types
 };
 
 const WaitTimeGraph = (props: Props) => {
@@ -49,7 +49,6 @@ const WaitTimeGraph = (props: Props) => {
         hasOfficeHours = hasWaitTimeData;
     }
 
-    const currentHour = today.getHours();
     const currentHourLabel = new Intl.DateTimeFormat("en-US", {
         hour: "numeric",
         hour12: true,
@@ -243,7 +242,8 @@ const WaitTimeGraph = (props: Props) => {
                             const today = new Date();
                     
                             // Get the selected day index (0 = Monday, 1 = Tuesday, etc.)
-                            const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                            const dayNames = 
+                            ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
                             const selectedDayIndex = dayNames.indexOf(selectedDay);
                             const todayIndex = (today.getDay() + 6) % 7; // Adjust for Monday-first order
                     
@@ -254,9 +254,9 @@ const WaitTimeGraph = (props: Props) => {
                                 const [hour, minute] = time.split(':');
                         
                                 // Set the bar time based on the slot
-                                barTime.setHours(period === 'PM' && hour !== '12' ? parseInt(hour) + 12 : 
-                                    period === 'AM' && hour === '12' ? 0 : parseInt(hour));
-                                barTime.setMinutes(parseInt(minute));
+                                barTime.setHours(period === 'PM' && hour !== '12' ? parseInt(hour,10) + 12 : 
+                                    period === 'AM' && hour === '12' ? 0 : parseInt(hour,10));
+                                barTime.setMinutes(parseInt(minute,10));
                         
                                 // Compare with current time
                                 if (barTime < currentTime) {
@@ -298,12 +298,15 @@ const WaitTimeGraph = (props: Props) => {
                             On {selectedDay.slice(0, 3)} at {data.slot}
                                 </div>
                                 {isFutureDate ? (
-                                    <div style={{ fontSize: "13px", fontWeight: "normal", color: "#666", fontStyle: "italic" }}>
-                                This is an estimate based on historical data
+                                    <div style={{ fontSize: "13px", fontWeight: "normal", 
+                                        color: "#666", fontStyle: "italic" }}
+                                    >
+                                    This is an estimate based on historical data
                                     </div>
                                 ) : (
                                     <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
-                                        <strong>Est Wait:</strong> {props.OHDetails[data.hour].avgWaitTime || `${data.waitTime} min`}
+                                        <strong>Est Wait:</strong> {props.OHDetails[data.hour].avgWaitTime ||
+                                         `${data.waitTime} min`}
                                     </div>
                                 )}
                             </div>
@@ -314,7 +317,8 @@ const WaitTimeGraph = (props: Props) => {
                                 ticks: { text: { fontSize: 13, fill: "#111827", fontWeight:  "300" } },
                                 // Use default, subtle domain line to match analytics cards
                             },
-                            tooltip: { container: { border: "none", padding: 0, boxShadow: "none", background: "transparent" } },
+                            tooltip: { container: { border: "none", padding: 0, 
+                                boxShadow: "none", background: "transparent" } },
                         }}
                         axisBottom={{
                             legend: "",

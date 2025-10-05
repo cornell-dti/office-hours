@@ -2,7 +2,7 @@ import * as React from "react";
 import Moment from "react-moment";
 import { Icon } from "semantic-ui-react";
 
-import { Grid } from "@material-ui/core";
+import { Grid, Switch } from "@material-ui/core";
 import { connect } from "react-redux";
 import { useState } from "react";
 import { pauseSession } from "../../firebasefunctions/session";
@@ -92,9 +92,9 @@ const SessionInformationHeader = ({
     user,
     isDesktop,
     isTa,
-    virtualLocation,
-    assignedQuestion,
-    onUpdate,
+    virtualLocation,// eslint-disable-line @typescript-eslint/no-unused-vars
+    assignedQuestion,// eslint-disable-line @typescript-eslint/no-unused-vars
+    onUpdate,// eslint-disable-line @typescript-eslint/no-unused-vars
     myQuestion,
     isOpen,
     questions,
@@ -145,65 +145,12 @@ const SessionInformationHeader = ({
         today,
     );
 
-    const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState("hide");
-    const [zoomLink, setZoomLink] = React.useState("");
-    const [showError, setShowError] = React.useState(false);
-    const [showErrorMessage, setShowErrorMessage] = React.useState("");
-
-    React.useEffect(() => {
-        if (typeof virtualLocation === "string" && virtualLocation.trim() !== "") {
-            setZoomLink(virtualLocation);
-            setZoomLinkDisplay("saved");
-        }
-    }, [virtualLocation]);
-
-    const closeZoomLink = () => {
-        if (typeof virtualLocation === "string" && virtualLocation.trim() !== "") {
-            setZoomLink(virtualLocation);
-            setZoomLinkDisplay("saved");
-        } else {
-            setZoomLink("");
-            setZoomLinkDisplay("hide");
-        }
-    };
-
-    const saveZoomLink = () => {
-        onUpdate(zoomLink);
-        if (zoomLink === "") {
-            setZoomLinkDisplay("hide");
-        } else {
-            setZoomLinkDisplay("saved");
-        }
-    };
+  
 
     const handlePause = () => {
         pauseSession(session, !session.isPaused);
     };
 
-    const activateError = () => {
-        setShowError(true);
-        let message = "";
-        if (!myQuestion) {
-            if (isOpen) {
-                message = 'Please fill out the "Join the Queue" form first';
-            } else {
-                message = "This queue has closed";
-            }
-        } else if (
-            (session.modality === "virtual" || session.modality === "hybrid") &&
-            !(typeof session.useTALink === "undefined" || session.useTALink === false) &&
-            !session.TALink
-        ) {
-            message = "A professor has not set a link for this office hour. Please reference the course website.";
-        } else if (assignedQuestion && !assignedQuestion.answererLocation) {
-            message = "Please wait for the TA to update their location";
-        } else if (avgWaitTime === "No information available") {
-            message = "Please wait for your turn to join the Zoom call";
-        } else {
-            message = `Please wait for your turn to join the Zoom call (estimated wait time: ${avgWaitTime})`;
-        }
-        setShowErrorMessage(message);
-    };
 
     const [startIndex, setStartIndex] = useState(0);
     const [hoveredTA, setHoveredTA] = useState<number | null>(null);
@@ -218,7 +165,7 @@ const SessionInformationHeader = ({
         <header
             className="DesktopSessionInformationHeader"
             style={{
-                height: "280px", // More compact design
+                height: "310px", // More compact design
             }}
         >
             <Grid container style={{ alignItems: "stretch", height: "100%" }}>
@@ -269,10 +216,37 @@ const SessionInformationHeader = ({
                                         />
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <img src={clockIcon} alt="Clock Icon for Office Hour Date" className="clockIcon" />
-                                        <Moment date={session.startTime.seconds * 1000} interval={0} format={"h:mm A"} />
-                                        <Moment date={session.endTime.seconds * 1000} interval={0} format={" - h:mm A"} />
+                                        <img
+                                            src={clockIcon}
+                                            alt="Clock Icon for Office Hour Date" 
+                                            className="clockIcon"
+                                        />
+                                        <Moment date={session.startTime.seconds*1000} interval={0} format={"h:mm A"}/>
+                                        <Moment date={session.endTime.seconds*1000} interval={0} format={" - h:mm A"}/>
                                     </div>
+                                </div>
+
+                                <div className="OneQueueInfo">
+                                    {isTa && isOpen &&
+                                        (<Grid
+                                            container
+                                            direction="row"
+                                            justifyContent="center" 
+                                            alignItems={'center'}
+                                            spacing={4}
+                                        >
+                                            <Grid item xs={2} >
+                                                <Switch 
+                                                    className="closeQueueSwitch" 
+                                                    checked={!isPaused} 
+                                                    onChange={handlePause} 
+                                                    color="primary" 
+                                                />
+                                            </Grid>
+                                            <Grid item xs={10}>
+                                                <p>{`Queue is ${isPaused ? "closed" : "open"}`} </p>
+                                            </Grid>
+                                        </Grid>)}
                                 </div>
                             </div>
                         </Grid>
@@ -290,7 +264,9 @@ const SessionInformationHeader = ({
                                             <p style={{ fontWeight: "bold", fontSize: "20px", margin: 0 }}>
                                                 TA's ({tas.length})
                                             </p>
-                                            <p style={{ fontSize: "14px", color: "#4d4d4d", margin: 0, whiteSpace: "nowrap" }}>
+                                            <p style={{ fontSize: "14px", color: "#4d4d4d",
+                                                margin: 0, whiteSpace: "nowrap" }}
+                                            >
                                                 {ratioText}
                                             </p>
                                         </div>
@@ -393,7 +369,8 @@ const SessionInformationHeader = ({
                             const today = new Date();
                             const isToday = selectedDate.toDateString() === today.toDateString();
                             const isFutureDate = selectedDate > today;
-                            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                            const dayNames = 
+                            ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
                             const selectedDay = dayNames[selectedDate.getDay()];
                             
                             // Don't show subtitle for today
@@ -404,7 +381,7 @@ const SessionInformationHeader = ({
                             return (
                                 <p className="WaitSubtitle">
                                     {isFutureDate ? (
-                                        <>This is an estimate of wait times on <strong>{selectedDay}</strong> for {course.code}.</>
+                                        <>This is an estimate of wait times on <strong>{selectedDay}</strong> for {course.code}.</> // eslint-disable-line max-len
                                     ) : (
                                         `Wait times for ${selectedDay}`
                                     )}
@@ -420,7 +397,8 @@ const SessionInformationHeader = ({
                             if (!isToday) return null;
                             
                             // Check if today has office hours based on actual data
-                            const todayDayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                            const todayDayNames = 
+                            ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
                             const todayDayName = todayDayNames[today.getDay()];
                             const todayData = sampleData.barData.find(day => day.dayOfWeek === todayDayName);
                             
@@ -459,6 +437,7 @@ const SessionInformationHeader = ({
                                 </>
                             );
                         })()}
+
                         <WaitTimeGraph
                             barData={sampleData.barData}
                             yMax={sampleData.yMax}
