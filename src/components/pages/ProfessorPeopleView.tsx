@@ -241,7 +241,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                     />
                                     <div className="percent-overlay">
                                         <p>
-                                            <span className="Question-Percent"> {percentResolved}% </span>
+                                            <span className="Question-Percent"> {Number.isInteger(percentResolved) ? percentResolved: percentResolved.toFixed(2)}% </span>
                                             <br /> answered
                                         </p>
                                     </div>

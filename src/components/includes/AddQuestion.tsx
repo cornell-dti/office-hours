@@ -194,6 +194,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         const allowRedirect = addQuestion(
             auth.currentUser,
             session,
+            course,
             firestore,
             location,
             selectedPrimary,

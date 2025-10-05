@@ -201,6 +201,7 @@ interface FireQuestion {
     askerId: string;
     answererId: string;
     content: string;
+    courseId: string;
     sessionId: string;
     primaryTag: string;
     secondaryTag: string;
