@@ -86,8 +86,8 @@ const formatEstimatedTime = (waitTimeSecs: number, currentTime: Date) => {
     return <> (<> <strong>{totalHour}:{totalMins}{amPm}</strong> </>) </>;
 };
 const pluralize = (count: number, singular: string, plural: string) => {
-        return count <= 1 ? singular : plural;
-    };
+    return count <= 1 ? singular : plural;
+};
 
 const SessionInformationHeader = ({
     session,

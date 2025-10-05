@@ -59,10 +59,10 @@ const WaitTimeGraph = (props: Props) => {
         return `${hour}:${half.toString().padStart(2, "0")} ${ampm}`;
     };
 
-	// Keep chart margin centralized so overlays align with the plot area
-	const chartMargin = React.useMemo(() => ({ top: 15, right: 12, bottom: 40, left: 12 }), []);
-	// Visual gap between the bars and the separator line
-	const baselineGapPx = -30;
+    // Keep chart margin centralized so overlays align with the plot area
+    const chartMargin = React.useMemo(() => ({ top: 5, right: 12, bottom: 40, left: 12 }), []);
+    // Visual gap between the bars and the separator line
+    const baselineGapPx = -55;
 
     // Build 6-slot data for the selected day and current 3-hour window
     const transformData = () => {
@@ -140,166 +140,193 @@ const WaitTimeGraph = (props: Props) => {
                 ))}
             </div>
 
-            {/* Side arrows, vertically centered beside the bars */}
-            <button
-                type="button"
-                onClick={() => setHourStart((s) => Math.max(0, s - 1))}
-                disabled={!hasPrevHours}
-                style={{
-                    position: "absolute",
-                    left: -6,
-                    top: "50%",
-                    transform: "translateY(-30%)",
-                    background: "transparent",
-                    border: "none",
-                    width: 28,
-                    height: 28,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    opacity: hasPrevHours ? 1 : 0.4,
-                    cursor: hasPrevHours ? "pointer" : "default",
-                    zIndex: 10,
-                }}
-            >
-                <img src={leftArrowIcon} alt="prev hours" style={{ width: 14, height: 14 }} />
-            </button>
-            <button
-                type="button"
-                onClick={() => setHourStart((s) => Math.min(hours.length - 3, s + 1))}
-                disabled={!hasNextHours}
-                style={{
-                    position: "absolute",
-                    right: -6,
-                    top: "50%",
-                    transform: "translateY(-30%)",
-                    background: "transparent",
-                    border: "none",
-                    width: 28,
-                    height: 28,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    opacity: hasNextHours ? 1 : 0.4,
-                    cursor: hasNextHours ? "pointer" : "default",
-                    zIndex: 10,
-                }}
-            >
-                <img src={rightArrowIcon} alt="next hours" style={{ width: 14, height: 14 }} />
-            </button>
+            {/* Show message if no office hours for this day */}
+            {!hasOfficeHours && (
+                <div
+                    style={{
+                        textAlign: "center",
+                        marginTop: "40px",
+                        marginBottom: "40px",
+                        fontSize: "14px",
+                        color: "#666",
+                        fontStyle: "italic",
+                    }}
+                >
+                    There are no normally scheduled office hour times for this day of the week.
+                </div>
+            )}
 
-			<ResponsiveBar
-                data={transformData()}
-                keys={["waitTime"]}
-                indexBy="slot"
-				margin={chartMargin}
-                padding={0.2}
-                colors={(bar) => {
-                    const currentTime = new Date();
-                    const today = new Date();
-                    
-                    // Get the selected day index (0 = Sunday, 1 = Monday, etc.)
-                    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-                    const selectedDayIndex = dayNames.indexOf(selectedDay);
-                    const todayIndex = today.getDay();
-                    
-                    // If selected day is today, use the original time-based logic
-                    if (selectedDayIndex === todayIndex) {
-                        const barTime = new Date();
-                        const [time, period] = bar.data.slot.split(' ');
-                        const [hour, minute] = time.split(':');
-                        
-                        // Set the bar time based on the slot
-                        barTime.setHours(period === 'PM' && hour !== '12' ? parseInt(hour) + 12 : 
-                                       period === 'AM' && hour === '12' ? 0 : parseInt(hour));
-                        barTime.setMinutes(parseInt(minute));
-                        
-                        // Compare with current time
-                        if (barTime < currentTime) {
-                            return "#D9D9D9"; // Past time
-                        } else if (bar.data.hour === currentHourLabel) {
-                            return "#6399D6"; // Current time
-                        } else {
-                            return "#DAE9FC"; // Future time
-                        }
-                    }
-                    // If selected day is in the future, all bars are future time
-                    else if (selectedDayIndex > todayIndex) {
-                        return "#DAE9FC"; // Future time
-                    }
-                    // If selected day is in the past, all bars are past time
-                    else {
-                        return "#D9D9D9"; // Past time
-                    }
-                }}
-                axisLeft={null}
-                enableGridY={false}
-                enableLabel={false}
-                isInteractive={true}
-                tooltip={({ data }) => (
-                    <div
+            {/* Only show graph if there are office hours */}
+            {hasOfficeHours && (
+                <>
+                    {/* Side arrows, vertically centered beside the bars */}
+                    <button
+                        type="button"
+                        onClick={() => setHourStart((s) => Math.max(0, s - 1))}
+                        disabled={!hasPrevHours}
                         style={{
-                            background: "white",
-                            padding: "8px 12px",
-                            borderRadius: "8px",
-                            fontSize: "13px",
-                            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                            position: "absolute",
+                            left: -6,
+                            top: "50%",
+                            transform: "translateY(-30%)",
+                            background: "transparent",
+                            border: "none",
+                            width: 28,
+                            height: 28,
                             display: "flex",
-                            flexDirection: "column",
-                            gap: "2px",
-                            textAlign: "left",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            opacity: hasPrevHours ? 1 : 0.4,
+                            cursor: hasPrevHours ? "pointer" : "default",
+                            zIndex: 10,
                         }}
                     >
-                        <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
-                            At {data.slot}
-                        </div>
-                        <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
-                            <strong>Est Wait:</strong> {props.OHDetails[data.hour].avgWaitTime || `${data.waitTime} min`}
-                        </div>
-                    </div>
-                )}
-                theme={{
-                    axis: {
-                        legend: { text: { fontSize: 16, outlineWidth: 0 } },
-                        ticks: { text: { fontSize: 13, fill: "#111827", fontWeight:  "300" } },
-                        // Use default, subtle domain line to match analytics cards
-                    },
-                    tooltip: { container: { border: "none", padding: 0, boxShadow: "none", background: "transparent" } },
-                }}
-				axisBottom={{
-					legend: "",
-					tickSize: 0,
-					tickPadding: 8,
-					tickRotation: 0,
-					format: (tick) => (String(tick).includes(":00 ") ? String(tick) : ""),
-				}}
-            />
+                        <img src={leftArrowIcon} alt="prev hours" style={{ width: 14, height: 14 }} />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setHourStart((s) => Math.min(hours.length - 3, s + 1))}
+                        disabled={!hasNextHours}
+                        style={{
+                            position: "absolute",
+                            right: -6,
+                            top: "50%",
+                            transform: "translateY(-30%)",
+                            background: "transparent",
+                            border: "none",
+                            width: 28,
+                            height: 28,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            opacity: hasNextHours ? 1 : 0.4,
+                            cursor: hasNextHours ? "pointer" : "default",
+                            zIndex: 10,
+                        }}
+                    >
+                        <img src={rightArrowIcon} alt="next hours" style={{ width: 14, height: 14 }} />
+                    </button>
 
-			{/* Separator line and soft white fade just above the x-axis to create a hover effect */}
-			<div
-				style={{
-					position: "absolute",
-					left: chartMargin.left,
-					right: chartMargin.right,
-					bottom: chartMargin.bottom + baselineGapPx,
-					height: 18,
-					pointerEvents: "none",
-					zIndex: 5,
-				}}
-			/>
-			<div
-				style={{
-					position: "absolute",
-					left: chartMargin.left,
-					right: chartMargin.right,
-					bottom: chartMargin.bottom + baselineGapPx,
-					height: 1.25,
-					background: "rgba(17, 24, 39, 0.85)",
-					borderRadius: 0.5,
-					pointerEvents: "none",
-					zIndex: 6,
-				}}
-			/>
+                    <ResponsiveBar
+                        data={transformData()}
+                        keys={["waitTime"]}
+                        indexBy="slot"
+                        margin={chartMargin}
+                        padding={0.2}
+                        colors={(bar) => {
+                            const currentTime = new Date();
+                            const today = new Date();
+                    
+                            // Get the selected day index (0 = Monday, 1 = Tuesday, etc.)
+                            const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                            const selectedDayIndex = dayNames.indexOf(selectedDay);
+                            const todayIndex = (today.getDay() + 6) % 7; // Adjust for Monday-first order
+                    
+                            // If selected day is today, use the original time-based logic
+                            if (selectedDayIndex === todayIndex) {
+                                const barTime = new Date();
+                                const [time, period] = bar.data.slot.split(' ');
+                                const [hour, minute] = time.split(':');
+                        
+                                // Set the bar time based on the slot
+                                barTime.setHours(period === 'PM' && hour !== '12' ? parseInt(hour) + 12 : 
+                                    period === 'AM' && hour === '12' ? 0 : parseInt(hour));
+                                barTime.setMinutes(parseInt(minute));
+                        
+                                // Compare with current time
+                                if (barTime < currentTime) {
+                                    return "#D9D9D9"; // Past time
+                                } if (bar.data.hour === currentHourLabel) {
+                                    return "#6399D6"; // Current time
+                                } 
+                                return "#DAE9FC"; // Future time
+                        
+                            }
+                            // If selected day is in the future, use estimated styling
+                            if (selectedDayIndex > todayIndex) {
+                                return "#E8F4FD"; // Lighter blue for estimates
+                            }
+                            // If selected day is in the past, all bars are past time
+                    
+                            return "#D9D9D9"; // Past time
+                    
+                        }}
+                        axisLeft={null}
+                        enableGridY={false}
+                        enableLabel={false}
+                        isInteractive={true}
+                        tooltip={({ data }) => (
+                            <div
+                                style={{
+                                    background: "white",
+                                    padding: "8px 12px",
+                                    borderRadius: "8px",
+                                    fontSize: "13px",
+                                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "2px",
+                                    textAlign: "left",
+                                }}
+                            >
+                                <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
+                            On {selectedDay.slice(0, 3)} at {data.slot}
+                                </div>
+                                {isFutureDate ? (
+                                    <div style={{ fontSize: "13px", fontWeight: "normal", color: "#666", fontStyle: "italic" }}>
+                                This is an estimate based on historical data
+                                    </div>
+                                ) : (
+                                    <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
+                                        <strong>Est Wait:</strong> {props.OHDetails[data.hour].avgWaitTime || `${data.waitTime} min`}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        theme={{
+                            axis: {
+                                legend: { text: { fontSize: 16, outlineWidth: 0 } },
+                                ticks: { text: { fontSize: 13, fill: "#111827", fontWeight:  "300" } },
+                                // Use default, subtle domain line to match analytics cards
+                            },
+                            tooltip: { container: { border: "none", padding: 0, boxShadow: "none", background: "transparent" } },
+                        }}
+                        axisBottom={{
+                            legend: "",
+                            tickSize: 0,
+                            tickPadding: 8,
+                            tickRotation: 0,
+                            format: (tick) => (String(tick).includes(":00 ") ? String(tick) : ""),
+                        }}
+                    />
+
+                    {/* Separator line and soft white fade just above the x-axis to create a hover effect */}
+                    <div
+                        style={{
+                            position: "absolute",
+                            left: chartMargin.left,
+                            right: chartMargin.right,
+                            bottom: chartMargin.bottom + baselineGapPx,
+                            height: 18,
+                            pointerEvents: "none",
+                            zIndex: 5,
+                        }}
+                    />
+                    <div
+                        style={{
+                            position: "absolute",
+                            left: chartMargin.left,
+                            right: chartMargin.right,
+                            bottom: chartMargin.bottom + baselineGapPx,
+                            height: 1.25,
+                            background: "rgba(17, 24, 39, 0.85)",
+                            borderRadius: 0.5,
+                            pointerEvents: "none",
+                            zIndex: 6,
+                        }}
+                    />
+                </>
+            )}
         </div>
     );
 };
