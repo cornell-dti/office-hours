@@ -38,6 +38,7 @@ type Props = {
     sessionBanners: Announcement[];
     timeWarning: number | undefined;
     showProfessorStudentView: boolean;
+    selectedDateEpoch: number;
 };
 
 type UndoState = {
@@ -68,6 +69,7 @@ const SessionView = ({
     timeWarning,
     sessionBanners,
     showProfessorStudentView,
+    selectedDateEpoch,
 }: Props) => {
     // make user appear as not a ta/prof if showProfessorStudentView is true
     const isTa = showProfessorStudentView ? false : user.roles[course.courseId] !== undefined;
@@ -242,6 +244,7 @@ const SessionView = ({
                 }}
                 questions={questions.filter((q) => q.status === "unresolved")}
                 isPaused={session.isPaused}
+                selectedDateEpoch={selectedDateEpoch}
             />
 
             <TaAnnouncements showProfessorStudentView={showProfessorStudentView} />

@@ -1,16 +1,16 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/button-has-type */
 /* eslint-disable react/no-unused-prop-types */
 import * as React from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
-import { Icon } from "semantic-ui-react";
 import rightArrowIcon from "../../media/Right Arrow.svg";
 import leftArrowIcon from "../../media/Left Arrow.svg";
 
 type Props = {
     barData: BarDatum[];
     timeKeys: string[];
-    yMax: number;
-    legend: string;
+    yMax: number;// eslint-disable-line react/no-unused-prop-types
+    legend: string;// eslint-disable-line react/no-unused-prop-types
     OHDetails: {
         [id: string]: {
             ta: string;
@@ -20,16 +20,37 @@ type Props = {
             avgWaitTime: string;
         };
     };
+    selectedDateEpoch: number;
+    course?: FireCourse;// eslint-disable-line react/no-unused-prop-types
 };
 
 const WaitTimeGraph = (props: Props) => {
     const today = new Date();
-    const day = today.getDay();
-    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const dayOfWeek = dayNames[day];
-    const [selectedDay, setSelectedDay] = React.useState<string>(dayOfWeek);
+    const selectedDate = new Date(props.selectedDateEpoch);
+    const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const selectedDay = dayNames[(selectedDate.getDay() + 6) % 7]; // Adjust for Sunday=0
+    
+    // Check if the selected date is in the future
+    const isFutureDate = selectedDate > today;
+    
+    // Check if there are office hours for the selected day
+    const selectedDayData = props.barData.find(day => day.dayOfWeek === selectedDay);
+    
+    // Check if there are office hours for the selected day based on actual data
+    let hasOfficeHours = false;
+    
+    if (selectedDayData) {
+        // Check if any time slot has wait time > 0
+        const timeSlotKeys = Object.keys(selectedDayData).filter(key => key !== 'dayOfWeek');
+        
+        const hasWaitTimeData = timeSlotKeys.some(key => 
+            Number(selectedDayData[key]) > 0
+        );
+        
+        // Office hours exist if there's actual wait time data
+        hasOfficeHours = hasWaitTimeData;
+    }
 
-    const currentHour = today.getHours();
     const currentHourLabel = new Intl.DateTimeFormat("en-US", {
         hour: "numeric",
         hour12: true,
@@ -218,7 +239,8 @@ const WaitTimeGraph = (props: Props) => {
                             const today = new Date();
                     
                             // Get the selected day index (0 = Monday, 1 = Tuesday, etc.)
-                            const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                            const dayNames = 
+                            ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
                             const selectedDayIndex = dayNames.indexOf(selectedDay);
                             const todayIndex = (today.getDay() + 6) % 7; // Adjust for Monday-first order
                     
@@ -229,9 +251,9 @@ const WaitTimeGraph = (props: Props) => {
                                 const [hour, minute] = time.split(':');
                         
                                 // Set the bar time based on the slot
-                                barTime.setHours(period === 'PM' && hour !== '12' ? parseInt(hour) + 12 : 
-                                    period === 'AM' && hour === '12' ? 0 : parseInt(hour));
-                                barTime.setMinutes(parseInt(minute));
+                                barTime.setHours(period === 'PM' && hour !== '12' ? parseInt(hour,10) + 12 : 
+                                    period === 'AM' && hour === '12' ? 0 : parseInt(hour,10));
+                                barTime.setMinutes(parseInt(minute,10));
                         
                                 // Compare with current time
                                 if (barTime < currentTime) {
@@ -273,12 +295,15 @@ const WaitTimeGraph = (props: Props) => {
                             On {selectedDay.slice(0, 3)} at {data.slot}
                                 </div>
                                 {isFutureDate ? (
-                                    <div style={{ fontSize: "13px", fontWeight: "normal", color: "#666", fontStyle: "italic" }}>
-                                This is an estimate based on historical data
+                                    <div style={{ fontSize: "13px", fontWeight: "normal", 
+                                        color: "#666", fontStyle: "italic" }}
+                                    >
+                                    This is an estimate based on historical data
                                     </div>
                                 ) : (
                                     <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
-                                        <strong>Est Wait:</strong> {props.OHDetails[data.hour].avgWaitTime || `${data.waitTime} min`}
+                                        <strong>Est Wait:</strong> {props.OHDetails[data.hour].avgWaitTime ||
+                                         `${data.waitTime} min`}
                                     </div>
                                 )}
                             </div>
@@ -289,7 +314,8 @@ const WaitTimeGraph = (props: Props) => {
                                 ticks: { text: { fontSize: 13, fill: "#111827", fontWeight:  "300" } },
                                 // Use default, subtle domain line to match analytics cards
                             },
-                            tooltip: { container: { border: "none", padding: 0, boxShadow: "none", background: "transparent" } },
+                            tooltip: { container: { border: "none", padding: 0, 
+                                boxShadow: "none", background: "transparent" } },
                         }}
                         axisBottom={{
                             legend: "",
