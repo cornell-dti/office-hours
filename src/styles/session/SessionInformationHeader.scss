@@ -6,7 +6,19 @@
   margin: 25px 48px;
 
   .OneQueueInfo {
-    padding: 5px 0;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.4;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  width: 100%;
+  }
+
+  .MuiGrid-spacing-xs-4 > .MuiGrid-item {
+    padding: 2px;
   }
 
   .switchWrapper {
@@ -33,68 +45,178 @@
     box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
     height: 100%;
     width: 100%;
-    padding: 6% 10%;
+    padding: 6% 10% 4% 6%;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: flex-start;
 
-    .Picture {
-      height: 100%;
-      width: 100%;
-      padding-bottom: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      img {
-        max-width: 60%;
-        height: 60%;
-        max-height: 72px;
-        max-width: 72px;
-        border-radius: 50%;
-      }
+    .Location {
+      font-size: 24px;
+      font-family: Roboto;
+      font-weight: 600;
+      margin-bottom: 6px;
+      margin-top: 2px;
+      overflow: hidden;
+      // white-space: nowrap;
+      text-overflow: ellipsis;
     }
-
-    .Details {
-      display: inline-block;
-
-      .Location {
-        font-size: 20px;
-        font-weight: 500;
-        margin-bottom: 5px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-
-      p time {
-        margin-bottom: 8px;
-      }
-
-      .Date {
-        margin-bottom: 20px;
-      }
-
-      a {
-        color: white;
-        text-decoration: underline;
-      }
+    .Date {
+      margin-top: 8px;
+      margin-left: 0;
+      color: #4d4d4d;
+      font-family: Roboto, sans-serif;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 1.4;
+      margin: 0;
     }
-
     .Title {
-      margin-bottom: 5px;
+      margin-bottom: 6px;
+      margin-left: 0;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+      color: #4d4d4d;
+      font-family: Roboto, sans-serif;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 1.4;
     }
-  }
+     .clockIcon {
+       vertical-align: middle;
+       margin-right: 10px;
+       height: 16px;
+       width: 16px;
+       opacity: 0.85;
+       }
+       .calendarIcon{
+       vertical-align: middle;
+       margin-right: 10px;
+       height: 16px;
+       width: 16px;
+       opacity: 0.85;
+       }
+}
+.TAsHeader {
+  border-radius: 8px;
+  box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+  padding: 12px 16px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
-  .ImgWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+.TAHeaderText {
+  text-align: left;
+  p { white-space: nowrap; word-break: keep-all; }
+}
 
+.TAImagesWrapper {
+  display: flex;
+  gap: 8px;
+  position: relative;
+  padding: 0 48px 0 28px; // slight reduction to reveal 4th avatar
+}
+
+
+.TAImagesScroll {
+  display: flex;
+  gap: 4px;
+  overflow: visible;
+  flex: 1;
+}
+
+.TAImagesScrollWrapper {
+  flex: 1;
+  padding: 0 8px 0 10px; // keep a small buffer but allow 4th avatar to show
+}
+
+.TAImagesScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.TACircleContainer {
+  flex: 0 0 auto;
+}
+
+.TATooltipWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.TACircle {
+  width: 46px;
+  height: 46px;
+  cursor: pointer;
+}
+
+.TATooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: normal;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  white-space: nowrap;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none;
+  border: 1px solid #e5e7eb;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: white;
+  }
+}
+
+.TATooltipWrapper:hover .TATooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.TACircle {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.arrowIcon {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.ScrollArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.TAImagesWrapper > .ScrollArrow:first-child { left: 4px; }
+.TAImagesWrapper > .ScrollArrow:last-child { right: -12px; }
   .QueueInfo {
     border-radius: 8px;
     box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
@@ -102,7 +224,7 @@
     background-color: #ffffff;
     color: $text-grey;
     text-align: center;
-    padding: 4% 10%;
+    padding: 3% 8%;
     width: 100%;
 
     p {
@@ -112,6 +234,66 @@
       padding-left: 10px;
     }
 
+    .WaitTitle{
+      color: #484848;
+      font-family: Roboto, sans-serif;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+      margin: 0 0 8px 0; // Add spacing below
+    }
+    .WaitSubtitle{
+      color: #666;
+      font-family: Roboto, sans-serif;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      margin: 0 0 15px 0; // Add spacing below
+    }
+    .WaitSummary {
+      color: #484848;
+      font-family: Roboto, sans-serif;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      margin: 0;
+      display: flex;          // align icon and text neatly on a row
+      align-items: center;
+    }
+    // Add a little space between stacked summary lines
+    .WaitSummary + .WaitSummary {
+      margin-top: 6px;
+    }
+    .waitIcon {
+      height: 20px;
+      width: 20px;
+      margin-right: 10px;
+      opacity: 0.85;
+      flex: 0 0 20px;        // reserve same width so text lines up
+    }
+    .waitIcon.hourglass {
+      height: 16px;          // slightly smaller hourglass
+      width: 16px;
+      flex-basis: 20px;      // keep left edge aligned with users icon
+    }
+    .WaitSummary span + span {
+      margin-left: 8px;      // spread out adjacent pieces of text
+    }
+    .WaitSummary strong {
+      font-weight: 500;      // lighter than default bold (700)
+    }
+    .GraphPlaceholder {
+      width: 100%;
+      max-width: 100%; /* Don't overflow parent container */
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-top: 25px;
+      display: block;
+    }
     .red {
       color: #f46565;
     }
@@ -120,6 +302,9 @@
       color: #5599db;
     }
   }
+
+
+
 
   @media only screen and (max-width: 1300px) {
     .closeQueueSwitch {
@@ -303,9 +488,7 @@
     }
   }
 
-  .Title {
-    margin-bottom: 5px;
-  }
+
 
   .MoreInformation {
     display: inline-block;
