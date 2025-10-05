@@ -25,8 +25,7 @@ function initBarData(): BarData[] {
 }
 
 function setBarDetail(d : BarData, suffix: string) : BarData{
-    const valStr = d.value.toString();
-    d.detail = `${valStr} ${suffix}`;
+    d.detail = `${d.value} ${suffix}`;
     return d;
 }
 
@@ -65,7 +64,7 @@ export const calcTAMetrics = async(
         const assigned = data.timeAssigned?.toDate();
         const addressed = data.timeAddressed?.toDate();
 
-        const dayName = DAYS[entered.getDay()];
+        const dayName = DAYS[entered.getUTCDay()];
         const dayObjWait = waitTimeBar.find(d => d.daysOfWeek === dayName);
         const dayObjTime = timeSpentBar.find(d => d.daysOfWeek === dayName);
         const dayObjStudents = studentsHelpedBar.find(d => d.daysOfWeek === dayName);
@@ -98,7 +97,7 @@ export const calcTAMetrics = async(
 
     waitTimeBar.forEach(d => setBarDetail(d, "minutes per student"));
     timeSpentBar.forEach(d => setBarDetail(d, "minutes per student"));
-    studentsHelpedBar.forEach(d => setBarDetail(d, `${d.value} student${d.value !== "1" ? "s":""}`));
+    studentsHelpedBar.forEach(d => setBarDetail(d, `student${d.value !== "1" ? "s":""}`));
 
     const metrics: MetricsResult = {
         waitTime: {
