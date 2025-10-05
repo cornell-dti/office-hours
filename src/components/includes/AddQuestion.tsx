@@ -203,6 +203,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         const allowRedirect = addQuestion(
             auth.currentUser,
             session,
+            course,
             compatFirestore,
             location,
             selectedPrimary,
