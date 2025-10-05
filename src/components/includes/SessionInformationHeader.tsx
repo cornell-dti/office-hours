@@ -606,11 +606,9 @@ const SessionInformationHeader = ({
                                                                     display: "inline-block"
                                                                 }}
                                                                 onMouseEnter={() => {
-                                                                    console.log('Hovering TA:', ta.firstName, ta.lastName);
                                                                     setHoveredTA(index);
                                                                 }}
                                                                 onMouseLeave={() => {
-                                                                    console.log('Leaving TA');
                                                                     setHoveredTA(null);
                                                                 }}
                                                             >
