@@ -1,6 +1,4 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable react/button-has-type */
-/* eslint-disable react/no-unused-prop-types */
 import * as React from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
 import rightArrowIcon from "../../media/Right Arrow.svg";
@@ -131,34 +129,39 @@ const WaitTimeGraph = (props: Props) => {
                     }
                 `}
             </style>
+            {/* Day selection buttons - now synchronized with calendar */}
             <div
                 style={{
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    marginTop: "20px",
+                    marginBottom: "20px",
                     gap: "10px",
                 }}
             >
-                {dayNames.map((dayName) => (
-                    <button
-                        key={dayName}
-                        onClick={() => setSelectedDay(dayName)}
-                        style={{
-                            backgroundColor: selectedDay === dayName ? "#e6e9ef" : "transparent",
-                            color: selectedDay === dayName ? "#4d4d4d" : "#6b7280",
-                            border: "none",
-                            padding: "6px 12px",
-                            borderRadius: "6px",
-                            cursor: "pointer",
-                            fontWeight: selectedDay === dayName ? 600 : 400,
-                            fontSize: "13px",
-                            transition: "all 0.2s ease",
-                        }}
-                    >
-                        {dayName === dayOfWeek ? "TODAY" : dayName.slice(0, 3).toUpperCase()}
-                    </button>
-                ))}
+                {dayNames.map((dayName) => {
+                    const isToday = dayName === dayNames[today.getDay()];
+                    const isSelected = dayName === selectedDay;
+                    
+                    return (
+                        <div
+                            key={dayName}
+                            style={{
+                                backgroundColor: isSelected ? "#e6e9ef" : "transparent",
+                                color: isSelected ? "#4d4d4d" : "#6b7280",
+                                border: "none",
+                                padding: "6px 12px",
+                                borderRadius: "6px",
+                                cursor: "default",
+                                fontWeight: isSelected ? 600 : 400,
+                                fontSize: "13px",
+                                transition: "all 0.2s ease",
+                            }}
+                        >
+                            {isToday ? "TODAY" : dayName.slice(0, 3).toUpperCase()}
+                        </div>
+                    );
+                })}
             </div>
 
             {/* Show message if no office hours for this day */}
