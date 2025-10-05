@@ -1,6 +1,5 @@
 import * as React from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
-import { Icon } from "semantic-ui-react";
 import rightArrowIcon from "../../media/Right Arrow.svg";
 import leftArrowIcon from "../../media/Left Arrow.svg";
 
@@ -20,6 +19,7 @@ type Props = {
     };
     selectedDateEpoch: number;
     course?: FireCourse;
+    hasSessionsForSelectedDay?: boolean; // optional override for scheduled day detection
 };
 
 const WaitTimeGraph = (props: Props) => {
@@ -32,24 +32,14 @@ const WaitTimeGraph = (props: Props) => {
     const isFutureDate = selectedDate > today;
     
     // Check if there are office hours for the selected day
-    const selectedDayData = props.barData.find(day => day.dayOfWeek === selectedDay);
-    
-    // Check if there are office hours for the selected day based on actual data
-    let hasOfficeHours = false;
-    
-    if (selectedDayData) {
-        // Check if any time slot has wait time > 0
-        const timeSlotKeys = Object.keys(selectedDayData).filter(key => key !== 'dayOfWeek');
-        
-        const hasWaitTimeData = timeSlotKeys.some(key => 
-            Number(selectedDayData[key]) > 0
-        );
-        
-        // Office hours exist if there's actual wait time data
-        hasOfficeHours = hasWaitTimeData;
-    }
+    // Priority: use explicit signal from parent if provided.
+    // Fallback: consider the day scheduled if present in barData.
+    const selectedDayData = props.barData.find((day: any) => day.dayOfWeek === selectedDay);
+    const hasOfficeHours =
+        typeof props.hasSessionsForSelectedDay === 'boolean'
+            ? props.hasSessionsForSelectedDay
+            : Boolean(selectedDayData);
 
-    const currentHour = today.getHours();
     const currentHourLabel = new Intl.DateTimeFormat("en-US", {
         hour: "numeric",
         hour12: true,
@@ -80,7 +70,7 @@ const WaitTimeGraph = (props: Props) => {
     };
 
     // Keep chart margin centralized so overlays align with the plot area
-    const chartMargin = React.useMemo(() => ({ top: 5, right: 12, bottom: 40, left: 12 }), []);
+    const chartMargin = React.useMemo(() => ({ top: 5, right: 12, bottom: 35, left: 12 }), []);
     // Visual gap between the bars and the separator line
     const baselineGapPx = -55;
 
@@ -99,37 +89,8 @@ const WaitTimeGraph = (props: Props) => {
     };
 
     return (
-        <div style={{ height: 140, position: "relative" }}>
-            <style>
-                {`
-                    /* Target only the actual bar rectangles, not the container or other SVG elements */
-                    svg rect[fill="#D9D9D9"]:hover,
-                    svg rect[fill="#6399D6"]:hover,
-                    svg rect[fill="#DAE9FC"]:hover {
-                        fill: #6399D6 !important;
-                        opacity: 0.4 !important;
-                        transition: fill 0.2s ease, opacity 0.2s ease !important;
-                    }
-                    /* Ensure only bar rectangles have transition for fill and opacity only */
-                    svg rect[fill="#D9D9D9"],
-                    svg rect[fill="#6399D6"],
-                    svg rect[fill="#DAE9FC"] {
-                        transition: fill 0.2s ease, opacity 0.2s ease;
-                    }
-                    /* Prevent any transitions on the chart container that might affect positioning */
-                    .nivo-bar,
-                    .nivo-bar-rect,
-                    svg {
-                        transition: none !important;
-                    }
-                    /* Only allow transitions on the specific bar rectangles */
-                    svg rect[fill="#D9D9D9"],
-                    svg rect[fill="#6399D6"],
-                    svg rect[fill="#DAE9FC"] {
-                        transition: fill 0.2s ease, opacity 0.2s ease !important;
-                    }
-                `}
-            </style>
+        <div style={{ height: 140, position: "relative", paddingTop: 3, paddingBottom: 16 }}>
+            <style>{``}</style>
             {/* Day selection buttons - now synchronized with calendar */}
             <div
                 style={{
@@ -177,7 +138,7 @@ const WaitTimeGraph = (props: Props) => {
                         fontStyle: "italic",
                     }}
                 >
-                    There are no normally scheduled office hour times for this day of the week.
+                    No office hours are scheduled for today.
                 </div>
             )}
 
@@ -319,7 +280,7 @@ const WaitTimeGraph = (props: Props) => {
                         axisBottom={{
                             legend: "",
                             tickSize: 0,
-                            tickPadding: 8,
+                            tickPadding: 18,
                             tickRotation: 0,
                             format: (tick) => (String(tick).includes(":00 ") ? String(tick) : ""),
                         }}

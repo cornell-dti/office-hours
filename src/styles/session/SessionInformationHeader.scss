@@ -251,10 +251,7 @@
       display: flex;          // align icon and text neatly on a row
       align-items: center;
     }
-    // Add a little space between stacked summary lines
-    .WaitSummary + .WaitSummary {
-      margin-top: 6px;
-    }
+
     .waitIcon {
       height: 20px;
       width: 20px;
