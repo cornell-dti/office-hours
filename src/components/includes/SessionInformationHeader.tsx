@@ -16,7 +16,7 @@ import { useSessionQuestions, useSessionTAs } from "../../firehooks";
 import { computeNumberAhead } from "../../utilities/questions";
 import { RootState } from "../../redux/store";
 import WaitTimeGraph from "./WaitTimeGraph";
-import { buildWaitTimeDataFromMap, hasSessionsOnDate } from "../../utils/waitTimeMap";
+import { buildWaitTimeDataFromMap, hasSessionsOnDate } from "../../firebasefunctions/waitTimeMap";
 
 type Props = {
     session: FireSession;

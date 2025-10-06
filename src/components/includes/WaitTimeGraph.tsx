@@ -44,15 +44,6 @@ const WaitTimeGraph = (props: Props) => {
         typeof value === 'number' && value > 0
     );
     
-    console.log('[WaitTimeGraph] Debug:', {
-        selectedDay,
-        selectedDayData,
-        hasSessionsForSelectedDay: props.hasSessionsForSelectedDay,
-        hasOfficeHours,
-        hasData,
-        barDataLength: props.barData.length,
-        barDataDays: props.barData.map(d => d.dayOfWeek)
-    });
 
     const currentHourLabel = new Intl.DateTimeFormat("en-US", {
         hour: "numeric",
