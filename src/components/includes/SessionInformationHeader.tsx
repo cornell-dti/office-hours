@@ -16,7 +16,7 @@ import { useSessionQuestions, useSessionTAs } from "../../firehooks";
 import { computeNumberAhead } from "../../utilities/questions";
 import { RootState } from "../../redux/store";
 import WaitTimeGraph from "./WaitTimeGraph";
-import { buildWaitTimeData, hasSessionsOnDate } from "../../utils/waitTime";
+import { buildWaitTimeDataFromMap, hasSessionsOnDate } from "../../utils/waitTimeMap";
 
 type Props = {
     session: FireSession;
@@ -153,6 +153,8 @@ const SessionInformationHeader = ({
 
     const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState("hide"); // used in save/close zoom link
     const [zoomLink, setZoomLink] = React.useState(""); // used in save/close zoom link
+    const [showError, setShowError] = React.useState(false);
+    const [showErrorMessage, setShowErrorMessage] = React.useState("");
 
     // Compact typography for the wait-time summary lines
     const summaryTextStyle: React.CSSProperties = { fontSize: 14, lineHeight: '16px' };
@@ -170,7 +172,9 @@ const SessionInformationHeader = ({
         let ignore = false;
         async function load() {
             if (!course?.courseId) return;
-            const data = await buildWaitTimeData(course.courseId);
+            console.log('[SessionInformationHeader] Loading wait time data for course:', course.courseId);
+            const data = await buildWaitTimeDataFromMap(course.courseId);
+            console.log('[SessionInformationHeader] Loaded data:', data);
             if (!ignore) setGraphData(data);
         }
         load();
@@ -436,7 +440,7 @@ const SessionInformationHeader = ({
                         {(() => {
                             const isTodayForHeader = new Date(selectedDateEpoch).toDateString() === new Date().toDateString();
                             return (
-                                <p className="WaitTitle" style={isTodayForHeader ? { marginBottom: 5 } : undefined}>Wait Time</p>
+                                <p className="WaitTitle" style={isTodayForHeader ? { marginBottom: 2 } : undefined}>Wait Time</p>
                             );
                         })()}
                         {(() => {
@@ -499,7 +503,7 @@ const SessionInformationHeader = ({
                                         <span className="red">{numAhead} students</span>
                                         <span>ahead</span>
                                     </p>
-                                    <p className="WaitSummary" style={summaryTextStyle}>
+                                    <p className="WaitSummary" style={{...summaryTextStyle, marginBottom: 5}}>
                                         <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
                                         <span className="blue"> No information available</span>
                                     </p>
