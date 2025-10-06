@@ -6,8 +6,6 @@ import leftArrowIcon from "../../media/Left Arrow.svg";
 type Props = {
     barData: BarDatum[];
     timeKeys: string[];
-    yMax: number;
-    legend: string;
     OHDetails: {
         [id: string]: {
             ta: string;
@@ -18,7 +16,6 @@ type Props = {
         };
     };
     selectedDateEpoch: number;
-    course?: FireCourse;
     hasSessionsForSelectedDay?: boolean; // optional override for scheduled day detection
 };
 
@@ -242,7 +239,10 @@ const WaitTimeGraph = (props: Props) => {
                             const today = new Date();
                     
                             // Get the selected day index (0 = Monday, 1 = Tuesday, etc.)
-                            const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                            const dayNames = [
+                                "Monday", "Tuesday", "Wednesday", "Thursday", 
+                                "Friday", "Saturday", "Sunday"
+                            ];
                             const selectedDayIndex = dayNames.indexOf(selectedDay);
                             const todayIndex = (today.getDay() + 6) % 7; // Adjust for Monday-first order
                     
@@ -253,9 +253,13 @@ const WaitTimeGraph = (props: Props) => {
                                 const [hour, minute] = time.split(':');
                         
                                 // Set the bar time based on the slot
-                                barTime.setHours(period === 'PM' && hour !== '12' ? parseInt(hour) + 12 : 
-                                    period === 'AM' && hour === '12' ? 0 : parseInt(hour));
-                                barTime.setMinutes(parseInt(minute));
+                                barTime.setHours(
+                                    period === 'PM' && hour !== '12' ? 
+                                        parseInt(hour, 10) + 12 : 
+                                        period === 'AM' && hour === '12' ? 
+                                            0 : parseInt(hour, 10)
+                                );
+                                barTime.setMinutes(parseInt(minute, 10));
                         
                                 // Compare with current time
                                 if (barTime < currentTime) {
@@ -282,7 +286,8 @@ const WaitTimeGraph = (props: Props) => {
                         tooltip={({ data }) => {
                             const oh = (props.OHDetails as any) || {};
                             const ohForSlot = data && (data as any).hour ? oh[(data as any).hour] : undefined;
-                            const wait = typeof (data as any).waitTime === "number" ? Math.round(Number((data as any).waitTime)) : undefined;
+                            const wait = typeof (data as any).waitTime === "number" ? 
+                                Math.round(Number((data as any).waitTime)) : undefined;
                             return (
                                 <div
                                     style={{
@@ -297,19 +302,44 @@ const WaitTimeGraph = (props: Props) => {
                                         textAlign: "left",
                                     }}
                                 >
-                                    <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
-                                        On {selectedDay.slice(0, 3)} at {(data as any).slot}
+                                    <div style={{ 
+                                        fontSize: "13px", 
+                                        fontWeight: "normal", 
+                                        color: "#333" 
+                                    }}
+                                    >
+                                        On {selectedDay.slice(0, 3)} at {
+                                            (data as any).slot
+                                        }
                                     </div>
-                                    <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
-                                        <strong>Est Wait:</strong> {wait !== undefined ? `${wait} min` : "No data"}
+                                    <div style={{ 
+                                        fontSize: "13px", 
+                                        fontWeight: "normal", 
+                                        color: "#333" 
+                                    }}
+                                    >
+                                        <strong>Est Wait:</strong> {
+                                            wait !== undefined ? `${wait} min` : "No data"
+                                        }
                                     </div>
                                     {isFutureDate && (
-                                        <div style={{ fontSize: "12px", fontWeight: "normal", color: "#666", fontStyle: "italic" }}>
+                                        <div style={{ 
+                                            fontSize: "12px", 
+                                            fontWeight: "normal", 
+                                            color: "#666", 
+                                            fontStyle: "italic" 
+                                        }}
+                                        >
                                             Based on historical data
                                         </div>
                                     )}
                                     {ohForSlot && (
-                                        <div style={{ fontSize: "12px", marginTop: 6, color: "#374151" }}>
+                                        <div style={{ 
+                                            fontSize: "12px", 
+                                            marginTop: 6, 
+                                            color: "#374151" 
+                                        }}
+                                        >
                                             {ohForSlot.location && (
                                                 <div>
                                                     <strong>Location:</strong> {ohForSlot.location}
@@ -322,7 +352,9 @@ const WaitTimeGraph = (props: Props) => {
                                             )}
                                             {(ohForSlot.startHour || ohForSlot.endHour) && (
                                                 <div>
-                                                    <strong>Time:</strong> {ohForSlot.startHour} {ohForSlot.endHour ? `– ${ohForSlot.endHour}` : ""}
+                                                    <strong>Time:</strong> {ohForSlot.startHour} {
+                                                        ohForSlot.endHour ? `– ${ohForSlot.endHour}` : ""
+                                                    }
                                                 </div>
                                             )}
                                         </div>
@@ -333,10 +365,23 @@ const WaitTimeGraph = (props: Props) => {
                         theme={{
                             axis: {
                                 legend: { text: { fontSize: 16, outlineWidth: 0 } },
-                                ticks: { text: { fontSize: 13, fill: "#111827", fontWeight:  "300" } },
+                                ticks: { 
+                                    text: { 
+                                        fontSize: 13, 
+                                        fill: "#111827", 
+                                        fontWeight: "300" 
+                                    } 
+                                },
                                 // Use default, subtle domain line to match analytics cards
                             },
-                            tooltip: { container: { border: "none", padding: 0, boxShadow: "none", background: "transparent" } },
+                            tooltip: { 
+                                container: { 
+                                    border: "none", 
+                                    padding: 0, 
+                                    boxShadow: "none", 
+                                    background: "transparent" 
+                                } 
+                            },
                         }}
                         axisBottom={{
                             legend: "",

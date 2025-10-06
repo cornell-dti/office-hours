@@ -5,7 +5,6 @@ import { Icon } from "semantic-ui-react";
 import { Grid } from "@material-ui/core";
 import { connect } from "react-redux";
 import { useState } from "react";
-import { pauseSession } from "../../firebasefunctions/session";
 import users from "../../media/users.svg";
 import calendarIcon from "../../media/Calendar_icon.svg";
 import clockIcon from "../../media/clock-regular_1.svg";
@@ -25,13 +24,8 @@ type Props = {
     user: FireUser;
     isDesktop: boolean;
     isTa: boolean;
-    virtualLocation?: string;
-    assignedQuestion?: FireOHQuestion;
-    onUpdate: (virtualLocation: string) => void;
     myQuestion: FireQuestion | null;
-    isOpen: boolean;
     questions: readonly FireQuestion[];
-    isPaused: boolean | undefined;
     selectedDateEpoch: number;
 };
 
@@ -98,13 +92,8 @@ const SessionInformationHeader = ({
     user,
     isDesktop,
     isTa,
-    virtualLocation,
-    assignedQuestion,
-    onUpdate,
     myQuestion,
-    isOpen,
     questions,
-    isPaused,
     selectedDateEpoch,
 }: Props) => {
     const [ratioText, setRatioText] = React.useState("");
@@ -151,10 +140,6 @@ const SessionInformationHeader = ({
         today,
     );
 
-    const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState("hide"); // used in save/close zoom link
-    const [zoomLink, setZoomLink] = React.useState(""); // used in save/close zoom link
-    const [showError, setShowError] = React.useState(false);
-    const [showErrorMessage, setShowErrorMessage] = React.useState("");
 
     // Compact typography for the wait-time summary lines
     const summaryTextStyle: React.CSSProperties = { fontSize: 14, lineHeight: '16px' };
@@ -172,9 +157,7 @@ const SessionInformationHeader = ({
         let ignore = false;
         async function load() {
             if (!course?.courseId) return;
-            console.log('[SessionInformationHeader] Loading wait time data for course:', course.courseId);
             const data = await buildWaitTimeDataFromMap(course.courseId);
-            console.log('[SessionInformationHeader] Loaded data:', data);
             if (!ignore) setGraphData(data);
         }
         load();
@@ -189,7 +172,10 @@ const SessionInformationHeader = ({
     React.useEffect(() => {
         let ignore = false;
         async function run() {
-            if (!course?.courseId) return setHasSessionsSelectedDay(undefined);
+            if (!course?.courseId) {
+                setHasSessionsSelectedDay(undefined);
+                return;
+            }
             const date = new Date(selectedDateEpoch);
             const exists = await hasSessionsOnDate(course.courseId, date);
             if (!ignore) setHasSessionsSelectedDay(exists);
@@ -200,60 +186,7 @@ const SessionInformationHeader = ({
         };
     }, [course?.courseId, selectedDateEpoch]);
 
-    React.useEffect(() => {
-        if (typeof virtualLocation === "string" && virtualLocation.trim() !== "") {
-            setZoomLink(virtualLocation);
-            setZoomLinkDisplay("saved");
-        }
-    }, [virtualLocation]);
 
-    const closeZoomLink = () => {
-        if (typeof virtualLocation === "string" && virtualLocation.trim() !== "") {
-            setZoomLink(virtualLocation);
-            setZoomLinkDisplay("saved");
-        } else {
-            setZoomLink("");
-            setZoomLinkDisplay("hide");
-        }
-    };
-
-    const saveZoomLink = () => {
-        onUpdate(zoomLink);
-        if (zoomLink === "") {
-            setZoomLinkDisplay("hide");
-        } else {
-            setZoomLinkDisplay("saved");
-        }
-    };
-
-    const handlePause = () => {
-        pauseSession(session, !session.isPaused);
-    };
-
-    const activateError = () => {
-        setShowError(true);
-        let message = "";
-        if (!myQuestion) {
-            if (isOpen) {
-                message = 'Please fill out the "Join the Queue" form first';
-            } else {
-                message = "This queue has closed";
-            }
-        } else if (
-            (session.modality === "virtual" || session.modality === "hybrid") &&
-            !(typeof session.useTALink === "undefined" || session.useTALink === false) &&
-            !session.TALink
-        ) {
-            message = "A professor has not set a link for this office hour. Please reference the course website.";
-        } else if (assignedQuestion && !assignedQuestion.answererLocation) {
-            message = "Please wait for the TA to update their location";
-        } else if (avgWaitTime === "No information available") {
-            message = "Please wait for your turn to join the Zoom call";
-        } else {
-            message = `Please wait for your turn to join the Zoom call (estimated wait time: ${avgWaitTime})`;
-        }
-        setShowErrorMessage(message);
-    };
 
     const [startIndex, setStartIndex] = useState(0);
     const [hoveredTA, setHoveredTA] = useState<number | null>(null);
@@ -298,7 +231,9 @@ const SessionInformationHeader = ({
                                         <>
                                             Held by
                                             <span className="black">
-                                                {" " + tas.map((ta) => ta.firstName + " " + ta.lastName).join(", ")}
+                                                {" " + tas.map((ta) => 
+                                                    ta.firstName + " " + ta.lastName
+                                                ).join(", ")}
                                             </span>
                                         </>
                                     )}
@@ -315,13 +250,25 @@ const SessionInformationHeader = ({
                                         <Moment
                                             date={session.startTime.seconds * 1000}
                                             interval={0}
-                                            format={"dddd, MMM D"}
+                                            format="dddd, MMM D"
                                         />
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <img src={clockIcon} alt="Clock Icon for Office Hour Date" className="clockIcon" />
-                                        <Moment date={session.startTime.seconds * 1000} interval={0} format={"h:mm A"} />
-                                        <Moment date={session.endTime.seconds * 1000} interval={0} format={" - h:mm A"} />
+                                        <img 
+                                            src={clockIcon} 
+                                            alt="Clock Icon for Office Hour Date" 
+                                            className="clockIcon" 
+                                        />
+                                        <Moment 
+                                            date={session.startTime.seconds * 1000} 
+                                            interval={0} 
+                                            format="h:mm A" 
+                                        />
+                                        <Moment 
+                                            date={session.endTime.seconds * 1000} 
+                                            interval={0} 
+                                            format=" - h:mm A" 
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -337,10 +284,21 @@ const SessionInformationHeader = ({
                                     {/* Text on the left */}
                                     <Grid item xs={12} sm={3}>
                                         <div className="TAHeaderText">
-                                            <p style={{ fontWeight: "bold", fontSize: "20px", margin: 0 }}>
+                                            <p style={{ 
+                                                fontWeight: "bold", 
+                                                fontSize: "20px", 
+                                                margin: 0 
+                                            }}
+                                            >
                                                 TA's ({tas.length})
                                             </p>
-                                            <p style={{ fontSize: "14px", color: "#4d4d4d", margin: 0, whiteSpace: "nowrap" }}>
+                                            <p style={{ 
+                                                fontSize: "14px", 
+                                                color: "#4d4d4d", 
+                                                margin: 0, 
+                                                whiteSpace: "nowrap" 
+                                            }}
+                                            >
                                                 {ratioText}
                                             </p>
                                         </div>
@@ -438,9 +396,15 @@ const SessionInformationHeader = ({
                 <Grid item style={{ display: "flex", width: "60%" }}>
                     <div className="QueueInfo">
                         {(() => {
-                            const isTodayForHeader = new Date(selectedDateEpoch).toDateString() === new Date().toDateString();
+                            const isTodayForHeader = new Date(selectedDateEpoch).toDateString() === 
+                                new Date().toDateString();
                             return (
-                                <p className="WaitTitle" style={isTodayForHeader ? { marginBottom: 2 } : undefined}>Wait Time</p>
+                                <p 
+                                    className="WaitTitle" 
+                                    style={isTodayForHeader ? { marginBottom: 2 } : undefined}
+                                >
+                                    Wait Time
+                                </p>
                             );
                         })()}
                         {(() => {
@@ -448,7 +412,10 @@ const SessionInformationHeader = ({
                             const today = new Date();
                             const isToday = selectedDate.toDateString() === today.toDateString();
                             const isFutureDate = selectedDate > today;
-                            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                            const dayNames = [
+                                "Sunday", "Monday", "Tuesday", "Wednesday", 
+                                "Thursday", "Friday", "Saturday"
+                            ];
                             const selectedDay = dayNames[selectedDate.getDay()];
                             
                             // Subtitle rules:
@@ -458,7 +425,9 @@ const SessionInformationHeader = ({
                             if (isToday) {
                                 if (hasSessionsSelectedDay === false) {
                                     return (
-                                        <p className="WaitSubtitle">Wait times for Today</p>
+                                        <p className="WaitSubtitle">
+                                            Wait times for Today
+                                        </p>
                                     );
                                 }
                                 return null;
@@ -467,7 +436,9 @@ const SessionInformationHeader = ({
                             return (
                                 <p className="WaitSubtitle">
                                     {isFutureDate ? (
-                                        <>This is an estimate of wait times on <strong>{selectedDay}</strong> for {course.code}.</>
+                                        <>This is an estimate of wait times on <strong>{selectedDay}</strong> for {
+                                            course.code
+                                        }.</>
                                     ) : (
                                         `Wait times for ${selectedDay}`
                                     )}
@@ -585,10 +556,6 @@ const SessionInformationHeader = ({
     );
 };
 
-SessionInformationHeader.defaultProps = {
-    virtualLocation: undefined,
-    assignedQuestion: undefined,
-};
 
 const mapStateToProps = (state: RootState) => ({
     user: state.auth.user,
