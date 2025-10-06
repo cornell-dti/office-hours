@@ -27,6 +27,11 @@ type Props = {
     myQuestion: FireQuestion | null;
     questions: readonly FireQuestion[];
     selectedDateEpoch: number;
+    virtualLocation?: string;
+    assignedQuestion?: FireQuestion;
+    isOpen: boolean;
+    onUpdate: (virtualLocation: string) => void;
+    isPaused?: boolean;
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
@@ -95,6 +100,11 @@ const SessionInformationHeader = ({
     myQuestion,
     questions,
     selectedDateEpoch,
+    virtualLocation,
+    assignedQuestion,
+    isOpen,
+    onUpdate,
+    isPaused,
 }: Props) => {
     const [ratioText, setRatioText] = React.useState("");
 

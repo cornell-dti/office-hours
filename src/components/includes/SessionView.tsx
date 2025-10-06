@@ -38,6 +38,7 @@ type Props = {
     timeWarning: number | undefined;
     showProfessorStudentView: boolean;
     selectedDateEpoch: number;
+    virtualLocation?: string;
 };
 
 type UndoState = {
@@ -68,6 +69,7 @@ const SessionView = ({
     sessionBanners,
     showProfessorStudentView,
     selectedDateEpoch,
+    virtualLocation,
 }: Props) => {
     // make user appear as not a ta/prof if showProfessorStudentView is true
     const isTa = showProfessorStudentView ? false : user.roles[course.courseId] !== undefined;
@@ -238,7 +240,7 @@ const SessionView = ({
                 assignedQuestion={assignedQuestion}
                 isOpen={isOpen(session, course.queueOpenInterval)}
                 myQuestion={myQuestion}
-                onUpdate={(virtualLocation) => {
+                onUpdate={(virtualLocation: string) => {
                     updateVirtualLocation(firestore, user, session, virtualLocation);
                     updateSessionProfile(virtualLocation);
                 }}
