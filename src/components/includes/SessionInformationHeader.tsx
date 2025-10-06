@@ -27,11 +27,6 @@ type Props = {
     myQuestion: FireQuestion | null;
     questions: readonly FireQuestion[];
     selectedDateEpoch: number;
-    virtualLocation?: string;
-    assignedQuestion?: FireQuestion;
-    isOpen: boolean;
-    onUpdate: (virtualLocation: string) => void;
-    isPaused?: boolean;
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
@@ -100,11 +95,6 @@ const SessionInformationHeader = ({
     myQuestion,
     questions,
     selectedDateEpoch,
-    virtualLocation,
-    assignedQuestion,
-    isOpen,
-    onUpdate,
-    isPaused,
 }: Props) => {
     const [ratioText, setRatioText] = React.useState("");
 
@@ -493,12 +483,9 @@ const SessionInformationHeader = ({
                         })()}
                         <WaitTimeGraph
                             barData={graphData.barData}
-                            yMax={graphData.yMax}
                             timeKeys={graphData.timeKeys}
-                            legend={graphData.legend}
                             OHDetails={graphData.OHDetails}
                             selectedDateEpoch={selectedDateEpoch}
-                            course={course}
                             hasSessionsForSelectedDay={hasSessionsSelectedDay}
                         />
                     </div>

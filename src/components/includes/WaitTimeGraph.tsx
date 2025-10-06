@@ -6,8 +6,6 @@ import leftArrowIcon from "../../media/Left Arrow.svg";
 type Props = {
     barData: BarDatum[];
     timeKeys: string[];
-    yMax: number;
-    legend: string;
     OHDetails: {
         [id: string]: {
             ta: string;
@@ -18,7 +16,6 @@ type Props = {
         };
     };
     selectedDateEpoch: number;
-    course: FireCourse;
     hasSessionsForSelectedDay?: boolean; // optional override for scheduled day detection
 };
 

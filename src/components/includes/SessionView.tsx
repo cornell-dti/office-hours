@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Icon } from "semantic-ui-react";
 
 import { connect } from "react-redux";
@@ -13,7 +13,6 @@ import {
     useSessionProfile,
     useAskerQuestions,
 } from "../../firehooks";
-import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
 import { filterUnresolvedQuestions } from "../../utilities/questions";
 import { firestore } from "../../firebase";
 
@@ -38,7 +37,6 @@ type Props = {
     timeWarning: number | undefined;
     showProfessorStudentView: boolean;
     selectedDateEpoch: number;
-    virtualLocation?: string;
 };
 
 type UndoState = {
@@ -69,7 +67,6 @@ const SessionView = ({
     sessionBanners,
     showProfessorStudentView,
     selectedDateEpoch,
-    virtualLocation,
 }: Props) => {
     // make user appear as not a ta/prof if showProfessorStudentView is true
     const isTa = showProfessorStudentView ? false : user.roles[course.courseId] !== undefined;
@@ -86,13 +83,6 @@ const SessionView = ({
     });
 
     const sessionProfile = useSessionProfile(isTa ? user.userId : undefined, isTa ? session.sessionId : undefined);
-
-    const updateSessionProfile = useCallback(
-        (virtualLocation: string) => {
-            updateQuestion(firestore, virtualLocation, questions, user);
-        },
-        [questions, user]
-    );
 
     useEffect(() => {
         const myQuestions = questions.filter((q) => q.askerId === user.userId);
@@ -211,7 +201,6 @@ const SessionView = ({
         questions.some(({ askerId, status }) => askerId === user.userId && status === "unresolved");
 
     const myQuestions = useAskerQuestions(session.sessionId, user.userId);
-    const assignedQuestion = myQuestions?.filter((q) => q.status === "assigned")[0];
 
     const myQuestion = React.useMemo(() => {
         if (myQuestions && myQuestions.length > 0) {
@@ -236,16 +225,8 @@ const SessionView = ({
                 callback={backCallback}
                 isDesktop={isDesktop}
                 isTa={isTa}
-                virtualLocation={sessionProfile?.virtualLocation}
-                assignedQuestion={assignedQuestion}
-                isOpen={isOpen(session, course.queueOpenInterval)}
                 myQuestion={myQuestion}
-                onUpdate={(virtualLocation: string) => {
-                    updateVirtualLocation(firestore, user, session, virtualLocation);
-                    updateSessionProfile(virtualLocation);
-                }}
                 questions={questions.filter((q) => q.status === "unresolved")}
-                isPaused={session.isPaused}
                 selectedDateEpoch={selectedDateEpoch}
             />
 
