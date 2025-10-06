@@ -233,11 +233,13 @@ export const submitFeedback =
     (removedQuestionId: string | undefined) =>
         (rating1?: number, rating2?: number, rating3?: number, feedback?: string, verified?: boolean | undefined) => {
             const questionRef = doc(firestore, `questions/${removedQuestionId}`);
+            console.log(questionRef.id);
             getDoc(questionRef).then((questionDoc) => {
                 if (questionDoc.exists()) {
+                    console.log('question exists');
                     const taID = questionDoc.data()?.answererId || undefined;
                     const timeStamp = questionDoc.data()?.timeAddressed || undefined;
-                    const feedbackRecord = {
+                    const rawFeedbackRecord = {
                         organization: rating1,
                         efficiency: rating2,
                         overallExperience: rating3,
@@ -245,6 +247,14 @@ export const submitFeedback =
                         writtenFeedback: feedback,
                         verification: verified,
                     };
+
+                    const feedbackRecord: Record<string, any> = {};
+                    for (const key in rawFeedbackRecord) {
+                        const typedKey = key as keyof typeof rawFeedbackRecord;
+                        if (rawFeedbackRecord[typedKey] !== undefined) {
+                            feedbackRecord[typedKey] = rawFeedbackRecord[typedKey];
+                        }
+                    }
                     if (taID == undefined) {
                         throw new Error("taID is undefined")
                     }
@@ -258,10 +268,6 @@ export const submitFeedback =
                             const updateData: any = {
                                 feedbackList: existingFeedbackList,
                             };
-
-                            if (doc.data().verified === undefined && verified !== undefined) {
-                                updateData.verified = verified;
-                            }
 
                             return updateDoc(usersRef, updateData);
                         }

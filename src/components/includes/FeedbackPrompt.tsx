@@ -10,10 +10,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 
 const FEEDBACK_CHAR_LIMIT = 1000;
-const Asterisk = () => <span className="required"> * </span>;
-const LOCATION_INPUTTED = 40;
-const QUESTION_INPUTTED = 50;
-const INITIAL_STATE = 10;
+const Asterisk = () => <span className="required">*</span>;
 
 type Props = {
     onClose: (rating1?: number, rating2?: number, rating3?: number, feedback?: string) => void;
@@ -27,8 +24,6 @@ const FeedbackPrompt = (props: Props) => {
     const [rating2, setRating2] = useState<number | null>(0);
     const [rating3, setRating3] = useState<number | null>(0);
     const [feedback, setFeedback] = useState<string>("");
-    const [stage, setStage] = useState<number>(INITIAL_STATE);
-    const [missingQuestion, setMissingQuestion] = useState<boolean>(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -66,14 +61,14 @@ const FeedbackPrompt = (props: Props) => {
 
                 <Typography variant="h6"> Feedback for TA</Typography>
 
-                <Typography variant="body1" style={{ fontStyle: "roboto", fontSize: "16px" }}>
+                <Typography variant="body1" style={{ fontStyle: "Roboto", fontSize: "16px" }}>
                     How was your experience?
                 </Typography>
 
-                <Typography variant="body2" style={{ fontStyle: "roboto", fontSize: "14px" }}>
+                <Typography variant="body2" style={{ fontStyle: "Roboto", fontSize: "14px" }}>
                     Your response will remain anonymous.
                 </Typography>
-                <Typography variant="body2" style={{ fontStyle: "roboto", fontSize: "14px" }}>
+                <Typography variant="body2" style={{ fontStyle: "Roboto", fontSize: "14px" }}>
                     Organization
                 </Typography>
                 <Box component="fieldset" mb={3} borderColor="transparent">
@@ -88,7 +83,7 @@ const FeedbackPrompt = (props: Props) => {
                     />
                     <br />
                 </Box>
-                <Typography variant="body2" style={{ fontStyle: "roboto", fontSize: "14px" }}>
+                <Typography variant="body2" style={{ fontStyle: "Roboto", fontSize: "14px" }}>
                     Efficiency
                 </Typography>
                 <Box component="fieldset" mb={3} borderColor="transparent">
@@ -103,7 +98,7 @@ const FeedbackPrompt = (props: Props) => {
                     />
                     <br />
                 </Box>
-                <Typography variant="body2" style={{ fontStyle: "roboto", fontSize: "14px" }}>
+                <Typography variant="body2" style={{ fontStyle: "Roboto", fontSize: "14px" }}>
                     Overall Experience
                 </Typography>
                 <Box component="fieldset" mb={3} borderColor="transparent">
@@ -135,7 +130,7 @@ const FeedbackPrompt = (props: Props) => {
                         },
                         maxLength: FEEDBACK_CHAR_LIMIT, 
                     }}
-                    //Uses handleUpdateFeedback to limit response
+                    // Uses handleUpdateFeedback to limit response
                     onChange={handleUpdateFeedback}
                 />
                 <Typography
