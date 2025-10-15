@@ -44,7 +44,7 @@ const TAMetrics = () => {
                 />
                 <ReusableBarGraph
                     barData={timeSpentData.barData}
-                    title="Time Spent Per Student"
+                    title="Wait Time Per Student"
                     subtitle={
                         <>
                             Students waited for help for an average of{" "}
