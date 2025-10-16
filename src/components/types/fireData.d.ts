@@ -119,9 +119,10 @@ type FireSessionSeriesDefinition =
 
 type FeedbackRecord = {
     session: string;
-    questionId: string;
     rating: number?;
-    writtenFeedback: string?;
+    timeStamp: FireTimestamp;
+    writtenFeedback?: string;
+    verification?: boolean;
 };
 
 /** @see FireUser for the enrollment invariant. */

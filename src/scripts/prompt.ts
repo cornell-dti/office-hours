@@ -1,50 +1,28 @@
 import { GoogleGenAI } from "@google/genai";
 import { doc, getDoc } from "firebase/firestore";
 import { firestore } from '../firebase';
-import { Timestamp } from "firebase-admin/firestore";
 
 /**Inteface for written feedback being sent to LLM*/
 interface FeedbackData {
     content: string;
 }
 
-/**Interface for a single feedback record*/
-interface FeedbackRecord {
-    efficiency: number;
-    organization: number;
-    overallExperience: number;
-    timeStamp: Timestamp;
-    writtenFeedback: string;
 
-}
-/**Inteface for feedback of one user*/
-interface Feedback {
-    courses: string[]; 
-    content: string;
-    feedbackList: FeedbackRecord[];
-    firstName: string;
-    lastName: string;
-    phoneNumber: string;
-    photoUrl: string;
-    roles: {[courseId: string]: string};
-    textNotifsEnabled: boolean;
-    textPrompted: boolean;
-};
 
 /**Constructs prompt for LLM with written feedback */
 function createAnalysisPrompt(feedback: FeedbackData) {
     return `
-        Analyze the following feedback and categorize it according to the specified format.
+        Analyze the following feedback and determine whether 
+        it is appropriate or not based on the following criteria.
         Feedback Content: "${feedback.content}"
-        Please analyze this request and return a JSON object with the following structure:
-        {
-            "length": "[short | medium | long]",
-            "type": "[constructive | critical | praise]",                
+        Please analyze this request and return a yes or no for whether the feedback
+         is acceptable or not based on the criteria below.:
+        {           
             "appropriateness": "[0-5 | 6-10 | 11-15 | 16-25 | 26+]",
             "inappropriate language": "[yes | no]",
-            "reasoning": "Brief explanation of the categorization"
         }
-        Return only the JSON object, no additional text.
+        Return yes if the appropriateness is 10 or higher and innapropriate language is no. 
+        Return no otherwise.
     `;
 }
 
@@ -87,13 +65,12 @@ const userId = "xSq2hFlgsWgzUIbwawsUKjT1w4B2"
  */
 async function analyzeFeedbackResponses() {
     try {
-        console.log(`Getting response: ${userId}`);
         const feedbackRef = doc(firestore, "users", userId);
         const feedbackSnap = await getDoc(feedbackRef);
 
         if (feedbackSnap.exists()) {
-            const data = feedbackSnap.data() as Feedback;
-            for (const record of data.feedbackList) {
+            const data = feedbackSnap.data() as FireUser;
+            for (const record of data.feedbackList!) {
                 const analysis = await analyzeFeedback(record);
                 console.log(`Analysis for ${userId}:`, analysis);
             }
