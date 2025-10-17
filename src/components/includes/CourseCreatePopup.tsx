@@ -1,8 +1,7 @@
 import * as React from "react";
-import "./CourseCreatePopup.scss";
 import { useState } from "react";
 import { Icon } from "semantic-ui-react";
-import firebase from "firebase/app";
+import { Timestamp } from "../../firebase"
 import { CURRENT_SEMESTER, START_DATE, END_DATE } from "../../constants";
 import { addPendingCourse } from "../../firebasefunctions/courses";
 import CreateCourseImg from "../../media/createCourseImage.png";
@@ -84,11 +83,11 @@ const CourseCreatePopup = ({ setCourseCreatePopup, userId }: Props) => {
 
         const course = {
             code,
-            endDate: firebase.firestore.Timestamp.fromDate(new Date(endDate)),
+            endDate: Timestamp.fromDate(new Date(endDate)),
             name,
             queueOpenInterval: 30,
             semester,
-            startDate: firebase.firestore.Timestamp.fromDate(new Date(startDate)),
+            startDate: Timestamp.fromDate(new Date(startDate)),
             professors,
             tas,
             courseId,

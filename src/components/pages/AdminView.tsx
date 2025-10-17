@@ -28,7 +28,7 @@ const AdminView = () => {
     }, [isAdmin, history])
 
     const courseRequestUserId = (course: FireCourse) => {
-        return course.professors.length !== 0
+        return course?.professors?.length !== 0
             ? course.professors[0]
             : course.tas.length !== 0
             ? course.tas[0]
@@ -60,10 +60,39 @@ const AdminView = () => {
                 courseId="DUMMY_COURSE_ID"
             />
 
+            <h2><br />Queue Me In Product Analytics</h2>   
+                  
+            {collapsed ? (
+                <Icon
+                    // Chevron used to denote the location of the analytics table when it is expanded.
+                    name='chevron down'
+                    onClick={handleExpand}
+                />
+            ) : (
+                <div>
+                    <Icon
+                        // Chevron used to denote the location of the analytics table when it is collapsed.
+                        name='chevron up'
+                        onClick={() => setCollapsed(true)}
+                    />
+                    
+                </div>
+            )}
+            {/* Separate style logic so component is technically "rendered" only once when the admin page loads,
+             not each time the arrow is clicked. This reduces repeated Firebase reads. */}
+            {analyticsLoaded && (
+                <div style={collapsed ? { display: "none" } : {}}>
+                    <AnalyticsView />
+                </div>
+            )}
+            
+
+
+
             <h2>New Course Requests</h2>
             <div className="course-container" >
                 <Grid container direction="row" alignItems={'stretch'} spacing={3}>
-                    {pendingCourses.map(course => (
+                    {pendingCourses && pendingCourses.map(course => (
                         <Grid item xl={3} lg={4} md={6} xs={12}>
                             <AdminPendingCourseCard
                                 key={course.courseId}

@@ -233,7 +233,7 @@ const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
 );
 
 const allPendingCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
-    switchMap(() => collectionData<FireCourse>(firestore.collection('pendingCourses'), 'courseId'))
+    switchMap(() => collectionData(collection(firestore,'pendingCourses') , {idField: 'courseId'}) as Observable<FireCourse[]>)
 );
 
 const getAskerQuestionsQuery = (sessionId: string, askerId: string) => {
