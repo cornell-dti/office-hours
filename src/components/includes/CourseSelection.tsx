@@ -66,15 +66,15 @@ function CourseSelection({ user, isEdit, allCourses, allPendingCourses }: Props)
         setFormerCourses(
             
             allCourses.filter((course) => {
-                    return course.semester !== CURRENT_SEMESTER;
+                return course.semester !== CURRENT_SEMESTER;
             })
         );
 
         setCurrentPendingCourses(
             allPendingCourses.filter((course) => {
                 return course.semester === CURRENT_SEMESTER;
-                })
-        ,
+            })
+            ,
         );
     }, [filterOnActiveAndRole, allCourses, allPendingCourses]);
 
@@ -382,27 +382,27 @@ function CourseSelection({ user, isEdit, allCourses, allPendingCourses }: Props)
                 
                 <div className="EnrollBar">
                     <div className="EnrolledCourses web">
-                    {createCourseHover && (
-                        <div className="createCourseHover">
-                            <img className="createCourseHoverImg" src={CreateCourseHoverMessage} alt="hoverImg" />
-                            <p>Your submission is pending to be reviewed by the team.</p>
-                        </div>
-                    )}
-                    <button
-                        type="button"
-                        className={
-                            "createNewCourseButton" + (hasCurrentCourse || hasCurrentPendingCourse ? " disabled" : "")
-                        }
-                        disabled={hasCurrentCourse || hasCurrentPendingCourse}
-                        onMouseOver={() => setCreateCourseHover(hasCurrentPendingCourse)}
-                        onFocus={() => setCreateCourseHover(hasCurrentPendingCourse)}
-                        onMouseOut={() => setCreateCourseHover(false)}
-                        onBlur={() => setCreateCourseHover(false)}
-                        onClick={() => setCourseCreatePopup(true)}
-                    >
+                        {createCourseHover && (
+                            <div className="createCourseHover">
+                                <img className="createCourseHoverImg" src={CreateCourseHoverMessage} alt="hoverImg" />
+                                <p>Your submission is pending to be reviewed by the team.</p>
+                            </div>
+                        )}
+                        <button
+                            type="button"
+                            className={
+                                "createNewCourseButton" + (hasCurrentCourse || hasCurrentPendingCourse ? " disabled" : "")
+                            }
+                            disabled={hasCurrentCourse || hasCurrentPendingCourse}
+                            onMouseOver={() => setCreateCourseHover(hasCurrentPendingCourse)}
+                            onFocus={() => setCreateCourseHover(hasCurrentPendingCourse)}
+                            onMouseOut={() => setCreateCourseHover(false)}
+                            onBlur={() => setCreateCourseHover(false)}
+                            onClick={() => setCourseCreatePopup(true)}
+                        >
                         Create a Class
-                    </button>
-                </div>
+                        </button>
+                    </div>
                     <div className="buttons">
                         {!isEdit && (
                             <button

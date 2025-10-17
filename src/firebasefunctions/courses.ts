@@ -23,9 +23,9 @@ export const addPendingCourse = async (
         && ((await getDocs(query(collection(firestore, 'courses'), where('courseId', '==', courseId)))).empty)) {
         const pendingRef = doc(firestore, 'pendingCourses', courseId);
         return setDoc(pendingRef, course);
-    } else {
-        throw new Error('courseId already exists in pendingCourses or courses');
-    }
+    } 
+    throw new Error('courseId already exists in pendingCourses or courses');
+    
 };
 
 /**
