@@ -3,6 +3,15 @@
 # dependencies
 node_modules
 
+# yarn files
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 # testing
 /coverage
 
@@ -25,7 +34,7 @@ functions/lib
 *.log
 
 # all folders and files beginning with a period
-
+.yarn
 
 ## Exceptions
 !.github/
@@ -39,3 +48,6 @@ yarn-error.log*
 
 .idea
 .DS_Store
+
+# ignore virtual environment
+venv/

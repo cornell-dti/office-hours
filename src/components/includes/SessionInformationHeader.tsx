@@ -1,27 +1,27 @@
-import * as React from 'react';
-import Moment from 'react-moment';
-import { Icon } from 'semantic-ui-react';
+import * as React from "react";
+import Moment from "react-moment";
+import { Icon } from "semantic-ui-react";
 
-import { Grid, Switch } from '@material-ui/core';
-import { connect } from 'react-redux';
-import { pauseSession } from '../../firebasefunctions/session';
-import users from '../../media/users.svg'
-import chalkboard from '../../media/chalkboard-teacher.svg'
-import hourglass from '../../media/hourglass-half.svg'
-
-import zoom from '../../media/zoom.svg';
-import closeZoom from '../../media/closeZoom.svg';
-
-import editZoomLink from '../../media/editZoomLink.svg';
-import { useSessionQuestions, useSessionTAs } from '../../firehooks';
-import { computeNumberAhead } from '../../utilities/questions';
-import JoinErrorMessage from './JoinErrorMessage';
-import { RootState } from '../../redux/store';
+import { Grid, Switch } from "@material-ui/core";
+import { connect } from "react-redux";
+import { useState } from "react";
+import { pauseSession } from "../../firebasefunctions/session";
+import users from "../../media/users.svg";
+import calendarIcon from "../../media/Calendar_icon.svg";
+import clockIcon from "../../media/clock-regular_1.svg";
+import hourglassIcon from "../../media/hourglass-half.svg";
+import rightArrowIcon from "../../media/Right Arrow.svg";
+import leftArrowIcon from "../../media/Left Arrow.svg";
+import { useSessionQuestions, useSessionTAs } from "../../firehooks";
+import { computeNumberAhead } from "../../utilities/questions";
+import { RootState } from "../../redux/store";
+import WaitTimeGraph from "./WaitTimeGraph";
+import sampleData from "../../dummy_data.json";
 
 type Props = {
     session: FireSession;
     course: FireCourse;
-    callback: Function;
+    callback: () => void;
     user: FireUser;
     isDesktop: boolean;
     isTa: boolean;
@@ -32,6 +32,7 @@ type Props = {
     isOpen: boolean;
     questions: readonly FireQuestion[];
     isPaused: boolean | undefined;
+    selectedDateEpoch: number;
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
@@ -41,15 +42,15 @@ const formatAvgTime = (rawTimeSecs: number) => {
     const timeDispSecs = timeSecs - timeMins * 60;
     const timeDispMins = timeMins - timeHours * 60;
     if (isNaN(timeSecs)) {
-        return 'No information available';
+        return "No information available";
     }
     if (timeMins === 0) {
-        return timeDispSecs + ' s';
+        return timeDispSecs + " s";
     }
     if (timeHours === 0) {
-        return timeDispMins + ' mins ' + timeDispSecs + ' s';
+        return timeDispMins + " mins " + timeDispSecs + " s";
     }
-    return timeHours + ' h ' + timeDispMins + ' mins';
+    return timeHours + " h " + timeDispMins + " mins";
 };
 
 const formatEstimatedTime = (waitTimeSecs: number, currentTime: Date) => {
@@ -64,22 +65,25 @@ const formatEstimatedTime = (waitTimeSecs: number, currentTime: Date) => {
 
     let amPm = " am";
     if ((currHour + timeHours) % 24 >= 12) {
-        amPm = " pm"
+        amPm = " pm";
     }
     let totalHour = (currHour + timeHours) % 12;
     const totalMins = (currMins + timeDispMins) % 60;
 
     if (currHour + timeHours >= 24) {
-        return " (No estimate available) "
+        return " (No estimate available) ";
     }
     if (currMins + timeDispMins >= 60) {
         totalHour = (totalHour + 1) % 12;
     }
     if (totalMins < 10) {
-        return ' (' + totalHour + ':0' + totalMins + amPm + ') ';
+        return <> (<> <strong>{totalHour}:0{totalMins}{amPm}</strong> </>) </>;
     }
-    return ' (' + totalHour + ':' + totalMins + amPm + ') ';
-}
+    return <> (<> <strong>{totalHour}:{totalMins}{amPm}</strong> </>) </>;
+};
+const pluralize = (count: number, singular: string, plural: string) => {
+    return count <= 1 ? singular : plural;
+};
 
 const SessionInformationHeader = ({
     session,
@@ -88,219 +92,150 @@ const SessionInformationHeader = ({
     user,
     isDesktop,
     isTa,
-    virtualLocation,
-    assignedQuestion,
-    onUpdate,
+    virtualLocation,// eslint-disable-line @typescript-eslint/no-unused-vars
+    assignedQuestion,// eslint-disable-line @typescript-eslint/no-unused-vars
+    onUpdate,// eslint-disable-line @typescript-eslint/no-unused-vars
     myQuestion,
     isOpen,
     questions,
     isPaused,
+    selectedDateEpoch,
 }: Props) => {
+    const [ratioText, setRatioText] = React.useState("");
+
+    React.useEffect(() => {
+        const ratio = session.studentPerTaRatio;
+        const numberOfTAs = session.tas.length;
+        if (ratio === undefined) {
+            if (numberOfTAs === 0) {
+                setRatioText("No TAs available");
+            } else {
+                setRatioText(`${numberOfTAs} ${pluralize(numberOfTAs, "TA", "TAs")} available`);
+            }
+            
+        } else if (ratio === -1) {
+            setRatioText("No TAs available");
+            
+        } else if (session.hasUnresolvedQuestion) {
+            setRatioText(`${ratio} ${pluralize(ratio, "student", "students")}/TA`);
+        } else {
+            setRatioText(`${numberOfTAs} ${pluralize(numberOfTAs, "TA", "TAs")} available`);
+        }
+    }, [session.studentPerTaRatio, session.hasUnresolvedQuestion, questions]);
+
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined),
-        user.userId
+        user.userId,
     );
 
-
-
-    let dynamicPosition = questions.findIndex(question => question.askerId === myQuestion?.askerId) + 1
+    let dynamicPosition = questions.findIndex((question) => question.askerId === myQuestion?.askerId) + 1;
 
     if (dynamicPosition === 0) {
-        dynamicPosition = questions.length + 1
+        dynamicPosition = questions.length + 1;
     }
 
-    const avgWaitTime =
-        formatAvgTime((session.totalWaitTime / session.assignedQuestions)
-            * (isTa ? 1 : dynamicPosition));
+    const avgWaitTime = formatAvgTime(
+        (session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition),
+    );
 
     const today = new Date();
-    const esimatedTime = formatEstimatedTime((session.totalWaitTime / session.assignedQuestions)
-        * (isTa ? 1 : dynamicPosition), today)
+    const esimatedTime = formatEstimatedTime(
+        (session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition),
+        today,
+    );
 
-    const [zoomLinkDisplay, setZoomLinkDisplay] = React.useState('hide');
-    const [zoomLink, setZoomLink] = React.useState('');
-    const [showError, setShowError] = React.useState(false);
-    const [showErrorMessage, setShowErrorMessage] = React.useState('');
-
-    React.useEffect(() => {
-        if (typeof virtualLocation === 'string' && virtualLocation.trim() !== '') {
-            setZoomLink(virtualLocation);
-            setZoomLinkDisplay('saved');
-        }
-    }, [virtualLocation]);
-
-    const closeZoomLink = () => {
-        if (typeof virtualLocation === 'string' && virtualLocation.trim() !== '') {
-            setZoomLink(virtualLocation);
-            setZoomLinkDisplay('saved');
-        } else {
-            setZoomLink('');
-            setZoomLinkDisplay('hide');
-        }
-    };
-
-    const saveZoomLink = () => {
-        onUpdate(zoomLink);
-        if (zoomLink === '') {
-            setZoomLinkDisplay('hide');
-        } else {
-            setZoomLinkDisplay('saved');
-        }
-    };
+  
 
     const handlePause = () => {
         pauseSession(session, !session.isPaused);
-    }
+    };
 
-    const activateError = () => {
-        setShowError(true);
-        let message = "";
-        if(!myQuestion) {
-            if(isOpen) {
-                message = 'Please fill out the "Join the Queue" form first';
-            } else {
-                message = 'This queue has closed';
-            }
-        } else if((session.modality === 'virtual' || 
-            session.modality === 'hybrid') && 
-            !(typeof session.useTALink === 'undefined' || 
-            session.useTALink === false) && 
-            !session.TALink) {
-            message = 'A professor has not set a link for this office hour. Please reference the course website.';
-        } else if(assignedQuestion && !assignedQuestion.answererLocation) {
-            message = 'Please wait for the TA to update their location';
-        } else if(avgWaitTime === 'No information available') {
-            message = 'Please wait for your turn to join the Zoom call';
-        } else {
-            message = `Please wait for your turn to join the Zoom call (estimated wait time: ${avgWaitTime})`;
-        }
-        setShowErrorMessage(message);
-    }
+
+    const [startIndex, setStartIndex] = useState(0);
+    const [hoveredTA, setHoveredTA] = useState<number | null>(null);
+    const visibleCount = 4;
+
+    const visibleTAs = React.useMemo(() => {
+        return tas.slice(startIndex, startIndex + visibleCount);
+    }, [tas, startIndex, visibleCount]);
+    const hasNext = startIndex + visibleCount < tas.length;
 
     return isDesktop ? (
-        <header className="DesktopSessionInformationHeader">
-            <Grid container direction="row" justifyContent="center" alignItems={'stretch'} spacing={3}>
-                <Grid container item lg={7} md={7} xs={12} justifyContent="center">
-                    <div className="LeftInformationHeader">
-                        <Grid container direction="row">
-                            <Grid container item lg={4} md={5} xs={4} className="Picture">
-                                <img
-                                    src={tas[0] ? tas[0].photoUrl : '/placeholder.png'}
-                                    alt={
-                                        tas[0]
-                                            ? `${tas[0].firstName} ${tas[0].lastName}'s Photo URL`
-                                            : 'Placeholder photo url'
-                                    }
-                                />
-                            </Grid>
-                            <Grid container item lg={8} md={7} xs={8} className="Details">
-                                {'building' in session ? (
+        <header
+            className="DesktopSessionInformationHeader"
+            style={{
+                height: "310px", // More compact design
+            }}
+        >
+            <Grid container style={{ alignItems: "stretch", height: "100%" }}>
+                {/* Left Column (Boxes 1 & 2) */}
+                <Grid item style={{ display: "flex", width: "40%" }}>
+                    <Grid container direction="column" spacing={2} style={{ width: "100%" }}>
+                        <Grid
+                            item
+                            style={{
+                                display: "flex",
+                                height: "60%",
+                            }}
+                        >
+                            <div className="LeftInformationHeader" style={{ width: "100%" }}>
+                                {"building" in session ? (
                                     <p className="Location">
-                                        {[session.building, session.room].map(s => s || '').join(' ')}
+                                        {[session.building, session.room].map((s) => s || "").join(" ")}
                                     </p>
-                                ) : session.modality === 'virtual' ? (
+                                ) : session.modality === "virtual" ? (
                                     <p className="Location">Online</p>
                                 ) : (
                                     <p className="Location">Discussion</p>
                                 )}
-                                <Moment
-                                    date={session.startTime.seconds * 1000}
-                                    interval={0}
-                                    format={'h:mm A'}
-                                />
-                                <Moment
-                                    date={session.endTime.seconds * 1000}
-                                    interval={0}
-                                    format={' - h:mm A'}
-                                />
-                                <p className="Date">
-                                    <Icon name="calendar alternate outline" />
-                                    <Moment
-                                        date={session.startTime.seconds * 1000}
-                                        interval={0}
-                                        format={'dddd, MMM D'}
-                                    />
-                                </p>
 
                                 <p className="Title">
                                     {session.title || (
                                         <>
                                             Held by
                                             <span className="black">
-                                                {' ' +
-                                                    tas
-                                                        .map(ta => ta.firstName + ' ' + ta.lastName)
-                                                        .join(', ')}
+                                                {" " + tas.map((ta) => ta.firstName + " " + ta.lastName).join(", ")}
                                             </span>
                                         </>
                                     )}
                                     <br />
                                 </p>
-                            </Grid>
-                        </Grid>
-                    </div>
-                </Grid>
 
-                <Grid container item lg={5} md={5} xs={12} justifyContent="center">
-                    <Grid
-                        container
-                        direction="column"
-                        justifyContent="space-evenly"
-                        alignItems={'stretch'}
-                        spacing={2}
-                    >
-                        <Grid container item>
-                            <div className="QueueInfo">
-                                <div className="OneQueueInfo">
-                                    <Grid container direction="row" justifyContent="center" alignItems={'center'}>
-                                        <Grid item xs={2}>
-                                            <img src={users} alt="number of people" />
-                                        </Grid>
-                                        <Grid item xs={10}>
-                                            <p>
-                                                <span className="red">{numAhead + ' students '}</span> ahead
-                                            </p>
-                                        </Grid>
-                                    </Grid>
-                                </div>
-                                {tas.length > 0 &&
-                                    <div className="OneQueueInfo">
-                                        <Grid container direction="row" justifyContent="center" alignItems={'center'}>
-                                            <Grid item xs={2}>
-                                                <img src={chalkboard} alt="number of people" />
-                                            </Grid>
-                                            <Grid item xs={10}>
-                                                <p>
-                                                    <span className="blue">{tas.length + ' TAs '}</span>
-                                                    assigned to this office hour
-                                                </p>
-                                            </Grid>
-                                        </Grid>
+                                <div className="Date">
+                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                                        <img
+                                            src={calendarIcon}
+                                            alt="Calendar Icon for Office Hour Date"
+                                            className="calendarIcon"
+                                        />
+                                        <Moment
+                                            date={session.startTime.seconds * 1000}
+                                            interval={0}
+                                            format={"dddd, MMM D"}
+                                        />
                                     </div>
-                                }
-                                <div className="OneQueueInfo">
-                                    <Grid container direction="row" justifyContent="center" alignItems={'center'}>
-                                        <Grid item xs={2}>
-                                            <img src={hourglass} alt="time" />
-                                        </Grid>
-                                        <Grid item xs={10}>
-                                            {avgWaitTime !== 'No information available' ? (
-                                                <p>
-                                                    <span className="blue">{avgWaitTime + ' ' + esimatedTime}</span>
-
-                                                    estimated wait time
-                                                </p>
-                                            ) : (
-                                                <p className="blue">{avgWaitTime}</p>
-                                            )}
-                                        </Grid>
-                                    </Grid>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <img
+                                            src={clockIcon}
+                                            alt="Clock Icon for Office Hour Date" 
+                                            className="clockIcon"
+                                        />
+                                        <Moment date={session.startTime.seconds*1000} interval={0} format={"h:mm A"}/>
+                                        <Moment date={session.endTime.seconds*1000} interval={0} format={" - h:mm A"}/>
+                                    </div>
                                 </div>
+
                                 <div className="OneQueueInfo">
                                     {isTa && isOpen &&
-                                        (<Grid container direction="row" justifyContent="center" alignItems={'center'}>
-                                            <Grid item xs={2}>
+                                        (<Grid
+                                            container
+                                            direction="row"
+                                            justifyContent="center" 
+                                            alignItems={'center'}
+                                            spacing={4}
+                                        >
+                                            <Grid item xs={2} >
                                                 <Switch 
                                                     className="closeQueueSwitch" 
                                                     checked={!isPaused} 
@@ -315,262 +250,204 @@ const SessionInformationHeader = ({
                                 </div>
                             </div>
                         </Grid>
-
-                        <Grid container item alignItems={'center'} justifyContent="center">
-                            <div className="ZoomLink">
-                                {session.modality === 'virtual' && isTa && (
-                                    <div className={(typeof session.useTALink === 'undefined'
-                                        || session.useTALink === false) ? "TaZoom" : "StudentZoom"}
-                                    >
-                                        {(typeof session.useTALink === 'undefined' || session.useTALink === false) ?
-                                            <Grid container direction="row" justifyContent="center" spacing={1}>
-                                                <Grid container justifyContent="center" item xs={2}>
-                                                    <img src={zoom} alt="zoom" />
-                                                </Grid>
-
-                                                {zoomLinkDisplay === 'show' && (
-                                                    <>
-                                                        <Grid container item lg={7} md={10} xs={7}>
-                                                            <input
-                                                                type="text"
-                                                                id="zoomLinkInput"
-                                                                name="zoomLinkInput"
-                                                                autoComplete="off"
-                                                                value={zoomLink}
-                                                                onChange={e => setZoomLink(e.target.value)}
-                                                            />
-                                                            <div className="CloseZoom">
-                                                                <img
-                                                                    onClick={closeZoomLink}
-                                                                    src={closeZoom}
-                                                                    alt="close zoom"
-                                                                />
-                                                            </div>
-                                                        </Grid>
-                                                        <Grid
-                                                            container
-                                                            justifyContent="center"
-                                                            alignItems={'center'}
-                                                            item
-                                                            lg={3}
-                                                            md={12}
-                                                            xs={3}
-                                                        >
-                                                            <button
-                                                                type="button"
-                                                                className="SaveZoomLink"
-                                                                onClick={saveZoomLink}
-                                                            >
-                                                                Save
-                                                            </button>
-                                                        </Grid>
-                                                    </>
-                                                )}
-
-                                                {zoomLinkDisplay === 'hide' && (
-                                                    <Grid container item xs={10}>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                setZoomLinkDisplay('show');
-                                                            }}
-                                                        >
-                                                            update your virtual location
-                                                        </button>
-                                                    </Grid>
-                                                )}
-
-                                                {zoomLinkDisplay === 'saved' && (
-                                                    <>
-                                                        <Grid container justifyContent="center" item xs={8}>
-                                                            <p>{zoomLink}</p>
-                                                        </Grid>
-                                                        <Grid container item justifyContent="center" xs={2}>
-                                                            <img
-                                                                id="EditZoom"
-                                                                onClick={() => setZoomLinkDisplay('show')}
-                                                                src={editZoomLink}
-                                                                alt="edit zoom link"
-                                                            />
-                                                        </Grid>
-                                                    </>
-                                                )}
-                                            </Grid>
-                                            :
-                                            <div className="StudentZoom">
-                                                <Grid
-                                                    container
-                                                    direction="row"
-                                                    justifyContent="center"
-                                                    alignItems={'center'}
-                                                >
-                                                    <Grid container justifyContent="center" item lg={2} md={2} xs={2}>
-                                                        <img src={zoom} alt="zoom" />
-                                                    </Grid>
-                                                    <Grid item lg={6} md={10} xs={6}>
-                                                        <p>Zoom Link</p>
-                                                    </Grid>
-                                                    <a
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        href={session.TALink}
-                                                    >
-                                                        <button type="button" className="JoinButton">
-                                                                Join
-                                                        </button>
-                                                    </a>
-                                                </Grid>
-                                            </div>
-                                        }
-                                    </div>
-                                )}
-
-                                {session.modality === 'virtual' && !isTa && (
-                                    <div className="StudentZoom">
-                                        <Grid
-                                            container
-                                            direction="row"
-                                            justifyContent="center"
-                                            alignItems={'center'}
-                                        >
-                                            <Grid container justifyContent="center" item lg={2} md={2} xs={2}>
-                                                <img src={zoom} alt="zoom" />
-                                            </Grid>
-                                            <Grid item lg={6} md={10} xs={6}>
-                                                <p>Zoom link</p>
-                                            </Grid>
-                                            <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
-                                                {(!(typeof session.useTALink === 'undefined' || 
-                                                                session.useTALink === false) && session.TALink) || 
-                                                                assignedQuestion?.answererLocation ? (
-                                                        <a
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            href={(typeof session.useTALink === 'undefined' || 
-                                                                session.useTALink === false) ? 
-                                                                assignedQuestion?.answererLocation : 
-                                                                session.TALink}
-                                                        >
-                                                            <button type="button" className="JoinButton">
-                                                                Join
-                                                            </button>
-                                                        </a>
-                                                    ) : (
-                                                        <button
-                                                            type="button"
-                                                            className="JoinButton"
-                                                            onClick={() => activateError()}
-                                                        >
-                                                            Join
-                                                        </button>
-                                                    )}
-                                            </Grid>
-                                        </Grid>
-                                    </div>
-                                )}
-
-                                {session.modality === 'review' && (
-                                    <div className="StudentZoom">
-                                        <Grid
-                                            container
-                                            direction="row"
-                                            justifyContent="center"
-                                            alignItems={'center'}
-                                        >
-                                            <Grid container justifyContent="center" item lg={2} md={2}>
-                                                <img src={zoom} alt="zoom" />
-                                            </Grid>
-                                            <Grid item lg={6} md={10}>
-                                                <p>Zoom Link</p>
-                                            </Grid>
-
-                                            <Grid
-                                                container
-                                                justifyContent="center"
-                                                item
-                                                lg={4}
-                                                md={12}
-                                                alignItems={'center'}
+                        <Grid item style={{ width: "100%", display: "flex", height: "40%" }}>
+                            <div className="TAsHeader">
+                                <Grid
+                                    container
+                                    alignItems="center"
+                                    justifyContent="space-between"
+                                    style={{ height: "100%", width: "100%" }}
+                                >
+                                    {/* Text on the left */}
+                                    <Grid item xs={12} sm={3}>
+                                        <div className="TAHeaderText">
+                                            <p style={{ fontWeight: "bold", fontSize: "20px", margin: 0 }}>
+                                                TA's ({tas.length})
+                                            </p>
+                                            <p style={{ fontSize: "14px", color: "#4d4d4d",
+                                                margin: 0, whiteSpace: "nowrap" }}
                                             >
-                                                <a
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    href={session.link}
+                                                {ratioText}
+                                            </p>
+                                        </div>
+                                    </Grid>
+
+                                    {/* TA profile images on the right */}
+                                    <Grid item xs={12} sm={9}>
+                                        <div className="TAImagesWrapper">
+                                            {startIndex > 0 && (
+                                                <div
+                                                    className="ScrollArrow"
+                                                    onClick={() => setStartIndex((prev) => prev - 1)}
                                                 >
-                                                    <button type="button" className="JoinButton">
-                                                        Join
-                                                    </button>
-                                                </a>
-                                            </Grid>
-                                        </Grid>
-                                    </div>
-                                )}
+                                                    <img src={leftArrowIcon} alt="scroll left" className="arrowIcon" />
+                                                </div>
+                                            )}
 
-                                {session.modality === 'hybrid' && (
-                                    <div className="StudentZoom">
-                                        <Grid
-                                            container
-                                            direction="row"
-                                            justifyContent="center"
-                                            alignItems={'center'}
-                                        >
-                                            <Grid container justifyContent="center" item xs={2}>
-                                                <img src={zoom} alt="zoom" />
-                                            </Grid>
-                                            {(typeof session.useTALink === 'undefined' ||
-                                                    session.useTALink === false) ? (<Grid container item xs={10}>
-                                                    <p>Use student provided Zoom link</p>
-                                                </Grid>): (<>
-                                                    <Grid item lg={6} md={10} xs={6}>
-                                                        <p>Zoom Link</p>
-                                                    </Grid>
-                                                    <Grid container justifyContent="center" item lg={4} md={12} xs={4}>
-                                                        <a
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            href={
-                                                                session.TALink}
-                                                        >
-                                                            <button type="button" className="JoinButton">
-                                                                            Join
-                                                            </button>
-                                                        </a>
-                                                    </Grid>
-                                                </>)}
-                                        </Grid>
-                                    </div>
-                                )}
+                                            <div className="TAImagesScrollWrapper">
+                                                <div className="TAImagesScroll">
+                                                    {visibleTAs.map((ta, index) => (
+                                                        <div key={index} className="TACircleContainer">
+                                                            <div 
+                                                                className="TATooltipWrapper"
+                                                                style={{
+                                                                    position: "relative",
+                                                                    display: "inline-block"
+                                                                }}
+                                                                onMouseEnter={() => {
+                                                                    setHoveredTA(index);
+                                                                }}
+                                                                onMouseLeave={() => {
+                                                                    setHoveredTA(null);
+                                                                }}
+                                                            >
+                                                                <img
+                                                                    src={ta.photoUrl || "/placeholder.png"}
+                                                                    alt={`${ta.firstName} ${ta.lastName}'s Photo`}
+                                                                    className="TACircle"
+                                                                    style={{
+                                                                        width: "48px",
+                                                                        height: "48px",
+                                                                        border: "2px solid #f2f2f2",
+                                                                        borderRadius: "50%",
+                                                                        objectFit: "cover",
+                                                                        cursor: "pointer"
+                                                                    }}
+                                                                />
+                                                                {hoveredTA === index && (
+                                                                    <div 
+                                                                        className="TATooltip"
+                                                                        style={{
+                                                                            position: "absolute",
+                                                                            bottom: "calc(100% + 8px)",
+                                                                            left: "50%",
+                                                                            transform: "translateX(-50%)",
+                                                                            background: "white",
+                                                                            padding: "8px 12px",
+                                                                            borderRadius: "8px",
+                                                                            fontSize: "13px",
+                                                                            color: "#333",
+                                                                            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                                                            whiteSpace: "nowrap",
+                                                                            zIndex: 9999,
+                                                                            border: "1px solid #e5e7eb"
+                                                                        }}
+                                                                    >
+                                                                        {ta.firstName} {ta.lastName}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
 
-                                {session.modality === 'in-person' && (
-                                    <div className="StudentZoom">
-                                        <Grid
-                                            container
-                                            direction="row"
-                                            justifyContent="center"
-                                            alignItems={'center'}
-                                        >
-                                            <Grid container justifyContent="center" item xs={2}>
-                                                <img src={zoom} alt="zoom" />
-                                            </Grid>
-                                            <Grid container item xs={10}>
-                                                <p>No Zoom link available</p>
-                                            </Grid>
-                                        </Grid>
-                                    </div>
-                                )}
-
-                                {showError && (
-                                    <JoinErrorMessage
-                                        message={showErrorMessage}
-                                        show={true}
-                                        closeModal={() => {
-                                            setShowError(false);
-                                        }}
-                                    />
-                                )}
+                                            {hasNext && (
+                                                <div
+                                                    className="ScrollArrow"
+                                                    onClick={() => setStartIndex((prev) => prev + 1)}
+                                                >
+                                                    <img
+                                                        src={rightArrowIcon}
+                                                        alt="scroll right"
+                                                        className="arrowIcon"
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </Grid>
+                                </Grid>
                             </div>
                         </Grid>
                     </Grid>
+                </Grid>
+                <Grid item style={{ display: "flex", width: "60%" }}>
+                    <div className="QueueInfo">
+                        <p className="WaitTitle">Wait Time</p>
+                        {(() => {
+                            const selectedDate = new Date(selectedDateEpoch);
+                            const today = new Date();
+                            const isToday = selectedDate.toDateString() === today.toDateString();
+                            const isFutureDate = selectedDate > today;
+                            const dayNames = 
+                            ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                            const selectedDay = dayNames[selectedDate.getDay()];
+                            
+                            // Don't show subtitle for today
+                            if (isToday) {
+                                return null;
+                            }
+                            
+                            return (
+                                <p className="WaitSubtitle">
+                                    {isFutureDate ? (
+                                        <>This is an estimate of wait times on <strong>{selectedDay}</strong> for {course.code}.</> // eslint-disable-line max-len
+                                    ) : (
+                                        `Wait times for ${selectedDay}`
+                                    )}
+                                </p>
+                            );
+                        })()}
+                        {(() => {
+                            const selectedDate = new Date(selectedDateEpoch);
+                            const today = new Date();
+                            const isToday = selectedDate.toDateString() === today.toDateString();
+                            
+                            // Only show queue info for today AND if today has office hours
+                            if (!isToday) return null;
+                            
+                            // Check if today has office hours based on actual data
+                            const todayDayNames = 
+                            ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                            const todayDayName = todayDayNames[today.getDay()];
+                            const todayData = sampleData.barData.find(day => day.dayOfWeek === todayDayName);
+                            
+                            // Check if there's actual wait time data for today
+                            const hasOfficeHours = todayData && Object.keys(todayData).some(key => 
+                                key !== 'dayOfWeek' && Number((todayData as any)[key]) > 0
+                            );
+                            
+                            if (!hasOfficeHours) return null;
+                            
+                            return avgWaitTime !== "No information available" ? (
+                                <>
+                                    <p className="WaitSummary">
+                                        <img src={users} alt="users" className="waitIcon" />
+                                        <span className="red">{numAhead} students</span>
+                                        <span>ahead</span>
+                                    </p>
+                                    <p className="WaitSummary">
+                                        <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
+                                        <span className="blue"> {avgWaitTime}</span>
+                                        <span className="gray"> {esimatedTime}</span>
+                                        <span>estimated wait time</span>
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="WaitSummary">
+                                        <img src={users} alt="users" className="waitIcon" />
+                                        <span className="red">{numAhead} students</span>
+                                        <span>ahead</span>
+                                    </p>
+                                    <p className="WaitSummary">
+                                        <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
+                                        <span className="blue"> No information available</span>
+                                    </p>
+                                </>
+                            );
+                        })()}
+
+                        <WaitTimeGraph
+                            barData={sampleData.barData}
+                            yMax={sampleData.yMax}
+                            timeKeys={sampleData.timeKeys}
+                            legend={sampleData.legend}
+                            OHDetails={sampleData.OHDetails}
+                            selectedDateEpoch={selectedDateEpoch}
+                            course={course}
+                        />
+                    </div>
                 </Grid>
             </Grid>
         </header>
@@ -583,23 +460,21 @@ const SessionInformationHeader = ({
                 </p>
                 <div className="CourseInfo">
                     <div className="CourseDetails">
-                        {'building' in session ? (
+                        {"building" in session ? (
                             <span>
                                 <p className="Location">{`${session.building} ${session.room}`}</p>
                             </span>
                         ) : (
                             <span>Online</span>
                         )}
-                        <Moment date={session.startTime.toDate()} interval={0} format={'h:mm A'} />
-                        <Moment date={session.endTime.toDate()} interval={0} format={' - h:mm A'} />
+                        <Moment date={session.startTime.toDate()} interval={0} format={"h:mm A"} />
+                        <Moment date={session.endTime.toDate()} interval={0} format={" - h:mm A"} />
                     </div>
                     <div className="Picture">
                         <img
-                            src={tas[0] ? tas[0].photoUrl : '/placeholder.png'}
+                            src={tas[0] ? tas[0].photoUrl : "/placeholder.png"}
                             alt={
-                                tas[0]
-                                    ? `${tas[0].firstName} ${tas[0].lastName}'s Photo URL`
-                                    : 'Placeholder photo url'
+                                tas[0] ? `${tas[0].firstName} ${tas[0].lastName}'s Photo URL` : "Placeholder photo url"
                             }
                         />
                     </div>
@@ -610,7 +485,7 @@ const SessionInformationHeader = ({
                 <div className="QueueInfo">
                     <img src={users} alt="number of people" />
                     <p>
-                        <span className="red">{numAhead + 'students '}</span>
+                        <span className="red">{numAhead + "students "}</span>
                         in queue
                     </p>
                 </div>
@@ -618,7 +493,7 @@ const SessionInformationHeader = ({
                     <div className="OfficeHourDate">
                         <p>
                             <Icon name="calendar" />
-                            <Moment date={session.startTime.toDate()} interval={0} format={'dddd, D MMM'} />
+                            <Moment date={session.startTime.toDate()} interval={0} format={"dddd, D MMM"} />
                         </p>
                     </div>
                     <p>
@@ -626,7 +501,7 @@ const SessionInformationHeader = ({
                             <>
                                 Held by
                                 <span className="black">
-                                    {' ' + tas.map(ta => ta.firstName + ' ' + ta.lastName).join(' and ')}
+                                    {" " + tas.map((ta) => ta.firstName + " " + ta.lastName).join(" and ")}
                                 </span>
                             </>
                         )}
@@ -643,7 +518,7 @@ SessionInformationHeader.defaultProps = {
 };
 
 const mapStateToProps = (state: RootState) => ({
-    user: state.auth.user
-})
+    user: state.auth.user,
+});
 
 export default connect(mapStateToProps, {})(SessionInformationHeader);

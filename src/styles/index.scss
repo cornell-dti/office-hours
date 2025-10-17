@@ -68,6 +68,7 @@ $mobile-breakpoint: 920px;
 @import "./professor/ProfessorTagsDelete";
 @import "./professor/ProfessorPeopleView";
 @import "./professor/ProfessorRoles";
+@import "./professor/ExportCSVModal";
 
 // Admin
 @import "./AdminView";
@@ -75,6 +76,7 @@ $mobile-breakpoint: 920px;
 // Courses
 @import "./courses/CourseCard";
 @import "./courses/CourseSelection";
+@import "./courses/CourseCreatePopup.scss";
 
 // Blog Posts
 @import "./blogPosts/AddBlogPost.scss";

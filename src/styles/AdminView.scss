@@ -18,14 +18,25 @@
         background-color: white;
         border: solid 1px #484848;
         margin: 5px;
+        margin-bottom: 20px;
         width: 150px;
         height: 40px;
         border-radius: 4px;
         text-decoration: none;
         cursor: pointer;
+        font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        transition: 0.3s;
+
         &:focus {
             outline: none;
-          }
+        }
+
+        &:hover {
+            background: #5599DB;
+            background-image: linear-gradient(80deg, #668ae9, #6db9ea);
+            color: white;
+            border: none;
+        }
     }
 
     .course {
@@ -43,21 +54,65 @@
             background-color: white;
             border: solid 1px #484848;
             border-radius: 4px;
+            font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
             text-decoration: none;
             padding: .5em;
             margin: .25em;
             cursor: pointer;
+            transition: 0.3s;
         }
-    
+
+        .editing-button:hover {
+            background-color: #5599DB;
+            color: white;
+        }
+
         .roles-button {
             display: inline-block;
             background-color: white;
             border: solid 1px #484848;
             border-radius: 4px;
+            font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
             text-decoration: none;
             padding: .5em;
             margin: .25em;
             cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .roles-button:hover {
+            background-color: #5599DB;
+            color: white;
+
+        }
+
+        .pending-button {
+            display: inline-block;
+            background-color: white;
+            border: solid 1px #484848;
+            border-radius: 4px;
+            text-decoration: none;
+            padding: .5em 2em;
+            margin: .25em;
+            cursor: pointer;
+
+            &.reject {
+                border-color: #F67D7D;
+                color: #F67D7D;
+            }
+
+            &.reject:hover {
+                background-color: #FFEEEE;
+            }
+
+            &.confirm {
+                border-color: #19B861;
+                color: #19B861;
+            }
+
+            &.confirm:hover {
+                background-color: #EEFFF6;
+            }
         }
 
         .pending-button {

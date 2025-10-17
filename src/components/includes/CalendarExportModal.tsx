@@ -1,7 +1,8 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { Icon } from 'semantic-ui-react';
-import GoogleIcon from '../../media/google_icon.svg';
-import AppleIcon from '../../media/apple_icon.svg';
+import CloseIcon from '@mui/icons-material/Close';
+import { Button, Icon } from 'semantic-ui-react';
+import CalIcon from '../../media/cal_icon.svg';
+
 
 type Props = {
     showCalendarModal: boolean;
@@ -49,7 +50,7 @@ const CalendarExportModal = ({
     }
 
     const getDateString = (): string => {
-        const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const months = [
             'January',
             'February',
@@ -65,11 +66,17 @@ const CalendarExportModal = ({
             'December'
         ];
         const dateStr = (
-            `${days[currentExportSessions[0].startTime.toDate().getDay()]}, ` + 
+            `${days[currentExportSessions[0].startTime.toDate().getDay()]}, ` +
             `${months[currentExportSessions[0].startTime.toDate().getMonth()]} ` +
             `${currentExportSessions[0].startTime.toDate().getDate()}`);
         return dateStr;
     }
+
+    /** Returns a string of the time in hours:minutes AM/PM.
+     * Ex: Returns 2:20:23 PM-3:20:23 PM as 2:20 PM-3:20 PM */
+    const getTimeString = (localeTime: string): string =>
+        localeTime.substring(0, localeTime.lastIndexOf(":")) + " " +
+        localeTime.substring(localeTime.length - 2)
 
 
     const createIcs = () => {
@@ -125,11 +132,30 @@ const CalendarExportModal = ({
         const finalLink = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
             `&text=${title}&dates=${dates}&ctz=${ctz}&location=${location}`;
         return finalLink;
-    }
+    };
 
     const exportToAppleCalendar = () => {
         const icsData = createIcs();
         downloadFile(icsData);
+    };
+
+    const dayExport = () => { return <div className='Title'>{getDateString()} Office Hours </div> };
+
+    const sessionExport = (session: FireSession) => {
+        return (
+            <div className='Title'>{session.title &&
+                <div>
+                    {course?.code + " : " + session.title}
+                    <div className='Subtitle'> {getDateString() + " @ " +
+                        getTimeString(
+                            session.startTime
+                                .toDate().toLocaleTimeString())
+                        + "-" +
+                        getTimeString(session
+                            .endTime.toDate().toLocaleTimeString())}
+                    </div>
+                </div>}
+            </div>)
     };
 
     return (
@@ -142,43 +168,38 @@ const CalendarExportModal = ({
                             className='closeButton'
                             onClick={closeModal}
                         >
-                            <Icon name='x' />
+                            <CloseIcon
+                                fontSize="large"
+                                sx={{
+                                    color: "black"
+                                }}
+                            />
                         </button>
-                        {isDayExport ? 
-                            <div className='Title'>{getDateString()} Office Hours</div> :
-                            <div className='Title'>{currentExportSessions[0].title ?
-                                course?.code + ` ` + currentExportSessions[0].title : ``} Office Hours</div>
+                        <img src={CalIcon} alt='Calendar export icon' id="calIcon" />
+                        {isDayExport ?
+                            dayExport() : sessionExport(currentExportSessions[0])
                         }
                         <div className='CalendarContainer'>
-                            {!isDayExport &&
-                                <div className='CalendarItem'>
-                                    <img
-                                        src={GoogleIcon}
-                                        alt='Export to Google Calendar'
-                                    />
-                                    <a
-                                        className='ExportText'
-                                        href={getGoogleCalendarLink()}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        Export to Google Calendar
-                                    </a>
-                                </div>
-                            }
-                            {!isDayExport && <div className='Line' />}
-                            <div className='CalendarItem'>
-                                <img
-                                    src={AppleIcon}
-                                    alt='Export to Apple Calendar'
-                                />
-                                <div
-                                    className='ExportText'
-                                    onClick={exportToAppleCalendar}
-                                >
-                                    Export to Apple Calendar
-                                </div>
-                            </div>
+
+                            <Button
+                                onClick={() => window.open(getGoogleCalendarLink(), "_blank")}
+                                className="export-btn"
+                            >
+                                <Button.Content icon>
+                                    <Icon name='google' />
+                                    Add to GCal
+                                </Button.Content>
+                            </Button>
+                        </div>
+
+                        <div className='CalendarContainer' id="last">
+                            <Button onClick={exportToAppleCalendar} className="export-btn">
+                                <Button.Content icon>
+                                    <Icon name='apple' />
+                                    Add to iCal
+                                </Button.Content>
+                            </Button>
+
                         </div>
                     </div>
                 </div>

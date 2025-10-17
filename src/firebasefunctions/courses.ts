@@ -1,10 +1,12 @@
+import { doc, updateDoc, setDoc, deleteDoc, getDocs, where, collection, query, writeBatch } from 'firebase/firestore';
 import { firestore } from '../firebase';
 
 export const updateCourses = (
     userId: string,
     userUpdate: Partial<FireUser>
 ): Promise<void> => {
-    return firestore.collection('users').doc(userId).update(userUpdate)
+    const userRef = doc(firestore, 'users', userId);
+    return updateDoc(userRef, userUpdate);
 };
 
 /**
@@ -17,9 +19,10 @@ export const addPendingCourse = async (
     courseId: string,
     course: FireCourse,
 ): Promise<void> => {
-    if ((await firestore.collection('pendingCourses').where('courseId', '==', courseId).get()).empty
-        && (await firestore.collection('courses').where('courseId', '==', courseId).get()).empty) {
-        return firestore.collection('pendingCourses').doc(courseId).set(course);
+    if (((await getDocs(query(collection(firestore, 'pendingCourses'), where('courseId', '==', courseId)))).empty)
+        && ((await getDocs(query(collection(firestore, 'courses'), where('courseId', '==', courseId)))).empty)) {
+        const pendingRef = doc(firestore, 'pendingCourses', courseId);
+        return setDoc(pendingRef, course);
     } else {
         throw new Error('courseId already exists in pendingCourses or courses');
     }
@@ -34,7 +37,7 @@ export const addPendingCourse = async (
 export const rejectPendingCourse = (  
     courseId: string,
 ): Promise<void> => {
-    return firestore.collection('pendingCourses').doc(courseId).delete();
+    return deleteDoc(doc(firestore, 'pendingCourses', courseId))
 }
 
 /**
@@ -48,8 +51,8 @@ export const confirmPendingCourse = (
 ): Promise<void> => {
     const courseId = course.courseId;
 
-    const batch = firestore.batch();
-    batch.delete(firestore.collection('pendingCourses').doc(courseId));
-    batch.set(firestore.collection('courses').doc(courseId), course);
+    const batch = writeBatch(firestore);
+    batch.delete(doc(firestore, 'pendingCourses', courseId));
+    batch.set(doc(firestore, 'courses', courseId), course);
     return batch.commit();
 }
