@@ -15,10 +15,15 @@ import {
 import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
 import { filterUnresolvedQuestions } from "../../utilities/questions";
 
-import {firestore } from "../../firebase";
+import firebase from "firebase/compat/app"
+
 import { RootState } from "../../redux/store";
 import Banner from "./Banner";
 import TaAnnouncements from "./TaAnnouncements";
+
+import "firebase/compat/auth";
+
+const firestore = firebase.firestore()
 
 type Props = {
     course: FireCourse;

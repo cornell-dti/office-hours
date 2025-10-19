@@ -1,7 +1,9 @@
 import React, {useState} from 'react';
 import { useHistory } from 'react-router-dom';
 
-import firebase, { app, firestore } from '../../firebase';
+import { signInWithPopup } from 'firebase/auth';
+import { auth } from '../../firebase';
+import firebase from "firebase/compat/app";
 import { userUpload } from '../../firebasefunctions/user';
 
 import QMILogo2020 from '../../media/QMILogo2020.svg';
@@ -24,6 +26,8 @@ import QMIThreePeople from '../../media/ppl_illustration.svg';
 import { clearNotifications } from '../../firebasefunctions/notifications';
 import LoginModal from '../includes/LoginModal';
 
+const firestore = firebase.firestore();
+
 const LoginView: React.FC = () => {
     const history = useHistory();
 
@@ -39,16 +43,15 @@ const LoginView: React.FC = () => {
         
         authProvider.addScope('email');
         authProvider.addScope('profile');
-
-        return app
-            .auth()
-            .signInWithPopup(authProvider)
+    
+        signInWithPopup(auth, authProvider)
             .then((response) => {
                 const user = response.user;
                 clearNotifications(user);
                 userUpload(user, firestore);
                 history.push('/');
-            }).catch((error) => {
+            })
+            .catch((error) => {
                 // eslint-disable-next-line no-console
                 console.error('Google Sign-In Error:', error);
             });

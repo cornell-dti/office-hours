@@ -1,4 +1,5 @@
-import { firestore } from '../firebase';
+import firebase from 'firebase/compat/app';
+const firestore= firebase.firestore();
 
 export const updatePhoneNum = (
     userId: string | undefined,

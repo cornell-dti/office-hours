@@ -12,9 +12,11 @@ import ProfessorStudentToggle from "./ProfessorStudentToggle";
 import TopBarNotifications from "./TopBarNotifications";
 import { useNotificationTracker } from "../../firehooks";
 import { RootState } from "../../redux/store";
-import { firestore, Timestamp } from "../../firebase";
+import firebase from "firebase/compat/app"
 import Snackbar from "./Snackbar";
 import TextNotificationModal from "./TextNotificationModal";
+
+const firestore = firebase.firestore();
 
 type Props = {
     courseId: string;
@@ -50,7 +52,7 @@ const TopBar = (props: Props) => {
 
     const updateLastSent = useCallback(() => {
         if (!notificationTracker?.id || !notificationTracker.notificationList || !user?.email) return;
-        const now =  Timestamp.now();
+        const now =  firebase.firestore.Timestamp.now();
         if (notificationTracker.lastSent && now.toDate().getTime() - 
         notificationTracker.lastSent.toDate().getTime() < 5000) {
             // Skipping update, lastSesnt was updated recently
@@ -58,7 +60,7 @@ const TopBar = (props: Props) => {
         }
         const batch = firestore.batch();
         batch.update(firestore.doc(`notificationTrackers/${user.email}`), {
-            lastSent: now
+            lastSetn: now
         });
     }, [
         notificationTracker, 

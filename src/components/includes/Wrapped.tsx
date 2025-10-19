@@ -8,7 +8,7 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import "../../styles/Wrapped.scss";
 import "../../styles/WrappedAnimation.scss";
 import React, { useEffect, useState } from "react";
-import { firestore } from '../../firebase';
+import firebase from "firebase/compat/app"
 import Couple from "../../media/wrapped/couple.svg"
 import Girl from "../../media/wrapped/girl.svg"
 import Bus from "../../media/wrapped/bus.svg"
@@ -71,6 +71,9 @@ import fiveDigits from "../../media/wrapped/five_digits.svg";
 import arrow from '../../media/wrapped/arrow.svg';
 import smallPlus from '../../media/wrapped/plus.svg';
 import bigPlus from '../../media/wrapped/plus2.svg';
+
+
+const firestore = firebase.firestore();
 
 type Props = {
     user: FireUser | undefined;

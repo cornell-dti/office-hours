@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Timestamp } from "../../firebase"
+import firebase from "firebase/compat/app";
 import plusCircle from "../../media/plus-circle.svg";
 import chevronUp from "../../media/chevron-up.svg";
 import chevronDown from "../../media/chevron-down.svg";
@@ -58,7 +58,7 @@ const TaAnnouncements = ({ user, session, showProfessorStudentView }: Props) => 
 
     const getTimeDifference = (announcement: TaAnnouncement) => {
         const announcementTime = announcement.uploadTime.toDate().getTime();
-        const currentTime = Timestamp.now().toDate().getTime();
+        const currentTime = firebase.firestore.Timestamp.now().toDate().getTime();
         const difference = currentTime - announcementTime;
         const minutes = Math.round(difference / 60000);
         return [Math.floor(minutes / 60), minutes % 60];

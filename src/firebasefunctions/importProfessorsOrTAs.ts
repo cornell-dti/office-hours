@@ -1,9 +1,9 @@
-import { firestore } from '../firebase';
+import firebase from "firebase/compat/app"
 import { blockArray } from '../firehooks';
 
 
 
-const db = firestore;
+const db = firebase.firestore();
 
 const getUserRoleUpdate = (
     user: FireUser,

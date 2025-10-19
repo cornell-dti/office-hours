@@ -1,7 +1,8 @@
 import moment from 'moment-timezone';
-import firebase from 'firebase/app';
-import { Timestamp } from '../firebase';
+import firebase from 'firebase/compat/app';
 import { getDateRange, syncTimes } from '../utilities/date';
+
+const Timestamp = firebase.firestore.Timestamp;
 
 export const createSeries = async (
     db: firebase.firestore.Firestore,

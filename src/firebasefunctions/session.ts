@@ -1,4 +1,7 @@
-import { firestore, Timestamp } from '../firebase';
+import firebase from 'firebase/compat/app';
+//import { firestore } from '../firebase';
+
+const firestore = firebase.firestore()
 
 export const addSession = (session: Omit<FireSession, 'sessionId'>) => {
     return firestore.collection('sessions').add(session).then(() => { });
@@ -37,7 +40,7 @@ export const addTaAnnouncement = (
     const taAnnouncement: TaAnnouncement = {
         ta: user,
         announcement,
-        uploadTime: Timestamp.now()
+        uploadTime: firebase.firestore.Timestamp.now()
     };
 
     const newSession: FireSession = {

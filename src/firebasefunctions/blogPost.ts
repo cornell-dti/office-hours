@@ -1,8 +1,10 @@
-import firebase from 'firebase/app';
-import { firestore } from '../firebase';
+import firebase from 'firebase/compat/app';
+import {User} from "firebase/auth"
+
+const firestore = firebase.firestore();
 
 export const addBlogPost = (
-    user: firebase.User | null, 
+    user: User | null, 
     title: string, description: string, 
     listItems: string[]
 ): boolean => {
@@ -23,7 +25,7 @@ export const addBlogPost = (
     } return false;
 }
 
-export const editBlogPost = (user: firebase.User | null, blogPost: BlogPost) => {
+export const editBlogPost = (user: User | null, blogPost: BlogPost) => {
     if (user != null) {
         const {title, description, listItems, postId} = blogPost;
         const updatedBlogPost: Partial<BlogPost> = {
@@ -38,7 +40,7 @@ export const editBlogPost = (user: firebase.User | null, blogPost: BlogPost) => 
 }
 
 export const deleteBlogPost = (
-    user: firebase.User | null, 
+    user: User | null, 
     postId: BlogPost['postId']
 ) => {
     if (user != null) {

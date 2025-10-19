@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
-import { firestore, Timestamp } from '../../firebase';
+import firebase from "firebase/compat/app";
 import { CURRENT_SEMESTER, START_DATE, END_DATE } from '../../constants';
 
+const firestore = firebase.firestore();
 
 const startDate = new Date(START_DATE);
 const endDate = new Date(END_DATE);
@@ -40,8 +41,8 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
             term,
             queueOpenInterval: 30,
             charLimit: 140,
-            startDate:Timestamp.fromDate(startDate),
-            endDate: Timestamp.fromDate(endDate),
+            startDate:firebase.firestore.Timestamp.fromDate(startDate),
+            endDate: firebase.firestore.Timestamp.fromDate(endDate),
             professors: [],
             tas: []
         };
