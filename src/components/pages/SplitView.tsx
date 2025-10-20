@@ -287,7 +287,7 @@ const SplitView = ({
             ) : null}
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt
-                    onClose={submitFeedback(removedQuestionId)}
+                    onClose={submitFeedback(removedQuestionId, session.sessionId)}
                     closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                 />
             ) : null}

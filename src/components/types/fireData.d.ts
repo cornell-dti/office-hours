@@ -124,7 +124,9 @@ type FireSessionSeriesDefinition =
 type FeedbackRecord = {
     session: string;
     questionId: string;
-    rating: number?;
+    organization: number?;
+    efficiency: number?;
+    overallExperience: number?;
     writtenFeedback: string?;
 };
 

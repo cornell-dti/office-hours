@@ -221,7 +221,7 @@ const ProfessorStudentView = ({
                 <ProductUpdates />
                 {displayFeedbackPrompt ? (
                     <FeedbackPrompt
-                        onClose={submitFeedback(removedQuestionId)}
+                        onClose={submitFeedback(removedQuestionId, session.sessionId)}
                         closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                     />
                 ) : null}

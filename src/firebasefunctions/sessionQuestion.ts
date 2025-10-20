@@ -237,49 +237,57 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
 /* Adds three new ratings (organization, efficiency, overallExperience) 
 to the firebase under the users tab for each question asked. Also adds a verification field
 to determine whether or not a review was checked. */
-export const submitFeedback = (removedQuestionId: string | undefined) => 
-    (rating1?: number, rating2?: number, rating3?: number, feedback?: string, verified?: boolean | undefined) => {
+export const submitFeedback = (removedQuestionId: string | undefined, sessionId: string) => 
+    async (rating1?: number, rating2?: number, rating3?: number, feedback?: string, verified?: boolean | undefined) => {
         
-    
-        const questionRef = firestore.collection("questions").doc(removedQuestionId)
-        questionRef.get().then((doc) => {
-            if (doc.exists) {
-                const taID = doc.data()?.answererId || undefined;
-                const timeStamp = doc.data()?.timeAddressed || undefined;
-                const feedbackRecord = {
-                    organization: rating1, 
-                    efficiency: rating2,
-                    overallExperience: rating3,
-                    timeStamp,
-                    writtenFeedback: feedback,
-                    verification: verified,
-                };
-                if (taID == undefined) {
-                        throw new Error("taID is undefined")
-                }
-                const usersRef = firestore.collection("users").doc(taID);
-                usersRef.get().then((doc) => {
-                    if (doc.exists) {
-                        const existingFeedbackList = doc.data()?.feedbackList || [];
-                    
-                        existingFeedbackList.push(feedbackRecord);
-
-                        const updateData: any = {
-                            feedbackList:
-                            existingFeedbackList,
-                        };
-
-                        if (doc.data()?.verified === undefined && verified !== undefined) {
-                            updateData.verified = verified;
-                        }
-        
-                        return usersRef.update(updateData);
-                    }
-                    return null; 
-                })
-            }
-            return Promise.resolve();
+        if (!removedQuestionId) {
+            return;
         }
-        )
-    
-    };
+
+        try {
+            const questionRef = firestore.collection("questions").doc(removedQuestionId);
+            const questionDoc = await questionRef.get();
+
+            if (!questionDoc.exists) {
+                return;
+            }
+
+            const taID = questionDoc.data()?.answererId || undefined;
+            const timeStamp = questionDoc.data()?.timeAddressed || undefined;
+
+            if (!taID) {
+                return;
+            }
+
+            const feedbackRecord = {
+                organization: rating1, 
+                efficiency: rating2,
+                overallExperience: rating3,
+                timeStamp,
+                writtenFeedback: feedback,
+                session: sessionId,
+                verification: verified,
+            };
+
+            const usersRef = firestore.collection("users").doc(taID);
+            const userDoc = await usersRef.get();
+
+            if (!userDoc.exists) {
+                return;
+            }
+
+            const existingFeedbackList = userDoc.data()?.feedbackList || [];
+            existingFeedbackList.push(feedbackRecord);
+
+                const updateData: any = {
+                    feedbackList: existingFeedbackList,
+                };
+                // Only set verified if it doesn’t exist yet
+                if (userDoc.data()?.verified === undefined && verified !== undefined) {
+                    updateData.verified = verified;
+                }
+                await usersRef.update(updateData);
+        }       
+        catch (error) {
+        }
+        };
