@@ -170,7 +170,7 @@ const TopBar = (props: Props) => {
                             </span>{" "}
                             Log Out
                         </li>
-                        <li onMouseDown={() => window.open("https://goo.gl/forms/7ozmsHfXYWNs8Y2i1", "_blank")}>
+                        <li onMouseDown={() => window.open(" https://forms.gle/UP4sQvVtMjjY4SVZ9", "_blank")}>
                             <span>
                                 <Icon name="edit" />
                             </span>
