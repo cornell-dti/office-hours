@@ -2,7 +2,7 @@ import * as React from "react";
 import Moment from "react-moment";
 import { Icon } from "semantic-ui-react";
 
-import { Grid, Switch } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { connect } from "react-redux";
 import { useState } from "react";
 import users from "../../media/users.svg";
@@ -201,7 +201,7 @@ const SessionInformationHeader = ({
         <header
             className="DesktopSessionInformationHeader"
             style={{
-                height: "310px", // More compact design
+                height: "280px", // More compact design
             }}
         >
             <Grid container style={{ alignItems: "stretch", height: "100%" }}>
@@ -270,29 +270,6 @@ const SessionInformationHeader = ({
                                             format=" - h:mm A" 
                                         />
                                     </div>
-                                </div>
-
-                                <div className="OneQueueInfo">
-                                    {isTa && isOpen &&
-                                        (<Grid
-                                            container
-                                            direction="row"
-                                            justifyContent="center" 
-                                            alignItems={'center'}
-                                            spacing={4}
-                                        >
-                                            <Grid item xs={2} >
-                                                <Switch 
-                                                    className="closeQueueSwitch" 
-                                                    checked={!isPaused} 
-                                                    onChange={handlePause} 
-                                                    color="primary" 
-                                                />
-                                            </Grid>
-                                            <Grid item xs={10}>
-                                                <p>{`Queue is ${isPaused ? "closed" : "open"}`} </p>
-                                            </Grid>
-                                        </Grid>)}
                                 </div>
                             </div>
                         </Grid>
@@ -504,7 +481,6 @@ const SessionInformationHeader = ({
                                 </>
                             );
                         })()}
-
                         <WaitTimeGraph
                             barData={graphData.barData}
                             timeKeys={graphData.timeKeys}

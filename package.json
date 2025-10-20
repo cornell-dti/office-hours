@@ -58,7 +58,7 @@
     "semantic-ui-react": "^0.88.1",
     "source-map-explorer": "^2.1.2",
     "ts-node": "^9.0.0",
-    "twilio": "^5.10.3",
+    "twilio": "^3.71.3",
     "yarn": "^1.22.17"
   },
   "scripts": {
