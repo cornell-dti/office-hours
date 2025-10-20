@@ -146,7 +146,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
 
         let totalRating = 0;
         feedback.forEach((feedbackRecord) => {
-            totalRating += feedbackRecord.rating ?? 0;
+            totalRating += feedbackRecord.overallExperience ?? 0;
         });
 
         return (totalRating / feedback.length).toFixed(2);

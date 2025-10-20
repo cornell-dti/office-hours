@@ -11,13 +11,12 @@ import CloseIcon from "@material-ui/icons/Close";
 
 const FEEDBACK_CHAR_LIMIT = 1000;
 const Asterisk = () => <span className="required"> * </span>;
-const LOCATION_INPUTTED = 40;
-const QUESTION_INPUTTED = 50;
-const INITIAL_STATE = 10;
 
 type Props = {
-    onClose: (rating1?: number, rating2?: number, rating3?: number, feedback?: string) => void;
+    onClose: (rating1?: number, rating2?: number, rating3?: number, feedback?: string, 
+        verified?: boolean, sessionId?: string) => void;
     closeFeedbackPrompt: () => void;
+    
 };
 
 
@@ -27,8 +26,8 @@ const FeedbackPrompt = (props: Props) => {
     const [rating2, setRating2] = useState<number | null>(0);
     const [rating3, setRating3] = useState<number | null>(0);
     const [feedback, setFeedback] = useState<string>("");
-    const [stage, setStage] = useState<number>(INITIAL_STATE);
-    const [missingQuestion, setMissingQuestion] = useState<boolean>(false);
+    const [verified, setVerified] = useState<boolean>(false);
+    const [sessionId, setSessionId] = useState<string>("");
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -159,7 +158,9 @@ const FeedbackPrompt = (props: Props) => {
                     variant="contained"
                     onClick={() => {
                         if (rating1 && rating2 && rating3) {
-                            props.onClose(rating1, rating2, rating3, feedback);
+                            setSessionId(sessionId);
+                            setVerified(verified);
+                            props.onClose(rating1, rating2, rating3, feedback, verified, sessionId);
                         }
                         props.closeFeedbackPrompt();
                     }}
