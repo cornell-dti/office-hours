@@ -5,6 +5,7 @@ import { useHistory } from "react-router";
 import { connect } from "react-redux";
 import addNotification from "react-push-notification";
 import { Icon } from "semantic-ui-react";
+import firebase from "firebase/compat/app"
 import { logOut } from "../../firebasefunctions/user";
 import Logo from "../../media/QLogo2.svg";
 import CalendarHeader from "./CalendarHeader";
@@ -12,7 +13,6 @@ import ProfessorStudentToggle from "./ProfessorStudentToggle";
 import TopBarNotifications from "./TopBarNotifications";
 import { useNotificationTracker } from "../../firehooks";
 import { RootState } from "../../redux/store";
-import firebase from "firebase/compat/app"
 import Snackbar from "./Snackbar";
 import TextNotificationModal from "./TextNotificationModal";
 

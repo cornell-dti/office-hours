@@ -3,12 +3,12 @@ import { Redirect } from "react-router";
 import { Checkbox } from "semantic-ui-react";
 import moment from "moment";
 import { collection, CollectionReference, query, where} from 'firebase/firestore';
+import firebase from "firebase/compat/app";
 import { collectionData, firestore, auth } from "../../firebase";
 import SelectedTags from "./SelectedTags";
 import SessionAlertModal from "./SessionAlertModal";
 
 import { addQuestion } from "../../firebasefunctions/sessionQuestion";
-import firebase from "firebase/compat/app";
 
 const compatFirestore = firebase.firestore();
 

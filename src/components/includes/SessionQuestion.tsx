@@ -3,10 +3,10 @@ import { Icon, Button } from "semantic-ui-react";
 import Moment from "react-moment";
 import Linkify from "react-linkify";
 import { connect } from "react-redux";
+import firebase from "firebase/compat/app"
 import notif from "../../media/notif.svg";
 import SelectedTags from "./SelectedTags";
 import GreenCheck from "../../media/greenCheck.svg";
-import firebase from "firebase/compat/app"
 import {
     markStudentNoShow,
     retractStudentQuestion,

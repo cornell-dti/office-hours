@@ -1,6 +1,6 @@
 
 import firebase from 'firebase/compat/app';
-//import { firestore } from '../firebase';
+// import { firestore } from '../firebase';
 
 const firestore = firebase.firestore()
 

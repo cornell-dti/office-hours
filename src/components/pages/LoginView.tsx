@@ -2,8 +2,8 @@ import React, {useState} from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { signInWithPopup } from 'firebase/auth';
-import { auth } from '../../firebase';
 import firebase from "firebase/compat/app";
+import { auth } from '../../firebase';
 import { userUpload } from '../../firebasefunctions/user';
 
 import QMILogo2020 from '../../media/QMILogo2020.svg';

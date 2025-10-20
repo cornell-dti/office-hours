@@ -16,8 +16,8 @@ import { Loader } from "semantic-ui-react";
 
 import { Notifications } from "react-push-notification";
 import { Provider, connect } from "react-redux";
-import { auth } from "../firebase";
 import firebase from "firebase/compat/app"
+import { auth } from "../firebase";
 
 import { updateAuthStatus, updateUser } from "../redux/actions/auth";
 import { store } from "../redux/store";
