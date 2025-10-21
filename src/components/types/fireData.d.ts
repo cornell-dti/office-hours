@@ -151,6 +151,11 @@ interface FireCourse {
             [timeSlot: string]: number; // wait time in minutes
         }
     };
+    waitTimeMap?: {
+        [dayOfWeek: string]: {
+            [timeSlot: string]: number | null; // wait time in seconds, null if no data
+        }
+    };
 }
 
 type PrivilegedFireCourseRole = "professor" | "ta";

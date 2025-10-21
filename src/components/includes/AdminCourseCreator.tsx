@@ -8,6 +8,40 @@ const endDate = new Date(END_DATE);
 const currentTerm = CURRENT_SEMESTER.substring(0, 2);
 const currentYear = CURRENT_SEMESTER.substring(2, 4);
 
+// Generate time slots (7am-11pm, 30-min intervals)
+const generateTimeSlots = (): string[] => {
+    const slots: string[] = [];
+    for (let hour = 7; hour < 23; hour++) {
+        for (let minute = 0; minute < 60; minute += 30) {
+            const time = new Date();
+            time.setHours(hour, minute, 0, 0);
+            const timeStr = time.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
+            slots.push(timeStr);
+        }
+    }
+    return slots;
+};
+
+// Create clean wait time map with all null values
+const createCleanWaitTimeMap = () => {
+    const timeSlots = generateTimeSlots();
+    const waitTimeMap: Record<string, Record<string, null>> = {};
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    
+    days.forEach(day => {
+        waitTimeMap[day] = {};
+        timeSlots.forEach(slot => {
+            waitTimeMap[day][slot] = null; // All slots start as null
+        });
+    });
+    
+    return waitTimeMap;
+};
+
 const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => {
     const [courseId, setCourseId] = useState('');
     const [name, setName] = useState('');
@@ -43,7 +77,8 @@ const AdminCourseCreator = ({ onSubmit }: { readonly onSubmit: () => void }) => 
             startDate:Timestamp.fromDate(startDate),
             endDate: Timestamp.fromDate(endDate),
             professors: [],
-            tas: []
+            tas: [],
+            waitTimeMap: createCleanWaitTimeMap()
         };
         setDoc(doc(firestore, 'courses', courseId), course).then(onSubmit);
     };
