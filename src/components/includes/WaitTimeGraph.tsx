@@ -358,6 +358,10 @@ const WaitTimeGraph = (props: Props) => {
                             opacity: hasPrevHours ? 1 : 0.4,
                             cursor: hasPrevHours ? "pointer" : "default",
                             zIndex: 10,
+                            padding: `${6 * scale}px ${12 * scale}px`,
+                            borderRadius: "6px",
+                            fontSize: `${13 * scale}px`,
+                            transition: "all 0.2s ease"
                         }}
                     >
                         <img src={leftArrowIcon} alt="prev hours" style={{ width: 14, height: 14 }} />
@@ -586,6 +590,32 @@ const WaitTimeGraph = (props: Props) => {
                     />
                 </>
             )}
+              
+            {/* Separator line and soft white fade just above the x-axis to create a hover effect */}
+            <div
+                style={{
+                    position: "absolute",
+                    left: chartMargin.left,
+                    right: chartMargin.right,
+                    bottom: chartMargin.bottom + baselineGapPx,
+                    height: 18,
+                    pointerEvents: "none",
+                    zIndex: 5,
+                }}
+            />
+            <div
+                style={{
+                    position: "absolute",
+                    left: chartMargin.left,
+                    right: chartMargin.right,
+                    bottom: chartMargin.bottom + baselineGapPx,
+                    height: 1.25,
+                    background: "rgba(17, 24, 39, 0.85)",
+                    borderRadius: 0.5,
+                    pointerEvents: "none",
+                    zIndex: 6,
+                }}
+            />
         </div>
     );
 };

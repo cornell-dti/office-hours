@@ -98,7 +98,7 @@
   border-radius: 8px;
   box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
   background-color: #ffffff;
-  padding: 6% 8%;
+  padding: 16px 20px;  
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -108,20 +108,30 @@
 
 .TAHeaderText {
   text-align: left;
+  p { white-space: nowrap; word-break: keep-all; }
 }
 
 .TAImagesWrapper {
   display: flex;
-  gap: 16px;
+  gap: 8px;
+  position: relative;
+  padding: 0 48px 0 28px; // slight reduction to reveal 4th avatar
 }
 
 
 .TAImagesScroll {
   display: flex;
-  gap: 16px;
-  overflow: hidden;
+  gap: 4px;
+  // overflow: hidden;
+  overflow: visible;
   flex: 1;
 }
+
+.TAImagesScrollWrapper {
+  flex: 1;
+  padding: 0 8px 0 10px; // keep a small buffer but allow 4th avatar to show
+}
+
 
 .TAImagesScroll::-webkit-scrollbar {
   display: none;
@@ -131,16 +141,58 @@
   flex: 0 0 auto;
 }
 
+.TATooltipWrapper {
+  position: relative;
+  display: inline-block;
+}
+
 .TACircle {
-  width: 40px;
-  height: 40px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   object-fit: cover;
+  cursor: pointer;
+}
+
+.TATooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: normal;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  white-space: nowrap;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none;
+  border: 1px solid #e5e7eb;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: white;
+  }
+}
+
+.TATooltipWrapper:hover .TATooltip {
+  opacity: 1;
+  visibility: visible;
 }
 
 .arrowIcon {
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
   cursor: pointer;
 }
 
@@ -148,7 +200,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  // border-radius: 9999px;
+  // background: #ffffff;
+  // box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
+
+.TAImagesWrapper > .ScrollArrow:first-child { left: 4px; }
+.TAImagesWrapper > .ScrollArrow:last-child { right: -12px; }
+
   .QueueInfo {
     border-radius: 8px;
     box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
@@ -185,7 +252,34 @@
       font-weight: 400;
       line-height: normal;
       margin: 0;
+      display: flex;          // align icon and text neatly on a row
+      align-items: center;
     }
+    // Add a little space between stacked summary lines
+    .WaitSummary + .WaitSummary {
+      margin-top: 6px;
+    }
+
+    .waitIcon {
+      height: 20px;
+      width: 20px;
+      margin-right: 10px;
+      opacity: 0.85;
+      flex: 0 0 20px;        // reserve same width so text lines up
+    }
+    .waitIcon.hourglass {
+      height: 16px;          // slightly smaller hourglass
+      width: 16px;
+      flex-basis: 20px;      // keep left edge aligned with users icon
+    }
+    .WaitSummary span + span {
+      margin-left: 8px;      // spread out adjacent pieces of text
+    }
+
+    .WaitSummary strong {
+      font-weight: 500;      // lighter than default bold (700)
+    }
+
     .GraphPlaceholder {
       width: 100%;
       max-width: 100%; /* Don't overflow parent container */
@@ -409,7 +503,8 @@
 .TAImagesScroll {
   display: flex;
   gap: 16px;
-  overflow: hidden;
+  // overflow: hidden;
+  overflow: visible;
   flex: 1;
 }
 
@@ -421,11 +516,53 @@
   flex: 0 0 auto;
 }
 
+.TATooltipWrapper {
+  position: relative;
+  display: inline-block;
+}
+
 .TACircle {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+  cursor: pointer;
+}
+
+.TATooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: normal;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  white-space: nowrap;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none;
+  border: 1px solid #e5e7eb;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: white;
+  }
+}
+
+.TATooltipWrapper:hover .TATooltip {
+  opacity: 1;
+  visibility: visible;
 }
 
 .arrowIcon {
@@ -438,6 +575,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
 }
   .QueueInfo {
     border-radius: 8px;
@@ -475,7 +617,35 @@
       font-weight: 400;
       line-height: normal;
       margin: 0;
+      display: flex;          // align icon and text neatly on a row
+      align-items: center;
     }
+
+        // Add a little space between stacked summary lines
+    .WaitSummary + .WaitSummary {
+      margin-top: 6px;
+    }
+    
+    .waitIcon {
+      height: 20px;
+      width: 20px;
+      margin-right: 10px;
+      opacity: 0.85;
+      flex: 0 0 20px;        // reserve same width so text lines up
+    }
+    .waitIcon.hourglass {
+      height: 16px;          // slightly smaller hourglass
+      width: 16px;
+      flex-basis: 20px;      // keep left edge aligned with users icon
+    }
+    .WaitSummary span + span {
+      margin-left: 8px;      // spread out adjacent pieces of text
+    }
+
+    .WaitSummary strong {
+      font-weight: 500;      // lighter than default bold (700)
+    }
+
     .GraphPlaceholder {
       width: 100%;
       max-width: 100%; /* Don't overflow parent container */
