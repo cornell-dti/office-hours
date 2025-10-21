@@ -129,7 +129,7 @@ async function buildWaitTimeMapFromSessions(courseId, weeksBack = 4) {
   weekdays.forEach(day => {
     waitTimeMap[day] = {};
     TIME_SLOTS.forEach(slot => {
-      waitTimeMap[day][slot] = 0;
+      waitTimeMap[day][slot] = null;
     });
   });
   
