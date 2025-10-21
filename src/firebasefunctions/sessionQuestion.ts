@@ -43,6 +43,7 @@ export const addQuestion = (
             ...finalLocation,
             ...upvotedUsers,
             ...addVirtual,
+            courseId: session.courseId,
             answererId: '',
             content: question,
             primaryTag: selectedPrimary != null ? selectedPrimary.tagId : '',

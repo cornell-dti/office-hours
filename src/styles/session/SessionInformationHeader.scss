@@ -6,19 +6,7 @@
   margin: 25px 48px;
 
   .OneQueueInfo {
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1.4;
-    display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 8px;
-  width: 100%;
-  }
-
-  .MuiGrid-spacing-xs-4 > .MuiGrid-item {
-    padding: 2px;
+    padding: 5px 0;
   }
 
   .switchWrapper {
@@ -263,10 +251,7 @@
       display: flex;          // align icon and text neatly on a row
       align-items: center;
     }
-    // Add a little space between stacked summary lines
-    .WaitSummary + .WaitSummary {
-      margin-top: 6px;
-    }
+
     .waitIcon {
       height: 20px;
       width: 20px;

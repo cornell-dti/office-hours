@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import * as React from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
 import rightArrowIcon from "../../media/Right Arrow.svg";
@@ -7,8 +6,6 @@ import leftArrowIcon from "../../media/Left Arrow.svg";
 type Props = {
     barData: BarDatum[];
     timeKeys: string[];
-    yMax: number;// eslint-disable-line react/no-unused-prop-types
-    legend: string;// eslint-disable-line react/no-unused-prop-types
     OHDetails: {
         [id: string]: {
             ta: string;
@@ -19,7 +16,7 @@ type Props = {
         };
     };
     selectedDateEpoch: number;
-    course?: FireCourse;// eslint-disable-line react/no-unused-prop-types
+    hasSessionsForSelectedDay?: boolean; // optional override for scheduled day detection
 };
 
 const WaitTimeGraph = (props: Props) => {
@@ -32,22 +29,18 @@ const WaitTimeGraph = (props: Props) => {
     const isFutureDate = selectedDate > today;
     
     // Check if there are office hours for the selected day
-    const selectedDayData = props.barData.find(day => day.dayOfWeek === selectedDay);
+    // Priority: use parent's session detection first (hard condition)
+    // Only show graph if there are actually scheduled sessions
+    const selectedDayData = props.barData.find((day: any) => day.dayOfWeek === selectedDay);
+    const hasOfficeHours = typeof props.hasSessionsForSelectedDay === 'boolean' 
+        ? props.hasSessionsForSelectedDay 
+        : false;
     
-    // Check if there are office hours for the selected day based on actual data
-    let hasOfficeHours = false;
+    // Check if we have actual data (non-null values) for this day
+    const hasData = selectedDayData && Object.values(selectedDayData).some(value => 
+        typeof value === 'number' && value > 0
+    );
     
-    if (selectedDayData) {
-        // Check if any time slot has wait time > 0
-        const timeSlotKeys = Object.keys(selectedDayData).filter(key => key !== 'dayOfWeek');
-        
-        const hasWaitTimeData = timeSlotKeys.some(key => 
-            Number(selectedDayData[key]) > 0
-        );
-        
-        // Office hours exist if there's actual wait time data
-        hasOfficeHours = hasWaitTimeData;
-    }
 
     const currentHourLabel = new Intl.DateTimeFormat("en-US", {
         hour: "numeric",
@@ -57,48 +50,36 @@ const WaitTimeGraph = (props: Props) => {
         .toLowerCase()
         .replace(" ", "");
 
-    // Windowed 3-hour view with 30-minute slots (6 columns)
-    const hours = props.timeKeys; // e.g. ["7pm", "8pm", ...]
-    const currentHourIndex = Math.max(0, hours.findIndex((h) => h === currentHourLabel));
-    const initialStart = Math.max(0, Math.min(currentHourIndex, hours.length - 3));
+    // Windowed view over 30‑minute slots (show 6 consecutive slots)
+    const slots = props.timeKeys; // e.g. ["7:00 AM", "7:30 AM", ...]
+    // currentHourLabel is not in the same format; default to start at 0 for simplicity
+    const initialStart = 0;
+    const windowSize = 6;
     const [hourStart, setHourStart] = React.useState<number>(initialStart);
     const hasPrevHours = hourStart > 0;
-    const hasNextHours = hourStart + 3 < hours.length;
-    const visibleHours = hours.slice(hourStart, hourStart + 3);
-
-    const parseHour = (h: string) => {
-        // "7pm" -> { hour: 7, ampm: "PM" }
-        const num = parseInt(h, 10);
-        const ampm = h.includes("pm") ? "PM" : "AM";
-        return { hour: num === 0 ? 12 : num, ampm };
-    };
-
-    const formatHalfLabel = (h: string, half: 0 | 30) => {
-        const { hour, ampm } = parseHour(h);
-        return `${hour}:${half.toString().padStart(2, "0")} ${ampm}`;
-    };
+    const hasNextHours = hourStart + windowSize < slots.length;
+    const visibleSlots = slots.slice(hourStart, hourStart + windowSize);
 
     // Keep chart margin centralized so overlays align with the plot area
-    const chartMargin = React.useMemo(() => ({ top: 5, right: 12, bottom: 40, left: 12 }), []);
+    const chartMargin = React.useMemo(() => ({ top: 5, right: 12, bottom: 35, left: 12 }), []);
     // Visual gap between the bars and the separator line
     const baselineGapPx = -55;
 
-    // Build 6-slot data for the selected day and current 3-hour window
+    // Build data for the selected day and current window of 30‑minute slots
     const transformData = () => {
         const dayData = props.barData.find((d) => d.dayOfWeek === selectedDay);
         if (!dayData) return [] as { slot: string; waitTime: number; hour: string }[];
 
-        const slots: { slot: string; waitTime: number; hour: string }[] = [];
-        visibleHours.forEach((h) => {
-            // Split each hour into two half-hour slots. Use the hour's value for both (no finer granularity available).
-            slots.push({ slot: formatHalfLabel(h, 0), waitTime: Number(dayData[h] as unknown as number), hour: h });
-            slots.push({ slot: formatHalfLabel(h, 30), waitTime: Number(dayData[h] as unknown as number), hour: h });
+        const data: { slot: string; waitTime: number; hour: string }[] = [];
+        visibleSlots.forEach((s) => {
+            const value = Number((dayData as any)[s] ?? 0);
+            data.push({ slot: s, waitTime: value, hour: s });
         });
-        return slots;
+        return data;
     };
 
     return (
-        <div style={{ height: 140, position: "relative" }}>
+        <div style={{ height: 140, position: "relative", paddingTop: 3, paddingBottom: 0 }}>
             <style>
                 {`
                     /* Target only the actual bar rectangles, not the container or other SVG elements */
@@ -140,7 +121,7 @@ const WaitTimeGraph = (props: Props) => {
                 }}
             >
                 {dayNames.map((dayName) => {
-                    const isToday = dayName === dayNames[today.getDay()];
+                    const isToday = dayName === dayNames[(today.getDay() + 6) % 7];
                     const isSelected = dayName === selectedDay;
                     
                     return (
@@ -176,17 +157,33 @@ const WaitTimeGraph = (props: Props) => {
                         fontStyle: "italic",
                     }}
                 >
-                    There are no normally scheduled office hour times for this day of the week.
+                    No office hours are scheduled for today.
                 </div>
             )}
 
-            {/* Only show graph if there are office hours */}
-            {hasOfficeHours && (
+            {/* Show message if office hours exist but no data available */}
+            {hasOfficeHours && !hasData && (
+                <div
+                    style={{
+                        textAlign: "center",
+                        marginTop: "40px",
+                        marginBottom: "40px",
+                        fontSize: "14px",
+                        color: "#666",
+                        fontStyle: "italic",
+                    }}
+                >
+                    There is no data available for the day you have chosen.
+                </div>
+            )}
+
+            {/* Only show graph if there are office hours AND data */}
+            {hasOfficeHours && hasData && (
                 <>
                     {/* Side arrows, vertically centered beside the bars */}
                     <button
                         type="button"
-                        onClick={() => setHourStart((s) => Math.max(0, s - 1))}
+                        onClick={() => setHourStart((s) => Math.max(0, s - windowSize))}
                         disabled={!hasPrevHours}
                         style={{
                             position: "absolute",
@@ -209,7 +206,7 @@ const WaitTimeGraph = (props: Props) => {
                     </button>
                     <button
                         type="button"
-                        onClick={() => setHourStart((s) => Math.min(hours.length - 3, s + 1))}
+                        onClick={() => setHourStart((s) => Math.min(slots.length - windowSize, s + windowSize))}
                         disabled={!hasNextHours}
                         style={{
                             position: "absolute",
@@ -242,8 +239,10 @@ const WaitTimeGraph = (props: Props) => {
                             const today = new Date();
                     
                             // Get the selected day index (0 = Monday, 1 = Tuesday, etc.)
-                            const dayNames = 
-                            ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                            const dayNames = [
+                                "Monday", "Tuesday", "Wednesday", "Thursday", 
+                                "Friday", "Saturday", "Sunday"
+                            ];
                             const selectedDayIndex = dayNames.indexOf(selectedDay);
                             const todayIndex = (today.getDay() + 6) % 7; // Adjust for Monday-first order
                     
@@ -254,9 +253,13 @@ const WaitTimeGraph = (props: Props) => {
                                 const [hour, minute] = time.split(':');
                         
                                 // Set the bar time based on the slot
-                                barTime.setHours(period === 'PM' && hour !== '12' ? parseInt(hour,10) + 12 : 
-                                    period === 'AM' && hour === '12' ? 0 : parseInt(hour,10));
-                                barTime.setMinutes(parseInt(minute,10));
+                                barTime.setHours(
+                                    period === 'PM' && hour !== '12' ? 
+                                        parseInt(hour, 10) + 12 : 
+                                        period === 'AM' && hour === '12' ? 
+                                            0 : parseInt(hour, 10)
+                                );
+                                barTime.setMinutes(parseInt(minute, 10));
                         
                                 // Compare with current time
                                 if (barTime < currentTime) {
@@ -280,50 +283,110 @@ const WaitTimeGraph = (props: Props) => {
                         enableGridY={false}
                         enableLabel={false}
                         isInteractive={true}
-                        tooltip={({ data }) => (
-                            <div
-                                style={{
-                                    background: "white",
-                                    padding: "8px 12px",
-                                    borderRadius: "8px",
-                                    fontSize: "13px",
-                                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: "2px",
-                                    textAlign: "left",
-                                }}
-                            >
-                                <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
-                            On {selectedDay.slice(0, 3)} at {data.slot}
-                                </div>
-                                {isFutureDate ? (
-                                    <div style={{ fontSize: "13px", fontWeight: "normal", 
-                                        color: "#666", fontStyle: "italic" }}
+                        tooltip={({ data }) => {
+                            const oh = (props.OHDetails as any) || {};
+                            const ohForSlot = data && (data as any).hour ? oh[(data as any).hour] : undefined;
+                            const wait = typeof (data as any).waitTime === "number" ? 
+                                Math.round(Number((data as any).waitTime)) : undefined;
+                            return (
+                                <div
+                                    style={{
+                                        background: "white",
+                                        padding: "8px 12px",
+                                        borderRadius: "8px",
+                                        fontSize: "13px",
+                                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        gap: "2px",
+                                        textAlign: "left",
+                                    }}
+                                >
+                                    <div style={{ 
+                                        fontSize: "13px", 
+                                        fontWeight: "normal", 
+                                        color: "#333" 
+                                    }}
                                     >
-                                    This is an estimate based on historical data
+                                        On {selectedDay.slice(0, 3)} at {
+                                            (data as any).slot
+                                        }
                                     </div>
-                                ) : (
-                                    <div style={{ fontSize: "13px", fontWeight: "normal", color: "#333" }}>
-                                        <strong>Est Wait:</strong> {props.OHDetails[data.hour].avgWaitTime ||
-                                         `${data.waitTime} min`}
+                                    <div style={{ 
+                                        fontSize: "13px", 
+                                        fontWeight: "normal", 
+                                        color: "#333" 
+                                    }}
+                                    >
+                                        <strong>Est Wait:</strong> {
+                                            wait !== undefined ? `${wait} min` : "No data"
+                                        }
                                     </div>
-                                )}
-                            </div>
-                        )}
+                                    {isFutureDate && (
+                                        <div style={{ 
+                                            fontSize: "12px", 
+                                            fontWeight: "normal", 
+                                            color: "#666", 
+                                            fontStyle: "italic" 
+                                        }}
+                                        >
+                                            Based on historical data
+                                        </div>
+                                    )}
+                                    {ohForSlot && (
+                                        <div style={{ 
+                                            fontSize: "12px", 
+                                            marginTop: 6, 
+                                            color: "#374151" 
+                                        }}
+                                        >
+                                            {ohForSlot.location && (
+                                                <div>
+                                                    <strong>Location:</strong> {ohForSlot.location}
+                                                </div>
+                                            )}
+                                            {ohForSlot.ta && (
+                                                <div>
+                                                    <strong>TA:</strong> {ohForSlot.ta}
+                                                </div>
+                                            )}
+                                            {(ohForSlot.startHour || ohForSlot.endHour) && (
+                                                <div>
+                                                    <strong>Time:</strong> {ohForSlot.startHour} {
+                                                        ohForSlot.endHour ? `– ${ohForSlot.endHour}` : ""
+                                                    }
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        }}
                         theme={{
                             axis: {
                                 legend: { text: { fontSize: 16, outlineWidth: 0 } },
-                                ticks: { text: { fontSize: 13, fill: "#111827", fontWeight:  "300" } },
+                                ticks: { 
+                                    text: { 
+                                        fontSize: 13, 
+                                        fill: "#111827", 
+                                        fontWeight: "300" 
+                                    } 
+                                },
                                 // Use default, subtle domain line to match analytics cards
                             },
-                            tooltip: { container: { border: "none", padding: 0, 
-                                boxShadow: "none", background: "transparent" } },
+                            tooltip: { 
+                                container: { 
+                                    border: "none", 
+                                    padding: 0, 
+                                    boxShadow: "none", 
+                                    background: "transparent" 
+                                } 
+                            },
                         }}
                         axisBottom={{
                             legend: "",
                             tickSize: 0,
-                            tickPadding: 8,
+                            tickPadding: 10,
                             tickRotation: 0,
                             format: (tick) => (String(tick).includes(":00 ") ? String(tick) : ""),
                         }}
