@@ -10,8 +10,9 @@ import { pauseSession } from "../../firebasefunctions/session";
 import users from "../../media/users.svg";
 import calendarIcon from "../../media/Calendar_icon.svg";
 import clockIcon from "../../media/clock-regular_1.svg";
-import rightArrowIcon from "../../media/rightArrowIcon.svg";
-import leftArrowIcon from "../../media/leftArrowIcon.svg";
+import hourglassIcon from "../../media/hourglass-half.svg";
+import rightArrowIcon from "../../media/RightArrow.svg";
+import leftArrowIcon from "../../media/LeftArrow.svg";
 import zoom from "../../media/zoom.svg";
 import closeZoom from "../../media/closeZoom.svg";
 import editZoomLink from "../../media/editZoomLink.svg";
@@ -80,9 +81,9 @@ const formatEstimatedTime = (waitTimeSecs: number, currentTime: Date) => {
         totalHour = (totalHour + 1) % 12;
     }
     if (totalMins < 10) {
-        return " (" + totalHour + ":0" + totalMins + amPm + ") ";
+        return  <> (<> <strong>{totalHour}:0{totalMins}{amPm}</strong> </>) </>;
     }
-    return " (" + totalHour + ":" + totalMins + amPm + ") ";
+    return <> (<> <strong>{totalHour}:{totalMins}{amPm}</strong> </>) </>;
 };
 
 const SessionInformationHeader = ({
@@ -126,7 +127,7 @@ const SessionInformationHeader = ({
         } else {
             setRatioText(`${numberOfTAs} ${pluralize(numberOfTAs, "TA", "TAs")} available`);
         }
-    }, [session.studentPerTaRatio, session.hasUnresolvedQuestion, tas, questions]);
+    }, [session.studentPerTaRatio, session.hasUnresolvedQuestion, session.tas.length, tas, questions]);
 
     const numAhead = computeNumberAhead(
         useSessionQuestions(session.sessionId, user.roles[course.courseId] !== undefined),
@@ -210,6 +211,7 @@ const SessionInformationHeader = ({
     };
 
     const [startIndex, setStartIndex] = useState(0);
+    const [hoveredTA, setHoveredTA] = useState<number | null>(null);
     const visibleCount = 4;
 
     const visibleTAs = React.useMemo(() => {
@@ -235,7 +237,7 @@ const SessionInformationHeader = ({
                                 item
                                 style={{
                                     display: "flex",
-                                    height: "65%",
+                                    height: "60%",
                                 }}
                             >
                                 <div className="LeftInformationHeader" style={{ width: "100%" }}>
@@ -262,32 +264,35 @@ const SessionInformationHeader = ({
                                     </p>
 
                                     <div className="Date">
-                                        <img
-                                            src={calendarIcon}
-                                            alt="Calendar Icon for Office Hour Date"
-                                            className="calendarIcon"
-                                        />
-                                        <Moment
-                                            date={session.startTime.seconds * 1000}
-                                            interval={0}
-                                            format={"dddd, MMM D"}
-                                        />
-                                        <br />
-                                        <img 
-                                            src={clockIcon} 
-                                            alt="Clock Icon for Office Hour Date" 
-                                            className="clockIcon" 
-                                        />
-                                        <Moment 
-                                            date={session.startTime.seconds * 1000} 
-                                            interval={0} 
-                                            format={"h:mm A"} 
-                                        />
-                                        <Moment 
-                                            date={session.endTime.seconds * 1000} 
-                                            interval={0} 
-                                            format={" - h:mm A"} 
-                                        />
+                                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                                            <img
+                                                src={calendarIcon}
+                                                alt="Calendar Icon for Office Hour Date"
+                                                className="calendarIcon"
+                                            />
+                                            <Moment
+                                                date={session.startTime.seconds * 1000}
+                                                interval={0}
+                                                format={"dddd, MMM D"}
+                                            />
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            <img 
+                                                src={clockIcon} 
+                                                alt="Clock Icon for Office Hour Date" 
+                                                className="clockIcon" 
+                                            />
+                                            <Moment 
+                                                date={session.startTime.seconds * 1000} 
+                                                interval={0} 
+                                                format={"h:mm A"} 
+                                            />
+                                            <Moment 
+                                                date={session.endTime.seconds * 1000} 
+                                                interval={0} 
+                                                format={" - h:mm A"} 
+                                            />
+                                        </div>
                                     </div>
 
                                     <div className="ZoomLink">
@@ -568,7 +573,7 @@ const SessionInformationHeader = ({
                                     </div>
                                 </div>
                             </Grid>
-                            <Grid item style={{ width: "100%", display: "flex", height: "35%" }}>
+                            <Grid item style={{ width: "100%", display: "flex", height: "40%" }}>
                                 <div className="TAsHeader">
                                     <Grid
                                         container
@@ -577,19 +582,25 @@ const SessionInformationHeader = ({
                                         style={{ height: "100%", width: "100%" }}
                                     >
                                         {/* Text on the left */}
-                                        <Grid item xs={12} sm={4}>
+                                        <Grid item xs={12} sm={3}>
                                             <div className="TAHeaderText">
                                                 <p style={{ fontWeight: "bold", fontSize: "20px", margin: 0 }}>
                                                     TA's ({tas.length})
                                                 </p>
-                                                <p 
-                                                    style={{ fontSize: "14px", color: "#4d4d4d", margin: 0 }}
-                                                >{ratioText}</p>
+                                                <p style={{ 
+                                                    fontSize: "14px", 
+                                                    color: "#4d4d4d", 
+                                                    margin: 0, 
+                                                    whiteSpace: "nowrap" 
+                                                }}
+                                                >
+                                                    {ratioText}
+                                                </p>
                                             </div>
                                         </Grid>
 
                                         {/* TA profile images on the right */}
-                                        <Grid item xs={12} sm={8}>
+                                        <Grid item xs={12} sm={9}>
                                             <div className="TAImagesWrapper">
                                                 {startIndex > 0 && (
                                                     <div
@@ -608,12 +619,53 @@ const SessionInformationHeader = ({
                                                     <div className="TAImagesScroll">
                                                         {visibleTAs.map((ta, index) => (
                                                             <div key={index} className="TACircleContainer">
-                                                                <img
-                                                                    src={ta.photoUrl || "/placeholder.png"}
-                                                                    alt={`${ta.firstName} ${ta.lastName}'s Photo`}
-                                                                    className="TACircle"
-                                                                    referrerPolicy="no-referrer"
-                                                                />
+                                                                <div
+                                                                    className="TATooltipWrapper"
+                                                                    style={{
+                                                                        position: "relative",
+                                                                        display: "inline-block"
+                                                                    }}
+                                                                    onMouseEnter={() => {
+                                                                        // eslint-disable-next-line no-console
+                                                                        console.log('Hovering TA:', 
+                                                                            ta.firstName, ta.lastName);
+                                                                        setHoveredTA(index);
+                                                                    }}
+                                                                    onMouseLeave={() => {
+                                                                        // eslint-disable-next-line no-console
+                                                                        console.log('Leaving TA');
+                                                                        setHoveredTA(null);
+                                                                    }}
+                                                                >
+                                                                    <img
+                                                                        src={ta.photoUrl || "/placeholder.png"}
+                                                                        alt={`${ta.firstName} ${ta.lastName}'s Photo`}
+                                                                        className="TACircle"
+                                                                        referrerPolicy="no-referrer"
+                                                                    />
+                                                                    {hoveredTA === index && (
+                                                                        <div 
+                                                                            className="TATooltip"
+                                                                            style={{
+                                                                                position: "absolute",
+                                                                                bottom: "calc(100% + 8px)",
+                                                                                left: "50%",
+                                                                                transform: "translateX(-50%)",
+                                                                                background: "white",
+                                                                                padding: "8px 12px",
+                                                                                borderRadius: "8px",
+                                                                                fontSize: "13px",
+                                                                                color: "#333",
+                                                                                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                                                                whiteSpace: "nowrap",
+                                                                                zIndex: 9999,
+                                                                                border: "1px solid #e5e7eb"
+                                                                            }}
+                                                                        >
+                                                                            {ta.firstName} {ta.lastName}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         ))}
                                                     </div>
@@ -642,16 +694,31 @@ const SessionInformationHeader = ({
                         <div className="QueueInfo">
                             <p className="WaitTitle">Wait Time</p>
                             {avgWaitTime !== "No information available" ? (
-                                <p className="WaitSummary">
-                                    <span className="red">{numAhead} students</span> ahead |
-                                    <span className="blue"> {avgWaitTime}</span>
-                                    <span className="gray"> {esimatedTime}</span> estimated wait time
-                                </p>
+                                <>
+                                    <p className="WaitSummary">
+                                        <img src={users} alt="users" className="waitIcon" />
+                                        <span className="red">{numAhead} students</span>
+                                        <span>ahead</span>
+                                    </p>
+                                    <p className="WaitSummary">
+                                        <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
+                                        <span className="blue"> {avgWaitTime}</span>
+                                        <span className="gray"> {esimatedTime}</span>
+                                        <span>estimated wait time</span>
+                                    </p>
+                                </>
                             ) : (
-                                <p className="WaitSummary">
-                                    <span className="red">{numAhead} students</span> ahead |
-                                    <span className="blue"> No information available</span>
-                                </p>
+                                <>
+                                    <p className="WaitSummary">
+                                        <img src={users} alt="users" className="waitIcon" />
+                                        <span className="red">{numAhead} students</span>
+                                        <span>ahead</span>
+                                    </p>
+                                    <p className="WaitSummary">
+                                        <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
+                                        <span className="blue"> No information available</span>
+                                    </p>
+                                </>
                             )}
                             <WaitTimeGraph
                                 barData={sampleData.barData}
