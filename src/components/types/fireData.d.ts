@@ -146,6 +146,16 @@ interface FireCourse {
     timeWarning?: number;
     isTimeLimit?: boolean;
     feedbackList?: FeedbackRecord[]; // TODO: possibly change to non-null
+    historicalWaitTimes?: {
+        [dayOfWeek: string]: {
+            [timeSlot: string]: number; // wait time in minutes
+        }
+    };
+    waitTimeMap?: {
+        [dayOfWeek: string]: {
+            [timeSlot: string]: number | null; // wait time in seconds, null if no data
+        }
+    };
 }
 
 type PrivilegedFireCourseRole = "professor" | "ta";
@@ -202,6 +212,7 @@ interface FireQuestion {
     answererId: string;
     content: string;
     sessionId: string;
+    courseId: string;
     primaryTag: string;
     secondaryTag: string;
     questionId: string;
