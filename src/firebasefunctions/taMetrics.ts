@@ -83,12 +83,6 @@ export const calcTAMetrics = async(
 
     let waitCount = 0;
     let timeSpentCount = 0;
-
-    function formatDate(date: Date): string {
-        return date.toISOString().split("T")[0]; // "YYYY-MM-DD"
-    }
-
-    const weekId = `${formatDate(startDate)}_${formatDate(endDate)}`;
     
     snapshot.forEach(question =>{
         const data = question.data();
@@ -161,7 +155,7 @@ export const calcTAMetrics = async(
         }
     };
 
-    const metricsRef = doc(firestore, `users/${taId}/metrics/${weekId}`);
+    const metricsRef = doc(firestore, `users/${taId}/metrics`);
     await setDoc(metricsRef, metrics);
     return metrics; 
 };
