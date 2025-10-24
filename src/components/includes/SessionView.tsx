@@ -23,6 +23,7 @@ import TaAnnouncements from "./TaAnnouncements";
 
 import "firebase/auth";
 
+
 type Props = {
     course: FireCourse;
     session: FireSession;
