@@ -289,5 +289,7 @@ export const submitFeedback = (removedQuestionId: string | undefined, sessionId:
                 await usersRef.update(updateData);
         }       
         catch (error) {
+            // eslint-disable-next-line no-console
+            console.log("Error updating")
         }
         };
