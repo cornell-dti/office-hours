@@ -121,7 +121,8 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     const courseUsers = useCourseUsersMap(courseId, true)
     const courseTAs = useCourseTAMap(course!)
 
-    // This component now iterates through user documents of TAs in a particular course and gets each of their feedback lists.
+    // This component now iterates through user documents of TAs in a 
+    // particular course and gets each of their feedback lists.
     const getFeedbackForSession = (sessionId: string) => {
         const feedback: FeedbackRecord[] = [];
 

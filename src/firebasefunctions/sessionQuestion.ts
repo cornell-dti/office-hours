@@ -289,5 +289,7 @@ export const submitFeedback =
 
                 await updateDoc(usersRef, updateData);
             } catch (error) {
+                // eslint-disable-next-line no-console
+                console.log("Error updating")
             }
         };
