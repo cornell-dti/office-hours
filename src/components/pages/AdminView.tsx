@@ -14,6 +14,7 @@ import  AnalyticsView from './AnalyticsView';
 
 const AdminView = () => {
     const [collapsed, setCollapsed] = useState(true);
+    const [analyticsLoaded, setAnalyticsLoaded] = useState(false);
     const history = useHistory();
     const courses = useAllCourses();
     const isAdmin = useIsAdmin();
@@ -32,6 +33,13 @@ const AdminView = () => {
         setSem(event.target.value);
     };
 
+    const handleExpand = () => {
+        setCollapsed(false);
+        if (!analyticsLoaded) {
+            setAnalyticsLoaded(true); // ensures <AnalyticsView/> mounts when user clicks on icon
+        }
+    };
+
     return (
         <div className="AdminView">
             <TopBar
@@ -48,7 +56,7 @@ const AdminView = () => {
                 <Icon
                     // Chevron used to denote the location of the analytics table when it is expanded.
                     name='chevron down'
-                    onClick={() => { setCollapsed(false)}}
+                    onClick={handleExpand}
                 />
             ) : (
                 <div>
@@ -57,14 +65,22 @@ const AdminView = () => {
                         name='chevron up'
                         onClick={() => setCollapsed(true)}
                     />
-                    <AnalyticsView/>
+                    
                 </div>
             )}
+            {/* Separate style logic so component is technically "rendered" only once when the admin page loads,
+             not each time the arrow is clicked. This reduces repeated Firebase reads. */}
+            {analyticsLoaded && (
+                <div style={collapsed ? { display: "none" } : {}}>
+                    <AnalyticsView />
+                </div>
+            )}
+            
 
 
             <h2>Courses</h2>
             <FormControl sx={{ m: 1, minWidth: "8%", backgroundColor: "#FFFFFF" }}>
-                <InputLabel id="course-select-label">Semester</InputLabel>
+                <InputLabel id="course-select-input">Semester</InputLabel>
                 <Select
                     labelId="course-select-label"
                     id="course-select"

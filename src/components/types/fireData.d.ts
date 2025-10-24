@@ -28,6 +28,8 @@ interface FireBaseSession {
     totalResolveTime: number;
     taAnnouncements?: TaAnnouncement[];
     isPaused?: boolean;
+    studentPerTaRatio?: number;
+    hasUnresolvedQuestion?: boolean;
 }
 
 interface FireSessionLocation {
@@ -78,6 +80,8 @@ interface FireBaseSessionSeries {
     startTime: FireTimestamp;
     tas: string[];
     title?: string;
+    studentPerTaRatio?: number;
+    hasUnresolvedQuestion?: boolean;
     sessionSeriesId: string;
 }
 

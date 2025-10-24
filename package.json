@@ -22,6 +22,7 @@
     "@types/node": "^12.12.15",
     "@types/react-linkify": "^1.0.1",
     "chai": "^4.2.0",
+    "dotenv": "^16.4.7",
     "firebase": "^11.2.0",
     "firebase-admin": "^13.0.2",
     "firebase-functions": "^6.3.1",
@@ -49,6 +50,7 @@
     "redux": "^4.1.2",
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.4.0",
+    "resend": "^4.1.2",
     "rxfire": "^6.1.0",
     "rxjs": "^7.8.2",
     "sass": "^1.72.0",
@@ -56,7 +58,7 @@
     "semantic-ui-react": "^0.88.1",
     "source-map-explorer": "^2.1.2",
     "ts-node": "^9.0.0",
-    "twilio": "^3.71.3",
+    "twilio": "^5.10.3",
     "yarn": "^1.22.17"
   },
   "scripts": {
@@ -99,7 +101,7 @@
     "eslint-plugin-jest": "^23.8.2",
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^3.0.0",
-    "firebase-tools": "11.18.0",
+    "firebase-tools": "^13.6.0",
     "ts-mocha": "^8.0.0",
     "typescript": "^4.3.5"
   },

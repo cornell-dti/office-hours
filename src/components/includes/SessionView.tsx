@@ -15,7 +15,6 @@ import {
 } from "../../firehooks";
 import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
 import { filterUnresolvedQuestions } from "../../utilities/questions";
-
 import { firestore } from "../../firebase";
 
 import { RootState } from "../../redux/store";
@@ -39,6 +38,7 @@ type Props = {
     sessionBanners: Announcement[];
     timeWarning: number | undefined;
     showProfessorStudentView: boolean;
+    selectedDateEpoch: number;
 };
 
 type UndoState = {
@@ -68,6 +68,7 @@ const SessionView = ({
     timeWarning,
     sessionBanners,
     showProfessorStudentView,
+    selectedDateEpoch,
 }: Props) => {
     // make user appear as not a ta/prof if showProfessorStudentView is true
     const isTa = showProfessorStudentView ? false : user.roles[course.courseId] !== undefined;
@@ -127,7 +128,6 @@ const SessionView = ({
      */
     useEffect(() => {
         let unsubscribe: () => void;
-        
         if (!isTa && !isProf) {
             const userRef = doc(firestore, "users", user.userId);
             unsubscribe = onSnapshot(userRef, (snapshot) => {
@@ -245,6 +245,7 @@ const SessionView = ({
                 }}
                 questions={questions.filter((q) => q.status === "unresolved")}
                 isPaused={session.isPaused}
+                selectedDateEpoch={selectedDateEpoch}
             />
 
             <TaAnnouncements showProfessorStudentView={showProfessorStudentView} />

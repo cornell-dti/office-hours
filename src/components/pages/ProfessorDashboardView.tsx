@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dropdown, DropdownProps } from 'semantic-ui-react';
 import TopBar from '../includes/TopBar';
@@ -24,43 +24,62 @@ interface CategoryTag {
 
 const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
     const [currentCategory, setCurrentCategory] = useState<CategoryTag | undefined>();
+    const [processedData, setProcessedData] = useState<{
+        tags: FireTag[];
+        questions: FireQuestion[];
+        categories: CategoryTag[];
+    } | null>(null);
 
+    // this should move hooks to component level
     const tags = useQuery<FireTag>(courseId, getTagsQuery, 'tagId');
     const questions = useQuery<FireQuestion>(courseId, getQuestionsQuery, 'questionId');
+    const course = useCourse(courseId);
 
-    const categories: CategoryTag[] = tags
-        .filter((tag) => tag.level === 1)
-        .map((tag) => {
-            const enrichedChildTags: (FireTag & { questionCount: number; resolvedQuestionCount: number })[] = tags
-                .filter(t => t.parentTag && t.parentTag === tag.tagId)
-                .map(t => {
-                    const tagQuestions = questions.filter(q => q.secondaryTag === t.tagId);
-                    return {
-                        ...t,
-                        questionCount: tagQuestions.length,
-                        resolvedQuestionCount: tagQuestions
-                            .filter(q => q.status === 'resolved' || q.status === 'retracted')
-                            .length
-                    };
-                });
+    useEffect(() => {
+        if (!tags || !questions) return;
 
-            const totalQuestions = enrichedChildTags
-                .reduce((acc, { questionCount }) => acc + questionCount, 0);
-            const resolvedQuestions = enrichedChildTags
-                .reduce((acc, { resolvedQuestionCount }) => acc + resolvedQuestionCount, 0);
+        const categories: CategoryTag[] = tags
+            .filter((tag) => tag.level === 1)
+            .map((tag) => {
+                const enrichedChildTags: (FireTag & { questionCount: number; resolvedQuestionCount: number })[] = tags
+                    .filter(t => t.parentTag && t.parentTag === tag.tagId)
+                    .map(t => {
+                        const tagQuestions = questions.filter(q => q.secondaryTag === t.tagId);
+                        return {
+                            ...t,
+                            questionCount: tagQuestions.length,
+                            resolvedQuestionCount: tagQuestions
+                                .filter(q => q.status === 'resolved' || q.status === 'retracted')
+                                .length
+                        };
+                    });
 
-            return {
-                category: tag.name,
-                totalQuestions,
-                resolvedQuestions,
-                percentResolved: totalQuestions === 0 ? 100 : 100 * resolvedQuestions / totalQuestions,
-                childTags: enrichedChildTags.map((t) => ({
-                    name: t.name,
-                    questionCount: t.questionCount
-                })),
-                yMax: enrichedChildTags.reduce((acc, { questionCount }) => Math.max(acc, questionCount), 0)
-            };
-        });
+                const totalQuestions = enrichedChildTags
+                    .reduce((acc, { questionCount }) => acc + questionCount, 0);
+                const resolvedQuestions = enrichedChildTags
+                    .reduce((acc, { resolvedQuestionCount }) => acc + resolvedQuestionCount, 0);
+
+                return {
+                    category: tag.name,
+                    totalQuestions,
+                    resolvedQuestions,
+                    percentResolved: totalQuestions === 0 ? 100 : 100 * resolvedQuestions / totalQuestions,
+                    childTags: enrichedChildTags.map((t) => ({
+                        name: t.name,
+                        questionCount: t.questionCount
+                    })),
+                    yMax: enrichedChildTags.reduce((acc, { questionCount }) => Math.max(acc, questionCount), 0)
+                };
+            });
+
+        setProcessedData({ tags, questions, categories });
+    }, [tags, questions]);
+
+    if (!processedData) {
+        return <div>Loading...</div>;
+    }
+
+    const { categories } = processedData;
 
     const handleUpdateCategory = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
         const newCategoryTag = categories.find(c => c.category === data.value);
@@ -80,8 +99,6 @@ const ProfessorDashboardView = ({ match: { params: { courseId } } }: RouteCompon
 
         return tickVals;
     };
-
-    const course = useCourse(courseId);
 
     return (
         <div className="ProfessorView">

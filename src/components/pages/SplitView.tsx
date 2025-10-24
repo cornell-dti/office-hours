@@ -20,9 +20,9 @@ import smsNotif from "../../media/smsNotif.svg";
 import { addBanner } from "../../redux/actions/announcements";
 import Banner from "../includes/Banner";
 import FeedbackPrompt from "../includes/FeedbackPrompt";
-// import Wrapped from "../includes/Wrapped";
-// import WrappedCountdown from "../includes/WrappedCountdown";
-// import { WRAPPED_START_DATE, WRAPPED_LAUNCH_DATE } from "../../constants";
+import Wrapped from "../includes/Wrapped";
+import WrappedCountdown from "../includes/WrappedCountdown";
+import { WRAPPED_START_DATE, WRAPPED_LAUNCH_DATE } from "../../constants";
 
 // Also update in the main LESS file
 const MOBILE_BREAKPOINT = 920;
@@ -83,11 +83,16 @@ const SplitView = ({
         match.params.page === "add" ? "addQuestion" : match.params.sessionId ? "session" : "calendar"
     );
     const [showModal, setShowModal] = useState(false);
+    const [selectedDateEpoch, setSelectedDateEpoch] = useState(() => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return today.getTime();
+    });
 
     const [removeQuestionId, setRemoveQuestionId] = useState<string | undefined>(undefined);
     const [displayFeedbackPrompt, setDisplayFeedbackPrompt] = useState<boolean>(false);
-    // const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
-    // const [countdownZero, setCountdownZero] = useState<boolean>(false);
+    const [displayWrapped, setDisplayWrapped] = useState<boolean>(false);
+    const [countdownZero, setCountdownZero] = useState<boolean>(false);
     const [removedQuestionId, setRemovedQuestionId] = useState<string | undefined>(undefined);
     const [showCalendarModal, setShowCalendarModal] = useState<boolean>(false);
     const [isDayExport, setIsDayExport] = useState<boolean>(false);
@@ -189,8 +194,8 @@ const SplitView = ({
         }
     }, [addBanner, user]);
 
-    // const start = new Date(WRAPPED_START_DATE);
-    // const launch = new Date(WRAPPED_LAUNCH_DATE);
+    const start = new Date(WRAPPED_START_DATE);
+    const launch = new Date(WRAPPED_LAUNCH_DATE);
 
     return (
         <>
@@ -200,8 +205,8 @@ const SplitView = ({
                 context="student"
                 courseId={match.params.courseId}
                 course={course}
-                // countdownZero={countdownZero}
-                // setDisplayWrapped={setDisplayWrapped}
+                countdownZero={countdownZero}
+                setDisplayWrapped={setDisplayWrapped}
             />
             {banners.map((banner, index) => (
                 <Banner
@@ -221,6 +226,8 @@ const SplitView = ({
                     setShowCalendarModal={setShowCalendarModal}
                     setIsDayExport={setIsDayExport}
                     setCurrentExportSessions={setCurrentExportSessions}
+                    selectedDateEpoch={selectedDateEpoch}
+                    setSelectedDateEpoch={setSelectedDateEpoch}
                 />
             )}
             <CalendarExportModal
@@ -242,6 +249,7 @@ const SplitView = ({
                             removeQuestionDisplayFeedback={removeQuestionDisplayFeedback}
                             timeWarning={course ? course.timeWarning : 1}
                             showProfessorStudentView={false}
+                            selectedDateEpoch={selectedDateEpoch}
                         />
                     ) : (
                         <section className="StudentSessionView">
@@ -270,13 +278,13 @@ const SplitView = ({
                     <Loader active={true} content="Loading" />
                 ))}
             <ProductUpdates />
-            {/* {user && user.wrapped ? (
+            {user && user.wrapped ? (
                 <WrappedCountdown
                     setDisplayWrapped={setDisplayWrapped}
                     setCountdownZero={setCountdownZero}
                     wrappedDate={{ launchDate: launch, startDate: start }}
                 />
-            ) : null} */}
+            ) : null}
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt
                     onClose={submitFeedback(removedQuestionId, session.sessionId)}
@@ -284,7 +292,7 @@ const SplitView = ({
                 />
             ) : null}
 
-            {/* {displayWrapped ? <Wrapped user={user} onClose={() => setDisplayWrapped(false)} /> : null} */}
+            {displayWrapped ? <Wrapped user={user} onClose={() => setDisplayWrapped(false)} /> : null}
         </>
     );
 };
