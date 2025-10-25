@@ -7,7 +7,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DateValidationError } from "@mui/x-date-pickers/models";
-import { useCourse, useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
+import { useCourse, useCourseTAMap, useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
 import CloseIcon from "../../media/CloseIcon.svg";
 import ExportIcon from "../../media/ExportIcon.svg";
 import ExportIcon2 from "../../media/ExportIcon2.svg";
@@ -115,20 +115,27 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
     }, [error]);
 
     // analytics calculations
+    // Added courseTAs for the course which holds a map of userIDs of TAs
     const { sessions } = useCoursesBetweenDates(startDate, endDate, courseId);
-    const courseUsers = useCourseUsersMap(courseId, true);
     const course = useCourse(courseId);
+    const courseUsers = useCourseUsersMap(courseId, true)
+    const courseTAs = useCourseTAMap(course!)
 
+    // This component now iterates through user documents of TAs in a 
+    // particular course and gets each of their feedback lists.
     const getFeedbackForSession = (sessionId: string) => {
         const feedback: FeedbackRecord[] = [];
 
-        if (course && course.feedbackList) {
-            course.feedbackList.forEach((feedbackRecord) => {
-                if (feedbackRecord.session === sessionId) {
-                    feedback.push(feedbackRecord);
-                }
-            });
-        }
+        Object.values(courseTAs).forEach((ta) => {
+            if (ta.feedbackList && Array.isArray(ta.feedbackList)) {
+                ta.feedbackList.forEach((feedbackRecord) => {
+                    if (feedbackRecord.session === sessionId) {
+                        feedback.push(feedbackRecord);
+                    }
+                });
+            }
+
+        });
 
         return feedback;
     };
@@ -140,7 +147,7 @@ const ExportCSVModal = ({ setShowModal, showModal, courseId }: Props) => {
 
         let totalRating = 0;
         feedback.forEach((feedbackRecord) => {
-            totalRating += feedbackRecord.rating ?? 0;
+            totalRating += feedbackRecord.overallExperience ?? 0;
         });
 
         return (totalRating / feedback.length).toFixed(2);

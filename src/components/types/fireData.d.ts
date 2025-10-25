@@ -124,7 +124,9 @@ type FireSessionSeriesDefinition =
 type FeedbackRecord = {
     session: string;
     questionId: string;
-    rating: number?;
+    organization: number?;
+    efficiency: number?;
+    overallExperience: number?;
     writtenFeedback: string?;
 };
 
@@ -177,6 +179,7 @@ interface ResolvedItem {
  *
  * @see FireCourse
  */
+//Now contains feedbackList for each user
 interface FireUser {
     firstName: string;
     lastName: string;
@@ -190,6 +193,7 @@ interface FireUser {
     textPrompted?: boolean;
     wrapped?: boolean;
     recentlyResolvedQuestion?: ResolvedItem;
+    feedbackList?: FeedbackRecord[];
 }
 
 interface FirePendingUser {
