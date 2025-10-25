@@ -168,7 +168,7 @@ interface ResolvedItem {
  *
  * @see FireCourse
  */
-//Now contains feedbackList for each user
+// Now contains feedbackList for each user
 interface FireUser {
     firstName: string;
     lastName: string;

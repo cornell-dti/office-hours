@@ -134,7 +134,7 @@ const FeedbackPrompt = (props: Props) => {
                         },
                         maxLength: FEEDBACK_CHAR_LIMIT, 
                     }}
-                    //Uses handleUpdateFeedback to limit response
+                    // Uses handleUpdateFeedback to limit response
                     onChange={handleUpdateFeedback}
                 />
                 <Typography
