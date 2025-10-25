@@ -13,6 +13,9 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+// Current semester constant - should match constants.ts
+const CURRENT_SEMESTER = 'FA25';
+
 // Generate time slots (7am-11pm, 30-min intervals)
 function generateTimeSlots() {
   const slots = [];
@@ -49,13 +52,15 @@ function createCleanWaitTimeMap() {
 
 async function cleanWaitTimeMaps() {
   console.log('Cleaning wait time maps - keeping only waitTimeMap with null values...\n');
+  console.log(`Processing only current semester courses (${CURRENT_SEMESTER})\n`);
   
   try {
-    // Get all courses
-    const coursesSnapshot = await db.collection('courses').get();
+    // Get only current semester courses
+    const coursesQuery = db.collection('courses').where('semester', '==', CURRENT_SEMESTER);
+    const coursesSnapshot = await coursesQuery.get();
     const courses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     
-    console.log(`Found ${courses.length} courses\n`);
+    console.log(`Found ${courses.length} courses for current semester (${CURRENT_SEMESTER})\n`);
     
     let processed = 0;
     
@@ -78,7 +83,7 @@ async function cleanWaitTimeMaps() {
     }
     
     console.log(`\nSummary:`);
-    console.log(`  Processed: ${processed} courses`);
+    console.log(`  Processed: ${processed} courses for current semester (${CURRENT_SEMESTER})`);
     console.log(`  Total: ${courses.length} courses`);
     
     console.log(`\nClean structure:`);
@@ -86,6 +91,7 @@ async function cleanWaitTimeMaps() {
     console.log(`  - All 7 days of the week`);
     console.log(`  - Time slots from 7:00 AM to 10:30 PM (30-min intervals)`);
     console.log(`  - All slots initialized to null`);
+    console.log(`  - Only processed current semester courses to avoid unnecessary Firebase reads`);
     
   } catch (error) {
     console.error('Error:', error);

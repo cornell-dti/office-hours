@@ -14,6 +14,9 @@ admin.initializeApp({
 const db = admin.firestore();
 const COURSE_ID = '3780';
 
+// Current semester constant - should match constants.ts
+const CURRENT_SEMESTER = 'FA25';
+
 // Helper function to calculate mean
 const mean = (arr) => arr.reduce((sum, val) => sum + val, 0) / arr.length;
 
@@ -212,6 +215,21 @@ async function runTest() {
     console.log('===============================================\n');
     
     console.log(`Using course: ${COURSE_ID}`);
+    
+    // Verify course is in current semester
+    const courseRef = db.collection('courses').doc(COURSE_ID);
+    const courseDoc = await courseRef.get();
+    
+    if (!courseDoc.exists()) {
+      console.error(`Course ${COURSE_ID} not found!`);
+      return;
+    }
+    
+    const courseData = courseDoc.data();
+    if (courseData.semester !== CURRENT_SEMESTER) {
+      console.warn(`Warning: Course ${COURSE_ID} is from semester ${courseData.semester}, not current semester (${CURRENT_SEMESTER})`);
+      console.warn('This script is optimized to only process current semester courses to avoid unnecessary Firebase reads.');
+    }
     
     // Calculate historical averages from REAL session data
     console.log('\nCalculating historical averages from real session data...');

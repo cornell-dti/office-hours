@@ -14,6 +14,9 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+// Current semester constant - should match constants.ts
+const CURRENT_SEMESTER = 'FA25';
+
 
 
 // Generate time slots (7am-11pm, 30-min intervals)
@@ -147,16 +150,17 @@ async function populateAllCourses() {
     console.log('Populating Historical Wait Time Data for All Courses');
     console.log('======================================================\n');
     
-    // Get all courses
+    // Get only current semester courses
     const coursesRef = db.collection('courses');
-    const coursesSnapshot = await coursesRef.get();
+    const coursesQuery = coursesRef.where('semester', '==', CURRENT_SEMESTER);
+    const coursesSnapshot = await coursesQuery.get();
     
     if (coursesSnapshot.empty) {
-      console.error('No courses found in Firebase!');
+      console.error(`No courses found for current semester (${CURRENT_SEMESTER})!`);
       return;
     }
     
-    console.log(`Found ${coursesSnapshot.size} courses`);
+    console.log(`Found ${coursesSnapshot.size} courses for current semester (${CURRENT_SEMESTER})`);
     
     let processedCourses = 0;
     let totalSessions = 0;
@@ -206,9 +210,9 @@ async function populateAllCourses() {
     
     console.log('\nHistorical Data Population Complete!');
     console.log('========================================');
-    console.log(`Processed ${processedCourses} courses`);
+    console.log(`Processed ${processedCourses} courses for current semester (${CURRENT_SEMESTER})`);
     console.log(`Total sessions processed: ${totalSessions}`);
-    console.log('\nAll courses now have historical wait time data!');
+    console.log('\nAll current semester courses now have historical wait time data!');
     console.log('The frontend can now display wait time predictions.');
     
   } catch (error) {
