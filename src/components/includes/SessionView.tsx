@@ -24,6 +24,7 @@ import "firebase/compat/auth";
 
 const firestore = firebase.firestore()
 
+
 type Props = {
     course: FireCourse;
     session: FireSession;
