@@ -103,7 +103,8 @@ export const createSeries = async (
 
             if (sessionSeries.modality === 'hybrid' && typeof sessionSeries.useTALink !== 'undefined') {
                 hybridProperty = {
-                    useTALink: sessionSeries.useTALink
+                    useTALink: sessionSeries.useTALink,
+                    TALink: sessionSeries.TALink
                 }
             }
 
@@ -222,7 +223,8 @@ export const updateSeries = async (
 
             if (sessionSeries.modality === 'hybrid' && typeof sessionSeries.useTALink !== 'undefined') {
                 hybridProperty = {
-                    useTALink: sessionSeries.useTALink
+                    useTALink: sessionSeries.useTALink,
+                    TALink: sessionSeries.TALink
                 }
             }
 
