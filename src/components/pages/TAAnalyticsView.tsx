@@ -1,13 +1,14 @@
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
-import { useCourse } from '../../firehooks';
+import { useCourse, useMyUser } from '../../firehooks';
 import TopBar from '../includes/TopBar';
 import TASidebar from '../includes/TASidebar';
 import StudentReviewPanel from "../includes/StudentReviewPanel";
 import TAMetrics from "../includes/TAMetrics";
 
-const TAAnalyticsView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string }>) => {
+const TAAnalyticsView = ({ match: { params: { courseId } } }: RouteComponentProps<{ courseId: string}>) => {
     const course = useCourse(courseId);
+    const user = useMyUser();
 
     return (
         <div className="TAAnalyticsView">
@@ -23,7 +24,9 @@ const TAAnalyticsView = ({ match: { params: { courseId } } }: RouteComponentProp
             />    
             <section className="rightOfSidebar">
                 <div className="main">
-                    <TAMetrics />
+                    { user && (
+                        <TAMetrics user={user}/>
+                    )}
                     <StudentReviewPanel />
                 </div>
             </section>

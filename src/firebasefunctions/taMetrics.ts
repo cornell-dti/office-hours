@@ -2,7 +2,6 @@ import { query, where, doc, getDocs, collection, Timestamp, setDoc} from 'fireba
 import { firestore } from '../firebase';
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
 // Type to pass into ReusableBarGraph
 export type BarData = {
     daysOfWeek: string;
@@ -154,9 +153,8 @@ export const calcTAMetrics = async(
             weeklyAvg: weeklyStudentsHelped.size,
         }
     };
-
-    const metricsRef = doc(firestore, `users/${taId}/metrics`);
-    await setDoc(metricsRef, metrics);
+    const metricsRef = doc(firestore, `users/${taId}`);
+    await setDoc(metricsRef, { metrics }, { merge : true });
     return metrics; 
 };
 

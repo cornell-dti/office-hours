@@ -1,16 +1,49 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
+// import { firestore } from '../../firebase';
+import { MetricData, MetricsResult, calcTAMetrics } from "../../firebasefunctions/taMetrics";
 import ReusableBarGraph from "./ReusableBarGraph";
-import studentHelpedData from "../../studentHelped.json";
-import timeSpentData from "../../timeSpent.json";
-import waitTimeData from "../../waitTime.json";
+// import studentHelpedData from "../../studentHelped.json";
+// import timeSpentData from "../../timeSpent.json";
+// import waitTimeData from "../../waitTime.json";
 
-const TAMetrics = () => {
-    const studentHelpedTotal = studentHelpedData.barData.reduce((acc, curr) => acc + Number(curr.value), 0);
+type TAMetricsProps = {
+    user: FireUser;
+}
+
+const TAMetrics = ({ user } : TAMetricsProps) => {
+    // const studentHelpedTotal = studentHelpedData.barData.reduce((acc, curr) => acc + Number(curr.value), 0);
  
-    const avgTime = ({ barData }: { barData: { dayOfWeek: string; value: string }[] }) => {
-        const total = barData.reduce((acc, curr) => acc + Number(curr.value), 0);
-        return Math.round(total / timeSpentData.barData.length);
-    };
+    // const avgTime = ({ barData }: { barData: { dayOfWeek: string; value: string }[] }) => {
+    //     const total = barData.reduce((acc, curr) => acc + Number(curr.value), 0);
+    //     return Math.round(total / timeSpentData.barData.length);
+    // };
+
+    const [studentsHelped, setStudentsHelped] = useState<MetricData>();
+    const [timeSpent, setTimeSpent] = useState<MetricData>();
+    const [waitTime, setWaitTime] = useState<MetricData>();
+
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const diff = (dayOfWeek + 6) % 7;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - diff);
+
+    const fetchData = async () => {
+        try {
+            const data: MetricsResult = await calcTAMetrics(user.userId, monday, today);
+            setStudentsHelped(data.studentsHelped);
+            setTimeSpent(data.timeSpent);
+            setWaitTime(data.waitTime);
+        } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error("Error fetching data: ", error);
+        }
+    }
+
+    useEffect(() => {
+        fetchData();
+    }, [user.userId])
 
     return (
         <div className="ta-metrics-container">
@@ -18,43 +51,50 @@ const TAMetrics = () => {
                 <p className="header-text">Metrics</p>
             </div>
             <div className="graphs-container">
-                <ReusableBarGraph
-                    barData={studentHelpedData.barData}
-                    title="Students Helped"
-                    subtitle={
-                        <>
-                            You helped a total of{" "}
-                            <span className="emphasis">{studentHelpedTotal} students</span>{" "}
-                            this week
-                        </>
-                    }
-                />
-                <ReusableBarGraph
-                    barData={timeSpentData.barData}
-                    title="Time Spent Per Student"
-                    subtitle={
-                        <>
-                            You spent an average of{" "}
-                            <span className="emphasis">
-                                {avgTime(timeSpentData)} minutes
-                            </span>{" "}
-                            with each student this week
-                        </>
-                    }
-                />
-                <ReusableBarGraph
-                    barData={timeSpentData.barData}
-                    title="Wait Time Per Student"
-                    subtitle={
-                        <>
-                            Students waited for help for an average of{" "}
-                            <span className="emphasis">
-                                {avgTime(waitTimeData)} minutes
-                            </span>{" "}
-                            this week
-                        </>
-                    }
-                />
+                {studentsHelped && timeSpent && waitTime ? (
+                    <>
+                        <ReusableBarGraph
+                            barData={studentsHelped.barData}
+                            title="Students Helped"
+                            subtitle={
+                                <>
+                                    You helped a total of{" "}
+                                    <span className="emphasis">{studentsHelped.weeklyAvg} students</span>{" "}
+                                    this week
+                                </>
+                            }
+                        />
+                        <ReusableBarGraph
+                            barData={timeSpent.barData}
+                            title="Time Spent Per Student"
+                            subtitle={
+                                <>
+                                    You spent an average of{" "}
+                                    <span className="emphasis">
+                                        {timeSpent.weeklyAvg} minutes
+                                    </span>{" "}
+                                    with each student this week
+                                </>
+                            }
+                        />
+                        <ReusableBarGraph
+                            barData={waitTime.barData}
+                            title="Wait Time Per Student"
+                            subtitle={
+                                <>
+                                    Students waited for help for an average of{" "}
+                                    <span className="emphasis">
+                                        {waitTime.weeklyAvg} minutes
+                                    </span>{" "}
+                                    this week
+                                </>
+                            }
+                        />
+                    </>
+                ) : (
+                    <>
+                    </>
+                )}
             </div>
         </div>
     );
