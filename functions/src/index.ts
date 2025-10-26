@@ -1,7 +1,12 @@
 // eslint-disable-next-line import/no-unresolved
+import {onCallGenkit} from "firebase-functions/v2/https"
 import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 import { Twilio } from 'twilio';
+import analyzeFeedbackResponses from "../scripts/prompt"
+import {genkit, z} from "genkit"
+import {gemini15Flash, googleAI} from "@genkit-ai/googleai"
+import createAnalysisPrompt from "../scripts/prompt"
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
@@ -519,5 +524,40 @@ exports.onQuestionStatusUpdate = functions.firestore
         }
         // If the question is not resolved yet, then we do nothing
         return null;
+    });
+const ai = genkit({
+  plugins: [googleAI()],
+  model: gemini15Flash,
+});
+
+const moderatePrompt = ai.defineFlow({
+    name: "Prompt",
+    outputSchema: z.string(),
+    streamSchema: z.string(),
+}, async (promptType = "moderatation", {sendChunk}) => {
+    const prompt = createAnalysisPrompt;
+      
+    // Call the `generateStream()` method to
+    // receive the `stream` async iterable.
+    const {stream, response: aiResponse} = ai.generateStream(prompt);
+      
+    // Send new words of the generative AI response
+    // to the client as they are generated.
+    for await (const chunk of stream) {
+        sendChunk(chunk.text);
+    }
+      
+    // Return the full generative AI response
+    // to clients that may not support streaming.
+    return (await aiResponse).text;
+    },
+    );
+
+/**
+ * Scheduled firebase function that runs once per day in each semester 
+ * This function will call the prompt constructed in the prompt.ts file.
+ */
+exports.scheduledFunctionCrontab = onSchedule("0 9 * 9-12,1-5 *", async (event) => {
+    moderatePrompt()
     });
     
