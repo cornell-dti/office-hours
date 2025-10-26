@@ -1,24 +1,13 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-// import { firestore } from '../../firebase';
 import { MetricData, MetricsResult, calcTAMetrics } from "../../firebasefunctions/taMetrics";
 import ReusableBarGraph from "./ReusableBarGraph";
-// import studentHelpedData from "../../studentHelped.json";
-// import timeSpentData from "../../timeSpent.json";
-// import waitTimeData from "../../waitTime.json";
 
 type TAMetricsProps = {
     user: FireUser;
 }
 
 const TAMetrics = ({ user } : TAMetricsProps) => {
-    // const studentHelpedTotal = studentHelpedData.barData.reduce((acc, curr) => acc + Number(curr.value), 0);
- 
-    // const avgTime = ({ barData }: { barData: { dayOfWeek: string; value: string }[] }) => {
-    //     const total = barData.reduce((acc, curr) => acc + Number(curr.value), 0);
-    //     return Math.round(total / timeSpentData.barData.length);
-    // };
-
     const [studentsHelped, setStudentsHelped] = useState<MetricData>();
     const [timeSpent, setTimeSpent] = useState<MetricData>();
     const [waitTime, setWaitTime] = useState<MetricData>();
