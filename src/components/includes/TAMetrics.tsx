@@ -7,17 +7,29 @@ type TAMetricsProps = {
     user: FireUser;
 }
 
+/**
+ * Renders and displays the three graph components for the TA Analytics Page. 
+ * Calls Reusable Bar Graph to render the three individual metric graphs. 
+ * Displays data for the bar graphs from Monday to Sunday for the current week, if the current
+ * day is in the middle of the week, then the component displays data from Monday to the current day.
+ * 
+ * @param user - The user (ta) that we fetch the metrics for 
+ */
 const TAMetrics = ({ user } : TAMetricsProps) => {
     const [studentsHelped, setStudentsHelped] = useState<MetricData>();
     const [timeSpent, setTimeSpent] = useState<MetricData>();
     const [waitTime, setWaitTime] = useState<MetricData>();
 
+    // Calculates the date of the most recent Monday that's passed, that way data can be displayed
+    // from `monday` to `today` which are then the `startDate` and `endDate` parameters for `calcTAMetrics`
     const today = new Date();
     const dayOfWeek = today.getDay();
     const diff = (dayOfWeek + 6) % 7;
     const monday = new Date(today);
     monday.setDate(today.getDate() - diff);
 
+    // Currently uses the returned output from `calcTAMetrics` instead of fetching from firebase.
+    // Can consider to change this depending on efficiency?
     const fetchData = async () => {
         try {
             const data: MetricsResult = await calcTAMetrics(user.userId, monday, today);
@@ -29,7 +41,6 @@ const TAMetrics = ({ user } : TAMetricsProps) => {
             console.error("Error fetching data: ", error);
         }
     }
-
     useEffect(() => {
         fetchData();
     }, [user.userId])

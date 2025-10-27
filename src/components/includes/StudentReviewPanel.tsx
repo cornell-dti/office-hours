@@ -8,6 +8,7 @@ type StudentReviewPanelProps = {
     user: FireUser;
 }
 
+// Feedback list type, copied from Firebase fields
 type FeedbackList = {
     efficiency: number;
     organization: number;
@@ -18,7 +19,6 @@ type FeedbackList = {
 
 const StudentReviewPanel = ( { user }: StudentReviewPanelProps) => {
     const [reviewData, setReviewData] = useState<FeedbackList[]>([]);
-
     const [filter, setFilter] = useState<string>("Most recent");
     const [sortedReviews, setSortedReviews] = useState<FeedbackList[]>([]);
 
@@ -103,6 +103,7 @@ const StudentReviewPanel = ( { user }: StudentReviewPanelProps) => {
             <div className="reviews">
                 {sortedReviews.map((review) => {
                     return (
+                        // Adapt Firebase field formatting to Student Review Card props
                         <StudentReviewCard
                             overall={review.overallExperience}
                             efficiency={review.efficiency}
