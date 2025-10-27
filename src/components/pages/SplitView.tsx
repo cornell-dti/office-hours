@@ -45,7 +45,7 @@ const useWindowWidth = () => {
             window.removeEventListener("resize", handleResize);
             window.removeEventListener("beforeunload", handleCloseWindowAlert);
         };
-    });
+    }, []);
 
     return width;
 };
