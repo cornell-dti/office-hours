@@ -70,6 +70,14 @@ const TopBar = (props: Props) => {
     ]);
 
     useEffect(() => {
+        const updateWindowDimensions = () => {
+            setWidth(window.innerWidth);
+        };
+
+        window.addEventListener('resize', updateWindowDimensions);
+    }, []);
+
+    useEffect(() => {
         if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
             for (let i = 0; i < notificationTracker.notificationList.length; i++) {
                 const notif = notificationTracker.notificationList[i];
