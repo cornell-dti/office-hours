@@ -153,8 +153,8 @@ export const calcTAMetrics = async(
             weeklyAvg: weeklyStudentsHelped.size,
         }
     };
-    const metricsRef = doc(firestore, `users/${taId}`);
-    await setDoc(metricsRef, { metrics }, { merge : true });
+    const usersRef = doc(firestore, `users/${taId}`);
+    await setDoc(usersRef, { metrics }, { merge : true });
     return metrics; 
 };
 
