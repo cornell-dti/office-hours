@@ -63,6 +63,13 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
         window.addEventListener("resize", updateWindowDimensions);
 
+        return () => {
+            window.removeEventListener("resize", updateWindowDimensions);
+        };
+    }, []);
+
+   
+    useEffect(() => {
         const tags$ = collectionData<FireTag>(
             query(collection(firestore, 'tags') as CollectionReference<FireTag>, 
                 where('courseId', '==', course.courseId)),{idField: "tagId"}
@@ -70,10 +77,9 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
         const subscription = tags$.subscribe((newTags) => setTags(newTags));
         return () => {
-            window.removeEventListener("resize", updateWindowDimensions);
             subscription.unsubscribe();
         };
-    });
+    }, [course.courseId]);
 
     const handleXClick = () => {
         setRedirect(true);
