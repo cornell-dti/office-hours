@@ -76,7 +76,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
     const activeTags = tags.filter((tag) => tag.active);
     const locationMissing = ((session.modality === "hybrid" && isVirtual) || session.modality === "virtual") 
         ? false : !location;
-   
+
     useEffect(() => {
         const updateWindowDimensions = () => {
             setWidth(window.innerWidth);
@@ -84,6 +84,13 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
         window.addEventListener("resize", updateWindowDimensions);
 
+        return () => {
+            window.removeEventListener("resize", updateWindowDimensions);
+        };
+    }, []);
+
+   
+    useEffect(() => {
         const tags$ = collectionData<FireTag>(
             query(collection(firestore, 'tags') as CollectionReference<FireTag>, 
                 where('courseId', '==', course.courseId)),{idField: "tagId"}
@@ -91,10 +98,9 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
 
         const subscription = tags$.subscribe((newTags) => setTags(newTags));
         return () => {
-            window.removeEventListener("resize", updateWindowDimensions);
             subscription.unsubscribe();
         };
-    });
+    }, [course.courseId]);
 
     const handleXClick = () => {
         setRedirect(true);
@@ -217,7 +223,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         setMissingLocation(locationMissing);
         setMissingQuestion(!question);
 
-        if (!selectedPrimary || !selectedSecondary || locationMissing || !question) {
+        if ((primaryTags.length > 0 && missingPrimaryTags) || (secondaryTags.length > 0 && missingSecondaryTags) 
+            || missingLocation || missingQuestion) {
             // eslint-disable-next-line no-console
             console.log("Fields missing, showing error state");
             return;
