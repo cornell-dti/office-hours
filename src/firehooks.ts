@@ -104,7 +104,7 @@ export const useProfessorViewSessions = (
         () => {
             const sessionsRef = collection(firestore, 'sessions');
 
-             // use date arithmetic instead of ms to avoid DST issues
+            // use date arithmetic instead of ms to avoid DST issues
             const startDate = new Date(selectedWeekEpoch);
             const endDate = new Date(startDate);
             endDate.setDate(endDate.getDate() + 7); 
