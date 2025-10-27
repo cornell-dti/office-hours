@@ -4,7 +4,6 @@ import CalendarDateItem from './CalendarDateItem';
 import chevron from '../../media/chevron.svg';
 
 const ONE_DAY = 24 /* hours */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* millis */;
-const ONE_WEEK = 7 /* days */ * ONE_DAY;
 const dayList = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
