@@ -99,6 +99,7 @@ const TopBar = (props: Props) => {
     // eslint-disable-next-line
     [ notificationTracker?.notificationList ]);
 
+    // Since this doesn't read in any state, we do not need to memoize it.
     const handleClick = (e: globalThis.MouseEvent) => {
         if (ref.current && !ref.current.contains(e.target as Node)) {
             setShowMenu(false);
@@ -110,7 +111,7 @@ const TopBar = (props: Props) => {
         return () => {
             document.removeEventListener("mousedown", handleClick);
         };
-    });
+    }, []);
 
     return (
         <div className="MenuBox" onBlur={() => setShowMenu(false)} ref={ref}>
