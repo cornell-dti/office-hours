@@ -25,9 +25,11 @@ const TAAnalyticsView = ({ match: { params: { courseId } } }: RouteComponentProp
             <section className="rightOfSidebar">
                 <div className="main">
                     { user && (
-                        <TAMetrics user={user}/>
+                        <>
+                            <TAMetrics user={user}/>
+                            <StudentReviewPanel user={user} />
+                        </>
                     )}
-                    <StudentReviewPanel />
                 </div>
             </section>
         </div>
