@@ -124,7 +124,9 @@ type FireSessionSeriesDefinition =
 type FeedbackRecord = {
     session: string;
     questionId: string;
-    rating: number?;
+    organization: number?;
+    efficiency: number?;
+    overallExperience: number?;
     writtenFeedback: string?;
 };
 
@@ -144,8 +146,7 @@ interface FireCourse {
     year: string;
     timeLimit?: number;
     timeWarning?: number;
-    isTimeLimit?: boolean;
-    feedbackList?: FeedbackRecord[]; // TODO: possibly change to non-null
+    isTimeLimit?: boolean; // TODO: possibly change to non-null
 }
 
 type PrivilegedFireCourseRole = "professor" | "ta";
@@ -167,6 +168,7 @@ interface ResolvedItem {
  *
  * @see FireCourse
  */
+// Now contains feedbackList for each user
 interface FireUser {
     firstName: string;
     lastName: string;
@@ -180,6 +182,7 @@ interface FireUser {
     textPrompted?: boolean;
     wrapped?: boolean;
     recentlyResolvedQuestion?: ResolvedItem;
+    feedbackList?: FeedbackRecord[];
 }
 
 interface FirePendingUser {
@@ -201,6 +204,7 @@ interface FireQuestion {
     askerId: string;
     answererId: string;
     content: string;
+    courseId: string;
     sessionId: string;
     primaryTag: string;
     secondaryTag: string;

@@ -19,6 +19,8 @@ type Props = {
     setShowCalendarModal: React.Dispatch<React.SetStateAction<boolean>>;
     setIsDayExport: React.Dispatch<React.SetStateAction<boolean>>;
     setCurrentExportSessions: React.Dispatch<React.SetStateAction<FireSession[]>>;
+    selectedDateEpoch: number;
+    setSelectedDateEpoch: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const CalenderView = ({
@@ -30,10 +32,9 @@ const CalenderView = ({
     setShowCalendarModal,
     setIsDayExport,
     setCurrentExportSessions,
+    selectedDateEpoch,
+    setSelectedDateEpoch,
 }: Props) => {
-    const [selectedDateEpoch, setSelectedDate] = React.useState(
-        new Date().setHours(0, 0, 0, 0)
-    );
     const selectedDate = new Date(selectedDateEpoch);
     selectedDate.setHours(0, 0, 0, 0);
     const selectedDateEnd = new Date(selectedDate);
@@ -67,7 +68,7 @@ const CalenderView = ({
     return (
         <aside className='CalendarView'>
             <CalendarDaySelect 
-                callback={setSelectedDate} 
+                callback={setSelectedDateEpoch} 
                 sessionDates={sessionDates} 
             />
             {course && user && sessions ? (
