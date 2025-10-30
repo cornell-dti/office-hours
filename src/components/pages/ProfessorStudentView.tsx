@@ -37,7 +37,7 @@ const useWindowWidth = () => {
             window.removeEventListener("resize", handleResize);
             window.removeEventListener("beforeunload", handleCloseWindowAlert);
         };
-    });
+    }, []);
 
     return width;
 };
@@ -94,6 +94,7 @@ const ProfessorStudentView = ({
             isPaused: false,
         },
     ]);
+    const [selectedDateEpoch, setSelectedDateEpoch] = useState<number>(Date.now());
 
     const courseHook = useCourse(match.params.courseId);
     const sessionHook = useSession(match.params.sessionId);
@@ -165,6 +166,8 @@ const ProfessorStudentView = ({
                         setShowCalendarModal={setShowCalendarModal}
                         setIsDayExport={setIsDayExport}
                         setCurrentExportSessions={setCurrentExportSessions}
+                        selectedDateEpoch={selectedDateEpoch}
+                        setSelectedDateEpoch={setSelectedDateEpoch}
                     />
                 )}
                 <CalendarExportModal
@@ -186,6 +189,7 @@ const ProfessorStudentView = ({
                                 removeQuestionDisplayFeedback={removeQuestionDisplayFeedback}
                                 timeWarning={course ? course.timeWarning : 1}
                                 showProfessorStudentView={true}
+                                selectedDateEpoch={selectedDateEpoch}
                             />
                         ) : (
                             <section className="StudentSessionView">
@@ -216,7 +220,7 @@ const ProfessorStudentView = ({
                 <ProductUpdates />
                 {displayFeedbackPrompt ? (
                     <FeedbackPrompt
-                        onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
+                        onClose={submitFeedback(removedQuestionId, session.sessionId)}
                         closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                     />
                 ) : null}
