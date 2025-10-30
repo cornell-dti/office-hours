@@ -99,6 +99,7 @@ const AdminStudentView = ({
             isPaused: false,
         },
     ]);
+    const [selectedDateEpoch, setSelectedDateEpoch] = useState<number>(Date.now());
 
     const courseHook = useCourse(match.params.courseId);
     const sessionHook = useSession(match.params.sessionId);
@@ -194,6 +195,8 @@ const AdminStudentView = ({
                         setShowCalendarModal={setShowCalendarModal}
                         setIsDayExport={setIsDayExport}
                         setCurrentExportSessions={setCurrentExportSessions}
+                        selectedDateEpoch={selectedDateEpoch}
+                        setSelectedDateEpoch={setSelectedDateEpoch}
                     />
                 )}
                 <CalendarExportModal
@@ -215,6 +218,7 @@ const AdminStudentView = ({
                                 removeQuestionDisplayFeedback={removeQuestionDisplayFeedback}
                                 timeWarning={course ? course.timeWarning : 1}
                                 showProfessorStudentView={true}
+                                selectedDateEpoch={selectedDateEpoch}
                             />
                         ) : (
                             <section className="StudentSessionView">
