@@ -45,7 +45,7 @@ const useWindowWidth = () => {
             window.removeEventListener("resize", handleResize);
             window.removeEventListener("beforeunload", handleCloseWindowAlert);
         };
-    });
+    }, []);
 
     return width;
 };
@@ -287,7 +287,7 @@ const SplitView = ({
             ) : null}
             {displayFeedbackPrompt ? (
                 <FeedbackPrompt
-                    onClose={submitFeedback(removedQuestionId, course, session.sessionId)}
+                    onClose={submitFeedback(removedQuestionId, session.sessionId)}
                     closeFeedbackPrompt={() => setDisplayFeedbackPrompt(false)}
                 />
             ) : null}

@@ -14,6 +14,7 @@ class TagsBarChart extends React.Component<Props> {
                 <ResponsiveBar
                     data={this.props.barData}
                     indexBy="name"
+                    keys={["questionCount"]} //fixes bug where bar doesn't display
                     margin={{
                         'top': 5,
                         'right': 20,
@@ -24,7 +25,7 @@ class TagsBarChart extends React.Component<Props> {
                     maxValue={this.props.yMax}
                     innerPadding={3}
                     padding={0.3}
-                    colors="#d8d8d8"
+                    colors="#67001F"
                     tooltip={({ value }) => (
                         <strong>
                             Questions: {value}
@@ -53,6 +54,7 @@ class TagsBarChart extends React.Component<Props> {
                     animate={true}
                     motionStiffness={90}
                     motionDamping={15}
+                    legends={[]}
                 />
             </div>
 

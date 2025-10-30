@@ -17,6 +17,7 @@ import { firestore } from "../../firebase";
 import Snackbar from "./Snackbar";
 import TextNotificationModal from "./TextNotificationModal";
 import TAStudentToggle from "./TAStudentToggle";
+import { MOBILE_BREAKPOINT } from "../../constants";
 
 type Props = {
     courseId: string;
@@ -38,6 +39,7 @@ const TopBar = (props: Props) => {
     const [showMenu, setShowMenu] = useState(false);
     const [showTextModal, setShowTextModal] = useState<boolean>(false);
     const [image, setImage] = useState(props.user ? props.user.photoUrl : "/placeholder.png");
+    const [width, setWidth] = useState<number>(window.innerWidth);
     const ref = React.useRef<HTMLDivElement>(null);
     const history = useHistory();
 
@@ -67,6 +69,14 @@ const TopBar = (props: Props) => {
         notificationTracker, 
         user,
     ]);
+
+    useEffect(() => {
+        const updateWindowDimensions = () => {
+            setWidth(window.innerWidth);
+        };
+
+        window.addEventListener('resize', updateWindowDimensions);
+    }, []);
 
     useEffect(() => {
         if (notificationTracker !== undefined && notificationTracker.notificationList !== undefined) {
@@ -100,6 +110,7 @@ const TopBar = (props: Props) => {
     // eslint-disable-next-line
     [ notificationTracker?.notificationList ]);
 
+    // Since this doesn't read in any state, we do not need to memoize it.
     const handleClick = (e: globalThis.MouseEvent) => {
         if (ref.current && !ref.current.contains(e.target as Node)) {
             setShowMenu(false);
@@ -111,10 +122,10 @@ const TopBar = (props: Props) => {
         return () => {
             document.removeEventListener("mousedown", handleClick);
         };
-    });
+    }, []);
 
     return (
-        <div className="MenuBox" onBlur={() => setShowMenu(false)} ref={ref}>
+        <div className="MenuBox" onBlur={() => setShowMenu(false)} >
             <header className="topBar">
                 <div className="triggerArea">
                     <div className="logo" onClick={() => history.push("/home")}>
@@ -144,14 +155,17 @@ const TopBar = (props: Props) => {
                             countdownZero={countdownZero}
                             setDisplayWrapped={setDisplayWrapped}
                         />
-                        <div className="userProfile" onClick={() => setShowMenu(!showMenu)}>
+                        <div 
+                            className={"userProfile " + (showMenu ? ' selected' : '')} 
+                            onClick={() => setShowMenu(!showMenu)}
+                        >
                             <img
                                 src={image}
                                 className="profilePic"
                                 onError={() => setImage("/placeholder.png")}
                                 alt="User Profile"
                             />
-                            <span className="name">
+                            {width >= MOBILE_BREAKPOINT && (<span className="name">
                                 {props.user
                                     ? props.user.firstName +
                                       " " +
@@ -160,13 +174,13 @@ const TopBar = (props: Props) => {
                                       props.user.email.substring(0, props.user.email.indexOf("@")) +
                                       ")"
                                     : "Loading..."}
-                            </span>
+                            </span>)}
                         </div>
                     </div>
                 </div>
             </header>
             {showMenu && (
-                <>
+                <div ref={ref}>
                     <ul className="desktop logoutMenu">
                         <li onMouseDown={() => logOut()}>
                             <span>
@@ -192,7 +206,7 @@ const TopBar = (props: Props) => {
                             SMS Settings
                         </li>
                     </ul>
-                </>
+                </div>
             )}
             <TextNotificationModal showTextModal={showTextModal} setShowTextModal={setShowTextModal} user={user} />
             {props.snackbars.map((snackbar) => (
