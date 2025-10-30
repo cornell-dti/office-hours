@@ -53,7 +53,6 @@ type AdminStudentViewProps = {
         };
     };
     user: FireUser | undefined;
-    role: FireCourseRole;
     course: FireCourse;
     session: FireSession;
     updateCourse: (user: FireCourse | undefined) => Promise<void>;
@@ -64,7 +63,6 @@ const AdminStudentView = ({
     history,
     match,
     user,
-    role,
     course,
     session,
     updateCourse,
@@ -74,6 +72,8 @@ const AdminStudentView = ({
         match.params.page === "add" ? "addQuestion" : match.params.sessionId ? "session" : "calendar"
     );
     const [showModal, setShowModal] = useState(false);
+
+    const role = user?.roles?.[match.params.courseId];
 
     const isProf = role === "professor";
 
@@ -182,7 +182,7 @@ const AdminStudentView = ({
                     />
                 )
             }
-            <TopBar courseId={match.params.courseId} context={role} role={role} />
+            { role && <TopBar courseId={match.params.courseId} context={role} role={role} />}
             <section className="rightOfSidebar">
                 <LeaveQueue setShowModal={setShowModal} showModal={showModal} removeQuestion={removeQuestion} />
                 {(width > MOBILE_BREAKPOINT || activeView === "calendar") && (
@@ -263,4 +263,4 @@ const mapStateToProps = (state: RootState) => ({
 export default connect(
     mapStateToProps, 
     { updateCourse, updateSession })
-(AdminStudentView as React.ComponentType<Omit<AdminStudentViewProps, "role">>);
+(AdminStudentView);
