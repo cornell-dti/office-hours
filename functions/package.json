@@ -20,7 +20,7 @@
     "firebase-admin": "^13.0.2",
     "firebase-functions": "^6.3.2",
     "firebase-tools": "^13.6.0",
-    "twilio": "^3.71.3"
+    "twilio": "^5.10.4"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",
