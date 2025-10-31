@@ -1,5 +1,5 @@
 $deselect: #898989;
-$selectprimary: #5f87ef;
+$selectprimary: #5599DB;
 $selectsecondary: #e4efff;
 
 .TASidebar {
@@ -57,6 +57,7 @@ $selectsecondary: #e4efff;
             float: left;
             text-align: left;
             color: $deselect;
+            font-family: Roboto;
         }
         button:hover {
             background-color: $selectsecondary;

@@ -38,7 +38,6 @@ const TAView = ({ match: { params: { courseId } } }: RouteComponentProps<{ cours
             />
             <section className="rightOfSidebar">
                 <div className="main">
-                    {/* TODO: Add Preparation Tab Components */}
                     <TAStudentTrends/>
                     <TAResources />
                 </div>
