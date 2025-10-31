@@ -6,6 +6,8 @@ import { RouteComponentProps } from 'react-router';
 // import { docData } from 'rxfire/firestore';
 import TopBar from '../includes/TopBar';
 import TASidebar from '../includes/TASidebar';
+import TAStudentTrends from "../includes/TAStudentTrends";
+import TAResources from "../includes/TAResources";
 
 import { useCourse } from '../../firehooks';
 // import { firestore } from '../../firebase';
@@ -36,7 +38,8 @@ const TAView = ({ match: { params: { courseId } } }: RouteComponentProps<{ cours
             />
             <section className="rightOfSidebar">
                 <div className="main">
-                    {/* TODO: Add Preparation Tab Components */}
+                    <TAStudentTrends/>
+                    <TAResources />
                 </div>
             </section>
         </div>

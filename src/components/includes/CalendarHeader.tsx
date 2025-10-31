@@ -50,7 +50,7 @@ const CalendarHeader = ({ currentCourseCode, updateSession, role }: Props): Reac
             <div className="CalendarHeader" onClick={() => setShowCourses(!showCourses)} ref={ref}>
                 <span>
                     <div className="courseCode">{currentCourseCode}</div>
-                    {role && role === 'ta' && <span className="TAMarker">TA</span>}
+                    {role && role === 'ta' && <span className="TAMarker TA">TA</span>}
                     {role && role === 'professor' && <span className="TAMarker Prof">PROF</span>}
                     <img src={Toggle} alt="Course Select" className="Toggle" />
                 </span>

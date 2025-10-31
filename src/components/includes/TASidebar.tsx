@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as ViewIcon } from "../../media/ViewIcon.svg";
-import { ReactComponent as Clipboard } from "../../media/clipboard.svg";
+import { ReactComponent as Clipboard } from "../../media/clipboard_grey.svg";
 // import { ReactComponent as LineGraph } from "../../media/linegraph.svg";
 
 type Props = {
