@@ -38,6 +38,7 @@ import { useMyUser, useAllCourses } from "../firehooks";
 import { CURRENT_SEMESTER } from "../constants";
 import AdminStudentView from "./pages/AdminStudentView";
 import TAView from "./pages/TAView";
+import TAAnalyticsView from "./pages/TAAnalyticsView";
 
 ReactGA.initialize("UA-123790900-1");
 
@@ -289,13 +290,13 @@ export default connect(null, { updateUser, updateAuthStatus })(({ updateUser, up
                             requireProfessor
                             requireTA={false}
                         />
-                        {/* <PrivateRoute 
+                        <PrivateRoute 
                             path="/ta-analytics/course/:courseId"
-                            component={TADashboardView}
+                            component={TAAnalyticsView}
                             exact={true}
                             requireProfessor={false}
                             requireTA={true}
-                        /> */}
+                        />
                         <PrivateRoute
                             path="/ta/course/:courseId"
                             component={TAView}

@@ -1,0 +1,131 @@
+.filter-dropdown{
+    display: flex;
+    align-items: center;
+    height: 33px;
+    width: 160px;
+
+    .filter-text{
+        margin-top: 11px;
+        align-items: center;
+        color: #121212;
+        font-family: Roboto;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 7.5px; /* 62.5% */
+        letter-spacing: -0.24px;
+        width: 40px;
+        margin-right: 8px;
+    }
+    .ui.default.dropdown:not(.button)>.text, .ui.dropdown:not(.button)>.default.text{
+        color: #121212;
+    }
+
+    .ui.selection.dropdown {
+        width: 112px;
+        height: 33px;
+        background-color: #E4EFFF;
+        border-radius: 4px;
+        color: rgba(0, 0, 0, 0.87);
+        padding: 10px;
+    }
+
+    .ui.selection.dropdown .menu > .item{
+        border-top: none;
+    }
+
+    .ui.dropdown .menu > .selected.item{
+        font-weight: 500;
+    }
+
+    .ui.selection.dropdown > .dropdown.icon {
+        // padding: 10px;
+        font-family: inherit !important;
+        font-size: 0 !important;
+        
+        /* Custom icon container */
+        width: 8px !important;
+        height: 5px !important;
+        right: 4px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+
+        background-image: url("../../media/chevron_down.svg");
+
+        &::before{
+            display: none !important;
+        }
+    }
+
+    .ui.dropdown > .text {
+        color: #121212;
+        font-family: Roboto;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 7.5px;
+        letter-spacing: -0.24px;
+    }
+
+    .ui.dropdown .menu {
+        background-color: #EAEAEA;
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    .ui.dropdown .menu > .item:hover{
+        background-color: #D8D8D8;
+        color: #121212;
+    }
+    
+    .ui.dropdown .menu > .item{
+        color: #121212;
+        font-size: 12px;
+    }
+}
+
+.student-review-container{
+    display: inline-flex;
+    flex-direction: column;
+    background-color: #F5F6F5;
+    width: 1152px;
+    .student-review-header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        width: 1152px;
+        height: 33px;
+        gap: 622px;
+        .header-text-container{
+            display: flex;
+            width: 370px;
+            height: 33px;
+            flex-direction: row;
+            gap: 10px;
+            .header-text{
+                color: #484848;
+                font-family: Roboto;
+                font-size: 28px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: normal;
+            }
+            .review-count{
+                color: #8D8E8E;
+                font-family: Roboto;
+                font-size: 28px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: normal;
+            }
+        }
+    }
+    .reviews{
+        display: flex;
+        flex-direction: column;
+    }
+}

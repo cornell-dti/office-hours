@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as ViewIcon } from "../../media/ViewIcon.svg";
 import { ReactComponent as Clipboard } from "../../media/clipboard_grey.svg";
-// import { ReactComponent as LineGraph } from "../../media/linegraph.svg";
+import { ReactComponent as LineGraph } from "../../media/linegraph.svg";
 
 type Props = {
     courseId: number | string;
@@ -43,14 +43,14 @@ const TASidebar = ({ courseId, code, selected }: Props) => {
                             Preparation
                             </button>
                         </Link>
-                        {/* <Link to={"/ta-analytics/course/" + courseId}>
+                        <Link to={"/ta-analytics/course/" + courseId}>
                             <button type="button" className={css(selected === "analytics")}>
-                                <div className="lineGraphIconContainer">
+                                <div className="iconContainer">
                                     <LineGraph/>
                                 </div>                                
                                 Analytics
                             </button>
-                        </Link> */}
+                        </Link>
                         <Link to={"/ta-student-view/course/" + courseId}>
                             <button type="button" className={css(selected === "student")}>
                                 <div className="iconContainer">
