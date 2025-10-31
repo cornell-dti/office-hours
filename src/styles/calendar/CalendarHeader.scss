@@ -159,9 +159,10 @@
         .UnselectedProfessorViewDashboard,
         .UnselectedProfessorViewQueue {
             height: 100%;
+            width: 112px;
             border: 2px solid #d2d2d2;
             box-sizing: border-box;
-            padding: 4px 10px;
+            padding: 4px 11px 4px 10px;
             a {
                 color: #909090;
             }
@@ -183,6 +184,8 @@
         .SelectedProfessorViewQueue,
         .SelectedProfessorViewDashboard {
             height: 100%;
+            width: 113px;
+            color: #2478CA;
             padding: 4px 10px;
             background: #e1f0fe;
             border: 2px solid #3594f1;
@@ -197,6 +200,162 @@
 
         .SelectedProfessorViewQueue,
         .UnselectedProfessorViewQueue {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+    }
+
+    .CalendarHeader,
+    .CalendarHeaderTAView {
+        height: 80%;
+        font-size: 15px;
+        font-weight: 500;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        width: fit-content;
+        padding: 2px 8px;
+        margin: 0px 0px 10px 10px;
+        position: relative;
+        min-width: 150px;
+
+        .courseCode {
+            align-self: center;
+            color: white;
+            margin-right: 5px;
+        }
+
+        .TAMarker {
+            justify-content: center;
+            border-radius: 3px;
+            color: #69a2e9;
+            background-color: white;
+            margin: 5px 5px 5px 5px;
+            width: 30px;
+            height: 19px;
+            align-items: center;
+
+            &.Prof {
+                width: 50px;
+            }
+        }
+
+        .Toggle {
+            width: 8px;
+            margin-left: 5px;
+        }
+
+        .logoutMenu {
+            span {
+                padding-right: 10px;
+            }
+        }
+
+        .courseMenu {
+            width: 100%;
+            position: absolute;
+            top: 36px;
+            border: solid 1px #e5e5e5;
+            border-radius: 5px;
+            background-color: white;
+            z-index: 1;
+
+            .editClasses {
+                border-top: solid 0.5px #d4d4d4;
+            }
+
+            li {
+                border: none;
+                padding: 0;
+                cursor: pointer;
+                width: 100%;
+                font-size: 15px;
+                font-weight: 300;
+                display: block;
+
+                div {
+                    color: #494949;
+                    width: 100%;
+                    padding: 10px;
+                    display: inline-block;
+                    margin: auto;
+                    text-align: center;
+                }
+
+                .thisCourse {
+                    color: #699ce9;
+                    font-weight: 500;
+                }
+            }
+        }
+
+        .mobileHeaderFace {
+            display: none;
+        }
+
+        span {
+            display: flex;
+            white-space: nowrap;
+        }
+
+        @media only screen and (max-width: $mobile-breakpoint) {
+            .mobileHeaderFace {
+                position: absolute;
+                right: 10px;
+                top: 10px;
+                height: 24px;
+                border-radius: 28px;
+                display: inline;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .CalendarHeaderTAView {
+        background: white;
+        background-image: none;
+
+        .UnselectedTAViewDashboard,
+        .UnselectedTAViewQueue {
+            height: 100%;
+            width: 112px;
+            border: 2px solid #d2d2d2;
+            box-sizing: border-box;
+            padding: 4px 11px 4px 10px;
+            a {
+                color: #909090;
+            }
+        }
+
+        .UnselectedTAViewDashboard {
+            border-left: none;
+        }
+
+        .UnselectedTAViewQueue {
+            border-right: none;
+        }
+
+        .SelectedTAViewQueue,
+        .SelectedTAViewDashboard {
+            height: 100%;
+            width: 113px;
+            color: #2478CA;
+            padding: 4px 10px;
+            background: #e1f0fe;
+            border: 2px solid #3594f1;
+            box-sizing: border-box;
+        }
+
+        .SelectedTAViewDashboard,
+        .UnselectedTAViewDashboard {
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+
+        .SelectedTAViewQueue,
+        .UnselectedTAViewQueue {
             border-top-left-radius: 5px;
             border-bottom-left-radius: 5px;
         }
