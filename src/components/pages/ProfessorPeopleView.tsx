@@ -37,9 +37,15 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
 
     // TA data
     // questionTAs includes undefined (for unanswered questions) and duplicates 
-    const questionTAs = allQuestions.map((q) => courseUsers[q.answererId])
-    const allTAs = questionTAs.filter((ta, ind) => ta &&
-        ind === questionTAs.findIndex(elem => elem && elem.userId === ta.userId))
+    //const questionTAs = allQuestions.map((q) => courseUsers[q.answererId])
+
+
+    const questionTAs = course?.professors.concat(course?.tas).map((q) => courseUsers[q])
+
+
+
+    const allTAs = questionTAs ? questionTAs.filter((ta, ind) => ta &&
+        ind === questionTAs.findIndex(elem => elem && elem.userId === ta.userId)) : [];
     const [filteredTAs, setFilteredTAs] = useState<FireUser[]>([])
     const [TAName, setTAName] = useState("")
     const [selectedTA, setSelectedTA] = useState<FireUser>()
@@ -234,6 +240,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             startHour: moment(session.startTime.seconds * 1000).format("h:mm a"),
             endHour: moment(session.endTime.seconds * 1000).format("h:mm a"),
             location: (session.modality === "virtual" || session.modality === "review") ? "Online" : session.building,
+            avgWaitTime: formatAvgTime(calculateAverageWaitTime(session))
         };
         const x = moment(session.startTime.seconds * 1000).format("MMM D");
         const taQuestions = questions[i] ?
@@ -305,9 +312,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                         <div>
                                             <p className="crowd-title">Average Wait Time</p>
                                             <p className="maroon-date">
-                                                {totalAssignedQuestions ?
-                                                    `${(totalWaitTime / totalAssignedQuestions / 60).toFixed(2)} minutes`
-                                                    : "Not applicable"}
+                                                {totalAssignedQuestions ? formattedAverageWaitTime() : "Not applicable"}
                                             </p>
                                         </div>
                                     </div>
@@ -365,7 +370,8 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                     <div className="ta-info">
                                         {selectedTA ?
                                             (<div>
-                                                <p className="maroon-date">{selectedTA.firstName} {selectedTA.lastName}</p>
+                                                <p className="maroon-date">
+                                                    {selectedTA.firstName} {selectedTA.lastName}</p>
                                                 <p className="maroon-descript">{selectedTA.email}</p>
                                             </div>) :
                                             (<div>
@@ -374,12 +380,6 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                             </div>)
                                         }
                                     </div>
-                                    <div>
-                                        <p className="crowd-title">Average Wait Time</p>
-                                        <p className="maroon-date">
-                                            {totalAssignedQuestions ? formattedAverageWaitTime() : "Not applicable"}
-                                        </p>
-                                    </div>
                                     <input
                                         placeholder={"Enter TA NetID"}
                                         onChange={(e) => setTAName(e.target.value.toLowerCase())}
@@ -410,53 +410,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                     />
                                 </div>
                             </div>
-                            <div className="Most-Crowded-Box">
-                                <div className="most-crowded-text">
-                                    <div>
-                                        <p className="crowd-title">Average Resolve Time</p>
-                                        <p className="maroon-date">
-                                            {totalAssignedQuestions ? formattedAverageResolveTime() : "Not applicable"}
-                                        </p>
-                                    </div>
-                                    <input
-                                        placeholder={"Enter TA NetID"}
-                                        onChange={(e) => setTAName(e.target.value.toLowerCase())}
-                                        onFocus={() => setShowTADropdown(true)}
-                                        onBlur={() => setShowTADropdown(false)}
-                                    />
-                                    {showTADropdown && filteredTAs.length !== 0 &&
-                                        (<div className="ta-results">
-                                            {filteredTAs.map((ta) => (
-                                                <button
-                                                    type="button"
-                                                    className="ta-result"
-                                                    onMouseDown={() => setSelectedTA(ta)}
-                                                >
-                                                    {ta.firstName} {ta.lastName} ({ta.email.split("@")[0]})
-                                                </button>
-                                            ))}
-                                        </div>)}
-                                </div>
-                                <div className="questions-line-container">
-                                    <div className="questions-line-container">
-                                    <QuestionsBarGraph
-                                        barData={taGraphData}
-                                        yMax={taChartYMax}
-                                        sessionKeys={sessions.map((s) => s.sessionId)}
-                                        calcTickVals={calcTickVals}
-                                        legend="questions"
-                                        sessionDict={sessionQuestionDict}
-                                    />
-                                </div>
 
-                                    <QuestionsLineChart
-                                        lineData={averageResolveTimeLineChartQuestionsTest}
-                                        yMax={averageResolveTimeMax}
-                                        calcTickVals={calcTickVals}
-                                        legend="minutes"
-                                    />
-                                </div>
-                            </div>
                             <div className="Most-Crowded-Box">
                                 <div className="most-crowded-text">
                                     <div>
