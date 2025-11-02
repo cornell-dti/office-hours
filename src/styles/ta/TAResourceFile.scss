@@ -1,0 +1,39 @@
+.file-button-container{
+    display: flex;
+    width: 200px;
+    padding: 9.067px 12px;
+    align-items: center;
+    border-radius: 4.828px;
+    border: 1.207px solid #5599DB;
+    background: #FFF;
+    .icon-name{
+        display: flex;
+        width: 165px;
+        align-items: center;
+    }
+    .file-icon{
+        color: #5599DB;
+        margin-right: 8px;
+    }
+    .filename{
+        color: #5599DB;
+        font-family: Roboto;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        text-decoration-line: underline;
+        text-decoration-style: solid;
+        text-decoration-skip-ink: none;
+        text-decoration-thickness: auto;
+        text-underline-offset: auto;
+        text-underline-position: from-font;
+    }
+    .download-icon{
+        width: 16.899px;
+        height: 16.899px;
+        flex-shrink: 0;
+                
+    }
+}
+

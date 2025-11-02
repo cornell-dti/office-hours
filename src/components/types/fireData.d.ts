@@ -179,7 +179,7 @@ interface ResolvedItem {
  *
  * @see FireCourse
  */
-//Now contains feedbackList for each user
+// Now contains feedbackList for each user
 interface FireUser {
     firstName: string;
     lastName: string;
@@ -215,6 +215,7 @@ interface FireQuestion {
     askerId: string;
     answererId: string;
     content: string;
+    courseId: string;
     sessionId: string;
     courseId: string;
     primaryTag: string;

@@ -25,6 +25,7 @@ export const updateVirtualLocation = (
 export const addQuestion = (
     user: User | null,
     session: FireSession,
+    course: FireCourse,
     db: Firestore,
     location: string,
     selectedPrimary: FireTag | undefined,
@@ -52,8 +53,8 @@ export const addQuestion = (
             ...finalLocation,
             ...upvotedUsers,
             ...addVirtual,
-            courseId: session.courseId,
-            answererId: '',
+            answererId: "",
+            courseId:course.courseId,
             content: question,
             primaryTag: selectedPrimary != null ? selectedPrimary.tagId : "",
             secondaryTag: selectedSecondary != null ? selectedSecondary.tagId : "",

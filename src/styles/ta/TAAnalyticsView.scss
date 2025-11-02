@@ -1,0 +1,31 @@
+.profTopBar {
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+}
+
+.TAAnalyticsView {
+    overflow: auto;
+    padding-bottom: 50px;
+
+    .main {
+        margin-right: 50px;
+        margin-left: calc(200px + 50px);
+    }
+
+    .rightOfSidebar {
+        min-width: 820px;
+        align-self: center;
+        padding-top: 50px;
+        background-color: #F5F6F5;
+    }
+
+    Button:not(.react-datepicker__navigation) {
+        cursor: pointer;
+        background-color: transparent;
+        border: none;
+        color: #a0a0a0;
+        outline: none;
+        user-select: none;
+    }
+}

@@ -45,7 +45,8 @@ const formatAvgTime = (rawTimeSecs: number) => {
         return timeDispSecs + " s";
     }
     if (timeHours === 0) {
-        return timeDispMins + " mins " + timeDispSecs + " s";
+        return pluralize(timeDispMins, timeDispMins + " min " + timeDispSecs + " s",
+            timeDispMins + " mins " + timeDispSecs + " s")
     }
     return timeHours + " h " + timeDispMins + " mins";
 };
@@ -116,7 +117,7 @@ const SessionInformationHeader = ({
         } else {
             setRatioText(`${numberOfTAs} ${pluralize(numberOfTAs, "TA", "TAs")} available`);
         }
-    }, [session.studentPerTaRatio, session.hasUnresolvedQuestion, session.tas.length, questions]);
+    }, [session.studentPerTaRatio, session.tas.length, session.hasUnresolvedQuestion, questions]);
 
     const tas = useSessionTAs(course, session);
     const numAhead = computeNumberAhead(
@@ -127,16 +128,17 @@ const SessionInformationHeader = ({
     let dynamicPosition = questions.findIndex((question) => question.askerId === myQuestion?.askerId) + 1;
 
     if (dynamicPosition === 0) {
+        dynamicPosition = questions.length === 0 ? 1 : questions.length + 1
         dynamicPosition = questions.length + 1;
     }
 
-    const avgWaitTime = formatAvgTime(
-        (session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition),
-    );
+    const avgWaitTime =
+        formatAvgTime((session.totalWaitTime / session.assignedQuestions)
+            * (isTa ? 1 : dynamicPosition - 1));
 
     const today = new Date();
     const esimatedTime = formatEstimatedTime(
-        (session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition),
+        (session.totalWaitTime / session.assignedQuestions) * (isTa ? 1 : dynamicPosition-1),
         today,
     );
 
@@ -335,7 +337,7 @@ const SessionInformationHeader = ({
                                                             >
                                                                 <img
                                                                     src={ta.photoUrl || "/placeholder.png"}
-                                                                    alt={`${ta.firstName} ${ta.lastName}'s Photo`}
+                                                                    alt={`${ta.firstName} ${ta.lastName}`}
                                                                     className="TACircle"
                                                                     style={{
                                                                         width: "48px",
@@ -457,14 +459,15 @@ const SessionInformationHeader = ({
                                 <>
                                     <p className="WaitSummary" style={summaryTextStyle}>
                                         <img src={users} alt="users" className="waitIcon" />
-                                        <span className="red">{numAhead} students</span>
+                                        <span className="red"> {numAhead === 1 ? numAhead + ' student' :
+                                            numAhead + ' students'} </span>
                                         <span>ahead</span>
                                     </p>
                                     <p className="WaitSummary" style={summaryTextStyle}>
                                         <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
                                         <span className="blue"> {avgWaitTime}</span>
                                         <span className="gray"> {esimatedTime}</span>
-                                        <span>estimated wait time</span>
+                                        <span> {isTa ? 'to move one position' : 'estimated wait time'} </span>
                                     </p>
                                 </>
                             ) : (
