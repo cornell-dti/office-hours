@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router';
-import { Checkbox } from 'semantic-ui-react';
-import moment from 'moment';
+import React, { useState, useEffect } from "react";
+import { Redirect } from "react-router";
+import { Checkbox } from "semantic-ui-react";
+import moment from "moment";
+import { collection, CollectionReference, query, where} from 'firebase/firestore';
+import { collectionData, firestore, auth } from "../../firebase";
+import SelectedTags from "./SelectedTags";
+import SessionAlertModal from "./SessionAlertModal";
 
-import SelectedTags from './SelectedTags';
-import SessionAlertModal from './SessionAlertModal';
-
-import { collectionData, firestore, auth } from '../../firebase';
-import { addQuestion } from '../../firebasefunctions/sessionQuestion';
+import { addQuestion } from "../../firebasefunctions/sessionQuestion";
+// import addFiles from "../../media/AddFilesButton.svg";
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
@@ -24,9 +25,26 @@ type Props = {
     session: FireSession;
     course: FireCourse;
     mobileBreakpoint: number;
+    showProfessorStudentView: boolean;
 };
 
-const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
+/**
+ * `AddQuestion` Component - Displays a component that allows users ask a question
+ *  to join the queue.
+ * 
+ * @remarks
+ * This component is used within a course session to enable students to submit 
+ * questions to join the queue. The user submits information about location as well
+ * as the specific assignment. It adapts its layout based on screen size and provides different 
+ * views depending on the user's role (professor's student view or student view).
+ * 
+ * @param props - Contains:
+ *   - `course`: The course associated with the session.
+ *   - `session`: The current session where the question will be added.
+ *   - `mobileBreakpoint`: The screen width threshold for mobile layout.
+ *   - `showProfessorStudentView`: boolean to toggle ProfessorStudentView.
+ */
+const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentView }: Props) => {
     /*
      * State machine states
      * 10 - initial state - nothing selected, secondary & text fields locked
@@ -37,8 +55,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
      * 60 - Warning modal (replaces question modal) - toggles after submit if n minutes are left in queue
      */
 
-    const [location, setLocation] = useState<string>('');
-    const [question, setQuestion] = useState<string>('');
+    const [location, setLocation] = useState<string>("");
+    const [question, setQuestion] = useState<string>("");
     const [stage, setStage] = useState<number>(INITIAL_STATE);
     const [width, setWidth] = useState<number>(window.innerWidth);
     const [selectedPrimary, setSelectedPrimary] = useState<FireTag>();
@@ -47,28 +65,32 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
     const [tags, setTags] = useState<FireTag[]>([]);
     // For hybrid sessions to keep track if student is in virtual location
     const [isVirtual, setIsVirtual] = useState<boolean>(false);
+    const [missingPrimaryTags, setMissingPrimaryTags] = useState<boolean>(false);
+    const [missingSecondaryTags, setMissingSecondaryTags] = useState<boolean>(false);
+    const [missingLocation, setMissingLocation] = useState<boolean>(false);
+    const [missingQuestion, setMissingQuestion] = useState<boolean>(false);
+    const [attemptedSubmit, setAttemptedSubmit] = useState<boolean>(false);
 
     const primaryTags = tags.filter((tag) => tag.level === 1);
     const secondaryTags = tags.filter((tag) => tag.level === 2);
     const activeTags = tags.filter((tag) => tag.active);
-
+    const locationMissing = (session.modality === "hybrid" && isVirtual) ? false : !location;
+   
     useEffect(() => {
         const updateWindowDimensions = () => {
             setWidth(window.innerWidth);
         };
 
-        window.addEventListener('resize', updateWindowDimensions);
+        window.addEventListener("resize", updateWindowDimensions);
 
         const tags$ = collectionData<FireTag>(
-            firestore
-                .collection('tags')
-                .where('courseId', '==', course.courseId),
-            'tagId'
+            query(collection(firestore, 'tags') as CollectionReference<FireTag>, 
+                where('courseId', '==', course.courseId)),{idField: "tagId"}
         );
 
         const subscription = tags$.subscribe((newTags) => setTags(newTags));
         return () => {
-            window.removeEventListener('resize', updateWindowDimensions);
+            window.removeEventListener("resize", updateWindowDimensions);
             subscription.unsubscribe();
         };
     });
@@ -78,9 +100,14 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
     };
 
     const handlePrimarySelected = (tag: FireTag | undefined): void => {
+        if (tag) {
+            setMissingPrimaryTags(false);
+        } else {
+            setMissingPrimaryTags(true); 
+        }
         if (selectedPrimary) {
-            setLocation('');
-            setQuestion('');
+            setLocation("");
+            setQuestion("");
             if (selectedPrimary.tagId === tag?.tagId) {
                 setStage(INITIAL_STATE);
                 setSelectedPrimary(undefined);
@@ -101,21 +128,26 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
     };
 
     const handleSecondarySelected = (tag: FireTag): void => {
+        if (tag) {
+            setMissingSecondaryTags(false); 
+        } else {
+            setMissingSecondaryTags(true); 
+        }
         if (selectedSecondary) {
-            setLocation('');
-            setQuestion('');
+            setLocation("");
+            setQuestion("");
             if (selectedSecondary.tagId === tag.tagId) {
                 setStage(PRIMARY_SELECTED);
                 setSelectedSecondary(undefined);
             } else {
-                !('building' in session) ? setStage(LOCATION_INPUTTED) : setStage(SECONDARY_SELECTED);
+                !("building" in session) ? setStage(LOCATION_INPUTTED) : setStage(SECONDARY_SELECTED);
                 setSelectedSecondary(tag);
             }
-        } else if (!('building' in session)) {
+        } else if (!("building" in session)) {
             setStage(LOCATION_INPUTTED);
             setSelectedSecondary(tag);
         } else {
-            if (session.modality === 'hybrid' && typeof session.useTALink !== 'undefined' && session.useTALink) {
+            if (session.modality === "hybrid" && typeof session.useTALink !== "undefined" && session.useTALink) {
                 setStage(LOCATION_INPUTTED);
             } else {
                 setStage(SECONDARY_SELECTED);
@@ -124,11 +156,13 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
         }
     };
 
-    const handleUpdateLocation = (
-        event: React.ChangeEvent<HTMLTextAreaElement>
-    ): void => {
+    const handleUpdateLocation = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
         let newStage: number;
+
+        const isLocationEmpty = target.value.length === 0;
+        setMissingLocation(isLocationEmpty);
+
         if (target.value.length > 0) {
             if (question.length > 0) {
                 newStage = QUESTION_INPUTTED;
@@ -139,12 +173,8 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
             newStage = SECONDARY_SELECTED;
         }
 
-        if (session.modality === 'in-person') {
-            setLocation(
-                target.value.length <= LOCATION_CHAR_LIMIT
-                    ? target.value
-                    : location
-            );
+        if (session.modality === "in-person") {
+            setLocation(target.value.length <= LOCATION_CHAR_LIMIT ? target.value : location);
             setStage(newStage);
         } else {
             setLocation(target.value);
@@ -152,13 +182,11 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
         }
     };
 
-    const handleUpdateQuestion = (
-        event: React.ChangeEvent<HTMLTextAreaElement>
-    ): void => {
+    const handleUpdateQuestion = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
         const target = event.target as HTMLTextAreaElement;
-        setQuestion(
-            target.value.length <= course.charLimit ? target.value : question
-        );
+        const isQuestionEmpty = target.value.length === 0;
+        setMissingQuestion(isQuestionEmpty);
+        setQuestion(target.value.length <= course.charLimit ? target.value : question);
         setStage(target.value.length > 0 ? QUESTION_INPUTTED : LOCATION_INPUTTED);
     };
 
@@ -177,11 +205,53 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
         setRedirect(allowRedirect);
     };
 
+    const handleClick = () : void => {
+        // eslint-disable-next-line no-console
+        console.log("Button Clicked");
+
+        setAttemptedSubmit(true);
+
+        setMissingPrimaryTags(!selectedPrimary);
+        setMissingSecondaryTags(!selectedSecondary);
+        setMissingLocation(locationMissing);
+        setMissingQuestion(!question);
+
+        if (!selectedPrimary || !selectedSecondary || locationMissing || !question) {
+            // eslint-disable-next-line no-console
+            console.log("Fields missing, showing error state");
+            return;
+        }
+    
+        // eslint-disable-next-line no-console
+        console.log("All fields filled, submitting...");
+        handleJoinClick(); 
+    };
+
+    useEffect(() => {
+        // eslint-disable-next-line no-console
+        console.log({
+            missingPrimaryTags,
+            missingSecondaryTags,
+            missingLocation,
+            missingQuestion,
+        });
+    }, [missingPrimaryTags, missingSecondaryTags, missingLocation, missingQuestion]);
+    
+    useEffect(() => {
+        if (attemptedSubmit){
+            setMissingPrimaryTags(!selectedPrimary);
+            setMissingSecondaryTags(!selectedSecondary);
+            setMissingLocation(locationMissing);
+            setMissingQuestion(!question);
+        }
+    }, [selectedPrimary, selectedSecondary, location, question, attemptedSubmit]);
+
+
     const handleJoinClick = (): void => {
         if (
             stage !== CLOSE_TO_END_OF_OH &&
             moment()
-                .add(WARNING_THRESHOLD, 'minutes')
+                .add(WARNING_THRESHOLD, "minutes")
                 .isAfter(session.endTime.seconds * 1000)
         ) {
             setStage(CLOSE_TO_END_OF_OH);
@@ -196,9 +266,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
             !event.repeat &&
             (event.ctrlKey || event.metaKey) &&
             event.keyCode === 13 &&
-            (stage > LOCATION_INPUTTED ||
-                primaryTags.length === 0 ||
-                secondaryTags.length === 0)
+            (stage > LOCATION_INPUTTED || primaryTags.length === 0 || secondaryTags.length === 0)
         ) {
             addNewQuestion();
         } else if (!event.repeat && event.keyCode === 27) {
@@ -206,14 +274,16 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
         }
     };
 
+    const Asterisk = () => <span className="required"> * </span>;
+
     if (redirect) {
         return (
             <Redirect
                 push={true}
                 to={
-                    '/course/' +
+                    (showProfessorStudentView ? "/professor-student-view/course/" : "/course/") +
                     course.courseId +
-                    '/session/' +
+                    "/session/" +
                     session.sessionId
                 }
             />
@@ -221,214 +291,190 @@ const AddQuestion = ({ course, session, mobileBreakpoint }: Props) => {
     }
 
     return (
-        <div className='QuestionView' onKeyDown={(e) => handleKeyPressDown(e)}>
+        
+        <div className="QuestionView" onKeyDown={(e) => handleKeyPressDown(e)}>
             {(stage < CLOSE_TO_END_OF_OH || width < mobileBreakpoint) && (
-                <div className='AddQuestion'>
-                    <div className='queueHeader'>
-                        <p className='title'>Join The Queue</p>
+                <div className="AddQuestion">
+                    <div className="queueHeader">
+                        <p className="title">Join The Queue</p>
                     </div>
-                    <div className='tagsContainer'>
+                    <div className="tagsContainer">
                         {primaryTags.length !== 0 && (
                             <>
-                                <hr />
-                                <div className='tagsMiniContainer'>
-                                    <p className='header'>Select a Category</p>
-                                    <div className='QuestionTags'>
-                                        {tags
-                                            .filter(
-                                                (tag) =>
-                                                    tag.active &&
-                                                    tag.level === 1
-                                            )
-                                            .map((tag) => (
-                                                <SelectedTags
-                                                    key={tag.tagId}
-                                                    tag={tag}
-                                                    isSelected={stage > INITIAL_STATE}
-                                                    onClick={() =>
-                                                        handlePrimarySelected(
-                                                            tag
-                                                        )
-                                                    }
-                                                    check={
-                                                        tag.name ===
-                                                        selectedPrimary?.name
-                                                    }
-                                                    isPrimary={true}
-                                                    select={true}
-                                                />
-                                            ))}
+                                <div className={`topRow ${missingPrimaryTags ? "error" : ""}`}>
+                                    <div className="disclaimerContainer text">
+                                        <p> <Asterisk /> Required</p>
+                                    </div>
+                                    <div className="tagsMiniContainer">
+                                        <p className="header">Select a Category<Asterisk /></p>
+                                        <div className="category">
+                                            {tags
+                                                .filter((tag) => tag.active && tag.level === 1)
+                                                .map((tag) => (
+                                                    <SelectedTags
+                                                        key={tag.tagId}
+                                                        tag={tag}
+                                                        isSelected={stage > INITIAL_STATE}
+                                                        onClick={() => handlePrimarySelected(tag)}
+                                                        check={tag.name === selectedPrimary?.name}
+                                                        isPrimary={true}
+                                                        select={true}
+                                                    />
+                                                ))}
+                                        </div>
                                     </div>
                                 </div>
+                                
                             </>
                         )}
                         {secondaryTags.length !== 0 && (
                             <>
                                 <hr />
-                                <div
-                                    className={
-                                        'tagsMiniContainer secondaryTags ' +
-                                        !!selectedPrimary
-                                    }
+                                <div className={`tagsMiniContainer 
+                                    ${missingSecondaryTags ? "error " :  ""}`
+                                    + !!selectedPrimary
+                                }
                                 >
-                                    <p className='header'>Select a Tag</p>
+                                    <p className="header">Select a Tag<Asterisk /></p>
                                     {selectedPrimary ? (
                                         tags
-                                            .filter(
-                                                (tag) =>
-                                                    tag.active &&
-                                                    tag.level === 2
-                                            )
-                                            .filter(
-                                                (tag) =>
-                                                    tag.parentTag ===
-                                                    selectedPrimary.tagId
-                                            )
+                                            .filter((tag) => tag.active && tag.level === 2)
+                                            .filter((tag) => tag.parentTag === selectedPrimary.tagId)
                                             .map((tag) => (
                                                 <SelectedTags
                                                     key={tag.tagId}
                                                     tag={tag}
-                                                    isSelected={
-                                                        selectedSecondary ===
-                                                        tag
-                                                    }
-                                                    onClick={() =>
-                                                        handleSecondarySelected(
-                                                            tag
-                                                        )
-                                                    }
-                                                    check={
-                                                        tag.name ===
-                                                        selectedSecondary?.name
-                                                    }
+                                                    isSelected={selectedSecondary === tag}
+                                                    onClick={() => handleSecondarySelected(tag)}
+                                                    check={tag.name === selectedSecondary?.name}
                                                     select={true}
                                                 />
                                             ))
                                     ) : (
-                                        <p className='placeHolder'>
-                                            {activeTags.length > 0 ? 'First select a category' :''}
+                                        <p className="placeHolder">
+                                            {activeTags.length > 0 ? "First select a category" : ""}
                                         </p>
                                     )}
                                 </div>
                             </>
                         )}
                         <hr />
-                        {'building' in session && (
+                        {"building" in session && (
                             <>
-                                {' '}
-                                <div className='tagsMiniContainer'>
+                                {" "}
+                                <div className={`tagsMiniContainer ${missingLocation  ? "error" : ""}`}>
                                     {
-                                        <p className='header'>
-                                            {session.modality === 'hybrid' ? 
-                                                'Location or Zoom Link' : 'Location'} &nbsp;
-                                            {session.modality ===
-                                                'in-person' && (
+                                        <p className="header">
+                                            {session.modality === "hybrid" ? "Location or Zoom Link" : "Location"}{" "}
+                                            &nbsp;
+                                            {session.modality === "in-person" && (
                                                 <span
                                                     className={
-                                                        'characterCount ' +
-                                                        (location.length >=
-                                                        LOCATION_CHAR_LIMIT
-                                                            ? 'warn'
-                                                            : '')
+                                                        "characterCount " +
+                                                        (location.length >= LOCATION_CHAR_LIMIT ? "warn" : "")
                                                     }
                                                 >
-                                                    (
-                                                    {LOCATION_CHAR_LIMIT -
-                                                        location.length}{' '}
-                                                    character
-                                                    {LOCATION_CHAR_LIMIT -
-                                                        location.length !==
-                                                        1 && 's'}{' '}
-                                                    left)
+                                                    ({LOCATION_CHAR_LIMIT - location.length} character
+                                                    {LOCATION_CHAR_LIMIT - location.length !== 1 && "s"} left)
                                                 </span>
                                             )}
+                                            <Asterisk/>
                                         </p>
                                     }
                                     {stage >= SECONDARY_SELECTED || activeTags.length === 0 ? (
-                                        <div className='locationInput'>
-                                            {session.modality === 'hybrid' && 
-                                            <Checkbox
-                                                className="hybridCheckbox"
-                                                label="Are you virtual?" 
-                                                checked={isVirtual}
-                                                onClick={() => setIsVirtual(!isVirtual)}
-                                            />}
-                                            {!(session.modality === 'hybrid' && 
-                                            typeof session.useTALink !== 'undefined' && session.useTALink) &&
+                                        <div className="locationInput">
+                                            {session.modality === "hybrid" && (
+                                                <Checkbox
+                                                    className="hybridCheckbox"
+                                                    label="Are you virtual?"
+                                                    checked={isVirtual}
+                                                    onClick={() => {
+                                                        setIsVirtual(!isVirtual);
+                                                        !isVirtual && setMissingLocation(false);
+                                                        !isVirtual && setStage(LOCATION_INPUTTED);
+                                                    }}
+                                                />
+                                            )}
+                                            {!(
+                                                session.modality === "hybrid" &&
+                                                typeof session.useTALink !== "undefined" &&
+                                                session.useTALink && isVirtual
+                                            ) && (
                                                 <textarea
-                                                    className='TextInput location'
+                                                    className="TextInput location"
                                                     value={location}
                                                     onChange={handleUpdateLocation}
-                                                    placeholder={(session.modality === 'in-person' || !isVirtual) ? 
-                                                        'What is your location?' : 'What is your zoom link?'}
-                                                /> 
-                                            }
+                                                    placeholder={
+                                                        session.modality === "in-person" || !isVirtual
+                                                            ? "Enter where you are (room & location in room)"
+                                                            : "What is your zoom link?"
+                                                    }
+                                                />
+                                            )}
                                         </div>
                                     ) : (
-                                        <p className='placeHolder text'>
-                                            Finish selecting tags...
-                                        </p>
+                                        <p className="placeHolder text">Finish selecting tags...</p>
                                     )}
                                 </div>
-                                <hr />
                             </>
                         )}
-                        <div className='tagsMiniContainer'>
-                            <p className='header'>{'Question '}</p>
+                        <hr/>
+                        <div className={`tagsMiniContainer ${missingQuestion ? "error" : ""}`}>
+                            <p className="header">{"Question "} <Asterisk /></p>
                             {stage >= LOCATION_INPUTTED ||
                             primaryTags.length === 0 ||
                             secondaryTags.length === 0 ||
                             activeTags.length === 0 ? (
                                     <textarea
-                                        className='TextInput question'
+                                        className="TextInput question"
                                         value={question}
                                         onChange={handleUpdateQuestion}
-                                        placeholder="What's your question about?"
+                                        placeholder="What would you like help or feedback on?"
                                     />
                                 ) : (
                                     <textarea
                                         disabled
-                                        className='TextInput question'
+                                        className="TextInput question"
                                         value={question}
                                         onChange={handleUpdateQuestion}
                                         placeholder={
-                                            !('building' in session)
-                                                ? 'First select a category and a tag'
-                                                : 'Enter your location...'
+                                            !("building" in session)
+                                                ? "First select a category and a tag"
+                                                : "Enter your location..."
                                         }
                                     />
                                 )}
                         </div>
-                        <div className='addButtonWrapper'>
-                            {stage > LOCATION_INPUTTED ||
-                            primaryTags.length === 0 ||
-                            secondaryTags.length === 0 ? (
-                                    <p
-                                        className='AddButton active'
-                                        onClick={() => handleJoinClick()}
-                                    >
-                                    Add My Question
-                                    </p>
-                                ) : (
-                                    <p className='AddButton'> Add My Question </p>
-                                )}
+                        {/* <hr />
+                        <div className="tagsMiniContainer">
+                            <p className="header">Your Files</p>
+                            <img alt="" src={addFiles}/>
+                        </div> */}
+                        <div className="addButtonWrapper">
+                            <p
+                                className={`AddButton ${stage > LOCATION_INPUTTED 
+                                    || primaryTags.length === 0 
+                                    || secondaryTags.length === 0 ? "active" : ""}`}
+                                onClick={handleClick}
+                            >
+                                Add My Question
+                            </p>
+                            
                         </div>
                     </div>
                 </div>
             )}
             {stage === CLOSE_TO_END_OF_OH && (
                 <SessionAlertModal
-                    header={'Warning'}
-                    icon={'exclamation'}
-                    color={'yellow'}
+                    header={"Warning"}
+                    icon={"exclamation"}
+                    color={"yellow"}
                     description={
-                        'This session ends at ' +
-                        moment(session.endTime.seconds * 1000).format(
-                            'h:mm A'
-                        ) +
-                        '. Consider adding yourself to a later queue.'
+                        "This session ends at " +
+                        moment(session.endTime.seconds * 1000).format("h:mm A") +
+                        ". Consider adding yourself to a later queue."
                     }
-                    buttons={['Cancel Question', 'Add Anyway']}
+                    buttons={["Cancel Question", "Add Anyway"]}
                     cancelAction={handleXClick}
                     course={course}
                     mainAction={() => handleJoinClick()}

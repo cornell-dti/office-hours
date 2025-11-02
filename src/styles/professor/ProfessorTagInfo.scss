@@ -60,15 +60,39 @@
             position: relative;
             padding-right: 25px;
             padding-left: 10px;
+            margin-bottom: 10px;
+            
+            input {
+                background-color: transparent;
+            }
+
+            input:hover,
+            input:focus {
+                color: #5f87ef;
+            }
 
             .Remove {
                 position: absolute;
                 right: 5px;
                 cursor: pointer;
             }
+
+            .Remove:hover {
+                color: #5f87ef;
+            }
+        }
+
+        .SelectedChildTag:focus-within,
+        .SelectedChildTag:hover {
+            border-color: #5f87ef;
+
+            input {
+                color: black;
+            }
         }
 
         .InputChildTag {
+            margin-bottom: 12px;
             &:focus {
                 outline: none;
             }
@@ -78,7 +102,7 @@
             background: #898989;
             color: #edeff2;
             padding: 1.5px 5px;
-            margin-bottom: 1px;
+            margin-bottom: 12px;
             line-height: 22px;
             vertical-align: bottom;
             width: auto;
@@ -93,7 +117,8 @@
     }
 }
 
-.ExpandedEdit, .ExpandedAdd {
+.ExpandedEdit,
+.ExpandedAdd {
     .Bottom {
         font-size: 14px;
         padding: 10px 0px;

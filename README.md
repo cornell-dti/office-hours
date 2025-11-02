@@ -1,5 +1,5 @@
 # Queue Me In
-by [Cornell Design & Tech Initiative](http://cornelldti.org)
+by [Cornell Digital Technology & Innovation](http://cornelldti.org)
 
 #### Contents
   - [About](#about)
@@ -15,7 +15,7 @@ We make it easier for students to get help because they don't have to wait in cr
 ## Getting Started
 View the [setup documentation](./docs/setup.md) for instructions on setting up and getting started with development!
 
-_Last updated **04/01/2019**_.
+_Last updated **02/29/2024**_.
 
 ## Screenshots
 
@@ -26,6 +26,35 @@ _Screenshots showing major parts of app_
 <img src="Screenshots/3.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;"> <img src="Screenshots/4.png" width="250px" style="margin: 10px; border: 1px rgba(0,0,0,0.4) solid;">
 
 ## Contributors
+
+### 2024-25
+* **Vannessa Wong** - Product Manager
+* **Nidhi Soma** - Technical Product Manager
+* **Maddie Hsia** - Product Marketing Manager
+* **Nadia Choophungart** - Associate Product Manager
+* **Eric Weng** - Software Developer
+* **Annie Chen** - Software Developer
+* **Layla Liu** - Software Developer
+* **Nikhill Andrew** - Software Developer
+* **Renee Du** - Designer
+
+
+
+### 2023-24
+* **Benjamin Tang** - Product Manager
+* **Lily Pham** - Technical Project Manager
+* **Richard Gu** - Co-Technical Project Manager
+* **Sydney Tran** - Software Developer
+* **Jessica Wang** - Software Developer
+* **Sophie Wang** - Software Developer
+* **Erin Xu** - Software Developer
+* **Steven Yu** - Software Developer
+* **Nidhi Soma** - Software Developer
+* **Brandon Lee** - Designer
+* **Jenny Zhang** - Designer
+* **Lucy Yang** - Designer
+* **Sia Harisingani** - Designer
+* **Raissa Ji** - Product Marketing Manager
 
 ### 2022-23
 * **Pranavi Gupta** - Product Manager

@@ -1,22 +1,31 @@
-import firebase from 'firebase/app';
-import { firestore } from '../firebase';
+import {
+    doc,
+    updateDoc,
+    getDoc,
+    setDoc,
+    collection,
+    writeBatch,
+    Timestamp,
+    Firestore,
+    onSnapshot,
+} from "firebase/firestore";
+import { User } from "firebase/auth";
+import { firestore } from "../firebase";
 
 export const updateVirtualLocation = (
-    db: firebase.firestore.Firestore,
+    db: Firestore,
     user: FireUser,
     session: FireSession,
-    virtualLocation: string): Promise<void> => {
-    return db.doc(`/sessions/${session.sessionId}/profiles/${user.userId}`).set({
-        virtualLocation
-    }, {
-        merge: true
-    }).then(() => { })
+    virtualLocation: string
+): Promise<void> => {
+    const profileRef = doc(db, `sessions/${session.sessionId}/profiles/${user.userId}`);
+    return setDoc(profileRef, { virtualLocation }, { merge: true }).then(() => {});
 };
 
 export const addQuestion = (
-    user: firebase.User | null,
+    user: User | null,
     session: FireSession,
-    db: firebase.firestore.Firestore,
+    db: Firestore,
     location: string,
     selectedPrimary: FireTag | undefined,
     selectedSecondary: FireTag | undefined,
@@ -24,184 +33,154 @@ export const addQuestion = (
     isVirtual: boolean
 ): boolean => {
     if (user != null) {
-        const batch = db.batch();
-        const questionId = db.collection('questions').doc().id;
-        const newQuestionSlot: Omit<FireQuestionSlot, 'questionId'> = {
+        const batch = writeBatch(db);
+        const questionId = doc(collection(db, "questions")).id;
+        const newQuestionSlot: Omit<FireQuestionSlot, "questionId"> = {
             askerId: user.uid,
             sessionId: session.sessionId,
-            status: 'unresolved',
-            timeEntered: firebase.firestore.Timestamp.now()
+            status: "unresolved",
+            timeEntered: Timestamp.now(),
         };
 
-        const addVirtual = session.modality === 'hybrid' ?
-            { isVirtual } : {};
+        const addVirtual = session.modality === "hybrid" ? { isVirtual } : {};
 
         const finalLocation = location.length === 0 ? {} : { location };
-        const upvotedUsers = session.modality === "review" ? { upvotedUsers: [user.uid] } : {}
+        const upvotedUsers = session.modality === "review" ? { upvotedUsers: [user.uid] } : {};
 
-        const newQuestion: Omit<FireOHQuestion, 'questionId'> = {
+        const newQuestion: Omit<FireOHQuestion, "questionId"> = {
             ...newQuestionSlot,
             ...finalLocation,
             ...upvotedUsers,
             ...addVirtual,
-            answererId: '',
+            answererId: "",
             content: question,
-            primaryTag: selectedPrimary != null ? selectedPrimary.tagId : '',
-            secondaryTag: selectedSecondary != null ? selectedSecondary.tagId : '',
+            primaryTag: selectedPrimary != null ? selectedPrimary.tagId : "",
+            secondaryTag: selectedSecondary != null ? selectedSecondary.tagId : "",
             wasNotified: false,
             position: session.totalQuestions - session.assignedQuestions + 1,
-
         };
-        batch.set(db.collection('questionSlots').doc(questionId), newQuestionSlot);
-        batch.set(db.collection('questions').doc(questionId), newQuestion);
+        batch.set(doc(collection(db, "questionSlots"), questionId), newQuestionSlot);
+        batch.set(doc(collection(db, "questions"), questionId), newQuestion);
         batch.commit();
 
-        return true
+        return true;
     }
 
-    return false
-}
+    return false;
+};
 
-export const markStudentNoShow = (
-    db: firebase.firestore.Firestore,
-    question: FireOHQuestion
-) => {
-    const batch = db.batch();
-    const slotUpdate: Partial<FireQuestionSlot> = { status: 'no-show' };
+export const markStudentNoShow = (db: Firestore, question: FireOHQuestion) => {
+    const batch = writeBatch(db);
+    const slotUpdate: Partial<FireQuestionSlot> = { status: "no-show" };
     const questionUpdate: Partial<FireQuestion> = slotUpdate;
-    batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
-    batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
+    batch.update(doc(db, `questionSlots/${question.questionId}`), slotUpdate);
+    batch.update(doc(db, `questions/${question.questionId}`), questionUpdate);
     batch.commit();
-}
+};
 
-
-export const markQuestionDone = (
-    db: firebase.firestore.Firestore,
-    question: FireOHQuestion
-) => {
-    const batch = db.batch();
-    const slotUpdate: Partial<FireQuestionSlot> = { status: 'resolved' };
+export const markQuestionDone = (db: Firestore, question: FireOHQuestion) => {
+    const batch = writeBatch(db);
+    const slotUpdate: Partial<FireQuestionSlot> = { status: "resolved" };
     const questionUpdate: Partial<FireOHQuestion> = {
-        status: 'resolved',
-        timeAddressed: firebase.firestore.Timestamp.now()
+        status: "resolved",
+        timeAddressed: Timestamp.now(),
     };
-    batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
-    batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
+    batch.update(doc(db, `questionSlots/${question.questionId}`), slotUpdate);
+    batch.update(doc(db, `questions/${question.questionId}`), questionUpdate);
     batch.commit();
-}
+};
 
-
-export const markQuestionDontKnow = (
-    db: firebase.firestore.Firestore,
-    question: FireOHQuestion
-) => {
-    const batch = db.batch();
-    const slotUpdate: Partial<FireQuestionSlot> = { status: 'unresolved' };
-    const questionUpdate: Partial<FireQuestion> = { status: 'unresolved', answererId: '' };
-    batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
-    batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
+export const markQuestionDontKnow = (db: Firestore, question: FireOHQuestion) => {
+    const batch = writeBatch(db);
+    const slotUpdate: Partial<FireQuestionSlot> = { status: "unresolved" };
+    const questionUpdate: Partial<FireQuestion> = { status: "unresolved", answererId: "" };
+    batch.update(doc(db, `questionSlots/${question.questionId}`), slotUpdate);
+    batch.update(doc(db, `questions/${question.questionId}`), questionUpdate);
     batch.commit();
-}
+};
 
-
-export const retractStudentQuestion = (
-    db: firebase.firestore.Firestore,
-    question: FireOHQuestion
-) => {
-    const batch = db.batch();
-    const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
+export const retractStudentQuestion = (db: Firestore, question: FireOHQuestion) => {
+    const batch = writeBatch(db);
+    const slotUpdate: Partial<FireQuestionSlot> = { status: "retracted" };
     const questionUpdate: Partial<FireQuestion> = slotUpdate;
-    batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
-    batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
+    batch.update(doc(db, `questionSlots/${question.questionId}`), slotUpdate);
+    batch.update(doc(db, `questions/${question.questionId}`), questionUpdate);
     batch.commit();
-}
+};
 
+export const updateComment = (db: Firestore, question: FireOHQuestion, newComment: string, isTA: boolean) => {
+    const update: Partial<FireOHQuestion> = isTA ? { taComment: newComment } : { studentComment: newComment };
+    const questionRef = doc(db, `questions/${question.questionId}`);
 
-export const updateComment = (
-    db: firebase.firestore.Firestore,
-    question: FireOHQuestion,
-    newComment: string,
-    isTA: boolean
-) => {
-    let update: Partial<FireOHQuestion>
-    if (isTA) {
-        update = { taComment: newComment };
-    } else {
-        update = { studentComment: newComment };
-    }
-    db.doc(`questions/${question.questionId}`).update(update);
-}
+    updateDoc(questionRef, update);
+};
 
 export const clearIndicator = (question: FireQuestion, ta: boolean) => {
-    let update: Partial<FireQuestion>;
-    if (ta) {
-        update = { taNew: false };
-    } else {
-        update = { studentNew: false };
-    }
-    firestore.doc(`questions/${question.questionId}`).update(update);
-}
-
+    const update: Partial<FireQuestion> = ta ? { taNew: false } : { studentNew: false };
+    const questionRef = doc(firestore, `questions/${question.questionId}`);
+    updateDoc(questionRef, update);
+};
 
 export const assignQuestionToTA = (
-    db: firebase.firestore.Firestore,
+    db: Firestore,
     question: FireOHQuestion,
     virtualLocation: string | undefined,
     myUserId: string
 ) => {
-
-
-    const batch = db.batch();
-    const slotUpdate: Partial<FireQuestionSlot> = { status: 'assigned' };
+    const batch = writeBatch(db);
+    const slotUpdate: Partial<FireQuestionSlot> = { status: "assigned" };
     const questionUpdate: Partial<FireOHQuestion> = {
-        status: 'assigned',
+        status: "assigned",
         answererId: myUserId,
-        timeAssigned: firebase.firestore.Timestamp.now(),
-        ...(virtualLocation ? { answererLocation: virtualLocation } : {})
+        timeAssigned: Timestamp.now(),
+        ...(virtualLocation ? { answererLocation: virtualLocation } : {}),
     };
-    batch.update(db.doc(`questionSlots/${question.questionId}`), slotUpdate);
-    batch.update(db.doc(`questions/${question.questionId}`), questionUpdate);
+    batch.update(doc(db, `questionSlots/${question.questionId}`), slotUpdate);
+    batch.update(doc(db, `questions/${question.questionId}`), questionUpdate);
     batch.commit();
-}
+};
 
-export const removeQuestionbyID = (
-    db: firebase.firestore.Firestore,
-    removeQuestionId: string | undefined
-) => {
+export const removeQuestionbyID = (db: Firestore, removeQuestionId: string | undefined) => {
     if (removeQuestionId !== undefined) {
-        const batch = db.batch();
-        const slotUpdate: Partial<FireQuestionSlot> = { status: 'retracted' };
+        const batch = writeBatch(db);
+        const slotUpdate: Partial<FireQuestionSlot> = { status: "retracted" };
         const questionUpdate: Partial<FireQuestion> = slotUpdate;
-        batch.update(db.doc(`questionSlots/${removeQuestionId}`), slotUpdate);
-        batch.update(db.doc(`questions/${removeQuestionId}`), questionUpdate);
+        batch.update(doc(db, `questionSlots/${removeQuestionId}`), slotUpdate);
+        batch.update(doc(db, `questions/${removeQuestionId}`), questionUpdate);
         batch.commit();
     }
-}
+};
 
 export const updateQuestion = (
-    db: firebase.firestore.Firestore,
+    db: Firestore,
     virtualLocation: string,
     questions: readonly FireQuestion[],
     user: FireUser
-
 ) => {
-    const batch = db.batch();
-
+    const batch = writeBatch(db);
     const questionUpdate: Partial<FireOHQuestion> = { answererLocation: virtualLocation };
     questions.forEach((q) => {
-        if (q.answererId === user.userId && q.status === 'assigned') {
-            batch.update(db.doc(`questions/${q.questionId}`), questionUpdate);
+        if (q.answererId === user.userId && q.status === "assigned") {
+            batch.update(doc(db, `questions/${q.questionId}`), questionUpdate);
         }
     });
 
     batch.commit();
-}
+};
 
-export const addComment = (content: string, commenterId: string, questionId: string, isTA: boolean,
-    askerId: string, answererId: string) => {
-    const timePosted = firebase.firestore.Timestamp.now();
-    const commentId = firestore.doc(`questions/${questionId}`).collection('comments').doc().id;
-    firestore.doc(`questions/${questionId}`).update(isTA ? { studentNew: true } : { taNew: true });
+export const addComment = (
+    content: string,
+    commenterId: string,
+    questionId: string,
+    isTA: boolean,
+    askerId: string,
+    answererId: string
+) => {
+    const timePosted = Timestamp.now();
+    const questionRef = doc(firestore, `questions/${questionId}`);
+    const commentsRef = collection(questionRef, "comments");
+    const commentId = doc(commentsRef).id;
+    updateDoc(questionRef, isTA ? { studentNew: true } : { taNew: true });
     const newComment: FireComment = {
         content,
         commenterId,
@@ -210,28 +189,34 @@ export const addComment = (content: string, commenterId: string, questionId: str
         commentId,
         askerId,
         answererId,
-    }
-    const batch = firestore.batch();
-    batch.set(firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId), newComment);
+    };
+    const batch = writeBatch(firestore);
+    batch.set(doc(commentsRef), newComment);
     batch.commit();
-}
+};
 
 export const deleteComment = (commentId: string, questionId: string) => {
-    const batch = firestore.batch();
-    const delCommentRef = firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId);
+    const batch = writeBatch(firestore);
+    const questionRef = doc(firestore, `questions/${questionId}`);
+    const commentsRef = collection(questionRef, "comments");
+    const delCommentRef = doc(commentsRef, commentId);
     batch.delete(delCommentRef);
     batch.commit();
-}
+};
 
 export const updateCurrentComment = (commentId: string, questionId: string, newContent: string) => {
-    const batch = firestore.batch();
-    const curCommentRef = firestore.doc(`questions/${questionId}`).collection('comments').doc(commentId);
+    const batch = writeBatch(firestore);
+    const questionRef = doc(firestore, `questions/${questionId}`);
+    const commentsRef = collection(questionRef, "comments");
+    const curCommentRef = doc(commentsRef, commentId);
     batch.update(curCommentRef, { content: newContent });
     batch.commit();
-}
+};
 
-export const getComments = (questionId: string, setComments: ((comments: FireComment[]) => void)): (() => void) => {
-    const unsubscribe = firestore.doc(`questions/${questionId}`).collection('comments').onSnapshot((commentData) => {
+export const getComments = (questionId: string, setComments: (comments: FireComment[]) => void): (() => void) => {
+    const questionRef = doc(firestore, `questions/${questionId}`);
+    const commentsRef = collection(questionRef, "comments");
+    const unsubscribe = onSnapshot(commentsRef, (commentData) => {
         const comments: FireComment[] = [];
         commentData.forEach((comment) => {
             comments.push(comment.data() as FireComment);
@@ -239,4 +224,72 @@ export const getComments = (questionId: string, setComments: ((comments: FireCom
         setComments(comments);
     });
     return unsubscribe;
-}
+};
+
+/* Adds three new ratings (organization, efficiency, overallExperience) 
+to the firebase under the users tab for each question asked. Also adds a verification field
+to determine whether or not a review was checked. */
+export const submitFeedback =
+    (removedQuestionId: string | undefined, sessionId: string) =>
+        async (
+            rating1?: number,
+            rating2?: number,
+            rating3?: number,
+            feedback?: string,
+            verified?: boolean | undefined,
+        ) => {
+
+            if (!removedQuestionId) {
+                return;
+            }
+
+            try {
+                const questionRef = doc(firestore, `questions/${removedQuestionId}`);
+                const questionDoc = await getDoc(questionRef);
+
+                if (!questionDoc.exists()) {
+                    return;
+                }
+
+                const taID = questionDoc.data()?.answererId || undefined;
+                const timeStamp = questionDoc.data()?.timeAddressed || undefined;
+
+                if (!taID) {
+                    return;
+                }
+
+                const feedbackRecord = {
+                    organization: rating1,
+                    efficiency: rating2,
+                    overallExperience: rating3,
+                    timeStamp,
+                    writtenFeedback: feedback,
+                    session: sessionId,
+                    verification: verified,
+                };
+
+                const usersRef = doc(firestore, `users/${taID}`);
+                const userDoc = await getDoc(usersRef);
+
+                if (!userDoc.exists()) {
+                    return;
+                }
+
+                const existingFeedbackList = userDoc.data()?.feedbackList || [];
+                existingFeedbackList.push(feedbackRecord);
+
+                const updateData: any = {
+                    feedbackList: existingFeedbackList,
+                };
+
+                // Only set verified if it doesn’t exist yet
+                if (userDoc.data().verified === undefined && verified !== undefined) {
+                    updateData.verified = verified;
+                }
+
+                await updateDoc(usersRef, updateData);
+            } catch (error) {
+                // eslint-disable-next-line no-console
+                console.log("Error updating")
+            }
+        };

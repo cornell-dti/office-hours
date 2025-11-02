@@ -1,0 +1,134 @@
+.export-csv-background {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Roboto";
+  font-weight: 400px;
+  background-color: rgba(112, 112, 112, 0.8);
+  animation: fade 0.6s;
+}
+
+.export-csv-container {
+  position: relative;
+  background-color: white;
+  border-radius: 8px;
+  height: 525px;
+  width: 400px;
+  padding-left: 32px;
+  padding-right: 32px;
+
+  .close-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border: none;
+      background-color: transparent;
+      padding: 0;
+      cursor: pointer;
+      width: 15px;
+      height: 15px;
+
+      img {
+          width: 15px;
+          height: 15px;
+          margin: 0;
+          padding: 0;
+      }
+  }
+
+  .export-button-container {
+    padding: 8px 20px 8px 20px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+    background-color: #5DA9F2;
+  }
+
+  .export-icon {
+    width: 32px;
+    height: 32px;
+    margin-top: 35px;
+  }
+
+  .export-icon2 {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+  }
+
+  h2 {
+    margin-top: 0px;
+    margin-bottom: 32px;
+    font-size: 16px;
+  }
+
+  p {
+    text-align: left;
+  }
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 16px;
+    justify-content: space-between;
+    align-self: stretch;
+
+    .radioCheckbox {
+      width: 50%;
+      text-align: left;
+      font-weight: light;
+    }
+
+    .label {
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 8px;
+    }
+
+    input {
+      padding: 8px !important;
+      border: 0 !important;
+    }
+  }
+
+  .time-interval {
+    margin-top: 24px;
+    margin-bottom: 20px;
+  }
+
+  .select-analytics {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+
+  .checkboxFormLabel {
+    width: 100%;
+    text-align: left;
+    font-weight: light;
+  }
+
+  .ui.radio.checkbox input:checked~.box:after, .ui.radio.checkbox input:checked~label:after {
+    background-color: rgba(85, 153, 219, 1) !important;
+  }
+
+  .Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: rgba(85, 153, 219, 1) !important;
+  }
+
+  .MuiCheckbox-colorSecondary.Mui-checked {
+    color: rgba(85, 153, 219, 1) !important;
+  }
+
+  .icon {
+    margin-right: 8px;
+    color: gray;
+  }
+}

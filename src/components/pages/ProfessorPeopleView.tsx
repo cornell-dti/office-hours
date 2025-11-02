@@ -12,6 +12,7 @@ import "react-dates/lib/css/_datepicker.css";
 import { useCourse, useCourseUsersMap, useCoursesBetweenDates } from "../../firehooks";
 import TopBar from "../includes/TopBar";
 
+
 const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) => {
     const courseId = props.match.params.courseId;
 
@@ -102,15 +103,34 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         return tickVals;
     };
 
+    const formatAvgTime = (rawTimeSecs: number) => {
+        const timeSecs = Math.floor(rawTimeSecs);
+        const timeMins = Math.floor(timeSecs / 60);
+        const timeHours = Math.floor(timeMins / 60);
+        const timeDispSecs = timeSecs - timeMins * 60;
+        const timeDispMins = timeMins - timeHours * 60;
+        if (isNaN(timeSecs)) {
+            return "No information available";
+        }
+        if (timeMins === 0) {
+            return timeDispSecs + " s";
+        }
+        if (timeHours === 0) {
+            return timeDispMins + " mins " + timeDispSecs + " s";
+        }
+        return timeHours + " h " + timeDispMins + " mins";
+    };
+
+    // average wait time in seconds
     const calculateAverageWaitTime = (session: FireSession) => {
-        return session.assignedQuestions === 0 ? 0 : session.totalWaitTime / session.assignedQuestions / 60;
+        return session.assignedQuestions === 0 ? 0 : session.totalWaitTime / session.assignedQuestions;
     };
 
     const averageWaitTimeLineChartQuestionsTest: { x: string; y: number }[] = [];
     let averageWaitTimeMax = 0;
     for (const session of sessions) {
         const x = moment(session.startTime.seconds * 1000).format("MMM D");
-        const y = calculateAverageWaitTime(session);
+        const y = calculateAverageWaitTime(session) / 60;
         const lastIndex = averageWaitTimeLineChartQuestionsTest.length - 1;
         if (averageWaitTimeLineChartQuestionsTest[lastIndex]?.x === x) {
             averageWaitTimeLineChartQuestionsTest[lastIndex].y += y;
@@ -121,6 +141,32 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         }
     }
 
+    const calculateAverageResolveTime = (session: FireSession) => {
+        return session.assignedQuestions === 0 ? 0 : session.totalResolveTime / session.assignedQuestions;
+    };
+
+    const averageResolveTimeLineChartQuestionsTest: { x: string; y: number }[] = [];
+    let averageResolveTimeMax = 0;
+    for (const session of sessions) {
+        const x = moment(session.startTime.seconds * 1000).format("MMM D");
+        const y = calculateAverageResolveTime(session) / 60;
+        const lastIndex = averageResolveTimeLineChartQuestionsTest.length - 1;
+        if (averageResolveTimeLineChartQuestionsTest[lastIndex]?.x === x) {
+            averageResolveTimeLineChartQuestionsTest[lastIndex].y += y;
+            averageResolveTimeMax = Math.max(
+                averageResolveTimeMax,
+                averageResolveTimeLineChartQuestionsTest[lastIndex].y
+            );
+        } else {
+            averageResolveTimeLineChartQuestionsTest.push({ x, y });
+            averageResolveTimeMax = Math.max(averageResolveTimeMax, y);
+        }
+    }
+
+    const totalResolveTime = sessions.reduce((accumulator, session) => {
+        return accumulator + session.totalResolveTime;
+    }, 0);
+
     const totalWaitTime = sessions.reduce((accumulator, session) => {
         return accumulator + session.totalWaitTime;
     }, 0);
@@ -129,6 +175,14 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
         return accumulator + session.assignedQuestions;
     }, 0);
 
+    const formattedAverageWaitTime = () => {
+        return formatAvgTime(totalWaitTime / totalAssignedQuestions);
+    };
+
+    const formattedAverageResolveTime = () => {
+        return formatAvgTime(totalResolveTime / totalAssignedQuestions);
+    };
+
     // Bar Chart
     const sessionQuestionDict: {
         [id: string]: {
@@ -136,8 +190,9 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             location: string;
             startHour: string;
             endHour: string;
+            avgWaitTime: string;
         };
-    } = {}
+    } = {};
 
     let chartYMax = (questions[busiestSessionIndex] && questions[busiestSessionIndex].length) || 0;
 
@@ -149,7 +204,8 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             ta: session.tas.join(", "),
             startHour: moment(session.startTime.seconds * 1000).format("h:mm a"),
             endHour: moment(session.endTime.seconds * 1000).format("h:mm a"),
-            location: (session.modality === "virtual" || session.modality === "review") ? "Online" : session.building,
+            location: session.modality === "virtual" || session.modality === "review" ? "Online" : session.building,
+            avgWaitTime: formatAvgTime(calculateAverageWaitTime(session)),
         };
         const x = moment(session.startTime.seconds * 1000).format("MMM D");
         const y = questions[i] ? questions[i].length : 0;
@@ -203,6 +259,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
             <TopBar courseId={courseId} context="professor" role="professor" />
             <section className="rightOfSidebar">
                 <div className="main">
+                    
                     <div className="Date-picker-container">
                         <DateRangePicker
                             isOutsideRange={() => false}
@@ -317,6 +374,12 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                             </div>)
                                         }
                                     </div>
+                                    <div>
+                                        <p className="crowd-title">Average Wait Time</p>
+                                        <p className="maroon-date">
+                                            {totalAssignedQuestions ? formattedAverageWaitTime() : "Not applicable"}
+                                        </p>
+                                    </div>
                                     <input
                                         placeholder={"Enter TA NetID"}
                                         onChange={(e) => setTAName(e.target.value.toLowerCase())}
@@ -344,6 +407,71 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
                                         calcTickVals={calcTickVals}
                                         legend="questions"
                                         sessionDict={sessionQuestionDict}
+                                    />
+                                </div>
+                            </div>
+                            <div className="Most-Crowded-Box">
+                                <div className="most-crowded-text">
+                                    <div>
+                                        <p className="crowd-title">Average Resolve Time</p>
+                                        <p className="maroon-date">
+                                            {totalAssignedQuestions ? formattedAverageResolveTime() : "Not applicable"}
+                                        </p>
+                                    </div>
+                                    <input
+                                        placeholder={"Enter TA NetID"}
+                                        onChange={(e) => setTAName(e.target.value.toLowerCase())}
+                                        onFocus={() => setShowTADropdown(true)}
+                                        onBlur={() => setShowTADropdown(false)}
+                                    />
+                                    {showTADropdown && filteredTAs.length !== 0 &&
+                                        (<div className="ta-results">
+                                            {filteredTAs.map((ta) => (
+                                                <button
+                                                    type="button"
+                                                    className="ta-result"
+                                                    onMouseDown={() => setSelectedTA(ta)}
+                                                >
+                                                    {ta.firstName} {ta.lastName} ({ta.email.split("@")[0]})
+                                                </button>
+                                            ))}
+                                        </div>)}
+                                </div>
+                                <div className="questions-line-container">
+                                    <div className="questions-line-container">
+                                    <QuestionsBarGraph
+                                        barData={taGraphData}
+                                        yMax={taChartYMax}
+                                        sessionKeys={sessions.map((s) => s.sessionId)}
+                                        calcTickVals={calcTickVals}
+                                        legend="questions"
+                                        sessionDict={sessionQuestionDict}
+                                    />
+                                </div>
+
+                                    <QuestionsLineChart
+                                        lineData={averageResolveTimeLineChartQuestionsTest}
+                                        yMax={averageResolveTimeMax}
+                                        calcTickVals={calcTickVals}
+                                        legend="minutes"
+                                    />
+                                </div>
+                            </div>
+                            <div className="Most-Crowded-Box">
+                                <div className="most-crowded-text">
+                                    <div>
+                                        <p className="crowd-title">Average Resolve Time</p>
+                                        <p className="maroon-date">
+                                            {totalAssignedQuestions ? formattedAverageResolveTime() : "Not applicable"}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="questions-line-container">
+                                    <QuestionsLineChart
+                                        lineData={averageResolveTimeLineChartQuestionsTest}
+                                        yMax={averageResolveTimeMax}
+                                        calcTickVals={calcTickVals}
+                                        legend="minutes"
                                     />
                                 </div>
                             </div>

@@ -4,12 +4,12 @@ interface FireTimestamp {
     toDate(): Date;
 }
 
-type FireSessionModality = 'in-person' | 'hybrid' | 'virtual' | 'review';
+type FireSessionModality = "in-person" | "hybrid" | "virtual" | "review";
 
 interface TaAnnouncement {
-    ta: FireUser; 
-    announcement: string; 
-    uploadTime: FireTimestamp; 
+    ta: FireUser;
+    announcement: string;
+    uploadTime: FireTimestamp;
 }
 
 interface FireBaseSession {
@@ -26,8 +26,10 @@ interface FireBaseSession {
     resolvedQuestions: number;
     totalWaitTime: number;
     totalResolveTime: number;
-    taAnnouncemements?: TaAnnouncement[]; 
+    taAnnouncements?: TaAnnouncement[];
     isPaused?: boolean;
+    studentPerTaRatio?: number;
+    hasUnresolvedQuestion?: boolean;
 }
 
 interface FireSessionLocation {
@@ -40,19 +42,19 @@ interface FireVirtualLocation {
 }
 
 interface FireVirtualSession extends FireBaseSession {
-    modality: 'virtual';
+    modality: "virtual";
     useTALink?: boolean;
     TALink?: string;
 }
 
 interface FireInPersonSession extends FireBaseSession, FireSessionLocation {
-    modality: 'in-person';
+    modality: "in-person";
     building: string;
     room: string;
 }
 
 interface FireHybridSession extends FireBaseSession, FireSessionLocation {
-    modality: 'hybrid';
+    modality: "hybrid";
     building: string;
     room: string;
     useTALink?: boolean;
@@ -60,7 +62,7 @@ interface FireHybridSession extends FireBaseSession, FireSessionLocation {
 }
 
 interface FireReviewSession extends FireBaseSession, FireVirtualLocation {
-    modality: 'review';
+    modality: "review";
     link: string;
 }
 
@@ -78,17 +80,19 @@ interface FireBaseSessionSeries {
     startTime: FireTimestamp;
     tas: string[];
     title?: string;
+    studentPerTaRatio?: number;
+    hasUnresolvedQuestion?: boolean;
     sessionSeriesId: string;
 }
 
 interface FireVirtualSessionSeries extends FireBaseSessionSeries {
-    modality: 'virtual';
+    modality: "virtual";
     useTALink?: boolean;
     TALink?: string;
 }
 
 interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
-    modality: 'hybrid';
+    modality: "hybrid";
     building: string;
     room: string;
     useTALink?: boolean;
@@ -96,22 +100,35 @@ interface FireHybridSessionSeries extends FireBaseSessionSeries, FireSessionLoca
 }
 
 interface FireInPersonSessionSeries extends FireBaseSessionSeries, FireSessionLocation {
-    modality: 'in-person';
+    modality: "in-person";
     building: string;
     room: string;
 }
 
 interface FireReviewSeries extends FireBaseSessionSeries, FireVirtualLocation {
-    modality: 'review';
+    modality: "review";
     link: string;
 }
 
-type FireSessionSeries = (FireVirtualSessionSeries | FireHybridSessionSeries |
-FireInPersonSessionSeries | FireReviewSeries);
+type FireSessionSeries =
+    | FireVirtualSessionSeries
+    | FireHybridSessionSeries
+    | FireInPersonSessionSeries
+    | FireReviewSeries;
 type FireSessionSeriesDefinition =
-    Omit<FireVirtualSessionSeries, 'sessionSeriesId'>
-    | Omit<FireHybridSessionSeries, 'sessionSeriesId'>
-    | Omit<FireInPersonSessionSeries, 'sessionSeriesId'> | Omit<FireReviewSeries, 'sessionSeriesId'>;
+    | Omit<FireVirtualSessionSeries, "sessionSeriesId">
+    | Omit<FireHybridSessionSeries, "sessionSeriesId">
+    | Omit<FireInPersonSessionSeries, "sessionSeriesId">
+    | Omit<FireReviewSeries, "sessionSeriesId">;
+
+type FeedbackRecord = {
+    session: string;
+    questionId: string;
+    organization: number?;
+    efficiency: number?;
+    overallExperience: number?;
+    writtenFeedback: string?;
+};
 
 /** @see FireUser for the enrollment invariant. */
 interface FireCourse {
@@ -129,11 +146,16 @@ interface FireCourse {
     year: string;
     timeLimit?: number;
     timeWarning?: number;
-    isTimeLimit?: boolean;
+    isTimeLimit?: boolean; // TODO: possibly change to non-null
 }
 
-type PrivilegedFireCourseRole = 'professor' | 'ta';
-type FireCourseRole = 'professor' | 'ta' | 'student';
+type PrivilegedFireCourseRole = "professor" | "ta";
+type FireCourseRole = "professor" | "ta" | "student";
+
+interface ResolvedItem {
+    questionId: string;
+    askerId: string;
+}
 
 /**
  * Invariant for fire user and course enrollment:
@@ -146,6 +168,7 @@ type FireCourseRole = 'professor' | 'ta' | 'student';
  *
  * @see FireCourse
  */
+//Now contains feedbackList for each user
 interface FireUser {
     firstName: string;
     lastName: string;
@@ -157,6 +180,9 @@ interface FireUser {
     phoneNumber?: string;
     textNotifsEnabled?: boolean;
     textPrompted?: boolean;
+    wrapped?: boolean;
+    recentlyResolvedQuestion?: ResolvedItem;
+    feedbackList?: FeedbackRecord[];
 }
 
 interface FirePendingUser {
@@ -182,7 +208,7 @@ interface FireQuestion {
     primaryTag: string;
     secondaryTag: string;
     questionId: string;
-    status: 'assigned' | 'resolved' | 'retracted' | 'unresolved' | 'no-show';
+    status: "assigned" | "resolved" | "retracted" | "unresolved" | "no-show";
     timeEntered: FireTimestamp;
     timeAddressed?: FireTimestamp;
     timeAssigned?: FireTimestamp;
@@ -200,8 +226,7 @@ interface FireOHQuestion extends FireQuestion {
     answererLocation?: string;
 }
 
-type FireQuestionSlot = Pick<FireQuestion, 'askerId'
-| 'sessionId' | 'status' | 'timeEntered' | 'questionId'>;
+type FireQuestionSlot = Pick<FireQuestion, "askerId" | "sessionId" | "status" | "timeEntered" | "questionId">;
 
 interface FireTag {
     active: boolean;
