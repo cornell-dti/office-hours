@@ -27,6 +27,11 @@ type Props = {
     myQuestion: FireQuestion | null;
     questions: readonly FireQuestion[];
     selectedDateEpoch: number;
+    virtualLocation?: string | undefined;
+    assignedQuestion?: FireQuestion | undefined;
+    isOpen?: boolean;
+    onUpdate?: (virtualLocation: string) => void;
+    isPaused?: boolean;
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
