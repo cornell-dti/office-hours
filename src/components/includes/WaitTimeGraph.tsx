@@ -39,6 +39,34 @@ const timeSlotToDate = (slot: string, date: Date): Date => {
     return slotDate;
 };
 
+// Helper function to check if a date is in the current week or next week
+const isInCurrentOrNextWeek = (date: Date): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Get Monday of current week (ISO week starts on Monday)
+    const currentMonday = new Date(today);
+    const currentDay = today.getDay();
+    const daysToMonday = currentDay === 0 ? 6 : currentDay - 1; // Convert Sunday=0 to Monday=0
+    currentMonday.setDate(today.getDate() - daysToMonday);
+    currentMonday.setHours(0, 0, 0, 0);
+    
+    // Get Monday of next week
+    const nextMonday = new Date(currentMonday);
+    nextMonday.setDate(currentMonday.getDate() + 7);
+    
+    // Get Sunday of next week (end of next week)
+    const nextSunday = new Date(nextMonday);
+    nextSunday.setDate(nextMonday.getDate() + 6);
+    nextSunday.setHours(23, 59, 59, 999);
+    
+    // Check if date is between current Monday and next Sunday (inclusive)
+    const dateToCheck = new Date(date);
+    dateToCheck.setHours(0, 0, 0, 0);
+    
+    return dateToCheck >= currentMonday && dateToCheck <= nextSunday;
+};
+
 const WaitTimeGraph = (props: Props) => {
     const today = new Date();
     const selectedDate = new Date(props.selectedDateEpoch);
@@ -47,6 +75,9 @@ const WaitTimeGraph = (props: Props) => {
     
     // Check if the selected date is in the future
     const isFutureDate = selectedDate > today;
+    
+    // Check if selected date is in current week or next week
+    const isInRelevantWeek = isInCurrentOrNextWeek(selectedDate);
     
     // Check if there are office hours for the selected day
     // Priority: use parent's session detection first (hard condition)
@@ -253,8 +284,8 @@ const WaitTimeGraph = (props: Props) => {
                 })}
             </div>
 
-            {/* Show message if no office hours for this day */}
-            {!hasOfficeHours && (
+            {/* Show message if date is outside current week or next week */}
+            {!isInRelevantWeek && (
                 <div
                     style={{
                         textAlign: "center",
@@ -265,12 +296,28 @@ const WaitTimeGraph = (props: Props) => {
                         fontStyle: "italic",
                     }}
                 >
-                    No office hours are scheduled for today.
+                    No current estimated times available.
                 </div>
             )}
 
-            {/* Show message if office hours exist but no data available */}
-            {hasOfficeHours && !hasData && (
+            {/* Show message if no office hours for this day (only for current/next week) */}
+            {isInRelevantWeek && !hasOfficeHours && (
+                <div
+                    style={{
+                        textAlign: "center",
+                        marginTop: "40px",
+                        marginBottom: "40px",
+                        fontSize: "14px",
+                        color: "#666",
+                        fontStyle: "italic",
+                    }}
+                >
+                    No office hours are scheduled for this day.
+                </div>
+            )}
+
+            {/* Show message if office hours exist but no data available (only for current/next week) */}
+            {isInRelevantWeek && hasOfficeHours && !hasData && (
                 <div
                     style={{
                         textAlign: "center",
@@ -285,8 +332,8 @@ const WaitTimeGraph = (props: Props) => {
                 </div>
             )}
 
-            {/* Only show graph if there are office hours AND data */}
-            {hasOfficeHours && hasData && (
+            {/* Only show graph if date is in current/next week AND there are office hours AND data */}
+            {isInRelevantWeek && hasOfficeHours && hasData && (
                 <>
                     {/* Side arrows, vertically centered beside the bars */}
                     <button
