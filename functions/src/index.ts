@@ -2,6 +2,7 @@
 import * as functions from "firebase-functions/v1";
 import * as admin from "firebase-admin";
 import { Twilio } from "twilio";
+import moment from "moment-timezone";
 
 // Use admin SDK to enable writing to other parts of database
 // const admin = require('firebase-admin');
@@ -215,24 +216,21 @@ async function processEndedSessionInCloud(session: FireSession, courseId: string
             return false;
         }
 
-        // Extract weekday and time slot from session start time
+        // Extract weekday and time slot from session start time using America/New_York timezone
+        const tz = 'America/New_York';
         const sessionDate = session.startTime.toDate();
-        
-        // Get weekday (convert Sunday=0 to Monday=0)
-        const sessionDayIndex = (sessionDate.getDay() + 6) % 7;
+        const m = moment.tz(sessionDate, tz);
+
+        // Get weekday (convert Sunday=0 to Monday=0) based on Eastern Time
+        const sessionDayIndex = (m.day() + 6) % 7;
         const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
         const weekday = dayNames[sessionDayIndex];
 
-        // Get time slot - round down to nearest 30-minute slot
-        const hour = sessionDate.getHours();
-        const minute = Math.floor(sessionDate.getMinutes() / 30) * 30;
-        const timeSlotDate = new Date(sessionDate);
-        timeSlotDate.setHours(hour, minute, 0, 0);
-        const timeSlotStr = timeSlotDate.toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true
-        });
+        // Get time slot - round down to nearest 30-minute slot in Eastern Time
+        const hour = m.hour();
+        const minute = Math.floor(m.minute() / 30) * 30;
+        const slot = m.clone().minute(minute).second(0).millisecond(0).hour(hour);
+        const timeSlotStr = slot.format('h:mm A');
 
         // Update waitTimeMap using admin SDK
         const courseRef = db.doc(`courses/${courseId}`);
@@ -243,8 +241,8 @@ async function processEndedSessionInCloud(session: FireSession, courseId: string
             return false;
         }
         
-        const courseData = courseDoc.data() as FireCourse;
-        const waitTimeMap = courseData.waitTimeMap || {};
+        const courseData = courseDoc.data() as any;
+        const waitTimeMap = courseData?.waitTimeMap || {};
         
         // Initialize if not exists
         if (!waitTimeMap[weekday]) waitTimeMap[weekday] = {};
@@ -261,7 +259,9 @@ async function processEndedSessionInCloud(session: FireSession, courseId: string
         // Calculate weighted average: 80% historical + 20% new
         const historicalWeight = 0.8;
         const newWeight = 0.2;
-        const newAvg = prevAvg === 0 ? avgWaitTimeSeconds : (prevAvg * historicalWeight + avgWaitTimeSeconds * newWeight);
+        const newAvg = prevAvg === 0 
+            ? avgWaitTimeSeconds 
+            : (prevAvg * historicalWeight + avgWaitTimeSeconds * newWeight);
         
         // Final validation before storing
         if (newAvg < 0) {
@@ -277,7 +277,8 @@ async function processEndedSessionInCloud(session: FireSession, courseId: string
         });
 
         functions.logger.info(
-            `✓ Processed session ${session.sessionId}: ${weekday} ${timeSlotStr} = ${avgWaitTimeSeconds}s, new average = ${waitTimeMap[weekday][timeSlotStr]}s`
+            `✓ Processed session ${session.sessionId}: ${weekday} ${timeSlotStr} = ` +
+            `${avgWaitTimeSeconds}s, new average = ${waitTimeMap[weekday][timeSlotStr]}s`
         );
         return true;
     } catch (error) {
@@ -287,10 +288,40 @@ async function processEndedSessionInCloud(session: FireSession, courseId: string
 }
 
 exports.onSessionUpdate = functions.firestore.document("sessions/{sessionId}").onUpdate(async (change) => {
+    const before = change.before.data() as FireSession;
     const after = change.after.data() as FireSession;
+    const sessionId = change.after.id;
+
+    functions.logger.info(
+        `onSessionUpdate triggered for session ${sessionId} ` +
+        `(totalWaitTime: ${before.totalWaitTime} -> ${after.totalWaitTime}, ` +
+        `assignedQuestions: ${before.assignedQuestions} -> ${after.assignedQuestions}, ` +
+        `resolvedQuestions: ${before.resolvedQuestions} -> ${after.resolvedQuestions})`
+    );
+
+    // Update waitTimeMap whenever session has wait time data and totalWaitTime changed
+    // This ensures waitTimeMap is always kept in sync when sessions are updated
+    const hasWaitTimeData = after.totalWaitTime > 0 && 
+                            (after.assignedQuestions > 0 || after.resolvedQuestions > 0);
+    const totalWaitTimeChanged = after.totalWaitTime !== before.totalWaitTime;
+    
+    // Update if: has wait time data AND totalWaitTime changed
+    if (hasWaitTimeData && totalWaitTimeChanged) {
+        functions.logger.info(
+            `Updating waitTimeMap from onSessionUpdate for session ${sessionId} ` +
+            `(totalWaitTime: ${before.totalWaitTime} -> ${after.totalWaitTime}, ` +
+            `assignedQuestions: ${after.assignedQuestions}, resolvedQuestions: ${after.resolvedQuestions})`
+        );
+        await processEndedSessionInCloud(after, after.courseId);
+    } else if (hasWaitTimeData && !totalWaitTimeChanged) {
+        // Log when we have wait time data but totalWaitTime didn't change (for debugging)
+        functions.logger.debug(
+            `Session ${sessionId} has wait time data but totalWaitTime didn't change ` +
+            `(totalWaitTime: ${after.totalWaitTime})`
+        );
+    }
 
     // retrieve session id and ordered queue of active questions
-    // Note: Wait time processing is handled by onQuestionUpdate whenever totalWaitTime changes
     const afterSessionId = change.after.id;
     const afterQuestions = (
         await db
@@ -303,48 +334,51 @@ exports.onSessionUpdate = functions.firestore.document("sessions/{sessionId}").o
 
     const sessionName: string | undefined = after.title;
 
-    const topQuestion: FireQuestion = afterQuestions[0].data() as FireQuestion;
+    // Guard against empty active questions to prevent runtime errors
+    if (afterQuestions.length > 0) {
+        const topQuestion: FireQuestion = afterQuestions[0].data() as FireQuestion;
 
-    // if the top active question was not notified, notify them
-    if (!topQuestion.wasNotified) {
-        const asker: FireUser = (await db.doc(`users/${topQuestion.askerId}`).get()).data() as FireUser;
-        sendSMS(
-            asker,
-            `Your question has reached the top of the \
+        // if the top active question was not notified, notify them
+        if (!topQuestion.wasNotified) {
+            const asker: FireUser = (await db.doc(`users/${topQuestion.askerId}`).get()).data() as FireUser;
+            sendSMS(
+                asker,
+                `Your question has reached the top of the \
                 ${sessionName} queue. A TA will likely help you shortly.`
-        );
-        db.doc(`notificationTrackers/${asker.email}`)
-            .update({
-                notificationList: admin.firestore.FieldValue.arrayUnion({
-                    title: "Your Question is Up!",
-                    subtitle: `Your question has reached the top of the \
+            );
+            db.doc(`notificationTrackers/${asker.email}`)
+                .update({
+                    notificationList: admin.firestore.FieldValue.arrayUnion({
+                        title: "Your Question is Up!",
+                        subtitle: `Your question has reached the top of the \
                      ${sessionName} queue.`,
-                    message: `Your question has reached the top of the \
+                        message: `Your question has reached the top of the \
                     ${sessionName} queue. A TA will likely help you shortly.`,
-                    createdAt: admin.firestore.Timestamp.now(),
-                }),
-            })
-            .catch(() => {
-                db.doc(`notificationTrackers/${asker.email}`).create({
-                    id: asker.email,
-                    notificationList: [
-                        {
-                            title: "Your Question is Up!",
-                            subtitle: `Your question has reached the top of the \
+                        createdAt: admin.firestore.Timestamp.now(),
+                    }),
+                })
+                .catch(() => {
+                    db.doc(`notificationTrackers/${asker.email}`).create({
+                        id: asker.email,
+                        notificationList: [
+                            {
+                                title: "Your Question is Up!",
+                                subtitle: `Your question has reached the top of the \
                      ${sessionName} queue.`,
-                            message: `Your question has reached the top of the \
+                                message: `Your question has reached the top of the \
                     ${sessionName} queue. A TA will likely help you shortly.`,
-                            createdAt: admin.firestore.Timestamp.now(),
-                        },
-                    ],
-                    notifications: admin.firestore.Timestamp.now(),
-                    productUpdates: admin.firestore.Timestamp.now(),
-                    lastSent: admin.firestore.Timestamp.now(),
+                                createdAt: admin.firestore.Timestamp.now(),
+                            },
+                        ],
+                        notifications: admin.firestore.Timestamp.now(),
+                        productUpdates: admin.firestore.Timestamp.now(),
+                        lastSent: admin.firestore.Timestamp.now(),
+                    });
                 });
+            db.doc(`questions/${afterQuestions[0].id}`).update({
+                wasNotified: true,
             });
-        db.doc(`questions/${afterQuestions[0].id}`).update({
-            wasNotified: true,
-        });
+        }
     }
 });
 
@@ -616,19 +650,49 @@ exports.onQuestionUpdate = functions.firestore.document("questions/{questionId}"
         totalResolveTime: admin.firestore.FieldValue.increment(resolveTimeChange),
     });
     
-    // Update waitTimeMap whenever totalWaitTime changes (real-time sync)
-    // This keeps the graph in sync and handles all cases automatically
+    // Additionally update waitTimeMap using the question's timeEntered to choose the slot (America/New_York)
     if (waitTimeChange !== 0) {
-        const updatedSessionDoc = await sessionRef.get();
-        const updatedSession = updatedSessionDoc.data() as FireSession;
-        
-        // Only process if we have valid wait time data
-        if (updatedSession.totalWaitTime > 0 && 
-            (updatedSession.assignedQuestions > 0 || updatedSession.resolvedQuestions > 0)) {
-            functions.logger.info(`Updating waitTimeMap for session ${updatedSession.sessionId} (totalWaitTime changed: ${waitTimeChange})`);
-            await processEndedSessionInCloud(updatedSession, updatedSession.courseId);
+        try {
+            const tz = 'America/New_York';
+            const sessionSnap = await db.doc(`sessions/${sessionId}`).get();
+            const sessionForCourse = sessionSnap.data() as FireSession;
+            const courseId = sessionForCourse.courseId;
+
+            // Choose the student's entry time for slotting; fall back to previous if undefined
+            const entryTs = (newQuestion.timeEntered ?? prevQuestion.timeEntered);
+            if (entryTs) {
+                const entryDate = entryTs.toDate();
+                const m = moment.tz(entryDate, tz);
+                const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                const weekday = dayNames[(m.day() + 6) % 7];
+                const minute = Math.floor(m.minute() / 30) * 30;
+                const slot = m.clone().minute(minute).second(0).millisecond(0);
+                const timeSlotStr = slot.format('h:mm A');
+
+                // Load course waitTimeMap
+                const courseRef = db.doc(`courses/${courseId}`);
+                const courseDoc = await courseRef.get();
+                const courseData = courseDoc.data() as any;
+                const waitTimeMap = courseData?.waitTimeMap || {};
+                if (!waitTimeMap[weekday]) waitTimeMap[weekday] = {};
+
+                const prevSec: number = waitTimeMap[weekday][timeSlotStr] || 0;
+                const deltaSec = Math.abs(waitTimeChange); // ensure positive contribution
+                const newAvg = prevSec === 0 ? deltaSec : Math.round(prevSec * 0.8 + deltaSec * 0.2);
+                waitTimeMap[weekday][timeSlotStr] = newAvg;
+
+                await courseRef.update({ waitTimeMap });
+                functions.logger.info(
+                    `✓ Updated waitTimeMap via onQuestionUpdate: ${weekday} ${timeSlotStr} = ${deltaSec}s, ` +
+                    `new avg = ${waitTimeMap[weekday][timeSlotStr]}s`
+                );
+            }
+        } catch (err) {
+            functions.logger.error('Error updating waitTimeMap from onQuestionUpdate', err as Error);
         }
     }
+
+    // Wait time processing at session level is handled by onSessionUpdate whenever totalWaitTime changes
 });
 
 exports.onQuestionStatusUpdate = functions.firestore
