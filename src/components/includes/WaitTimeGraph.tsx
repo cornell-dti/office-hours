@@ -392,17 +392,17 @@ const WaitTimeGraph = (props: Props) => {
                         colors={(bar) => {
                             const currentTime = new Date();
                             const today = new Date();
-                    
-                            // Get the selected day index (0 = Monday, 1 = Tuesday, etc.)
-                            const dayNames = [
-                                "Monday", "Tuesday", "Wednesday", "Thursday", 
-                                "Friday", "Saturday", "Sunday"
-                            ];
-                            const selectedDayIndex = dayNames.indexOf(selectedDay);
-                            const todayIndex = (today.getDay() + 6) % 7; // Adjust for Monday-first order
+                            today.setHours(0, 0, 0, 0);
+                            
+                            // Compare actual dates, not just day names
+                            const selectedDateNormalized = new Date(selectedDate);
+                            selectedDateNormalized.setHours(0, 0, 0, 0);
+                            
+                            const isToday = selectedDateNormalized.getTime() === today.getTime();
+                            const isFutureDate = selectedDateNormalized > today;
                     
                             // If selected day is today, use the original time-based logic
-                            if (selectedDayIndex === todayIndex) {
+                            if (isToday) {
                                 const barTime = new Date();
                                 const [time, period] = bar.data.slot.split(' ');
                                 const [hour, minute] = time.split(':');
@@ -425,9 +425,9 @@ const WaitTimeGraph = (props: Props) => {
                                 return "#DAE9FC"; // Future time
                         
                             }
-                            // If selected day is in the future, use estimated styling
-                            if (selectedDayIndex > todayIndex) {
-                                return "#E8F4FD"; // Lighter blue for estimates
+                            // If selected day is in the future, all bars should be blue (estimated styling)
+                            if (isFutureDate) {
+                                return "#DAE9FC"; // Blue for future estimates
                             }
                             // If selected day is in the past, all bars are past time
                     
