@@ -24,10 +24,11 @@ export type WaitTimeMapData = {
 };
 
 
-// Generate time slots (7am-11pm, 30-min intervals) to match the backend structure
-const generateTimeSlots = (): string[] => {
+// Generate time slots (12am-11:30pm, 30-min intervals) - full 24 hour coverage
+export const generateTimeSlots = (): string[] => {
     const slots: string[] = [];
-    for (let hour = 7; hour < 23; hour++) {
+    // Generate slots for all 24 hours (0-23)
+    for (let hour = 0; hour <= 23; hour++) {
         for (let minute = 0; minute < 60; minute += 30) {
             const time = new Date();
             time.setHours(hour, minute, 0, 0);
@@ -43,6 +44,25 @@ const generateTimeSlots = (): string[] => {
 };
 
 const TIME_SLOTS = generateTimeSlots();
+
+/**
+ * Generate initial waitTimeMap structure with all time slots for all days
+ * All slots are initialized to null (indicating no data yet)
+ */
+export const generateInitialWaitTimeMap = (): { [weekday: string]: { [timeSlot: string]: number | null } } => {
+    const timeSlots = generateTimeSlots();
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const waitTimeMap: { [weekday: string]: { [timeSlot: string]: number | null } } = {};
+    
+    days.forEach(day => {
+        waitTimeMap[day] = {};
+        timeSlots.forEach(slot => {
+            waitTimeMap[day][slot] = null; // null indicates no data yet, vs 0 which would mean zero wait time
+        });
+    });
+    
+    return waitTimeMap;
+};
 
 /**
  * Build wait time data from the waitTimeMap structure in Firestore
