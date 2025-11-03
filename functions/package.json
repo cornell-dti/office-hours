@@ -16,7 +16,7 @@
     "firebase": "^11.2.0",
     "firebase-admin": "^13.0.2",
     "firebase-functions": "^6.3.2",
-    "firebase-tools": "11.18.0",
+    "firebase-tools": "13.34.0",
     "twilio": "^3.71.3"
   },
   "devDependencies": {
