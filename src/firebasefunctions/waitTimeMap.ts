@@ -96,7 +96,8 @@ export const buildWaitTimeDataFromMap = async (courseId: string): Promise<WaitTi
             Object.entries(dayData).forEach(([timeSlot, waitTime]) => {
                 if (waitTime !== null && typeof waitTime === 'number' && waitTime > 0) {
                     // Convert seconds to minutes for display
-                    const minutes = Math.round(waitTime / 60);
+                    // Show at least 1 minute when waitTime > 0 to ensure it appears on graph
+                    const minutes = Math.max(1, Math.round(waitTime / 60));
                     row[timeSlot] = minutes;
                     maxWaitTime = Math.max(maxWaitTime, minutes);
                     populatedSlots++;
