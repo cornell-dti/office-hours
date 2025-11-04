@@ -188,186 +188,65 @@ exports.onCommentCreate = functions.firestore
     });
 
 exports.onSessionUpdate = functions.firestore.document("sessions/{sessionId}").onUpdate(async (change) => {
-    try {
-        functions.logger.info("onSessionUpdate: Starting function execution");
-        
-        const before = change.before.data() as FireSession;
-        const after = change.after.data() as FireSession;
-        const sessionId = change.after.id;
+    // NOTE: This function only handles notifications. WaitTimeMap updates are handled by onQuestionUpdate
+    // to ensure we use the question's entry time (not session start time) for slotting.
+    // When onQuestionUpdate updates totalWaitTime, it triggers this function, but we don't touch waitTime here.
+    
+    // retrieve session id and ordered queue of active questions
+    const afterSessionId = change.after.id;
+    const afterQuestions = (
+        await db
+            .collection("questions")
+            .where("sessionId", "==", afterSessionId)
+            .where("status", "in", ["assigned", "unresolved"])
+            .orderBy("timeEntered", "asc")
+            .get()
+    ).docs;
 
-        functions.logger.info(
-            `onSessionUpdate triggered for session ${sessionId} ` +
-            `(totalWaitTime: ${before.totalWaitTime} -> ${after.totalWaitTime}, ` +
-            `assignedQuestions: ${before.assignedQuestions} -> ${after.assignedQuestions}, ` +
-            `resolvedQuestions: ${before.resolvedQuestions} -> ${after.resolvedQuestions})`
+    const sessionName: string | undefined = (change.after.data() as FireSession).title;
+
+    const topQuestion: FireQuestion = afterQuestions[0].data() as FireQuestion;
+
+    // if the top active question was not notified, notify them
+    if (!topQuestion.wasNotified) {
+        const asker: FireUser = (await db.doc(`users/${topQuestion.askerId}`).get()).data() as FireUser;
+        sendSMS(
+            asker,
+            `Your question has reached the top of the \
+                ${sessionName} queue. A TA will likely help you shortly.`
         );
-
-        // Wait time processing is now handled by onQuestionUpdate based on question entry times
-        // This ensures waitTimeMap uses the correct time slot (when student entered queue)
-        // instead of session start time, preventing conflicts between the two update paths
-
-        // retrieve session id and ordered queue of active questions
-        const afterSessionId = change.after.id;
-        functions.logger.info(`onSessionUpdate: Querying questions for sessionId: ${afterSessionId}`);
-        
-        let afterQuestions;
-        try {
-            afterQuestions = (
-                await db
-                    .collection("questions")
-                    .where("sessionId", "==", afterSessionId)
-                    .where("status", "in", ["assigned", "unresolved"])
-                    .orderBy("timeEntered", "asc")
-                    .get()
-            ).docs;
-            functions.logger.info(`onSessionUpdate: Found ${afterQuestions.length} active questions`);
-        } catch (queryError) {
-            functions.logger.error("onSessionUpdate: Error querying questions", {
-                sessionId: afterSessionId,
-                error: queryError instanceof Error ? queryError.message : String(queryError),
-                stack: queryError instanceof Error ? queryError.stack : undefined,
+        db.doc(`notificationTrackers/${asker.email}`)
+            .update({
+                notificationList: admin.firestore.FieldValue.arrayUnion({
+                    title: "Your Question is Up!",
+                    subtitle: `Your question has reached the top of the \
+                     ${sessionName} queue.`,
+                    message: `Your question has reached the top of the \
+                    ${sessionName} queue. A TA will likely help you shortly.`,
+                    createdAt: admin.firestore.Timestamp.now(),
+                }),
+            })
+            .catch(() => {
+                db.doc(`notificationTrackers/${asker.email}`).create({
+                    id: asker.email,
+                    notificationList: [
+                        {
+                            title: "Your Question is Up!",
+                            subtitle: `Your question has reached the top of the \
+                     ${sessionName} queue.`,
+                            message: `Your question has reached the top of the \
+                    ${sessionName} queue. A TA will likely help you shortly.`,
+                            createdAt: admin.firestore.Timestamp.now(),
+                        },
+                    ],
+                    notifications: admin.firestore.Timestamp.now(),
+                    productUpdates: admin.firestore.Timestamp.now(),
+                    lastSent: admin.firestore.Timestamp.now(),
+                });
             });
-            throw queryError;
-        }
-
-        const sessionName: string | undefined = after.title;
-        functions.logger.info(`onSessionUpdate: Session name: ${sessionName || "undefined"}`);
-
-        // Guard against empty active questions to prevent runtime errors
-        if (afterQuestions.length > 0) {
-            const topQuestionDoc = afterQuestions[0];
-            if (!topQuestionDoc || !topQuestionDoc.exists) {
-                functions.logger.warn("onSessionUpdate: Top question document does not exist");
-                return;
-            }
-
-            const topQuestion: FireQuestion = topQuestionDoc.data() as FireQuestion;
-            functions.logger.info(
-                `onSessionUpdate: Top question ID: ${topQuestionDoc.id}, ` +
-                `wasNotified: ${topQuestion.wasNotified}`
-            );
-
-            // if the top active question was not notified, notify them
-            if (!topQuestion.wasNotified) {
-                try {
-                    if (!topQuestion.askerId) {
-                        functions.logger.error("onSessionUpdate: Top question has no askerId", {
-                            questionId: topQuestionDoc.id,
-                        });
-                        return;
-                    }
-
-                    functions.logger.info(`onSessionUpdate: Fetching user data for askerId: ${topQuestion.askerId}`);
-                    const askerDoc = await db.doc(`users/${topQuestion.askerId}`).get();
-                    
-                    if (!askerDoc || !askerDoc.exists) {
-                        functions.logger.error("onSessionUpdate: User document does not exist", {
-                            askerId: topQuestion.askerId,
-                            questionId: topQuestionDoc.id,
-                        });
-                        return;
-                    }
-
-                    const asker: FireUser = askerDoc.data() as FireUser;
-                    if (!asker || !asker.email) {
-                        functions.logger.error("onSessionUpdate: User data is invalid or missing email", {
-                            askerId: topQuestion.askerId,
-                            questionId: topQuestionDoc.id,
-                        });
-                        return;
-                    }
-
-                    functions.logger.info(`onSessionUpdate: Sending SMS to user: ${asker.email}`);
-                    try {
-                        const smsMessage = `Your question has reached the top of the ` +
-                            `${sessionName || "queue"} queue. A TA will likely help you shortly.`;
-                        await sendSMS(asker, smsMessage);
-                    } catch (smsError) {
-                        functions.logger.error("onSessionUpdate: Error sending SMS", {
-                            askerEmail: asker.email,
-                            error: smsError instanceof Error ? smsError.message : String(smsError),
-                        });
-                        // Continue execution even if SMS fails
-                    }
-
-                    functions.logger.info(
-                        `onSessionUpdate: Updating notification tracker for: ${asker.email}`
-                    );
-                    const queueName = sessionName || "queue";
-                    const notificationSubtitle = `Your question has reached the top of the ${queueName} queue.`;
-                    const notificationMessage = `${notificationSubtitle} A TA will likely help you shortly.`;
-                    await db.doc(`notificationTrackers/${asker.email}`)
-                        .update({
-                            notificationList: admin.firestore.FieldValue.arrayUnion({
-                                title: "Your Question is Up!",
-                                subtitle: notificationSubtitle,
-                                message: notificationMessage,
-                                createdAt: admin.firestore.Timestamp.now(),
-                            }),
-                        })
-                        .catch(async () => {
-                            functions.logger.info(
-                                `onSessionUpdate: Notification tracker doesn't exist, ` +
-                                `creating new one for: ${asker.email}`
-                            );
-                            try {
-                                await db.doc(`notificationTrackers/${asker.email}`).create({
-                                    id: asker.email,
-                                    notificationList: [
-                                        {
-                                            title: "Your Question is Up!",
-                                            subtitle: notificationSubtitle,
-                                            message: notificationMessage,
-                                            createdAt: admin.firestore.Timestamp.now(),
-                                        },
-                                    ],
-                                    notifications: admin.firestore.Timestamp.now(),
-                                    productUpdates: admin.firestore.Timestamp.now(),
-                                    lastSent: admin.firestore.Timestamp.now(),
-                                });
-                            } catch (createError) {
-                                functions.logger.error("onSessionUpdate: Error creating notification tracker", {
-                                    askerEmail: asker.email,
-                                    error: createError instanceof Error ? createError.message : String(createError),
-                                });
-                            }
-                        });
-
-                    functions.logger.info(`onSessionUpdate: Marking question as notified: ${topQuestionDoc.id}`);
-                    await db.doc(`questions/${topQuestionDoc.id}`).update({
-                        wasNotified: true,
-                    });
-                    functions.logger.info("onSessionUpdate: Successfully completed notification process");
-                } catch (notificationError) {
-                    const errorMessage = notificationError instanceof Error
-                        ? notificationError.message
-                        : String(notificationError);
-                    const errorStack = notificationError instanceof Error
-                        ? notificationError.stack
-                        : undefined;
-                    functions.logger.error("onSessionUpdate: Error in notification process", {
-                        questionId: topQuestionDoc.id,
-                        error: errorMessage,
-                        stack: errorStack,
-                    });
-                    throw notificationError;
-                }
-            } else {
-                functions.logger.info("onSessionUpdate: Top question was already notified, skipping");
-            }
-        } else {
-            functions.logger.info("onSessionUpdate: No active questions found, exiting");
-        }
-        
-        functions.logger.info("onSessionUpdate: Function execution completed successfully");
-    } catch (error) {
-        functions.logger.error("onSessionUpdate: Unhandled error in function", {
-            error: error instanceof Error ? error.message : String(error),
-            stack: error instanceof Error ? error.stack : undefined,
-            sessionId: change.after.id,
+        db.doc(`questions/${afterQuestions[0].id}`).update({
+            wasNotified: true,
         });
-        // Re-throw to ensure Firebase Functions logs the error
-        throw error;
     }
 });
 
@@ -630,8 +509,8 @@ exports.onQuestionUpdate = functions.firestore.document("questions/{questionId}"
     // Update relevant statistics in database
     const sessionRef = db.doc(`sessions/${sessionId}`);
     
-    // Update session statistics
-    await sessionRef.update({
+    // Update session statistics - return the promise to match original behavior
+    const sessionUpdatePromise = sessionRef.update({
         totalQuestions: admin.firestore.FieldValue.increment(numQuestionChange),
         assignedQuestions: admin.firestore.FieldValue.increment(numAssignedChange),
         resolvedQuestions: admin.firestore.FieldValue.increment(numResolvedChange),
@@ -640,48 +519,59 @@ exports.onQuestionUpdate = functions.firestore.document("questions/{questionId}"
     });
     
     // Additionally update waitTimeMap using the question's timeEntered to choose the slot (America/New_York)
+    // This is a non-blocking side effect - errors are caught and logged but don't affect the main operation
     if (waitTimeChange !== 0) {
-        try {
-            const tz = 'America/New_York';
-            const sessionSnap = await db.doc(`sessions/${sessionId}`).get();
-            const sessionForCourse = sessionSnap.data() as FireSession;
-            const courseId = sessionForCourse.courseId;
+        // Fire-and-forget: run waitTimeMap update in background, don't block session update
+        // eslint-disable-next-line no-void
+        void (async () => {
+            try {
+                const tz = 'America/New_York';
+                const sessionSnap = await db.doc(`sessions/${sessionId}`).get();
+                const sessionForCourse = sessionSnap.data() as FireSession;
+                if (!sessionForCourse) {
+                    functions.logger.warn('onQuestionUpdate: Session not found for waitTimeMap update', { sessionId });
+                    return;
+                }
+                const courseId = sessionForCourse.courseId;
 
-            // Choose the student's entry time for slotting; fall back to previous if undefined
-            const entryTs = (newQuestion.timeEntered ?? prevQuestion.timeEntered);
-            if (entryTs) {
-                const entryDate = entryTs.toDate();
-                const m = moment.tz(entryDate, tz);
-                const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-                const weekday = dayNames[(m.day() + 6) % 7];
-                const minute = Math.floor(m.minute() / 30) * 30;
-                const slot = m.clone().minute(minute).second(0).millisecond(0);
-                const timeSlotStr = slot.format('h:mm A');
+                // Choose the student's entry time for slotting; fall back to previous if undefined
+                const entryTs = (newQuestion.timeEntered ?? prevQuestion.timeEntered);
+                if (entryTs) {
+                    const entryDate = entryTs.toDate();
+                    const m = moment.tz(entryDate, tz);
+                    const dayNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                    const weekday = dayNames[(m.day() + 6) % 7];
+                    const minute = Math.floor(m.minute() / 30) * 30;
+                    const slot = m.clone().minute(minute).second(0).millisecond(0);
+                    const timeSlotStr = slot.format('h:mm A');
 
-                // Load course waitTimeMap
-                const courseRef = db.doc(`courses/${courseId}`);
-                const courseDoc = await courseRef.get();
-                const courseData = courseDoc.data() as any;
-                const waitTimeMap = courseData?.waitTimeMap || {};
-                if (!waitTimeMap[weekday]) waitTimeMap[weekday] = {};
+                    // Load course waitTimeMap
+                    const courseRef = db.doc(`courses/${courseId}`);
+                    const courseDoc = await courseRef.get();
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const courseData = courseDoc.data() as any;
+                    const waitTimeMap = courseData?.waitTimeMap || {};
+                    if (!waitTimeMap[weekday]) waitTimeMap[weekday] = {};
 
-                const prevSec: number = waitTimeMap[weekday][timeSlotStr] || 0;
-                const deltaSec = Math.abs(waitTimeChange); // ensure positive contribution
-                const newAvg = prevSec === 0 ? deltaSec : Math.round(prevSec * 0.8 + deltaSec * 0.2);
-                waitTimeMap[weekday][timeSlotStr] = newAvg;
+                    const prevSec: number = waitTimeMap[weekday][timeSlotStr] || 0;
+                    const deltaSec = Math.abs(waitTimeChange); // ensure positive contribution
+                    const newAvg = prevSec === 0 ? deltaSec : Math.round(prevSec * 0.8 + deltaSec * 0.2);
+                    waitTimeMap[weekday][timeSlotStr] = newAvg;
 
-                await courseRef.update({ waitTimeMap });
-                functions.logger.info(
-                    `✓ Updated waitTimeMap via onQuestionUpdate: ${weekday} ${timeSlotStr} = ${deltaSec}s, ` +
-                    `new avg = ${waitTimeMap[weekday][timeSlotStr]}s`
-                );
+                    await courseRef.update({ waitTimeMap });
+                    functions.logger.info(
+                        `✓ Updated waitTimeMap via onQuestionUpdate: ${weekday} ${timeSlotStr} = ${deltaSec}s, ` +
+                        `new avg = ${waitTimeMap[weekday][timeSlotStr]}s`
+                    );
+                }
+            } catch (err) {
+                functions.logger.error('Error updating waitTimeMap from onQuestionUpdate', err as Error);
             }
-        } catch (err) {
-            functions.logger.error('Error updating waitTimeMap from onQuestionUpdate', err as Error);
-        }
+        })();
     }
 
-    // Wait time processing at session level is handled by onSessionUpdate whenever totalWaitTime changes
+    // Return the session update promise to match original behavior and ensure proper error handling
+    return sessionUpdatePromise;
 });
 
 exports.onQuestionStatusUpdate = functions.firestore
