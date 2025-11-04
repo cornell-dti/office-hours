@@ -15,7 +15,7 @@ import { useSessionQuestions, useSessionTAs } from "../../firehooks";
 import { computeNumberAhead } from "../../utilities/questions";
 import { RootState } from "../../redux/store";
 import WaitTimeGraph from "./WaitTimeGraph";
-import { buildWaitTimeDataFromMap, hasSessionsOnDate, getSessionTimeRange } from "../../firebasefunctions/waitTimeMap";
+import { buildWaitTimeDataFromMap, hasSessionsOnDate } from "../../firebasefunctions/waitTimeMap";
 
 type Props = {
     session: FireSession;
@@ -27,11 +27,6 @@ type Props = {
     myQuestion: FireQuestion | null;
     questions: readonly FireQuestion[];
     selectedDateEpoch: number;
-    virtualLocation?: string | undefined;
-    assignedQuestion?: FireQuestion | undefined;
-    isOpen?: boolean;
-    onUpdate?: (virtualLocation: string) => void;
-    isPaused?: boolean;
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {

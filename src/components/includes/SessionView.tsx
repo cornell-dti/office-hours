@@ -235,16 +235,8 @@ const SessionView = ({
                 callback={backCallback}
                 isDesktop={isDesktop}
                 isTa={isTa}
-                virtualLocation={sessionProfile?.virtualLocation}
-                assignedQuestion={assignedQuestion}
-                isOpen={isOpen(session, course.queueOpenInterval)}
                 myQuestion={myQuestion}
-                onUpdate={(virtualLocation) => {
-                    updateVirtualLocation(firestore, user, session, virtualLocation);
-                    updateSessionProfile(virtualLocation);
-                }}
                 questions={questions.filter((q) => q.status === "unresolved")}
-                isPaused={session.isPaused}
                 selectedDateEpoch={selectedDateEpoch}
             />
 
