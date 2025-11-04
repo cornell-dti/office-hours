@@ -14,7 +14,7 @@ class TagsBarChart extends React.Component<Props> {
                 <ResponsiveBar
                     data={this.props.barData}
                     indexBy="name"
-                    keys={["questionCount"]} //fixes bug where bar doesn't display
+                    keys={["questionCount"]} // fixes bug where bar doesn't display
                     margin={{
                         'top': 5,
                         'right': 20,

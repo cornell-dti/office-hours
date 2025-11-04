@@ -36,7 +36,7 @@ const ProfessorPeopleView = (props: RouteComponentProps<{ courseId: string }>) =
 
     // TA data
     // questionTAs includes undefined (for unanswered questions) and duplicates 
-    //const questionTAs = allQuestions.map((q) => courseUsers[q.answererId])
+    // const questionTAs = allQuestions.map((q) => courseUsers[q.answererId])
 
 
     const questionTAs = course?.professors.concat(course?.tas).map((q) => courseUsers[q])
