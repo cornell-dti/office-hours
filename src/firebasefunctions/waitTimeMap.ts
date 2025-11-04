@@ -1,5 +1,5 @@
 // waitTimeMap.ts - Utility functions for reading from waitTimeMap structure
-import { doc, getDoc, collection, query, where, getDocs, updateDoc, Timestamp } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
 import { firestore } from '../firebase';
 
 export type WaitTimeMapData = {
@@ -250,7 +250,6 @@ export const getSessionTimeRange = async (
     
         return { earliestStart, latestEnd };
     } catch (error) {
-        console.error('Error getting session time range:', error);
         return { earliestStart: null, latestEnd: null };
     }
 };

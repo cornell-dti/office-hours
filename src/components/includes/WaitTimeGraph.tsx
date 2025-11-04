@@ -103,10 +103,6 @@ const WaitTimeGraph = (props: Props) => {
 
     // State for filtered slots based on session times
     const [filteredSlots, setFilteredSlots] = React.useState<string[]>(props.timeKeys);
-    const [sessionTimeRange, setSessionTimeRange] = React.useState<{
-        earliestStart: Date | null;
-        latestEnd: Date | null;
-    } | null>(null);
 
     // Fetch session time range and filter slots
     React.useEffect(() => {
@@ -120,7 +116,6 @@ const WaitTimeGraph = (props: Props) => {
             if (!props.courseId || !hasOfficeHoursCheck) {
                 // If no courseId or no office hours, use all slots
                 setFilteredSlots(props.timeKeys);
-                setSessionTimeRange(null);
                 return;
             }
 
@@ -130,7 +125,6 @@ const WaitTimeGraph = (props: Props) => {
             if (!timeRange.earliestStart || !timeRange.latestEnd) {
                 // No sessions found, use all slots
                 setFilteredSlots(props.timeKeys);
-                setSessionTimeRange(null);
                 return;
             }
 
@@ -170,13 +164,8 @@ const WaitTimeGraph = (props: Props) => {
             // If no slots match, fall back to all slots
             if (filtered.length === 0) {
                 setFilteredSlots(props.timeKeys);
-                setSessionTimeRange(null);
             } else {
                 setFilteredSlots(filtered);
-                setSessionTimeRange({
-                    earliestStart: earliestStartRounded,
-                    latestEnd: latestEndRounded,
-                });
             }
         }
         loadSessionTimeRange();
