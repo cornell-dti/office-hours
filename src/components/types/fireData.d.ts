@@ -147,6 +147,7 @@ interface FireCourse {
     timeLimit?: number;
     timeWarning?: number;
     isTimeLimit?: boolean; // TODO: possibly change to non-null
+    waitTimeMap?: { [weekday: string]: { [timeSlot: string]: number | null } };
 }
 
 type PrivilegedFireCourseRole = "professor" | "ta";
