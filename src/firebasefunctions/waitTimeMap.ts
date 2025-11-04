@@ -175,9 +175,6 @@ export const buildWaitTimeDataFromMap = async (courseId: string): Promise<WaitTi
  */
 export const hasSessionsOnDate = async (courseId: string, date: Date): Promise<boolean> => {
     try {
-        const { collection, query, where, getDocs } = await import('firebase/firestore');
-        const { firestore } = await import('../firebase');
-    
         // Create start and end of day timestamps
         const startOfDay = new Date(date);
         startOfDay.setHours(0, 0, 0, 0);
