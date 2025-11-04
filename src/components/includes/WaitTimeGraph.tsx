@@ -21,6 +21,8 @@ type Props = {
     selectedDateEpoch: number;
     hasSessionsForSelectedDay?: boolean; // optional override for scheduled day detection
     courseId?: string; // Optional courseId to query session time ranges
+    sessionStartTime?: FireTimestamp; // Optional: current session start time for fallback filtering
+    sessionEndTime?: FireTimestamp; // Optional: current session end time for fallback filtering
 };
 
 // Convert time slot string (e.g., "7:00 AM") to Date object for comparison
@@ -121,8 +123,25 @@ const WaitTimeGraph = (props: Props) => {
                 return;
             }
 
-            const timeRange = await getSessionTimeRange(props.courseId, selectedDate);
+            let timeRange = await getSessionTimeRange(props.courseId, selectedDate);
             if (ignore) return;
+
+            // Fallback: if no sessions found for selected date, try using the current session's time
+            if ((!timeRange.earliestStart || !timeRange.latestEnd) && props.sessionStartTime && props.sessionEndTime) {
+                const sessionDate = props.sessionStartTime.toDate();
+                const sessionStartDate = new Date(sessionDate);
+                sessionStartDate.setHours(0, 0, 0, 0);
+                const sessionEndDate = new Date(sessionDate);
+                sessionEndDate.setHours(23, 59, 59, 999);
+                
+                // Only use session time if it's on the selected date
+                if (sessionStartDate.toDateString() === selectedDate.toDateString()) {
+                    timeRange = {
+                        earliestStart: props.sessionStartTime.toDate(),
+                        latestEnd: props.sessionEndTime.toDate()
+                    };
+                }
+            }
 
             if (!timeRange.earliestStart || !timeRange.latestEnd) {
                 // No sessions found, use all slots
@@ -137,30 +156,27 @@ const WaitTimeGraph = (props: Props) => {
             );
             earliestStartRounded.setSeconds(0, 0);
 
-            // Round latest end up to nearest 30-minute slot
+            // Round latest end DOWN to nearest 30-minute slot (not up)
+            // This ensures we only include slots that are actually part of the session
             const latestEndRounded = new Date(timeRange.latestEnd);
-            const endMinutes = latestEndRounded.getMinutes();
-            // Round up to the next 30-minute boundary if not already on one
-            if (endMinutes % 30 !== 0) {
-                latestEndRounded.setMinutes(
-                    Math.ceil(endMinutes / 30) * 30
-                );
-                // If rounding up crosses hour boundary, handle it
-                if (latestEndRounded.getMinutes() === 60) {
-                    latestEndRounded.setMinutes(0);
-                    latestEndRounded.setHours(latestEndRounded.getHours() + 1);
-                }
-            }
+            latestEndRounded.setMinutes(
+                Math.floor(latestEndRounded.getMinutes() / 30) * 30
+            );
             latestEndRounded.setSeconds(0, 0);
 
             // Filter slots that fall within the session time range
-            // Compare only the time portion, not the full date
+            // Compare full Date objects to handle midnight boundaries correctly
             const filtered = props.timeKeys.filter(slot => {
                 const slotDate = timeSlotToDate(slot, selectedDate);
-                const slotTime = slotDate.getHours() * 60 + slotDate.getMinutes();
-                const earliestTime = earliestStartRounded.getHours() * 60 + earliestStartRounded.getMinutes();
-                const latestTime = latestEndRounded.getHours() * 60 + latestEndRounded.getMinutes();
-                return slotTime >= earliestTime && slotTime <= latestTime;
+                const earliestDate = new Date(selectedDate);
+                earliestDate.setHours(earliestStartRounded.getHours(), earliestStartRounded.getMinutes(), 0, 0);
+                
+                const latestDate = new Date(selectedDate);
+                latestDate.setHours(latestEndRounded.getHours(), latestEndRounded.getMinutes(), 0, 0);
+                
+                // Include slots that start at or after earliestStart and at or before latestEnd
+                // Since slots are 30-minute intervals, we compare slot start times
+                return slotDate >= earliestDate && slotDate <= latestDate;
             });
 
             // If no slots match, fall back to all slots
@@ -174,7 +190,7 @@ const WaitTimeGraph = (props: Props) => {
         return () => {
             ignore = true;
         };
-    }, [props.courseId, props.timeKeys, props.hasSessionsForSelectedDay, selectedDate]);
+    }, [props.courseId, props.timeKeys, props.hasSessionsForSelectedDay, props.sessionStartTime, props.sessionEndTime, selectedDate]);
 
     // Windowed view over 30‑minute slots (show 6 consecutive slots)
     const slots = filteredSlots; // Use filtered slots instead of all timeKeys
