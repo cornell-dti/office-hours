@@ -1,5 +1,5 @@
 // waitTimeMap.ts - Utility functions for reading from waitTimeMap structure
-import { doc, getDoc, collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, Timestamp, limit } from 'firebase/firestore';
 import { firestore } from '../firebase';
 
 export type WaitTimeMapData = {
@@ -188,11 +188,12 @@ export const hasSessionsOnDate = async (courseId: string, date: Date): Promise<b
             sessionsRef,
             where('courseId', '==', courseId),
             where('startTime', '>=', startOfDay),
-            where('startTime', '<=', endOfDay)
+            where('startTime', '<=', endOfDay),
+            limit(1)
         );
     
-        const querySnapshot = await getDocs(sessionsQuery);
-        return !querySnapshot.empty;
+        const snapshot = await getDocs(sessionsQuery);
+        return !snapshot.empty;
     } catch (error) {
         return false;
     }
