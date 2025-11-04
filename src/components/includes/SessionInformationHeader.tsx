@@ -491,6 +491,8 @@ const SessionInformationHeader = ({
                             selectedDateEpoch={selectedDateEpoch}
                             hasSessionsForSelectedDay={hasSessionsSelectedDay}
                             courseId={course?.courseId}
+                            sessionStartTime={session.startTime}
+                            sessionEndTime={session.endTime}
                         />
                     </div>
                 </Grid>
