@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import * as H from "history";
 import { connect } from "react-redux";
 import { Loader } from "semantic-ui-react";
+import firebase from "firebase/compat/app"
 import ProfessorSidebar from "../includes/ProfessorSidebar";
 import TopBar from "../includes/TopBar";
 import LeaveQueue from "../includes/LeaveQueue";
 
 import { useCourse, useSession } from "../../firehooks";
-import { firestore } from "../../firebase";
 import { removeQuestionbyID, submitFeedback } from "../../firebasefunctions/sessionQuestion";
 import CalendarExportModal from "../includes/CalendarExportModal";
 import CalendarView from "../includes/CalendarView";
@@ -18,6 +18,7 @@ import SessionView from "../includes/SessionView";
 import { updateCourse, updateSession } from "../../redux/actions/course";
 
 const MOBILE_BREAKPOINT = 920;
+const firestore = firebase.firestore();
 
 const useWindowWidth = () => {
     const [width, setWidth] = useState(window.innerWidth);

@@ -3,11 +3,14 @@ import { Redirect } from "react-router";
 import { Checkbox } from "semantic-ui-react";
 import moment from "moment";
 import { collection, CollectionReference, query, where} from 'firebase/firestore';
+import firebase from "firebase/compat/app";
 import { collectionData, firestore, auth } from "../../firebase";
 import SelectedTags from "./SelectedTags";
 import SessionAlertModal from "./SessionAlertModal";
 
 import { addQuestion } from "../../firebasefunctions/sessionQuestion";
+
+const compatFirestore = firebase.firestore();
 
 const LOCATION_CHAR_LIMIT = 40;
 const WARNING_THRESHOLD = 10; // minutes left in queue
@@ -155,7 +158,7 @@ const AddQuestion = ({ course, session, mobileBreakpoint, showProfessorStudentVi
         const allowRedirect = addQuestion(
             auth.currentUser,
             session,
-            firestore,
+            compatFirestore,
             location,
             selectedPrimary,
             selectedSecondary,

@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect} from 'react';
 
 import { docData } from 'rxfire/firestore';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap} from 'rxjs/operators';
 import { Observable, of, EMPTY, combineLatest } from 'rxjs';
 import moment from 'moment';
 import { collection, doc, query, where, orderBy, documentId, Query, DocumentData } from 'firebase/firestore';
@@ -20,16 +20,7 @@ export const useDoc = <T>(collectionDoc: string, id: string | undefined, idField
             if (id) {
                 const primaryTag$: Observable<T> = 
                 docData(doc(firestore, collectionDoc, id), {idField: idFieldArg}) as Observable<T>;
-                const subscription = primaryTag$.subscribe((d:T) => {
-                    if (!d) {
-                        // eslint-disable-next-line no-console
-                        console.warn(`Firestore document ${collectionDoc}/${id} is undefined or null.`);
-                    } else if (typeof d !== "object") {
-                        // eslint-disable-next-line no-console
-                        console.error(`Unexpected Firestore data type:`, d);
-                    }
-                    setDocument(d);
-                });
+                const subscription = primaryTag$.subscribe((d:T) => setDocument(d));
                 return () => { subscription.unsubscribe(); };
             }
             // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -51,22 +42,15 @@ export const useQueryWithLoading = <T, P = string>(
     queryParameter: P, getQuery: (parameter: P) => Query, idFieldArg: string
 ): T[] | null => {
     const [result, setResult] = useState<T[] | null>(null);
-    const memoizedQuery = useMemo(() => getQuery(queryParameter), [queryParameter, getQuery]);
+   
     useEffect(
         () => {
             
-            const results$:Observable<T[]> = collectionData(memoizedQuery, {idField: idFieldArg}) as Observable<T[]>;
+            const results$:Observable<T[]> = collectionData(getQuery(queryParameter), 
+                {idField: idFieldArg}) as Observable<T[]>;
 
             // updates results as they come in. Triggers re-renders.
             const subscription = results$.subscribe(results => setResult(results));
-            //     {
-            //     const mappedResults: T[] = results.map((result: DocumentData) => {
-            //         // Safely map or cast DocumentData to T (e.g., FireTag or FireHybridSession)
-            //         return result as T;
-            //     });
-            //     setResult(mappedResults);
-            // });
-
             return () => { subscription.unsubscribe(); };
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -79,11 +63,11 @@ export const useBatchQueryWithLoading = <T, P = string>(
     queryParameter: P, getQueries: (parameter: P) => (Query)[], idFieldArg: string
 ): T[] | null => {
     const [result, setResult] = useState<T[] | null>(null);
-    const memoizedQueries = useMemo(() => getQueries(queryParameter), [queryParameter, getQueries]);
+
     useEffect(
         () => {
             let partialResult: T[] = [];
-            const effects = memoizedQueries.map(getQuery => {
+            const effects = getQueries(queryParameter).map(getQuery => {
                 const results$: Observable<T[]> = collectionData(getQuery, {idField: idFieldArg}) as Observable<T[]>;
 
                 // updates results as they come in. Triggers re-renders.
@@ -240,9 +224,7 @@ export const useIsAdmin: () => unknown =
     createUseSingletonObservableHook(isAdminSingletonObservable);
 
 const allCoursesObservable: Observable<readonly FireCourse[]> = loggedIn$.pipe(
-    switchMap(() => collectionData(collection(firestore,'courses') , {idField: 'courseId'}).pipe(
-        map((docs: DocumentData[]) => docs as FireCourse[])
-    ))
+    switchMap(() => collectionData(collection(firestore,'courses') , {idField: 'courseId'}) as Observable<FireCourse[]>)
 );
 
 const getAskerQuestionsQuery = (sessionId: string, askerId: string) => {

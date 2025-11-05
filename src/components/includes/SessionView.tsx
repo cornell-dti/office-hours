@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Icon } from "semantic-ui-react";
 
 import { connect } from "react-redux";
-// import { onSnapshot, doc, updateDoc, deleteField} from 'firebase/firestore';
+import firebase from "firebase/compat/app"
 import SessionInformationHeader from "./SessionInformationHeader";
 import SessionQuestionsContainer from "./SessionQuestionsContainer";
 
@@ -16,13 +16,14 @@ import {
 import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
 import { filterUnresolvedQuestions } from "../../utilities/questions";
 
-import { firestore } from "../../firebase";
 
 import { RootState } from "../../redux/store";
 import Banner from "./Banner";
 import TaAnnouncements from "./TaAnnouncements";
 
-import "firebase/auth";
+import "firebase/compat/auth";
+
+const firestore = firebase.firestore()
 
 type Props = {
     course: FireCourse;

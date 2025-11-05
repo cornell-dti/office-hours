@@ -11,9 +11,12 @@ import {
 } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { firestore, Timestamp } from '../../firebase';
+import firebase from "firebase/compat/app";
 import { createSeries, updateSeries } from '../../firebasefunctions/series';
 import { addSession, updateSession } from '../../firebasefunctions/session';
+
+const firestore = firebase.firestore();
+const Timestamp = firebase.firestore.Timestamp;
 
 enum Modality {
     VIRTUAL = 'virtual',

@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { auth, firestore } from '../../firebase';
+import { signInWithPopup } from 'firebase/auth';
+import firebase from "firebase/compat/app";
+import { auth } from '../../firebase';
 import { userUpload } from '../../firebasefunctions/user';
 
 import QMILogo2020 from '../../media/QMILogo2020.svg';
@@ -25,14 +26,15 @@ import QMIThreePeople from '../../media/ppl_illustration.svg';
 import { clearNotifications } from '../../firebasefunctions/notifications';
 import LoginModal from '../includes/LoginModal';
 
+const firestore = firebase.firestore();
+
 const LoginView: React.FC = () => {
     const history = useHistory();
 
     const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
 
     const googleAuth = () => {
-        const authProvider = new GoogleAuthProvider();
-        
+        const authProvider = new firebase.auth.GoogleAuthProvider();
         if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_IS_STAGING !== 'true') {
             authProvider.setCustomParameters({
                 hd: 'cornell.edu',
