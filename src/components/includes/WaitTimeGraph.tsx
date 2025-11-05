@@ -411,29 +411,30 @@ const WaitTimeGraph = (props: Props) => {
                                 const [time, period] = bar.data.slot.split(' ');
                                 const [hour, minute] = time.split(':');
                         
-                                // Set the bar time based on the slot (start of the 30-minute slot)
-                                const slotStartTime = new Date();
-                                slotStartTime.setHours(
+                                // Set the bar start time based on the slot
+                                const barStartTime = new Date();
+                                barStartTime.setHours(
                                     period === 'PM' && hour !== '12' ? 
                                         parseInt(hour, 10) + 12 : 
                                         period === 'AM' && hour === '12' ? 
                                             0 : parseInt(hour, 10)
                                 );
-                                slotStartTime.setMinutes(parseInt(minute, 10));
-                                slotStartTime.setSeconds(0, 0);
+                                barStartTime.setMinutes(parseInt(minute, 10));
+                                barStartTime.setSeconds(0, 0);
                                 
-                                // Calculate the end of this 30-minute slot
-                                const slotEndTime = new Date(slotStartTime);
-                                slotEndTime.setMinutes(slotEndTime.getMinutes() + 30);
+                                // Calculate the end time of this 30-minute slot
+                                const barEndTime = new Date(barStartTime);
+                                barEndTime.setMinutes(barEndTime.getMinutes() + 30);
                         
-                                // Check if current time falls within this 30-minute slot
-                                const isOngoing = currentTime >= slotStartTime && currentTime < slotEndTime;
+                                // Check if current time falls within this slot (currently ongoing)
+                                const isCurrentSlot = currentTime >= barStartTime && currentTime < barEndTime;
                                 
                                 // Compare with current time
-                                if (slotEndTime <= currentTime) {
+                                if (barStartTime < currentTime && !isCurrentSlot) {
                                     return "#D9D9D9"; // Past time
-                                } else if (isOngoing) {
-                                    return "#6399D6"; // Currently ongoing - darker blue
+                                } 
+                                if (isCurrentSlot) {
+                                    return "#6399D6"; // Current time block - darker blue
                                 } 
                                 return "#DAE9FC"; // Future time
                         
