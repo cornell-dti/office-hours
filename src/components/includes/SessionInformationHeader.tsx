@@ -2,10 +2,9 @@ import * as React from "react";
 import Moment from "react-moment";
 import { Icon } from "semantic-ui-react";
 
-import { Grid, Switch } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { connect } from "react-redux";
 import { useState } from "react";
-import { pauseSession } from "../../firebasefunctions/session";
 import users from "../../media/users.svg";
 import calendarIcon from "../../media/Calendar_icon.svg";
 import clockIcon from "../../media/clock-regular_1.svg";
@@ -16,7 +15,7 @@ import { useSessionQuestions, useSessionTAs } from "../../firehooks";
 import { computeNumberAhead } from "../../utilities/questions";
 import { RootState } from "../../redux/store";
 import WaitTimeGraph from "./WaitTimeGraph";
-import sampleData from "../../dummy_data.json";
+import { buildWaitTimeDataFromMap, hasSessionsOnDate } from "../../firebasefunctions/waitTimeMap";
 
 type Props = {
     session: FireSession;
@@ -25,23 +24,21 @@ type Props = {
     user: FireUser;
     isDesktop: boolean;
     isTa: boolean;
-    virtualLocation?: string;
-    assignedQuestion?: FireOHQuestion;
-    onUpdate: (virtualLocation: string) => void;
     myQuestion: FireQuestion | null;
-    isOpen: boolean;
     questions: readonly FireQuestion[];
-    isPaused: boolean | undefined;
     selectedDateEpoch: number;
 };
 
 const formatAvgTime = (rawTimeSecs: number) => {
+    if (!Number.isFinite(rawTimeSecs)) {
+        return "No information available";
+    }
     const timeSecs = Math.floor(rawTimeSecs);
     const timeMins = Math.floor(timeSecs / 60);
     const timeHours = Math.floor(timeMins / 60);
     const timeDispSecs = timeSecs - timeMins * 60;
     const timeDispMins = timeMins - timeHours * 60;
-    if (isNaN(timeSecs)) {
+    if (!Number.isFinite(timeSecs) || isNaN(timeSecs)) {
         return "No information available";
     }
     if (timeMins === 0) {
@@ -55,6 +52,9 @@ const formatAvgTime = (rawTimeSecs: number) => {
 };
 
 const formatEstimatedTime = (waitTimeSecs: number, currentTime: Date) => {
+    if (!Number.isFinite(waitTimeSecs)) {
+        return " (No estimate available) ";
+    }
     const currMins = currentTime.getMinutes();
     const currHour = currentTime.getHours();
 
@@ -71,7 +71,7 @@ const formatEstimatedTime = (waitTimeSecs: number, currentTime: Date) => {
     let totalHour = (currHour + timeHours) % 12;
     const totalMins = (currMins + timeDispMins) % 60;
 
-    if (currHour + timeHours >= 24) {
+    if (!Number.isFinite(timeSecs) || currHour + timeHours >= 24) {
         return " (No estimate available) ";
     }
     if (currMins + timeDispMins >= 60) {
@@ -93,13 +93,8 @@ const SessionInformationHeader = ({
     user,
     isDesktop,
     isTa,
-    virtualLocation,// eslint-disable-line @typescript-eslint/no-unused-vars
-    assignedQuestion,// eslint-disable-line @typescript-eslint/no-unused-vars
-    onUpdate,// eslint-disable-line @typescript-eslint/no-unused-vars
     myQuestion,
-    isOpen,
     questions,
-    isPaused,
     selectedDateEpoch,
 }: Props) => {
     const [ratioText, setRatioText] = React.useState("");
@@ -147,11 +142,52 @@ const SessionInformationHeader = ({
         today,
     );
 
-  
 
-    const handlePause = () => {
-        pauseSession(session, !session.isPaused);
-    };
+    // Compact typography for the wait-time summary lines
+    const summaryTextStyle: React.CSSProperties = { fontSize: 14, lineHeight: '16px' };
+
+    // WaitTime graph data (replaces dummy_data.json)
+    const [graphData, setGraphData] = React.useState({
+        barData: [] as any[],
+        timeKeys: [] as string[],
+        yMax: 10,
+        legend: "Avg minutes per student",
+        OHDetails: {} as any,
+    });
+
+    React.useEffect(() => {
+        let ignore = false;
+        async function load() {
+            if (!course?.courseId) return;
+            const data = await buildWaitTimeDataFromMap(course.courseId);
+            if (!ignore) setGraphData(data);
+        }
+        load();
+        return () => {
+            ignore = true;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [course?.courseId, selectedDateEpoch]);
+
+    // Determine if the selected date has any session (exact day match)
+    const [hasSessionsSelectedDay, setHasSessionsSelectedDay] = React.useState<boolean | undefined>(undefined);
+    React.useEffect(() => {
+        let ignore = false;
+        async function run() {
+            if (!course?.courseId) {
+                setHasSessionsSelectedDay(undefined);
+                return;
+            }
+            const date = new Date(selectedDateEpoch);
+            const exists = await hasSessionsOnDate(course.courseId, date);
+            if (!ignore) setHasSessionsSelectedDay(exists);
+        }
+        run();
+        return () => {
+            ignore = true;
+        };
+    }, [course?.courseId, selectedDateEpoch]);
+
 
 
     const [startIndex, setStartIndex] = useState(0);
@@ -167,7 +203,7 @@ const SessionInformationHeader = ({
         <header
             className="DesktopSessionInformationHeader"
             style={{
-                height: "310px", // More compact design
+                height: "280px", // More compact design
             }}
         >
             <Grid container style={{ alignItems: "stretch", height: "100%" }}>
@@ -197,7 +233,9 @@ const SessionInformationHeader = ({
                                         <>
                                             Held by
                                             <span className="black">
-                                                {" " + tas.map((ta) => ta.firstName + " " + ta.lastName).join(", ")}
+                                                {" " + tas.map((ta) => 
+                                                    ta.firstName + " " + ta.lastName
+                                                ).join(", ")}
                                             </span>
                                         </>
                                     )}
@@ -214,41 +252,26 @@ const SessionInformationHeader = ({
                                         <Moment
                                             date={session.startTime.seconds * 1000}
                                             interval={0}
-                                            format={"dddd, MMM D"}
+                                            format="dddd, MMM D"
                                         />
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <img
-                                            src={clockIcon}
+                                        <img 
+                                            src={clockIcon} 
                                             alt="Clock Icon for Office Hour Date" 
-                                            className="clockIcon"
+                                            className="clockIcon" 
                                         />
-                                        <Moment date={session.startTime.seconds*1000} interval={0} format={"h:mm A"}/>
-                                        <Moment date={session.endTime.seconds*1000} interval={0} format={" - h:mm A"}/>
+                                        <Moment 
+                                            date={session.startTime.seconds * 1000} 
+                                            interval={0} 
+                                            format="h:mm A" 
+                                        />
+                                        <Moment 
+                                            date={session.endTime.seconds * 1000} 
+                                            interval={0} 
+                                            format=" - h:mm A" 
+                                        />
                                     </div>
-                                </div>
-
-                                <div className="OneQueueInfo">
-                                    {isTa && isOpen &&
-                                        (<Grid
-                                            container
-                                            direction="row"
-                                            justifyContent="center" 
-                                            alignItems={'center'}
-                                            spacing={4}
-                                        >
-                                            <Grid item xs={2} >
-                                                <Switch 
-                                                    className="closeQueueSwitch" 
-                                                    checked={!isPaused} 
-                                                    onChange={handlePause} 
-                                                    color="primary" 
-                                                />
-                                            </Grid>
-                                            <Grid item xs={10}>
-                                                <p>{`Queue is ${isPaused ? "closed" : "open"}`} </p>
-                                            </Grid>
-                                        </Grid>)}
                                 </div>
                             </div>
                         </Grid>
@@ -263,11 +286,20 @@ const SessionInformationHeader = ({
                                     {/* Text on the left */}
                                     <Grid item xs={12} sm={3}>
                                         <div className="TAHeaderText">
-                                            <p style={{ fontWeight: "bold", fontSize: "20px", margin: 0 }}>
+                                            <p style={{ 
+                                                fontWeight: "bold", 
+                                                fontSize: "20px", 
+                                                margin: 0 
+                                            }}
+                                            >
                                                 TA's ({tas.length})
                                             </p>
-                                            <p style={{ fontSize: "14px", color: "#4d4d4d",
-                                                margin: 0, whiteSpace: "nowrap" }}
+                                            <p style={{ 
+                                                fontSize: "14px", 
+                                                color: "#4d4d4d", 
+                                                margin: 0, 
+                                                whiteSpace: "nowrap" 
+                                            }}
                                             >
                                                 {ratioText}
                                             </p>
@@ -365,25 +397,50 @@ const SessionInformationHeader = ({
                 </Grid>
                 <Grid item style={{ display: "flex", width: "60%" }}>
                     <div className="QueueInfo">
-                        <p className="WaitTitle">Wait Time</p>
+                        {(() => {
+                            const isTodayForHeader = new Date(selectedDateEpoch).toDateString() === 
+                                new Date().toDateString();
+                            return (
+                                <p 
+                                    className="WaitTitle" 
+                                    style={isTodayForHeader ? { marginBottom: 2 } : undefined}
+                                >
+                                    Wait Time
+                                </p>
+                            );
+                        })()}
                         {(() => {
                             const selectedDate = new Date(selectedDateEpoch);
                             const today = new Date();
                             const isToday = selectedDate.toDateString() === today.toDateString();
                             const isFutureDate = selectedDate > today;
-                            const dayNames = 
-                            ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                            const dayNames = [
+                                "Sunday", "Monday", "Tuesday", "Wednesday", 
+                                "Thursday", "Friday", "Saturday"
+                            ];
                             const selectedDay = dayNames[selectedDate.getDay()];
                             
-                            // Don't show subtitle for today
+                            // Subtitle rules:
+                            // - Today with no sessions: show "Wait times for Today"
+                            // - Today with sessions: no subtitle (we show the live block below)
+                            // - Not today: keep existing future/past subtitles
                             if (isToday) {
+                                if (hasSessionsSelectedDay === false) {
+                                    return (
+                                        <p className="WaitSubtitle">
+                                            Wait times for Today
+                                        </p>
+                                    );
+                                }
                                 return null;
                             }
-                            
+
                             return (
                                 <p className="WaitSubtitle">
                                     {isFutureDate ? (
-                                        <>This is an estimate of wait times on <strong>{selectedDay}</strong> for {course.code}.</> // eslint-disable-line max-len
+                                        <>This is an estimate of wait times on <strong>{selectedDay}</strong> for {
+                                            course.code
+                                        }.</>
                                     ) : (
                                         `Wait times for ${selectedDay}`
                                     )}
@@ -395,31 +452,18 @@ const SessionInformationHeader = ({
                             const today = new Date();
                             const isToday = selectedDate.toDateString() === today.toDateString();
                             
-                            // Only show queue info for today AND if today has office hours
-                            if (!isToday) return null;
-                            
-                            // Check if today has office hours based on actual data
-                            const todayDayNames = 
-                            ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-                            const todayDayName = todayDayNames[today.getDay()];
-                            const todayData = sampleData.barData.find(day => day.dayOfWeek === todayDayName);
-                            
-                            // Check if there's actual wait time data for today
-                            const hasOfficeHours = todayData && Object.keys(todayData).some(key => 
-                                key !== 'dayOfWeek' && Number((todayData as any)[key]) > 0
-                            );
-                            
-                            if (!hasOfficeHours) return null;
+                            // Only show queue info for today AND if today has scheduled office hours
+                            if (!isToday || hasSessionsSelectedDay === false) return null;
                             
                             return avgWaitTime !== "No information available" ? (
                                 <>
-                                    <p className="WaitSummary">
+                                    <p className="WaitSummary" style={summaryTextStyle}>
                                         <img src={users} alt="users" className="waitIcon" />
                                         <span className="red"> {numAhead === 1 ? numAhead + ' student' :
                                             numAhead + ' students'} </span>
                                         <span>ahead</span>
                                     </p>
-                                    <p className="WaitSummary">
+                                    <p className="WaitSummary" style={summaryTextStyle}>
                                         <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
                                         <span className="blue"> {avgWaitTime}</span>
                                         <span className="gray"> {esimatedTime}</span>
@@ -428,27 +472,27 @@ const SessionInformationHeader = ({
                                 </>
                             ) : (
                                 <>
-                                    <p className="WaitSummary">
+                                    <p className="WaitSummary" style={summaryTextStyle}>
                                         <img src={users} alt="users" className="waitIcon" />
                                         <span className="red">{numAhead} students</span>
                                         <span>ahead</span>
                                     </p>
-                                    <p className="WaitSummary">
+                                    <p className="WaitSummary" style={{...summaryTextStyle, marginBottom: 5}}>
                                         <img src={hourglassIcon} alt="hourglass" className="waitIcon hourglass" />
                                         <span className="blue"> No information available</span>
                                     </p>
                                 </>
                             );
                         })()}
-
                         <WaitTimeGraph
-                            barData={sampleData.barData}
-                            yMax={sampleData.yMax}
-                            timeKeys={sampleData.timeKeys}
-                            legend={sampleData.legend}
-                            OHDetails={sampleData.OHDetails}
+                            barData={graphData.barData}
+                            timeKeys={graphData.timeKeys}
+                            OHDetails={graphData.OHDetails}
                             selectedDateEpoch={selectedDateEpoch}
-                            course={course}
+                            hasSessionsForSelectedDay={hasSessionsSelectedDay}
+                            courseId={course?.courseId}
+                            sessionStartTime={session.startTime}
+                            sessionEndTime={session.endTime}
                         />
                     </div>
                 </Grid>
@@ -515,10 +559,6 @@ const SessionInformationHeader = ({
     );
 };
 
-SessionInformationHeader.defaultProps = {
-    virtualLocation: undefined,
-    assignedQuestion: undefined,
-};
 
 const mapStateToProps = (state: RootState) => ({
     user: state.auth.user,
