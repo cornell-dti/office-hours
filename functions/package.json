@@ -21,7 +21,7 @@
     "firebase-functions": "^6.3.2",
     "firebase-tools": "^13.6.0",
     "moment-timezone": "^0.5.45",
-    "twilio": "^3.71.3"
+    "twilio": "^5.10.4"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",
