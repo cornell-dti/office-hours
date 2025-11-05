@@ -2,8 +2,8 @@ import React, { Dispatch, SetStateAction, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Icon } from 'semantic-ui-react';
 import {signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../../firebase';
 import firebase from "firebase/compat/app"
+import { auth } from '../../firebase';
 import { userUpload } from '../../firebasefunctions/user';
 import { clearNotifications } from '../../firebasefunctions/notifications';
 import userIcon from '../../media/userIcon.svg'

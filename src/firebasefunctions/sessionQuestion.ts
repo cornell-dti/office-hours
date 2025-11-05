@@ -1,5 +1,5 @@
 import firebase from 'firebase/compat/app';
-//import { firestore, Timestamp } from '../firebase';
+// import { firestore, Timestamp } from '../firebase';
 import { User } from 'firebase/auth';
 
 
@@ -18,7 +18,7 @@ export const updateVirtualLocation = (
 };
 
 
-//make this v9 to make AddQuestion.tsx work
+// make this v9 to make AddQuestion.tsx work
 export const addQuestion = (
     user: User | null,
     session: FireSession,

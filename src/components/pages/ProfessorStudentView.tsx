@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import * as H from "history";
 import { connect } from "react-redux";
 import { Loader } from "semantic-ui-react";
+import firebase from "firebase/compat/app"
 import ProfessorSidebar from "../includes/ProfessorSidebar";
 import TopBar from "../includes/TopBar";
 import LeaveQueue from "../includes/LeaveQueue";
 
 import { useCourse, useSession } from "../../firehooks";
-import firebase from "firebase/compat/app"
 import { removeQuestionbyID, submitFeedback } from "../../firebasefunctions/sessionQuestion";
 import CalendarExportModal from "../includes/CalendarExportModal";
 import CalendarView from "../includes/CalendarView";

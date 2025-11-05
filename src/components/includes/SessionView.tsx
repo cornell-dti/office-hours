@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Icon } from "semantic-ui-react";
 
 import { connect } from "react-redux";
+import firebase from "firebase/compat/app"
 import SessionInformationHeader from "./SessionInformationHeader";
 import SessionQuestionsContainer from "./SessionQuestionsContainer";
 
@@ -15,7 +16,6 @@ import {
 import { updateQuestion, updateVirtualLocation } from "../../firebasefunctions/sessionQuestion";
 import { filterUnresolvedQuestions } from "../../utilities/questions";
 
-import firebase from "firebase/compat/app"
 
 import { RootState } from "../../redux/store";
 import Banner from "./Banner";

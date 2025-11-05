@@ -41,7 +41,7 @@ export const addDBNotification =
                     const prevTracker = prevTrackerSnap.data();
                     const notifList: SessionNotification[] =
                         prevTracker !== undefined &&
-                            prevTracker.notificatoniList !== undefined ? prevTracker.notificationList : []
+                            prevTracker.notificationList !== undefined ? prevTracker.notificationList : []
                     const newNotification: SessionNotification = {
                         title: notification.title,
                         subtitle: notification.subtitle,

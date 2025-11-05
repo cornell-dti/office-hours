@@ -3,11 +3,11 @@ import * as H from "history";
 import { Loader } from "semantic-ui-react";
 
 import { connect } from "react-redux";
+import firebase from "firebase/compat/app"
 import SessionView from "../includes/SessionView";
 import CalendarView from "../includes/CalendarView";
 import LeaveQueue from "../includes/LeaveQueue";
 import ProductUpdates from "../includes/ProductUpdates";
-import firebase from "firebase/compat/app"
 import { useCourse, useSession } from "../../firehooks";
 import { removeQuestionbyID, submitFeedback } from "../../firebasefunctions/sessionQuestion";
 import TopBar from "../includes/TopBar";
