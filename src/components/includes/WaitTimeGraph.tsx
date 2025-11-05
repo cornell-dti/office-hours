@@ -93,15 +93,6 @@ const WaitTimeGraph = (props: Props) => {
     const hasData = selectedDayData && Object.values(selectedDayData).some(value => 
         typeof value === 'number' && value > 0
     );
-    
-
-    const currentHourLabel = new Intl.DateTimeFormat("en-US", {
-        hour: "numeric",
-        hour12: true,
-    })
-        .format(today)
-        .toLowerCase()
-        .replace(" ", "");
 
     // State for filtered slots based on session times
     const [filteredSlots, setFilteredSlots] = React.useState<string[]>(props.timeKeys);
@@ -188,7 +179,8 @@ const WaitTimeGraph = (props: Props) => {
         return () => {
             ignore = true;
         };
-    }, [props.courseId, props.timeKeys, props.hasSessionsForSelectedDay, props.sessionStartTime, props.sessionEndTime, selectedDate]);
+    }, [props.courseId, props.timeKeys, props.hasSessionsForSelectedDay, 
+        props.sessionStartTime, props.sessionEndTime, selectedDate]);
 
     // Windowed view over 30‑minute slots (show 6 consecutive slots)
     const slots = filteredSlots; // Use filtered slots instead of all timeKeys
@@ -396,18 +388,18 @@ const WaitTimeGraph = (props: Props) => {
                         padding={0.2}
                         colors={(bar) => {
                             const currentTime = new Date();
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
+                            const todayNormalized = new Date();
+                            todayNormalized.setHours(0, 0, 0, 0);
                             
                             // Compare actual dates, not just day names
                             const selectedDateNormalized = new Date(selectedDate);
                             selectedDateNormalized.setHours(0, 0, 0, 0);
                             
-                            const isToday = selectedDateNormalized.getTime() === today.getTime();
-                            const isFutureDate = selectedDateNormalized > today;
+                            const isTodayNormalized = selectedDateNormalized.getTime() === todayNormalized.getTime();
+                            const isFutureDateNormalized = selectedDateNormalized > todayNormalized;
                     
                             // If selected day is today, use the original time-based logic
-                            if (isToday) {
+                            if (isTodayNormalized) {
                                 const [time, period] = bar.data.slot.split(' ');
                                 const [hour, minute] = time.split(':');
                         
@@ -440,7 +432,7 @@ const WaitTimeGraph = (props: Props) => {
                         
                             }
                             // If selected day is in the future, all bars should be blue (estimated styling)
-                            if (isFutureDate) {
+                            if (isFutureDateNormalized) {
                                 return "#DAE9FC"; // Blue for future estimates
                             }
                             // If selected day is in the past, all bars are past time
