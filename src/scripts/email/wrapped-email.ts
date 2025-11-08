@@ -2,7 +2,7 @@ import { Resend } from 'resend';
 import * as admin from "firebase-admin"
 import 'dotenv/config'
 import { HTML } from "./wrapped-html";
-import { MAX_BATCH_LIMIT, MAX_EMAIL_LIMIT } from "../../constants";
+import { CURRENT_SEMESTER, MAX_BATCH_LIMIT, MAX_EMAIL_LIMIT } from "../../constants";
 
 /*
 
@@ -19,7 +19,7 @@ been hit, there will be a console statement that tells you the next input number
 
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
-    databaseURL: 'https://queue-me-in-prod.firebaseio.com'
+    //databaseURL: 'https://queue-me-in-prod.firebaseio.com'
 
 });
 
@@ -81,7 +81,7 @@ Continue from this user the next day by typing "node ${process.argv[1]} ${i}"`)
     console.log('firebase worked');
     // using orderBy for email field to filter out users that don't have an email
     const usersSnapshot = await usersRef
-        .where('wrapped', '==',true)
+        .where('wrapped', '==', CURRENT_SEMESTER)
         .where('email', '!=', null)
         .orderBy('email')
         .get();

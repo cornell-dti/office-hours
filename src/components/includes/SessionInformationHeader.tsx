@@ -186,6 +186,7 @@ const SessionInformationHeader = ({
         return () => {
             ignore = true;
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [course?.courseId, selectedDateEpoch]);
 
 

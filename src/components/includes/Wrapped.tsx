@@ -123,7 +123,7 @@ const Wrapped= (props: Props): JSX.Element => {
     const [totalStages, setTotalStages] = useState<number>(0);
 
     // add these to useEffect?
-    const semester =  "SPRING 2023 & FALL 2024";
+    const semester =  "SPRING 2025 & FALL 2025";
     const months : string[] = [
         "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", 
         "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
@@ -206,9 +206,6 @@ const Wrapped= (props: Props): JSX.Element => {
                 const docRef = doc(firestore, 'wrapped', props.user?.userId || '');
                 const docSnap = await getDoc(docRef);
     
-                const userDocRef = doc(firestore, 'users', wrappedData.favTaId || '');
-                const userDocSnap = await getDoc(userDocRef);
-    
                 if (docSnap.exists()) {
                     const studentData = docSnap.data() as { 
                         numVisits: number;
@@ -221,32 +218,37 @@ const Wrapped= (props: Props): JSX.Element => {
                         favMonth: number;
                         numStudentsHelped: number;
                     };
+                    console.log(studentData)
     
                     setWrappedData(studentData);
     
                     let numStages = 0;
                     if (studentData.timeHelpingStudents === undefined || studentData.timeHelpingStudents === 0) {
                         numStages = 6;
-                        setRole(0);
-                    } else if (studentData.favTaId === "" || studentData.favTaId === undefined) {
+                        setRole(0); // Only Student
+                    } else if ((studentData.favTaId === "" || studentData.favTaId === undefined) && (studentData.numVisits === 0)) {
                         numStages = 4;
-                        setRole(2);
+                        setRole(2); // Only TA
                     } else {
                         numStages = 7;
-                        setRole(1);
+                        setRole(1); // TA + Student
                     }
     
                     let taNameExists = false;
-                    if (userDocSnap.exists()) {
-                        setTaName(userDocSnap.data() as { 
-                            firstName: string;
-                            lastName: string;
-                        });  
-                        taNameExists = true;
-                    } else {
-                        console.log('No such TA document!');
+                    if (wrappedData.favTaId) {
+                        const userDocRef = doc(firestore, 'users', wrappedData.favTaId || '');
+                        const userDocSnap = await getDoc(userDocRef);
+                            if (userDocSnap.exists()) {
+                                setTaName(userDocSnap.data() as { 
+                                    firstName: string;
+                                    lastName: string;
+                                });  
+                                taNameExists = true;
+                            } else {
+                                console.log('No such TA document!');
+                            }
                     }
-    
+                
                     if (
                         studentData.favClass === "" || 
                         studentData.favDay === -1 || 
@@ -258,24 +260,24 @@ const Wrapped= (props: Props): JSX.Element => {
                     } 
     
                     setTotalStages(numStages);
-    
-                    const courseDocRef = doc(firestore, "courses", studentData.favClass);
-                    const coursesDocSnap = await getDoc(courseDocRef);
-    
-                    if (coursesDocSnap.exists()) {
-                        setFavClass(coursesDocSnap.data() as {
-                            code: string;
-                        });
-                    } else {
-                        console.log('No such course document!');
+                    
+                    if (studentData.favClass !== "") {
+                        const courseDocRef = doc(firestore, "courses", studentData.favClass);
+                        const coursesDocSnap = await getDoc(courseDocRef);
+                        if (coursesDocSnap.exists()) {
+                            setFavClass(coursesDocSnap.data() as {
+                                code: string;
+                            });
+                        } else {
+                            console.log('No such course document!');
+                        }
                     }
+                    
                 } else {
                     console.log('No such wrapped document!');
                 }
             } catch (error) {
                 console.error("Error fetching data: ", error);
-            } finally {
-                setLoading(false);
             }
         };
     
@@ -397,15 +399,6 @@ const Wrapped= (props: Props): JSX.Element => {
             {favClass.code} ON {day} <Asterik />
             {favClass.code} ON {day} <Asterik />
             {favClass.code} ON {day} <Asterik />
-        </div>
-    );
-
-    const StudentsHelpedBanner = () => (
-        <div> 
-            <Asterik/>
-            {/* fix month to be ta month not student month */}
-            YOU HAD THE MOST VISITS IN {month} <Asterik/>
-            YOU HAD THE MOST VISITS IN {month} <Asterik/>
         </div>
     );
 
@@ -685,7 +678,7 @@ const Wrapped= (props: Props): JSX.Element => {
                 {showBanner && (
                     <>
                         <div className="banner bottom-ta-helped">
-                            <StudentsHelpedBanner />
+                            <TimeSpentBanner />
                         </div>
                     </>
                 )}
@@ -756,6 +749,7 @@ const Wrapped= (props: Props): JSX.Element => {
                 }
 
                 {stage === 0 && <Welcome />}    
+                {console.log(role)}
 
                 {role === 2 && <RenderTA />}
                 {role === 0 && <RenderStudent/>}
