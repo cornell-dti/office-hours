@@ -114,7 +114,7 @@ const WrappedCountdown: React.FC<WrappedCountdownProps> = ({ setDisplayWrapped, 
                                     View Now
                                 </div>
                             </div>
-                            {!confettiShown && <ConfettiExplosion duration={2800} force={0.6} particleCount={200} />}
+                            {!confettiShown && <ConfettiExplosion duration={3000} force={0.6} particleCount={200} />}
                             <img className="cone" src={cone} alt="icon" />
                         </div>
                     )}
