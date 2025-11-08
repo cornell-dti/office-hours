@@ -169,7 +169,7 @@ interface FireUser {
     phoneNumber?: string;
     textNotifsEnabled?: boolean;
     textPrompted?: boolean;
-    wrapped?: boolean;
+    wrapped?: string;
 }
 
 interface FirePendingUser {

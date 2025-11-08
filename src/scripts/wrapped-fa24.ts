@@ -1,8 +1,9 @@
 import admin from "firebase-admin";
+import { CURRENT_SEMESTER } from "../constants";
 
 admin.initializeApp({
     credential: admin.credential.applicationDefault(),
-    databaseURL: 'https://queue-me-in-prod.firebaseio.com'
+    //databaseURL: 'https://queue-me-in-prod.firebaseio.com'
 
 });
 
@@ -18,8 +19,8 @@ const errorUsers: {
 
 // Firestore Timestamps for the query range
 
-const startDate = admin.firestore.Timestamp.fromDate(new Date('2024-01-22'));
-const endDate = admin.firestore.Timestamp.fromDate(new Date('2024-11-22'));
+const startDate = admin.firestore.Timestamp.fromDate(new Date('2025-01-22'));
+const endDate = admin.firestore.Timestamp.fromDate(new Date('2025-11-22'));
 
 const getWrapped = async () => {
     // Refs
@@ -83,6 +84,10 @@ const getWrapped = async () => {
     }[]} = {};
 
     // Helper functions
+
+    /**
+     * This function does final checks for the validity of a user, and then writes the user to the wrapped collection and updates the field "wrapped" in the users collection. Keeps track of users that encountered an error for debugging.
+     */
     const updateWrappedDocs = async () => {
         // Update the wrapped collection
         const batch = db.batch();
@@ -92,15 +97,18 @@ const getWrapped = async () => {
             if (userId) {
                 /* Defition of active: 
             If a user is only a student, they need to have at least one OH visit. 
-            If a user is a TA, they need to have at least one TA session AND at least one OH visit as a student.
+            If a user is a TA, they need to have at least one TA session AND at least one OH visit as a student OR both values for studentsHelped and timeHelpingStudents.
         */
-                const hasVisits = stats.numVisits > 0;
+                // This is true if the user is either an active student, or a TA who who helped more than 0 students for more than 0 minutes
+                const taStatsExist = stats.timeHelpingStudents && stats.numStudentsHelped;
+                const hasVisits = stats.numVisits > 0 || taStatsExist;
+
                 // This is true if the user is either a student, or a TA who has more than one session
                 const isUserActive = stats.timeHelpingStudents === undefined || (TAsessions[userId]?.length > 0);
                 // True if user is either a student, or TA who helped more than 0 students for more than 0 minutes
                 const taHelped = stats.timeHelpingStudents === undefined || 
                 (stats.numStudentsHelped && stats.timeHelpingStudents > 0 && stats.numStudentsHelped > 0);
-                const hasMinutes = stats.favMonth !== -1 && stats.totalMinutes > 0;
+                const hasMinutes = stats.favMonth !== -1 && stats.favDay !== -1 && stats.totalMinutes > 0;
                 const taStatsMismatched = 
                 (stats.timeHelpingStudents !== undefined && stats.numStudentsHelped === undefined)
                 || (stats.timeHelpingStudents === undefined && stats.numStudentsHelped !== undefined);
@@ -114,7 +122,7 @@ const getWrapped = async () => {
                         const userDoc = userDocuments[userId];
                         if (userDoc.exists) {
                             usersRef.doc(userId).update({
-                                wrapped: true,
+                                wrapped: CURRENT_SEMESTER,
                             });
                         } else {
                             // Handle the case where the document does not exist
@@ -134,6 +142,11 @@ const getWrapped = async () => {
         await batch.commit();
     }
 
+    /**
+     * This function initializes an object of Wrapped statistics in the userStats dictionary for the asker and answerer with the respective student and TA fields. It also initializes a student's taCounts object (which tracks how many times they interacted with a TA), officeHourSessions list (which tracks which sessions they have been to), and monthTimeCounts list (which tracks the number of visits for each month).
+     * @param answererId: the userID of the person answering a question. Expected to be valid ID.
+     * @param askerId: the userID of the person asking a question. Expected to be valid ID.
+     */
     const initializeUser = (answererId:string, askerId:string) => {
         // if an instance doesn't exist yet for the user, creating one
         if (!userStats[askerId]) {
@@ -187,7 +200,9 @@ const getWrapped = async () => {
 
     }
 
-     
+     /**
+     * This function calculates all user's Wrapped stats with the helper variables we have been storing such as officeHourSessions and monthTimeCounts.
+     */
     const processStats = () => {
         count = 0;
         for (const [userId, stats] of Object.entries(userStats)) {
