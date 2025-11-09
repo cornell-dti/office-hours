@@ -221,7 +221,6 @@ const Wrapped= (props: Props): JSX.Element => {
                         favMonth: number;
                         numStudentsHelped: number;
                     };
-                    console.log(studentData)
     
                     setWrappedData(studentData);
     
@@ -238,8 +237,8 @@ const Wrapped= (props: Props): JSX.Element => {
                     }
     
                     let taNameExists = false;
-                    if (wrappedData.favTaId) {
-                        const userDocRef = doc(firestore, 'users', wrappedData.favTaId || '');
+                    if (studentData.favTaId) {
+                        const userDocRef = doc(firestore, 'users', studentData.favTaId || '');
                         const userDocSnap = await getDoc(userDocRef);
                             if (userDocSnap.exists()) {
                                 setTaName(userDocSnap.data() as { 
@@ -251,12 +250,12 @@ const Wrapped= (props: Props): JSX.Element => {
                                 console.log('No such TA document!');
                             }
                     }
-                
+                    // We are "skipping" a slide only if user is a Student or StudentTA, NOT a TA
                     if (
-                        studentData.favClass === "" || 
+                        (studentData.favClass === "" || 
                         studentData.favDay === -1 || 
                         studentData.favTaId === "" || 
-                        !taNameExists
+                        !taNameExists) && !studentData.timeHelpingStudents
                     ) {
                         setDisplayFavs(false);
                         numStages--;
@@ -310,7 +309,7 @@ const Wrapped= (props: Props): JSX.Element => {
         
         <div className={"dotsContainer" + showDots}>
             {[...Array(totalStages)].map((_, index) => ( 
-                <Dot active={index === stage} onClick={() => setStage(index)}/>
+                <Dot key={index}  active={index === stage} onClick={() => setStage(index)}/>
             ))}
         </div>
     );
@@ -349,7 +348,7 @@ const Wrapped= (props: Props): JSX.Element => {
                                     
                     {/* this is the actual circle part. 
                                     cx and cy are centers so shld be half of height/width. r is radius */}
-                    <circle cx='150' cy='150' r='115'> </circle>
+                    <circle cx='50%' cy='50%' r='38%'> </circle>
                 </svg>
                 <svg className="blue-circle" width="400" height="400">
                     <defs>
@@ -365,7 +364,7 @@ const Wrapped= (props: Props): JSX.Element => {
                             <stop offset="1" stopColor="#78B6F4" />
                         </linearGradient>
                     </defs>
-                    <circle cx='200' cy='200' r='180'> </circle>
+                    <circle cx='50%' cy='50%' r='45%'> </circle>
                 </svg>
                 {/* imported way of using svgs, so cant adjust stroke colors */}
                 <img src={arrow} className="arrow-circle" alt="dti arrow" />
@@ -751,9 +750,7 @@ const Wrapped= (props: Props): JSX.Element => {
                     </div>
                 }
 
-                {stage === 0 && <Welcome />}    
-                {console.log(role)}
-
+                {stage === 0 && <Welcome />}
                 {role === 2 && <RenderTA />}
                 {role === 0 && <RenderStudent/>}
                 {role === 1 && <RenderStudentTA/>}

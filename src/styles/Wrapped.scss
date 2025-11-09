@@ -24,12 +24,12 @@
   // position: fixed;
   display: flex;
   flex-direction: column;
-  position: absolute;
+  position: relative;
   margin: auto;
   max-width: 825px;
   max-height: 475px;
   width: 80vw;
-  height: 30vw;
+  height: 50vw;
   color: #FFFFFF;
   align-items: center;
   justify-content: center;
@@ -288,6 +288,7 @@
   }
 
   &.top-text{
+    animation: fadeIn 0.5s ease-in both;
     font-weight: bold;
     font-size: 35px;
     margin-bottom: 2rem;
@@ -296,6 +297,7 @@
   
   }
   &.taName {
+    animation: fadeIn 1s 0.75s ease-in both;
     font-family: "Roboto";
     font-weight: 700;
     color: #080680;
