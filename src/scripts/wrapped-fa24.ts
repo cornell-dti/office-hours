@@ -1,4 +1,4 @@
-import admin from "firebase-admin";
+import * as admin from "firebase-admin";
 import { CURRENT_SEMESTER } from "../constants";
 
 admin.initializeApp({
@@ -19,8 +19,11 @@ const errorUsers: {
 
 // Firestore Timestamps for the query range
 const year = (new Date()).getFullYear();
+console.log('Current year is: '+ year);
 const startDate = admin.firestore.Timestamp.fromDate(new Date(year+'-01-22'));
 const endDate = admin.firestore.Timestamp.fromDate(new Date(year+'-11-22'));
+console.log('Querying from ' + startDate.toDate().toDateString() + " to " + endDate.toDate().toDateString());
+console.log("-------------STARTING-------------")
 
 const getWrapped = async () => {
     // Refs
@@ -29,7 +32,7 @@ const getWrapped = async () => {
     const wrappedRef = db.collection('wrapped-fa25');
     const usersRef = db.collection('users-test');
 
-    // Query all questions asked between FA23 and SP24
+    // Query all questions asked between startDate and endDate
     const questionsSnapshot = await questionsRef
         .where('timeEntered', '>=', startDate) 
         .where('timeEntered', '<=', endDate)
@@ -101,21 +104,20 @@ const getWrapped = async () => {
             If a user is a TA, they need to have at least one TA session AND at least one OH visit as a student 
             OR both values for studentsHelped and timeHelpingStudents.
         */
-                // This is true if the user is either an active student, or a TA who who helped more than
-                // 0 students for more than 0 minutes
-                const taStatsExist = stats.timeHelpingStudents && stats.numStudentsHelped;
+                // This is true if the user is a TA who who helped more than
+                // 0 students for more than 0 minutes and has more than one session
+                const taStatsExist = stats.timeHelpingStudents && stats.numStudentsHelped 
+                && (TAsessions[userId]?.length > 0);
+                // Below are requirements for only students or studentTAs.
+                // True if user has visited OH at least one time OR is an active TA.
                 const hasVisits = stats.numVisits > 0 || taStatsExist;
-
-                // This is true if the user is either a student, or a TA who has more than one session
-                const isUserActive = stats.timeHelpingStudents === undefined || (TAsessions[userId]?.length > 0);
-                // True if user is either a student, or TA who helped more than 0 students for more than 0 minutes
-                const taHelped = stats.timeHelpingStudents === undefined || 
-                (stats.numStudentsHelped && stats.timeHelpingStudents > 0 && stats.numStudentsHelped > 0);
-                const hasMinutes = stats.favMonth !== -1 && stats.favDay !== -1 && stats.totalMinutes > 0;
+                // True if user has valid favorite stats and has spent at least a minute at OH OR is an active TA.
+                const hasMinutes = (stats.favMonth !== -1 && stats.favDay !== -1 && stats.totalMinutes > 0) 
+                || taStatsExist;
                 const taStatsMismatched = 
                 (stats.timeHelpingStudents !== undefined && stats.numStudentsHelped === undefined)
                 || (stats.timeHelpingStudents === undefined && stats.numStudentsHelped !== undefined);
-                if (hasVisits && isUserActive && hasMinutes && taHelped) {
+                if (hasVisits && hasMinutes) {
                     if (taStatsMismatched) {
                         errorUsers.push({user: userId, error: "Mismatch in updating ta specfic values."})
                     } else {
@@ -212,6 +214,9 @@ const getWrapped = async () => {
      */
     const processStats = () => {
         count = 0;
+        const weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
+        / (1000 * 60 * 60 * 24 * 7); // convert ms to weeks
+
         for (const [userId, stats] of Object.entries(userStats)) {
             if (count > 0 && count % 100 === 0) {
             // eslint-disable-next-line no-console
@@ -226,8 +231,6 @@ const getWrapped = async () => {
                 } 
             }
             // Personality type
-            const weeksInRange = (endDate.toDate().getTime() - startDate.toDate().getTime())
-        / (1000 * 60 * 60 * 24 * 7); // convert ms to weeks
             const averageSessionsPerWeek = stats.numVisits / weeksInRange;
 
             if (averageSessionsPerWeek >= 2) {
@@ -249,7 +252,7 @@ const getWrapped = async () => {
             if (stats.favTaId) {
             // only looking at the sessions from the favorite TA that match with sessions the user went to
                 const resSession = TAsessions[stats.favTaId]?.filter( (TAsession) => 
-                    officeHourSessions[userId].includes(TAsession.session) && TAsession.asker === userId);
+                    TAsession.asker === userId && officeHourSessions[userId].includes(TAsession.session));
                 if (resSession?.length === 1) {
                     stats.favClass =  resSession[0].courseId;
                     stats.favDay = resSession[0].day;
@@ -258,9 +261,12 @@ const getWrapped = async () => {
                     - find mode class
                     - out of all the sessions for that class, find mode day
                 */
-
                     const classFrequency: { [courseId: string]: number } = {};
                     const dayFrequency: { [day: number]: number } = {};
+
+                    for (const TAsession of resSession) {
+                        classFrequency[TAsession.courseId] = (classFrequency[TAsession.courseId] ?? 0) + 1;
+                    }
 
                     resSession.forEach((TAsession) => {
                         if (!classFrequency[TAsession.courseId]) {
@@ -272,24 +278,25 @@ const getWrapped = async () => {
 
                     const modeCourseId = Object.keys(classFrequency).reduce(((courseId1:string, courseId2:string) =>
                         classFrequency[courseId1] > classFrequency[courseId2] ? courseId1 : courseId2), "");
-                    resSession.forEach((TAsession) => {
+                    
+                    // Calculating day counts ONLY for mode course
+                    for (const TAsession of resSession) {
                         if (TAsession.courseId === modeCourseId) {
-                            if (!dayFrequency[TAsession.day]) {
-                                dayFrequency[TAsession.day] = 1;
-                            } else {
-                                dayFrequency[TAsession.day] += 1;
-                            }
-                        }
-                    });
+                             dayFrequency[TAsession.day] = ( dayFrequency[TAsession.day] ?? 0) + 1;
+                        }    
+                    }
+
                     const modeDay = Object.keys(dayFrequency).reduce(((day1, day2) =>
                         dayFrequency[parseInt(day1, 10)] > dayFrequency[parseInt(day2,10)] ? day1 : day2), "");
-
-                    const modeSessions = resSession.filter((TAsession) => TAsession.courseId === modeCourseId 
-                && TAsession.day === parseInt(modeDay,10));
                     
                     // There could be multiple ties, so just picking the first one
-                    stats.favClass =  modeSessions[0].courseId;
-                    stats.favDay = modeSessions[0].day;
+                    const modeSession = resSession.find(
+                        TAsession => TAsession.courseId === modeCourseId && TAsession.day === parseInt(modeDay,10)
+                    );
+                    if (modeSession) {
+                        stats.favClass = modeSession.courseId;
+                        stats.favDay = modeSession.day;
+                    }
 
                 }
             }
