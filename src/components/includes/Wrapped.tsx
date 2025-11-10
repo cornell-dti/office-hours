@@ -256,7 +256,7 @@ const Wrapped= (props: Props): JSX.Element => {
                         (studentData.favClass === "" || 
                         studentData.favDay === -1 || 
                         studentData.favTaId === "" || 
-                        !taNameExists) && !studentData.timeHelpingStudents
+                        !taNameExists) && (studentData.numVisits != 0)
                     ) {
                         setDisplayFavs(false);
                         numStages--;
