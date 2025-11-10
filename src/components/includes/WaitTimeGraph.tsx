@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/require-default-props */
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { ResponsiveBar, BarDatum } from "@nivo/bar";
 import rightArrowIcon from "../../media/Right Arrow.svg";
 import leftArrowIcon from "../../media/Left Arrow.svg";
@@ -73,6 +74,8 @@ const isInCurrentOrNextWeek = (date: Date): boolean => {
 
 const WaitTimeGraph = (props: Props) => {
     const today = new Date();
+    const vw = typeof window !== "undefined" ? window.innerWidth : 1024;
+    const scale = Math.min(1, vw / 1024);
     const selectedDate = new Date(props.selectedDateEpoch);
     const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const selectedDay = dayNames[(selectedDate.getDay() + 6) % 7]; // Adjust for Sunday=0
@@ -199,12 +202,15 @@ const WaitTimeGraph = (props: Props) => {
     const visibleSlots = slots.slice(hourStart, hourStart + windowSize);
 
     // Keep chart margin centralized so overlays align with the plot area
-    const chartMargin = React.useMemo(() => ({ top: 5, right: 12, bottom: 35, left: 12 }), []);
+    // check this responsive sizing
+    const chartMargin = React.useMemo(() => ({ 
+        top: 15 * scale, 
+        right: vw < 768 ? 10 : 20,
+        bottom: 40 * scale, 
+        left: 12 * scale
+    }), []);
     // Visual gap between the bars and the separator line
-    const baselineGapPx = -55;
-
-    const vw = typeof window !== "undefined" ? window.innerWidth : 1024;
-    const scale = Math.min(1, vw / 1024);
+    const baselineGapPx = (vw < 1406 && vw > 1279) ? -67 : (vw < 700) ? -15 : (vw < 920) ? -25 : -30;
 
     // Build data for the selected day and current window of 30‑minute slots
     const transformData = () => {
@@ -220,7 +226,14 @@ const WaitTimeGraph = (props: Props) => {
     };
 
     return (
-        <div style={{ height: 140, position: "relative", paddingTop: 3, paddingBottom: 0 }}>
+        <div 
+            style={{ 
+                width: "100%",
+                minWidth: 0,
+                height: "160px", 
+                position: "relative"
+            }}
+        >
             <style>
                 {`
                     /* Target only the actual bar rectangles, not the container or other SVG elements */

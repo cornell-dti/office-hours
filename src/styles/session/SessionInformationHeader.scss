@@ -11,10 +11,10 @@
     font-weight: 400;
     line-height: 1.4;
     display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 8px;
-  width: 100%;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    width: 100%;
   }
 
   .MuiGrid-spacing-xs-4 > .MuiGrid-item {
@@ -55,7 +55,7 @@
       font-family: Roboto;
       font-weight: 500;
       margin-bottom: 5px;
-      overflow: hidden;
+      // overflow: hidden;
       // white-space: nowrap;
       text-overflow: ellipsis;
     }
@@ -71,7 +71,7 @@
     }
     .Title {
       margin-bottom: 5px;
-      overflow: hidden;
+      // overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
       margin-bottom: 5px;
@@ -244,6 +244,17 @@
       line-height: normal;
       margin: 0 0 8px 0; // Add spacing below
     }
+
+    .WaitSubtitle{
+      color: #666;
+      font-family: Roboto, sans-serif;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      margin: 0 0 15px 0; // Add spacing below
+    }
+
     .WaitSummary {
       color: #484848;
       font-family: Roboto, sans-serif;
@@ -319,6 +330,7 @@
 
       p {
         padding-left: 10px;
+        padding-right: 30px;
         max-width: fit-content;
       }
 
@@ -417,7 +429,38 @@
   width: 100%;
   border-bottom: solid 1px #e3e3e3;
 
-    .LeftInformationHeader {
+  .OneQueueInfo {
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    margin-bottom: 3px;
+    width: 100%;
+  }
+
+  .MuiGrid-spacing-xs-4 > .MuiGrid-item {
+      padding: 2px;
+  }
+
+  .switchWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+    width: 100%;
+    margin-left: 2px;
+
+    .MuiFormControlLabel-label {
+      font-size: 15px;
+      width: 100%;
+    }
+  }
+
+  .LeftInformationHeader {
     font-size: 13px;
     background-color: white;
     color: #484848;
@@ -439,7 +482,7 @@
       font-family: Roboto;
       font-weight: 500;
       margin-bottom: 5px;
-      overflow: hidden;
+      // overflow: hidden;
       // white-space: nowrap;
       text-overflow: ellipsis;
     }
@@ -455,7 +498,7 @@
     }
     .Title {
       margin-bottom: 5px;
-      overflow: hidden;
+      // overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
       margin-bottom: 5px;
@@ -609,6 +652,17 @@
       line-height: normal;
       margin: 0 0 8px 0; // Add spacing below
     }
+
+    .WaitSubtitle{
+      color: #666;
+      font-family: Roboto, sans-serif;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      margin: 0 0 15px 0; // Add spacing below
+    }
+
     .WaitSummary {
       color: #484848;
       font-family: Roboto, sans-serif;
@@ -621,7 +675,7 @@
       align-items: center;
     }
 
-        // Add a little space between stacked summary lines
+    // Add a little space between stacked summary lines
     .WaitSummary + .WaitSummary {
       margin-top: 6px;
     }
@@ -685,6 +739,7 @@
 
       p {
         padding-left: 10px;
+        padding-right: 30px;
       }
 
       button {
@@ -897,11 +952,28 @@
 
 @media (max-width: 1279px) {
   .DesktopSessionInformationHeader .LeftInformationHeader {
-    min-height: 230px;
-    max-height: 265px;
+    min-height: 270px;
+    max-height: 300px;
     padding: 23px 0 0 28px;
+    margin-bottom: 65px;
+    box-sizing: border-box;
+  }
+}
+
+@media (min-width: 1280px) {
+  .DesktopSessionInformationHeader .LeftInformationHeader {
+    min-height: 200px;
+    max-height: 250px;
+    padding: 23px 0 10px 28px;
     margin-bottom: 15px;
     box-sizing: border-box;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1279px) {
+  .ZoomLinkText {
+    max-width: none !important;
+    flex-basis: auto !important; 
   }
 }
 
